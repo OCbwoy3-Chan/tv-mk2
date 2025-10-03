@@ -172,6 +172,10 @@ import * as Layout from '#/components/Layout'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
+import {
+  useAutoLikeOnRepost,
+  useSetAutoLikeOnRepost,
+} from '../../state/preferences/auto-like-on-repost.tsx'
 import {SearchProfileCard} from '../Search/components/SearchProfileCard'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams>
@@ -829,6 +833,9 @@ export function RunesSettingsScreen({}: Props) {
   const setOpenRouterModelControl = Dialog.useDialogControl()
   const openRouterConfigured = useOpenRouterConfigured()
 
+  const autoLikeOnRepost = useAutoLikeOnRepost()
+  const setAutoLikeOnRepost = useSetAutoLikeOnRepost()
+
   return (
     <Layout.Screen>
       <Layout.Header.Outer>
@@ -1096,6 +1103,17 @@ export function RunesSettingsScreen({}: Props) {
                 longer to load and use more bandwidth.
               </Trans>
             </Admonition>
+            <Toggle.Item
+              name="auto_like_on_repost"
+              label={_(msg`Auto-like what you repost`)}
+              value={autoLikeOnRepost}
+              onChange={value => setAutoLikeOnRepost(value)}
+              style={[a.w_full]}>
+              <Toggle.LabelText style={[a.flex_1]}>
+                <Trans>Auto-like what you repost</Trans>
+              </Toggle.LabelText>
+              <Toggle.Platform />
+            </Toggle.Item>
             <Toggle.Item
               name="hide_feeds_promo_tab"
               label={_(msg`Hide "Feeds ✨" tab when only one feed is selected`)}

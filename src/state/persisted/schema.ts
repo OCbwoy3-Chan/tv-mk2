@@ -208,6 +208,8 @@ const schema = z.object({
   mutedThreads: z.array(z.string()),
   trendingDisabled: z.boolean().optional(),
   trendingVideoDisabled: z.boolean().optional(),
+
+  autoLikeOnRepost: z.boolean().optional(),
 })
 export type Schema = z.infer<typeof schema>
 
@@ -333,6 +335,8 @@ export const defaults: Schema = {
     postName: 'skeet',
     postsName: 'skeets',
   },
+
+  autoLikeOnRepost: false,
 }
 
 export function tryParse(rawData: string): Schema | undefined {

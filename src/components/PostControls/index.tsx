@@ -34,6 +34,7 @@ import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
+import {useAutoLikeOnRepost} from '../../state/preferences/auto-like-on-repost.tsx'
 import {BookmarkButton} from './BookmarkButton'
 import {
   PostControlButton,
@@ -114,6 +115,8 @@ let PostControls = ({
   const disableReplyMetrics = useDisableReplyMetrics()
   const disableQuotesMetrics = useDisableQuotesMetrics()
 
+  const autoLikeOnRepost = useAutoLikeOnRepost()
+
   const onPressToggleLike = async () => {
     if (isBlocked) {
       Toast.show(l`Cannot interact with a blocked user`, {
@@ -162,6 +165,17 @@ let PostControls = ({
           reqId,
         })
         await queueRepost()
+        setHasLikeIconBeenToggled(true)
+        if (!post.viewer?.like && autoLikeOnRepost) {
+          sendInteraction({
+            item: post.uri,
+            event: 'app.bsky.feed.defs#interactionLike',
+            feedContext,
+            reqId,
+          })
+          captureAction(ProgressGuideAction.Like)
+          await queueLike()
+        }
       } else {
         await queueUnrepost()
       }
