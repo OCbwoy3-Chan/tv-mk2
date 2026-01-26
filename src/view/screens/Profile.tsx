@@ -29,6 +29,7 @@ import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {listenSoftReset} from '#/state/events'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useLabelerInfoQuery} from '#/state/queries/labeler'
+import {useLinkatBoardQuery} from '#/state/queries/linkat'
 import {resetProfilePostsQueries} from '#/state/queries/post-feed'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
@@ -43,6 +44,7 @@ import {type ListRef} from '#/view/com/util/List'
 import {ProfileHeader, ProfileHeaderLoading} from '#/screens/Profile/Header'
 import {ProfileFeedSection} from '#/screens/Profile/Sections/Feed'
 import {ProfileLabelsSection} from '#/screens/Profile/Sections/Labels'
+import {ProfileLinkatSection} from '#/screens/Profile/Sections/Linkat'
 import {atoms as a} from '#/alf'
 import {Circle_And_Square_Stroke1_Corner0_Rounded_Filled as CircleAndSquareIcon} from '#/components/icons/CircleAndSquare'
 import {Heart2_Stroke1_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
@@ -200,6 +202,7 @@ function ProfileScreenLoaded({
   const listsSectionRef = React.useRef<SectionRef>(null)
   const starterPacksSectionRef = React.useRef<SectionRef>(null)
   const labelsSectionRef = React.useRef<SectionRef>(null)
+  const linksSectionRef = React.useRef<SectionRef>(null)
 
   useSetTitle(combinedDisplayName(profile))
 
@@ -227,6 +230,9 @@ function ProfileScreenLoaded({
   // subtract starterpack count from list count, since starterpacks are a type of list
   const listCount = (profile.associated?.lists || 0) - starterPackCount
   const showListsTab = hasSession && (isMe || listCount > 0)
+  // Check if user has Linkat board
+  const {data: linkatBoard} = useLinkatBoardQuery(profile.did)
+  const showLinksTab = Boolean(linkatBoard?.cards?.length)
 
   const sectionTitles = [
     showFiltersTab ? _(msg`Labels`) : undefined,
@@ -236,6 +242,7 @@ function ProfileScreenLoaded({
     showMediaTab ? _(msg`Media`) : undefined,
     showVideosTab ? _(msg`Videos`) : undefined,
     showLikesTab ? _(msg`Likes`) : undefined,
+    showLinksTab ? _(msg`Links`) : undefined,
     showFeedsTab ? _(msg`Feeds`) : undefined,
     showStarterPacksTab ? _(msg`Starter Packs`) : undefined,
     showListsTab && !hasLabeler ? _(msg`Lists`) : undefined,
@@ -248,11 +255,15 @@ function ProfileScreenLoaded({
   let mediaIndex: number | null = null
   let videosIndex: number | null = null
   let likesIndex: number | null = null
+  let linksIndex: number | null = null
   let feedsIndex: number | null = null
   let starterPacksIndex: number | null = null
   let listsIndex: number | null = null
   if (showFiltersTab) {
     filtersIndex = nextIndex++
+  }
+  if (showListsTab && hasLabeler) {
+    listsIndex = nextIndex++
   }
   if (showPostsTab) {
     postsIndex = nextIndex++
@@ -269,13 +280,16 @@ function ProfileScreenLoaded({
   if (showLikesTab) {
     likesIndex = nextIndex++
   }
+  if (showLinksTab) {
+    linksIndex = nextIndex++
+  }
   if (showFeedsTab) {
     feedsIndex = nextIndex++
   }
   if (showStarterPacksTab) {
     starterPacksIndex = nextIndex++
   }
-  if (showListsTab) {
+  if (showListsTab && !hasLabeler) {
     listsIndex = nextIndex++
   }
 
@@ -293,6 +307,8 @@ function ProfileScreenLoaded({
         videosSectionRef.current?.scrollToTop()
       } else if (index === likesIndex) {
         likesSectionRef.current?.scrollToTop()
+      } else if (index === linksIndex) {
+        linksSectionRef.current?.scrollToTop()
       } else if (index === feedsIndex) {
         feedsSectionRef.current?.scrollToTop()
       } else if (index === starterPacksIndex) {
@@ -308,6 +324,7 @@ function ProfileScreenLoaded({
       mediaIndex,
       videosIndex,
       likesIndex,
+      linksIndex,
       feedsIndex,
       listsIndex,
       starterPacksIndex,
@@ -522,6 +539,18 @@ function ProfileScreenLoaded({
                 setScrollViewTag={setScrollViewTag}
                 emptyStateMessage={_(msg`No likes yet`)}
                 emptyStateIcon={HeartIcon}
+              />
+            )
+          : null}
+        {showLinksTab
+          ? ({headerHeight, isFocused, scrollElRef}) => (
+              <ProfileLinkatSection
+                ref={linksSectionRef}
+                did={profile.did}
+                headerHeight={headerHeight}
+                isFocused={isFocused}
+                scrollElRef={scrollElRef as ListRef}
+                setScrollViewTag={setScrollViewTag}
               />
             )
           : null}
