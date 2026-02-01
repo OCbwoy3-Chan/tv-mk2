@@ -30,7 +30,7 @@ import {listenSoftReset} from '#/state/events'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useLabelerInfoQuery} from '#/state/queries/labeler'
 import {resetProfilePostsQueries} from '#/state/queries/post-feed'
-import {useProfileQuery} from '#/state/queries/profile'
+import {type TealActorStatus, useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
 import {useAgent, useSession} from '#/state/session'
 import {useSetMinimalShellMode} from '#/state/shell'
@@ -167,7 +167,9 @@ function ProfileScreenLoaded({
   moderationOpts,
   hideBackButton,
 }: {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: AppBskyActorDefs.ProfileViewDetailed & {
+    tealStatus: TealActorStatus | undefined
+  }
   moderationOpts: ModerationOpts
   hideBackButton: boolean
   isPlaceholderProfile: boolean

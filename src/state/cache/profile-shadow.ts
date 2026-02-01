@@ -21,7 +21,10 @@ import {
 import {findAllProfilesInQueryData as findAllProfilesInPostLikedByQueryData} from '#/state/queries/post-liked-by'
 import {findAllProfilesInQueryData as findAllProfilesInPostQuotesQueryData} from '#/state/queries/post-quotes'
 import {findAllProfilesInQueryData as findAllProfilesInPostRepostedByQueryData} from '#/state/queries/post-reposted-by'
-import {findAllProfilesInQueryData as findAllProfilesInProfileQueryData} from '#/state/queries/profile'
+import {
+  findAllProfilesInQueryData as findAllProfilesInProfileQueryData,
+  type TealActorStatus,
+} from '#/state/queries/profile'
 import {findAllProfilesInQueryData as findAllProfilesInProfileFollowersQueryData} from '#/state/queries/profile-followers'
 import {findAllProfilesInQueryData as findAllProfilesInProfileFollowsQueryData} from '#/state/queries/profile-follows'
 import {findAllProfilesInQueryData as findAllProfilesInSuggestedFollowsQueryData} from '#/state/queries/suggested-follows'
@@ -49,7 +52,9 @@ const shadows: WeakMap<
 const emitter = new EventEmitter()
 
 export function useProfileShadow<
-  TProfileView extends bsky.profile.AnyProfileView,
+  TProfileView extends bsky.profile.AnyProfileView & {
+    tealStatus: TealActorStatus | undefined
+  },
 >(profile: TProfileView): Shadow<TProfileView> {
   const [shadow, setShadow] = useState(() => shadows.get(profile))
   const [prevPost, setPrevPost] = useState(profile)

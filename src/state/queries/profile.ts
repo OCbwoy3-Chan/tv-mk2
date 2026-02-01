@@ -55,6 +55,32 @@ export const precacheProfile = unstableCacheProfileView
 const RQKEY_ROOT = 'profile'
 export const RQKEY = (did: string) => [RQKEY_ROOT, did]
 
+export type TealArtist = {
+  artistName: string
+  artistMbId?: string
+}
+
+export type TealPlayView = {
+  trackName: string
+  trackMbId?: string
+  recordingMbId?: string
+  duration?: number
+  artists: TealArtist[]
+  releaseName?: string
+  releaseMbId?: string
+  isrc?: string
+  originUrl?: string
+  musicServiceBaseDomain?: string
+  submissionClientAgent?: string
+  playedTime?: string // datetime
+}
+
+export type TealActorStatus = {
+  time: string // datetime
+  expiry?: string // datetime
+  item: TealPlayView
+}
+
 export const profilesQueryKeyRoot = 'profiles'
 export const profilesQueryKey = (handles: string[]) => [
   profilesQueryKeyRoot,
@@ -70,7 +96,11 @@ export function useProfileQuery({
 }) {
   const agent = useAgent()
   const {getUnstableProfile} = useUnstableProfileViewCache()
-  return useQuery<AppBskyActorDefs.ProfileViewDetailed>({
+  return useQuery<
+    AppBskyActorDefs.ProfileViewDetailed & {
+      tealStatus: TealActorStatus | undefined
+    }
+  >({
     // WARNING
     // this staleTime is load-bearing
     // if you remove it, the UI infinite-loops
@@ -80,11 +110,33 @@ export function useProfileQuery({
     queryKey: RQKEY(did ?? ''),
     queryFn: async () => {
       const res = await agent.getProfile({actor: did ?? ''})
-      return res.data
+      try {
+        const teal = await fetch(
+          `https://slingshot.microcosm.blue/xrpc/com.atproto.repo.getRecord?repo=${did ?? ''}&collection=fm.teal.alpha.actor.status&rkey=self`,
+          {
+            method: 'GET',
+          },
+        )
+        const tealData = await teal.json()
+
+        return {
+          ...res.data,
+          tealStatus: tealData.value as TealActorStatus | undefined,
+        }
+      } catch (e) {
+        return {
+          ...res.data,
+          tealStatus: undefined as TealActorStatus | undefined,
+        }
+      }
     },
     placeholderData: () => {
       if (!did) return
-      return getUnstableProfile(did) as AppBskyActorDefs.ProfileViewDetailed
+      const profile = getUnstableProfile(did) as AppBskyActorDefs.ProfileViewDetailed
+      return profile ? {
+        ...profile,
+        tealStatus: undefined,
+      } : undefined
     },
     enabled: !!did,
   })

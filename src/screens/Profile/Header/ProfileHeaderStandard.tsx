@@ -1,5 +1,6 @@
 import {memo, useMemo, useState} from 'react'
 import {View} from 'react-native'
+import {Image} from 'expo-image'
 import {
   type AppBskyActorDefs,
   moderateProfile,
@@ -18,6 +19,7 @@ import {logger} from '#/logger'
 import {type Shadow, useProfileShadow} from '#/state/cache/profile-shadow'
 import {useDisableFollowedByMetrics} from '#/state/preferences/disable-followed-by-metrics'
 import {
+  type TealActorStatus,
   useProfileBlockMutationQueue,
   useProfileFollowMutationQueue,
 } from '#/state/queries/profile'
@@ -30,6 +32,7 @@ import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
 import {useDialogControl} from '#/components/Dialog'
 import {MessageProfileButton} from '#/components/dms/MessageProfileButton'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
+import {tealfm} from '#/components/icons/tealfm'
 import {
   KnownFollowers,
   shouldShowKnownFollowers,
@@ -47,7 +50,9 @@ import {ProfileHeaderShell} from './Shell'
 import {AnimatedProfileHeaderSuggestedFollows} from './SuggestedFollows'
 
 interface Props {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: AppBskyActorDefs.ProfileViewDetailed & {
+    tealStatus: TealActorStatus | undefined
+  }
   descriptionRT: RichTextAPI | null
   moderationOpts: ModerationOpts
   hideBackButton?: boolean
@@ -63,8 +68,11 @@ let ProfileHeaderStandard = ({
 }: Props): React.ReactNode => {
   const t = useTheme()
   const {gtMobile} = useBreakpoints()
-  const profile =
-    useProfileShadow<AppBskyActorDefs.ProfileViewDetailed>(profileUnshadowed)
+  const profile = useProfileShadow<
+    AppBskyActorDefs.ProfileViewDetailed & {
+      tealStatus: TealActorStatus | undefined
+    }
+  >(profileUnshadowed)
   const {currentAccount} = useSession()
   const {_} = useLingui()
   const moderation = useMemo(
@@ -166,6 +174,25 @@ let ProfileHeaderStandard = ({
                   />
                 </View>
               ) : undefined}
+
+              {profile.tealStatus && (
+                <View style={[a.flex_row, a.align_center, a.gap_sm]}>
+                  <Image
+                    source={{
+                      uri: `https://coverartarchive.org/release/${profile.tealStatus.item.releaseMbId}/front-250`,
+                    }}
+                    style={[{width: 30, height: 30, borderRadius: 4}]}
+                    loading={'eager'}
+                    accessibilityIgnoresInvertColors
+                  />
+                  <Text>
+                    Listening to {profile.tealStatus.item.trackName} by{' '}
+                    {profile.tealStatus.item.artists
+                      .map(artist => artist.artistName)
+                      .join(', ')}
+                  </Text>
+                </View>
+              )}
 
               {!isMe &&
                 !disableFollowedByMetrics &&

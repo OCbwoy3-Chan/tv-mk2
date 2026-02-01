@@ -19,6 +19,7 @@ import {useIsFocused} from '@react-navigation/native'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {type TealActorStatus} from '#/state/queries/profile'
 import {useSetLightStatusBar} from '#/state/shell/light-status-bar'
 import {usePagerHeaderContext} from '#/view/com/pager/PagerHeaderContext'
 import {LoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
@@ -60,7 +61,9 @@ ProfileHeaderLoading = memo(ProfileHeaderLoading)
 export {ProfileHeaderLoading}
 
 interface Props {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: AppBskyActorDefs.ProfileViewDetailed & {
+    tealStatus: TealActorStatus | undefined
+  }
   labeler: AppBskyLabelerDefs.LabelerViewDetailed | undefined
   descriptionRT: RichTextAPI | null
   moderationOpts: ModerationOpts
@@ -105,7 +108,9 @@ const MinimalHeader = memo(function MinimalHeader({
   hideBackButton = false,
 }: {
   onLayout: (e: LayoutChangeEvent) => void
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: AppBskyActorDefs.ProfileViewDetailed & {
+    tealStatus: TealActorStatus | undefined
+  }
   labeler?: AppBskyLabelerDefs.LabelerViewDetailed
   hideBackButton?: boolean
 }) {
