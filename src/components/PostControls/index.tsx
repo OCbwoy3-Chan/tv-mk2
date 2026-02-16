@@ -16,6 +16,7 @@ import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {type Shadow} from '#/state/cache/types'
 import {useFeedFeedbackContext} from '#/state/feed-feedback'
 import {useDisableLikesMetrics} from '#/state/preferences/disable-likes-metrics'
+import {useDisableQuotesMetrics} from '#/state/preferences/disable-quotes-metrics'
 import {useDisableReplyMetrics} from '#/state/preferences/disable-reply-metrics'
 import {useDisableRepostsMetrics} from '#/state/preferences/disable-reposts-metrics'
 import {
@@ -109,6 +110,7 @@ let PostControls = ({
   const disableLikesMetrics = useDisableLikesMetrics()
   const disableRepostsMetrics = useDisableRepostsMetrics()
   const disableReplyMetrics = useDisableReplyMetrics()
+  const disableQuotesMetrics = useDisableQuotesMetrics()
 
   const onPressToggleLike = async () => {
     if (isBlocked) {
@@ -271,9 +273,8 @@ let PostControls = ({
           <RepostButton
             isReposted={!!post.viewer?.repost}
             repostCount={
-              !disableRepostsMetrics
-                ? (post.repostCount ?? 0) + (post.quoteCount ?? 0)
-                : 0
+              (!disableRepostsMetrics ? (post.repostCount ?? 0) : 0) +
+              (!disableQuotesMetrics ? (post.quoteCount ?? 0) : 0)
             }
             onRepost={onRepost}
             onQuote={onQuote}
