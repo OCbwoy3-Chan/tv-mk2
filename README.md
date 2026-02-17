@@ -53,7 +53,9 @@ These are all available as options in a sub-page of the app's settings.
 - Toggle to make all user avatars square (like labelers)
 - Toggle for more square-ish UI (still slightly rounded)
 - Toggle to remove the composer prompt at the top of the Following & Discover feeds
+- Toggle between handle and DID in URLs and share links
 - Change post translation provider (between Google, Kagi, Papago, and LibreTranslate)
+- Use an OpenRouter API key for generating image alt text when posting
 
 #### Metrics
 
@@ -82,7 +84,7 @@ You can completely disable the visiblity of all metrics individually, including 
 - [ ] Change followed accounts [on onboarding](https://github.com/blacksky-algorithms/blacksky.community/commit/e36ee43efb4999f070860d7f70122e45b28c1e2b)
 - [ ] Join date & switch accounts in composer from a fork like [deer.aylac.top](https://github.com/ayla6/deer-social-test)
 - [ ] Visual replies indicator like the [Firmament userstyle](https://witchsky.app/profile/did:plc:jwhxcrf5uvl3vyw7nurecgt5/post/3m4rr3vzmak2a) (and likes?)
-- [ ] Put DeerSettings into separate subpages
+- [ ] Put RunesSettings into separate subpages
 - [ ] After subpages for options, add [Outlinks page](https://witchsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3m5zjhhshic2g) &
   - [ ] ShareMenuItems.tsx, ShareMenuItems.web.tsx
 - [ ] For profile meatball button, Open profile in PDSls & Open bridged OG fedi account page
@@ -94,7 +96,6 @@ You can completely disable the visiblity of all metrics individually, including 
 - [ ] Collapse labels past a customizable number (from the same labeler?) into a labeler clip "(+)"
 - [ ] Submit releases to the Google Play Store and iOS App Store
 - [ ] Move from [Cloudflare Pages](https://pages.cloudflare.com/) to [wisp.place](https://wisp.place/) (needs serverless for embeds)
-- [ ] Toggle between handle and DID in share links
 - [ ] Move TOS and privacy policy to Jollywhoppers website
 - [ ] Ignore `!no-unauthenticated` labels
 - [ ] Material 3 Expressive theming on Android (Liquid **ass on iOS)

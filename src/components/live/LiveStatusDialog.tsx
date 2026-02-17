@@ -80,9 +80,7 @@ function DialogInner({
   }, [navigation, profile.handle, control])
 
   const handlePressViewAvatar = useCallback(() => {
-    if (onPressViewAvatar) {
-      control.close(onPressViewAvatar)
-    }
+    control.close(onPressViewAvatar)
   }, [control, onPressViewAvatar])
 
   return (
@@ -95,7 +93,9 @@ function DialogInner({
         profile={profile}
         embed={embed}
         onPressOpenProfile={onPressOpenProfile}
-        onPressViewAvatar={handlePressViewAvatar}
+        {...(onPressViewAvatar
+          ? {onPressViewAvatar: handlePressViewAvatar}
+          : {})}
       />
       <Dialog.Close />
     </Dialog.ScrollableInner>

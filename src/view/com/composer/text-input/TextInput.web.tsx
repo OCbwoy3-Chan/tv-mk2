@@ -242,7 +242,7 @@ export function TextInput({
           }
         },
       },
-      content: generateJSON(textToHtml(richTextToHTML(richtext)), extensions, {
+      content: generateJSON(richTextToHTML(richtext), extensions, {
         preserveWhitespace: 'full',
       }),
       autofocus: autoFocus ? 'end' : null,
@@ -455,6 +455,7 @@ function escapeHTML(str: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
+    .replace(/\n/g, '<br/>')
 }
 
 function editorJsonToText(
@@ -529,14 +530,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
 })
-
-function textToHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\n/g, '<br>')
-}
 
 function getImageOrVideoFromUri(
   items: DataTransferItemList,
