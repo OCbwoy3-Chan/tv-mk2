@@ -1,4 +1,4 @@
-import {memo, useCallback, useEffect, useMemo} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef} from 'react'
 import {Pressable, TouchableWithoutFeedback, View} from 'react-native'
 import Animated, {
   measure,
@@ -74,6 +74,17 @@ let ProfileHeaderShell = ({
 
   const aviRef = useAnimatedRef()
   const bannerRef = useAnimatedRef<Animated.View>()
+  const containerRef = useRef<View>(null)
+
+  // Apply safe-area CSS on web
+  useEffect(() => {
+    if (containerRef.current && typeof window !== 'undefined') {
+      const element = containerRef.current as any
+      if (element.style) {
+        element.style.paddingTop = 'env(safe-area-inset-top)'
+      }
+    }
+  }, [])
 
   const onPressBack = useCallback(() => {
     if (navigation.canGoBack()) {
@@ -191,7 +202,10 @@ let ProfileHeaderShell = ({
   }, [profile.banner, moderation, _openLightboxBanner, bannerRef])
 
   return (
-    <View style={t.atoms.bg} pointerEvents={IS_IOS ? 'auto' : 'box-none'}>
+    <View
+      ref={containerRef}
+      style={t.atoms.bg}
+      pointerEvents={IS_IOS ? 'auto' : 'box-none'}>
       <View
         pointerEvents={IS_IOS ? 'auto' : 'box-none'}
         style={[a.relative, {height: 150}]}>
