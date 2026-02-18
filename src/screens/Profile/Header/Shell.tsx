@@ -1,5 +1,5 @@
 import {memo, useCallback, useEffect, useMemo, useRef} from 'react'
-import {Pressable, TouchableWithoutFeedback, View} from 'react-native'
+import {Pressable, View} from 'react-native'
 import Animated, {
   measure,
   type MeasuredDimensions,
@@ -262,22 +262,11 @@ let ProfileHeaderShell = ({
               style={{borderRadius: 0}}
             />
           ) : (
-            <TouchableWithoutFeedback
-              testID="profileHeaderBannerButton"
-              onPress={onPressBanner}
-              accessibilityRole="image"
-              accessibilityLabel={_(msg`View ${profile.handle}'s banner`)}
-              accessibilityHint="">
-              <View>
-                <Animated.View ref={bannerRef} collapsable={false}>
-                  <UserBanner
-                    type={profile.associated?.labeler ? 'labeler' : 'default'}
-                    banner={profile.banner}
-                    moderation={moderation.ui('banner')}
-                  />
-                </Animated.View>
-              </View>
-            </TouchableWithoutFeedback>
+            <UserBanner
+              type={profile.associated?.labeler ? 'labeler' : 'default'}
+              banner={profile.banner}
+              moderation={moderation.ui('banner')}
+            />
           )}
         </GrowableBanner>
       </View>
