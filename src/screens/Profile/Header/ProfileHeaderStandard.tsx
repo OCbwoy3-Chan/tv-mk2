@@ -205,7 +205,7 @@ let ProfileHeaderStandard = ({
           <View style={[a.flex_row, a.flex_wrap, {gap: 10}, a.pt_md]}>
             {websiteFormatted && (
               <Link
-                to={sanitizeWebsiteForLink(websiteFormatted)}
+                to={sanitizeWebsiteForLink(website ?? '')}
                 label={_(msg({message: `Visit ${websiteFormatted}`}))}
                 style={[a.flex_row, a.align_center, a.gap_xs]}>
                 <Globe
