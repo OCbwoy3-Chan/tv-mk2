@@ -7,16 +7,14 @@ import {
 
 import {
   BLUE_HUE as BLACKSKY_BLUE_HUE,
-  // defaultScale as BLACKSKY_defaultScale,
-  dimScale as BLACKSKY_dimScale,
-  GREEN_HUE as BLACKSKY_GREEN_HUE,
-  RED_HUE as BLACKSKY_RED_HUE,
-} from '#/alf/util/blackskyColorGeneration'
-import {
   BLUE_HUE as ZEPPELIN_BLUE_HUE,
   defaultScale as ZEPPELIN_defaultScale,
+  // defaultScale as BLACKSKY_defaultScale,
+  dimScale as BLACKSKY_dimScale,
   dimScale as ZEPPELIN_dimScale,
+  GREEN_HUE as BLACKSKY_GREEN_HUE,
   GREEN_HUE as ZEPPELIN_GREEN_HUE,
+  RED_HUE as BLACKSKY_RED_HUE,
   RED_HUE as ZEPPELIN_RED_HUE,
 } from '#/alf/util/blackskyColorGeneration'
 import {
@@ -31,6 +29,8 @@ export type Palette = {
   white: string
   black: string
   like: string
+  pink: string
+  yellow: string
 
   contrast_0: string
   contrast_25: string
@@ -91,10 +91,19 @@ export type Palette = {
   negative_975: string
 }
 
+const STATIC_VALUES = {
+  white: '#FEFBFB',
+  black: '#000000',
+  pink: '#EC4899',
+  yellow: '#FFC404',
+}
+
 export const DEFAULT_PALETTE: Palette = {
   white: '#FEFBFB',
   black: '#000000',
   like: '#dd5e8f',
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
 
   contrast_0: '#FEFBFB',
   contrast_25: '#ECE9E9',
@@ -159,6 +168,8 @@ export const DEFAULT_SUBDUED_PALETTE: Palette = {
   white: '#FEFBFB',
   black: '#383434',
   like: '#dd5e8f',
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
 
   contrast_0: '#FEFBFB',
   contrast_25: '#ECE9E9',
@@ -329,7 +340,9 @@ const scaleLight = (idx: number) => BLACKSKY_dimScale[idx]
 export const BLACKSKY_PALETTE: Palette = {
   white: BLACKSKY_BRAND.white,
   black: BLACKSKY_BRAND.black,
-  like: '#EC4899',
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
+  like: STATIC_VALUES.pink,
 
   // neutrals
   contrast_0: BLACKSKY_BRAND.white,
@@ -485,9 +498,11 @@ export const blackskyscheme = {
 }
 
 export const BLUESKY_PALETTE: Palette = {
-  white: '#FFFFFF',
-  black: '#000000',
-  like: '#EC4899',
+  white: STATIC_VALUES.white,
+  black: STATIC_VALUES.black,
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
+  like: STATIC_VALUES.pink,
 
   contrast_0: '#FFFFFF',
   contrast_25: '#F9FAFB',
@@ -549,9 +564,11 @@ export const BLUESKY_PALETTE: Palette = {
 }
 
 export const BLUESKY_SUBDUED_PALETTE: Palette = {
-  white: '#FFFFFF',
-  black: '#000000',
-  like: '#EC4899',
+  white: STATIC_VALUES.white,
+  black: STATIC_VALUES.black,
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
+  like: STATIC_VALUES.pink,
 
   contrast_0: '#FFFFFF',
   contrast_25: '#F9FAFB',
@@ -628,8 +645,10 @@ export const blueskyscheme = {
 
 export const DEER_PALETTE: Palette = {
   white: `hsl(${DEER_BLUE_HUE}, 20%, ${DEER_defaultScale[14]}%)`,
-  black: '#000000',
-  like: '#ec4899',
+  black: STATIC_VALUES.black,
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
+  like: STATIC_VALUES.pink,
 
   contrast_0: `hsl(${DEER_BLUE_HUE}, 20%, ${DEER_defaultScale[14]}%)`,
   contrast_25: `hsl(${DEER_BLUE_HUE}, 20%, ${DEER_defaultScale[13]}%)`,
@@ -725,7 +744,9 @@ export const deerscheme = {
 export const ZEPPELIN_PALETTE: Palette = {
   white: `hsl(${ZEPPELIN_BLUE_HUE}, 15%, ${ZEPPELIN_defaultScale[14]}%)`,
   black: `hsl(${ZEPPELIN_BLUE_HUE}, 23%, ${ZEPPELIN_defaultScale[0]}%)`,
-  like: '#ec4899',
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
+  like: STATIC_VALUES.pink,
 
   contrast_0: `hsl(${ZEPPELIN_BLUE_HUE}, 15%, ${ZEPPELIN_defaultScale[14]}%)`,
   contrast_25: `hsl(${ZEPPELIN_BLUE_HUE}, 15%, ${ZEPPELIN_defaultScale[13]}%)`,
@@ -836,9 +857,11 @@ export const zeppelinscheme = {
 }
 
 export const KITTY_PALETTE: Palette = {
-  white: '#FFFFFF',
-  black: '#000000',
-  like: '#EC4899',
+  white: STATIC_VALUES.white,
+  black: STATIC_VALUES.black,
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
+  like: STATIC_VALUES.pink,
 
   contrast_0: '#FFFFFF',
   contrast_25: '#F9FAFB',
@@ -900,9 +923,11 @@ export const KITTY_PALETTE: Palette = {
 }
 
 export const KITTY_SUBDUED_PALETTE: Palette = {
-  white: '#FFFFFF',
-  black: '#000000',
-  like: '#EC4899',
+  white: STATIC_VALUES.white,
+  black: STATIC_VALUES.black,
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
+  like: STATIC_VALUES.pink,
 
   contrast_0: '#FFFFFF',
   contrast_25: '#F9FAFB',
@@ -1000,9 +1025,11 @@ const REDDWARF_TAILWIND_ATOMS_VIBRANT = {
 
 export const REDDWARF_SUBDUED_PALETTE: Palette = {
   ...DEFAULT_SUBDUED_PALETTE,
-  white: '#FFFFFF',
-  black: '#000000',
   like: '#FF6B6B',
+  white: STATIC_VALUES.white,
+  black: STATIC_VALUES.black,
+  pink: STATIC_VALUES.pink,
+  yellow: STATIC_VALUES.yellow,
 
   contrast_0: REDDWARF_TAILWIND_ATOMS.color_gray_50,
   contrast_25: REDDWARF_TAILWIND_ATOMS.color_gray_50,
