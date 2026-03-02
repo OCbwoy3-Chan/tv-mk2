@@ -43,6 +43,9 @@ postbuild-web:
 
     # copy our static pages over!
     cp -r witchsky-static-about web-build/about
+    
+    # copy a stylesheet
+    cp src/style.css web-build/style.css
 
 [group('dev')]
 dev-android-setup: prebuild-android
