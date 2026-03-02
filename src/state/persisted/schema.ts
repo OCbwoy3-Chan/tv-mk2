@@ -1,6 +1,6 @@
 import {z} from 'zod'
 
-import { DEFAULT_ALT_TEXT_AI_MODEL } from '#/lib/constants'
+import {DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
 import {deviceLanguageCodes, deviceLocales} from '#/locale/deviceLocales'
 import {findSupportedAppLanguage} from '#/locale/helpers'
 import {logger} from '#/logger'
@@ -58,6 +58,7 @@ const schema = z.object({
     'zeppelin',
     'kitty',
     'reddwarf',
+    'catppuccin',
   ]),
   hue: z.number(),
   session: z.object({
