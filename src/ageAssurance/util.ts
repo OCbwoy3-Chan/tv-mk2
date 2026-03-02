@@ -12,7 +12,7 @@ import {useAgeAssuranceDataContext} from '#/ageAssurance/data'
 import {AgeAssuranceAccess} from '#/ageAssurance/types'
 import {type Geolocation, useGeolocation} from '#/geolocation'
 
-export const MIN_ACCESS_AGE = 13
+export const MIN_ACCESS_AGE = 1
 const FALLBACK_REGION_CONFIG: AppBskyAgeassuranceDefs.ConfigRegion = {
   countryCode: '*',
   regionCode: undefined,

@@ -15,6 +15,14 @@ export type Events = {
     experimentId: string
     variationId: string
   }
+  'feature:viewed': {
+    featureId: string
+    featureResultValue: unknown
+    /** Only available if feature has experiment rules applied */
+    experimentId?: string
+    /** Only available if feature has experiment rules applied */
+    variationId?: string
+  }
 
   'account:loggedIn': {
     logContext:
@@ -562,6 +570,10 @@ export type Events = {
     setDescription: boolean
     profilesCount: number
     feedsCount: number
+  }
+  'starterPack:convertToList': {
+    starterPack: string
+    memberCount: number
   }
   'starterPack:ctaPress': {
     starterPack: string

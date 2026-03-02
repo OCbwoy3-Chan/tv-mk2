@@ -11,10 +11,9 @@ import {
   type ModerationOpts,
   RichText as RichTextApi,
 } from '@atproto/api'
-import {msg} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
-import {useActorStatus} from '#/lib/actor-status'
 import {getModerationCauseKey} from '#/lib/moderation'
 import {forceLTR} from '#/lib/strings/bidi'
 import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
@@ -47,6 +46,7 @@ import {Text} from '#/components/Typography'
 import {useSimpleVerificationState} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {type Metrics} from '#/analytics'
+import {useActorStatus} from '#/features/liveNow'
 import type * as bsky from '#/types/bsky'
 
 export function Default({

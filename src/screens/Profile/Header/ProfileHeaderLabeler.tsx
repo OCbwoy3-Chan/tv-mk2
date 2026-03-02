@@ -7,8 +7,9 @@ import {
   type ModerationOpts,
   type RichText as RichTextAPI,
 } from '@atproto/api'
-import {msg, Plural, plural, Trans} from '@lingui/macro'
+import {msg, plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Plural, Trans} from '@lingui/react/macro'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {MAX_LABELERS} from '#/lib/constants'
@@ -354,7 +355,6 @@ export function HeaderLabelerButtons({
         </Button>
       ) : null}
       <ProfileMenu profile={profile} />
-
       <CantSubscribePrompt control={cantSubscribePrompt} />
     </>
   )

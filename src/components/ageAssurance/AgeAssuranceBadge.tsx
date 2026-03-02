@@ -1,5 +1,5 @@
 import {View} from 'react-native'
-import {Trans} from '@lingui/macro'
+import {Trans} from '@lingui/react/macro'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, select, useTheme} from '#/alf'

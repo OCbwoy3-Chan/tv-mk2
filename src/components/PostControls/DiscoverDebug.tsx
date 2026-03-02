@@ -1,6 +1,6 @@
 import {Pressable} from 'react-native'
 import * as Clipboard from 'expo-clipboard'
-import {t} from '@lingui/macro'
+import {t} from '@lingui/core/macro'
 
 import {DISCOVER_DEBUG_DIDS} from '#/lib/constants'
 import {useDiscoverContextEnabled} from '#/state/preferences/discover-context-enabled'

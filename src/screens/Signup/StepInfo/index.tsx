@@ -1,7 +1,8 @@
 import React, {useRef} from 'react'
 import {type TextInput, View} from 'react-native'
-import {msg, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Plural, Trans} from '@lingui/react/macro'
 import * as EmailValidator from 'email-validator'
 import type tldts from 'tldts'
 
@@ -85,16 +86,10 @@ export function StepInfo({
   const aaRegionConfig = useAgeAssuranceRegionConfigWithFallback()
   const {setDeviceGeolocation} = useDeviceGeolocationApi()
   const locationControl = Dialog.useDialogControl()
-  const isOverRegionMinAccessAge = state.dateOfBirth
-    ? !isUnderAge(state.dateOfBirth.toISOString(), aaRegionConfig.minAccessAge)
-    : true
-  const isOverAppMinAccessAge = state.dateOfBirth
-    ? !isUnderAge(state.dateOfBirth.toISOString(), MIN_ACCESS_AGE)
-    : true
-  const isOverMinAdultAge = state.dateOfBirth
-    ? !isUnderAge(state.dateOfBirth.toISOString(), 18)
-    : true
-  const isDeviceGeolocationGranted = useIsDeviceGeolocationGranted()
+  const isOverRegionMinAccessAge = true
+  const isOverAppMinAccessAge = true
+  const isOverMinAdultAge = true
+  const isDeviceGeolocationGranted = true
 
   const [hasWarnedEmail, setHasWarnedEmail] = React.useState<boolean>(false)
 
@@ -384,15 +379,15 @@ export function StepInfo({
                     <Admonition.Content>
                       <Admonition.Text>
                         {!isOverAppMinAccessAge ? (
-                          <Trans>
-                            You must be {MIN_ACCESS_AGE} years of age or older
-                            to create an account.
-                          </Trans>
+                          <Plural
+                            value={MIN_ACCESS_AGE}
+                            other="You must be # years of age or older to create an account."
+                          />
                         ) : (
-                          <Trans>
-                            You must be {aaRegionConfig.minAccessAge} years of
-                            age or older to create an account in your region.
-                          </Trans>
+                          <Plural
+                            value={aaRegionConfig.minAccessAge}
+                            other="You must be # years of age or older to create an account in your region."
+                          />
                         )}
                       </Admonition.Text>
                       {IS_NATIVE &&

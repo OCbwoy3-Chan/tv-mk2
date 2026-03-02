@@ -26,6 +26,7 @@ export const embedPlayerSources = [
   'giphy',
   'tenor',
   'flickr',
+  'bandcamp',
   'streamplace',
 ] as const
 
@@ -47,6 +48,8 @@ export type EmbedPlayerType =
   | 'giphy_gif'
   | 'tenor_gif'
   | 'flickr_album'
+  | 'bandcamp_album'
+  | 'bandcamp_track'
   | 'streamplace_stream'
 
 export const externalEmbedLabels: Record<EmbedPlayerSource, string> = {
@@ -60,6 +63,7 @@ export const externalEmbedLabels: Record<EmbedPlayerSource, string> = {
   appleMusic: 'Apple Music',
   soundcloud: 'SoundCloud',
   flickr: 'Flickr',
+  bandcamp: 'Bandcamp',
   streamplace: 'Streamplace',
 }
 
@@ -465,6 +469,32 @@ export function parseEmbedPlayerFromUrl(
     }
   }
 
+  const bandcampRegex = /^[a-z\d][a-z\d-]{2,}[a-z\d]\.bandcamp\.com$/i
+
+  if (bandcampRegex.test(urlp.hostname)) {
+    const pathComponents = urlp.pathname.split('/')
+    switch (pathComponents[1]) {
+      case 'album':
+        return {
+          type: 'bandcamp_album',
+          source: 'bandcamp',
+          playerUri: `https://bandcamp.com/EmbeddedPlayer/url=${encodeURIComponent(
+            urlp.href,
+          )}/size=large/bgcol=ffffff/linkcol=0687f5/minimal=true/transparent=true/`,
+        }
+      case 'track':
+        return {
+          type: 'bandcamp_track',
+          source: 'bandcamp',
+          playerUri: `https://bandcamp.com/EmbeddedPlayer/url=${encodeURIComponent(
+            urlp.href,
+          )}/size=large/bgcol=ffffff/linkcol=0687f5/minimal=true/transparent=true/`,
+        }
+      default:
+        return undefined
+    }
+  }
+
   if (urlp.hostname === 'stream.place') {
     if (isValidStreamPlaceUrl(urlp)) {
       return {
@@ -525,6 +555,9 @@ export function getPlayerAspect({
       return {height: 165}
     case 'apple_music_song':
       return {height: 150}
+    case 'bandcamp_album':
+    case 'bandcamp_track':
+      return {aspectRatio: 1}
     default:
       return {aspectRatio: 16 / 9}
   }

@@ -7,8 +7,9 @@ import {
 } from 'react-native'
 import {EncodingType, readAsStringAsync} from 'expo-file-system/legacy'
 import {Image} from 'expo-image'
-import {msg, Plural, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Plural, Trans} from '@lingui/react/macro'
 
 import {generateAltText} from '#/lib/ai/generateAltText'
 import {DEFAULT_ALT_TEXT_AI_MODEL, MAX_ALT_TEXT} from '#/lib/constants'

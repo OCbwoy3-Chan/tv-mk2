@@ -1,5 +1,6 @@
 import React from 'react'
-import {msg, Plural} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
+import {Plural} from '@lingui/react/macro'
 import {useLingui} from '@lingui/react'
 import {useFocusEffect} from '@react-navigation/native'
 

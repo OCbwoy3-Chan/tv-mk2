@@ -1,8 +1,9 @@
 import {useMemo} from 'react'
 import {Pressable, View} from 'react-native'
 import {type AppBskyUnspeccedDefs, moderateProfile} from '@atproto/api'
-import {msg, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'

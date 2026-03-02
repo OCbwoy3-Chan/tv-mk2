@@ -1,5 +1,6 @@
-import {msg, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a} from '#/alf'

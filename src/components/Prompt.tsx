@@ -1,12 +1,18 @@
 import {createContext, useCallback, useContext, useId, useMemo} from 'react'
 import {type GestureResponderEvent, View} from 'react-native'
-import {msg} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme, type ViewStyleProp, web} from '#/alf'
-import {Button, type ButtonColor, ButtonText} from '#/components/Button'
+import {
+  Button,
+  type ButtonColor,
+  ButtonIcon,
+  ButtonText,
+} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
+import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Text} from '#/components/Typography'
 import {type BottomSheetViewProps} from '../../modules/bottom-sheet'
 
@@ -129,7 +135,7 @@ export function Cancel({
     <Button
       variant="solid"
       color="secondary"
-      size={'large'}
+      size="large"
       label={cta || _(msg`Cancel`)}
       onPress={onPress}>
       <ButtonText>{cta || _(msg`Cancel`)}</ButtonText>
@@ -141,6 +147,9 @@ export function Action({
   onPress,
   color = 'primary',
   cta,
+  disabled = false,
+  icon,
+  shouldCloseOnPress = true,
   testID,
 }: {
   /**
@@ -156,25 +165,41 @@ export function Action({
    * Optional i18n string. If undefined, it will default to "Confirm".
    */
   cta?: string
+  /**
+   * If undefined, it will default to false.
+   */
+  disabled?: boolean
+  icon?: React.ComponentType<SVGIconProps>
+  /**
+   * Optionally close dialog automatically on press. If undefined, it will
+   * default to true.
+   */
+  shouldCloseOnPress?: boolean
   testID?: string
 }) {
   const {_} = useLingui()
   const {close} = Dialog.useDialogContext()
   const handleOnPress = useCallback(
     (e: GestureResponderEvent) => {
-      close(() => onPress?.(e))
+      if (shouldCloseOnPress) {
+        close(() => onPress?.(e))
+      } else {
+        onPress?.(e)
+      }
     },
-    [close, onPress],
+    [close, onPress, shouldCloseOnPress],
   )
 
   return (
     <Button
       color={color}
-      size={'large'}
+      disabled={disabled}
+      size="large"
       label={cta || _(msg`Confirm`)}
       onPress={handleOnPress}
       testID={testID}>
       <ButtonText>{cta || _(msg`Confirm`)}</ButtonText>
+      {icon && <ButtonIcon icon={icon} />}
     </Button>
   )
 }

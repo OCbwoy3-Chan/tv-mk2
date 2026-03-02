@@ -5,10 +5,12 @@ import {
   AppBskyActorStatus,
   type AppBskyEmbedExternal,
 } from '@atproto/api'
-import {msg, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {differenceInMinutes} from 'date-fns'
 
+import {useDebouncedValue} from '#/lib/hooks/useDebouncedValue'
 import {cleanError} from '#/lib/strings/errors'
 import {definitelyUrl} from '#/lib/strings/url-helpers'
 import {useTickEveryMinute} from '#/state/shell'
@@ -20,13 +22,13 @@ import * as TextField from '#/components/forms/TextField'
 import {Clock_Stroke2_Corner0_Rounded as ClockIcon} from '#/components/icons/Clock'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
-import {LinkPreview} from './LinkPreview'
 import {
+  displayDuration,
   useLiveLinkMetaQuery,
   useRemoveLiveStatusMutation,
   useUpsertLiveStatusMutation,
-} from './queries'
-import {displayDuration, useDebouncedValue} from './utils'
+} from '#/features/liveNow'
+import {LinkPreview} from '#/features/liveNow/components/LinkPreview'
 
 export function EditLiveDialog({
   control,

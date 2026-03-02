@@ -7,11 +7,10 @@ import {
   useState,
 } from 'react'
 import {View} from 'react-native'
-import {msg} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
-import {useTheme} from '#/alf'
-import {atoms as a} from '#/alf'
+import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
@@ -103,9 +102,9 @@ export function Trigger({children, label}: TriggerProps) {
       <Button
         label={label}
         onPress={control.open}
-        style={[a.flex_1, a.justify_between]}
+        style={[a.flex_1, a.justify_between, a.pl_lg, a.pr_md]}
         color="secondary"
-        size="small"
+        size="large"
         shape="rectangular">
         <>{children}</>
       </Button>

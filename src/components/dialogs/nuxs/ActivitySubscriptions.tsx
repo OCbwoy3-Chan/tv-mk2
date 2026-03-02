@@ -1,8 +1,9 @@
 import {useCallback} from 'react'
 import {View} from 'react-native'
 import {Image} from 'expo-image'
-import {msg, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme, web} from '#/alf'

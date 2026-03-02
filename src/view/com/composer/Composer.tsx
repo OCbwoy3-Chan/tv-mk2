@@ -54,8 +54,9 @@ import {
   type BskyAgent,
   type RichText,
 } from '@atproto/api'
-import {msg, plural, Trans} from '@lingui/macro'
+import {msg, plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
 
@@ -1873,9 +1874,7 @@ function ComposerEmbeds({
         <View
           style={[a.pb_sm, video ? [a.pt_md] : [a.pt_xl], IS_WEB && [a.pb_md]]}>
           <View style={[a.relative]}>
-            <View style={{pointerEvents: 'none'}}>
-              <LazyQuoteEmbed uri={embed.quote.uri} />
-            </View>
+            <LazyQuoteEmbed uri={embed.quote.uri} linkDisabled />
             {canRemoveQuote && (
               <ExternalEmbedRemoveBtn
                 onRemove={() => dispatch({type: 'embed_remove_quote'})}
