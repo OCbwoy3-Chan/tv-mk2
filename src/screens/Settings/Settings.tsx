@@ -372,16 +372,17 @@ function ProfilePreview({
           ]}>
           {displayName}
         </Text>
-        {shouldShowVerificationCheckButton(verificationState) && (
-          <View
-            style={[
-              {
-                marginTop: platform({web: 8, ios: 8, android: 10}),
-              },
-            ]}>
+        <View
+          style={[
+            a.flex_row,
+            a.gap_2xs,
+            a.align_center,
+            {marginTop: platform({web: 8, ios: 8, android: 10})},
+          ]}>
+          {shouldShowVerificationCheckButton(verificationState) && (
             <VerificationCheckButton profile={shadow} size="lg" />
-          </View>
-        )}
+          )}
+        </View>
       </View>
       <Text style={[a.text_md, a.leading_snug, t.atoms.text_contrast_medium]}>
         {sanitizeHandle(profile.handle, '@')}

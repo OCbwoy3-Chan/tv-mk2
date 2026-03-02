@@ -16,6 +16,7 @@ import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {type ComposerOptsPostRef} from '#/state/shell/composer'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme, web} from '#/alf'
+import {PdsBadge} from '#/components/PdsBadge'
 import {QuoteEmbed} from '#/components/Post/Embed'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationState} from '#/components/verification'
@@ -116,6 +117,9 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
                   sanitizeHandle(replyTo.author.handle),
               )}
             </Text>
+            <View style={[a.pl_xs]}>
+              <PdsBadge did={replyTo.author.did} size="sm" />
+            </View>
             {verification.showBadge && (
               <View style={[a.pl_xs]}>
                 <VerificationCheck

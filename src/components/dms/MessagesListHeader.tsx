@@ -20,6 +20,7 @@ import {Bell2Off_Filled_Corner0_Rounded as BellStroke} from '#/components/icons/
 import * as Layout from '#/components/Layout'
 import {Link} from '#/components/Link'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
+import {PdsBadge} from '#/components/PdsBadge'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationState} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
@@ -161,6 +162,9 @@ function HeaderReady({
                 numberOfLines={1}>
                 {displayName}
               </Text>
+              <View style={[a.pl_xs]}>
+                <PdsBadge did={profile.did} size="sm" />
+              </View>
               {verification.showBadge && (
                 <View style={[a.pl_xs]}>
                   <VerificationCheck

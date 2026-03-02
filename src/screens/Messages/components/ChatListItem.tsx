@@ -41,6 +41,7 @@ import {Trash_Stroke2_Corner0_Rounded} from '#/components/icons/Trash'
 import {Link} from '#/components/Link'
 import {useMenuControl} from '#/components/Menu'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
+import {PdsBadge} from '#/components/PdsBadge'
 import {createPortalGroup} from '#/components/Portal'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationState} from '#/components/verification'
@@ -417,6 +418,9 @@ function ChatListItemReady({
                         ]}>
                         {displayName}
                       </Text>
+                    </View>
+                    <View style={[a.pl_xs, a.self_center]}>
+                      <PdsBadge did={profile.did} size="sm" />
                     </View>
                     {verification.showBadge && (
                       <View style={[a.pl_xs, a.self_center]}>

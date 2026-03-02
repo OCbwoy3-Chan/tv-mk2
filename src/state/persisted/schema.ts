@@ -173,6 +173,12 @@ const schema = z.object({
     .optional(),
   highQualityImages: z.boolean().optional(),
   hideUnreplyablePosts: z.boolean().optional(),
+  pdsLabel: z
+    .object({
+      enabled: z.boolean(),
+      hideBskyPds: z.boolean(),
+    })
+    .optional(),
 
   postReplacement: z.object({
     enabled: z.boolean().optional(),
@@ -304,6 +310,10 @@ export const defaults: Schema = {
   },
   highQualityImages: false,
   hideUnreplyablePosts: false,
+  pdsLabel: {
+    enabled: false,
+    hideBskyPds: true,
+  },
   showExternalShareButtons: false,
   translationServicePreference: 'google',
   libreTranslateInstance: 'https://libretranslate.com/',

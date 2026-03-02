@@ -42,6 +42,7 @@ import {
   shouldShowKnownFollowers,
 } from '#/components/KnownFollowers'
 import {Link} from '#/components/Link'
+import {PdsBadge} from '#/components/PdsBadge'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
@@ -162,7 +163,15 @@ let ProfileHeaderStandard = ({
                   profile.displayName || sanitizeHandle(profile.handle),
                   moderation.ui('displayName'),
                 )}
-                <View style={[a.pl_xs, {marginTop: platform({ios: 2})}]}>
+                <View
+                  style={[
+                    a.pl_xs,
+                    a.flex_row,
+                    a.gap_2xs,
+                    a.align_center,
+                    {marginTop: platform({ios: 2})},
+                  ]}>
+                  <PdsBadge did={profile.did} size="lg" />
                   <VerificationCheckButton profile={profile} size="lg" />
                 </View>
               </Text>

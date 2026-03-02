@@ -17,6 +17,7 @@ import {Button} from '#/components/Button'
 import {CheckThick_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
 import {ChevronRight_Stroke2_Corner0_Rounded as ChevronIcon} from '#/components/icons/Chevron'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
+import {PdsBadge} from '#/components/PdsBadge'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationState} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
@@ -167,6 +168,7 @@ function AccountItem({
                   profile?.displayName || profile?.handle || account.handle,
                 )}
               </Text>
+              <PdsBadge did={account.did} size="sm" />
               {verification.showBadge && (
                 <View>
                   <VerificationCheck

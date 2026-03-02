@@ -38,6 +38,7 @@ import {
 } from '#/components/KnownFollowers'
 import {InlineLinkText, Link} from '#/components/Link'
 import {Loader} from '#/components/Loader'
+import {PdsBadge} from '#/components/PdsBadge'
 import * as Pills from '#/components/Pills'
 import {Portal} from '#/components/Portal'
 import {RichText} from '#/components/RichText'
@@ -546,6 +547,9 @@ function Inner({
                 moderation.ui('displayName'),
               )}
             </Text>
+            <View style={[a.pl_xs, {marginTop: -2}]}>
+              <PdsBadge did={profile.did} size="md" interactive={false} />
+            </View>
             {verification.showBadge && (
               <View
                 style={[
@@ -555,7 +559,7 @@ function Inner({
                   },
                 ]}>
                 <VerificationCheck
-                  width={16}
+                  width={14}
                   verifier={verification.role === 'verifier'}
                 />
               </View>
@@ -581,7 +585,7 @@ function Inner({
 
       {!isBlockedUser && (
         <>
-          {disableFollowersMetrics && disableFollowingMetrics ? ( null ) : 
+          {disableFollowersMetrics && disableFollowingMetrics ? null : (
             <View style={[a.flex_row, a.flex_wrap, a.gap_md, a.pt_xs]}>
               {!disableFollowersMetrics ? (
                 <InlineLinkText
@@ -589,7 +593,9 @@ function Inner({
                   label={`${followers} ${pluralizedFollowers}`}
                   style={[t.atoms.text]}
                   onPress={hide}>
-                  <Text style={[a.text_md, a.font_semi_bold]}>{followers} </Text>
+                  <Text style={[a.text_md, a.font_semi_bold]}>
+                    {followers}{' '}
+                  </Text>
                   <Text style={[t.atoms.text_contrast_medium]}>
                     {pluralizedFollowers}
                   </Text>
@@ -601,14 +607,16 @@ function Inner({
                   label={_(msg`${following} following`)}
                   style={[t.atoms.text]}
                   onPress={hide}>
-                  <Text style={[a.text_md, a.font_semi_bold]}>{following} </Text>
+                  <Text style={[a.text_md, a.font_semi_bold]}>
+                    {following}{' '}
+                  </Text>
                   <Text style={[t.atoms.text_contrast_medium]}>
                     {pluralizedFollowings}
                   </Text>
                 </InlineLinkText>
               ) : null}
             </View>
-          }
+          )}
 
           {profile.description?.trim() && !moderation.ui('profileView').blur ? (
             <View style={[a.pt_md]}>

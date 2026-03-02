@@ -57,6 +57,7 @@ import {
 } from '#/components/icons/UserCircle'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
+import {PdsBadge} from '#/components/PdsBadge'
 import {useSimpleVerificationState} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {IS_WEB} from '#/env'
@@ -104,6 +105,7 @@ let DrawerProfileCard = ({
             numberOfLines={1}>
             {profile?.displayName || account.handle}
           </Text>
+          <PdsBadge did={account.did} size="md" />
           {verification.showBadge && (
             <View
               style={{

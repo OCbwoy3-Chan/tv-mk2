@@ -40,6 +40,7 @@ import {
 import {Check_Stroke2_Corner0_Rounded as Check} from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {Link as InternalLink, type LinkProps} from '#/components/Link'
+import {PdsBadge} from '#/components/PdsBadge'
 import * as Pills from '#/components/Pills'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
@@ -259,6 +260,14 @@ function InlineNameAndHandle({
         numberOfLines={1}>
         {forceLTR(name)}
       </Text>
+      <View
+        style={[
+          a.pl_2xs,
+          a.self_center,
+          {marginTop: platform({default: 0, android: -1})},
+        ]}>
+        <PdsBadge did={profile.did} size="sm" />
+      </View>
       {verification.showBadge && (
         <View
           style={[
@@ -318,6 +327,9 @@ export function Name({
         numberOfLines={1}>
         {name}
       </Text>
+      <View style={[a.pl_xs]}>
+        <PdsBadge did={profile.did} size="sm" />
+      </View>
       {verification.showBadge && (
         <View style={[a.pl_xs]}>
           <VerificationCheck

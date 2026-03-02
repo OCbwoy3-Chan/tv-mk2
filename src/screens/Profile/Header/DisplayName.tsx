@@ -5,6 +5,7 @@ import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {type Shadow} from '#/state/cache/types'
 import {atoms as a, platform, useBreakpoints, useTheme} from '#/alf'
+import {PdsBadge} from '#/components/PdsBadge'
 import {Text} from '#/components/Typography'
 import {VerificationCheckButton} from '#/components/verification/VerificationCheckButton'
 
@@ -36,10 +37,14 @@ export function ProfileHeaderDisplayName({
         <View
           style={[
             a.pl_xs,
+            a.flex_row,
+            a.gap_2xs,
+            a.align_center,
             {
               marginTop: platform({ios: 2}),
             },
           ]}>
+          <PdsBadge did={profile.did} size="lg" />
           <VerificationCheckButton profile={profile} size="lg" />
         </View>
       </Text>

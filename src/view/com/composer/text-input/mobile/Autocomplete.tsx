@@ -9,6 +9,7 @@ import {sanitizeHandle} from '#/lib/strings/handles'
 import {useActorAutocompleteQuery} from '#/state/queries/actor-autocomplete'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, platform, useTheme} from '#/alf'
+import {PdsBadge} from '#/components/PdsBadge'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationState} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
@@ -115,6 +116,9 @@ function AutocompleteProfileCard({
               numberOfLines={1}>
               {displayName}
             </Text>
+            <View style={[{marginTop: platform({android: -2})}]}>
+              <PdsBadge did={profile.did} size="sm" />
+            </View>
             {state.isVerified && (
               <View
                 style={[

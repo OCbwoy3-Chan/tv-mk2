@@ -54,6 +54,7 @@ import {faCircleExclamation} from '@fortawesome/free-solid-svg-icons/faCircleExc
 import {faClipboardCheck} from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
 import {faClone} from '@fortawesome/free-solid-svg-icons/faClone'
 import {faCommentSlash} from '@fortawesome/free-solid-svg-icons/faCommentSlash'
+import {faDatabase} from '@fortawesome/free-solid-svg-icons/faDatabase'
 import {faDownload} from '@fortawesome/free-solid-svg-icons/faDownload'
 import {faEllipsis} from '@fortawesome/free-solid-svg-icons/faEllipsis'
 import {faEnvelope} from '@fortawesome/free-solid-svg-icons/faEnvelope'
@@ -150,6 +151,7 @@ library.add(
   faCommentSlash,
   faComments,
   faCompass,
+  faDatabase,
   faDownload,
   faEllipsis,
   faEnvelope,
@@ -160,6 +162,7 @@ library.add(
   faFire,
   faFlask,
   faFloppyDisk,
+
   faGear,
   faGlobe,
   faHand,

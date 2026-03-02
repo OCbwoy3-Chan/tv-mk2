@@ -5,7 +5,7 @@ import {msg, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
-import { DEFAULT_ALT_TEXT_AI_MODEL } from '#/lib/constants'
+import {DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
 import {usePalette} from '#/lib/hooks/usePalette'
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {dynamicActivate} from '#/locale/i18n'
@@ -114,6 +114,12 @@ import {
   useSetOpenRouterApiKey,
   useSetOpenRouterModel,
 } from '#/state/preferences/openrouter'
+import {
+  usePdsLabelEnabled,
+  usePdsLabelHideBskyPds,
+  useSetPdsLabelEnabled,
+  useSetPdsLabelHideBskyPds,
+} from '#/state/preferences/pds-label'
 import {
   usePostReplacement,
   useSetPostReplacement,
@@ -708,6 +714,11 @@ export function RunesSettingsScreen({}: Props) {
   const deerVerificationEnabled = useDeerVerificationEnabled()
   const setDeerVerificationEnabled = useSetDeerVerificationEnabled()
 
+  const pdsLabelEnabled = usePdsLabelEnabled()
+  const setPdsLabelEnabled = useSetPdsLabelEnabled()
+  const pdsLabelHideBskyPds = usePdsLabelHideBskyPds()
+  const setPdsLabelHideBskyPds = useSetPdsLabelHideBskyPds()
+
   const repostCarouselEnabled = useRepostCarouselEnabled()
   const setRepostCarouselEnabled = useSetRepostCarouselEnabled()
 
@@ -760,7 +771,9 @@ export function RunesSettingsScreen({}: Props) {
             </Toggle.Item>
             <Toggle.Item
               name="use_handle_in_links"
-              label={_(msg`Use handles in profile links instead of DIDs (requires restart)`)}
+              label={_(
+                msg`Use handles in profile links instead of DIDs (requires restart)`,
+              )}
               value={handleInLinks ?? false}
               onChange={value => setHandleInLinks(value)}
               style={[a.w_full]}>
@@ -908,6 +921,35 @@ export function RunesSettingsScreen({}: Props) {
             <SettingsList.ItemText>
               <Trans>Tweaks</Trans>
             </SettingsList.ItemText>
+            <Toggle.Item
+              name="pds_label_badge"
+              label={_(
+                msg`Show a PDS badge next to the display name on profiles`,
+              )}
+              value={pdsLabelEnabled}
+              onChange={value => setPdsLabelEnabled(value)}
+              style={[a.w_full]}>
+              <Toggle.LabelText style={[a.flex_1]}>
+                <Trans>
+                  Show a PDS badge next to the display name on profiles
+                </Trans>
+              </Toggle.LabelText>
+              <Toggle.Platform />
+            </Toggle.Item>
+            {pdsLabelEnabled && (
+              <Toggle.Item
+                name="pds_label_hide_bsky"
+                label={_(msg`Hide PDS badge for Bluesky-hosted accounts`)}
+                value={pdsLabelHideBskyPds}
+                onChange={value => setPdsLabelHideBskyPds(value)}
+                style={[a.w_full]}>
+                <Toggle.LabelText style={[a.flex_1]}>
+                  <Trans>Hide PDS badge for Bluesky-hosted accounts</Trans>
+                </Toggle.LabelText>
+                <Toggle.Platform />
+              </Toggle.Item>
+            )}
+
             <Toggle.Item
               name="repost_carousel"
               label={_(msg`Combine reposts into a horizontal carousel`)}
@@ -1186,8 +1228,7 @@ export function RunesSettingsScreen({}: Props) {
             <SettingsList.Item>
               <Admonition type="info" style={[a.flex_1]}>
                 <Trans>
-                  Current model:{' '}
-                  {openRouterModel ?? DEFAULT_ALT_TEXT_AI_MODEL}.{' '}
+                  Current model: {openRouterModel ?? DEFAULT_ALT_TEXT_AI_MODEL}.{' '}
                   <InlineLinkText
                     to="https://openrouter.ai/models?fmt=cards&input_modalities=image&order=most-popular"
                     label="openrouter.ai">
