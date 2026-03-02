@@ -197,7 +197,7 @@ const ImageAltTextInner = ({
                 onChangeText={text => {
                   setAltText(text)
                 }}
-                value={altText}
+                defaultValue={altText}
                 multiline
                 numberOfLines={3}
                 autoFocus
