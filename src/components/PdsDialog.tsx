@@ -4,16 +4,18 @@ import {
   FontAwesomeIcon,
   type FontAwesomeIconStyle,
 } from '@fortawesome/react-native-fontawesome'
-import {msg, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 
 import {isBridgedPdsUrl, isBskyPdsUrl} from '#/state/queries/pds-label'
 
 const failedFaviconUrls = new Set<string>()
+import Svg, {G, Path, Rect} from 'react-native-svg'
+
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import Svg, {G, Path, Rect} from 'react-native-svg'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
 
@@ -75,37 +77,31 @@ export function PdsDialog({
               size={36}
             />
             <View style={[a.flex_1]}>
-              {/*<Text
-                style={[a.text_2xl, a.font_semi_bold, a.leading_tight]}
-                numberOfLines={1}>
-                {displayName}
-              </Text>*/}
-              <Text style={[a.text_2xl, a.font_semi_bold, a.leading_tight]}>
-                {isBsky && <Trans>Bluesky-hosted PDS</Trans>}
-                {isBridged && <Trans>Fediverse bridge</Trans>}
-                {!isBsky && !isBridged && <Trans>Third-party PDS</Trans>}
+              {
+                <Text
+                  style={[a.text_2xl, a.font_semi_bold, a.leading_tight]}
+                  numberOfLines={1}>
+                  {isBridged ? <Trans>Fediverse</Trans> : displayName}
+                </Text>
+              }
+              <Text style={[a.text_sm, a.leading_tight]}>
+                {isBsky && <Trans>Bluesky Social</Trans>}
               </Text>
             </View>
           </View>
 
           <Text style={[a.text_md, a.leading_snug]}>
             <Trans>
-              This badge represents the{' '}
-              <InlineLinkText
-                to={'https://atproto.com/guides/self-hosting'}
-                label={displayName}
-                style={[a.text_md, a.font_semi_bold]}>
-                Personal Data Server
-              </InlineLinkText>{' '}
-              this account is stored on:{' '}
+              This badge represents the Personal Data Server this account is
+              stored on:{' '}
               <InlineLinkText
                 to={pdsUrl}
                 label={displayName}
                 style={[a.text_md, a.font_semi_bold]}>
                 {displayName}
               </InlineLinkText>
-              {'. '}A PDS is where your posts, follows, and other data live on
-              the AT Protocol network.
+              . A PDS is where posts, follows, and other data live on the AT
+              Protocol network.
             </Trans>
           </Text>
 
@@ -114,29 +110,40 @@ export function PdsDialog({
               <Trans>
                 This account is bridged from the Fediverse via{' '}
                 <InlineLinkText
-                  to="https://fed.brid.gy"
+                  to="https://witchsky.app/profile/ap.brid.gy"
                   label="Bridgy Fed"
                   style={[a.text_md, a.font_semi_bold]}>
                   Bridgy Fed
                 </InlineLinkText>
-                . Their original account lives on a Fediverse platform such as
-                Mastodon.
+                .{' '}
+                {/* Their original account is avaiable at:{' '}
+                <InlineLinkText
+                  to={BridgedUrl}
+                  label="Federated account address"
+                  style={[a.text_md, a.font_semi_bold]}>
+                  {BridgedUrl}
+                </InlineLinkText> */}
               </Trans>
             </Text>
           )}
 
-          {isBsky && (
+          {!isBridged && (
             <Text style={[a.text_md, a.leading_snug]}>
               <Trans>
-                This account is hosted on one of Bluesky's first party PDS's.
-              </Trans>
-            </Text>
-          )}
-
-          {!isBsky && !isBridged && (
-            <Text style={[a.text_md, a.leading_snug]}>
-              <Trans>
-                This account is self-hosted or uses a third-party PDS provider.
+                <InlineLinkText
+                  to="https://atproto.com/guides/glossary#pds-personal-data-server"
+                  label="PDS Glossary definition"
+                  style={[a.text_md, a.font_semi_bold]}>
+                  Learn more
+                </InlineLinkText>{' '}
+                about what a PDS is and how to{' '}
+                <InlineLinkText
+                  to="https://atproto.com/guides/glossary#pds-personal-data-server"
+                  label="PDS Glossary definition"
+                  style={[a.text_md, a.font_semi_bold]}>
+                  self-host
+                </InlineLinkText>{' '}
+                your own.
               </Trans>
             </Text>
           )}

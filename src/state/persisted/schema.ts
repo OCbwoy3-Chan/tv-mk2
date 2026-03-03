@@ -311,7 +311,7 @@ export const defaults: Schema = {
   highQualityImages: false,
   hideUnreplyablePosts: false,
   pdsLabel: {
-    enabled: false,
+    enabled: true,
     hideBskyPds: true,
   },
   showExternalShareButtons: false,
