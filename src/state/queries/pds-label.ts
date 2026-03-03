@@ -27,6 +27,34 @@ export function isBridgedPdsUrl(url: string): boolean {
   }
 }
 
+// Ordered from highest to lowest quality. The web path probes these via Image
+// (CORS-safe) and returns the first that successfully loads. The native path
+// uses these as a fallback chain when no <link> icon is found in the HTML.
+const ICON_CANDIDATE_PATHS = [
+  '/apple-touch-icon.png', // 180 × 180, very common
+  '/apple-icon-180x180.png',
+  '/favicon-256x256.png',
+  '/favicon-96x96.png',
+  '/favicon-32x32.png',
+  '/favicon-16x16.png',
+  '/favicon.ico',
+]
+
+/** Returns the pixel size for a `sizes` attribute value like "180x180", or 0. */
+function parseSizeAttr(sizes: string | null | undefined): number {
+  if (!sizes) return 0
+  const match = sizes.match(/(\d+)x\d+/i)
+  return match ? parseInt(match[1], 10) : 0
+}
+
+/** Resolves an href found in a <link> tag to an absolute URL. */
+function resolveHref(href: string, origin: string): string {
+  if (href.startsWith('http')) return href
+  if (href.startsWith('//')) return `https:${href}`
+  if (href.startsWith('/')) return `${origin}${href}`
+  return `${origin}/${href}`
+}
+
 async function fetchFaviconUrl(pdsUrl: string): Promise<string | undefined> {
   let origin = ''
   try {
@@ -37,44 +65,78 @@ async function fetchFaviconUrl(pdsUrl: string): Promise<string | undefined> {
 
   if (IS_WEB) {
     // fetch() is blocked by CORS for third-party origins on web.
-    // Use the browser Image constructor instead — it loads cross-origin without CORS.
-    // Only resolve with the URL once the image confirms it loaded.
-    return new Promise<string | undefined>(resolve => {
-      const url = `${origin}/favicon.ico`
-      const img = new Image()
-      img.onload = () => resolve(url)
-      img.onerror = () => resolve(undefined)
-      img.src = url
-    })
+    // Probe candidate URLs in parallel using the Image constructor (CORS-safe).
+    // Return whichever high-quality candidate loads first, in priority order.
+    const results = await Promise.all(
+      ICON_CANDIDATE_PATHS.map(
+        path =>
+          new Promise<string | undefined>(resolve => {
+            const url = `${origin}${path}`
+            const img = new Image()
+            img.onload = () => resolve(url)
+            img.onerror = () => resolve(undefined)
+            img.src = url
+          }),
+      ),
+    )
+    // Return the first (highest-priority) candidate that loaded.
+    return results.find(Boolean)
   }
 
-  const [linkIconUrl, faviconIcoUrl] = await Promise.all([
-    fetch(origin, {headers: {Accept: 'text/html'}})
-      .then(async res => {
-        if (!res.ok) return undefined
-        const html = await res.text()
-        // Match <link rel="icon"> or <link rel="shortcut icon"> in either attribute order
-        const match =
-          html.match(
-            /<link[^>]+rel=["'][^"']*\bicon\b[^"']*["'][^>]*href=["']([^"']+)["']/i,
-          ) ||
-          html.match(
-            /<link[^>]+href=["']([^"']+)["'][^>]*rel=["'][^"']*\bicon\b[^"']*["']/i,
-          )
-        if (!match) return undefined
-        const href = match[1]
-        if (href.startsWith('http')) return href
-        if (href.startsWith('//')) return `https:${href}`
-        if (href.startsWith('/')) return `${origin}${href}`
-        return `${origin}/${href}`
-      })
-      .catch(() => undefined),
-    fetch(`${origin}/favicon.ico`)
-      .then(res => (res.ok ? `${origin}/favicon.ico` : undefined))
-      .catch(() => undefined),
-  ])
+  // Native path: parse the page HTML for all <link rel="icon"> / <link
+  // rel="apple-touch-icon"> tags, pick the one with the largest declared size,
+  // then fall back to probing the candidate paths in order.
+  const htmlIconUrl = await fetch(origin, {headers: {Accept: 'text/html'}})
+    .then(async res => {
+      if (!res.ok) return undefined
+      const html = await res.text()
 
-  return faviconIcoUrl ?? linkIconUrl
+      // Collect every <link> tag that looks like an icon.
+      const linkTagRe = /<link([^>]+)>/gi
+      let best: {url: string; size: number} | undefined
+
+      let tagMatch: RegExpExecArray | null
+      while ((tagMatch = linkTagRe.exec(html)) !== null) {
+        const attrs = tagMatch[1]
+        const relMatch = attrs.match(/rel=["']([^"']+)["']/i)
+        if (!relMatch) continue
+        const rel = relMatch[1].toLowerCase()
+        if (!rel.includes('icon')) continue
+
+        const hrefMatch =
+          attrs.match(/href=["']([^"']+)["']/i) ||
+          attrs.match(/href=([^\s>]+)/i)
+        if (!hrefMatch) continue
+
+        const sizesMatch = attrs.match(/sizes=["']([^"']+)["']/i)
+        const size = parseSizeAttr(sizesMatch?.[1])
+        const url = resolveHref(hrefMatch[1], origin)
+
+        // apple-touch-icon gets a size bonus so it beats a generic icon of the
+        // same declared dimensions.
+        const effectiveSize = rel.includes('apple-touch-icon') ? size + 1 : size
+
+        if (!best || effectiveSize > best.size) {
+          best = {url, size: effectiveSize}
+        }
+      }
+
+      return best?.url
+    })
+    .catch(() => undefined)
+
+  if (htmlIconUrl) return htmlIconUrl
+
+  // Fall back to probing known high-quality paths in order.
+  for (const path of ICON_CANDIDATE_PATHS) {
+    const url = `${origin}${path}`
+    const ok = await fetch(url, {method: 'HEAD'})
+      .then(res => res.ok)
+      .catch(() => false)
+    if (ok) return url
+  }
+
+  return undefined
 }
 
 export const RQKEY_ROOT = 'pds-label'
