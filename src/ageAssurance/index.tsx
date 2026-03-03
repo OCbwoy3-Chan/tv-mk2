@@ -2,8 +2,10 @@ import {createContext, useCallback, useContext, useEffect, useMemo} from 'react'
 
 import {useGetAndRegisterPushToken} from '#/lib/notifications/notifications'
 import {Provider as RedirectOverlayProvider} from '#/ageAssurance/components/RedirectOverlay'
-import {AgeAssuranceDataProvider} from '#/ageAssurance/data'
-import {useAgeAssuranceDataContext} from '#/ageAssurance/data'
+import {
+  AgeAssuranceDataProvider,
+  useAgeAssuranceDataContext,
+} from '#/ageAssurance/data'
 import {logger} from '#/ageAssurance/logger'
 import {
   useAgeAssuranceState,
@@ -14,11 +16,7 @@ import {
   type AgeAssuranceState,
   AgeAssuranceStatus,
 } from '#/ageAssurance/types'
-import {
-  isUnderAge,
-  MIN_ACCESS_AGE,
-  useAgeAssuranceRegionConfigWithFallback,
-} from '#/ageAssurance/util'
+import {useAgeAssuranceRegionConfigWithFallback} from '#/ageAssurance/util'
 
 export {
   prefetchConfig as prefetchAgeAssuranceConfig,
@@ -98,18 +96,11 @@ function InnerProvider({children}: {children: React.ReactNode}) {
   return (
     <AgeAssuranceStateContext.Provider
       value={useMemo(() => {
-        const chatDisabled = state.access !== AgeAssuranceAccess.Full
-        const isUnderAdultAge = data?.birthdate
-          ? isUnderAge(data.birthdate, 18)
-          : true
-        const isOverRegionMinAccessAge = data?.birthdate
-          ? !isUnderAge(data.birthdate, config.minAccessAge)
-          : false
-        const isOverAppMinAccessAge = data?.birthdate
-          ? !isUnderAge(data.birthdate, MIN_ACCESS_AGE)
-          : false
-        const adultContentDisabled =
-          state.access !== AgeAssuranceAccess.Full || isUnderAdultAge
+        const chatDisabled = false
+        const isUnderAdultAge = false
+        const isOverRegionMinAccessAge = true
+        const isOverAppMinAccessAge = true
+        const adultContentDisabled = isUnderAdultAge
         return {
           Access: AgeAssuranceAccess,
           Status: AgeAssuranceStatus,
