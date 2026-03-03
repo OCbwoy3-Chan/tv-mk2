@@ -78,7 +78,8 @@ export function AppearanceSettingsScreen({}: Props) {
         | 'zeppelin'
         | 'kitty'
         | 'reddwarf'
-        | 'catppuccin',
+        | 'catppuccin'
+        | 'evergarden',
     ) => {
       setColorScheme(value)
     },
@@ -115,6 +116,7 @@ export function AppearanceSettingsScreen({}: Props) {
     {name: 'kitty', label: _(msg`Kitty`)},
     {name: 'reddwarf', label: _(msg`Red Dwarf`)},
     {name: 'catppuccin', label: _(msg`Catppuccin`)},
+    {name: 'evergarden', label: _(msg`Evergarden`)},
   ]
 
   return (

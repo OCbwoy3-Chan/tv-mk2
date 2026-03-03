@@ -15,6 +15,7 @@ import {
   blueskyscheme,
   catppuccinscheme,
   deerscheme,
+  evergardenscheme,
   kittyscheme,
   type Palette,
   reddwarfscheme,
@@ -158,6 +159,8 @@ export function selectScheme(colorScheme: string | undefined): SchemeType {
       return reddwarfscheme
     case 'catppuccin':
       return catppuccinscheme
+    case 'evergarden':
+      return evergardenscheme
     default:
       return themes
   }

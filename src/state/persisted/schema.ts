@@ -59,6 +59,7 @@ const schema = z.object({
     'kitty',
     'reddwarf',
     'catppuccin',
+    'evergarden',
   ]),
   hue: z.number(),
   session: z.object({
