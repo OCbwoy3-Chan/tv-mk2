@@ -6,35 +6,44 @@ import {
   usePdsLabelEnabled,
   usePdsLabelHideBskyPds,
 } from '#/state/preferences/pds-label'
-import {usePdsLabelQuery} from '#/state/queries/pds-label'
+import {usePdsFaviconQuery, usePdsLabelQuery} from '#/state/queries/pds-label'
 import {atoms as a, useBreakpoints} from '#/alf'
 import {Button} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import {FaviconOrGlobe, PdsDialog} from '#/components/PdsDialog'
+import {PdsBadgeIcon, PdsDialog} from '#/components/PdsDialog'
 import {IS_WEB} from '#/env'
 
 export function PdsBadge({
   did,
+  handle,
   size,
   interactive = true,
 }: {
   did: string
+  handle?: string
   size: 'lg' | 'md' | 'sm'
   interactive?: boolean
 }) {
   const enabled = usePdsLabelEnabled()
   const hideBskyPds = usePdsLabelHideBskyPds()
   const {data, isLoading} = usePdsLabelQuery(enabled ? did : undefined)
+  const {data: faviconUrl} = usePdsFaviconQuery(
+    data && !data.isBsky && !data.isBridged ? data.pdsUrl : undefined,
+  )
+
+  const isBskyHandle =
+    !!handle &&
+    (handle.endsWith('.bsky.social') || handle === 'bsky.social')
 
   if (!enabled) return null
-  if (isLoading) return <PdsBadgeLoading size={size} />
+  if (isLoading) return <PdsBadgeLoading size={size} isBsky={isBskyHandle} />
   if (!data) return null
   if (hideBskyPds && data.isBsky) return null
 
   return (
     <PdsBadgeInner
       pdsUrl={data.pdsUrl}
-      faviconUrl={data.faviconUrl}
+      faviconUrl={faviconUrl}
       isBsky={data.isBsky}
       isBridged={data.isBridged}
       size={size}
@@ -43,7 +52,13 @@ export function PdsBadge({
   )
 }
 
-function PdsBadgeLoading({size}: {size: 'lg' | 'md' | 'sm'}) {
+function PdsBadgeLoading({
+  size,
+  isBsky = false,
+}: {
+  size: 'lg' | 'md' | 'sm'
+  isBsky?: boolean
+}) {
   const {gtPhone} = useBreakpoints()
   let dimensions = 12
   if (size === 'lg') {
@@ -53,12 +68,12 @@ function PdsBadgeLoading({size}: {size: 'lg' | 'md' | 'sm'}) {
   }
   return (
     <View style={{width: dimensions, height: dimensions}}>
-      <FaviconOrGlobe
-        faviconUrl=""
-        isBsky={false}
+      <PdsBadgeIcon
+        faviconUrl={undefined}
+        isBsky={isBsky}
         isBridged={false}
         size={dimensions}
-        borderRadius={dimensions / 4}
+        borderRadius={Math.round(dimensions * 0.25)}
       />
     </View>
   )
@@ -73,7 +88,7 @@ function PdsBadgeInner({
   interactive,
 }: {
   pdsUrl: string
-  faviconUrl: string
+  faviconUrl: string | undefined
   isBsky: boolean
   isBridged: boolean
   size: 'lg' | 'md' | 'sm'
@@ -91,12 +106,12 @@ function PdsBadgeInner({
   }
 
   const icon = (
-    <FaviconOrGlobe
+    <PdsBadgeIcon
       faviconUrl={faviconUrl}
       isBsky={isBsky}
       isBridged={isBridged}
       size={dimensions}
-      borderRadius={dimensions / 4}
+      borderRadius={Math.round(dimensions * 0.25)}
     />
   )
 
@@ -126,18 +141,23 @@ function PdsBadgeInner({
           }
         }}>
         {({hovered}) => (
-          <View
-            style={[
-              a.justify_center,
-              a.align_center,
-              a.transition_transform,
-              {
-                width: dimensions,
-                height: dimensions,
-                transform: [{scale: hovered ? 1.1 : 1}],
-              },
-            ]}>
-            {icon}
+          <View style={{width: dimensions, height: dimensions}}>
+            <View
+              style={[
+                a.justify_center,
+                a.align_center,
+                a.transition_transform,
+                {
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  transform: [{scale: hovered ? 1.1 : 1}],
+                },
+              ]}>
+              {icon}
+            </View>
           </View>
         )}
       </Button>
