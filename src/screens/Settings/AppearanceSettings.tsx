@@ -1,5 +1,5 @@
 import {useCallback} from 'react'
-import {View} from 'react-native'
+import {Pressable, View} from 'react-native'
 import Animated, {
   FadeInUp,
   FadeOutUp,
@@ -26,12 +26,27 @@ import {useKawaiiMode, useSetKawaiiMode} from '#/state/preferences/kawaii'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
 import {SettingsListItem as AppIconSettingsListItem} from '#/screens/Settings/AppIconSettings/SettingsListItem'
 import {type Alf, atoms as a, native, useAlf, useTheme} from '#/alf'
+import {
+  BLACKSKY_PALETTE,
+  BLUESKY_PALETTE,
+  CATPPUCIN_PALETTE,
+  DEER_PALETTE,
+  DEFAULT_PALETTE,
+  EVERGARDEN_PALETTE,
+  KITTY_PALETTE,
+  REDDWARF_PALETTE,
+  ZEPPELIN_PALETTE,
+} from '#/alf/themes'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import {Slider} from '#/components/forms/Slider'
 import * as Toggle from '#/components/forms/Toggle'
 import {Circle_And_Square_Stroke1_Corner0_Rounded_Filled as SquareIcon} from '#/components/icons/CircleAndSquare'
 import {ColorPalette_Stroke2_Corner0_Rounded as ColorPaletteIcon} from '#/components/icons/ColorPalette'
 import {type Props as SVGIconProps} from '#/components/icons/common'
+import {
+  Heart2_Filled_Stroke2_Corner0_Rounded as HeartIconFilled,
+  Heart2_Stroke2_Corner0_Rounded as HeartIconOutline,
+} from '#/components/icons/Heart2'
 import {Moon_Stroke2_Corner0_Rounded as MoonIcon} from '#/components/icons/Moon'
 import {Phone_Stroke2_Corner0_Rounded as PhoneIcon} from '#/components/icons/Phone'
 import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
@@ -43,6 +58,24 @@ import {IS_INTERNAL, IS_NATIVE} from '#/env'
 import * as SettingsList from './components/SettingsList'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AppearanceSettings'>
+
+type ColorSchemeName =
+  | 'witchsky'
+  | 'bluesky'
+  | 'blacksky'
+  | 'deer'
+  | 'zeppelin'
+  | 'kitty'
+  | 'reddwarf'
+  | 'catppuccin'
+  | 'evergarden'
+
+type ColorSchemeOption = {
+  name: ColorSchemeName
+  label: string
+  primary: string
+}
+
 export function AppearanceSettingsScreen({}: Props) {
   const {_} = useLingui()
   const {fonts} = useAlf()
@@ -69,18 +102,7 @@ export function AppearanceSettingsScreen({}: Props) {
   )
 
   const onChangeScheme = useCallback(
-    (
-      value:
-        | 'witchsky'
-        | 'bluesky'
-        | 'blacksky'
-        | 'deer'
-        | 'zeppelin'
-        | 'kitty'
-        | 'reddwarf'
-        | 'catppuccin'
-        | 'evergarden',
-    ) => {
+    (value: ColorSchemeName) => {
       setColorScheme(value)
     },
     [setColorScheme],
@@ -107,16 +129,52 @@ export function AppearanceSettingsScreen({}: Props) {
     [fonts],
   )
 
-  const colorSchemes = [
-    {name: 'witchsky', label: _(msg`Witchsky`)},
-    {name: 'bluesky', label: _(msg`Bluesky`)},
-    {name: 'blacksky', label: _(msg`Blacksky`)},
-    {name: 'deer', label: _(msg`Deer`)},
-    {name: 'zeppelin', label: _(msg`Zeppelin`)},
-    {name: 'kitty', label: _(msg`Kitty`)},
-    {name: 'reddwarf', label: _(msg`Red Dwarf`)},
-    {name: 'catppuccin', label: _(msg`Catppuccin`)},
-    {name: 'evergarden', label: _(msg`Evergarden`)},
+  const colorSchemes: ColorSchemeOption[] = [
+    {
+      name: 'witchsky',
+      label: _(msg`Witchsky`),
+      primary: DEFAULT_PALETTE.primary_500,
+    },
+    {
+      name: 'bluesky',
+      label: _(msg`Bluesky`),
+      primary: BLUESKY_PALETTE.primary_500,
+    },
+    {
+      name: 'blacksky',
+      label: _(msg`Blacksky`),
+      primary: BLACKSKY_PALETTE.primary_500,
+    },
+    {
+      name: 'deer',
+      label: _(msg`Deer`),
+      primary: DEER_PALETTE.primary_500,
+    },
+    {
+      name: 'zeppelin',
+      label: _(msg`Zeppelin`),
+      primary: ZEPPELIN_PALETTE.primary_500,
+    },
+    {
+      name: 'kitty',
+      label: _(msg`Kitty`),
+      primary: KITTY_PALETTE.primary_500,
+    },
+    {
+      name: 'reddwarf',
+      label: _(msg`Red Dwarf`),
+      primary: REDDWARF_PALETTE.primary_500,
+    },
+    {
+      name: 'catppuccin',
+      label: _(msg`Catppuccin`),
+      primary: CATPPUCIN_PALETTE.primary_500,
+    },
+    {
+      name: 'evergarden',
+      label: _(msg`Evergarden`),
+      primary: EVERGARDEN_PALETTE.primary_500,
+    },
   ]
 
   return (
@@ -186,24 +244,11 @@ export function AppearanceSettingsScreen({}: Props) {
                 <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
                   <Trans>Choose which color scheme to use:</Trans>
                 </Text>
-                <Toggle.Group
-                  label={_(msg`Color Theme`)}
-                  type="radio"
-                  values={[colorScheme]}
-                  onChange={([value]) =>
-                    onChangeScheme(value as typeof colorScheme)
-                  }>
-                  <View style={[a.gap_sm, a.flex_1]}>
-                    {colorSchemes.map(({name, label}) => (
-                      <Toggle.Item key={name} name={name} label={label}>
-                        <Toggle.Radio />
-                        <Toggle.LabelText>
-                          <Trans>{label}</Trans>
-                        </Toggle.LabelText>
-                      </Toggle.Item>
-                    ))}
-                  </View>
-                </Toggle.Group>
+                <ColorSchemeGrid
+                  schemes={colorSchemes}
+                  selectedScheme={colorScheme}
+                  onSchemeChange={onChangeScheme}
+                />
                 <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
                   <Trans>Hue shift the colors:</Trans>
                 </Text>
@@ -322,6 +367,72 @@ export function AppearanceSettingsScreen({}: Props) {
         </Layout.Content>
       </Layout.Screen>
     </LayoutAnimationConfig>
+  )
+}
+
+function ColorSchemeGrid({
+  schemes,
+  selectedScheme,
+  onSchemeChange,
+}: {
+  schemes: ColorSchemeOption[]
+  selectedScheme: ColorSchemeName
+  onSchemeChange: (scheme: ColorSchemeName) => void
+}) {
+  const t = useTheme()
+  return (
+    <View style={[a.flex_row, a.flex_wrap, a.gap_sm]}>
+      {schemes.map(({name, label, primary}) => {
+        const isSelected = selectedScheme === name
+        const HeartIcon = isSelected ? HeartIconFilled : HeartIconOutline
+        return (
+          <Pressable
+            accessibilityRole="button"
+            key={name}
+            onPress={() => onSchemeChange(name)}
+            style={[
+              a.flex_1,
+              a.rounded_md,
+              a.overflow_hidden,
+              {minWidth: '30%'},
+              a.border,
+              {
+                borderColor: isSelected
+                  ? primary
+                  : t.atoms.border_contrast_low.borderColor,
+                borderWidth: isSelected ? 2 : 1,
+              },
+            ]}>
+            <View
+              style={[
+                a.p_sm,
+                a.gap_xs,
+                {backgroundColor: t.atoms.bg.backgroundColor},
+              ]}>
+              <View
+                style={[
+                  a.w_full,
+                  a.rounded_xs,
+                  {backgroundColor: primary, height: 24},
+                ]}
+              />
+              <View
+                style={[
+                  a.flex_row,
+                  a.align_center,
+                  a.justify_center,
+                  a.gap_xs,
+                ]}>
+                <Text style={[a.text_sm, a.font_bold, t.atoms.text]}>
+                  {label}
+                </Text>
+                <HeartIcon size="xs" style={[{color: primary}]} />
+              </View>
+            </View>
+          </Pressable>
+        )
+      })}
+    </View>
   )
 }
 

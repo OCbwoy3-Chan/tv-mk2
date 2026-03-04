@@ -92,6 +92,15 @@ export function shiftPalette(palette: Palette, hueShift: number): Palette {
   const keys = Object.keys(newPalette) as Array<keyof Palette>
 
   keys.forEach(key => {
+    if (
+      key.startsWith('positive_') ||
+      key.startsWith('negative_') ||
+      key === 'like' ||
+      key === 'pink' ||
+      key === 'yellow'
+    ) {
+      return
+    }
     newPalette[key] = changeHue(newPalette[key], hueShift)
   })
 
@@ -201,11 +210,13 @@ export function ThemeProvider({
     [setFontFamily],
   )
 
-  const value = React.useMemo<Alf>(
-    () => ({
-      themes: hueShifter(currentScheme, hue),
+  const value = React.useMemo<Alf>(() => {
+    const shiftedThemes = hueShifter(currentScheme, hue)
+
+    return {
+      themes: shiftedThemes,
       themeName: themeName,
-      theme: hueShifter(currentScheme, hue)[themeName],
+      theme: shiftedThemes[themeName],
       fonts: {
         scale: fontScale,
         scaleMultiplier: fontScaleMultiplier,
@@ -214,18 +225,17 @@ export function ThemeProvider({
         setFontFamily: setFontFamilyAndPersist,
       },
       flags: {},
-    }),
-    [
-      currentScheme,
-      hue,
-      themeName,
-      fontScale,
-      fontScaleMultiplier,
-      fontFamily,
-      setFontScaleAndPersist,
-      setFontFamilyAndPersist,
-    ],
-  )
+    }
+  }, [
+    currentScheme,
+    hue,
+    themeName,
+    fontScale,
+    fontScaleMultiplier,
+    fontFamily,
+    setFontScaleAndPersist,
+    setFontFamilyAndPersist,
+  ])
 
   return <Context.Provider value={value}>{children}</Context.Provider>
 }
