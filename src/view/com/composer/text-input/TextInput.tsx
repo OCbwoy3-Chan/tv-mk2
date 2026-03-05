@@ -57,6 +57,7 @@ export function TextInput({
   const theme = useTheme()
   const [autocompletePrefix, setAutocompletePrefix] = useState('')
   const prevLength = useRef(richtext.length)
+  const prevText = useRef(richtext.text)
 
   useImperativeHandle(ref, () => ({
     focus: () => textInput.current?.focus(),
@@ -72,6 +73,44 @@ export function TextInput({
   const onChangeText = useCallback(
     async (newText: string) => {
       const mayBePaste = newText.length > prevLength.current + 1
+
+      // Check if this is a paste over selected text with a URL
+      // NOTE: onChangeText happens before onSelectionChange, so textInputSelection.current
+      // still contains the selection from before the paste
+      if (
+        mayBePaste &&
+        textInputSelection.current.start !== textInputSelection.current.end
+      ) {
+        const selectionStart = textInputSelection.current.start
+        const selectionEnd = textInputSelection.current.end
+        const selectedText = prevText.current.substring(
+          selectionStart,
+          selectionEnd,
+        )
+
+        // Calculate what was pasted
+        const beforeSelection = prevText.current.substring(0, selectionStart)
+        const afterSelection = prevText.current.substring(selectionEnd)
+        const expectedLength = beforeSelection.length + afterSelection.length
+        const pastedLength = newText.length - expectedLength
+
+        if (pastedLength > 0 && selectedText.length > 0) {
+          const pastedText = newText.substring(
+            selectionStart,
+            selectionStart + pastedLength,
+          )
+
+          // Check if pasted text is a URL
+          const urlPattern =
+            /^(?:(?:(?:https?|ftp):)?\/\/)?(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i
+
+          if (urlPattern.test(pastedText.trim())) {
+            // Create markdown-style link: [selectedText](url)
+            const markdownLink = `[${selectedText}](${pastedText.trim()})`
+            newText = beforeSelection + markdownLink + afterSelection
+          }
+        }
+      }
 
       const newRt = new RichText({text: newText})
       newRt.detectFacetsWithoutResolution()
@@ -170,6 +209,7 @@ export function TextInput({
         onNewLink(suggestedUri)
       }
       prevLength.current = newText.length
+      prevText.current = newText
     },
     [setRichText, autocompletePrefix, onPhotoPasted, onNewLink],
   )
