@@ -220,7 +220,6 @@ export function UserBanner({
   ) : banner &&
     !((moderation?.blur && IS_ANDROID) /* android crashes with blur */) ? (
     <Image
-      testID="userBannerImage"
       style={[styles.bannerImage, t.atoms.bg_contrast_25]}
       contentFit="cover"
       source={{uri: maybeModifyHighQualityImage(banner, highQualityImages)}}
@@ -230,7 +229,6 @@ export function UserBanner({
     />
   ) : (
     <View
-      testID="userBannerFallback"
       style={[
         styles.bannerImage,
         type === 'labeler' ? styles.labelerBanner : t.atoms.bg_contrast_25,

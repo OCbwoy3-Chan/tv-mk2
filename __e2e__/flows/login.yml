@@ -15,6 +15,11 @@ appId: app.witchsky
 - tapOn:
     id: "customServerTextInput"
 - inputText: "http://localhost:3000"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard
 - tapOn: "Done"
 - tapOn:
     id: "loginUsernameInput"

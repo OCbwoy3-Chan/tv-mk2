@@ -26,6 +26,7 @@ appId: app.witchsky
 - tapOn:
     id: "report:details"
 - inputText: "This is a test report"
+- hideKeyboard
 - tapOn:
     id: "report:submit"
 - assertNotVisible:

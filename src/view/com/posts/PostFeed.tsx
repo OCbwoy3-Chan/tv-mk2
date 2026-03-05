@@ -797,6 +797,12 @@ let PostFeed = ({
     hideUnreplyablePosts,
   ])
 
+  useEffect(() => {
+    if (enabled === false) {
+      setIsPTRing(false)
+    }
+  }, [enabled])
+
   // events
   // =
 

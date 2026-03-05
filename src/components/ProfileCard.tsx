@@ -11,8 +11,7 @@ import {
   type ModerationOpts,
   RichText as RichTextApi,
 } from '@atproto/api'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
+import {useLingui} from '@lingui/react/macro'
 
 import {getModerationCauseKey} from '#/lib/moderation'
 import {forceLTR} from '#/lib/strings/bidi'
@@ -57,6 +56,7 @@ export function Default({
   testID,
   position,
   contextProfileDid,
+  onPress,
 }: {
   profile: bsky.profile.AnyProfileView
   moderationOpts: ModerationOpts
@@ -64,9 +64,10 @@ export function Default({
   testID?: string
   position?: number
   contextProfileDid?: string
+  onPress?: (e: GestureResponderEvent) => void
 }) {
   return (
-    <Link testID={testID} profile={profile}>
+    <Link testID={testID} profile={profile} onPress={onPress}>
       <Card
         profile={profile}
         moderationOpts={moderationOpts}
@@ -136,14 +137,13 @@ export function Link({
 }: {
   profile: bsky.profile.AnyProfileView
 } & Omit<LinkProps, 'to' | 'label'>) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
+
   return (
     <InternalLink
-      label={_(
-        msg`View ${
-          profile.displayName || sanitizeHandle(profile.handle)
-        }'s profile`,
-      )}
+      label={l`View ${
+        profile.displayName || sanitizeHandle(profile.handle)
+      }’s profile`}
       to={{
         screen: 'Profile',
         params: {name: profile.did},
@@ -500,7 +500,7 @@ export function FollowButtonInner({
   contextProfileDid,
   ...rest
 }: FollowButtonProps) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const profile = useProfileShadow(profileUnshadowed)
   const moderation = moderateProfile(profile, moderationOpts)
   const [queueFollow, queueUnfollow] = useProfileFollowMutationQueue(
@@ -517,18 +517,17 @@ export function FollowButtonInner({
     try {
       await queueFollow()
       Toast.show(
-        _(
-          msg`Following ${sanitizeDisplayName(
-            profile.displayName || profile.handle,
-            moderation.ui('displayName'),
-          )}`,
-        ),
+        l`Following ${sanitizeDisplayName(
+          profile.displayName || profile.handle,
+          moderation.ui('displayName'),
+        )}`,
       )
       onPressProp?.(e)
       onFollow?.()
-    } catch (err: any) {
+    } catch (e) {
+      const err = e as Error
       if (err?.name !== 'AbortError') {
-        Toast.show(_(msg`An issue occurred, please try again.`), 'xmark')
+        Toast.show(l`An issue occurred, please try again.`, 'xmark')
       }
     }
   }
@@ -539,47 +538,38 @@ export function FollowButtonInner({
     try {
       await queueUnfollow()
       Toast.show(
-        _(
-          msg`No longer following ${sanitizeDisplayName(
-            profile.displayName || profile.handle,
-            moderation.ui('displayName'),
-          )}`,
-        ),
+        l`No longer following ${sanitizeDisplayName(
+          profile.displayName || profile.handle,
+          moderation.ui('displayName'),
+        )}`,
       )
       onPressProp?.(e)
-    } catch (err: any) {
+    } catch (e) {
+      const err = e as Error
       if (err?.name !== 'AbortError') {
-        Toast.show(_(msg`An issue occurred, please try again.`), 'xmark')
+        Toast.show(l`An issue occurred, please try again.`, 'xmark')
       }
     }
   }
 
   const unfollowLabel = profile.viewer?.followedBy
-    ? _(
-        msg({
-          message: 'Mutuals',
-          comment: 'User is following this account, click to unfollow',
-        }),
-      )
-    : _(
-        msg({
-          message: 'Following',
-          comment: 'User is following this account, click to unfollow',
-        }),
-      )
+    ? l({
+        message: 'Mutuals',
+        comment: 'User is following this account, click to unfollow',
+      })
+    : l({
+        message: 'Following',
+        comment: 'User is following this account, click to unfollow',
+      })
   const followLabel = profile.viewer?.followedBy
-    ? _(
-        msg({
-          message: 'Follow back',
-          comment: 'User is not following this account, click to follow back',
-        }),
-      )
-    : _(
-        msg({
-          message: 'Follow',
-          comment: 'User is not following this account, click to follow',
-        }),
-      )
+    ? l({
+        message: 'Follow back',
+        comment: 'User is not following this account, click to follow back',
+      })
+    : l({
+        message: 'Follow',
+        comment: 'User is not following this account, click to follow',
+      })
 
   if (!profile.viewer) return null
   if (
@@ -598,7 +588,9 @@ export function FollowButtonInner({
           variant="solid"
           color="secondary"
           {...rest}
-          onPress={onPressUnfollow}>
+          onPress={(e: GestureResponderEvent) => {
+            void onPressUnfollow(e)
+          }}>
           {withIcon && (
             <ButtonIcon icon={Check} position={isRound ? undefined : 'left'} />
           )}
@@ -611,7 +603,9 @@ export function FollowButtonInner({
           variant="solid"
           color={colorInverted ? 'secondary_inverted' : 'primary'}
           {...rest}
-          onPress={onPressFollow}>
+          onPress={(e: GestureResponderEvent) => {
+            void onPressFollow(e)
+          }}>
           {withIcon && (
             <ButtonIcon icon={Plus} position={isRound ? undefined : 'left'} />
           )}

@@ -164,6 +164,12 @@ export function NotificationFeed({
     [isFetchingNextPage, t.palette.primary_500],
   )
 
+  React.useEffect(() => {
+    if (!enabled) {
+      setIsPTRing(false)
+    }
+  }, [enabled])
+
   return (
     <View style={s.hContentRegion}>
       {error && (

@@ -145,7 +145,7 @@ import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
-import {IS_ANDROID, IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
+import {IS_ANDROID, IS_IOS, IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
 import {BottomSheetPortalProvider} from '../../../../modules/bottom-sheet'
 import {
   draftToComposerPosts,
@@ -1545,7 +1545,13 @@ function ComposerTopBar({
     <Animated.View
       style={topBarAnimatedStyle}
       layout={native(LinearTransition)}>
-      <View style={styles.topbarInner}>
+      <View
+        style={[
+          a.flex_row,
+          a.align_center,
+          a.gap_xs,
+          IS_LIQUID_GLASS ? [a.px_lg, a.pt_lg, a.pb_md] : [a.p_sm],
+        ]}>
         <Button
           label={_(msg`Cancel`)}
           variant="ghost"
@@ -1653,7 +1659,7 @@ function AltTextReminder({
   dispatch: (action: ComposerAction) => void
 }) {
   const {_} = useLingui()
-  const t = useTheme();
+  const t = useTheme()
   const openRouterConfigured = useOpenRouterConfigured()
   const openRouterApiKey = useOpenRouterApiKey()
   const openRouterModel = useOpenRouterModel()
@@ -1667,7 +1673,7 @@ function AltTextReminder({
       }
     }
     return false
- }, [thread])
+  }, [thread])
 
   const handleGenerateAltText = useCallback(async () => {
     if (!openRouterApiKey) return
@@ -1695,9 +1701,9 @@ function AltTextReminder({
                   let binary = ''
                   for (let i = 0; i < uint8Array.length; i++) {
                     binary += String.fromCharCode(uint8Array[i])
-                   }
+                  }
                   base64 = btoa(binary)
-                 } else {
+                } else {
                   const base64Result = await readAsStringAsync(imagePath, {
                     encoding: EncodingType.Base64,
                   })
@@ -1705,7 +1711,7 @@ function AltTextReminder({
                   const pathParts = imagePath.split('.')
                   const ext = pathParts[pathParts.length - 1]?.toLowerCase()
                   mimeType = ext === 'png' ? 'image/png' : 'image/jpeg'
-                 }
+                }
 
                 const generated = await generateAltText(
                   openRouterApiKey,
@@ -1725,11 +1731,11 @@ function AltTextReminder({
                     },
                   },
                 })
-               } catch (err) {
+              } catch (err) {
                 logger.error('Failed to generate alt text for image', {
                   error: err,
                 })
-               }
+              }
             }
           }
         }
@@ -1737,7 +1743,7 @@ function AltTextReminder({
     } finally {
       setIsGenerating(false)
     }
- }, [openRouterApiKey, openRouterModel, thread, dispatch])
+  }, [openRouterApiKey, openRouterModel, thread, dispatch])
 
   return (
     <Admonition type="error" style={[a.mt_2xs, a.mb_sm, a.mx_lg]}>
@@ -1747,7 +1753,7 @@ function AltTextReminder({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={_(msg`Generate Alt Text with AI`)}
-            accessibilityHint=''
+            accessibilityHint=""
             onPress={handleGenerateAltText}
             disabled={isGenerating}>
             {isGenerating ? (
@@ -2288,10 +2294,15 @@ function useKeyboardVerticalOffset() {
     return bottom * -1
   }
 
+  // they ditched the gap behaviour on 26
+  if (IS_LIQUID_GLASS) {
+    return top
+  }
+
   // iPhone SE
   if (top === 20) return 40
 
-  // all other iPhones
+  // all other iPhones on <26
   return top + 10
 }
 
@@ -2336,13 +2347,6 @@ function useHideKeyboardOnBackground() {
 }
 
 const styles = StyleSheet.create({
-  topbarInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    height: 54,
-    gap: 4,
-  },
   postBtn: {
     borderRadius: 20,
     paddingHorizontal: 20,

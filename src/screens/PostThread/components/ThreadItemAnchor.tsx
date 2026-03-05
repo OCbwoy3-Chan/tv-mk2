@@ -1,5 +1,5 @@
 import {memo, useCallback, useMemo} from 'react'
-import {type GestureResponderEvent, Text as RNText, View} from 'react-native'
+import {Text as RNText, View} from 'react-native'
 import {
   AppBskyFeedDefs,
   AppBskyFeedPost,
@@ -7,21 +7,13 @@ import {
   AtUri,
   RichText as RichTextAPI,
 } from '@atproto/api'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Plural, Trans} from '@lingui/react/macro'
+import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
-import {useTranslate} from '#/lib/hooks/useTranslate'
 import {makeProfileLink} from '#/lib/routes/links'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {niceDate} from '#/lib/strings/time'
-import {
-  getTranslatorLink,
-  getTranslatorLinkKagi,
-  isPostInLanguage,
-} from '#/locale/helpers'
 import {
   POST_TOMBSTONE,
   type Shadow,
@@ -29,13 +21,11 @@ import {
 } from '#/state/cache/post-shadow'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {FeedFeedbackProvider, useFeedFeedback} from '#/state/feed-feedback'
-import {useLanguagePrefs} from '#/state/preferences'
 import {useDisableLikesMetrics} from '#/state/preferences/disable-likes-metrics'
 import {useDisableQuotesMetrics} from '#/state/preferences/disable-quotes-metrics'
 import {useDisableRepostsMetrics} from '#/state/preferences/disable-reposts-metrics'
 import {useDisableSavesMetrics} from '#/state/preferences/disable-saves-metrics'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {useTranslationServicePreference} from '#/state/preferences/translation-service-preference'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
@@ -53,13 +43,14 @@ import {Button} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
 import {CalendarClock_Stroke2_Corner0_Rounded as CalendarClockIcon} from '#/components/icons/CalendarClock'
 import {Trash_Stroke2_Corner0_Rounded as TrashIcon} from '#/components/icons/Trash'
-import {InlineLinkText, Link} from '#/components/Link'
+import {Link} from '#/components/Link'
 import {ContentHider} from '#/components/moderation/ContentHider'
 import {LabelsOnMyPost} from '#/components/moderation/LabelsOnMe'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
 import {PdsBadge} from '#/components/PdsBadge'
 import {type AppModerationCause} from '#/components/Pills'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
+import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls, PostControlsSkeleton} from '#/components/PostControls'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
@@ -189,7 +180,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 }) {
   const t = useTheme()
   const ax = useAnalytics()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const {openComposer} = useOpenComposer()
   const {currentAccount, hasSession} = useSession()
   const feedFeedback = useFeedFeedback(postSource?.feedSourceInfo, hasSession)
@@ -430,6 +421,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                 shouldProxyLinks={true}
               />
             ) : undefined}
+            <TranslatedPost post={post} postText={record.text} />
             {post.embed && (
               <View style={[a.py_xs]}>
                 <Embed
@@ -468,7 +460,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
               {post.repostCount != null &&
               post.repostCount !== 0 &&
               !disableRepostsMetrics ? (
-                <Link to={repostsHref} label={_(msg`Reposts of this post`)}>
+                <Link to={repostsHref} label={l`Reposts of this post`}>
                   <Text
                     testID="repostCount-expanded"
                     style={[a.text_md, t.atoms.text_contrast_medium]}>
@@ -489,7 +481,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
               post.quoteCount !== 0 &&
               !post.viewer?.embeddingDisabled &&
               !disableQuotesMetrics ? (
-                <Link to={quotesHref} label={_(msg`Quotes of this post`)}>
+                <Link to={quotesHref} label={l`Quotes of this post`}>
                   <Text
                     testID="quoteCount-expanded"
                     style={[a.text_md, t.atoms.text_contrast_medium]}>
@@ -509,7 +501,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
               {post.likeCount != null &&
               post.likeCount !== 0 &&
               !disableLikesMetrics ? (
-                <Link to={likesHref} label={_(msg`Likes on this post`)}>
+                <Link to={likesHref} label={l`Likes on this post`}>
                   <Text
                     testID="likeCount-expanded"
                     style={[a.text_md, t.atoms.text_contrast_medium]}>
@@ -580,45 +572,8 @@ function ExpandedPostDetails({
   isThreadAuthor: boolean
 }) {
   const t = useTheme()
-  const ax = useAnalytics()
-  const {_, i18n} = useLingui()
-  const translate = useTranslate()
+  const {i18n} = useLingui()
   const isRootPost = !('reply' in post.record)
-  const langPrefs = useLanguagePrefs()
-
-  const translationServicePreference = useTranslationServicePreference()
-
-  const needsTranslation = useMemo(
-    () =>
-      Boolean(
-        langPrefs.primaryLanguage &&
-          !isPostInLanguage(post, [langPrefs.primaryLanguage]),
-      ),
-    [post, langPrefs.primaryLanguage],
-  )
-
-  const onTranslatePress = useCallback(
-    (e: GestureResponderEvent) => {
-      e.preventDefault()
-      translate(post.record.text || '', langPrefs.primaryLanguage)
-
-      if (
-        bsky.dangerousIsType<AppBskyFeedPost.Record>(
-          post.record,
-          AppBskyFeedPost.isRecord,
-        )
-      ) {
-        ax.metric('translate', {
-          sourceLanguages: post.record.langs ?? [],
-          targetLanguage: langPrefs.primaryLanguage,
-          textLength: post.record.text.length,
-        })
-      }
-
-      return false
-    },
-    [ax, translate, langPrefs, post],
-  )
 
   return (
     <View style={[a.gap_md, a.pt_md, a.align_start]}>
@@ -630,38 +585,6 @@ function ExpandedPostDetails({
         {isRootPost && (
           <WhoCanReply post={post} isThreadAuthor={isThreadAuthor} />
         )}
-        {needsTranslation && (
-          <>
-            <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
-              &middot;
-            </Text>
-
-            <InlineLinkText
-              // overridden to open an intent on android, but keep
-              // as anchor tag for accessibility
-              to={
-                // in case u want to expand this to allow other services to be u would do this after the kagi one
-                // : translationServicePreference === "insert service name"
-                // ? getTranslatorLink(post.record.text, langPrefs.primaryLanguage, "insert service name")
-                // atm i cant really think of another service that lets u easily do this so its only kagi for now
-                // the default itll use if its not any of the checks is google!!
-                translationServicePreference === 'kagi'
-                  ? getTranslatorLinkKagi(
-                      post.record.text,
-                      langPrefs.primaryLanguage,
-                    )
-                  : getTranslatorLink(
-                      post.record.text,
-                      langPrefs.primaryLanguage,
-                    )
-              }
-              label={_(msg`Translate`)}
-              style={[a.text_sm]}
-              onPress={onTranslatePress}>
-              <Trans>Translate</Trans>
-            </InlineLinkText>
-          </>
-        )}
       </View>
     </View>
   )
@@ -669,7 +592,7 @@ function ExpandedPostDetails({
 
 function BackdatedPostIndicator({post}: {post: AppBskyFeedDefs.PostView}) {
   const t = useTheme()
-  const {_, i18n} = useLingui()
+  const {t: l, i18n} = useLingui()
   const control = Prompt.usePromptControl()
   const enableSquareButtons = useEnableSquareButtons()
 
@@ -690,10 +613,8 @@ function BackdatedPostIndicator({post}: {post: AppBskyFeedDefs.PostView}) {
   return (
     <>
       <Button
-        label={_(msg`Archived post`)}
-        accessibilityHint={_(
-          msg`Shows information about when this post was created`,
-        )}
+        label={l`Archived post`}
+        accessibilityHint={l`Shows information about when this post was created`}
         onPress={e => {
           e.preventDefault()
           e.stopPropagation()
@@ -752,7 +673,7 @@ function BackdatedPostIndicator({post}: {post: AppBskyFeedDefs.PostView}) {
           </Prompt.DescriptionText>
         </Prompt.Content>
         <Prompt.Actions>
-          <Prompt.Action cta={_(msg`Okay`)} onPress={() => {}} />
+          <Prompt.Action cta={l`Okay`} onPress={() => {}} />
         </Prompt.Actions>
       </Prompt.Outer>
     </>

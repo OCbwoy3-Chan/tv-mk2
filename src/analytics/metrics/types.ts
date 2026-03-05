@@ -2,6 +2,8 @@
  * Do not import runtime code into this file
  */
 
+import {type Platform} from 'react-native'
+
 import {type NotificationReason} from '#/lib/hooks/useNotificationHandler'
 import {type FeedDescriptor} from '#/state/queries/post-feed'
 import {type LiveEventFeedMetricContext} from '#/features/liveEvents/types'
@@ -647,6 +649,32 @@ export type Events = {
     tab: string
   }
 
+  'search:query': {
+    source: 'typed' | 'history' | 'autocomplete'
+  }
+
+  'search:results:loaded': {
+    tab: 'top' | 'latest' | 'people' | 'feeds'
+    initialCount: number
+  }
+
+  'search:result:press': {
+    tab?: 'top' | 'latest' | 'people' | 'feeds'
+    resultType: 'post' | 'profile' | 'feed'
+    position: number
+    uri: string
+  }
+
+  'search:recent:press': {
+    profileDid: string
+    position: number
+  }
+
+  'search:autocomplete:press': {
+    profileDid: string
+    position: number
+  }
+
   'progressGuide:hide': {}
   'progressGuide:followDialog:open': {}
 
@@ -678,6 +706,17 @@ export type Events = {
     sourceLanguages: string[]
     targetLanguage: string
     textLength: number
+  }
+  'translate:result': {
+    method: 'on-device' | 'google-translate' | 'fallback-alert'
+    os: Platform['OS']
+    sourceLanguage: string | null
+    targetLanguage: string
+  }
+  'translate:override': {
+    os: Platform['OS']
+    sourceLanguage: string
+    targetLanguage: string
   }
 
   'verification:create': {}

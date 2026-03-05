@@ -117,7 +117,6 @@ module.exports = function (_config) {
             'zh-Hans',
             'zh-Hant',
           ],
-          UIDesignRequiresCompatibility: true,
         },
         associatedDomains: ASSOCIATED_DOMAINS,
         entitlements: {

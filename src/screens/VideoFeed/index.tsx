@@ -33,9 +33,7 @@ import {
   type ModerationDecision,
   RichText as RichTextAPI,
 } from '@atproto/api'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 import {
   type RouteProp,
   useFocusEffect,
@@ -452,7 +450,7 @@ function Feed() {
           }
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
-              fetchNextPage()
+              void fetchNextPage()
             }
           }}
           showsVerticalScrollIndicator={false}
@@ -516,6 +514,7 @@ let VideoItem = ({
       }
     }
   }, [
+    ax,
     active,
     post.uri,
     post.author.did,
@@ -622,7 +621,7 @@ function ModerationOverlay({
   embed: AppBskyEmbedVideo.View
   onPressShow: () => void
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const hider = Hider.useHider()
   const {bottom} = useSafeAreaInsets()
 
@@ -649,7 +648,7 @@ function ModerationOverlay({
             <Trans>Hidden by your moderation settings.</Trans>
           </Text>
           <Button
-            label={_(msg`Show anyway`)}
+            label={l`Show anyway`}
             size="small"
             variant="solid"
             color="secondary_inverted"
@@ -677,7 +676,7 @@ function ModerationOverlay({
           <Divider style={{borderColor: 'white'}} />
           <View>
             <Button
-              label={_(msg`View details`)}
+              label={l`View details`}
               onPress={() => {
                 hider.showInfoDialog()
               }}
@@ -725,7 +724,7 @@ function Overlay({
   feedContext: string | undefined
   reqId: string | undefined
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const t = useTheme()
   const {openComposer} = useOpenComposer()
   const {currentAccount} = useSession()
@@ -812,11 +811,9 @@ function Overlay({
             <Animated.View style={[a.px_md, animatedStyle]}>
               <View style={[a.w_full, a.flex_row, a.align_center, a.gap_md]}>
                 <Link
-                  label={_(
-                    msg`View ${sanitizeDisplayName(
-                      post.author.displayName || post.author.handle,
-                    )}'s profile`,
-                  )}
+                  label={l`View ${sanitizeDisplayName(
+                    post.author.displayName || post.author.handle,
+                  )}'s profile`}
                   to={{
                     screen: 'Profile',
                     params: {name: post.author.did},
@@ -849,13 +846,11 @@ function Overlay({
                     <Button
                       label={
                         profile.viewer?.following
-                          ? _(msg`Following ${handle}`)
-                          : _(msg`Follow ${handle}`)
+                          ? l`Following ${handle}`
+                          : l`Follow ${handle}`
                       }
                       accessibilityHint={
-                        profile.viewer?.following
-                          ? _(msg`Unfollows the user`)
-                          : ''
+                        profile.viewer?.following ? l`Unfollows the user` : ''
                       }
                       size="small"
                       variant="solid"
@@ -863,8 +858,8 @@ function Overlay({
                       style={[a.mb_xs]}
                       onPress={() =>
                         profile.viewer?.following
-                          ? queueUnfollow()
-                          : queueFollow()
+                          ? void queueUnfollow()
+                          : void queueFollow()
                       }>
                       {!!profile.viewer?.following && (
                         <ButtonIcon icon={CheckIcon} />
@@ -893,6 +888,7 @@ function Overlay({
                     record={record}
                     feedContext={feedContext}
                     logContext="FeedItem"
+                    forceGoogleTranslate={true}
                     onPressReply={() =>
                       navigation.navigate('PostThread', {
                         name: post.author.did,
@@ -948,7 +944,7 @@ function ExpandableRichTextView({
   const [hasBeenExpanded, setHasBeenExpanded] = useState(false)
   const [constrained, setConstrained] = useState(false)
   const [contentHeight, setContentHeight] = useState(0)
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const {screenReaderEnabled} = useA11y()
 
   if (expanded && !hasBeenExpanded) {
@@ -989,8 +985,8 @@ function ExpandableRichTextView({
       />
       {constrained && !screenReaderEnabled && (
         <Pressable
-          accessibilityHint={_(msg`Expands or collapses post text`)}
-          accessibilityLabel={expanded ? _(msg`Read less`) : _(msg`Read more`)}
+          accessibilityHint={l`Expands or collapses post text`}
+          accessibilityLabel={expanded ? l`Read less` : l`Read more`}
           hitSlop={HITSLOP_20}
           onPress={() => setExpanded(prev => !prev)}
           style={[a.absolute, a.inset_0]}
@@ -1050,7 +1046,7 @@ function PlayPauseTapArea({
   feedContext: string | undefined
   reqId: string | undefined
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const doubleTapRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const playHaptic = useHaptics()
   // TODO: implement viaRepost -sfn
@@ -1093,7 +1089,7 @@ function PlayPauseTapArea({
       clearTimeout(doubleTapRef.current)
       doubleTapRef.current = null
       playHaptic('Light')
-      queueLike()
+      void queueLike()
       sendInteraction({
         item: post.uri,
         event: 'app.bsky.feed.defs#interactionLike',
@@ -1108,16 +1104,12 @@ function PlayPauseTapArea({
   return (
     <Button
       disabled={!player}
-      aria-valuetext={
-        isPlaying ? _(msg`Video is playing`) : _(msg`Video is paused`)
-      }
-      label={_(
-        msg`Video from ${sanitizeHandle(
-          post.author.handle,
-          '@',
-        )}. Tap to play or pause the video`,
-      )}
-      accessibilityHint={_(msg`Double tap to like`)}
+      aria-valuetext={isPlaying ? l`Video is playing` : l`Video is paused`}
+      label={l`Video from ${sanitizeHandle(
+        post.author.handle,
+        '@',
+      )}. Tap to play or pause the video`}
+      accessibilityHint={l`Double tap to like`}
       onPress={onPress}
       style={[a.absolute, a.inset_0, a.z_10]}>
       <View />
@@ -1127,7 +1119,7 @@ function PlayPauseTapArea({
 
 function EndMessage() {
   const navigation = useNavigation<NavigationProp>()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const t = useTheme()
   const enableSquareButtons = useEnableSquareButtons()
   return (
@@ -1179,8 +1171,8 @@ function EndMessage() {
         variant="solid"
         color="secondary_inverted"
         size="small"
-        label={_(msg`Go back`)}
-        accessibilityHint={_(msg`Returns to previous page`)}>
+        label={l`Go back`}
+        accessibilityHint={l`Returns to previous page`}>
         <ButtonIcon icon={ArrowLeftIcon} />
         <ButtonText>
           <Trans>Go back</Trans>

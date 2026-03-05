@@ -1,6 +1,7 @@
 import {useCallback} from 'react'
 import * as IntentLauncher from 'expo-intent-launcher'
 
+import {useOpenLink} from '#/lib/hooks/useOpenLink'
 import {
   getTranslatorLink,
   getTranslatorLinkKagi,
@@ -9,32 +10,46 @@ import {
 } from '#/locale/helpers'
 import {useTranslationServicePreference} from '#/state/preferences/translation-service-preference'
 import {IS_ANDROID} from '#/env'
-import {useOpenLink} from './useOpenLink'
 
-export function useTranslate() {
+/**
+ * @deprecated Will always link out to Google Translate. Prefer `useTranslate`.
+ */
+export function useGoogleTranslate() {
   const openLink = useOpenLink()
 
   const translationServicePreference = useTranslationServicePreference()
 
   return useCallback(
-    async (text: string, language: string) => {
+    async (text: string, targetLangCode: string, sourceLanguage?: string) => {
       let translateUrl
 
       // if ur curious why this isnt a switch case, good question, for some reason making this a switch case breaks the functionality
       // it is a mystery https://www.youtube.com/watch?v=fq3abPnEEGE
       if (translationServicePreference == 'kagi') {
-        translateUrl = getTranslatorLinkKagi(text, language)
+        translateUrl = getTranslatorLinkKagi(
+          text,
+          targetLangCode,
+          sourceLanguage,
+        )
       } else if (translationServicePreference == 'papago') {
-        translateUrl = getTranslatorLinkPapago(text, language)
+        translateUrl = getTranslatorLinkPapago(
+          text,
+          targetLangCode,
+          sourceLanguage,
+        )
       } else if (translationServicePreference == 'libreTranslate') {
-        translateUrl = getTranslatorLinkLibreTranslate(text, language)
+        translateUrl = getTranslatorLinkLibreTranslate(
+          text,
+          targetLangCode,
+          sourceLanguage,
+        )
       } else {
-        translateUrl = getTranslatorLink(text, language)
+        translateUrl = getTranslatorLink(text, targetLangCode, sourceLanguage)
       }
 
       if (IS_ANDROID && translationServicePreference == 'google') {
         try {
-          // use getApplicationIconAsync to determine if the translate app is installed
+          // use `getApplicationIconAsync` to determine if the translate app is installed
           if (
             !(await IntentLauncher.getApplicationIconAsync(
               'com.google.android.apps.translate',

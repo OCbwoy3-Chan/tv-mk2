@@ -33,21 +33,27 @@ export function code3ToCode2Strict(lang: string): string | undefined {
   return undefined
 }
 
+const displayNamesCache = new Map<string, Intl.DisplayNames>()
+
+function getDisplayNames(appLang: string): Intl.DisplayNames {
+  let cached = displayNamesCache.get(appLang)
+  if (!cached) {
+    cached = new Intl.DisplayNames([appLang], {
+      type: 'language',
+      fallback: 'none',
+      languageDisplay: 'standard',
+    })
+    displayNamesCache.set(appLang, cached)
+  }
+  return cached
+}
+
 function getLocalizedLanguage(
   langCode: string,
   appLang: string,
 ): string | undefined {
   try {
-    const allNames = new Intl.DisplayNames([appLang], {
-      type: 'language',
-      fallback: 'none',
-      languageDisplay: 'standard',
-    })
-    const translatedName = allNames.of(langCode)
-
-    if (translatedName) {
-      return translatedName
-    }
+    return getDisplayNames(appLang).of(langCode) || undefined
   } catch (e) {
     // ignore RangeError from Intl.DisplayNames APIs
     if (!(e instanceof RangeError)) {
@@ -129,32 +135,45 @@ export function isPostInLanguage(
 }
 
 // we cant hook into functions like this, so we will make other translator functions n swap between em
-export function getTranslatorLink(text: string, lang: string): string {
-  return `https://translate.google.com/?sl=auto&tl=${lang}&text=${encodeURIComponent(
+export function getTranslatorLink(
+  text: string,
+  targetLangCode: string,
+  sourceLanguage?: string,
+): string {
+  return `https://translate.google.com/?sl=${sourceLanguage ?? 'auto'}&tl=${targetLangCode}&text=${encodeURIComponent(
     text,
   )}`
 }
 
-export function getTranslatorLinkKagi(text: string, lang: string): string {
-  return `https://translate.kagi.com/?from=auto&to=${lang}&text=${encodeURIComponent(
+export function getTranslatorLinkKagi(
+  text: string,
+  targetLangCode: string,
+  sourceLanguage?: string,
+): string {
+  return `https://translate.kagi.com/?from=${sourceLanguage ?? 'auto'}&to=${targetLangCode}&text=${encodeURIComponent(
     text,
   )}`
 }
 
-export function getTranslatorLinkPapago(text: string, lang: string): string {
-  return `https://papago.naver.com/?sk=auto&tk=${lang}&st=${encodeURIComponent(
+export function getTranslatorLinkPapago(
+  text: string,
+  targetLangCode: string,
+  sourceLanguage?: string,
+): string {
+  return `https://papago.naver.com/?sk=${sourceLanguage ?? 'auto'}&tk=${targetLangCode}&st=${encodeURIComponent(
     text,
   )}`
 }
 
 export function getTranslatorLinkLibreTranslate(
   text: string,
-  lang: string,
+  targetLangCode: string,
+  sourceLanguage?: string,
 ): string {
   const instance =
     persisted.get('libreTranslateInstance') ??
     persisted.defaults.libreTranslateInstance!
-  return `${instance}?source=auto&target=${lang}&q=${encodeURIComponent(text)}`
+  return `${instance}?source=${sourceLanguage ?? 'auto'}&target=${targetLangCode}&q=${encodeURIComponent(text)}`
 }
 
 /**
@@ -328,17 +347,26 @@ export function regionName(countryCode: string, appLang: string): string {
   return countryCode
 }
 
+const regionNamesCache = new Map<string, Intl.DisplayNames>()
+
+function getRegionNames(appLang: string): Intl.DisplayNames {
+  let cached = regionNamesCache.get(appLang)
+  if (!cached) {
+    cached = new Intl.DisplayNames([appLang], {
+      type: 'region',
+      fallback: 'none',
+    })
+    regionNamesCache.set(appLang, cached)
+  }
+  return cached
+}
+
 function getLocalizedRegionName(
   countryCode: string,
   appLang: string,
 ): string | undefined {
   try {
-    const allNames = new Intl.DisplayNames([appLang], {
-      type: 'region',
-      fallback: 'none',
-    })
-
-    return allNames.of(countryCode)
+    return getRegionNames(appLang).of(countryCode)
   } catch (err) {
     console.warn('Error getting localized region name:', err)
     return undefined

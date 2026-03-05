@@ -21,7 +21,7 @@ import {useDialogControl} from '#/components/Dialog'
 import {CreateOrEditListDialog} from '#/components/dialogs/lists/CreateOrEditListDialog'
 import {ArrowOutOfBoxModified_Stroke2_Corner2_Rounded as ShareIcon} from '#/components/icons/ArrowOutOfBox'
 import {ChainLink_Stroke2_Corner0_Rounded as ChainLink} from '#/components/icons/ChainLink'
-import {DotGrid_Stroke2_Corner0_Rounded as DotGridIcon} from '#/components/icons/DotGrid'
+import {DotGrid3x1_Stroke2_Corner0_Rounded as DotGridIcon} from '#/components/icons/DotGrid'
 import {PencilLine_Stroke2_Corner0_Rounded as PencilLineIcon} from '#/components/icons/Pencil'
 import {PersonCheck_Stroke2_Corner0_Rounded as PersonCheckIcon} from '#/components/icons/Person'
 import {Pin_Stroke2_Corner0_Rounded as PinIcon} from '#/components/icons/Pin'
@@ -157,7 +157,7 @@ export function MoreOptionsMenu({
             </Button>
           )}
         </Menu.Trigger>
-        <Menu.Outer>
+        <Menu.Outer showCancel>
           <Menu.Group>
             <Menu.Item
               label={IS_WEB ? _(msg`Copy link to list`) : _(msg`Share via...`)}
