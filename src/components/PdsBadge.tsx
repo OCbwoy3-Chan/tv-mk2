@@ -1,5 +1,5 @@
 import {View} from 'react-native'
-import {msg} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
 import {
@@ -32,8 +32,7 @@ export function PdsBadge({
   )
 
   const isBskyHandle =
-    !!handle &&
-    (handle.endsWith('.bsky.social') || handle === 'bsky.social')
+    !!handle && (handle.endsWith('.bsky.social') || handle === 'bsky.social')
 
   if (!enabled) return null
   if (isLoading) return <PdsBadgeLoading size={size} isBsky={isBskyHandle} />

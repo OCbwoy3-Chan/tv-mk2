@@ -55,7 +55,7 @@ function resolveHref(href: string, origin: string): string {
   return `${origin}/${href}`
 }
 
-async function fetchFaviconUrl(pdsUrl: string): Promise<string | undefined> {
+async function getFaviconUrl(pdsUrl: string): Promise<string | undefined> {
   let origin = ''
   try {
     origin = new URL(pdsUrl).origin
@@ -136,7 +136,12 @@ async function fetchFaviconUrl(pdsUrl: string): Promise<string | undefined> {
     if (ok) return url
   }
 
-  return undefined
+  try {
+    const hostname = new URL(pdsUrl).hostname
+    return `https://favicon.im/${hostname}?throw-error-on-404=true`
+  } catch {
+    return undefined
+  }
 }
 
 export const RQKEY_ROOT = 'pds-label'
@@ -165,7 +170,7 @@ export function usePdsFaviconQuery(pdsUrl: string | undefined) {
     queryKey: RQKEY_FAVICON(pdsUrl ?? ''),
     queryFn: async () => {
       if (!pdsUrl) return undefined
-      return await fetchFaviconUrl(pdsUrl)
+      return await getFaviconUrl(pdsUrl)
     },
     enabled: !!pdsUrl,
     staleTime: 1000 * 60 * 60, // 1 hour

@@ -84,9 +84,11 @@ export function PdsDialog({
                   {isBridged ? <Trans>Fediverse</Trans> : displayName}
                 </Text>
               }
-              <Text style={[a.text_sm, a.leading_tight]}>
-                {isBsky && <Trans>Bluesky Social</Trans>}
-              </Text>
+              {isBsky && 
+                <Text style={[a.text_sm, a.leading_tight]}>
+                  <Trans>Bluesky Social</Trans>
+                </Text>
+              }
             </View>
           </View>
 
@@ -138,8 +140,8 @@ export function PdsDialog({
                 </InlineLinkText>{' '}
                 about what a PDS is and how to{' '}
                 <InlineLinkText
-                  to="https://atproto.com/guides/glossary#pds-personal-data-server"
-                  label="PDS Glossary definition"
+                  to="https://atproto.com/guides/self-hosting#pds"
+                  label="Self-hosting PDS documentation"
                   style={[a.text_md, a.font_semi_bold]}>
                   self-host
                 </InlineLinkText>{' '}
