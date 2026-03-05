@@ -194,7 +194,7 @@ function NoResultsText({
             })}
             to={urls.website.blog.searchTipsAndTricks}
             style={[a.text_md, a.leading_snug]}>
-            read about how to use search filters.
+            read about how to use search filters
           </InlineLinkText>
           .
         </Trans>
