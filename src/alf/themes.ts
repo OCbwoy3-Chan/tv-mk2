@@ -1275,8 +1275,8 @@ export const EVERGARDEN_PALETTE: Palette = {
   primary_700: `hsl(167, 35%, 60%)`,
   primary_800: `hsl(187, 42%, 36%)`,
   primary_900: `hsl(194, 32%, 25%)`,
-  primary_950: `hsl(216, 48%, 10%)`,
-  primary_975: `hsl(220, 50%, 7%)`,
+  primary_950: `hsl(198, 18.4%, 14.8%)`,
+  primary_975: `hsl(200, 50%, 7%)`,
 
   positive_25: '#ECFEFA',
   positive_50: '#E2FAF5',
