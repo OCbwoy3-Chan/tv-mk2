@@ -9,8 +9,8 @@ import {
   RichText as RichTextAPI,
 } from '@atproto/api'
 import {msg} from '@lingui/core/macro'
-import {Trans} from '@lingui/react/macro'
 import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
 import {makeProfileLink} from '#/lib/routes/links'
@@ -377,7 +377,7 @@ export function QuoteEmbed({
         author={quote.author}
         moderation={moderation}
         showAvatar
-                  showPronouns={showPronouns}
+        showPronouns={showPronouns}
         postHref={itemHref}
         timestamp={quote.indexedAt}
         linkDisabled

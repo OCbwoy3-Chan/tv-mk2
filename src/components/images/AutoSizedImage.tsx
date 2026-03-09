@@ -12,10 +12,11 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {type Dimensions} from '#/lib/media/types'
+import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
-  maybeModifyHighQualityImage,
-  useHighQualityImages,
-} from '#/state/preferences/high-quality-images'
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {useLargeAltBadgeEnabled} from '#/state/preferences/large-alt-badge'
 import {atoms as a, useTheme} from '#/alf'
 import {ArrowsDiagonalOut_Stroke2_Corner0_Rounded as Fullscreen} from '#/components/icons/ArrowsDiagonal'
@@ -90,6 +91,7 @@ export function AutoSizedImage({
   const containerRef = useAnimatedRef()
   const fetchedDimsRef = useRef<{width: number; height: number} | null>(null)
   const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
 
   let aspectRatio: number | undefined
   const dims = image.aspectRatio
@@ -120,7 +122,10 @@ export function AutoSizedImage({
       <Image
         contentFit={isContain ? 'contain' : 'cover'}
         style={[a.w_full, a.h_full]}
-        source={maybeModifyHighQualityImage(image.thumb, highQualityImages)}
+        source={applyImageTransforms(image.thumb, {
+          imageCdnHost,
+          highQualityImages,
+        })}
         accessible={true} // Must set for `accessibilityLabel` to work
         accessibilityIgnoresInvertColors
         accessibilityLabel={image.alt}

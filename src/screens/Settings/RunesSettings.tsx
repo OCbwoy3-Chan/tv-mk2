@@ -1,8 +1,9 @@
 import {useState} from 'react'
 import {View} from 'react-native'
 import {type ProfileViewBasic} from '@atproto/api/dist/client/types/app/bsky/actor/defs'
-import {msg, Trans} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
@@ -98,6 +99,10 @@ import {
   useHighQualityImages,
   useSetHighQualityImages,
 } from '#/state/preferences/high-quality-images'
+import {
+  useImageCdnHost,
+  useSetImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {
   useNoAppLabelers,
@@ -296,6 +301,80 @@ function LibreTranslateInstanceDialog({
               msg`Input the url of the LibreTranslate instance to use`,
             )}
             defaultValue={libreTranslateInstance}
+          />
+
+          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
+            <Button
+              label={_(msg`Save`)}
+              size="large"
+              onPress={submit}
+              variant="solid"
+              color="primary"
+              disabled={shouldDisable()}>
+              <ButtonText>
+                <Trans>Save</Trans>
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+
+        <Dialog.Close />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
+  )
+}
+
+function ImageCdnHostDialog({control}: {control: Dialog.DialogControlProps}) {
+  const pal = usePalette('default')
+  const {_} = useLingui()
+
+  const imageCdnHost = useImageCdnHost()
+  const [url, setUrl] = useState(imageCdnHost ?? '')
+  const setImageCdnHost = useSetImageCdnHost()
+
+  const submit = () => {
+    try {
+      setImageCdnHost(new URL(url).origin)
+    } catch {
+      setImageCdnHost(url)
+    }
+    control.close()
+  }
+
+  const shouldDisable = () => {
+    try {
+      return !new URL(url).hostname.includes('.')
+    } catch (e) {
+      return true
+    }
+  }
+
+  return (
+    <Dialog.Outer
+      control={control}
+      nativeOptions={{preventExpansion: true}}
+      onClose={() => setUrl(imageCdnHost ?? '')}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner label={_(msg`Image CDN URL`)}>
+        <View style={[a.gap_sm, a.pb_lg]}>
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>Image CDN URL</Trans>
+          </Text>
+        </View>
+
+        <View style={a.gap_lg}>
+          <Dialog.Input
+            label="Text input field"
+            autoFocus
+            style={[styles.textInput, pal.border, pal.text]}
+            onChangeText={value => {
+              setUrl(value)
+            }}
+            placeholder={persisted.defaults.imageCdnHost}
+            placeholderTextColor={pal.colors.textLight}
+            onSubmitEditing={submit}
+            accessibilityHint={_(msg`Input the URL of the image CDN to use`)}
+            defaultValue={imageCdnHost}
           />
 
           <View style={IS_WEB && [a.flex_row, a.justify_end]}>
@@ -657,6 +736,7 @@ export function RunesSettingsScreen({}: Props) {
 
   const highQualityImages = useHighQualityImages()
   const setHighQualityImages = useSetHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
 
   const hideFeedsPromoTab = useHideFeedsPromoTab()
   const setHideFeedsPromoTab = useSetHideFeedsPromoTab()
@@ -732,6 +812,8 @@ export function RunesSettingsScreen({}: Props) {
   const setTranslationServicePreference = useSetTranslationServicePreference()
 
   const setLibreTranslateInstanceControl = Dialog.useDialogControl()
+
+  const setImageCdnHostControl = Dialog.useDialogControl()
 
   const setPostReplacementDialogControl = Dialog.useDialogControl()
 
@@ -1007,7 +1089,6 @@ export function RunesSettingsScreen({}: Props) {
                 longer to load and use more bandwidth.
               </Trans>
             </Admonition>
-
             <Toggle.Item
               name="hide_feeds_promo_tab"
               label={_(msg`Hide "Feeds ✨" tab when only one feed is selected`)}
@@ -1096,8 +1177,8 @@ export function RunesSettingsScreen({}: Props) {
             <Admonition type="warning" style={[a.flex_1]}>
               <Trans>
                 This only gets rid of the reminder on app launch, useful if your
-                PDS does not have email verification setup.\nThis does NOT give
-                access to features locked behind email verification.
+                PDS does not have email verification setup.\u00A0 This does NOT
+                give access to features locked behind email verification.
               </Trans>
             </Admonition>
 
@@ -1358,6 +1439,29 @@ export function RunesSettingsScreen({}: Props) {
 
           <SettingsList.Divider />
 
+          <SettingsList.Item>
+            <SettingsList.ItemIcon icon={EarthIcon} />
+            <SettingsList.ItemText>
+              <Trans>{`Image CDN`}</Trans>
+            </SettingsList.ItemText>
+            <SettingsList.BadgeButton
+              label={_(msg`Change`)}
+              onPress={() => setImageCdnHostControl.open()}
+            />
+          </SettingsList.Item>
+          <SettingsList.Item>
+            <Admonition type="info" style={[a.flex_1]}>
+              <Trans>
+                Override the CDN host for all images. Current: 
+                <InlineLinkText to={imageCdnHost} label={imageCdnHost}>
+                  {imageCdnHost}
+                </InlineLinkText>
+              </Trans>
+            </Admonition>
+          </SettingsList.Item>
+
+          <SettingsList.Divider />
+
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
             <SettingsList.ItemIcon icon={RaisingHandIcon} />
             <SettingsList.ItemText>
@@ -1406,6 +1510,7 @@ export function RunesSettingsScreen({}: Props) {
       <LibreTranslateInstanceDialog
         control={setLibreTranslateInstanceControl}
       />
+      <ImageCdnHostDialog control={setImageCdnHostControl} />
       <PostReplacementDialog control={setPostReplacementDialogControl} />
       <OpenRouterApiKeyDialog control={setOpenRouterApiKeyControl} />
       <OpenRouterModelDialog control={setOpenRouterModelControl} />

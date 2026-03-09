@@ -11,6 +11,11 @@ import {shareUrl} from '#/lib/sharing'
 import {parseEmbedPlayerFromUrl} from '#/lib/strings/embed-player'
 import {toNiceDomain} from '#/lib/strings/url-helpers'
 import {useExternalEmbedsPrefs} from '#/state/preferences'
+import {useHighQualityImages} from '#/state/preferences/high-quality-images'
+import {
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {atoms as a, useTheme} from '#/alf'
 import {Divider} from '#/components/Divider'
 import {Earth_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
@@ -36,8 +41,15 @@ export const ExternalEmbed = ({
   const t = useTheme()
   const playHaptic = useHaptics()
   const externalEmbedPrefs = useExternalEmbedsPrefs()
+  const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
   const niceUrl = toNiceDomain(link.uri)
   const imageUri = link.thumb
+    ? applyImageTransforms(link.thumb, {
+        imageCdnHost,
+        highQualityImages,
+      })
+    : undefined
   const embedPlayerParams = React.useMemo(() => {
     const params = parseEmbedPlayerFromUrl(link.uri)
 
@@ -132,7 +144,7 @@ export const ExternalEmbed = ({
               {link.description ? (
                 <Text
                   emoji
-                  numberOfLines={link.thumb ? 2 : 4}
+                  numberOfLines={imageUri ? 2 : 4}
                   style={[a.text_sm, a.leading_snug]}>
                   {link.description}
                 </Text>

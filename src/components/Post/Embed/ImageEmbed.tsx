@@ -9,10 +9,11 @@ import {
 import {Image} from 'expo-image'
 
 import {useLightboxControls} from '#/state/lightbox'
+import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
-  maybeModifyHighQualityImage,
-  useHighQualityImages,
-} from '#/state/preferences/high-quality-images'
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {type Dimensions} from '#/view/com/lightbox/ImageViewing/@types'
 import {atoms as a} from '#/alf'
 import {AutoSizedImage} from '#/components/images/AutoSizedImage'
@@ -29,12 +30,19 @@ export function ImageEmbed({
 }) {
   const {openLightbox} = useLightboxControls()
   const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
   const {images} = embed.view
 
   if (images.length > 0) {
     const items = images.map(img => ({
-      uri: maybeModifyHighQualityImage(img.fullsize, highQualityImages),
-      thumbUri: maybeModifyHighQualityImage(img.thumb, highQualityImages),
+      uri: applyImageTransforms(img.fullsize, {
+        imageCdnHost,
+        highQualityImages,
+      }),
+      thumbUri: applyImageTransforms(img.thumb, {
+        imageCdnHost,
+        highQualityImages,
+      }),
       alt: img.alt,
       dimensions: img.aspectRatio ?? null,
     }))

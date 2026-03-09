@@ -173,6 +173,7 @@ const schema = z.object({
     })
     .optional(),
   highQualityImages: z.boolean().optional(),
+  imageCdnHost: z.string().optional(),
   hideUnreplyablePosts: z.boolean().optional(),
   pdsLabel: z
     .object({
@@ -310,6 +311,7 @@ export const defaults: Schema = {
     ],
   },
   highQualityImages: false,
+  imageCdnHost: 'https://cdn.bsky.app',
   hideUnreplyablePosts: false,
   pdsLabel: {
     enabled: true,

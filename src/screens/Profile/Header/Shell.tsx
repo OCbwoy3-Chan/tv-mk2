@@ -20,10 +20,11 @@ import {type Shadow} from '#/state/cache/types'
 import {useLightboxControls} from '#/state/lightbox'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
-  maybeModifyHighQualityImage,
-  useHighQualityImages,
-} from '#/state/preferences/high-quality-images'
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {useSession} from '#/state/session'
 import {LoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -68,6 +69,7 @@ let ProfileHeaderShell = ({
   const playHaptic = useHaptics()
   const liveStatusControl = useDialogControl()
   const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
   const enableSquareAvatars = useEnableSquareAvatars()
   const enableSquareButtons = useEnableSquareButtons()
 
@@ -102,8 +104,11 @@ let ProfileHeaderShell = ({
       openLightbox({
         images: [
           {
-            uri: maybeModifyHighQualityImage(uri, highQualityImages),
-            thumbUri: maybeModifyHighQualityImage(uri, highQualityImages),
+            uri: applyImageTransforms(uri, {imageCdnHost, highQualityImages}),
+            thumbUri: applyImageTransforms(uri, {
+              imageCdnHost,
+              highQualityImages,
+            }),
             thumbRect,
             dimensions:
               type === 'circle-avi' || type === 'rect-avi'
@@ -124,7 +129,7 @@ let ProfileHeaderShell = ({
         index: 0,
       })
     },
-    [openLightbox, highQualityImages, enableSquareAvatars],
+    [openLightbox, imageCdnHost, highQualityImages, enableSquareAvatars],
   )
 
   // theres probs a better way instead of just making a separate one but this works:tm: so its whatever
@@ -133,8 +138,11 @@ let ProfileHeaderShell = ({
       openLightbox({
         images: [
           {
-            uri: maybeModifyHighQualityImage(uri, highQualityImages),
-            thumbUri: maybeModifyHighQualityImage(uri, highQualityImages),
+            uri: applyImageTransforms(uri, {imageCdnHost, highQualityImages}),
+            thumbUri: applyImageTransforms(uri, {
+              imageCdnHost,
+              highQualityImages,
+            }),
             thumbRect,
             dimensions: thumbRect,
             thumbDimensions: null,
@@ -144,7 +152,7 @@ let ProfileHeaderShell = ({
         index: 0,
       })
     },
-    [openLightbox, highQualityImages],
+    [openLightbox, imageCdnHost, highQualityImages],
   )
 
   const isMe = useMemo(

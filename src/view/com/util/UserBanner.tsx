@@ -20,10 +20,11 @@ import {
   compressImage,
   createComposerImage,
 } from '#/state/gallery'
+import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
-  maybeModifyHighQualityImage,
-  useHighQualityImages,
-} from '#/state/preferences/high-quality-images'
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {EditImageDialog} from '#/view/com/composer/photos/EditImageDialog'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {atoms as a, tokens, useTheme} from '#/alf'
@@ -57,6 +58,7 @@ export function UserBanner({
   const [rawImage, setRawImage] = useState<ComposerImage | undefined>()
   const editImageDialogControl = useDialogControl()
   const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
 
   const onOpenCamera = useCallback(async () => {
     if (!(await requestCameraAccessIfNeeded())) {
@@ -132,10 +134,10 @@ export function UserBanner({
                     testID="userBannerImage"
                     style={styles.bannerImage}
                     source={{
-                      uri: maybeModifyHighQualityImage(
-                        banner,
+                      uri: applyImageTransforms(banner, {
+                        imageCdnHost,
                         highQualityImages,
-                      ),
+                      }),
                     }}
                     accessible={true}
                     accessibilityIgnoresInvertColors
@@ -222,7 +224,9 @@ export function UserBanner({
     <Image
       style={[styles.bannerImage, t.atoms.bg_contrast_25]}
       contentFit="cover"
-      source={{uri: maybeModifyHighQualityImage(banner, highQualityImages)}}
+      source={{
+        uri: applyImageTransforms(banner, {imageCdnHost, highQualityImages}),
+      }}
       blurRadius={moderation?.blur ? 100 : 0}
       accessible={true}
       accessibilityIgnoresInvertColors

@@ -1,7 +1,7 @@
 import React from 'react'
 import {msg} from '@lingui/core/macro'
-import {Plural} from '@lingui/react/macro'
 import {useLingui} from '@lingui/react'
+import {Plural} from '@lingui/react/macro'
 import {useFocusEffect} from '@react-navigation/native'
 
 import {useSetTitle} from '#/lib/hooks/useSetTitle'

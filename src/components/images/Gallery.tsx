@@ -8,10 +8,11 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {type Dimensions} from '#/lib/media/types'
+import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
-  maybeModifyHighQualityImage,
-  useHighQualityImages,
-} from '#/state/preferences/high-quality-images'
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {useLargeAltBadgeEnabled} from '#/state/preferences/large-alt-badge'
 import {atoms as a, useTheme} from '#/alf'
 import {MediaInsetBorder} from '#/components/MediaInsetBorder'
@@ -53,6 +54,7 @@ export function GalleryItem({
   const {_} = useLingui()
   const largeAltBadge = useLargeAltBadgeEnabled()
   const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
   const image = images[index]
   const hasAlt = !!image.alt
   const hideBadges =
@@ -82,7 +84,10 @@ export function GalleryItem({
         accessibilityHint="">
         <Image
           source={{
-            uri: maybeModifyHighQualityImage(image.thumb, highQualityImages),
+            uri: applyImageTransforms(image.thumb, {
+              imageCdnHost,
+              highQualityImages,
+            }),
           }}
           style={[a.flex_1]}
           accessible={true}

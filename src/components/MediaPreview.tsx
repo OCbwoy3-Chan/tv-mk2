@@ -4,10 +4,11 @@ import {type AppBskyFeedDefs} from '@atproto/api'
 import {Trans} from '@lingui/react/macro'
 
 import {isTenorGifUri} from '#/lib/strings/embed-player'
+import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
-  maybeModifyHighQualityImage,
-  useHighQualityImages,
-} from '#/state/preferences/high-quality-images'
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {atoms as a, useTheme} from '#/alf'
 import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import {Text} from '#/components/Typography'
@@ -24,7 +25,6 @@ export function Embed({
   embed: AppBskyFeedDefs.PostView['embed']
   style?: StyleProp<ViewStyle>
 }) {
-  const highQualityImages = useHighQualityImages()
   const e = bsky.post.parseEmbed(embed)
 
   if (!e) return null
@@ -35,10 +35,7 @@ export function Embed({
         {e.view.images.map(image => (
           <ImageItem
             key={image.thumb}
-            thumbnail={maybeModifyHighQualityImage(
-              image.thumb,
-              highQualityImages,
-            )}
+            thumbnail={image.thumb}
             alt={image.alt}
           />
         ))}
@@ -59,9 +56,15 @@ export function Embed({
     return (
       <Outer style={style}>
         {e.view.presentation === 'gif' ? (
-          <GifItem thumbnail={e.view.thumbnail} alt={e.view.alt} />
+          <GifItem
+            thumbnail={e.view.thumbnail ? e.view.thumbnail : undefined}
+            alt={e.view.alt}
+          />
         ) : (
-          <VideoItem thumbnail={e.view.thumbnail} alt={e.view.alt} />
+          <VideoItem
+            thumbnail={e.view.thumbnail ? e.view.thumbnail : undefined}
+            alt={e.view.alt}
+          />
         )}
       </Outer>
     )
@@ -98,8 +101,17 @@ export function ImageItem({
   children?: React.ReactNode
 }) {
   const t = useTheme()
+  const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
 
-  if (!thumbnail) {
+  const transformedThumbnail = thumbnail
+    ? applyImageTransforms(thumbnail, {
+        imageCdnHost,
+        highQualityImages,
+      })
+    : undefined
+
+  if (!transformedThumbnail) {
     return (
       <View
         style={[
@@ -119,8 +131,8 @@ export function ImageItem({
   return (
     <View style={[a.relative, a.flex_1, a.aspect_square, {maxWidth: 100}]}>
       <Image
-        key={thumbnail}
-        source={{uri: thumbnail}}
+        key={transformedThumbnail}
+        source={{uri: transformedThumbnail}}
         alt={alt}
         style={[a.flex_1, a.rounded_xs, t.atoms.bg_contrast_25]}
         contentFit="cover"

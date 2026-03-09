@@ -56,8 +56,8 @@ import {
   UserCircle_Stroke2_Corner0_Rounded as UserCircle,
 } from '#/components/icons/UserCircle'
 import {InlineLinkText} from '#/components/Link'
-import {Text} from '#/components/Typography'
 import {PdsBadge} from '#/components/PdsBadge'
+import {Text} from '#/components/Typography'
 import {useSimpleVerificationState} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {IS_WEB} from '#/env'

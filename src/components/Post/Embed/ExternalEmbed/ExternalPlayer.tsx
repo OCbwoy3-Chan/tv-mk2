@@ -27,6 +27,11 @@ import {
   getPlayerAspect,
 } from '#/lib/strings/embed-player'
 import {useExternalEmbedsPrefs} from '#/state/preferences'
+import {useHighQualityImages} from '#/state/preferences/high-quality-images'
+import {
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {atoms as a, useTheme} from '#/alf'
 import {useDialogControl} from '#/components/Dialog'
@@ -128,6 +133,8 @@ export function ExternalPlayer({
   const windowDims = useWindowDimensions()
   const externalEmbedsPrefs = useExternalEmbedsPrefs()
   const consentDialogControl = useDialogControl()
+  const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
 
   const [isPlayerActive, setPlayerActive] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(true)
@@ -224,7 +231,12 @@ export function ExternalPlayer({
           <>
             <Image
               style={[a.flex_1]}
-              source={{uri: link.thumb}}
+              source={{
+                uri: applyImageTransforms(link.thumb, {
+                  imageCdnHost,
+                  highQualityImages,
+                }),
+              }}
               accessibilityIgnoresInvertColors
               loading="lazy"
             />

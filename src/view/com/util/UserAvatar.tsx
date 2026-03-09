@@ -35,10 +35,11 @@ import {
   createComposerImage,
 } from '#/state/gallery'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
+import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
-  maybeModifyHighQualityImage,
-  useHighQualityImages,
-} from '#/state/preferences/high-quality-images'
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
 import {EditImageDialog} from '#/view/com/composer/photos/EditImageDialog'
 import {atoms as a, tokens, useTheme} from '#/alf'
@@ -250,6 +251,7 @@ let UserAvatar = ({
   const finalShape =
     overrideShape ?? (type === 'user' ? avishapeforce : 'square')
   const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
 
   const aviStyle = useMemo(() => {
     let borderRadius
@@ -321,9 +323,9 @@ let UserAvatar = ({
           style={aviStyle}
           resizeMode="cover"
           source={{
-            uri: maybeModifyHighQualityImage(
+            uri: applyImageTransforms(
               hackModifyThumbnailPath(avatar, size < 90),
-              highQualityImages,
+              {imageCdnHost, highQualityImages},
             ),
           }}
           blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
@@ -335,9 +337,9 @@ let UserAvatar = ({
           style={aviStyle}
           contentFit="cover"
           source={{
-            uri: maybeModifyHighQualityImage(
+            uri: applyImageTransforms(
               hackModifyThumbnailPath(avatar, size < 90),
-              highQualityImages,
+              {imageCdnHost, highQualityImages},
             ),
           }}
           blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
@@ -379,6 +381,7 @@ let EditableUserAvatar = ({
 
   const sheetWrapper = useSheetWrapper()
   const highQualityImages = useHighQualityImages()
+  const imageCdnHost = useImageCdnHost()
 
   const enableSquareAvatars = useEnableSquareAvatars()
 
@@ -480,7 +483,10 @@ let EditableUserAvatar = ({
                   testID="userAvatarImage"
                   style={aviStyle}
                   source={{
-                    uri: maybeModifyHighQualityImage(avatar, highQualityImages),
+                    uri: applyImageTransforms(avatar, {
+                      imageCdnHost,
+                      highQualityImages,
+                    }),
                   }}
                   accessibilityRole="image"
                 />
