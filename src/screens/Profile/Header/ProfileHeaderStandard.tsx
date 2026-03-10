@@ -14,7 +14,7 @@ import {Trans} from '@lingui/react/macro'
 import {useHaptics} from '#/lib/haptics'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
-import {formatJoinDate} from '#/lib/strings/time'
+import {formatJoinDate, niceDate} from '#/lib/strings/time'
 import {
   sanitizeWebsiteForDisplay,
   sanitizeWebsiteForLink,
@@ -28,7 +28,15 @@ import {
 } from '#/state/queries/profile'
 import {useRequireAuth, useSession} from '#/state/session'
 import {ProfileMenu} from '#/view/com/profile/ProfileMenu'
-import {atoms as a, platform, tokens, useBreakpoints, useTheme} from '#/alf'
+import {
+  atoms as a,
+  native,
+  platform,
+  tokens,
+  useBreakpoints,
+  useTheme,
+  web,
+} from '#/alf'
 import {SubscribeProfileButton} from '#/components/activity-notifications/SubscribeProfileButton'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
@@ -77,7 +85,7 @@ let ProfileHeaderStandard = ({
   const profile =
     useProfileShadow<AppBskyActorDefs.ProfileViewDetailed>(profileUnshadowed)
   const {currentAccount} = useSession()
-  const {_} = useLingui()
+  const {_, i18n} = useLingui()
   const moderation = useMemo(
     () => moderateProfile(profile, moderationOpts),
     [profile, moderationOpts],
@@ -97,6 +105,15 @@ let ProfileHeaderStandard = ({
     if (!profile.createdAt) return ''
     return formatJoinDate(profile.createdAt)
   }, [profile.createdAt])
+
+  const dateJoinedExact = useMemo(() => {
+    if (!profile.createdAt) return ''
+
+    const createdAt = new Date(profile.createdAt)
+    if (Number.isNaN(createdAt.getTime())) return ''
+
+    return niceDate(i18n, createdAt)
+  }, [i18n, profile.createdAt])
 
   const unblockAccount = async () => {
     try {
@@ -125,7 +142,13 @@ let ProfileHeaderStandard = ({
         hideBackButton={hideBackButton}
         isPlaceholderProfile={isPlaceholderProfile}>
         <View
-          style={[a.px_lg, a.pt_md, a.pb_sm, a.overflow_hidden]}
+          style={[
+            a.px_lg,
+            a.pt_md,
+            a.pb_sm,
+            native(a.overflow_hidden),
+            web({overflowX: 'clip', zIndex: 10}),
+          ]}
           pointerEvents={IS_IOS ? 'auto' : 'box-none'}>
           <View
             style={[
@@ -233,7 +256,9 @@ let ProfileHeaderStandard = ({
                 width={tokens.space.lg}
                 style={{color: t.atoms.text_contrast_medium.color}}
               />
-              <Text style={[t.atoms.text_contrast_medium]}>
+              <Text
+                style={[t.atoms.text_contrast_medium]}
+                title={dateJoinedExact}>
                 <Trans>Joined {dateJoined}</Trans>
               </Text>
             </View>
