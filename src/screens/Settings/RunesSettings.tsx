@@ -134,6 +134,10 @@ import {
   useSetRepostCarouselEnabled,
 } from '#/state/preferences/repost-carousel-enabled'
 import {
+  useSetShowFollowsYouBadge,
+  useShowFollowsYouBadge,
+} from '#/state/preferences/show-follows-you-badge'
+import {
   useSetShowLinkInHandle,
   useShowLinkInHandle,
 } from '#/state/preferences/show-link-in-handle.tsx'
@@ -802,6 +806,9 @@ export function RunesSettingsScreen({}: Props) {
   const repostCarouselEnabled = useRepostCarouselEnabled()
   const setRepostCarouselEnabled = useSetRepostCarouselEnabled()
 
+  const showFollowsYouBadge = useShowFollowsYouBadge()
+  const setShowFollowsYouBadge = useSetShowFollowsYouBadge()
+
   const showLinkInHandle = useShowLinkInHandle()
   const setShowLinkInHandle = useSetShowLinkInHandle()
 
@@ -1425,13 +1432,25 @@ export function RunesSettingsScreen({}: Props) {
             </Toggle.Item>
 
             <Toggle.Item
+              name="show_follows_you_badge"
+              label={_(msg`Show "Follows you" badge`)}
+              value={showFollowsYouBadge}
+              onChange={value => setShowFollowsYouBadge(value)}
+              style={[a.w_full]}>
+              <Toggle.LabelText style={[a.flex_1]}>
+                <Trans>Show "Follows you" badge</Trans>
+              </Toggle.LabelText>
+              <Toggle.Platform />
+            </Toggle.Item>
+
+            <Toggle.Item
               name="disable_posts_metrics"
-              label={_(msg`Disable posts metrics`)}
+              label={_(msg`Disable post counts metrics`)}
               value={disablePostsMetrics}
               onChange={value => setDisablePostsMetrics(value)}
               style={[a.w_full]}>
               <Toggle.LabelText style={[a.flex_1]}>
-                <Trans>Disable posts metrics</Trans>
+                <Trans>Disable post counts metrics</Trans>
               </Toggle.LabelText>
               <Toggle.Platform />
             </Toggle.Item>

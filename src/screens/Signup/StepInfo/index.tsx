@@ -33,16 +33,12 @@ import {ScreenTransition} from '#/components/ScreenTransition'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {
-  isUnderAge,
   MIN_ACCESS_AGE,
   useAgeAssuranceRegionConfigWithFallback,
 } from '#/ageAssurance/util'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE, IS_WEB} from '#/env'
-import {
-  useDeviceGeolocationApi,
-  useIsDeviceGeolocationGranted,
-} from '#/geolocation'
+import {useDeviceGeolocationApi} from '#/geolocation'
 import {BackNextButtons} from '../BackNextButtons'
 
 function sanitizeDate(date: Date): Date {

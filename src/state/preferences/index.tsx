@@ -41,6 +41,7 @@ import {Provider as OpenRouterProvider} from './openrouter'
 import {Provider as PdsLabelProvider} from './pds-label'
 import {Provider as PostNameReplacementProvider} from './post-name-replacement.tsx'
 import {Provider as RepostCarouselProvider} from './repost-carousel-enabled'
+import {Provider as ShowFollowsYouBadgeProvider} from './show-follows-you-badge'
 import {Provider as ShowLinkInHandleProvider} from './show-link-in-handle'
 import {Provider as SubtitlesProvider} from './subtitles'
 import {Provider as TranslationServicePreferenceProvider} from './translation-service-preference'
@@ -127,29 +128,31 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
                                                                         <DisableFollowingMetricsProvider>
                                                                           <DisableFollowedByMetricsProvider>
                                                                             <DisablePostsMetricsProvider>
-                                                                              <HideSimilarAccountsRecommProvider>
-                                                                                <HideUnreplyablePostsProvider>
-                                                                                  <EnableSquareAvatarsProvider>
-                                                                                    <EnableSquareButtonsProvider>
-                                                                                      <PostNameReplacementProvider>
-                                                                                        <DisableVerifyEmailReminderProvider>
-                                                                                          <TranslationServicePreferenceProvider>
-                                                                                            <OpenRouterProvider>
-                                                                                              <DisableComposerPromptProvider>
-                                                                                                <DiscoverContextEnabledProvider>
-                                                                                                  {
-                                                                                                    children
-                                                                                                  }
-                                                                                                </DiscoverContextEnabledProvider>
-                                                                                              </DisableComposerPromptProvider>
-                                                                                            </OpenRouterProvider>
-                                                                                          </TranslationServicePreferenceProvider>
-                                                                                        </DisableVerifyEmailReminderProvider>
-                                                                                      </PostNameReplacementProvider>
-                                                                                    </EnableSquareButtonsProvider>
-                                                                                  </EnableSquareAvatarsProvider>
-                                                                                </HideUnreplyablePostsProvider>
-                                                                              </HideSimilarAccountsRecommProvider>
+                                                                              <ShowFollowsYouBadgeProvider>
+                                                                                <HideSimilarAccountsRecommProvider>
+                                                                                  <HideUnreplyablePostsProvider>
+                                                                                    <EnableSquareAvatarsProvider>
+                                                                                      <EnableSquareButtonsProvider>
+                                                                                        <PostNameReplacementProvider>
+                                                                                          <DisableVerifyEmailReminderProvider>
+                                                                                            <TranslationServicePreferenceProvider>
+                                                                                              <OpenRouterProvider>
+                                                                                                <DisableComposerPromptProvider>
+                                                                                                  <DiscoverContextEnabledProvider>
+                                                                                                    {
+                                                                                                      children
+                                                                                                    }
+                                                                                                  </DiscoverContextEnabledProvider>
+                                                                                                </DisableComposerPromptProvider>
+                                                                                              </OpenRouterProvider>
+                                                                                            </TranslationServicePreferenceProvider>
+                                                                                          </DisableVerifyEmailReminderProvider>
+                                                                                        </PostNameReplacementProvider>
+                                                                                      </EnableSquareButtonsProvider>
+                                                                                    </EnableSquareAvatarsProvider>
+                                                                                  </HideUnreplyablePostsProvider>
+                                                                                </HideSimilarAccountsRecommProvider>
+                                                                              </ShowFollowsYouBadgeProvider>
                                                                             </DisablePostsMetricsProvider>
                                                                           </DisableFollowedByMetricsProvider>
                                                                         </DisableFollowingMetricsProvider>

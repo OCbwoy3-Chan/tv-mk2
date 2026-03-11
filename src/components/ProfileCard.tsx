@@ -20,6 +20,7 @@ import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
 import * as Toast from '#/view/com/util/Toast'
@@ -647,13 +648,15 @@ export function Labels({
   const moderation = moderateProfile(profile, moderationOpts)
   const modui = moderation.ui('profileList')
   const followedBy = profile.viewer?.followedBy
+  const showFollowsYouBadge = useShowFollowsYouBadge()
 
-  if (!followedBy && !modui.inform && !modui.alert) {
+  if (!(followedBy && showFollowsYouBadge) && !modui.inform && !modui.alert) {
     return null
   }
 
   return (
     <Pills.Row style={[a.pt_xs]}>
+      {followedBy && showFollowsYouBadge && <Pills.FollowsYou />}
       {modui.alerts.map(alert => (
         <Pills.Label key={getModerationCauseKey(alert)} cause={alert} />
       ))}

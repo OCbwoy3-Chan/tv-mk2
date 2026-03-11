@@ -1,7 +1,8 @@
 import React from 'react'
 import {Dimensions, ScrollView, View} from 'react-native'
-import {msg, Plural} from '@lingui/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Plural} from '@lingui/react/macro'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {type FeedPostSlice} from '#/state/queries/post-feed'
