@@ -6,6 +6,7 @@ import {Trans} from '@lingui/react/macro'
 
 import {cleanError} from '#/lib/strings/errors'
 import {useAgent, useSession} from '#/state/session'
+import {pdsAgent} from '#/state/session/agent'
 import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import * as Toast from '#/view/com/util/Toast'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
@@ -42,7 +43,7 @@ export function DisableEmail2FADialog({
     setError('')
     setIsProcessing(true)
     try {
-      await agent.com.atproto.server.requestEmailUpdate()
+      await pdsAgent(agent).com.atproto.server.requestEmailUpdate()
       setStage(Stages.ConfirmCode)
     } catch (e) {
       setError(cleanError(String(e)))
@@ -56,7 +57,7 @@ export function DisableEmail2FADialog({
     setIsProcessing(true)
     try {
       if (currentAccount?.email) {
-        await agent.com.atproto.server.updateEmail({
+        await pdsAgent(agent).com.atproto.server.updateEmail({
           email: currentAccount.email,
           token: confirmationCode.trim(),
           emailAuthFactor: false,

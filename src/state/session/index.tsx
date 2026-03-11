@@ -22,6 +22,7 @@ import {
   createAgentAndCreateAccount,
   createAgentAndLogin,
   createAgentAndResume,
+  pdsAgent,
   sessionAccountToSession,
 } from './agent'
 import {type Action, getInitialState, reducer, type State} from './reducer'
@@ -278,7 +279,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
   >(async () => {
     const agent = state.currentAgentState.agent as BskyAppAgent
     const signal = cancelPendingTask()
-    const {data} = await agent.com.atproto.server.getSession()
+    const {data} = await pdsAgent(agent).com.atproto.server.getSession()
     if (signal.aborted) return
     store.dispatch({
       type: 'partial-refresh-session',
@@ -448,4 +449,15 @@ export function useAgent(): BskyAgent {
     throw Error('useAgent() must be below <SessionProvider>.')
   }
   return agent
+}
+
+export function useBlankPrefAuthedAgent(): BskyAgent {
+  const agent = useContext(AgentContext)
+  if (!agent) {
+    throw Error('useAgent() must be below <SessionProvider>.')
+  }
+
+  return useMemo(() => {
+    return (agent as BskyAppAgent).cloneWithoutProxy()
+  }, [agent])
 }

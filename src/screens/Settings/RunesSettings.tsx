@@ -1,12 +1,13 @@
 import {useState} from 'react'
 import {View} from 'react-native'
+import {isDid} from '@atproto/api'
 import {type ProfileViewBasic} from '@atproto/api/dist/client/types/app/bsky/actor/defs'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
-import {DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
+import {APPVIEW_DID_PROXY, DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
 import {usePalette} from '#/lib/hooks/usePalette'
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {dynamicActivate} from '#/locale/i18n'
@@ -18,6 +19,7 @@ import {
   useConstellationInstance,
   useSetConstellationInstance,
 } from '#/state/preferences/constellation-instance'
+import {useCustomAppViewDid} from '#/state/preferences/custom-appview-did'
 import {
   useDeerVerificationEnabled,
   useDeerVerificationTrusted,
@@ -152,6 +154,8 @@ import {
   useSetHandleInLinks,
 } from '#/state/preferences/use-handle-in-links'
 import {useProfilesQuery} from '#/state/queries/profile'
+import {findService, useDidDocument} from '#/state/queries/resolve-identity'
+import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useBreakpoints} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -173,7 +177,6 @@ import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {SearchProfileCard} from '../Search/components/SearchProfileCard'
-
 type Props = NativeStackScreenProps<CommonNavigatorParams>
 
 function ConstellationInstanceDialog({
@@ -538,6 +541,136 @@ function PostReplacementDialog({
   )
 }
 
+function CustomAppViewDidDialog({
+  control,
+}: {
+  control: Dialog.DialogControlProps
+}) {
+  const pal = usePalette('default')
+  const {_} = useLingui()
+
+  const [did, setDid] = useState('')
+  const [, setCustomAppViewDid] = useCustomAppViewDid()
+
+  const doc = useDidDocument({did})
+  const bskyAppViewService =
+    doc.data && findService(doc.data, '#bsky_appview', 'BskyAppView')
+
+  const submit = () => {
+    if (did.length === 0) {
+      setCustomAppViewDid(undefined)
+      control.close()
+      return
+    }
+    if (!bskyAppViewService?.serviceEndpoint) return
+    setCustomAppViewDid(did)
+    control.close()
+  }
+
+  return (
+    <Dialog.Outer
+      control={control}
+      nativeOptions={{preventExpansion: true}}
+      onClose={() => setDid('')}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner label={_(msg`Custom AppView Proxy DID`)}>
+        <View style={[a.gap_sm, a.pb_lg]}>
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>Custom AppView Proxy DID</Trans>
+          </Text>
+        </View>
+
+        <View style={a.gap_lg}>
+          <Dialog.Input
+            label="Text input field"
+            autoFocus
+            style={[styles.textInput, pal.border, pal.text]}
+            onChangeText={value => {
+              setDid(value)
+            }}
+            placeholder={
+              APPVIEW_DID_PROXY?.substring(0, APPVIEW_DID_PROXY.indexOf('#')) ||
+              `did:web:api.bsky.app`
+            }
+            placeholderTextColor={pal.colors.textLight}
+            onSubmitEditing={submit}
+            accessibilityHint={_(
+              msg`Input the DID of the AppView to proxy requests through`,
+            )}
+            isInvalid={
+              !!did && !bskyAppViewService?.serviceEndpoint && !doc.isLoading
+            }
+          />
+
+          {did && !isDid(did) && (
+            <View>
+              <ErrorMessage message={_(msg`must enter a DID`)} />
+            </View>
+          )}
+
+          {did && (did.includes('#') || did.includes('?')) && (
+            <View>
+              <ErrorMessage message={_(msg`don't include the service id`)} />
+            </View>
+          )}
+
+          {doc.isError && (
+            <View>
+              <ErrorMessage
+                message={
+                  doc.error.message || _(msg`document resolution failure`)
+                }
+              />
+            </View>
+          )}
+
+          {doc.data &&
+            !bskyAppViewService &&
+            (doc.data as {message?: string}).message && (
+              <View>
+                <ErrorMessage
+                  message={(doc.data as {message: string}).message}
+                />
+              </View>
+            )}
+
+          {doc.data && !bskyAppViewService && (
+            <View>
+              <ErrorMessage
+                message={_(msg`document doesn't contain #bsky_appview service`)}
+              />
+            </View>
+          )}
+
+          {bskyAppViewService && (
+            <Text style={[a.text_sm, a.leading_snug]}>
+              {JSON.stringify(bskyAppViewService, null, 2)}
+            </Text>
+          )}
+
+          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
+            <Button
+              label={_(msg`Save`)}
+              size="large"
+              onPress={submit}
+              variant="solid"
+              color={did.length > 0 ? 'primary' : 'secondary'}
+              disabled={
+                did.length !== 0 && !bskyAppViewService?.serviceEndpoint
+              }>
+              <ButtonText>
+                {did.length > 0 ? <Trans>Save</Trans> : <Trans>Reset</Trans>}
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+
+        <Dialog.Close />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
+  )
+}
+
 function TrustedVerifiersDialog({
   control,
 }: {
@@ -828,6 +961,9 @@ export function RunesSettingsScreen({}: Props) {
   const openRouterModel = useOpenRouterModel()
   const setOpenRouterModelControl = Dialog.useDialogControl()
   const openRouterConfigured = useOpenRouterConfigured()
+
+  const [customAppViewDid] = useCustomAppViewDid()
+  const setCustomAppViewDidControl = Dialog.useDialogControl()
 
   return (
     <Layout.Screen>
@@ -1481,6 +1617,27 @@ export function RunesSettingsScreen({}: Props) {
 
           <SettingsList.Divider />
 
+          <SettingsList.Item>
+            <SettingsList.ItemIcon icon={StarIcon} />
+            <SettingsList.ItemText>
+              <Trans>{`Custom AppView DID`}</Trans>
+            </SettingsList.ItemText>
+            <SettingsList.BadgeButton
+              label={customAppViewDid ? _(msg`Set`) : _(msg`Change`)}
+              onPress={() => setCustomAppViewDidControl.open()}
+            />
+          </SettingsList.Item>
+          <SettingsList.Item>
+            <Admonition type="info" style={[a.flex_1]}>
+              <Trans>
+                Restart app after changing your AppView.
+                {customAppViewDid && _(msg` Currently ${customAppViewDid}`)}
+              </Trans>
+            </Admonition>
+          </SettingsList.Item>
+
+          <SettingsList.Divider />
+
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
             <SettingsList.ItemIcon icon={RaisingHandIcon} />
             <SettingsList.ItemText>
@@ -1525,6 +1682,7 @@ export function RunesSettingsScreen({}: Props) {
         </SettingsList.Container>
       </Layout.Content>
       <ConstellationInstanceDialog control={setConstellationInstanceControl} />
+      <CustomAppViewDidDialog control={setCustomAppViewDidControl} />
       <TrustedVerifiersDialog control={setTrustedVerifiersDialogControl} />
       <LibreTranslateInstanceDialog
         control={setLibreTranslateInstanceControl}

@@ -38,6 +38,7 @@ import {
   createThreadgateRecord,
   threadgateAllowUISettingToAllowRecordValue,
 } from '#/state/queries/threadgate'
+import {pdsAgent} from '#/state/session/agent'
 import {
   type EmbedDraft,
   type PostDraft,
@@ -176,7 +177,7 @@ export async function post(
   }
 
   try {
-    await agent.com.atproto.repo.applyWrites({
+    await pdsAgent(agent).com.atproto.repo.applyWrites({
       repo: agent.assertDid,
       writes: writes,
       validate: true,

@@ -141,3 +141,9 @@ export const APP_CONFIG_PROD_URL = `https://app-config.workers.bsky.app`
 export const APP_CONFIG_URL = IS_DEV
   ? (APP_CONFIG_DEV_URL ?? APP_CONFIG_PROD_URL)
   : APP_CONFIG_PROD_URL
+
+export const ENV_PUBLIC_BSKY_SERVICE: string | undefined =
+  process.env.EXPO_PUBLIC_PUBLIC_BSKY_SERVICE
+export const ENV_APPVIEW_DID_PROXY:
+  | `did:${string}:${string}#bsky_appview`
+  | undefined = process.env.EXPO_PUBLIC_APPVIEW_DID_PROXY

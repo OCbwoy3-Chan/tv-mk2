@@ -13,6 +13,7 @@ import {listenNetworkConfirmed, listenNetworkLost} from '#/state/events'
 import {PERSISTED_QUERY_ROOT} from '#/state/queries'
 import * as env from '#/env'
 import {IS_NATIVE, IS_WEB} from '#/env'
+import {PUBLIC_BSKY_SERVICE} from './constants'
 
 declare global {
   interface Window {
@@ -27,7 +28,7 @@ async function checkIsOnline(): Promise<boolean> {
     setTimeout(() => {
       controller.abort()
     }, 15e3)
-    const res = await fetch('https://public.api.bsky.app/xrpc/_health', {
+    const res = await fetch(`${PUBLIC_BSKY_SERVICE}/xrpc/_health`, {
       cache: 'no-store',
       signal: controller.signal,
     })
