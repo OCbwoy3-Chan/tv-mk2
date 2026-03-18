@@ -102,8 +102,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 a.font_semi_bold,
                 t.atoms.text,
                 a.leading_tight,
-                a.flex_shrink_0,
-                {maxWidth: '70%'},
+                a.flex_shrink,
               ]}>
               {forceLTR(
                 sanitizeDisplayName(
@@ -139,7 +138,10 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 a.text_md,
                 t.atoms.text_contrast_medium,
                 {lineHeight: 1.17},
-                {flexShrink: 10},
+                {flexBasis: '30%'},
+                a.flex_grow,
+                a.flex_shrink_0,
+                web({maxWidth: 'max-content'}),
               ]}>
               {NON_BREAKING_SPACE + sanitizeHandle(handle, '@')}
             </MaybeLinkText>
