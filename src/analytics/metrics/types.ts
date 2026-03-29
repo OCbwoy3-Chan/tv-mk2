@@ -230,6 +230,9 @@ export type Events = {
 
   'composer:gif:open': {}
   'composer:gif:select': {}
+  'composer:image:edit': {
+    platform: Platform['OS']
+  }
   'composerPrompt:press': {}
   'composerPrompt:camera:press': {}
   'composerPrompt:gallery:press': {}
@@ -477,10 +480,12 @@ export type Events = {
   'suggestedUser:follow': {
     logContext:
       | 'Explore'
-      | 'InterstitialDiscover'
-      | 'InterstitialProfile'
-      | 'Profile'
+      | 'DiscoverInterstitial'
+      | 'ProfileInterstitial'
+      | 'ProfileHeader'
       | 'Onboarding'
+      | 'SeeMoreSuggestedUsers'
+      | 'ProgressGuide'
     location: 'Card' | 'Profile' | 'FollowAll'
     recId?: number | string
     position: number
@@ -490,9 +495,11 @@ export type Events = {
   'suggestedUser:press': {
     logContext:
       | 'Explore'
-      | 'InterstitialDiscover'
-      | 'InterstitialProfile'
+      | 'DiscoverInterstitial'
+      | 'ProfileInterstitial'
+      | 'ProfileHeader'
       | 'Onboarding'
+      | 'SeeMoreSuggestedUsers'
     recId?: number | string
     position: number
     suggestedDid: string
@@ -501,10 +508,11 @@ export type Events = {
   'suggestedUser:seen': {
     logContext:
       | 'Explore'
-      | 'InterstitialDiscover'
-      | 'InterstitialProfile'
-      | 'Profile'
+      | 'DiscoverInterstitial'
+      | 'ProfileInterstitial'
+      | 'ProfileHeader'
       | 'Onboarding'
+      | 'SeeMoreSuggestedUsers'
       | 'ProgressGuide'
     recId?: number | string
     position: number
@@ -514,13 +522,14 @@ export type Events = {
   'suggestedUser:seeMore': {
     logContext:
       | 'Explore'
-      | 'InterstitialDiscover'
-      | 'InterstitialProfile'
-      | 'Profile'
+      | 'DiscoverInterstitial'
+      | 'ProfileInterstitial'
+      | 'ProfileHeader'
       | 'Onboarding'
+    recId?: number | string
   }
   'suggestedUser:dismiss': {
-    logContext: 'InterstitialDiscover' | 'InterstitialProfile'
+    logContext: 'DiscoverInterstitial' | 'ProfileInterstitial' | 'ProfileHeader'
     recId?: number | string
     position: number
     suggestedDid: string
@@ -707,20 +716,84 @@ export type Events = {
   'reportDialog:failure': {}
 
   translate: {
-    sourceLanguages: string[]
-    targetLanguage: string
+    os: Platform['OS']
+    /**
+     * The languages the content might be in, such as the user-supplied
+     * language codes on posts. Currently only available on posts.
+     */
+    possibleSourceLanguages: string[] | undefined
+    /**
+     * This is the user's configured primary language, which is always defined.
+     */
+    expectedTargetLanguage: string
+    /**
+     * The length of the text being translated. We assume shorter texts are
+     * more likely to have inaccurate translations.
+     */
     textLength: number
+    googleTranslate: boolean
   }
   'translate:result': {
-    method: 'on-device' | 'google-translate' | 'fallback-alert'
+    success: boolean
     os: Platform['OS']
-    sourceLanguage: string | null
-    targetLanguage: string
+    /**
+     * The languages the content might be in, such as the user-supplied
+     * language codes on posts. Currently only available on posts.
+     */
+    possibleSourceLanguages: string[] | undefined
+    /**
+     * The language we expected the content to be in. This could be based on
+     * user selection or on our confidence in the detected language. This is
+     * nullable because we may not always have an expected source language.
+     */
+    expectedSourceLanguage: string | null
+    /**
+     * This is the user's configured primary language, which is always defined.
+     */
+    expectedTargetLanguage: string
+    /**
+     * The language the translation result was actually in. This is nullable
+     * because the translation could have failed, in which case we won't have a
+     * result source language.
+     */
+    resultSourceLanguage: string | null
+    /**
+     * The language the translation result was translated into. This should be
+     * the same as `expectedTargetLanguage`, but we include it for completeness
+     * and in case there are any edge cases where they differ. This is nullable
+     * because if the translation failed, we won't have a result target
+     * language.
+     */
+    resultTargetLanguage: string | null
+    /**
+     * The length of the text being translated. We assume shorter texts are
+     * more likely to have inaccurate translations.
+     */
+    textLength: number
   }
   'translate:override': {
     os: Platform['OS']
-    sourceLanguage: string
-    targetLanguage: string
+    /**
+     * The languages the content might be in, such as the user-supplied
+     * language codes on posts. Currently only available on posts.
+     */
+    possibleSourceLanguages: string[] | undefined
+    /**
+     * The language the user has indicated the content is actually in, which
+     * may be different from the expected source language if the user is
+     * overriding the auto-detected language. This is the language the user
+     * wants to translate from after overriding.
+     */
+    expectedSourceLanguage: string
+    /**
+     * This is the user's configured primary language, which is always defined.
+     */
+    expectedTargetLanguage: string
+    /**
+     * The language the translation result was actually in, which the user now
+     * wishes to override.
+     */
+    resultSourceLanguage: string
   }
 
   'postMenu:openMuteWordsDialog': {

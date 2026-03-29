@@ -55,10 +55,15 @@ interface PostOpts {
   langs?: string[]
 }
 
+type FeatureFlags = {
+  highResolutionImages?: boolean
+}
+
 export async function post(
   agent: BskyAgent,
   queryClient: QueryClient,
   opts: PostOpts,
+  featureFlags?: FeatureFlags,
 ) {
   const thread = opts.thread
   opts.onStateChange?.(t`Processing...`)
@@ -95,6 +100,7 @@ export async function post(
       queryClient,
       draft,
       opts.onStateChange,
+      featureFlags,
     )
     let labels: $Typed<ComAtprotoLabelDefs.SelfLabels> | undefined
     if (draft.labels.length) {
@@ -256,6 +262,7 @@ async function resolveEmbed(
   queryClient: QueryClient,
   draft: PostDraft,
   onStateChange: ((state: string) => void) | undefined,
+  featureFlags?: FeatureFlags,
 ): Promise<
   | $Typed<AppBskyEmbedImages.Main>
   | $Typed<AppBskyEmbedVideo.Main>
@@ -266,7 +273,13 @@ async function resolveEmbed(
 > {
   if (draft.embed.quote) {
     const [resolvedMedia, resolvedQuote] = await Promise.all([
-      resolveMedia(agent, queryClient, draft.embed, onStateChange),
+      resolveMedia(
+        agent,
+        queryClient,
+        draft.embed,
+        onStateChange,
+        featureFlags,
+      ),
       resolveRecord(agent, queryClient, draft.embed.quote.uri),
     ])
     if (resolvedMedia) {
@@ -289,6 +302,7 @@ async function resolveEmbed(
     queryClient,
     draft.embed,
     onStateChange,
+    featureFlags,
   )
   if (resolvedMedia) {
     return resolvedMedia
@@ -314,6 +328,7 @@ async function resolveMedia(
   queryClient: QueryClient,
   embedDraft: EmbedDraft,
   onStateChange: ((state: string) => void) | undefined,
+  featureFlags?: FeatureFlags,
 ): Promise<
   | $Typed<AppBskyEmbedExternal.Main>
   | $Typed<AppBskyEmbedImages.Main>
@@ -340,7 +355,9 @@ async function resolveMedia(
           }
         }
         logger.debug(`Compressing image #${i}`)
-        const {path, width, height, mime} = await compressImage(image)
+        const {path, width, height, mime} = await compressImage(image, {
+          highResolution: featureFlags?.highResolutionImages,
+        })
         logger.debug(`Uploading image #${i}`)
         const res = await uploadBlob(agent, path, mime)
         return {

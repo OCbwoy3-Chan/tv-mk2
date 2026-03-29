@@ -204,18 +204,43 @@ export function resetImageManipulation(
   return img
 }
 
-export async function compressImage(img: ComposerImage): Promise<PickerImage> {
+export async function compressImage(
+  img: ComposerImage,
+  options?: {
+    highResolution?: boolean
+  },
+): Promise<PickerImage> {
   const source = img.transformed || img.source
-  const [w, h] = containImageRes(source.width, source.height, POST_IMG_MAX)
+  const highResolution = options?.highResolution ?? false
+  let attempts = 0
+  let maxDimension = highResolution ? 4000 : POST_IMG_MAX.width
 
   let minQualityPercentage = 0
   let maxQualityPercentage = 101 // exclusive
   let newDataUri
 
   while (maxQualityPercentage - minQualityPercentage > 1) {
+    if (attempts >= 4) break
+
+    const [w, h] = containImageRes(source.width, source.height, maxDimension)
     const qualityPercentage = Math.round(
       (maxQualityPercentage + minQualityPercentage) / 2,
     )
+
+    /*
+     * In the event the image doesn't compress well, we want to avoid
+     * unecessary iterations. In this case, binary search will check 51, 26,
+     * 13(rounded). We don't want to go below 25, so if we've halved to 13,
+     * reset the loop and reduce the image dimensions instead.
+     */
+    if (qualityPercentage <= 13) {
+      minQualityPercentage = 0
+      maxQualityPercentage = 101
+      attempts++
+      // 4000px → 3200px → 2560px → 2048px → ~1638px
+      maxDimension = Math.floor(maxDimension * 0.8)
+      continue
+    }
 
     const res = await manipulateAsync(
       source.path,
@@ -355,12 +380,12 @@ function joinPath(a: string, b: string) {
 function containImageRes(
   w: number,
   h: number,
-  {width: maxW, height: maxH}: {width: number; height: number},
+  max: number,
 ): [width: number, height: number] {
   let scale = 1
 
-  if (w > maxW || h > maxH) {
-    scale = w > h ? maxW / w : maxH / h
+  if (w > max || h > max) {
+    scale = w > h ? max / w : max / h
     w = Math.floor(w * scale)
     h = Math.floor(h * scale)
   }

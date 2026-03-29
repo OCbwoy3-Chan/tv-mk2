@@ -136,22 +136,22 @@ export function usePostAuthorShadowFilter(data?: FeedPage[]) {
     new Map<string, {muted: boolean; blocked: boolean}>(),
   )
 
-  const [prevData, setPrevData] = useState(data)
-  if (data !== prevData) {
-    const newAuthors = new Set(trackedDids)
-    let hasNew = false
-    for (const slice of data?.flatMap(page => page.slices) ?? []) {
-      for (const item of slice.items) {
-        const author = item.post.author
-        if (!newAuthors.has(author.did)) {
-          hasNew = true
-          newAuthors.add(author.did)
+  useEffect(() => {
+    setTrackedDids(prev => {
+      const currentDids = new Set(prev)
+      let hasNew = false
+      for (const slice of data?.flatMap(page => page.slices) ?? []) {
+        for (const item of slice.items) {
+          const author = item.post.author
+          if (!currentDids.has(author.did)) {
+            hasNew = true
+            currentDids.add(author.did)
+          }
         }
       }
-    }
-    if (hasNew) setTrackedDids([...newAuthors])
-    setPrevData(data)
-  }
+      return hasNew ? [...currentDids] : prev
+    })
+  }, [data])
 
   useEffect(() => {
     const unsubs: Array<() => void> = []

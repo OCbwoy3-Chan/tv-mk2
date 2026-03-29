@@ -1,6 +1,6 @@
 {
   "name": "witchsky-app",
-  "version": "1.119.0",
+  "version": "1.120.0",
   "private": true,
   "engines": {
     "node": ">=18"
@@ -52,7 +52,7 @@
     "lint-native": "swiftlint ./modules && ktlint ./modules",
     "lint-native:fix": "swiftlint --fix ./modules && ktlint --format ./modules",
     "typecheck": "tsc --project ./tsconfig.check.json",
-    "e2e:mock-server": "cd dev-env && yarn e2e:mock-server",
+    "e2e:mock-server": "cd dev-env && yarn start",
     "e2e:build": "EXPO_PUBLIC_ENV=e2e NODE_ENV=test RN_SRC_EXT=e2e.ts,e2e.tsx expo run:ios",
     "e2e:build-android": "EXPO_PUBLIC_ENV=e2e NODE_ENV=test RN_SRC_EXT=e2e.ts,e2e.tsx expo run:android",
     "e2e:start": "EXPO_PUBLIC_ENV=e2e NODE_ENV=test RN_SRC_EXT=e2e.ts,e2e.tsx expo start -c",
@@ -70,6 +70,7 @@
     "intl:pull": "crowdin download translations --verbose -b main",
     "intl:push": "crowdin push translations --verbose -b main",
     "intl:push-sources": "crowdin push sources --verbose -b main",
+    "intl:release": "yarn intl:pull && yarn intl:extract:all",
     "nuke": "rm -rf ./node_modules && rm -rf ./ios && rm -rf ./android",
     "update-extensions": "bash scripts/updateExtensions.sh",
     "export": "npx expo export --dump-sourcemap && yarn upload-native-sourcemaps",
@@ -85,7 +86,7 @@
     "@braintree/sanitize-url": "^6.0.2",
     "@bsky.app/alf": "^0.1.7",
     "@bsky.app/expo-image-crop-tool": "^0.5.0",
-    "@bsky.app/expo-translate-text": "^0.2.7",
+    "@bsky.app/expo-translate-text": "^0.2.9",
     "@bsky.app/react-native-mmkv": "2.12.5",
     "@discord/bottom-sheet": "bluesky-social/react-native-bottom-sheet",
     "@emoji-mart/data": "^1.2.1",
@@ -209,7 +210,7 @@
     "react-native-drawer-layout": "^4.2.2",
     "react-native-edge-to-edge": "^1.6.0",
     "react-native-gesture-handler": "~2.28.0",
-    "react-native-keyboard-controller": "^1.20.7",
+    "react-native-keyboard-controller": "^1.21.0",
     "react-native-pager-view": "6.8.0",
     "react-native-progress": "bluesky-social/react-native-progress",
     "react-native-qrcode-styled": "^0.3.3",
@@ -239,6 +240,7 @@
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/runtime": "^7.26.0",
+    "@crowdin/cli": "^4.14.1",
     "@eslint/js": "^9.39.2",
     "@expo/config-plugins": "~54.0.4",
     "@lingui/babel-plugin-lingui-macro": "^5.9.2",
@@ -287,8 +289,8 @@
     "react-refresh": "^0.14.0",
     "svgo": "^3.3.2",
     "ts-plugin-sort-import-suggestions": "^1.0.4",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.0",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.57.2",
     "webpack-bundle-analyzer": "^4.10.1"
   },
   "resolutions": {
@@ -325,7 +327,8 @@
     ],
     "modulePathIgnorePatterns": [
       "__tests__/.*/__mocks__",
-      "__e2e__/.*"
+      "__e2e__/.*",
+      "bskylink/.*"
     ],
     "coveragePathIgnorePatterns": [
       "<rootDir>/node_modules/",

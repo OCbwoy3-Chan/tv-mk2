@@ -1,7 +1,10 @@
 import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {LayoutAnimation, Platform} from 'react-native'
 import {getLocales} from 'expo-localization'
-import {onTranslateTask} from '@bsky.app/expo-translate-text'
+import {
+  isTranslationSupported,
+  onTranslateTask,
+} from '@bsky.app/expo-translate-text'
 import {type TranslationTaskResult} from '@bsky.app/expo-translate-text/build/ExpoTranslateText.types'
 import {useLingui} from '@lingui/react/macro'
 import {useFocusEffect} from '@react-navigation/native'
@@ -9,9 +12,14 @@ import {useFocusEffect} from '@react-navigation/native'
 import {useGoogleTranslate} from '#/lib/hooks/useGoogleTranslate'
 import {logger} from '#/logger'
 import {useAnalytics} from '#/analytics'
-import {HAS_ON_DEVICE_TRANSLATION, IS_ANDROID, IS_IOS} from '#/env'
+import {IS_ANDROID, IS_IOS} from '#/env'
 import {Context} from './context'
-import {type TranslationFunctionParams, type TranslationState} from './types'
+import {
+  type ContextType,
+  type TranslationFunctionParams,
+  type TranslationOptions,
+  type TranslationState,
+} from './types'
 import {guessLanguage} from './utils'
 
 export * from './types'
@@ -98,10 +106,7 @@ async function attemptTranslation(
 export function useTranslate({
   key,
   forceGoogleTranslate = false,
-}: {
-  key: string
-  forceGoogleTranslate?: boolean
-}) {
+}: TranslationOptions) {
   const context = useContext(Context)
   if (!context) {
     throw new Error(
@@ -118,7 +123,15 @@ export function useTranslate({
 
   const translate = useCallback(
     async (params: TranslationFunctionParams) => {
-      return context.translate({...params, key, forceGoogleTranslate})
+      return context.translate(
+        {
+          ...params,
+        },
+        {
+          key,
+          forceGoogleTranslate,
+        },
+      )
     },
     [context, forceGoogleTranslate, key],
   )
@@ -199,28 +212,35 @@ export function Provider({children}: React.PropsWithChildren<unknown>) {
     })
   }, [])
 
-  const translate = useCallback(
-    async ({
-      key,
-      text,
-      targetLangCode,
-      sourceLangCode,
-      ...options
-    }: {
-      key: string
-      text: string
-      targetLangCode: string
-      sourceLangCode?: string
-      forceGoogleTranslate?: boolean
-    }) => {
-      if (options?.forceGoogleTranslate || !HAS_ON_DEVICE_TRANSLATION) {
-        ax.metric('translate:result', {
-          method: 'google-translate',
-          os: Platform.OS,
-          sourceLanguage: sourceLangCode ?? null,
-          targetLanguage: targetLangCode,
-        })
-        await googleTranslate(text, targetLangCode, sourceLangCode)
+  const translate = useCallback<ContextType['translate']>(
+    async (
+      {
+        text,
+        expectedTargetLanguage,
+        expectedSourceLanguage,
+        possibleSourceLanguages,
+        forceGoogleTranslate: forceGoogleTranslateOverride,
+      },
+      {key, forceGoogleTranslate},
+    ) => {
+      const shouldForceGoogleTranslate = Boolean(
+        forceGoogleTranslateOverride ?? forceGoogleTranslate,
+      )
+
+      ax.metric('translate', {
+        os: Platform.OS,
+        possibleSourceLanguages,
+        expectedTargetLanguage: expectedTargetLanguage,
+        textLength: text.length,
+        googleTranslate: shouldForceGoogleTranslate,
+      })
+
+      if (shouldForceGoogleTranslate || !isTranslationSupported()) {
+        await googleTranslate(
+          text,
+          expectedTargetLanguage,
+          expectedSourceLanguage,
+        )
         return
       }
 
@@ -234,14 +254,18 @@ export function Provider({children}: React.PropsWithChildren<unknown>) {
       try {
         const result = await attemptTranslation(
           text,
-          targetLangCode,
-          sourceLangCode,
+          expectedTargetLanguage,
+          expectedSourceLanguage,
         )
         ax.metric('translate:result', {
-          method: 'on-device',
+          success: true,
           os: Platform.OS,
-          sourceLanguage: result.sourceLanguage,
-          targetLanguage: result.targetLanguage,
+          possibleSourceLanguages,
+          expectedSourceLanguage: expectedSourceLanguage ?? null,
+          expectedTargetLanguage,
+          resultSourceLanguage: result.sourceLanguage,
+          resultTargetLanguage: result.targetLanguage,
+          textLength: text.length,
         })
         if (!IS_ANDROID) {
           LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
@@ -253,17 +277,22 @@ export function Provider({children}: React.PropsWithChildren<unknown>) {
             translatedText: result.translatedText,
             sourceLanguage: result.sourceLanguage,
             targetLanguage: result.targetLanguage,
+            postLanguages: possibleSourceLanguages,
           },
         }))
       } catch (e) {
-        logger.error('Failed to translate post on device', {safeMessage: e})
+        logger.error('Failed to translate text on device', {safeMessage: e})
         // On-device translation failed (language pack missing or user
-        // dismissed the download prompt). Fall back to Google Translate.
+        // dismissed the download prompt).
         ax.metric('translate:result', {
-          method: 'fallback-alert',
+          success: false,
           os: Platform.OS,
-          sourceLanguage: sourceLangCode ?? null,
-          targetLanguage: targetLangCode,
+          possibleSourceLanguages,
+          expectedSourceLanguage: expectedSourceLanguage ?? null,
+          expectedTargetLanguage,
+          resultSourceLanguage: null,
+          resultTargetLanguage: null,
+          textLength: text.length,
         })
         let errorMessage = l`Device failed to translate :(`
         if (!IS_ANDROID) {

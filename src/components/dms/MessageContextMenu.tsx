@@ -1,5 +1,5 @@
 import {memo, useCallback} from 'react'
-import {LayoutAnimation} from 'react-native'
+import {LayoutAnimation, Platform} from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import {type ChatBskyConvoDefs, RichText} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
@@ -67,9 +67,11 @@ export let MessageContextMenu = ({
     void translate(message.text, langPrefs.primaryLanguage)
 
     ax.metric('translate', {
-      sourceLanguages: [],
-      targetLanguage: langPrefs.primaryLanguage,
+      os: Platform.OS,
+      possibleSourceLanguages: [], // N/A for chats
+      expectedTargetLanguage: langPrefs.primaryLanguage,
       textLength: message.text.length,
+      googleTranslate: true,
     })
   }, [ax, langPrefs.primaryLanguage, message.text, translate])
 
