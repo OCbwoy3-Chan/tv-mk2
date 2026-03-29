@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {type GestureResponderEvent, View} from 'react-native'
 import {
   AppBskyEmbedRecord,
@@ -43,9 +43,8 @@ import {useMenuControl} from '#/components/Menu'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
 import {PdsBadge} from '#/components/PdsBadge'
 import {createPortalGroup} from '#/components/Portal'
+import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
-import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE} from '#/env'
 import type * as bsky from '#/types/bsky'
@@ -83,7 +82,7 @@ export let ChatListItem = ({
   )
 }
 
-ChatListItem = React.memo(ChatListItem)
+ChatListItem = memo(ChatListItem)
 
 function ChatListItemReady({
   convo,
@@ -110,16 +109,13 @@ function ChatListItemReady({
 
   const enableSquareButtons = useEnableSquareButtons()
 
-  const moderation = React.useMemo(
+  const moderation = useMemo(
     () => moderateProfile(profile, moderationOpts),
     [profile, moderationOpts],
   )
   const playHaptic = useHaptics()
   const queryClient = useQueryClient()
   const isUnread = convo.unreadCount > 0
-  const verification = useSimpleVerificationState({
-    profile,
-  })
 
   const blockInfo = useMemo(() => {
     const modui = moderation.ui('profileView')
@@ -422,14 +418,11 @@ function ChatListItemReady({
                     <View style={[a.pl_xs, a.self_center]}>
                       <PdsBadge did={profile.did} size="sm" />
                     </View>
-                    {verification.showBadge && (
-                      <View style={[a.pl_xs, a.self_center]}>
-                        <VerificationCheck
-                          width={14}
-                          verifier={verification.role === 'verifier'}
-                        />
-                      </View>
-                    )}
+                    <ProfileBadges
+                      profile={profile}
+                      size="md"
+                      style={[a.pl_xs, a.self_center]}
+                    />
                     {lastMessageSentAt && (
                       <View style={[a.pl_xs]}>
                         <TimeElapsed timestamp={lastMessageSentAt}>

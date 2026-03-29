@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback} from 'react'
 import {Pressable, View} from 'react-native'
 import Animated, {
   runOnJS,
@@ -36,17 +36,17 @@ export function NewMessagesPill({
 
   const enableSquareButtons = useEnableSquareButtons()
 
-  const onPressIn = React.useCallback(() => {
+  const onPressIn = useCallback(() => {
     if (IS_WEB) return
     scale.set(() => withTiming(1.075, {duration: 100}))
   }, [scale])
 
-  const onPressOut = React.useCallback(() => {
+  const onPressOut = useCallback(() => {
     if (IS_WEB) return
     scale.set(() => withTiming(1, {duration: 100}))
   }, [scale])
 
-  const onPress = React.useCallback(() => {
+  const onPress = useCallback(() => {
     runOnJS(playHaptic)()
     onPressInner?.()
   }, [onPressInner, playHaptic])

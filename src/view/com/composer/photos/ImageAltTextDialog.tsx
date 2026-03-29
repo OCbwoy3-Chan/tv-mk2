@@ -13,7 +13,6 @@ import {Plural, Trans} from '@lingui/react/macro'
 
 import {generateAltText} from '#/lib/ai/generateAltText'
 import {DEFAULT_ALT_TEXT_AI_MODEL, MAX_ALT_TEXT} from '#/lib/constants'
-import {useIsKeyboardVisible} from '#/lib/hooks/useIsKeyboardVisible'
 import {enforceLen} from '#/lib/strings/helpers'
 import {type ComposerImage} from '#/state/gallery'
 import {
@@ -30,7 +29,7 @@ import * as TextField from '#/components/forms/TextField'
 import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfo} from '#/components/icons/CircleInfo'
 import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
 import {Text} from '#/components/Typography'
-import {IS_ANDROID, IS_LIQUID_GLASS, IS_WEB} from '#/env'
+import {IS_LIQUID_GLASS, IS_WEB} from '#/env'
 
 type Props = {
   control: Dialog.DialogOuterProps['control']
@@ -45,7 +44,6 @@ export const ImageAltTextDialog = ({
   onChange,
   sourceViewTag,
 }: Props): React.ReactNode => {
-  const {height: minHeight} = useWindowDimensions()
   const [altText, setAltText] = useState(image.alt)
 
   useEffect(() => {
@@ -61,7 +59,7 @@ export const ImageAltTextDialog = ({
           alt: enforceLen(altText, MAX_ALT_TEXT, true),
         })
       }}
-      nativeOptions={{minHeight, sourceViewTag}}>
+      nativeOptions={{fullHeight: true, sourceViewTag}}>
       <Dialog.Handle />
       <ImageAltTextInner
         control={control}
@@ -94,8 +92,6 @@ const ImageAltTextInner = ({
   const openRouterConfigured = useOpenRouterConfigured()
   const openRouterApiKey = useOpenRouterApiKey()
   const openRouterModel = useOpenRouterModel()
-
-  const [isKeyboardVisible] = useIsKeyboardVisible()
 
   const imageStyle = useMemo<ImageStyle>(() => {
     const maxWidth = IS_WEB
@@ -282,8 +278,6 @@ const ImageAltTextInner = ({
           </Button>
         </AltTextCounterWrapper>
       </View>
-      {/* Maybe fix this later -h */}
-      {IS_ANDROID && isKeyboardVisible ? <View style={{height: 300}} /> : null}
     </Dialog.ScrollableInner>
   )
 }

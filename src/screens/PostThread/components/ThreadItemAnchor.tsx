@@ -53,12 +53,12 @@ import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls, PostControlsSkeleton} from '#/components/PostControls'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
+import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import * as Skele from '#/components/Skeleton'
 import {Text} from '#/components/Typography'
-import {VerificationCheckButton} from '#/components/verification/VerificationCheckButton'
 import {WhoCanReply} from '#/components/WhoCanReply'
 import {useAnalytics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
@@ -376,7 +376,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   <View
                     style={[a.pl_xs, a.flex_row, a.gap_2xs, a.align_center]}>
                     <PdsBadge did={post.author.did} size="md" />
-                    <VerificationCheckButton profile={authorShadow} size="md" />
+                    <ProfileBadges
+                      profile={authorShadow}
+                      size="md"
+                      interactive
+                    />
                   </View>
                 </View>
                 <Text
@@ -421,7 +425,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                 shouldProxyLinks={true}
               />
             ) : undefined}
-            <TranslatedPost post={post} postText={record.text} />
+            <TranslatedPost
+              post={post}
+              postText={record.text}
+              postTextStyle={[a.text_lg]}
+            />
             {post.embed && (
               <View style={[a.py_xs]}>
                 <Embed

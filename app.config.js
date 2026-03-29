@@ -297,7 +297,7 @@ module.exports = function (_config) {
               ],
             },
             android: {
-              compileSdkVersion: 35,
+              compileSdkVersion: 36,
               targetSdkVersion: 35,
               buildToolsVersion: '35.0.0',
               buildReactNativeFromSource: IS_PRODUCTION,

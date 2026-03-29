@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Pressable, useWindowDimensions, View} from 'react-native'
+import {Pressable, View} from 'react-native'
 import {type AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -15,7 +15,6 @@ import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useProfileUpdateMutation} from '#/state/queries/profile'
 import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
-import * as Toast from '#/view/com/util/Toast'
 import {EditableUserAvatar} from '#/view/com/util/UserAvatar'
 import {UserBanner} from '#/view/com/util/UserBanner'
 import {atoms as a, useTheme} from '#/alf'
@@ -29,6 +28,7 @@ import {Globe_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
 import {InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import * as Prompt from '#/components/Prompt'
+import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationState} from '#/components/verification'
 
@@ -49,7 +49,6 @@ export function EditProfileDialog({
   const {_} = useLingui()
   const cancelControl = Dialog.useDialogControl()
   const [dirty, setDirty] = useState(false)
-  const {height} = useWindowDimensions()
 
   const onPressCancel = useCallback(() => {
     if (dirty) {
@@ -64,7 +63,7 @@ export function EditProfileDialog({
       control={control}
       nativeOptions={{
         preventDismiss: dirty,
-        minHeight: height,
+        fullHeight: true,
       }}
       webOptions={{
         onBackgroundPress: () => {

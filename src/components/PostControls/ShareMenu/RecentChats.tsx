@@ -18,9 +18,8 @@ import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {useDialogContext} from '#/components/Dialog'
+import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
-import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {useAnalytics} from '#/analytics'
 import type * as bsky from '#/types/bsky'
 
@@ -112,7 +111,6 @@ function RecentChatItem({
     profile.displayName || sanitizeHandle(profile.handle),
     moderation.ui('displayName'),
   )
-  const verification = useSimpleVerificationState({profile})
 
   if (isBlockedOrBlocking(profile) || isMuted(profile)) {
     return null
@@ -142,14 +140,7 @@ function RecentChatItem({
           numberOfLines={1}>
           {name}
         </Text>
-        {verification.showBadge && (
-          <View style={[a.pl_2xs]}>
-            <VerificationCheck
-              width={10}
-              verifier={verification.role === 'verifier'}
-            />
-          </View>
-        )}
+        <ProfileBadges profile={profile} size="xs" style={[a.pl_2xs]} />
       </View>
     </Button>
   )

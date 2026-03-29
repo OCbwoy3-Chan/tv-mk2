@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {memo, useCallback} from 'react'
 import {Keyboard, View} from 'react-native'
 import {type ChatBskyConvoDefs, type ModerationCause} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
@@ -19,7 +19,6 @@ import {
   unstableCacheProfileView,
   useProfileBlockMutationQueue,
 } from '#/state/queries/profile'
-import * as Toast from '#/view/com/util/Toast'
 import {type ViewStyleProp} from '#/alf'
 import {atoms as a} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
@@ -41,6 +40,7 @@ import {SpeakerVolumeFull_Stroke2_Corner0_Rounded as Unmute} from '#/components/
 import * as Menu from '#/components/Menu'
 import {ReportDialog} from '#/components/moderation/ReportDialog'
 import * as Prompt from '#/components/Prompt'
+import * as Toast from '#/components/Toast'
 import type * as bsky from '#/types/bsky'
 
 let ConvoMenu = ({
@@ -162,7 +162,7 @@ let ConvoMenu = ({
     </>
   )
 }
-ConvoMenu = React.memo(ConvoMenu)
+ConvoMenu = memo(ConvoMenu)
 
 function MenuContent({
   convo: initialConvo,
@@ -208,13 +208,15 @@ function MenuContent({
       }
     },
     onError: () => {
-      Toast.show(_(msg`Could not mute chat`), 'xmark')
+      Toast.show(_(msg`Could not mute chat`), {
+        type: 'error',
+      })
     },
   })
 
   const [queueBlock, queueUnblock] = useProfileBlockMutationQueue(profile)
 
-  const toggleBlock = React.useCallback(() => {
+  const toggleBlock = useCallback(() => {
     if (listBlocks.length) {
       blockedByListControl.open()
       return

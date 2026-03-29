@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback} from 'react'
 import {View} from 'react-native'
 import {type AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
@@ -11,11 +11,11 @@ import {type NavigationProp} from '#/lib/routes/types'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useGetConvoAvailabilityQuery} from '#/state/queries/messages/get-convo-availability'
 import {useGetConvoForMembers} from '#/state/queries/messages/get-convo-for-members'
-import * as Toast from '#/view/com/util/Toast'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
 import {canBeMessaged} from '#/components/dms/util'
 import {Message_Stroke2_Corner0_Rounded as Message} from '#/components/icons/Message'
+import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
 
 export function MessageProfileButton({
@@ -42,7 +42,7 @@ export function MessageProfileButton({
     },
   })
 
-  const onPress = React.useCallback(() => {
+  const onPress = useCallback(() => {
     if (!convoAvailability?.canChat) {
       return
     }

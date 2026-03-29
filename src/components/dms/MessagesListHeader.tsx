@@ -21,9 +21,8 @@ import * as Layout from '#/components/Layout'
 import {Link} from '#/components/Link'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
 import {PdsBadge} from '#/components/PdsBadge'
+import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
-import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {IS_WEB} from '#/env'
 
 const PFP_SIZE = IS_WEB ? 40 : Layout.HEADER_SLOT_SIZE
@@ -113,9 +112,6 @@ function HeaderReady({
   const {_} = useLingui()
   const t = useTheme()
   const convoState = useConvo()
-  const verification = useSimpleVerificationState({
-    profile,
-  })
 
   const isDeletedAccount = profile?.handle === 'missing.invalid'
   const displayName = isDeletedAccount
@@ -165,14 +161,7 @@ function HeaderReady({
               <View style={[a.pl_xs]}>
                 <PdsBadge did={profile.did} size="sm" />
               </View>
-              {verification.showBadge && (
-                <View style={[a.pl_xs]}>
-                  <VerificationCheck
-                    width={14}
-                    verifier={verification.role === 'verifier'}
-                  />
-                </View>
-              )}
+              <ProfileBadges profile={profile} size="md" style={[a.pl_xs]} />
             </View>
             {!isDeletedAccount && (
               <Text

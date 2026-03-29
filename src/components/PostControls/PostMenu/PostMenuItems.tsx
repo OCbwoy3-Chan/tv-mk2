@@ -67,7 +67,6 @@ import {
 } from '#/state/queries/threadgate'
 import {useRequireAuth, useSession} from '#/state/session'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
-import * as Toast from '#/view/com/util/Toast'
 import {useDialogControl} from '#/components/Dialog'
 import {useGlobalDialogsControlContext} from '#/components/dialogs/Context'
 import {
@@ -106,6 +105,7 @@ import {
   useReportDialogControl,
 } from '#/components/moderation/ReportDialog'
 import * as Prompt from '#/components/Prompt'
+import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
 import {IS_INTERNAL, IS_WEB} from '#/env'
 import * as bsky from '#/types/bsky'
@@ -230,7 +230,9 @@ let PostMenuItems = ({
       },
       e => {
         logger.error('Failed to delete post', {message: e})
-        Toast.show(l`Failed to delete post, please try again`, 'xmark')
+        Toast.show(l`Failed to delete post, please try again`, {
+          type: 'error',
+        })
       },
     )
   }
@@ -409,16 +411,30 @@ let PostMenuItems = ({
       const e = err as Error
       if (e?.name !== 'AbortError') {
         logger.error('Failed to toggle thread mute', {message: e})
-        Toast.show(l`Failed to toggle thread mute, please try again`, 'xmark')
+        Toast.show(l`Failed to toggle thread mute, please try again`, {
+          type: 'error',
+        })
       }
     }
+  }
+
+  const onToggleWordsAndTagsMute = () => {
+    ax.metric('postMenu:openMuteWordsDialog', {
+      uri: postUri,
+      authorDid: postAuthor.did,
+      logContext,
+      feedDescriptor: feedFeedback.feedDescriptor,
+    })
+    mutedWordsDialogControl.open()
   }
 
   const onCopyPostText = () => {
     const str = richTextToString(richText, true)
 
     void Clipboard.setStringAsync(str)
-    Toast.show(l`Copied to clipboard`, 'clipboard-check')
+    Toast.show(l`Copied to clipboard`, {
+      type: 'success',
+    })
   }
 
   const onPressTranslate = () => {
@@ -657,8 +673,17 @@ let PostMenuItems = ({
       const e = err as Error
       if (e?.name !== 'AbortError') {
         logger.error('Failed to block account', {message: e})
-        Toast.show(l`There was an issue! ${e.toString()}`, 'xmark')
+        Toast.show(l`There was an issue! ${e.toString()}`, {
+          type: 'error',
+        })
       }
+    } finally {
+      ax.metric('postMenu:blockAccount', {
+        uri: postUri,
+        authorDid: postAuthor.did,
+        logContext,
+        feedDescriptor: feedFeedback.feedDescriptor,
+      })
     }
   }
 
@@ -671,8 +696,17 @@ let PostMenuItems = ({
         const e = err as Error
         if (e?.name !== 'AbortError') {
           logger.error('Failed to unmute account', {message: e})
-          Toast.show(l`There was an issue! ${e.toString()}`, 'xmark')
+          Toast.show(l`There was an issue! ${e.toString()}`, {
+            type: 'error',
+          })
         }
+      } finally {
+        ax.metric('postMenu:unmuteAccount', {
+          uri: postUri,
+          authorDid: postAuthor.did,
+          logContext,
+          feedDescriptor: feedFeedback.feedDescriptor,
+        })
       }
     } else {
       try {
@@ -682,8 +716,17 @@ let PostMenuItems = ({
         const e = err as Error
         if (e?.name !== 'AbortError') {
           logger.error('Failed to mute account', {message: e})
-          Toast.show(l`There was an issue! ${e.toString()}`, 'xmark')
+          Toast.show(l`There was an issue! ${e.toString()}`, {
+            type: 'error',
+          })
         }
+      } finally {
+        ax.metric('postMenu:muteAccount', {
+          uri: postUri,
+          authorDid: postAuthor.did,
+          logContext,
+          feedDescriptor: feedFeedback.feedDescriptor,
+        })
       }
     }
   }
@@ -879,7 +922,7 @@ let PostMenuItems = ({
               <Menu.Item
                 testID="postDropdownMuteWordsBtn"
                 label={l`Mute words & tags`}
-                onPress={() => mutedWordsDialogControl.open()}>
+                onPress={onToggleWordsAndTagsMute}>
                 <Menu.ItemText>{l`Mute words & tags`}</Menu.ItemText>
                 <Menu.ItemIcon icon={Filter} position="right" />
               </Menu.Item>
@@ -1062,6 +1105,14 @@ let PostMenuItems = ({
         subject={{
           ...post,
           $type: 'app.bsky.feed.defs#postView',
+        }}
+        onAfterSubmit={() => {
+          ax.metric('postMenu:reportPost', {
+            uri: postUri,
+            authorDid: postAuthor.did,
+            logContext,
+            feedDescriptor: feedFeedback.feedDescriptor,
+          })
         }}
       />
       <PostInteractionSettingsDialog

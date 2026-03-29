@@ -82,7 +82,7 @@ export function DraftsButton({
         ]}
         disabled={isSaving}
         onPress={handlePress}>
-        <ButtonText style={[a.text_md]}>
+        <ButtonText style={[a.text_md]} maxFontSizeMultiplier={2}>
           <Trans>Drafts</Trans>
         </ButtonText>
       </Button>

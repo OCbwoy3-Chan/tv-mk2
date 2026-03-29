@@ -17,10 +17,9 @@ import {unstableCacheProfileView} from '#/state/queries/profile'
 import {atoms as a, platform, useTheme, web} from '#/alf'
 import {WebOnlyInlineLinkText} from '#/components/Link'
 import {PdsBadge} from '#/components/PdsBadge'
+import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
-import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {IS_ANDROID} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import {TimeElapsed} from './TimeElapsed'
@@ -60,7 +59,6 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
   }, [queryClient, author])
 
   const timestampLabel = niceDate(i18n, opts.timestamp)
-  const verification = useSimpleVerificationState({profile: author})
   const {isActive: live} = useActorStatus(author)
 
   const MaybeLinkText = opts.linkDisabled ? Text : WebOnlyInlineLinkText
@@ -114,6 +112,11 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 ),
               )}
             </MaybeLinkText>
+            <ProfileBadges
+              profile={author}
+              size="sm"
+              style={[a.pl_2xs, a.self_center]}
+            />
             <View
               style={[
                 a.pl_2xs,
@@ -124,21 +127,6 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
               ]}>
               <PdsBadge did={author.did} size="sm" interactive={false} />
             </View>
-            {verification.showBadge && (
-              <View
-                style={[
-                  a.pl_2xs,
-                  a.self_center,
-                  {
-                    marginTop: platform({web: 1, ios: 0, android: -1}),
-                  },
-                ]}>
-                <VerificationCheck
-                  width={platform({android: 13, default: 12})}
-                  verifier={verification.role === 'verifier'}
-                />
-              </View>
-            )}
             <MaybeLinkText
               emoji
               numberOfLines={1}

@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback} from 'react'
 import {Keyboard, View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -30,7 +30,7 @@ export function HostingProvider({
   const serviceProviderLabel =
     serviceUrl === undefined ? _(msg`Automatic`) : toNiceDomain(serviceUrl)
 
-  const onPressSelectService = React.useCallback(() => {
+  const onPressSelectService = useCallback(() => {
     Keyboard.dismiss()
     serverInputControl.open()
     onOpenDialog?.()

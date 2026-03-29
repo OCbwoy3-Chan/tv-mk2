@@ -1,4 +1,4 @@
-import React from 'react'
+import {createContext, useContext, useMemo, useState} from 'react'
 import {
   type AppBskyActorDefs,
   type AppBskyFeedDefs,
@@ -19,7 +19,7 @@ import {
   RQKEY_LINK_ROOT,
 } from '#/state/queries/resolve-link'
 import {type EmojiPickerPosition} from '#/view/com/composer/text-input/web/EmojiPicker'
-import * as Toast from '#/view/com/util/Toast'
+import * as Toast from '#/components/Toast'
 
 export interface ComposerOptsPostRef {
   uri: string
@@ -81,9 +81,9 @@ type ControlsContext = {
   closeComposer: () => boolean
 }
 
-const stateContext = React.createContext<StateContext>(undefined)
+const stateContext = createContext<StateContext>(undefined)
 stateContext.displayName = 'ComposerStateContext'
-const controlsContext = React.createContext<ControlsContext>({
+const controlsContext = createContext<ControlsContext>({
   openComposer(_opts: ComposerOpts) {},
   closeComposer() {
     return false
@@ -93,7 +93,7 @@ controlsContext.displayName = 'ComposerControlsContext'
 
 export function Provider({children}: React.PropsWithChildren<{}>) {
   const {_} = useLingui()
-  const [state, setState] = React.useState<StateContext>()
+  const [state, setState] = useState<StateContext>()
   const queryClient = useQueryClient()
 
   const openComposer = useNonReactiveCallback((opts: ComposerOpts) => {
@@ -120,10 +120,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
           author.viewer?.blockingByList),
     )
     if (isBlocked) {
-      Toast.show(
-        _(msg`Cannot interact with a blocked user`),
-        'exclamation-circle',
-      )
+      Toast.show(_(msg`Cannot interact with a blocked user`), {
+        type: 'warning',
+      })
     } else {
       setState(prevOpts => {
         if (prevOpts) {
@@ -151,7 +150,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     return wasOpen
   })
 
-  const api = React.useMemo(
+  const api = useMemo(
     () => ({
       openComposer,
       closeComposer,
@@ -169,12 +168,12 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useComposerState() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useComposerControls() {
-  const {closeComposer} = React.useContext(controlsContext)
-  return React.useMemo(() => ({closeComposer}), [closeComposer])
+  const {closeComposer} = useContext(controlsContext)
+  return useMemo(() => ({closeComposer}), [closeComposer])
 }
 
 /**
@@ -184,6 +183,6 @@ export function useComposerControls() {
  * @deprecated use `#/lib/hooks/useOpenComposer` instead
  */
 export function useOpenComposer() {
-  const {openComposer} = React.useContext(controlsContext)
-  return React.useMemo(() => ({openComposer}), [openComposer])
+  const {openComposer} = useContext(controlsContext)
+  return useMemo(() => ({openComposer}), [openComposer])
 }

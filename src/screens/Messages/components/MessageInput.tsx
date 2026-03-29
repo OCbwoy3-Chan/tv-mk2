@@ -25,10 +25,10 @@ import {
 } from '#/state/messages/message-drafts'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {type EmojiPickerPosition} from '#/view/com/composer/text-input/web/EmojiPicker'
-import * as Toast from '#/view/com/util/Toast'
 import {android, atoms as a, useTheme, utils} from '#/alf'
 import {useSharedInputStyles} from '#/components/forms/TextField'
 import {PaperPlane_Stroke2_Corner0_Rounded as PaperPlane} from '#/components/icons/PaperPlane'
+import * as Toast from '#/components/Toast'
 import {IS_IOS, IS_WEB} from '#/env'
 import {useExtractEmbedFromFacets} from './MessageInputEmbed'
 
@@ -79,7 +79,9 @@ export function MessageInput({
       return
     }
     if (countGraphemes(message) > MAX_DM_GRAPHEME_LENGTH) {
-      Toast.show(_(msg`Message is too long`), 'xmark')
+      Toast.show(_(msg`Message is too long`), {
+        type: 'error',
+      })
       return
     }
     clearDraft()

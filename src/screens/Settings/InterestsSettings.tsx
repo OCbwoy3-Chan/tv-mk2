@@ -23,13 +23,13 @@ import {createGetSuggestedFeedsQueryKey} from '#/state/queries/trending/useGetSu
 import {createGetSuggestedUsersQueryKey} from '#/state/queries/trending/useGetSuggestedUsersQuery'
 import {createSuggestedStarterPacksQueryKey} from '#/state/queries/useSuggestedStarterPacksQuery'
 import {useAgent} from '#/state/session'
-import * as Toast from '#/view/com/util/Toast'
 import {atoms as a, useGutters, useTheme} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Divider} from '#/components/Divider'
 import * as Toggle from '#/components/forms/Toggle'
 import * as Layout from '#/components/Layout'
 import {Loader} from '#/components/Loader'
+import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'InterestsSettings'>
@@ -140,7 +140,9 @@ function Inner({
               context: 'toast',
             }),
           ),
-          'xmark',
+          {
+            type: 'error',
+          },
         )
       } finally {
         setIsSaving(false)

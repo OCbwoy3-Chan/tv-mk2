@@ -197,7 +197,8 @@ export function TitleText({
         style,
       ]}
       numberOfLines={2}
-      emoji>
+      emoji
+      maxFontSizeMultiplier={2}>
       {children}
     </Text>
   )

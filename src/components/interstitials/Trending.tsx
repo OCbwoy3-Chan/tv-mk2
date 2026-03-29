@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback} from 'react'
 import {ScrollView, View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -39,7 +39,7 @@ export function Inner() {
 
   const enableSquareButtons = useEnableSquareButtons()
 
-  const onConfirmHide = React.useCallback(() => {
+  const onConfirmHide = useCallback(() => {
     ax.metric('trendingTopics:hide', {context: 'interstitial'})
     setTrendingDisabled(true)
   }, [ax, setTrendingDisabled])

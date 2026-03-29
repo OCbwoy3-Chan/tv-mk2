@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {type TextInput, View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -25,7 +25,6 @@ import * as TextField from '#/components/forms/TextField'
 import {Envelope_Stroke2_Corner0_Rounded as Envelope} from '#/components/icons/Envelope'
 import {Lock_Stroke2_Corner0_Rounded as Lock} from '#/components/icons/Lock'
 import {Ticket_Stroke2_Corner0_Rounded as Ticket} from '#/components/icons/Ticket'
-import {SimpleInlineLinkText as InlineLinkText} from '#/components/Link'
 import {createStaticClick, SimpleInlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {usePreemptivelyCompleteActivePolicyUpdate} from '#/components/PolicyUpdateOverlay/usePreemptivelyCompleteActivePolicyUpdate'
@@ -87,10 +86,10 @@ export function StepInfo({
   const isOverMinAdultAge = true
   const isDeviceGeolocationGranted = true
 
-  const [hasWarnedEmail, setHasWarnedEmail] = React.useState<boolean>(false)
+  const [hasWarnedEmail, setHasWarnedEmail] = useState<boolean>(false)
 
-  const tldtsRef = React.useRef<typeof tldts>(undefined)
-  React.useEffect(() => {
+  const tldtsRef = useRef<typeof tldts>(undefined)
+  useEffect(() => {
     // @ts-expect-error - valid path
     import('tldts/dist/index.cjs.min.js').then(tldts => {
       tldtsRef.current = tldts
@@ -189,11 +188,11 @@ export function StepInfo({
               <Trans>
                 Witchsky is part of the{' '}
                 {
-                  <InlineLinkText
+                  <SimpleInlineLinkText
                     label={_(msg`Atmosphere`)}
                     to="https://atproto.com/">
                     <Trans>Atmosphere</Trans>
-                  </InlineLinkText>
+                  </SimpleInlineLinkText>
                 }
                 —the network of apps, services, and accounts built on the AT
                 Protocol.
@@ -235,9 +234,9 @@ export function StepInfo({
               create a new account on a Bluesky-hosted PDS, sign up through{' '}
               {/* TODO: Xan: change to say sign up for a Witchsky account */}
               {
-                <InlineLinkText label={_(msg`bsky.app`)} to="https://bsky.app">
+                <SimpleInlineLinkText label={_(msg`bsky.app`)} to="https://bsky.app">
                   <Trans>bsky.app</Trans>
-                </InlineLinkText>
+                </SimpleInlineLinkText>
               }{' '}
               first, then return to Witchsky and log in with the account you
               created.

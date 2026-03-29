@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {Image} from 'expo-image'
 import {type AppBskyEmbedExternal} from '@atproto/api'
@@ -50,7 +50,7 @@ export const ExternalEmbed = ({
         highQualityImages,
       })
     : undefined
-  const embedPlayerParams = React.useMemo(() => {
+  const embedPlayerParams = useMemo(() => {
     const params = parseEmbedPlayerFromUrl(link.uri)
 
     if (params && externalEmbedPrefs?.[params.source] !== 'hide') {

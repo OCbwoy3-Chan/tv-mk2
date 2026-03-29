@@ -15,9 +15,8 @@ import {Button, ButtonIcon} from '#/components/Button'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
 import * as Layout from '#/components/Layout'
 import {Link} from '#/components/Link'
+import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
-import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {useAnalytics} from '#/analytics'
 import type * as bsky from '#/types/bsky'
 
@@ -142,7 +141,6 @@ function RecentProfileItem({
     profile.displayName || sanitizeHandle(profile.handle),
     moderation.ui('displayName'),
   )
-  const verification = useSimpleVerificationState({profile})
 
   const enableSquareButtons = useEnableSquareButtons()
 
@@ -170,14 +168,7 @@ function RecentProfileItem({
           <Text emoji style={[a.text_xs, a.leading_snug]} numberOfLines={1}>
             {name}
           </Text>
-          {verification.showBadge && (
-            <View style={[a.pl_2xs]}>
-              <VerificationCheck
-                width={10}
-                verifier={verification.role === 'verifier'}
-              />
-            </View>
-          )}
+          <ProfileBadges profile={profile} size="xs" style={[a.pl_xs]} />
         </View>
       </Link>
       <Button

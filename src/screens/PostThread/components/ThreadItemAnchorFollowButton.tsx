@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -13,11 +13,11 @@ import {
   useProfileQuery,
 } from '#/state/queries/profile'
 import {useRequireAuth} from '#/state/session'
-import * as Toast from '#/view/com/util/Toast'
 import {atoms as a, useBreakpoints} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
+import * as Toast from '#/components/Toast'
 import {IS_IOS} from '#/env'
 import {GrowthHack} from './GrowthHack'
 
@@ -72,12 +72,12 @@ function PostThreadFollowBtnLoaded({
 
   const isFollowing = !!profile.viewer?.following
   const isFollowedBy = !!profile.viewer?.followedBy
-  const [wasFollowing, setWasFollowing] = React.useState<boolean>(isFollowing)
+  const [wasFollowing, setWasFollowing] = useState<boolean>(isFollowing)
 
   const enableSquareButtons = useEnableSquareButtons()
 
   // This prevents the button from disappearing as soon as we follow.
-  const showFollowBtn = React.useMemo(
+  const showFollowBtn = useMemo(
     () => !isFollowing || !wasFollowing,
     [isFollowing, wasFollowing],
   )
@@ -93,7 +93,7 @@ function PostThreadFollowBtnLoaded({
    * sudden rendering of the button. However, on web if we do this, there's an obvious flicker once the
    * button renders. So, we update the state in both cases.
    */
-  React.useEffect(() => {
+  useEffect(() => {
     const updateWasFollowing = () => {
       if (wasFollowing !== isFollowing) {
         setWasFollowing(isFollowing)
@@ -109,7 +109,7 @@ function PostThreadFollowBtnLoaded({
     }
   }, [isFollowing, wasFollowing, navigation])
 
-  const onPress = React.useCallback(() => {
+  const onPress = useCallback(() => {
     if (!isFollowing) {
       requireAuth(async () => {
         try {
@@ -117,7 +117,9 @@ function PostThreadFollowBtnLoaded({
         } catch (e: any) {
           if (e?.name !== 'AbortError') {
             logger.error('Failed to follow', {message: String(e)})
-            Toast.show(_(msg`There was an issue! ${e.toString()}`), 'xmark')
+            Toast.show(_(msg`There was an issue! ${e.toString()}`), {
+              type: 'error',
+            })
           }
         }
       })
@@ -128,7 +130,9 @@ function PostThreadFollowBtnLoaded({
         } catch (e: any) {
           if (e?.name !== 'AbortError') {
             logger.error('Failed to unfollow', {message: String(e)})
-            Toast.show(_(msg`There was an issue! ${e.toString()}`), 'xmark')
+            Toast.show(_(msg`There was an issue! ${e.toString()}`), {
+              type: 'error',
+            })
           }
         }
       })
@@ -148,7 +152,7 @@ function PostThreadFollowBtnLoaded({
       {gtMobile && (
         <ButtonIcon icon={isFollowing ? CheckIcon : PlusIcon} size="sm" />
       )}
-      <ButtonText>
+      <ButtonText maxFontSizeMultiplier={2}>
         {!isFollowing ? (
           isFollowedBy ? (
             <Trans>Follow back</Trans>

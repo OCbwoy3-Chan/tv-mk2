@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback} from 'react'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Plural} from '@lingui/react/macro'
@@ -30,7 +30,7 @@ export const ProfileFollowersScreen = ({route}: Props) => {
   useSetTitle(profile ? _(msg`People following @${profile.handle}`) : undefined)
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       setMinimalShellMode(false)
     }, [setMinimalShellMode]),
   )

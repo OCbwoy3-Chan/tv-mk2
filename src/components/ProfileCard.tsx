@@ -23,7 +23,6 @@ import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
-import * as Toast from '#/view/com/util/Toast'
 import {PreviewableUserAvatar, UserAvatar} from '#/view/com/util/UserAvatar'
 import {
   atoms as a,
@@ -43,10 +42,10 @@ import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus
 import {Link as InternalLink, type LinkProps} from '#/components/Link'
 import {PdsBadge} from '#/components/PdsBadge'
 import * as Pills from '#/components/Pills'
+import {ProfileBadges} from '#/components/ProfileBadges'
 import {RichText} from '#/components/RichText'
+import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
-import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {type Metrics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
 import type * as bsky from '#/types/bsky'
@@ -244,7 +243,6 @@ function InlineNameAndHandle({
   moderationOpts: ModerationOpts
 }) {
   const t = useTheme()
-  const verification = useSimpleVerificationState({profile})
   const moderation = moderateProfile(profile, moderationOpts)
   const name = sanitizeDisplayName(
     profile.displayName || sanitizeHandle(profile.handle),
@@ -272,19 +270,15 @@ function InlineNameAndHandle({
         ]}>
         <PdsBadge did={profile.did} size="sm" />
       </View>
-      {verification.showBadge && (
-        <View
-          style={[
-            a.pl_2xs,
-            a.self_center,
-            {marginTop: platform({default: 0, android: -1})},
-          ]}>
-          <VerificationCheck
-            width={platform({android: 13, default: 12})}
-            verifier={verification.role === 'verifier'}
-          />
-        </View>
-      )}
+      <ProfileBadges
+        profile={profile}
+        size="md"
+        style={[
+          a.pl_2xs,
+          a.self_center,
+          {marginTop: platform({default: 0, android: -1})},
+        ]}
+      />
       <Text
         emoji
         style={[
@@ -315,7 +309,6 @@ export function Name({
     profile.displayName || sanitizeHandle(profile.handle),
     moderation.ui('displayName'),
   )
-  const verification = useSimpleVerificationState({profile})
   return (
     <View style={[a.flex_row, a.align_center, a.max_w_full, style]}>
       <Text
@@ -334,14 +327,7 @@ export function Name({
       <View style={[a.pl_xs]}>
         <PdsBadge did={profile.did} size="sm" />
       </View>
-      {verification.showBadge && (
-        <View style={[a.pl_xs]}>
-          <VerificationCheck
-            width={14}
-            verifier={verification.role === 'verifier'}
-          />
-        </View>
-      )}
+      <ProfileBadges profile={profile} size="md" style={[a.pl_xs]} />
     </View>
   )
 }
@@ -531,7 +517,9 @@ export function FollowButtonInner({
     } catch (e) {
       const err = e as Error
       if (err?.name !== 'AbortError') {
-        Toast.show(l`An issue occurred, please try again.`, 'xmark')
+        Toast.show(l`An issue occurred, please try again.`, {
+          type: 'error',
+        })
       }
     }
   }
@@ -551,7 +539,9 @@ export function FollowButtonInner({
     } catch (e) {
       const err = e as Error
       if (err?.name !== 'AbortError') {
-        Toast.show(l`An issue occurred, please try again.`, 'xmark')
+        Toast.show(l`An issue occurred, please try again.`, {
+          type: 'error',
+        })
       }
     }
   }

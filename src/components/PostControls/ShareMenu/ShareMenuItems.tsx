@@ -15,7 +15,6 @@ import {toShareUrl, toShareUrlBsky} from '#/lib/strings/url-helpers'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useShowExternalShareButtons} from '#/state/preferences/external-share-buttons'
 import {useSession} from '#/state/session'
-import * as Toast from '#/view/com/util/Toast'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {useDialogControl} from '#/components/Dialog'
@@ -26,6 +25,7 @@ import {Clipboard_Stroke2_Corner2_Rounded as ClipboardIcon} from '#/components/i
 import {PaperPlane_Stroke2_Corner0_Rounded as PaperPlaneIcon} from '#/components/icons/PaperPlane'
 import {SquareArrowTopRight_Stroke2_Corner0_Rounded as ExternalIcon} from '#/components/icons/SquareArrowTopRight'
 import * as Menu from '#/components/Menu'
+import * as Toast from '#/components/Toast'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {IS_IOS} from '#/env'
@@ -83,7 +83,9 @@ let ShareMenuItems = ({
     } else {
       await ExpoClipboard.setStringAsync(url)
     }
-    Toast.show(_(msg`Copied to clipboard`), 'clipboard-check')
+    Toast.show(_(msg`Copied to clipboard`), {
+      type: 'success',
+    })
     onShareProp()
   }
 

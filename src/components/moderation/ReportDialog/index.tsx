@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import {Pressable, type ScrollView, View} from 'react-native'
 import {type AppBskyLabelerDefs, BSKY_LABELER_DID} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
@@ -67,11 +74,11 @@ export function ReportDialog(
   },
 ) {
   const ax = useAnalytics()
-  const subject = React.useMemo(
+  const subject = useMemo(
     () => (props.subject ? parseReportSubject(props.subject) : undefined),
     [props.subject],
   )
-  const onClose = React.useCallback(() => {
+  const onClose = useCallback(() => {
     ax.metric('reportDialog:close', {})
   }, [ax])
   return (
@@ -109,7 +116,7 @@ function Inner(props: ReportDialogProps) {
   const logger = ax.logger.useChild(ax.logger.Context.ReportDialog)
   const t = useTheme()
   const {_} = useLingui()
-  const ref = React.useRef<ScrollView>(null)
+  const ref = useRef<ScrollView>(null)
   const {
     data: allLabelers,
     isLoading: isLabelerLoading,
@@ -119,7 +126,7 @@ function Inner(props: ReportDialogProps) {
   const isLoading = useDelayedLoading(500, isLabelerLoading)
   const copy = useCopyForSubject(props.subject)
   const {categories, getCategory} = useReportOptions()
-  const [state, dispatch] = React.useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer(reducer, initialState)
 
   const enableSquareButtons = useEnableSquareButtons()
 
@@ -127,8 +134,8 @@ function Inner(props: ReportDialogProps) {
    * Submission handling
    */
   const {mutateAsync: submitReport} = useSubmitReportMutation()
-  const [isPending, setPending] = React.useState(false)
-  const [isSuccess, setSuccess] = React.useState(false)
+  const [isPending, setPending] = useState(false)
+  const [isSuccess, setSuccess] = useState(false)
 
   // some reasons ONLY go to Bluesky
   const isBskyOnlyReason = state?.selectedOption?.reason
@@ -142,7 +149,7 @@ function Inner(props: ReportDialogProps) {
   /**
    * Labelers that support this `subject` and its NSID collection
    */
-  const supportedLabelers = React.useMemo(() => {
+  const supportedLabelers = useMemo(() => {
     if (!allLabelers) return []
     return allLabelers
       .filter(l => {
@@ -172,7 +179,8 @@ function Inner(props: ReportDialogProps) {
         if (supportedReasonTypes === undefined) return true
         return (
           // supports new reason type
-          supportedReasonTypes.includes(state.selectedOption.reason) || // supports old reason type (backwards compat)
+          // supports old reason type (backwards compat)
+          supportedReasonTypes.includes(state.selectedOption.reason) ||
           supportedReasonTypes.includes(
             NEW_TO_OLD_REASONS_MAP[state.selectedOption.reason],
           )
@@ -197,7 +205,7 @@ function Inner(props: ReportDialogProps) {
   const isAlwaysBskyLabeler =
     hasSingleSupportedLabeler && (isBskyOnlyReason || isBskyOnlySubject)
 
-  const onSubmit = React.useCallback(async () => {
+  const onSubmit = useCallback(async () => {
     dispatch({type: 'clearError'})
 
     logger.info('submitting')
@@ -590,7 +598,7 @@ function ActionOnce({
   check: () => boolean
   callback: () => void
 }) {
-  React.useEffect(() => {
+  useEffect(() => {
     if (check()) {
       callback()
     }
@@ -690,7 +698,7 @@ function CategoryCard({
   const t = useTheme()
   const {_} = useLingui()
   const gutters = useGutters(['compact'])
-  const onPress = React.useCallback(() => {
+  const onPress = useCallback(() => {
     onSelect?.(option)
   }, [onSelect, option])
   return (
@@ -735,7 +743,7 @@ function OptionCard({
   const t = useTheme()
   const {_} = useLingui()
   const gutters = useGutters(['compact'])
-  const onPress = React.useCallback(() => {
+  const onPress = useCallback(() => {
     onSelect?.(option)
   }, [onSelect, option])
   return (
@@ -797,7 +805,7 @@ function LabelerCard({
 }) {
   const t = useTheme()
   const {_} = useLingui()
-  const onPress = React.useCallback(() => {
+  const onPress = useCallback(() => {
     onSelect?.(labeler)
   }, [onSelect, labeler])
   const title = getLabelingServiceTitle({

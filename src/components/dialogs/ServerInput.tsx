@@ -1,5 +1,5 @@
 import {useCallback, useImperativeHandle, useRef, useState} from 'react'
-import {useWindowDimensions, View} from 'react-native'
+import {View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -25,7 +25,6 @@ export function ServerInputDialog({
   onSelect: (url: string) => void
 }) {
   const ax = useAnalytics()
-  const {height} = useWindowDimensions()
   const formRef = useRef<DialogInnerRef>(null)
 
   // persist these options between dialog open/close
@@ -48,10 +47,7 @@ export function ServerInputDialog({
     <Dialog.Outer
       control={control}
       onClose={onClose}
-      nativeOptions={platform({
-        android: {minHeight: height / 2},
-        ios: {preventExpansion: true},
-      })}>
+      nativeOptions={{preventExpansion: true}}>
       <Dialog.Handle />
       <DialogInner
         formRef={formRef}

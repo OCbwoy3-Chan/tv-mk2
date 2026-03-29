@@ -1,10 +1,5 @@
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {
-  TextInput,
-  useWindowDimensions,
-  View,
-  type ViewToken,
-} from 'react-native'
+import {TextInput, View, type ViewToken} from 'react-native'
 import {type ModerationOpts} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -73,7 +68,6 @@ export function FollowDialog({
   const {_} = useLingui()
   const control = Dialog.useDialogControl()
   const {gtPhone} = useBreakpoints()
-  const {height: minHeight} = useWindowDimensions()
 
   return (
     <>
@@ -90,7 +84,7 @@ export function FollowDialog({
         </ButtonText>
         {showArrow && <ButtonIcon icon={ArrowRightIcon} />}
       </Button>
-      <Dialog.Outer control={control} nativeOptions={{minHeight}}>
+      <Dialog.Outer control={control} nativeOptions={{fullHeight: true}}>
         <Dialog.Handle />
         <DialogInner guide={guide} />
       </Dialog.Outer>
@@ -106,9 +100,8 @@ export function FollowDialogWithoutGuide({
 }: {
   control: Dialog.DialogOuterProps['control']
 }) {
-  const {height: minHeight} = useWindowDimensions()
   return (
-    <Dialog.Outer control={control} nativeOptions={{minHeight}}>
+    <Dialog.Outer control={control} nativeOptions={{fullHeight: true}}>
       <Dialog.Handle />
       <DialogInner />
     </Dialog.Outer>

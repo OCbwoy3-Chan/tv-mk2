@@ -18,9 +18,8 @@ import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme, web} from '#/alf'
 import {PdsBadge} from '#/components/PdsBadge'
 import {QuoteEmbed} from '#/components/Post/Embed'
+import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
-import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {parseEmbed} from '#/types/bsky/post'
 
 export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
@@ -72,8 +71,6 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
     }
   }, [embed])
 
-  const verification = useSimpleVerificationState({profile: replyTo.author})
-
   return (
     <Pressable
       style={[
@@ -102,33 +99,19 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
       />
       <View style={[a.flex_1, a.pl_md, a.pr_sm, a.gap_2xs]}>
         <View style={[a.flex_row, a.align_center, a.pr_xs]}>
-          <View style={[a.flex_row, a.align_center]}>
-            <Text
-              style={[
-                a.font_semi_bold,
-                a.text_md,
-                a.leading_snug,
-                a.flex_shrink,
-              ]}
-              numberOfLines={1}
-              emoji>
-              {sanitizeDisplayName(
-                replyTo.author.displayName ||
-                  sanitizeHandle(replyTo.author.handle),
-              )}
-            </Text>
-            <View style={[a.pl_xs]}>
-              <PdsBadge did={replyTo.author.did} size="sm" />
-            </View>
-            {verification.showBadge && (
-              <View style={[a.pl_xs]}>
-                <VerificationCheck
-                  width={14}
-                  verifier={verification.role === 'verifier'}
-                />
-              </View>
+          <Text
+            style={[a.font_semi_bold, a.text_md, a.leading_snug, a.flex_shrink]}
+            numberOfLines={1}
+            emoji>
+            {sanitizeDisplayName(
+              replyTo.author.displayName ||
+                sanitizeHandle(replyTo.author.handle),
             )}
+          </Text>
+          <View style={[a.pl_xs]}>
+              <PdsBadge did={replyTo.author.did} size="sm" />
           </View>
+          <ProfileBadges profile={replyTo.author} size="sm" style={[a.pl_xs]} />
           {replyTo.author?.pronouns && (
             <Text
               style={[

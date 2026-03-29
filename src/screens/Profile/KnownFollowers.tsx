@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {type AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -53,7 +53,7 @@ export const ProfileKnownFollowersScreen = ({route}: Props) => {
 
   const {name} = route.params
 
-  const [isPTRing, setIsPTRing] = React.useState(false)
+  const [isPTRing, setIsPTRing] = useState(false)
   const {
     data: resolvedDid,
     isLoading: isDidLoading,
@@ -76,7 +76,7 @@ export const ProfileKnownFollowersScreen = ({route}: Props) => {
     profile ? _(msg`Followers of @${profile.handle} that you know`) : undefined,
   )
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = useCallback(async () => {
     setIsPTRing(true)
     try {
       await refetch()
@@ -86,7 +86,7 @@ export const ProfileKnownFollowersScreen = ({route}: Props) => {
     setIsPTRing(false)
   }, [refetch, setIsPTRing])
 
-  const onEndReached = React.useCallback(async () => {
+  const onEndReached = useCallback(async () => {
     if (isFetchingNextPage || !hasNextPage || !!error) return
     try {
       await fetchNextPage()
@@ -95,7 +95,7 @@ export const ProfileKnownFollowersScreen = ({route}: Props) => {
     }
   }, [isFetchingNextPage, hasNextPage, error, fetchNextPage])
 
-  const followers = React.useMemo(() => {
+  const followers = useMemo(() => {
     if (data?.pages) {
       return data.pages.flatMap(page => page.followers)
     }
@@ -105,7 +105,7 @@ export const ProfileKnownFollowersScreen = ({route}: Props) => {
   const isError = Boolean(resolveError || error)
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       setMinimalShellMode(false)
     }, [setMinimalShellMode]),
   )

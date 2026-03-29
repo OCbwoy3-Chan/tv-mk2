@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   ActivityIndicator,
   type ListRenderItemInfo,
@@ -46,7 +46,7 @@ export function NotificationFeed({
   refreshNotifications: () => Promise<void>
 }) {
   const initialNumToRender = useInitialNumToRender()
-  const [isPTRing, setIsPTRing] = React.useState(false)
+  const [isPTRing, setIsPTRing] = useState(false)
   const t = useTheme()
   const {_} = useLingui()
   const moderationOpts = useModerationOpts()
@@ -72,7 +72,7 @@ export function NotificationFeed({
   const isEmpty =
     !isFetching && !data?.pages.find(page => page.items.length > 0)
 
-  const items = React.useMemo(() => {
+  const items = useMemo(() => {
     let arr: any[] = []
     if (isFetched) {
       if (isEmpty) {
@@ -91,7 +91,7 @@ export function NotificationFeed({
     return arr
   }, [isFetched, isError, isEmpty, data])
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = useCallback(async () => {
     try {
       setIsPTRing(true)
       await refreshNotifications()
@@ -104,7 +104,7 @@ export function NotificationFeed({
     }
   }, [refreshNotifications, setIsPTRing])
 
-  const onEndReached = React.useCallback(async () => {
+  const onEndReached = useCallback(async () => {
     if (isFetching || !hasNextPage || isError) return
 
     try {
@@ -114,11 +114,11 @@ export function NotificationFeed({
     }
   }, [isFetching, hasNextPage, isError, fetchNextPage])
 
-  const onPressRetryLoadMore = React.useCallback(() => {
+  const onPressRetryLoadMore = useCallback(() => {
     fetchNextPage()
   }, [fetchNextPage])
 
-  const renderItem = React.useCallback(
+  const renderItem = useCallback(
     ({item, index}: ListRenderItemInfo<any>) => {
       if (item === EMPTY_FEED_ITEM) {
         return (
@@ -152,7 +152,7 @@ export function NotificationFeed({
     [moderationOpts, _, onPressRetryLoadMore, filter],
   )
 
-  const FeedFooter = React.useCallback(
+  const FeedFooter = useCallback(
     () =>
       isFetchingNextPage ? (
         <View style={styles.feedFooter}>
@@ -164,7 +164,7 @@ export function NotificationFeed({
     [isFetchingNextPage, t.palette.primary_500],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!enabled) {
       setIsPTRing(false)
     }

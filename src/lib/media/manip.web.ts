@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
 import {blobToDataUri, getDataUriSize} from './util'
@@ -179,17 +177,20 @@ export async function saveBytesToDisk(
 ) {
   const blob = new Blob([bytes], {type})
   const url = URL.createObjectURL(blob)
-  await downloadUrl(url, filename)
+  downloadUrl(url, filename)
   // Firefox requires a small delay
   setTimeout(() => URL.revokeObjectURL(url), 100)
   return true
 }
 
-async function downloadUrl(href: string, filename: string) {
+function downloadUrl(href: string, filename: string) {
   const a = document.createElement('a')
   a.href = href
   a.download = filename
+  a.style.display = 'none'
+  document.body.appendChild(a)
   a.click()
+  document.body.removeChild(a)
 }
 
 export async function safeDeleteAsync() {

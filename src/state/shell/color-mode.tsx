@@ -1,4 +1,4 @@
-import React from 'react'
+import {createContext, PropsWithChildren, useContext, useEffect, useMemo, useState} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -15,29 +15,25 @@ type SetContext = {
   setHue: (v: persisted.Schema['hue']) => void
 }
 
-const stateContext = React.createContext<StateContext>({
+const stateContext = createContext<StateContext>({
   colorMode: 'system',
   darkTheme: 'dark',
   colorScheme: 'witchsky',
   hue: 0,
 })
 stateContext.displayName = 'ColorModeStateContext'
-const setContext = React.createContext<SetContext>({} as SetContext)
+const setContext = createContext<SetContext>({} as SetContext)
 setContext.displayName = 'ColorModeSetContext'
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [colorMode, setColorMode] = React.useState(() =>
-    persisted.get('colorMode'),
-  )
-  const [darkTheme, setDarkTheme] = React.useState(() =>
-    persisted.get('darkTheme'),
-  )
-  const [colorScheme, setColorScheme] = React.useState(
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [colorMode, setColorMode] = useState(() => persisted.get('colorMode'))
+  const [darkTheme, setDarkTheme] = useState(() => persisted.get('darkTheme'))
+  const [colorScheme, setColorScheme] = useState(
     persisted.get('colorScheme'),
   )
-  const [hue, setHue] = React.useState(persisted.get('hue'))
+  const [hue, setHue] = useState(persisted.get('hue'))
 
-  const stateContextValue = React.useMemo(
+  const stateContextValue = useMemo(
     () => ({
       colorMode,
       darkTheme,
@@ -47,7 +43,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [colorMode, darkTheme, colorScheme, hue],
   )
 
-  const setContextValue = React.useMemo(
+  const setContextValue = useMemo(
     () => ({
       setColorMode: (_colorMode: persisted.Schema['colorMode']) => {
         setColorMode(_colorMode)
@@ -69,7 +65,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     const unsub1 = persisted.onUpdate('darkTheme', nextDarkTheme => {
       setDarkTheme(nextDarkTheme)
     })
@@ -100,9 +96,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useThemePrefs() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetThemePrefs() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }
