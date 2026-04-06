@@ -16,7 +16,6 @@
     flake-utils.lib.eachDefaultSystem (
       system: let
         noEmulator = (builtins.getEnv "NO_EMULATOR") == "1";
-        xdgStateHome = builtins.getEnv "XDG_STATE_HOME";
 
         android-arch =
           if system == "aarch64-darwin"
@@ -26,11 +25,6 @@
           if system == "aarch64-darwin"
           then "arm64-v8a"
           else "x86_64";
-        homedir = builtins.getEnv "HOME";
-        state-home =
-          if pkgs.lib.last (pkgs.lib.splitString "-" system) == "darwin"
-          then "${homedir}/." # ~/.android
-          else "${xdgStateHome}/";
 
         pkgs = import nixpkgs {
           inherit system;
@@ -47,22 +41,22 @@
                 build-tools-35-0-0
                 cmdline-tools-latest
                 platform-tools
-                platforms-android-35
-                sources-android-35
+                platforms-android-36
+                sources-android-36
                 ndk-27-1-12297006
                 cmake-3-22-1
               ]
               ++ pkgs.lib.optionals (!noEmulator) [
                 emulator
-                sdk."system-images-android-35-google-apis-${android-arch}"
-                sdk."system-images-android-35-google-apis-playstore-${android-arch}"
+                sdk."system-images-android-36-google-apis-${android-arch}"
+                sdk."system-images-android-36-google-apis-playstore-${android-arch}"
               ]
         );
 
         create-avd = pkgs.writeShellScriptBin "create-avd" ''
           avdmanager create avd \
-            --name android-35 \
-            --package 'system-images;android-35;google_apis_playstore;${android-arch-underline}' \
+            --name android-36 \
+            --package 'system-images;android-36;google_apis_playstore;${android-arch-underline}' \
             --tag google_apis_playstore \
             --device pixel_8 \
             --force
@@ -82,10 +76,7 @@
               JAVA_HOME = pinnedJDK;
               ANDROID_HOME = "${androidSdk}/share/android-sdk";
               ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-              ANDROID_USER_HOME = "${state-home}android"; # has leading '/' sorted out already
-              ANDROID_AVD_HOME = "${ANDROID_USER_HOME}/avd";
 
-              GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_SDK_ROOT}/build-tools/35.0.0/aapt2";
 
               packages =
                 [
@@ -112,6 +103,13 @@
 
               shellHook = ''
                 export GRADLE_USER_HOME=~/.cache/gradle
+                if [[ ${system} =~ .*-darwin ]]; then
+	                export ANDROID_USER_HOME="~/.android"
+                else
+                        export ANDROID_USER_HOME="''${XDG_STATE_HOME:-$HOME/.local/state}/android"
+                fi
+                export ANDROID_AVD_HOME="$ANDROID_USER_HOME/avd"
+                export GRADLE_OPTS="-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_SDK_ROOT}/build-tools/35.0.0/aapt2''${GRADLE_OPTS:+ $GRADLE_OPTS}";
               '';
             };
           };
