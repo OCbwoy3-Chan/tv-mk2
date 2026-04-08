@@ -176,22 +176,48 @@ export async function saveImageToMediaLibrary({uri}: {uri: string}) {
 
 export async function saveVideoToMediaLibrary({uri}: {uri: string}) {
   // download the file to cache
-  const downloadResponse = await RNFetchBlob.config({
-    fileCache: true,
-  })
-    .fetch('GET', uri)
-    .catch(() => null)
-  if (downloadResponse == null) return false
-  let videoPath = downloadResponse.path()
-  let extension = mimeToExt(downloadResponse.respInfo.headers['content-type'])
-  videoPath = normalizePath(
-    await moveToPermanentPath(videoPath, '.' + extension),
-    true,
-  )
+  const tempPath = `${cacheDirectory ?? ''}/${String(uuid.v4())}.bin`
+  const dlResumable = createDownloadResumable(uri, tempPath, {cache: true})
+  const dlRes = await dlResumable.downloadAsync().catch(() => null)
+  if (!dlRes?.uri) return false
+
+  const contentType =
+    dlRes.headers['content-type'] ?? dlRes.headers['Content-Type']
+  if (!contentType) {
+    void safeDeleteAsync(dlRes.uri)
+    return false
+  }
+
+  let extension: string
+  try {
+    extension = mimeToExt(contentType)
+  } catch {
+    void safeDeleteAsync(dlRes.uri)
+    return false
+  }
+
+  const videoPath = await moveToPermanentPath(dlRes.uri, '.' + extension)
 
   // save
-  await MediaLibrary.createAssetAsync(videoPath)
-  safeDeleteAsync(videoPath)
+  try {
+    if (IS_ANDROID) {
+      await MediaLibrary.createAlbumAsync(
+        ALBUM_NAME,
+        undefined,
+        undefined,
+        videoPath,
+      )
+    } else {
+      await MediaLibrary.saveToLibraryAsync(videoPath)
+    }
+  } catch (err) {
+    logger.error(err instanceof Error ? err : String(err), {
+      message: 'Failed to save video to media library',
+    })
+    throw err
+  } finally {
+    void safeDeleteAsync(videoPath)
+  }
   return true
 }
 

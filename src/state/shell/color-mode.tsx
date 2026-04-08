@@ -1,4 +1,11 @@
-import {createContext, PropsWithChildren, useContext, useEffect, useMemo, useState} from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -28,9 +35,7 @@ setContext.displayName = 'ColorModeSetContext'
 export function Provider({children}: PropsWithChildren<{}>) {
   const [colorMode, setColorMode] = useState(() => persisted.get('colorMode'))
   const [darkTheme, setDarkTheme] = useState(() => persisted.get('darkTheme'))
-  const [colorScheme, setColorScheme] = useState(
-    persisted.get('colorScheme'),
-  )
+  const [colorScheme, setColorScheme] = useState(persisted.get('colorScheme'))
   const [hue, setHue] = useState(persisted.get('hue'))
 
   const stateContextValue = useMemo(

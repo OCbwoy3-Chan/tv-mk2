@@ -25,7 +25,7 @@ const onGeolocationServiceResponseUpdate = (
 async function fetchGeolocationServiceData(): Promise<Geolocation | undefined> {
   if (debug.enabled) return debug.resolve(debug.geolocation)
   // Return local geolocation data instead of making HTTP request
-  return geolocationData as Geolocation
+  return geolocationData
 }
 
 /**

@@ -15,7 +15,7 @@ import {
   AppBskyRichtextFacet,
   RichText,
 } from '@atproto/api'
-import { isNative } from '@bsky.app/alf'
+import {isNative} from '@bsky.app/alf'
 
 import {useHideBottomBarBorderForScreen} from '#/lib/hooks/useHideBottomBarBorder'
 import {ScrollProvider} from '#/lib/ScrollContext'
@@ -51,8 +51,7 @@ import {MessageItem} from '#/components/dms/MessageItem'
 import {NewMessagesPill} from '#/components/dms/NewMessagesPill'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
-import {IS_NATIVE} from '#/env'
-import {IS_WEB} from '#/env'
+import {IS_NATIVE, IS_WEB} from '#/env'
 import {ChatStatusInfo} from './ChatStatusInfo'
 import {MessageInputEmbed, useMessageEmbed} from './MessageInputEmbed'
 

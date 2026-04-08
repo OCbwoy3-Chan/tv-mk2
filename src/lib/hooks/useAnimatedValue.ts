@@ -8,5 +8,5 @@ export function useAnimatedValue(initialValue: number) {
     lazyRef.current = new Animated.Value(initialValue)
   }
 
-  return lazyRef.current as Animated.Value
+  return lazyRef.current
 }

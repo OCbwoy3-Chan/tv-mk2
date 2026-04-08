@@ -54,12 +54,16 @@ import {
   ChevronTop_Stroke2_Corner0_Rounded as ChevronUpIcon,
 } from '#/components/icons/Chevron'
 import {Contacts_Filled_Corner2_Rounded as ContactsIconFilled} from '#/components/icons/Contacts'
-import {Heart2_Filled_Stroke2_Corner0_Rounded as HeartIconFilled} from '#/components/icons/Heart2'
-import {LikeRepost_Stroke2_Corner2_Rounded as RepostHeartIcon} from '#/components/icons/Heart2'
+import {
+  Heart2_Filled_Stroke2_Corner0_Rounded as HeartIconFilled,
+  LikeRepost_Stroke2_Corner2_Rounded as RepostHeartIcon,
+} from '#/components/icons/Heart2'
 import {PersonPlus_Filled_Stroke2_Corner0_Rounded as PersonPlusIcon} from '#/components/icons/Person'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
-import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
-import {RepostRepost_Stroke2_Corner2_Rounded as RepostRepostIcon} from '#/components/icons/Repost'
+import {
+  Repost_Stroke2_Corner3_Rounded as RepostIcon,
+  RepostRepost_Stroke2_Corner2_Rounded as RepostRepostIcon,
+} from '#/components/icons/Repost'
 import {StarterPack} from '#/components/icons/StarterPack'
 import {VerifiedCheck} from '#/components/icons/VerifiedCheck'
 import {InlineLinkText, Link} from '#/components/Link'
