@@ -75,6 +75,10 @@ export function useFeedFeedback(
   const isDiscover = isDiscoverFeed(feed?.feedDescriptor)
   const acceptsInteractions = Boolean(isDiscover || feed?.acceptsInteractions)
   const proxyDid = feed?.view?.did
+  const feedAgent = useMemo(
+    () => (proxyDid ? agent.withProxy('bsky_fg', proxyDid) : null),
+    [agent, proxyDid],
+  )
   const enabled =
     Boolean(feed) && Boolean(proxyDid) && acceptsInteractions && hasSession
 
@@ -151,14 +155,11 @@ export function useFeedFeedback(
     }
 
     // Send to the feed
-    agent.app.bsky.feed
+    feedAgent?.app.bsky.feed
       .sendInteractions(
         {interactions: interactionsToSend, feed: feed?.uri},
         {
           encoding: 'application/json',
-          headers: {
-            'atproto-proxy': `${proxyDid}#bsky_fg`,
-          },
         },
       )
       .catch(() => {}) // ignore upstream errors
@@ -172,7 +173,7 @@ export function useFeedFeedback(
     )
     throttledFlushAggregatedStats()
     logger.debug('flushed')
-  }, [agent, throttledFlushAggregatedStats, proxyDid, enabled, feed])
+  }, [feedAgent, throttledFlushAggregatedStats, enabled, feed])
 
   const sendToFeed = useMemo(
     () =>

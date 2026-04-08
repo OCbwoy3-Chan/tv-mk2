@@ -368,6 +368,12 @@ class BskyAppAgent extends BskyAgent {
   persistSessionHandler: ((event: AtpSessionEvent) => void) | undefined =
     undefined
 
+  clone(): this {
+    // `withProxy()` calls `clone()`. Since this class subclasses `BskyAgent`,
+    // we must provide our own clone implementation.
+    return this.copyInto(new BskyAgent(this.sessionManager) as this)
+  }
+
   constructor({service}: {service: string}) {
     super({
       service,
