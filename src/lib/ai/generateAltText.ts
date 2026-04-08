@@ -1,4 +1,8 @@
-import {DEFAULT_ALT_TEXT_AI_MODEL, MAX_ALT_TEXT} from '#/lib/constants'
+import {
+  DEFAULT_ALT_TEXT_AI_MODEL,
+  DEFAULT_ALT_TEXT_AI_PROMPT,
+  MAX_ALT_TEXT,
+} from '#/lib/constants'
 import {logger} from '#/logger'
 
 export async function generateAltText(
@@ -6,6 +10,7 @@ export async function generateAltText(
   model: string,
   imageBase64: string,
   imageMimeType: string,
+  customPrompt?: string,
 ): Promise<string> {
   const response = await fetch(
     'https://openrouter.ai/api/v1/chat/completions',
@@ -25,7 +30,7 @@ export async function generateAltText(
             content: [
               {
                 type: 'text',
-                text: `Generate a concise, descriptive alt text for this image, also extract text if needed. The alt text should be clear and helpful for screen readers. Keep it under ${MAX_ALT_TEXT} characters. Only respond with the alt text itself, no explanations or quotes.`,
+                text: customPrompt || DEFAULT_ALT_TEXT_AI_PROMPT,
               },
               {
                 type: 'image_url',

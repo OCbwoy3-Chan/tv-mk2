@@ -19,6 +19,7 @@ import {
   useOpenRouterApiKey,
   useOpenRouterConfigured,
   useOpenRouterModel,
+  useOpenRouterPrompt,
 } from '#/state/preferences/openrouter'
 import {AltTextCounterWrapper} from '#/view/com/composer/AltTextCounterWrapper'
 import {atoms as a, tokens, useTheme} from '#/alf'
@@ -92,6 +93,7 @@ const ImageAltTextInner = ({
   const openRouterConfigured = useOpenRouterConfigured()
   const openRouterApiKey = useOpenRouterApiKey()
   const openRouterModel = useOpenRouterModel()
+  const openRouterPrompt = useOpenRouterPrompt()
 
   const imageStyle = useMemo<ImageStyle>(() => {
     const maxWidth = IS_WEB
@@ -153,6 +155,7 @@ const ImageAltTextInner = ({
         openRouterModel ?? DEFAULT_ALT_TEXT_AI_MODEL,
         base64,
         mimeType,
+        openRouterPrompt ?? undefined,
       )
 
       setAltText(enforceLen(generated, MAX_ALT_TEXT, true))
@@ -163,7 +166,7 @@ const ImageAltTextInner = ({
     } finally {
       setIsGenerating(false)
     }
-  }, [openRouterApiKey, openRouterModel, image, setAltText])
+  }, [openRouterApiKey, openRouterModel, openRouterPrompt, image, setAltText])
 
   return (
     <Dialog.ScrollableInner label={_(msg`Add alt text`)}>

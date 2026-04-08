@@ -7,7 +7,10 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
-import {DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
+import {
+  DEFAULT_ALT_TEXT_AI_MODEL,
+  DEFAULT_ALT_TEXT_AI_PROMPT,
+} from '#/lib/constants'
 import {usePalette} from '#/lib/hooks/usePalette'
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {dynamicActivate} from '#/locale/i18n'
@@ -121,8 +124,10 @@ import {
   useOpenRouterApiKey,
   useOpenRouterConfigured,
   useOpenRouterModel,
+  useOpenRouterPrompt,
   useSetOpenRouterApiKey,
   useSetOpenRouterModel,
+  useSetOpenRouterPrompt,
 } from '#/state/preferences/openrouter'
 import {
   usePdsLabelEnabled,
@@ -865,6 +870,76 @@ function OpenRouterModelDialog({
   )
 }
 
+function OpenRouterPromptDialog({
+  control,
+}: {
+  control: Dialog.DialogControlProps
+}) {
+  const pal = usePalette('default')
+  const {_} = useLingui()
+
+  const prompt = useOpenRouterPrompt()
+  const [value, setValue] = useState(prompt ?? '')
+  const setPrompt = useSetOpenRouterPrompt()
+
+  const submit = () => {
+    setPrompt(value.trim() || undefined)
+    control.close()
+  }
+
+  return (
+    <Dialog.Outer
+      control={control}
+      nativeOptions={{preventExpansion: true}}
+      onClose={() => setValue(prompt ?? '')}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner label={_(msg`Alt Text Prompt`)}>
+        <View style={[a.gap_sm, a.pb_lg]}>
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>Alt Text Prompt</Trans>
+          </Text>
+        </View>
+
+        <View style={a.gap_lg}>
+          <Dialog.Input
+            label="Prompt"
+            multiline
+            numberOfLines={6}
+            style={[
+              styles.textInput,
+              pal.border,
+              pal.text,
+              {minHeight: 120, textAlignVertical: 'top'},
+            ]}
+            onChangeText={setValue}
+            placeholder={DEFAULT_ALT_TEXT_AI_PROMPT}
+            placeholderTextColor={pal.colors.textLight}
+            accessibilityHint={_(
+              msg`Enter a custom prompt for AI alt text generation`,
+            )}
+            defaultValue={prompt ?? ''}
+          />
+
+          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
+            <Button
+              label={_(msg`Save`)}
+              size="large"
+              onPress={submit}
+              variant="solid"
+              color="primary">
+              <ButtonText>
+                <Trans>Save</Trans>
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+
+        <Dialog.Close />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
+  )
+}
+
 export function RunesSettingsScreen({}: Props) {
   const {_} = useLingui()
 
@@ -972,6 +1047,7 @@ export function RunesSettingsScreen({}: Props) {
   const setOpenRouterApiKeyControl = Dialog.useDialogControl()
   const openRouterModel = useOpenRouterModel()
   const setOpenRouterModelControl = Dialog.useDialogControl()
+  const setOpenRouterPromptControl = Dialog.useDialogControl()
   const openRouterConfigured = useOpenRouterConfigured()
 
   const autoLikeOnRepost = useAutoLikeOnRepost()
@@ -1487,6 +1563,30 @@ export function RunesSettingsScreen({}: Props) {
             </SettingsList.Item>
           )}
 
+          {openRouterConfigured && (
+            <SettingsList.Item>
+              <SettingsList.ItemIcon icon={_BeakerIcon} />
+              <SettingsList.ItemText>
+                <Trans>Alt Text Prompt</Trans>
+              </SettingsList.ItemText>
+              <SettingsList.BadgeButton
+                label={_(msg`Change`)}
+                onPress={() => setOpenRouterPromptControl.open()}
+              />
+            </SettingsList.Item>
+          )}
+
+          {openRouterConfigured && (
+            <SettingsList.Item>
+              <Admonition type="info" style={[a.flex_1]}>
+                <Trans>
+                  Customize the prompt sent to the AI model when generating alt
+                  text. Leave empty to use the default prompt.
+                </Trans>
+              </Admonition>
+            </SettingsList.Item>
+          )}
+
           <SettingsList.Divider />
 
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
@@ -1707,6 +1807,7 @@ export function RunesSettingsScreen({}: Props) {
       <PostReplacementDialog control={setPostReplacementDialogControl} />
       <OpenRouterApiKeyDialog control={setOpenRouterApiKeyControl} />
       <OpenRouterModelDialog control={setOpenRouterModelControl} />
+      <OpenRouterPromptDialog control={setOpenRouterPromptControl} />
     </Layout.Screen>
   )
 }

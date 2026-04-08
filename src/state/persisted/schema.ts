@@ -201,6 +201,7 @@ const schema = z.object({
 
   openRouterApiKey: z.string().optional(),
   openRouterModel: z.string().optional(),
+  openRouterPrompt: z.string().optional(),
 
   useHandleInLinks: z.boolean().optional(),
 
@@ -327,6 +328,7 @@ export const defaults: Schema = {
 
   openRouterApiKey: undefined,
   openRouterModel: DEFAULT_ALT_TEXT_AI_MODEL,
+  openRouterPrompt: undefined,
 
   useHandleInLinks: false,
 
