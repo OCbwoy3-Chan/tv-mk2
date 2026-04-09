@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import {View} from 'react-native'
+import {isDid} from '@atproto/api'
 import {type ProfileViewBasic} from '@atproto/api/dist/client/types/app/bsky/actor/defs'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -18,6 +19,10 @@ import {
   useConstellationInstance,
   useSetConstellationInstance,
 } from '#/state/preferences/constellation-instance'
+import {
+  useCustomAppViewDid,
+  useSetCustomAppViewDid,
+} from '#/state/preferences/custom-appview-did'
 import {
   useDeerVerificationEnabled,
   useDeerVerificationTrusted,
@@ -152,6 +157,8 @@ import {
   useSetHandleInLinks,
 } from '#/state/preferences/use-handle-in-links'
 import {useProfilesQuery} from '#/state/queries/profile'
+import {findService, useDidDocument} from '#/state/queries/resolve-identity'
+import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useBreakpoints} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -245,6 +252,140 @@ function ConstellationInstanceDialog({
               disabled={shouldDisable()}>
               <ButtonText>
                 <Trans>Save</Trans>
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+
+        <Dialog.Close />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
+  )
+}
+
+function CustomAppViewDidDialog({
+  control,
+}: {
+  control: Dialog.DialogControlProps
+}) {
+  const pal = usePalette('default')
+  const {_} = useLingui()
+
+  const [customAppViewDid] = useCustomAppViewDid()
+  const [did, setDid] = useState(customAppViewDid ?? '')
+  const setCustomAppViewDid = useSetCustomAppViewDid()
+
+  const doc = useDidDocument({did})
+  const bskyAppViewService =
+    doc.data && findService(doc.data, '#bsky_appview', 'BskyAppView')
+
+  const submit = () => {
+    if (did.length === 0) {
+      control.close(() => {
+        setCustomAppViewDid(undefined)
+      })
+      return
+    }
+    if (!bskyAppViewService?.serviceEndpoint) return
+    control.close(() => {
+      setCustomAppViewDid(did)
+    })
+  }
+
+  return (
+    <Dialog.Outer
+      control={control}
+      nativeOptions={{preventExpansion: true}}
+      onClose={() => setDid(customAppViewDid ?? '')}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner label={_(msg`Custom AppView Proxy DID`)}>
+        <View style={[a.gap_sm, a.pb_lg]}>
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>Custom AppView Proxy DID</Trans>
+          </Text>
+        </View>
+
+        <View style={a.gap_lg}>
+          <Dialog.Input
+            label="Text input field"
+            autoFocus
+            style={[styles.textInput, pal.border, pal.text]}
+            onChangeText={value => {
+              setDid(value)
+            }}
+            placeholder={
+              APPVIEW_DID_PROXY?.substring(0, APPVIEW_DID_PROXY.indexOf('#')) ||
+              `did:web:api.bsky.app`
+            }
+            placeholderTextColor={pal.colors.textLight}
+            onSubmitEditing={submit}
+            accessibilityHint={_(
+              msg`Input the DID of the AppView to proxy requests through`,
+            )}
+            isInvalid={
+              !!did && !bskyAppViewService?.serviceEndpoint && !doc.isLoading
+            }
+            defaultValue={customAppViewDid ?? ''}
+          />
+
+          {did && !isDid(did) && (
+            <View>
+              <ErrorMessage message={_(msg`must enter a DID`)} />
+            </View>
+          )}
+
+          {did && (did.includes('#') || did.includes('?')) && (
+            <View>
+              <ErrorMessage message={_(msg`don't include the service id`)} />
+            </View>
+          )}
+
+          {doc.isError && (
+            <View>
+              <ErrorMessage
+                message={
+                  doc.error.message || _(msg`document resolution failure`)
+                }
+              />
+            </View>
+          )}
+
+          {doc.data &&
+            !bskyAppViewService &&
+            (doc.data as {message?: string}).message && (
+              <View>
+                <ErrorMessage
+                  message={(doc.data as {message: string}).message}
+                />
+              </View>
+            )}
+
+          {doc.data && !bskyAppViewService && (
+            <View>
+              <ErrorMessage
+                message={_(msg`document doesn't contain #bsky_appview service`)}
+              />
+            </View>
+          )}
+
+          {bskyAppViewService && (
+            <Text style={[a.text_sm, a.leading_snug]}>
+              {JSON.stringify(bskyAppViewService, null, 2)}
+            </Text>
+          )}
+
+          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
+            <Button
+              label={_(msg`Save`)}
+              size="large"
+              onPress={submit}
+              variant="solid"
+              color={did.length > 0 ? 'primary' : 'secondary'}
+              disabled={
+                did.length !== 0 && !bskyAppViewService?.serviceEndpoint
+              }>
+              <ButtonText>
+                {did.length > 0 ? <Trans>Save</Trans> : <Trans>Reset</Trans>}
               </ButtonText>
             </Button>
           </View>
@@ -836,6 +977,9 @@ export function RunesSettingsScreen({}: Props) {
   const autoLikeOnRepost = useAutoLikeOnRepost()
   const setAutoLikeOnRepost = useSetAutoLikeOnRepost()
 
+  const [customAppViewDid] = useCustomAppViewDid()
+  const setCustomAppViewDidControl = Dialog.useDialogControl()
+
   return (
     <Layout.Screen>
       <Layout.Header.Outer>
@@ -1009,8 +1153,6 @@ export function RunesSettingsScreen({}: Props) {
               onPress={() => setPostReplacementDialogControl.open()}
             />
           </SettingsList.Item>
-
-          <SettingsList.Divider />
 
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
             <SettingsList.ItemIcon icon={PaintRollerIcon} />
@@ -1499,6 +1641,19 @@ export function RunesSettingsScreen({}: Props) {
 
           <SettingsList.Divider />
 
+          <SettingsList.Item>
+            <SettingsList.ItemIcon icon={StarIcon} />
+            <SettingsList.ItemText>
+              <Trans>{`Custom AppView DID`}</Trans>
+            </SettingsList.ItemText>
+            <SettingsList.BadgeButton
+              label={customAppViewDid ? _(msg`Change`) : _(msg`Set`)}
+              onPress={() => setCustomAppViewDidControl.open()}
+            />
+          </SettingsList.Item>
+
+          <SettingsList.Divider />
+
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
             <SettingsList.ItemIcon icon={RaisingHandIcon} />
             <SettingsList.ItemText>
@@ -1543,6 +1698,7 @@ export function RunesSettingsScreen({}: Props) {
         </SettingsList.Container>
       </Layout.Content>
       <ConstellationInstanceDialog control={setConstellationInstanceControl} />
+      <CustomAppViewDidDialog control={setCustomAppViewDidControl} />
       <TrustedVerifiersDialog control={setTrustedVerifiersDialogControl} />
       <LibreTranslateInstanceDialog
         control={setLibreTranslateInstanceControl}

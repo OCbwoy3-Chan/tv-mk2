@@ -17,6 +17,7 @@ import {
   type AppBskyFeedThreadgate,
   AtUri,
   type BlobRef,
+  isDid,
   type RichText as RichTextAPI,
 } from '@atproto/api'
 import {plural} from '@lingui/core/macro'
@@ -609,8 +610,8 @@ let PostMenuItems = ({
     if (!videoEmbed) return
     const did = post.author.did
     const cid = videoEmbed.cid
-    if (!did.startsWith('did:')) return
-    const pdsUrl = await resolvePdsServiceUrl(did as `did:${string}`)
+    if (!isDid(did)) return
+    const pdsUrl = await resolvePdsServiceUrl(did)
     const uri = `${pdsUrl}/xrpc/com.atproto.sync.getBlob?did=${did}&cid=${cid}`
 
     Toast.show(l({message: 'Downloading video...', context: 'toast'}))
@@ -624,10 +625,9 @@ let PostMenuItems = ({
         type: 'success',
       })
     else
-      Toast.show(
-        l({message: 'Failed to download video', context: 'toast'}),
-        {type: 'error'},
-      )
+      Toast.show(l({message: 'Failed to download video', context: 'toast'}), {
+        type: 'error',
+      })
   }
 
   const onPressDownloadGif = async () => {
@@ -644,10 +644,9 @@ let PostMenuItems = ({
         type: 'success',
       })
     else
-      Toast.show(
-        l({message: 'Failed to download GIF', context: 'toast'}),
-        {type: 'error'},
-      )
+      Toast.show(l({message: 'Failed to download GIF', context: 'toast'}), {
+        type: 'error',
+      })
   }
 
   const isEmbedGif = () => {

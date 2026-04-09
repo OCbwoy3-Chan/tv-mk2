@@ -8,6 +8,7 @@ import {DM_SERVICE_HEADERS} from '#/lib/constants'
 import {saveBytesToDisk} from '#/lib/media/manip'
 import {logger} from '#/logger'
 import {useAgent} from '#/state/session'
+import {pdsAgent} from '#/state/session/agent'
 import {atoms as a, useTheme, web} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -34,7 +35,7 @@ export function ExportCarDialog({
     try {
       setLoading('repo')
       const did = agent.session.did
-      const downloadRes = await agent.com.atproto.sync.getRepo({did})
+      const downloadRes = await pdsAgent(agent).com.atproto.sync.getRepo({did})
       const saveRes = await saveBytesToDisk(
         'repo.car',
         downloadRes.data,
