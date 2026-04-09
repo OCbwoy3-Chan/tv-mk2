@@ -204,12 +204,70 @@ export function resetImageManipulation(
   return img
 }
 
+async function bypassCompressionOnWeb(
+  img: ComposerImage,
+): Promise<PickerImage | undefined> {
+  const source = img.transformed || img.source
+  if (
+    source.width > POST_IMG_MAX.width ||
+    source.height > POST_IMG_MAX.height
+  ) {
+    return undefined
+  }
+
+  if (
+    ![
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/avif',
+      'image/gif',
+    ].includes(source.mime)
+  ) {
+    return undefined
+  }
+
+  const path = source.path
+  // convert path to data URI if it is not already
+  if (!path.startsWith('data:')) {
+    try {
+      await fetch(path)
+      const response = await fetch(path)
+      const blob = await response.blob()
+      if (blob.size > POST_IMG_MAX.size) {
+        return undefined
+      }
+      // path = await blobToDataUri(blob)
+    } catch (e) {
+      // Fetch failed, likely due to CORS. Return undefined to trigger normal compression flow and error handling.
+      return undefined
+    }
+  } else if (getDataUriSize(path) > POST_IMG_MAX.size) {
+    return undefined
+  }
+
+  return {
+    path: await moveIfNecessary(path),
+    width: source.width,
+    height: source.height,
+    mime: source.mime,
+    size: getDataUriSize(path),
+  }
+}
+
 export async function compressImage(
   img: ComposerImage,
   options?: {
     highResolution?: boolean
   },
 ): Promise<PickerImage> {
+  if (IS_WEB) {
+    const res = await bypassCompressionOnWeb(img)
+    if (res) {
+      return res
+    }
+  }
+
   const source = img.transformed || img.source
   const highResolution = options?.highResolution ?? false
   let attempts = 0
