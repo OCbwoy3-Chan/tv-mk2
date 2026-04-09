@@ -138,7 +138,7 @@ export function LoggedOut({onDismiss}: {onDismiss?: () => void}) {
             }
             onPressSignIn={() => {
               setScreenState(ScreenState.S_Login)
-              logEvent('splash:signInPressed', {})
+              ax.metric('splash:signInPressed', {})
             }}
           />
         ) : undefined}

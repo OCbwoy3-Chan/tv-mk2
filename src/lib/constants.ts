@@ -64,8 +64,9 @@ export const MAX_DM_GRAPHEME_LENGTH = 1000
 // Recommended is 100 per: https://www.w3.org/WAI/GL/WCAG20/tests/test3.html
 // but increasing limit per user feedback
 export const MAX_ALT_TEXT = 2000
-export const DEFAULT_ALT_TEXT_AI_MODEL = 'qwen/qwen3.5-122b-a10b'
-export const DEFAULT_ALT_TEXT_AI_PROMPT = 'Write alt text for this image. Be concise — 1-2 sentences for simple images. If the image contains readable text, transcribe it rather than describing it. Only describe what you can clearly see; do not guess at names or details.'
+export const DEFAULT_ALT_TEXT_AI_MODEL = 'google/gemma-4-26b-a4b-it:free'
+export const DEFAULT_ALT_TEXT_AI_PROMPT =
+  'Write alt text for this image. Be concise — 1-2 sentences for simple images. If the image contains readable text, transcribe it rather than describing it. Only describe what you can clearly see; do not guess at names or details.'
 
 export const MAX_REPORT_REASON_GRAPHEME_LENGTH = 2000
 

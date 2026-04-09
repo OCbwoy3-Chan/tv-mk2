@@ -8,6 +8,7 @@ import {Trans} from '@lingui/react/macro'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {
+  APPVIEW_DID_PROXY,
   DEFAULT_ALT_TEXT_AI_MODEL,
   DEFAULT_ALT_TEXT_AI_PROMPT,
 } from '#/lib/constants'
