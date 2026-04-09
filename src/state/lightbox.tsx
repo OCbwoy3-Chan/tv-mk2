@@ -1,7 +1,8 @@
-import {createContext, useContext, useMemo, useState} from 'react'
+import {createContext, useContext, useEffect, useMemo, useState} from 'react'
 import {nanoid} from 'nanoid/non-secure'
 
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
+import {useHotkeysContext} from '#/lib/hotkeys'
 import {type ImageSource} from '#/view/com/lightbox/ImageViewing/@types'
 
 export type Lightbox = {
@@ -28,6 +29,15 @@ LightboxControlContext.displayName = 'LightboxControlContext'
 
 export function Provider({children}: React.PropsWithChildren<{}>) {
   const [activeLightbox, setActiveLightbox] = useState<Lightbox | null>(null)
+  const {disableScope, enableScope} = useHotkeysContext()
+
+  useEffect(() => {
+    if (activeLightbox) {
+      disableScope('global')
+    } else {
+      enableScope('global')
+    }
+  }, [activeLightbox, disableScope, enableScope])
 
   const openLightbox = useNonReactiveCallback(
     (lightbox: Omit<Lightbox, 'id'>) => {

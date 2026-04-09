@@ -8,7 +8,7 @@ msgstr ""
 "Language: hi\n"
 "Project-Id-Version: 49a8cb746fbc2ae5707392ee41ddec4c\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-03-20 16:42\n"
+"PO-Revision-Date: 2026-04-08 18:50\n"
 "Last-Translator: \n"
 "Language-Team: Hindi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -185,6 +185,11 @@ msgstr ""
 #. placeholder {0}: createFullHandle(draftValue, state.userDomain)
 #: src/screens/Signup/StepHandle/index.tsx:186
 msgid "{0} is not available"
+msgstr ""
+
+#. placeholder {0}: codeToLanguageName( expectedSourceLanguage, langPrefs.appLanguage, )
+#: src/lib/translation/index.tsx:314
+msgid "{0} is not supported by your device."
 msgstr ""
 
 #. placeholder {0}: formatCount(i18n, JOINED_THIS_WEEK)
@@ -438,6 +443,12 @@ msgstr "{following} फ़ॉलोइंग"
 msgid "{handle} can't be messaged"
 msgstr "{handle} को संदेश भेजा नहीं जा सकता"
 
+#: src/components/dms/InitiateChatFlow.tsx:805
+#: src/components/dms/InitiateChatFlow.tsx:858
+#: src/components/dms/InitiateChatFlow.tsx:897
+msgid "{handle} can’t be messaged"
+msgstr ""
+
 #: src/features/liveNow/utils.ts:15
 msgid "{hours, plural, one {# hour {minutesString}} other {# hours {minutesString}}}"
 msgstr ""
@@ -558,28 +569,28 @@ msgstr "<0>{0}</0> {1, plural, one {फ़ॉलोइंग} other {फ़ॉ�
 #. Like count display, the <0> tags enclose the number of likes in bold (will never be 0)
 #. placeholder {0}: formatPostStatCount(post.likeCount)
 #. placeholder {1}: post.likeCount
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:493
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:486
 msgid "<0>{0}</0> {1, plural, one {like} other {likes}}"
 msgstr "<0>{0}</0> {1, plural, other {पसंद}}"
 
 #. Quote count display, the <0> tags enclose the number of quotes in bold (will never be 0)
 #. placeholder {0}: formatPostStatCount(post.quoteCount)
 #. placeholder {1}: post.quoteCount
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:475
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:468
 msgid "<0>{0}</0> {1, plural, one {quote} other {quotes}}"
 msgstr "<0>{0}</0> {1, plural, other {क्वोट}}"
 
 #. Repost count display, the <0> tags enclose the number of reposts in bold (will never be 0)
 #. placeholder {0}: formatPostStatCount(post.repostCount)
 #. placeholder {1}: post.repostCount
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:455
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:448
 msgid "<0>{0}</0> {1, plural, one {repost} other {reposts}}"
 msgstr "<0>{0}</0> {1, plural, other {रीपोस्ट}}"
 
 #. Save count display, the <0> tags enclose the number of saves in bold (will never be 0)
 #. placeholder {0}: formatPostStatCount(post.bookmarkCount)
 #. placeholder {1}: post.bookmarkCount
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:506
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:499
 msgid "<0>{0}</0> {1, plural, one {save} other {saves}}"
 msgstr ""
 
@@ -851,8 +862,8 @@ msgstr "खाता जोड़ें"
 #: src/view/com/composer/GifAltText.tsx:76
 #: src/view/com/composer/GifAltText.tsx:150
 #: src/view/com/composer/GifAltText.tsx:217
-#: src/view/com/composer/photos/Gallery.tsx:194
-#: src/view/com/composer/photos/Gallery.tsx:241
+#: src/view/com/composer/photos/Gallery.tsx:196
+#: src/view/com/composer/photos/Gallery.tsx:243
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:95
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:103
 msgid "Add alt text"
@@ -904,8 +915,8 @@ msgstr ""
 msgid "Add media to post"
 msgstr ""
 
-#: src/components/moderation/ReportDialog/index.tsx:522
-#: src/components/moderation/ReportDialog/index.tsx:526
+#: src/components/moderation/ReportDialog/index.tsx:532
+#: src/components/moderation/ReportDialog/index.tsx:536
 msgid "Add more details (optional)"
 msgstr ""
 
@@ -960,7 +971,7 @@ msgstr "आपके फ़ीड मे यह फ़ीड जोड़ें"
 msgid "Add to lists"
 msgstr "सूचियों में जोड़ें"
 
-#: src/components/PostControls/BookmarkButton.tsx:142
+#: src/components/PostControls/BookmarkButton.tsx:144
 msgid "Add to saved posts"
 msgstr ""
 
@@ -996,7 +1007,7 @@ msgstr ""
 msgid "Additional details (limit 1000 characters)"
 msgstr ""
 
-#: src/components/moderation/ReportDialog/index.tsx:540
+#: src/components/moderation/ReportDialog/index.tsx:550
 msgid "Additional details (limit 300 characters)"
 msgstr ""
 
@@ -1156,7 +1167,7 @@ msgstr "@{0} द्वारा पहले से साइन इन कि�
 #: src/components/images/Gallery.tsx:120
 #: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:94
 #: src/view/com/composer/GifAltText.tsx:100
-#: src/view/com/composer/photos/Gallery.tsx:212
+#: src/view/com/composer/photos/Gallery.tsx:214
 msgid "ALT"
 msgstr "ALT"
 
@@ -1175,7 +1186,7 @@ msgid "Alt Text"
 msgstr "वैकल्पिक पाठ"
 
 #: src/view/com/composer/GifAltText.tsx:105
-#: src/view/com/composer/photos/Gallery.tsx:124
+#: src/view/com/composer/photos/Gallery.tsx:125
 msgid "Alt text describes images for blind and low-vision users, and helps give context to everyone."
 msgstr "वैकल्पिक पाठ अंधे और कम दृश्य लोगों के लिए छवियों का वर्णन करता है, और सब को संदर्भ देने में मदद करता है।"
 
@@ -1277,7 +1288,7 @@ msgstr ""
 msgid "An issue not included in these options"
 msgstr "समस्या जो इन विकल्पों में से नहीं है"
 
-#: src/components/dms/dialogs/NewChatDialog.tsx:40
+#: src/components/dms/dialogs/NewChatDialog.tsx:41
 msgid "An issue occurred starting the chat"
 msgstr "बातचीत शुरू करने में समस्या हुई"
 
@@ -1447,12 +1458,12 @@ msgid "Apply Pull Request"
 msgstr ""
 
 #. placeholder {0}: niceDate(i18n, createdAt, 'medium')
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:627
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:620
 msgid "Archived from {0}"
 msgstr "{0} से पुरालेखित"
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:598
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:636
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:591
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:629
 msgid "Archived post"
 msgstr "पुरालेखित पोस्ट"
 
@@ -1549,6 +1560,9 @@ msgstr "वीडियो और GIF स्वतः चलाएँ"
 msgid "Available"
 msgstr ""
 
+#: src/components/dms/InitiateChatFlow.tsx:485
+#: src/components/dms/InitiateChatFlow.tsx:670
+#: src/components/dms/InitiateChatFlow.tsx:677
 #: src/components/moderation/LabelsOnMeDialog.tsx:334
 #: src/components/moderation/LabelsOnMeDialog.tsx:335
 #: src/screens/Login/ChooseAccountForm.tsx:98
@@ -1607,7 +1621,7 @@ msgstr ""
 msgid "Before you can get notifications for {name}'s posts, you must first verify your email."
 msgstr ""
 
-#: src/components/dms/dialogs/NewChatDialog.tsx:58
+#: src/components/dms/dialogs/NewChatDialog.tsx:66
 #: src/components/dms/MessageProfileButton.tsx:60
 #: src/screens/Messages/ChatList.tsx:376
 #: src/screens/Messages/Conversation.tsx:226
@@ -1737,7 +1751,7 @@ msgstr "ब्लॉग"
 msgid "Bluesky"
 msgstr "Bluesky"
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:652
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:645
 msgid "Bluesky cannot confirm the authenticity of the claimed date."
 msgstr "Bluesky दावा किए गए तिथि के प्रामाणिकता की पुष्टि नहीं कर सकता।"
 
@@ -1823,20 +1837,20 @@ msgstr ""
 msgid "Browse custom feeds"
 msgstr ""
 
-#: src/components/FeedInterstitials.tsx:641
+#: src/components/FeedInterstitials.tsx:534
 msgid "Browse more accounts"
 msgstr ""
 
-#: src/components/FeedInterstitials.tsx:771
+#: src/components/FeedInterstitials.tsx:664
 msgid "Browse more feeds on the Explore page"
 msgstr "एक्सप्लोर पृष्ठ पर और सूची देखें"
 
-#: src/components/FeedInterstitials.tsx:752
-#: src/components/FeedInterstitials.tsx:755
+#: src/components/FeedInterstitials.tsx:645
+#: src/components/FeedInterstitials.tsx:648
 msgid "Browse more suggestions"
 msgstr "और सुझाव देखें"
 
-#: src/components/FeedInterstitials.tsx:780
+#: src/components/FeedInterstitials.tsx:673
 msgid "Browse more suggestions on the Explore page"
 msgstr "एक्सप्लोर पृष्ठ पर और सुझाव देखें"
 
@@ -1878,9 +1892,9 @@ msgstr ""
 #. placeholder {0}: sanitizeHandle(item.feed.creator.handle, '@')
 #. placeholder {0}: sanitizeHandle(labeler.creator.handle, '@')
 #: src/components/LabelingServiceCard/index.tsx:62
-#: src/components/moderation/ReportDialog/index.tsx:843
+#: src/components/moderation/ReportDialog/index.tsx:853
 #: src/screens/Search/components/StarterPackCard.tsx:107
-#: src/screens/Search/Explore.tsx:969
+#: src/screens/Search/Explore.tsx:970
 msgid "By {0}"
 msgstr "{0} के द्वारा"
 
@@ -1944,7 +1958,7 @@ msgstr "कैमरा"
 #: src/screens/Deactivated.tsx:150
 #: src/screens/Profile/Header/EditProfileDialog.tsx:215
 #: src/screens/Profile/Header/EditProfileDialog.tsx:223
-#: src/screens/Search/Shell.tsx:396
+#: src/screens/Search/Shell.tsx:397
 #: src/screens/Settings/AppIconSettings/index.tsx:42
 #: src/screens/Settings/AppIconSettings/index.tsx:228
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:80
@@ -1970,13 +1984,13 @@ msgstr "क्वोट पोस्ट रद्द करें"
 msgid "Cancel reactivation and sign out"
 msgstr ""
 
-#: src/screens/Search/Shell.tsx:387
+#: src/screens/Search/Shell.tsx:388
 msgid "Cancel search"
 msgstr "खोज रद्द करें"
 
-#: src/components/PostControls/index.tsx:109
-#: src/components/PostControls/index.tsx:140
-#: src/components/PostControls/index.tsx:168
+#: src/components/PostControls/index.tsx:110
+#: src/components/PostControls/index.tsx:141
+#: src/components/PostControls/index.tsx:169
 #: src/state/shell/composer/index.tsx:107
 msgid "Cannot interact with a blocked user"
 msgstr "अवरुद्ध उपयोगकर्ता से संपर्क नहीं कर सकते"
@@ -2019,7 +2033,7 @@ msgstr ""
 msgid "Change Handle"
 msgstr "हैंडल बदलें"
 
-#: src/components/moderation/ReportDialog/index.tsx:439
+#: src/components/moderation/ReportDialog/index.tsx:449
 msgid "Change moderation service"
 msgstr ""
 
@@ -2032,11 +2046,11 @@ msgstr ""
 msgid "Change password dialog"
 msgstr ""
 
-#: src/components/moderation/ReportDialog/index.tsx:304
+#: src/components/moderation/ReportDialog/index.tsx:314
 msgid "Change report category"
 msgstr ""
 
-#: src/components/moderation/ReportDialog/index.tsx:384
+#: src/components/moderation/ReportDialog/index.tsx:394
 msgid "Change report reason"
 msgstr ""
 
@@ -2209,7 +2223,7 @@ msgstr "सभी स्टोरेज डेटा खाली करें (
 msgid "Clear image cache"
 msgstr ""
 
-#: src/components/forms/SearchInput.tsx:69
+#: src/components/forms/SearchInput.tsx:87
 msgid "Clear search query"
 msgstr "खोज क्वेरी खाली करें"
 
@@ -2285,10 +2299,11 @@ msgstr "ठक 🐴 ठक 🐴"
 #: src/components/dms/AfterReportDialog.tsx:212
 #: src/components/dms/AfterReportDialog.tsx:217
 #: src/components/dms/EmojiPopup.android.tsx:59
+#: src/components/dms/InitiateChatFlow.tsx:510
 #: src/components/NewskieDialog.tsx:169
 #: src/components/NewskieDialog.tsx:175
 #: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:107
-#: src/components/ProgressGuide/FollowDialog.tsx:441
+#: src/components/ProgressGuide/FollowDialog.tsx:445
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:122
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:128
 #: src/components/verification/VerificationsDialog.tsx:146
@@ -2328,7 +2343,7 @@ msgstr "निचला ड्रॉयर बंद करो"
 msgid "Close dialog"
 msgstr "डायलॉग बंद करें"
 
-#: src/view/shell/index.web.tsx:131
+#: src/view/shell/index.web.tsx:129
 msgid "Close drawer menu"
 msgstr ""
 
@@ -2420,6 +2435,7 @@ msgstr "समाप्त करें और खाते का उपयो�
 msgid "Complete the challenge"
 msgstr "चुनौती पूरी करें"
 
+#: src/lib/hotkeys/index.tsx:66
 #: src/view/com/feeds/ComposerPrompt.tsx:147
 #: src/view/shell/desktop/LeftNav.tsx:575
 msgid "Compose new post"
@@ -2595,6 +2611,10 @@ msgstr ""
 #: src/screens/PostThread/components/ThreadItemReadMoreUp.tsx:64
 msgid "Continue thread..."
 msgstr "थ्रेड को जारी रखें..."
+
+#: src/components/dms/InitiateChatFlow.tsx:437
+msgid "Continue to group name"
+msgstr ""
 
 #: src/screens/Onboarding/StepInterests/index.tsx:90
 #: src/screens/Onboarding/StepProfile/index.tsx:300
@@ -2805,6 +2825,7 @@ msgstr ""
 #. Text on button to create a new starter pack
 #: src/components/dialogs/StarterPackDialog.tsx:113
 #: src/components/dialogs/StarterPackDialog.tsx:210
+#: src/components/dms/InitiateChatFlow.tsx:446
 #: src/components/StarterPack/ProfileStarterPacks.tsx:329
 msgid "Create"
 msgstr "बनाएँ"
@@ -2874,6 +2895,10 @@ msgstr "इसके बदले अवतार बनाएँ"
 msgid "Create another"
 msgstr "एक और बनाएँ"
 
+#: src/components/dms/InitiateChatFlow.tsx:445
+msgid "Create group chat"
+msgstr ""
+
 #: src/components/dialogs/lists/CreateListFromStarterPackDialog.tsx:180
 #: src/components/dialogs/lists/CreateListFromStarterPackDialog.tsx:188
 msgid "Create list"
@@ -2899,8 +2924,8 @@ msgstr "नया खाता बनाएँ"
 
 #. Accessibility label for button to create a moderation report for the selected option
 #. placeholder {0}: option.title
-#: src/components/moderation/ReportDialog/index.tsx:703
-#: src/components/moderation/ReportDialog/index.tsx:749
+#: src/components/moderation/ReportDialog/index.tsx:713
+#: src/components/moderation/ReportDialog/index.tsx:759
 msgid "Create report for {0}"
 msgstr "{0} के लिए शिकायत लिखें"
 
@@ -3145,7 +3170,7 @@ msgstr "डेवलपर मोड सक्षम"
 msgid "Developer options"
 msgstr "डेवलपर विकल्प"
 
-#: src/lib/translation/index.tsx:294
+#: src/lib/translation/index.tsx:303
 msgid "Device failed to translate :("
 msgstr ""
 
@@ -3237,7 +3262,7 @@ msgstr "लॉग आउट उपयोगकर्ताओं को मे�
 msgid "Discover new custom feeds"
 msgstr "नए कस्टम फ़ीड की खोज करें"
 
-#: src/screens/Search/Explore.tsx:451
+#: src/screens/Search/Explore.tsx:452
 msgid "Discover new feeds"
 msgstr ""
 
@@ -3274,7 +3299,7 @@ msgstr ""
 msgid "Dismiss this section"
 msgstr ""
 
-#: src/components/FeedInterstitials.tsx:445
+#: src/components/FeedInterstitials.tsx:348
 msgid "Dismiss this suggestion"
 msgstr ""
 
@@ -3475,7 +3500,7 @@ msgstr "फ़ीड संपादित करें"
 
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:86
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:90
-#: src/view/com/composer/photos/Gallery.tsx:219
+#: src/view/com/composer/photos/Gallery.tsx:221
 msgid "Edit image"
 msgstr "छवि संपादित करें"
 
@@ -3746,7 +3771,7 @@ msgstr ""
 msgid "Enter your username and password"
 msgstr "अपने उपयोगकर्ता नाम और पासवर्ड दर्ज करें"
 
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:148
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:150
 msgid "Enters full screen"
 msgstr ""
 
@@ -3999,16 +4024,16 @@ msgstr ""
 msgid "Failed to load conversations"
 msgstr ""
 
-#: src/screens/Search/Explore.tsx:528
-#: src/screens/Search/Explore.tsx:573
-#: src/screens/Search/Explore.tsx:619
+#: src/screens/Search/Explore.tsx:529
+#: src/screens/Search/Explore.tsx:574
+#: src/screens/Search/Explore.tsx:620
 msgid "Failed to load feeds"
 msgstr ""
 
-#: src/screens/Search/Explore.tsx:487
-#: src/screens/Search/Explore.tsx:542
-#: src/screens/Search/Explore.tsx:587
-#: src/screens/Search/Explore.tsx:633
+#: src/screens/Search/Explore.tsx:488
+#: src/screens/Search/Explore.tsx:543
+#: src/screens/Search/Explore.tsx:588
+#: src/screens/Search/Explore.tsx:634
 msgid "Failed to load feeds preferences"
 msgstr "फ़ीड प्राथमिकताएँ लोड करने में असफल"
 
@@ -4038,14 +4063,14 @@ msgstr "पुराने संदेश लोड करने में अ�
 msgid "Failed to load preference."
 msgstr ""
 
-#: src/screens/Search/Explore.tsx:480
-#: src/screens/Search/Explore.tsx:535
-#: src/screens/Search/Explore.tsx:580
-#: src/screens/Search/Explore.tsx:626
+#: src/screens/Search/Explore.tsx:481
+#: src/screens/Search/Explore.tsx:536
+#: src/screens/Search/Explore.tsx:581
+#: src/screens/Search/Explore.tsx:627
 msgid "Failed to load suggested feeds"
 msgstr "अनुशंसित फ़ीड लोड करने में असफल"
 
-#: src/screens/Search/Explore.tsx:390
+#: src/screens/Search/Explore.tsx:391
 msgid "Failed to load suggested follows"
 msgstr "अनुशंसित फ़ॉलो लोड करने में असफल"
 
@@ -4107,7 +4132,7 @@ msgstr "छवि सहेजने में असफल: {0}"
 msgid "Failed to save settings. Please try again."
 msgstr ""
 
-#: src/screens/Settings/InterestsSettings.tsx:137
+#: src/screens/Settings/InterestsSettings.tsx:147
 msgctxt "toast"
 msgid "Failed to save your interests."
 msgstr ""
@@ -4187,7 +4212,7 @@ msgstr "फ़ीड"
 #. placeholder {0}: sanitizeHandle(feed.creatorHandle, '@')
 #. placeholder {0}: sanitizeHandle(view.creator.handle, '@')
 #: src/components/FeedCard.tsx:170
-#: src/state/queries/feed.ts:121
+#: src/state/queries/feed.ts:118
 #: src/view/com/feeds/FeedSourceCard.tsx:151
 msgid "Feed by {0}"
 msgstr "{0} द्वारा फ़ीड"
@@ -4323,14 +4348,14 @@ msgid "Find my friends"
 msgstr ""
 
 #. Starter packs suggested to the user for them to follow
-#: src/components/ProgressGuide/FollowDialog.tsx:74
-#: src/components/ProgressGuide/FollowDialog.tsx:82
-#: src/components/ProgressGuide/FollowDialog.tsx:427
+#: src/components/ProgressGuide/FollowDialog.tsx:72
+#: src/components/ProgressGuide/FollowDialog.tsx:80
+#: src/components/ProgressGuide/FollowDialog.tsx:431
 #: src/screens/Onboarding/StepSuggestedStarterpacks/index.tsx:43
 msgid "Find people to follow"
 msgstr "फ़ॉलो करने के लिए लोग खोजें"
 
-#: src/screens/Search/Shell.tsx:529
+#: src/screens/Search/Shell.tsx:530
 msgid "Find posts, users, and feeds on Bluesky"
 msgstr ""
 
@@ -4372,6 +4397,10 @@ msgstr ""
 
 #: src/components/contacts/components/OTPInput.tsx:55
 msgid "Focus code input"
+msgstr ""
+
+#: src/lib/hotkeys/index.tsx:73
+msgid "Focus the search field"
 msgstr ""
 
 #. User is not following this account, click to follow
@@ -4833,6 +4862,11 @@ msgstr ""
 
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:169
 msgid "Grooming or predatory behavior"
+msgstr ""
+
+#: src/components/dms/InitiateChatFlow.tsx:227
+#: src/components/dms/InitiateChatFlow.tsx:545
+msgid "Group name"
 msgstr ""
 
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:219
@@ -5682,7 +5716,7 @@ msgstr "पसंद"
 
 #. Accessibility label for the like button when the post has not been liked, verb form followed by number of likes and noun form
 #. placeholder {0}: post.likeCount || 0
-#: src/components/PostControls/index.tsx:284
+#: src/components/PostControls/index.tsx:287
 msgid "Like ({0, plural, one {# like} other {# likes}})"
 msgstr "पसंद करें ({0, plural, one {# पसंद} other {# पसंद}})"
 
@@ -5749,7 +5783,7 @@ msgstr ""
 msgid "Likes of your reposts notifications"
 msgstr ""
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:489
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:482
 msgid "Likes on this post"
 msgstr "इस पोस्ट पर पसंद"
 
@@ -5901,12 +5935,12 @@ msgstr ""
 msgid "Live link"
 msgstr ""
 
-#: src/screens/Search/Explore.tsx:88
+#: src/screens/Search/Explore.tsx:90
 msgid "Load more"
 msgstr "और लोड करें"
 
-#: src/screens/Search/Explore.tsx:517
-#: src/screens/Search/Explore.tsx:608
+#: src/screens/Search/Explore.tsx:518
+#: src/screens/Search/Explore.tsx:609
 msgid "Load more suggested feeds"
 msgstr "और अनुशंसित फ़ीड लोड करें"
 
@@ -5914,7 +5948,7 @@ msgstr "और अनुशंसित फ़ीड लोड करें"
 msgid "Load new notifications"
 msgstr "नई अधिसूचनाएँ लोड करें"
 
-#: src/screens/Profile/ProfileFeed/index.tsx:203
+#: src/screens/Profile/ProfileFeed/index.tsx:204
 #: src/screens/Profile/Sections/Feed.tsx:117
 #: src/screens/ProfileList/FeedSection.tsx:113
 #: src/view/com/feeds/FeedPage.tsx:170
@@ -6083,10 +6117,12 @@ msgstr ""
 msgid "Message from server: {0}"
 msgstr "सर्वर से संदेश: {0}"
 
+#: src/screens/Messages/components/MessageComposer.tsx:166
 #: src/screens/Messages/components/MessageInput.tsx:154
 msgid "Message input field"
 msgstr "संदेश दर्ज करने का स्थान"
 
+#: src/screens/Messages/components/MessageComposer.tsx:69
 #: src/screens/Messages/components/MessageInput.tsx:79
 #: src/screens/Messages/components/MessageInput.web.tsx:60
 msgid "Message is too long"
@@ -6217,7 +6253,7 @@ msgstr "सिनेमा"
 msgid "Music"
 msgstr "संगीत"
 
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:169
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:171
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VolumeControl.tsx:97
 msgctxt "video"
 msgid "Mute"
@@ -6364,8 +6400,8 @@ msgstr "अगले स्क्रीन पर जाता है"
 msgid "Navigates to your profile"
 msgstr "आपके प्रोफ़ाइल पर जाता है"
 
-#: src/components/moderation/ReportDialog/index.tsx:335
-#: src/components/moderation/ReportDialog/index.tsx:352
+#: src/components/moderation/ReportDialog/index.tsx:345
+#: src/components/moderation/ReportDialog/index.tsx:362
 msgid "Need to report a copyright violation, legal request, or regulatory compliance issue?"
 msgstr ""
 
@@ -6392,7 +6428,8 @@ msgstr ""
 msgid "New {postsCount, plural, one {post} other {posts}} from {firstAuthorName}"
 msgstr ""
 
-#: src/components/dms/dialogs/NewChatDialog.tsx:71
+#: src/components/dms/dialogs/NewChatDialog.tsx:79
+#: src/components/dms/dialogs/NewChatDialog.tsx:89
 #: src/screens/Messages/ChatList.tsx:408
 #: src/screens/Messages/ChatList.tsx:415
 msgid "New chat"
@@ -6419,6 +6456,16 @@ msgstr ""
 msgid "New followers"
 msgstr ""
 
+#: src/components/dms/InitiateChatFlow.tsx:226
+#: src/components/dms/InitiateChatFlow.tsx:709
+#: src/components/dms/InitiateChatFlow.tsx:737
+msgid "New group chat"
+msgstr ""
+
+#: src/components/dms/InitiateChatFlow.tsx:261
+msgid "New group chat with:"
+msgstr ""
+
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:228
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:236
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:387
@@ -6440,7 +6487,7 @@ msgstr "नए संदेश"
 msgid "New password"
 msgstr "नया पासवर्ड"
 
-#: src/screens/Profile/ProfileFeed/index.tsx:220
+#: src/screens/Profile/ProfileFeed/index.tsx:221
 #: src/screens/ProfileList/index.tsx:251
 #: src/screens/ProfileList/index.tsx:300
 #: src/view/screens/Feeds.tsx:553
@@ -6450,13 +6497,9 @@ msgid "New post"
 msgstr "नया पोस्ट"
 
 #: src/view/com/feeds/FeedPage.tsx:181
-msgctxt "action"
-msgid "New post"
-msgstr "नया पोस्ट"
-
 #: src/view/shell/desktop/LeftNav.tsx:583
 msgctxt "action"
-msgid "New Post"
+msgid "New post"
 msgstr "नया पोस्ट"
 
 #: src/view/com/notifications/NotificationFeedItem.tsx:545
@@ -6489,6 +6532,7 @@ msgstr "समाचार"
 
 #: src/components/contacts/screens/ViewMatches.tsx:395
 #: src/components/contacts/screens/ViewMatches.tsx:410
+#: src/components/dms/InitiateChatFlow.tsx:438
 #: src/screens/Login/ForgotPasswordForm.tsx:149
 #: src/screens/Login/ForgotPasswordForm.tsx:156
 #: src/screens/Login/SetNewPasswordForm.tsx:186
@@ -6641,12 +6685,13 @@ msgid "No result"
 msgstr "कोई परिणाम नहीं"
 
 #: src/components/dialogs/SearchablePeopleList.tsx:224
-#: src/components/ProgressGuide/FollowDialog.tsx:211
+#: src/components/dms/InitiateChatFlow.tsx:334
+#: src/components/ProgressGuide/FollowDialog.tsx:209
 msgid "No results"
 msgstr "कोई परिणाम नहीं"
 
 #. placeholder {0}: interestsDisplayNames[selectedInterest]
-#: src/screens/Search/Explore.tsx:826
+#: src/screens/Search/Explore.tsx:827
 msgid "No results for \"{0}\"."
 msgstr ""
 
@@ -6663,7 +6708,7 @@ msgstr "\"{query}\" के लिए कोई परिणाम नहीं �
 msgid "No results found for “<0>{query}</0>”."
 msgstr ""
 
-#: src/screens/Search/Explore.tsx:830
+#: src/screens/Search/Explore.tsx:831
 msgid "No results."
 msgstr ""
 
@@ -6679,6 +6724,10 @@ msgstr ""
 #: src/components/dialogs/EmbedConsent.tsx:107
 msgid "No thanks"
 msgstr "नहीं धन्यवाद"
+
+#: src/lib/translation/index.tsx:308
+msgid "No translation received from your device."
+msgstr ""
 
 #: src/view/screens/Profile.tsx:500
 msgid "No video posts yet"
@@ -6838,7 +6887,7 @@ msgstr "ठीक"
 #: src/components/BotAccountAlert.tsx:52
 #: src/components/BotAccountAlert.tsx:57
 #: src/screens/Login/PasswordUpdatedForm.tsx:37
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:658
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:651
 msgid "Okay"
 msgstr "ठीक है"
 
@@ -6938,6 +6987,7 @@ msgstr ""
 msgid "Open drawer menu"
 msgstr "ड्रॉअर मेनू खोलें"
 
+#: src/screens/Messages/components/MessageComposer.tsx:143
 #: src/screens/Messages/components/MessageInput.web.tsx:180
 #: src/view/com/composer/Composer.tsx:1979
 msgid "Open emoji picker"
@@ -7230,7 +7280,7 @@ msgstr "पासवर्ड अपडेट किया गया"
 msgid "Password updated!"
 msgstr "पासवर्ड अपडेट किया गया!"
 
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:153
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:155
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:395
 msgid "Pause"
 msgstr "रोकें"
@@ -7345,7 +7395,7 @@ msgstr "पिन किए गए फ़ीड"
 msgid "Pinned to your feeds"
 msgstr "आपके फ़ीड में पिन किया गया"
 
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:153
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:155
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:396
 msgid "Play"
 msgstr "चलाएँ"
@@ -7372,7 +7422,7 @@ msgstr "वीडियो चलाएँ"
 msgid "Plays or pauses the GIF"
 msgstr ""
 
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:154
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:156
 msgid "Plays or pauses the video"
 msgstr ""
 
@@ -7553,7 +7603,7 @@ msgctxt "action"
 msgid "Post"
 msgstr "पोस्ट करें"
 
-#: src/screens/PostThread/index.tsx:529
+#: src/screens/PostThread/index.tsx:553
 msgctxt "description"
 msgid "Post"
 msgstr "पोस्ट करें"
@@ -7594,7 +7644,7 @@ msgstr "पोस्ट मिटाया गया"
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "पोस्ट अपलोड करने में असफल। कृपया अपना इंटरनेट कनेक्शन जाँच लें और फिर प्रयास करें।"
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:130
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:131
 #: src/screens/PostThread/components/ThreadItemPost.tsx:113
 #: src/screens/PostThread/components/ThreadItemTreePost.tsx:109
 #: src/screens/VideoFeed/index.tsx:551
@@ -7873,7 +7923,7 @@ msgstr "क्वोट पोस्ट अक्षम किए गए"
 msgid "Quotes"
 msgstr "क्वोट"
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:471
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:464
 msgid "Quotes of this post"
 msgstr "इस पोस्ट के क्वोट"
 
@@ -8009,6 +8059,10 @@ msgstr "बातचीत फिर लोड करें"
 msgid "Remove"
 msgstr "हटाएँ"
 
+#: src/components/dms/ChatProfileTabs.tsx:153
+msgid "Remove {displayName} from group chat"
+msgstr ""
+
 #: src/components/StarterPack/Wizard/WizardListCard.tsx:62
 msgid "Remove {displayName} from starter pack"
 msgstr "स्टार्टर पैक से {displayName} को हटाएँ"
@@ -8076,7 +8130,7 @@ msgstr "जल्द पहुँच से हटाएँ?"
 msgid "Remove from saved feeds"
 msgstr "सहेजे फ़ीड से हटाएँ"
 
-#: src/components/PostControls/BookmarkButton.tsx:141
+#: src/components/PostControls/BookmarkButton.tsx:143
 #: src/screens/Bookmarks/index.tsx:262
 msgid "Remove from saved posts"
 msgstr ""
@@ -8085,7 +8139,7 @@ msgstr ""
 msgid "Remove from your feeds?"
 msgstr ""
 
-#: src/view/com/composer/photos/Gallery.tsx:228
+#: src/view/com/composer/photos/Gallery.tsx:230
 msgid "Remove image"
 msgstr "छवि हटाएँ"
 
@@ -8237,7 +8291,7 @@ msgstr "जवाब दें"
 
 #. Accessibility label for the reply button, verb form followed by number of replies and noun form
 #. placeholder {0}: post.replyCount || 0
-#: src/components/PostControls/index.tsx:242
+#: src/components/PostControls/index.tsx:243
 msgid "Reply ({0, plural, one {# reply} other {# replies}})"
 msgstr "जवाब दें ({0, plural, one {# जवाब} other {# जवाब}})"
 
@@ -8293,7 +8347,7 @@ msgid "Report conversation"
 msgstr "बातचीत की शिकायत करें"
 
 #: src/components/moderation/ReportDialog/index.tsx:98
-#: src/components/moderation/ReportDialog/index.tsx:255
+#: src/components/moderation/ReportDialog/index.tsx:265
 msgid "Report dialog"
 msgstr "शिकायत डायलॉग"
 
@@ -8404,7 +8458,7 @@ msgstr "आपने रीपोस्ट किया"
 msgid "Reposts"
 msgstr ""
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:451
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:444
 msgid "Reposts of this post"
 msgstr "इस पोस्ट के रीपोस्ट"
 
@@ -8508,7 +8562,7 @@ msgstr "पिछली क्रिया का फिर से प्रय�
 #: src/components/dms/MessageItem.tsx:322
 #: src/components/Error.tsx:66
 #: src/components/Lists.tsx:115
-#: src/components/moderation/ReportDialog/index.tsx:289
+#: src/components/moderation/ReportDialog/index.tsx:299
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoFallback.tsx:56
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoFallback.tsx:59
 #: src/components/StarterPack/ProfileStarterPacks.tsx:377
@@ -8530,7 +8584,7 @@ msgstr "पिछली क्रिया का फिर से प्रय�
 msgid "Retry"
 msgstr "फिर प्रयास करें"
 
-#: src/components/moderation/ReportDialog/index.tsx:286
+#: src/components/moderation/ReportDialog/index.tsx:296
 #: src/view/screens/Storybook/Admonitions.tsx:61
 msgid "Retry loading report options"
 msgstr ""
@@ -8686,10 +8740,10 @@ msgid "Scroll to top"
 msgstr "ऊपर जाएँ"
 
 #: src/components/dialogs/SearchablePeopleList.tsx:515
-#: src/components/forms/SearchInput.tsx:33
-#: src/components/forms/SearchInput.tsx:35
+#: src/components/forms/SearchInput.tsx:51
+#: src/components/forms/SearchInput.tsx:53
 #: src/screens/Search/Shell.tsx:354
-#: src/screens/Search/Shell.tsx:517
+#: src/screens/Search/Shell.tsx:518
 #: src/view/shell/bottom-bar/BottomBar.tsx:199
 msgid "Search"
 msgstr "खोजें"
@@ -8701,7 +8755,7 @@ msgstr "खोजें"
 msgid "Search @{0}'s posts"
 msgstr ""
 
-#: src/components/ProgressGuide/FollowDialog.tsx:658
+#: src/components/ProgressGuide/FollowDialog.tsx:685
 msgid "Search by name or interest"
 msgstr "नाम या दिलचस्पी से खोजें"
 
@@ -8714,20 +8768,16 @@ msgid "Search feeds"
 msgstr "फ़ीड खोजें"
 
 #. Accessibility label for a tab that searches for accounts in a category (e.g. Art, Video Games, Sports, etc.) that are suggested for the user to follow. The tab is not currently active and can be selected.
-#: src/components/ProgressGuide/FollowDialog.tsx:487
+#: src/components/ProgressGuide/FollowDialog.tsx:488
 msgid "Search for \"{interestsDisplayName}\""
 msgstr ""
 
 #. Accessibility label for a tab that searches for accounts in a category (e.g. Art, Video Games, Sports, etc.) that are suggested for the user to follow. The tab is currently selected.
-#: src/components/ProgressGuide/FollowDialog.tsx:480
+#: src/components/ProgressGuide/FollowDialog.tsx:483
 msgid "Search for \"{interestsDisplayName}\" (active)"
 msgstr ""
 
-#: src/view/shell/desktop/Search.tsx:130
-msgid "Search for \"{query}\""
-msgstr "\"{query}\" खोजें"
-
-#: src/screens/Search/components/AutocompleteResults.tsx:47
+#: src/screens/Search/components/AutocompleteResults.tsx:54
 msgid "Search for \"{searchText}\""
 msgstr "\"{searchText}\" खोजें"
 
@@ -8735,12 +8785,16 @@ msgstr "\"{searchText}\" खोजें"
 msgid "Search for feeds that you want to suggest to others."
 msgstr "फ़ीड खोजें जो आप दूसरों को दिखाना चाहते हैं"
 
-#: src/screens/Search/Explore.tsx:377
+#: src/screens/Search/Explore.tsx:378
 msgid "Search for more accounts"
 msgstr ""
 
-#: src/screens/Search/Explore.tsx:454
+#: src/screens/Search/Explore.tsx:455
 msgid "Search for more feeds"
+msgstr ""
+
+#: src/components/dms/InitiateChatFlow.tsx:982
+msgid "Search for people"
 msgstr ""
 
 #: src/screens/Search/Shell.tsx:380
@@ -8771,7 +8825,8 @@ msgid "Search posts"
 msgstr ""
 
 #: src/components/dialogs/SearchablePeopleList.tsx:535
-#: src/components/ProgressGuide/FollowDialog.tsx:677
+#: src/components/dms/InitiateChatFlow.tsx:1002
+#: src/components/ProgressGuide/FollowDialog.tsx:704
 msgid "Search profiles"
 msgstr "प्रोफ़ाइल खोजें"
 
@@ -8784,7 +8839,8 @@ msgid "Search..."
 msgstr ""
 
 #: src/components/dialogs/SearchablePeopleList.tsx:536
-#: src/components/ProgressGuide/FollowDialog.tsx:678
+#: src/components/dms/InitiateChatFlow.tsx:1003
+#: src/components/ProgressGuide/FollowDialog.tsx:705
 msgid "Searches for profiles"
 msgstr ""
 
@@ -8822,12 +8878,12 @@ msgstr ""
 msgid "See jobs at Bluesky"
 msgstr "Bluesky में नौकरियाँ देखें"
 
-#: src/components/FeedInterstitials.tsx:592
-#: src/components/FeedInterstitials.tsx:655
+#: src/components/FeedInterstitials.tsx:490
+#: src/components/FeedInterstitials.tsx:548
 msgid "See more"
 msgstr ""
 
-#: src/components/FeedInterstitials.tsx:573
+#: src/components/FeedInterstitials.tsx:471
 msgid "See more suggested profiles"
 msgstr ""
 
@@ -8864,7 +8920,7 @@ msgstr ""
 msgid "Select a color"
 msgstr "रंग चुनें"
 
-#: src/components/moderation/ReportDialog/index.tsx:374
+#: src/components/moderation/ReportDialog/index.tsx:384
 msgid "Select a reason"
 msgstr ""
 
@@ -8927,6 +8983,10 @@ msgstr "GIF चुनें"
 msgid "Select GIF \"{0}\""
 msgstr "\"{0}\" GIF चुनें"
 
+#: src/components/dms/InitiateChatFlow.tsx:645
+msgid "Select group chat members"
+msgstr ""
+
 #: src/components/dialogs/MutedWords.tsx:151
 msgid "Select how long to mute this word for."
 msgstr "चुनें कि कितने समय तक इस शब्द को म्यूट करना है।"
@@ -8945,7 +9005,7 @@ msgstr "भाषा चुनें..."
 msgid "Select languages"
 msgstr "भाषाएँ चुनें"
 
-#: src/components/moderation/ReportDialog/index.tsx:424
+#: src/components/moderation/ReportDialog/index.tsx:434
 msgid "Select moderation service"
 msgstr ""
 
@@ -8991,7 +9051,7 @@ msgid "Select your date of birth"
 msgstr "अपनी जन्मतिथि चुनें"
 
 #: src/screens/Onboarding/StepInterests/index.tsx:69
-#: src/screens/Settings/InterestsSettings.tsx:168
+#: src/screens/Settings/InterestsSettings.tsx:178
 msgid "Select your interests from the options below"
 msgstr "नीचे दिए विकल्पों में अपनी दिलचस्पियाँ चुनें"
 
@@ -9031,6 +9091,7 @@ msgstr "ईमेल भेजें"
 msgid "Send feedback"
 msgstr "प्रतिक्रिया भेजें"
 
+#: src/screens/Messages/components/MessageComposer.tsx:216
 #: src/screens/Messages/components/MessageInput.tsx:194
 #: src/screens/Messages/components/MessageInput.web.tsx:234
 msgid "Send message"
@@ -9044,7 +9105,7 @@ msgstr ""
 msgid "Send post to..."
 msgstr "इन्हें पोस्ट भेजें"
 
-#: src/components/moderation/ReportDialog/index.tsx:814
+#: src/components/moderation/ReportDialog/index.tsx:824
 msgid "Send report to {title}"
 msgstr ""
 
@@ -9364,7 +9425,7 @@ msgstr "चेतावनी दिखाएँ और फ़ीड से फ़ि�
 msgid "Show when you’re live"
 msgstr ""
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:599
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:592
 msgid "Shows information about when this post was created"
 msgstr ""
 
@@ -9519,7 +9580,7 @@ msgstr ""
 msgid "Some of your verifications are invalid."
 msgstr ""
 
-#: src/components/FeedInterstitials.tsx:734
+#: src/components/FeedInterstitials.tsx:627
 msgid "Some other feeds you might like"
 msgstr "कुछ अन्य फ़ीड जो आपको शायद पसंद आएँ"
 
@@ -9547,7 +9608,7 @@ msgid "Something went wrong"
 msgstr "कोई गड़बड़ हुई"
 
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:139
-#: src/components/moderation/ReportDialog/index.tsx:281
+#: src/components/moderation/ReportDialog/index.tsx:291
 #: src/screens/Deactivated.tsx:86
 #: src/screens/Settings/components/DeactivateAccountDialog.tsx:59
 #: src/view/screens/Storybook/Admonitions.tsx:56
@@ -9579,7 +9640,7 @@ msgstr "कुछ गड़बड़ है? हमें बताएँ।"
 msgid "Sorry, we're unable to load account suggestions at this time."
 msgstr ""
 
-#: src/App.native.tsx:142
+#: src/App.native.tsx:140
 #: src/App.web.tsx:119
 msgid "Sorry! Your session expired. Please sign in again."
 msgstr ""
@@ -9618,7 +9679,7 @@ msgstr "खेल"
 msgid "Start a conversation, and it will appear here."
 msgstr ""
 
-#: src/components/dms/dialogs/NewChatDialog.tsx:81
+#: src/components/dms/dialogs/NewChatDialog.tsx:95
 msgid "Start a new chat"
 msgstr "नया बातचीत शुरू करें"
 
@@ -9632,7 +9693,12 @@ msgstr "लोगों को जोड़ना शुरू करें"
 msgid "Start adding people!"
 msgstr "लोगों को जोड़ना शुरू करें!"
 
+#: src/components/dms/InitiateChatFlow.tsx:646
+msgid "Start chat"
+msgstr ""
+
 #: src/components/dialogs/SearchablePeopleList.tsx:383
+#: src/components/dms/InitiateChatFlow.tsx:773
 msgid "Start chat with {displayName}"
 msgstr "{displayName} से बातचीत शुरू करें"
 
@@ -9660,7 +9726,7 @@ msgstr "आपके द्वारा स्टार्टर पैक"
 msgid "Starter pack is invalid"
 msgstr "स्टार्टर पैक अमान्य है"
 
-#: src/screens/Search/Explore.tsx:663
+#: src/screens/Search/Explore.tsx:664
 #: src/view/screens/Profile.tsx:241
 msgid "Starter Packs"
 msgstr "स्टार्टर पैक"
@@ -9727,9 +9793,9 @@ msgstr "अपील जमा करें"
 msgid "Submit Appeal"
 msgstr "अपील जमा करें"
 
-#: src/components/moderation/ReportDialog/index.tsx:502
-#: src/components/moderation/ReportDialog/index.tsx:563
-#: src/components/moderation/ReportDialog/index.tsx:570
+#: src/components/moderation/ReportDialog/index.tsx:512
+#: src/components/moderation/ReportDialog/index.tsx:573
+#: src/components/moderation/ReportDialog/index.tsx:580
 msgid "Submit report"
 msgstr ""
 
@@ -9772,12 +9838,16 @@ msgstr "सफल!"
 msgid "Successfully verified"
 msgstr ""
 
-#: src/screens/Search/Explore.tsx:374
+#: src/components/dms/InitiateChatFlow.tsx:313
+msgid "Suggested"
+msgstr ""
+
+#: src/screens/Search/Explore.tsx:375
 msgid "Suggested accounts"
 msgstr ""
 
 #. Accounts suggested to the user for them to follow
-#: src/components/FeedInterstitials.tsx:569
+#: src/components/FeedInterstitials.tsx:468
 #: src/screens/Onboarding/StepSuggestedAccounts/index.tsx:180
 msgid "Suggested for you"
 msgstr "आपके लिए सुझाव"
@@ -10119,8 +10189,8 @@ msgstr "सर्वर से संपर्क करने में सम�
 msgid "There was an issue fetching notifications. Tap here to try again."
 msgstr "अधिसूचनाएँ लाने में समस्या हुई। फिर प्रयास करने के लिए यहाँ दबाएँ।"
 
-#: src/screens/Search/Explore.tsx:1025
-#: src/view/com/posts/PostFeed.tsx:763
+#: src/screens/Search/Explore.tsx:1026
+#: src/view/com/posts/PostFeed.tsx:773
 msgid "There was an issue fetching posts. Tap here to try again."
 msgstr "पोस्ट लाने में समस्या हुई। फिर प्रयास करने के लिए यहाँ दबाएँ।"
 
@@ -10387,7 +10457,7 @@ msgstr "यह मॉडरेशन सेवा अनुपलब्ध ह�
 
 #. placeholder {0}: niceDate(i18n, createdAt)
 #. placeholder {1}: niceDate(i18n, indexedAt)
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:639
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:632
 msgid "This post claims to have been created on <0>{0}</0>, but was first seen by Bluesky on <1>{1}</1>."
 msgstr "यह पोस्ट <0>{0}</0> को बनने का दावा करता है, पर इसे Bluesky पर सबसे पहले <1>{1}</1> को देखा गया।"
 
@@ -10554,7 +10624,7 @@ msgstr "आज"
 msgid "Toggle to enable or disable adult content"
 msgstr "वयस्क सामग्री सक्षम या अक्षम करने के लिए टॉगल करें"
 
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:171
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:173
 msgid "Toggles the sound"
 msgstr ""
 
@@ -10607,6 +10677,10 @@ msgstr ""
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:537
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:539
 msgid "Translating…"
+msgstr ""
+
+#: src/lib/translation/index.tsx:305
+msgid "Translation to the same language is unavailable on your device."
 msgstr ""
 
 #: src/screens/Settings/ThreadPreferences.tsx:87
@@ -10788,7 +10862,7 @@ msgstr "खाता अनफ़ॉलो करें"
 msgid "Unfollows the user"
 msgstr ""
 
-#: src/components/moderation/ReportDialog/index.tsx:486
+#: src/components/moderation/ReportDialog/index.tsx:496
 msgid "Unfortunately, none of your subscribed labelers supports this report type."
 msgstr ""
 
@@ -10818,7 +10892,7 @@ msgstr "नापसंद करें"
 
 #. Accessibility label for the like button when the post has been liked, verb followed by number of likes and noun
 #. placeholder {0}: post.likeCount || 0
-#: src/components/PostControls/index.tsx:276
+#: src/components/PostControls/index.tsx:279
 msgid "Unlike ({0, plural, one {# like} other {# likes}})"
 msgstr "नापसंद करें ({0, plural, one {# पसंद} other {# पसंद}})"
 
@@ -10827,7 +10901,7 @@ msgstr "नापसंद करें ({0, plural, one {# पसंद} other 
 msgid "Unmute"
 msgstr "अनम्यूट करें"
 
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:168
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:170
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VolumeControl.tsx:96
 msgctxt "video"
 msgid "Unmute"
@@ -10925,6 +10999,10 @@ msgstr "इस लेबलकर्ता की सदस्यता छो�
 #: src/screens/List/ListHiddenScreen.tsx:90
 msgid "Unsubscribed from list"
 msgstr "सूची की सदस्यता छोड़ी गई"
+
+#: src/view/com/composer/text-input/TextInput.tsx:131
+msgid "Unsupported clipboard content"
+msgstr ""
 
 #: src/view/com/composer/Composer.tsx:1369
 msgid "Unsupported video type: {mimeType}"
@@ -11081,7 +11159,7 @@ msgid "User list by {0}"
 msgstr "{0} द्वारा उपयोगकर्ता सूची"
 
 #. placeholder {0}: sanitizeHandle(view.creator.handle, '@')
-#: src/state/queries/feed.ts:162
+#: src/state/queries/feed.ts:159
 msgid "User List by {0}"
 msgstr ""
 
@@ -11240,8 +11318,8 @@ msgstr ""
 msgid "Version {0}"
 msgstr ""
 
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:86
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:147
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:87
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:149
 msgid "Video"
 msgstr "वीडियो"
 
@@ -11289,7 +11367,7 @@ msgid "Video uploaded"
 msgstr "वीडियो अपलोड किया गया"
 
 #. placeholder {0}: embed.alt
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:86
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:87
 msgid "Video: {0}"
 msgstr "वीडियो: {0}"
 
@@ -11413,7 +11491,7 @@ msgid "View your default post interaction settings"
 msgstr ""
 
 #: src/view/com/home/HomeHeaderLayout.web.tsx:57
-#: src/view/com/home/HomeHeaderLayoutMobile.tsx:75
+#: src/view/com/home/HomeHeaderLayoutMobile.tsx:82
 msgid "View your feeds and explore more"
 msgstr "अपने फ़ीड देखें और अधिक खोजें"
 
@@ -11483,7 +11561,7 @@ msgid "We apply the highest privacy standards, and never share or sell your cont
 msgstr ""
 
 #: src/view/com/feeds/MissingFeed.tsx:141
-msgid "We could not connect to the service that provides this custom feed. It may be temporarily unavailable and experiencing issues, or permanently unavailable."
+msgid "We could not connect to the service that provides this custom feed. It may be temporarily experiencing issues, or permanently unavailable."
 msgstr ""
 
 #: src/view/com/feeds/MissingFeed.tsx:147
@@ -11539,7 +11617,7 @@ msgstr ""
 msgid "We ran out of posts from your follows. Here's the latest from <0/>."
 msgstr "आपके फ़ॉलो किए गए लोगों के पोस्ट ख़त्म हो गए। यहाँ है <0/> से सबसे नए पोस्ट।"
 
-#: src/screens/Settings/InterestsSettings.tsx:161
+#: src/screens/Settings/InterestsSettings.tsx:171
 msgid "We recommend selecting at least two interests."
 msgstr ""
 
@@ -11604,9 +11682,13 @@ msgid "We're having issues initializing the age assurance process for your accou
 msgstr ""
 
 #: src/components/dialogs/SearchablePeopleList.tsx:108
-#: src/components/ProgressGuide/FollowDialog.tsx:185
+#: src/components/ProgressGuide/FollowDialog.tsx:183
 msgid "We're having network issues, try again"
 msgstr "हमें नेटवर्क समस्याएँ हो रही हैं, फिर प्रयास करें।"
+
+#: src/components/dms/InitiateChatFlow.tsx:250
+msgid "We’re having network issues, try again"
+msgstr ""
 
 #: src/components/dialogs/nuxs/InitialVerificationAnnouncement.tsx:96
 msgid "We’re introducing a new layer of verification on Bluesky — an easy-to-see checkmark."
@@ -11770,6 +11852,7 @@ msgstr ""
 msgid "Would you like to save this as a draft to edit later?"
 msgstr ""
 
+#: src/screens/Messages/components/MessageComposer.tsx:167
 #: src/screens/Messages/components/MessageInput.tsx:156
 #: src/screens/Messages/components/MessageInput.web.tsx:213
 msgid "Write a message"
@@ -12400,11 +12483,11 @@ msgstr "आपका पूरा हैंडल <0>@{0}</0> होगा"
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:68
 #: src/screens/Settings/ContentAndMediaSettings.tsx:94
 #: src/screens/Settings/ContentAndMediaSettings.tsx:97
-#: src/screens/Settings/InterestsSettings.tsx:47
+#: src/screens/Settings/InterestsSettings.tsx:49
 msgid "Your interests"
 msgstr ""
 
-#: src/screens/Settings/InterestsSettings.tsx:128
+#: src/screens/Settings/InterestsSettings.tsx:138
 msgctxt "toast"
 msgid "Your interests have been updated!"
 msgstr ""
@@ -12463,11 +12546,11 @@ msgid "Your reply was sent"
 msgstr ""
 
 #. placeholder {0}: state.selectedLabeler?.creator.displayName
-#: src/components/moderation/ReportDialog/index.tsx:513
+#: src/components/moderation/ReportDialog/index.tsx:523
 msgid "Your report will be sent to <0>{0}</0>."
 msgstr ""
 
-#: src/screens/Settings/InterestsSettings.tsx:61
+#: src/screens/Settings/InterestsSettings.tsx:63
 msgid "Your selected interests help us serve you content you care about."
 msgstr ""
 

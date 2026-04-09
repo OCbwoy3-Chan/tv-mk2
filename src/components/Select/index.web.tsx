@@ -108,7 +108,7 @@ export function Trigger({children, label}: TriggerProps) {
             borderRadius: 10,
             maxWidth: 400,
             outline: 0,
-            borderWidth: 2,
+            borderWidth: 1,
             borderStyle: 'solid',
             borderColor: focused
               ? t.palette.primary_500

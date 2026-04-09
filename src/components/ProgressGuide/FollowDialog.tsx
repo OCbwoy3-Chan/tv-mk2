@@ -8,7 +8,7 @@ import {popularInterests, useInterestsDisplayNames} from '#/lib/interests'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useActorSearch} from '#/state/queries/actor-search'
 import {usePreferencesQuery} from '#/state/queries/preferences'
-import {useGetSuggestedUsersQuery} from '#/state/queries/trending/useGetSuggestedUsersQuery'
+import {useGetSuggestedUsersForSeeMoreQuery} from '#/state/queries/trending/useGetSuggestedUsersForSeeMoreQuery'
 import {useSession} from '#/state/session'
 import {type Follow10ProgressGuide} from '#/state/shell/progress-guide'
 import {type ListMethods} from '#/view/com/util/List'
@@ -142,7 +142,7 @@ function DialogInner({guide}: {guide?: Follow10ProgressGuide}) {
     data: suggestions,
     isFetching: isFetchingSuggestions,
     error: suggestionsError,
-  } = useGetSuggestedUsersQuery({
+  } = useGetSuggestedUsersForSeeMoreQuery({
     category: selectedInterest,
     limit: 50,
   })

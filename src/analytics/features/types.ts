@@ -11,6 +11,7 @@ export enum Features {
   LiveNowBetaDisable = 'live_now_beta:disable',
   ImageUploadsHighResolution = 'image_uploads:high_resolution',
   GroupChatsEnable = 'group_chats:enable',
+  DmsNewMessageComposerEnable = 'dms:new_message_composer:enable',
 
   AATest = 'aa-test',
 }

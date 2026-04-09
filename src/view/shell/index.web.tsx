@@ -9,7 +9,6 @@ import {useIntentHandler} from '#/lib/hooks/useIntentHandler'
 import {type NavigationProp} from '#/lib/routes/types'
 import {useSession} from '#/state/session'
 import {useIsDrawerOpen, useSetDrawerOpen} from '#/state/shell'
-import {useComposerKeyboardShortcut} from '#/state/shell/composer/useComposerKeyboardShortcut'
 import {useCloseAllActiveElements} from '#/state/util'
 import {Lightbox} from '#/view/com/lightbox/Lightbox'
 import {ModalsContainer} from '#/view/com/modals/Modal'
@@ -34,7 +33,7 @@ import {WelcomeModal} from '#/components/WelcomeModal'
 import {RedirectOverlay} from '#/ageAssurance/components/RedirectOverlay'
 import {PassiveAnalytics} from '#/analytics/PassiveAnalytics'
 import {FlatNavigator, RoutesContainer} from '#/Navigation'
-import {Composer} from './Composer.web'
+import {Composer} from './Composer'
 import {DrawerContent} from './Drawer'
 
 function ShellInner() {
@@ -44,7 +43,6 @@ function ShellInner() {
   const {state: policyUpdateState} = usePolicyUpdateContext()
   const welcomeModalControl = useWelcomeModal()
 
-  useComposerKeyboardShortcut()
   useIntentHandler()
 
   useLayoutEffect(() => {

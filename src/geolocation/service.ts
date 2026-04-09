@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import EventEmitter from 'eventemitter3'
+import {EventEmitter} from 'eventemitter3'
 
 import {FALLBACK_GEOLOCATION_SERVICE_RESPONSE} from '#/geolocation/const'
 import * as debug from '#/geolocation/debug'

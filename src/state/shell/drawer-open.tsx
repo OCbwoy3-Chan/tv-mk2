@@ -1,5 +1,7 @@
 import {createContext, useContext, useState} from 'react'
 
+import {useHotkeysContext} from '#/lib/hotkeys'
+
 type StateContext = boolean
 type SetContext = (v: boolean) => void
 
@@ -10,10 +12,22 @@ setContext.displayName = 'DrawerOpenSetContext'
 
 export function Provider({children}: React.PropsWithChildren<{}>) {
   const [state, setState] = useState(false)
+  const {disableScope, enableScope} = useHotkeysContext()
+
+  const setDrawerOpen = (open: boolean) => {
+    if (open) {
+      disableScope('global')
+    } else {
+      enableScope('global')
+    }
+    setState(open)
+  }
 
   return (
     <stateContext.Provider value={state}>
-      <setContext.Provider value={setState}>{children}</setContext.Provider>
+      <setContext.Provider value={setDrawerOpen}>
+        {children}
+      </setContext.Provider>
     </stateContext.Provider>
   )
 }

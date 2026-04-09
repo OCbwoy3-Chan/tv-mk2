@@ -582,7 +582,7 @@ function LightboxFooter({
         {altText ? (
           <View accessibilityRole="button" style={styles.footerText}>
             <Text
-              style={[s.gray3]}
+              style={{color: colors.gray3}}
               numberOfLines={isAltExpanded ? undefined : 3}
               selectable
               onPress={() => {

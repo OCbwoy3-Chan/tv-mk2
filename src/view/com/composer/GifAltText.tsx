@@ -101,7 +101,7 @@ export function GifAltTextDialogLoaded({
         </Text>
       </TouchableOpacity>
 
-      <Admonition type="tip" style={[a.mt_sm]}>
+      <Admonition type="info" style={[a.mt_sm]}>
         <Trans>
           Alt text describes images for blind and low-vision users, and helps
           give context to everyone.

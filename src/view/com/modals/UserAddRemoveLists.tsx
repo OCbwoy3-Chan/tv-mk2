@@ -139,7 +139,7 @@ function ListItem({
   onAdd?: (listUri: string) => void
   onRemove?: (listUri: string) => void
 }) {
-  const t = useTheme();
+  const t = useTheme()
   const pal = usePalette('default')
   const {_} = useLingui()
   const {currentAccount} = useSession()
@@ -204,7 +204,7 @@ function ListItem({
       <View style={styles.listItemContent}>
         <Text
           type="lg"
-          style={[s.bold, pal.text]}
+          style={[{fontWeight: '600'}, pal.text]}
           numberOfLines={1}
           lineHeight={1.2}>
           {sanitizeDisplayName(list.name)}

@@ -10,7 +10,7 @@ import {
 
 import {createPersistedQueryStorage} from '#/lib/persisted-query-storage'
 import {listenNetworkConfirmed, listenNetworkLost} from '#/state/events'
-import {PERSISTED_QUERY_ROOT} from '#/state/queries'
+import {isQueryPersisted} from '#/state/queries/util'
 import * as env from '#/env'
 import {IS_NATIVE, IS_WEB} from '#/env'
 import {PUBLIC_BSKY_SERVICE} from './constants'
@@ -138,8 +138,7 @@ const dehydrateOptions: PersistQueryClientProviderProps['persistOptions']['dehyd
   {
     shouldDehydrateMutation: (_: any) => false,
     shouldDehydrateQuery: query => {
-      const root = String(query.queryKey[0])
-      return root === PERSISTED_QUERY_ROOT
+      return isQueryPersisted(query.queryKey)
     },
   }
 
@@ -191,7 +190,10 @@ function QueryProviderInner({
   })
   useEffect(() => {
     if (IS_WEB) {
-      window.__TANSTACK_QUERY_CLIENT__ = queryClient
+      // WARNING, BROKEN
+      // something since v5.32.0 causes OOMs. not important
+      // so disable for now
+      // window.__TANSTACK_QUERY_CLIENT__ = queryClient
     }
   }, [queryClient])
   return (

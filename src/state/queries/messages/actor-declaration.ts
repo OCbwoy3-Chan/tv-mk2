@@ -53,7 +53,7 @@ export function useUpdateActorDeclaration({
     onError: error => {
       logger.error(error)
       if (currentAccount) {
-        queryClient.invalidateQueries({
+        void queryClient.invalidateQueries({
           queryKey: PROFILE_RKEY(currentAccount.did),
         })
       }

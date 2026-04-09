@@ -431,16 +431,30 @@ yarn intl:compile    # Compile translations for runtime
 // src/state/queries/profile.ts
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query'
 
-// Query key pattern
-const RQKEY_ROOT = 'profile'
-export const RQKEY = (did: string) => [RQKEY_ROOT, did]
+import {createQueryKey} from '#/state/queries/util'
 
-// Query hook
+/*
+ * Query key name should match the query hook name for consistency
+ */
+const profileQueryKeyRoot = 'profile'
+
+/*
+ * Use object params and createQueryKey helper for better readability and to
+ * avoid bugs with parameter order or types.
+ */
+export const createProfileQueryKey = (args: {did: string}) =>
+  createQueryKey(profileQueryKeyRoot, args)
+
+/*
+ * Query hook should be named use[Name]Query, where [Name] describes the data
+ * being fetched. This is not a strict requirement, but it's a helpful
+ * convention for discoverability
+ */
 export function useProfileQuery({did}: {did: string}) {
   const agent = useAgent()
 
   return useQuery({
-    queryKey: RQKEY(did),
+    queryKey: createProfileQueryKey({did}),
     queryFn: async () => {
       const res = await agent.getProfile({actor: did})
       return res.data
@@ -450,8 +464,12 @@ export function useProfileQuery({did}: {did: string}) {
   })
 }
 
-// Mutation hook
-export function useUpdateProfile() {
+/*
+ * Mutation hook should match the name of the query hook, but with "Mutation"
+ * suffix. This is not a strict requirement, but it's a helpful convention for
+ * discoverability and consistency.
+ */
+export function useProfileMutation() {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -459,7 +477,9 @@ export function useUpdateProfile() {
       // Update logic
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({queryKey: RQKEY(variables.did)})
+      queryClient.invalidateQueries({
+        queryKey: createProfileQueryKey({did: variables.did}),
+      })
     },
     onError: (error) => {
       if (isNetworkError(error)) {
@@ -472,6 +492,24 @@ export function useUpdateProfile() {
       }
     }
   })
+}
+
+/*
+ * If cache mutation is needed, include specific interfaces for the specific
+ * mutations you require adjacent to the source queries. Naming should be
+ * descriptive of the mutation's purpose, e.g. use[Name]CacheMutation. This is
+ * not a strict requirement, but it's a helpful convention for discoverability
+ * and consistency.
+ */
+export function useProfileCacheMutation() {
+  const queryClient = useQueryClient()
+
+  return (data: Partial<Profile>) => {
+    queryClient.setQueryData(createProfileQueryKey({did: data.did}), oldData => {
+      if (!oldData) return oldData
+      return {...oldData, ...data}
+    })
+  }
 }
 ```
 
@@ -491,7 +529,7 @@ export function useDraftsQuery() {
   const agent = useAgent()
 
   return useInfiniteQuery({
-    queryKey: ['drafts'],
+    queryKey: createQueryKey('drafts'),
     queryFn: async ({pageParam}) => {
       const res = await agent.app.bsky.draft.getDrafts({cursor: pageParam})
       return res.data
@@ -503,6 +541,19 @@ export function useDraftsQuery() {
 ```
 
 To get all items from pages: `data?.pages.flatMap(page => page.items) ?? []`
+
+**Persisted Queries**
+
+To persist query data across app restarts, `createQueryKey` supports a third
+parameter called `options`, which has a `persistedVersion` property. When this
+property is set to a number, the query will be persisted.
+
+When this property is updated (e.g. incremented), the persisted data will be cleared and replaced with the new data from the query function. This is useful for cases where the shape of the data has changed and old persisted data would no longer be valid.
+
+```tsx
+export const createProfileQueryKey = (args: {did: string}) =>
+  createQueryKey(profileQueryKeyRoot, args, {persistedVersion: 1})
+```
 
 ### Preferences (React Context)
 

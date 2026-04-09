@@ -5,7 +5,6 @@ import {
 import {type QueryClient, useQuery} from '@tanstack/react-query'
 
 import {createBskyTopicsHeader} from '#/lib/api/feed/utils'
-import {logger} from '#/logger'
 import {getContentLanguages} from '#/state/preferences/languages'
 import {STALE} from '#/state/queries'
 import {usePreferencesQuery} from '#/state/queries/preferences'
@@ -54,27 +53,8 @@ export function useGetSuggestedOnboardingUsersQuery(props: QueryProps) {
           },
         },
       )
-      // FALLBACK: if no results for 'all', try again with no interests specified
-      if (!props.category && data.actors.length === 0) {
-        logger.error(
-          `Did not get any suggested onboarding users, falling back - interests: ${overrideInterests}`,
-        )
-        const {data: fallbackData} =
-          await agent.app.bsky.unspecced.getSuggestedOnboardingUsers(
-            {
-              category: props.category ?? undefined,
-              limit: props.limit || 10,
-            },
-            {
-              headers: {
-                'Accept-Language': contentLangs,
-              },
-            },
-          )
-        return fallbackData
-      }
 
-      return data
+      return {...data, recId: data.recIdStr}
     },
   })
 }
