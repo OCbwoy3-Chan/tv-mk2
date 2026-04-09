@@ -204,7 +204,7 @@ export function resetImageManipulation(
   return img
 }
 
-async function bypassCompressionOnWeb(
+async function bypassCompression(
   img: ComposerImage,
 ): Promise<PickerImage | undefined> {
   const source = img.transformed || img.source
@@ -261,11 +261,9 @@ export async function compressImage(
     highResolution?: boolean
   },
 ): Promise<PickerImage> {
-  if (IS_WEB) {
-    const res = await bypassCompressionOnWeb(img)
-    if (res) {
-      return res
-    }
+  const res = await bypassCompression(img)
+  if (res) {
+    return res
   }
 
   const source = img.transformed || img.source
