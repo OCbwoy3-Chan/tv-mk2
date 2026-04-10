@@ -12,6 +12,8 @@ import {
   SaveFormat,
 } from 'expo-image-manipulator'
 import {type BlobRef} from '@atproto/api'
+import {transformExif} from '@uwx/exif-be-gone-web'
+import {toByteArray} from 'base64-js'
 import {nanoid} from 'nanoid/non-secure'
 
 import {POST_IMG_MAX} from '#/lib/constants'
@@ -207,6 +209,35 @@ export function resetImageManipulation(
 async function bypassCompression(
   img: ComposerImage,
 ): Promise<PickerImage | undefined> {
+  // TODO: use expo-file-system instead of working directly in memory
+
+  function dataUriToUint8Array(uri: string) {
+    const base64 = uri.split(',')[1]
+    return toByteArray(base64)
+  }
+
+  function toArrayBuffer(uint8: Uint8Array) {
+    if (uint8.buffer instanceof ArrayBuffer) {
+      if (
+        uint8.byteOffset === 0 &&
+        uint8.byteLength === uint8.buffer.byteLength
+      ) {
+        return uint8.buffer
+      }
+
+      return uint8.buffer.slice(
+        uint8.byteOffset,
+        uint8.byteOffset + uint8.byteLength,
+      )
+    }
+
+    // Fallback for environments where Uint8Array.buffer is not an ArrayBuffer
+    const buffer = new ArrayBuffer(uint8.length)
+    const view = new Uint8Array(buffer)
+    view.set(uint8)
+    return buffer
+  }
+
   const source = img.transformed || img.source
   if (
     source.width > POST_IMG_MAX.width ||
@@ -227,31 +258,48 @@ async function bypassCompression(
     return undefined
   }
 
+  let data: Uint8Array
+
   const path = source.path
   // convert path to data URI if it is not already
   if (!path.startsWith('data:')) {
     try {
       await fetch(path)
       const response = await fetch(path)
-      const blob = await response.blob()
-      if (blob.size > POST_IMG_MAX.size) {
+      data = new Uint8Array(await response.arrayBuffer())
+      if (data.byteLength > POST_IMG_MAX.size) {
         return undefined
       }
-      // path = await blobToDataUri(blob)
     } catch (e) {
       // Fetch failed, likely due to CORS. Return undefined to trigger normal compression flow and error handling.
       return undefined
     }
-  } else if (getDataUriSize(path) > POST_IMG_MAX.size) {
+  } else {
+    if (getDataUriSize(path) > POST_IMG_MAX.size) {
+      return undefined
+    }
+    data = new Uint8Array(dataUriToUint8Array(path).buffer)
+  }
+
+  try {
+    data = await transformExif(data)
+  } catch (err) {
+    console.error(
+      'Failed to transform EXIF data, proceeding with original image',
+      err,
+    )
     return undefined
   }
 
+  const dataUri = await blobToDataUri(
+    new Blob([toArrayBuffer(data)], {type: source.mime}),
+  )
   return {
-    path: await moveIfNecessary(path),
+    path: dataUri,
     width: source.width,
     height: source.height,
     mime: source.mime,
-    size: getDataUriSize(path),
+    size: getDataUriSize(dataUri),
   }
 }
 
