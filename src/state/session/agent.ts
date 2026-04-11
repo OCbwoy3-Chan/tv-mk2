@@ -51,7 +51,7 @@ export function createPublicAgent() {
   const agent = new BskyAppAgent({service: PUBLIC_BSKY_SERVICE})
   const proxyDid =
     readCustomAppViewDidUri() || BLUESKY_PROXY_HEADER.get() || APPVIEW_DID_PROXY
-  agent.configureProxy(proxyDid)
+  agent.configureProxy(proxyDid as ProxyHeaderValue)
   return agent
 }
 
@@ -83,7 +83,7 @@ export async function createAgentAndResume(
 
   const proxyDid =
     readCustomAppViewDidUri() || BLUESKY_PROXY_HEADER.get() || APPVIEW_DID_PROXY
-  agent.configureProxy(proxyDid)
+  agent.configureProxy(proxyDid as ProxyHeaderValue)
 
   return agent.prepare({
     resolvers: [gates, moderation, aa],
@@ -124,7 +124,7 @@ export async function createAgentAndLogin(
 
   const proxyDid =
     readCustomAppViewDidUri() || BLUESKY_PROXY_HEADER.get() || APPVIEW_DID_PROXY
-  agent.configureProxy(proxyDid)
+  agent.configureProxy(proxyDid as ProxyHeaderValue)
 
   return agent.prepare({
     resolvers: [gates, moderation, aa],
@@ -295,7 +295,7 @@ export async function createAgentAndCreateAccount(
 
   const proxyDid =
     readCustomAppViewDidUri() || BLUESKY_PROXY_HEADER.get() || APPVIEW_DID_PROXY
-  agent.configureProxy(proxyDid)
+  agent.configureProxy(proxyDid as ProxyHeaderValue)
 
   return agent.prepare({
     resolvers: [gates, moderation, aa],
@@ -409,7 +409,7 @@ class BskyAppAgent extends BskyAgent {
     })
     const proxyDid = readCustomAppViewDidUri() || APPVIEW_DID_PROXY
     if (proxyDid) {
-      this.configureProxy(proxyDid)
+      this.configureProxy(proxyDid as ProxyHeaderValue)
     }
   }
 
