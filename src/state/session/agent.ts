@@ -191,7 +191,7 @@ export async function createAgentAndCreateAccount(
   if (IS_PROD_SERVICE(service)) {
     void Promise.allSettled([
       networkRetry(3, () => {
-        return agent.setPersonalDetails({
+        return pdsAgent(agent).setPersonalDetails({
           birthDate: birthdate,
         })
       }).catch(e => {
@@ -257,7 +257,7 @@ export async function createAgentAndCreateAccount(
   } else {
     void Promise.allSettled([
       networkRetry(3, () => {
-        return agent.setPersonalDetails({
+        return pdsAgent(agent).setPersonalDetails({
           birthDate: birthDate.toISOString(),
         })
       }).catch(e => {

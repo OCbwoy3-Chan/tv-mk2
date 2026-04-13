@@ -26,6 +26,7 @@ import {useDeleteActorDeclaration} from '#/state/queries/messages/actor-declarat
 import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
 import {useAgent} from '#/state/session'
 import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
+import {pdsAgent} from '#/state/session/agent'
 import {useOnboardingDispatch} from '#/state/shell'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useCloseAllActiveElements} from '#/state/util'
@@ -553,7 +554,7 @@ function DevOptions() {
           <Button
             onPress={() => {
               device.set([PolicyUpdate202508], false)
-              void agent.bskyAppRemoveNuxs([PolicyUpdate202508])
+              void pdsAgent(agent).bskyAppRemoveNuxs([PolicyUpdate202508])
               Toast.show(`Done`, {
                 type: 'info',
               })
