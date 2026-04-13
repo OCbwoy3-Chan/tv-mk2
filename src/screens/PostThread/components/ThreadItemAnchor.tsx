@@ -48,7 +48,6 @@ import {Link} from '#/components/Link'
 import {ContentHider} from '#/components/moderation/ContentHider'
 import {LabelsOnMyPost} from '#/components/moderation/LabelsOnMe'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
-import {PdsBadge} from '#/components/PdsBadge'
 import {type AppModerationCause} from '#/components/Pills'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
 import {TranslatedPost} from '#/components/Post/Translated'
@@ -368,7 +367,6 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 
                   <View
                     style={[a.pl_xs, a.flex_row, a.gap_2xs, a.align_center]}>
-                    <PdsBadge did={post.author.did} size="md" />
                     <ProfileBadges
                       profile={authorShadow}
                       size="md"

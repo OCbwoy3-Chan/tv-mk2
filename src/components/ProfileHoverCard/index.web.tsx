@@ -38,7 +38,6 @@ import {
 } from '#/components/KnownFollowers'
 import {InlineLinkText, Link} from '#/components/Link'
 import {Loader} from '#/components/Loader'
-import {PdsBadge} from '#/components/PdsBadge'
 import * as Pills from '#/components/Pills'
 import {Portal} from '#/components/Portal'
 import {ProfileBadges} from '#/components/ProfileBadges'
@@ -545,12 +544,10 @@ function Inner({
                 moderation.ui('displayName'),
               )}
             </Text>
-            <View style={[a.pl_xs, {marginTop: -2}]}>
-              <PdsBadge did={profile.did} size="md" interactive={false} />
-            </View>
             <ProfileBadges
               profile={profile}
               size="md"
+              pdsInteractive={false}
               style={[
                 a.pl_xs,
                 {

@@ -20,7 +20,6 @@ import {Bell2Off_Filled_Corner0_Rounded as BellStroke} from '#/components/icons/
 import * as Layout from '#/components/Layout'
 import {Link} from '#/components/Link'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
-import {PdsBadge} from '#/components/PdsBadge'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
@@ -158,9 +157,6 @@ function HeaderReady({
                 numberOfLines={1}>
                 {displayName}
               </Text>
-              <View style={[a.pl_xs]}>
-                <PdsBadge did={profile.did} size="sm" />
-              </View>
               <ProfileBadges profile={profile} size="md" style={[a.pl_xs]} />
             </View>
             {!isDeletedAccount && (

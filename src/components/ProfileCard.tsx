@@ -40,7 +40,6 @@ import {
 import {Check_Stroke2_Corner0_Rounded as Check} from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {Link as InternalLink, type LinkProps} from '#/components/Link'
-import {PdsBadge} from '#/components/PdsBadge'
 import * as Pills from '#/components/Pills'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {RichText} from '#/components/RichText'
@@ -269,17 +268,8 @@ function InlineNameAndHandle({
           a.self_center,
           {marginTop: platform({default: 0, android: -1})},
         ]}>
-        <PdsBadge did={profile.did} size="sm" />
+        <ProfileBadges profile={profile} size="sm" />
       </View>
-      <ProfileBadges
-        profile={profile}
-        size="md"
-        style={[
-          a.pl_2xs,
-          a.self_center,
-          {marginTop: platform({default: 0, android: -1})},
-        ]}
-      />
       <Text
         emoji
         style={[
@@ -325,9 +315,6 @@ export function Name({
         numberOfLines={1}>
         {name}
       </Text>
-      <View style={[a.pl_xs]}>
-        <PdsBadge did={profile.did} size="sm" />
-      </View>
       <ProfileBadges profile={profile} size="md" style={[a.pl_xs]} />
     </View>
   )
