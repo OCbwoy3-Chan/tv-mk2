@@ -137,7 +137,7 @@
     "@types/invariant": "^2.2.37",
     "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^20.14.3",
-    "@uwx/exif-be-gone-web": "1.6.5",
+    "@uwx/exif-be-gone-web": "1.6.6",
     "array.prototype.findlast": "^1.2.3",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "base64-js": "^1.5.1",
