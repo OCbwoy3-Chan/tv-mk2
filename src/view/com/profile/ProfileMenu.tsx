@@ -10,6 +10,7 @@ import {HITSLOP_20} from '#/lib/constants'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
 import {shareText, shareUrl} from '#/lib/sharing'
+import {useOpenLink} from '#/lib/hooks/useOpenLink'
 import {toShareUrl, toShareUrlBsky} from '#/lib/strings/url-helpers'
 import {type Shadow} from '#/state/cache/types'
 import {useModalControls} from '#/state/modals'
@@ -50,6 +51,7 @@ import {
 } from '#/components/icons/Person'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {SpeakerVolumeFull_Stroke2_Corner0_Rounded as Unmute} from '#/components/icons/Speaker'
+import {SquareArrowTopRight_Stroke2_Corner0_Rounded as ExternalIcon} from '#/components/icons/SquareArrowTopRight'
 import {StarterPack} from '#/components/icons/StarterPack'
 import * as Menu from '#/components/Menu'
 import {
@@ -70,6 +72,7 @@ import {GoLiveDisabledDialog} from '#/features/liveNow/components/GoLiveDisabled
 import {Dot} from '#/features/nuxs/components/Dot'
 import {Gradient} from '#/features/nuxs/components/Gradient'
 import {useDevMode} from '#/storage/hooks/dev-mode'
+import { useShowExternalShareButtons } from '#/state/preferences/external-share-buttons'
 
 let ProfileMenu = ({
   profile,
@@ -118,6 +121,9 @@ let ProfileMenu = ({
   const goLiveDialogControl = useDialogControl()
   const goLiveDisabledDialogControl = useDialogControl()
   const addToStarterPacksDialogControl = useDialogControl()
+
+  const showExternalShareButtons = useShowExternalShareButtons()
+  const openLink = useOpenLink()
 
   const showLoggedOutWarning = useMemo(() => {
     return (
@@ -256,6 +262,14 @@ let ProfileMenu = ({
     navigation.navigate('ProfileSearch', {name: profile.handle})
   }, [navigation, profile.handle])
 
+  const onOpenProfileInPdsls = () => {
+    openLink(`https://pdsls.dev/at://${profile.did}/app.bsky.actor.profile/self`, true)
+  }
+
+  const onOpenRepoInPdsls = () => {
+    openLink(`https://pdsls.dev/at://${profile.did}`, true)
+  }
+
   const verificationCreatePromptControl = Prompt.usePromptControl()
   const verificationRemovePromptControl = Prompt.usePromptControl()
   const currentAccountVerifications =
@@ -347,6 +361,26 @@ let ProfileMenu = ({
                 icon={IS_WEB ? ChainLinkIcon : ArrowOutOfBoxIcon}
               />
             </Menu.Item>
+            {showExternalShareButtons && <>
+              <Menu.Item
+                testID="profileDropdownOpenProfileInPdsls"
+                label={_(msg`Open profile in PDSls`)}
+                onPress={onOpenProfileInPdsls}>
+                <Menu.ItemText>
+                  <Trans>Open profile in PDSls</Trans>
+                </Menu.ItemText>
+                <Menu.ItemIcon icon={ExternalIcon} position="right" />
+              </Menu.Item>
+              <Menu.Item
+                testID="profileDropdownOpenRepoInPdsls"
+                label={_(msg`Open repo in PDSls`)}
+                onPress={onOpenRepoInPdsls}>
+                <Menu.ItemText>
+                  <Trans>Open repo in PDSls</Trans>
+                </Menu.ItemText>
+                <Menu.ItemIcon icon={ExternalIcon} position="right" />
+              </Menu.Item>
+            </>}
             <Menu.Item
               testID="profileHeaderDropdownSearchBtn"
               label={_(msg`Search posts`)}
