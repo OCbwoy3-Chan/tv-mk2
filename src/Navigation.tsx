@@ -124,6 +124,7 @@ import {QuoteNotificationSettingsScreen} from '#/screens/Settings/NotificationSe
 import {ReplyNotificationSettingsScreen} from '#/screens/Settings/NotificationSettings/ReplyNotificationSettings'
 import {RepostNotificationSettingsScreen} from '#/screens/Settings/NotificationSettings/RepostNotificationSettings'
 import {RepostsOnRepostsNotificationSettingsScreen} from '#/screens/Settings/NotificationSettings/RepostsOnRepostsNotificationSettings'
+import {PetLabelSettingsScreen} from '#/screens/Settings/PetLabelSettings'
 import {PrivacyAndSecuritySettingsScreen} from '#/screens/Settings/PrivacyAndSecuritySettings'
 import {RunesSettingsScreen} from '#/screens/Settings/RunesSettings'
 import {SettingsScreen} from '#/screens/Settings/Settings'
@@ -443,6 +444,14 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         getComponent={() => AutomationLabelSettingsScreen}
         options={{
           title: title(msg`Automation Label`),
+          requireAuth: true,
+        }}
+      />
+      <Stack.Screen
+        name="PetLabelSettings"
+        getComponent={() => PetLabelSettingsScreen}
+        options={{
+          title: title(msg`Pet Label`),
           requireAuth: true,
         }}
       />

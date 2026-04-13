@@ -842,6 +842,8 @@ export type Events = {
 
   'bot:label:toggle': {state: 'add' | 'remove'}
   'bot:badge:click': {}
+  'pet:label:toggle': {state: 'add' | 'remove'}
+  'pet:badge:click': {}
 
   'live:create': {duration: number}
   'live:edit': {}

@@ -3,6 +3,7 @@ import {useWindowDimensions, View} from 'react-native'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {atoms as a, useAlf, type ViewStyleProp} from '#/alf'
 import {BotBadge, BotBadgeButton, isBotAccount} from '#/components/BotBadge'
+import {isPetAccount, PetBadge, PetBadgeButton} from '#/components/PetBadge'
 import {useSimpleVerificationState} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {VerificationCheckButton} from '#/components/verification/VerificationCheckButton'
@@ -44,7 +45,12 @@ export function ProfileBadges({
   } = useAlf()
 
   // if nothing to show, don't render the container at all
-  if (!verification.showBadge && !isBotAccount(shadowed)) return null
+  if (
+    !verification.showBadge &&
+    !isBotAccount(shadowed) &&
+    !isPetAccount(shadowed)
+  )
+    return null
 
   const isOnTheSmallSide = size === 'xs' || size === 'sm'
 
@@ -68,6 +74,7 @@ export function ProfileBadges({
             width={verificationIconWidth}
           />
           <BotBadgeButton profile={shadowed} width={botIconWidth} />
+          <PetBadgeButton profile={shadowed} width={botIconWidth} />
         </>
       ) : (
         <>
@@ -78,6 +85,7 @@ export function ProfileBadges({
             />
           )}
           <BotBadge profile={shadowed} width={botIconWidth} />
+          <PetBadge profile={shadowed} width={botIconWidth} />
         </>
       )}
     </View>
