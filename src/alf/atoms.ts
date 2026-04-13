@@ -107,6 +107,15 @@ export const atoms = {
   zoom_fade_in: web({
     animation: `zoomIn ${EXP_CURVE} 0.3s, fadeIn ${EXP_CURVE} 0.3s`,
   }),
+  // bottom-anchored sheet entrance animation
+  slide_up_in: web({
+    animation: `slideUp ${EXP_CURVE} 0.25s, fadeIn ${EXP_CURVE} 0.25s`,
+  }),
+  // bottom-anchored sheet exit animation
+  slide_down_out: web({
+    animation: `slideDown ease-in 0.2s, fadeOut ease-in 0.2s`,
+    animationFillMode: 'forwards',
+  }),
 
   /**
    * Visually hidden but available to screen readers (web).

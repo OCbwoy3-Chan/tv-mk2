@@ -119,6 +119,21 @@ function ShellInner() {
       )}
 
       <PolicyUpdateOverlayPortalOutlet />
+
+      {/* workaround for a WebKit compositing bug. After a
+          dialog (which uses Portal + fixed elements + CSS animations)
+          closes, WebKit can skip painting subsequent view transitions.
+          A persistent zero-size fixed element keeps the compositing
+          tree from entering this broken state. */}
+      <div
+        aria-hidden
+        style={{
+          position: 'fixed',
+          width: 0,
+          height: 0,
+          pointerEvents: 'none',
+        }}
+      />
     </>
   )
 }
