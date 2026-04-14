@@ -5108,13 +5108,6 @@
   resolved "https://registry.yarnpkg.com/@remirror/core-constants/-/core-constants-3.0.0.tgz#96fdb89d25c62e7b6a5d08caf0ce5114370e3b8f"
   integrity sha512-42aWfPrimMfDKDi4YegyS7x+/0tlzaqwPQCULLanv3DMIlu96KTJR0fM5isWX2UViOqlGnX6YFgqWepcX+XMNg==
 
-"@rolldown/plugin-babel@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@rolldown/plugin-babel/-/plugin-babel-0.2.3.tgz#94f2c897285160aab1a7cfe827cbca1b7233e4f4"
-  integrity sha512-+zEk16yGlz1F9STiRr6uG9hmIXb6nprjLczV/htGptYuLoCuxb+itZ03RKCEeOhBpDDd1NU7qF6x1VLMUp62bw==
-  dependencies:
-    picomatch "^4.0.4"
-
 "@rollup/pluginutils@^4.0.0":
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-4.2.1.tgz#e6c6c3aba0744edce3fb2074922d3776c0af2a6d"
@@ -13768,11 +13761,6 @@ picomatch@^4.0.3:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.3.tgz#796c76136d1eead715db1e7bad785dedd695a042"
   integrity sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==
-
-picomatch@^4.0.4:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.4.tgz#fd6f5e00a143086e074dffe4c924b8fb293b0589"
-  integrity sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==
 
 pidtree@0.6.0:
   version "0.6.0"
