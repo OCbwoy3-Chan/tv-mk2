@@ -1318,7 +1318,7 @@ export function RunesSettingsScreen({}: Props) {
             </Toggle.Item>
             <Admonition type="info" style={[a.flex_1]}>
               <Trans>
-                Images will be served as PNG instead of JPEG. Images will take
+                Images will be served as PNG instead of WEBP. Images will take
                 longer to load and use more bandwidth.
               </Trans>
             </Admonition>

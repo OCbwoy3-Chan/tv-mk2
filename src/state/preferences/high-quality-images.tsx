@@ -50,8 +50,8 @@ export function useSetHighQualityImages() {
 function modifyHighQualityImage(src: string) {
   try {
     const url = new URL(src)
-    if (url.hostname === 'cdn.bsky.app' && url.pathname.endsWith('@jpeg')) {
-      url.pathname = url.pathname.replace(/@jpeg$/, '@png')
+    if (url.hostname === 'cdn.bsky.app') {
+      url.pathname = url.pathname += "@png"
       return url.toString()
     }
   } catch {
