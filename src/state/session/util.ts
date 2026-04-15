@@ -27,6 +27,10 @@ export function isSignupQueued(accessJwt: string | undefined) {
   return false
 }
 
+export function canAttemptSessionResume(account: SessionAccount) {
+  return !!(account.isOauthSession || account.refreshJwt || account.accessJwt)
+}
+
 export function isSessionExpired(account: SessionAccount) {
   if (account.accessJwt) {
     return isJwtExpired(account.accessJwt)
