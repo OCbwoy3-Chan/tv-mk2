@@ -54,7 +54,7 @@ import {
   type AppBskyUnspeccedGetPostThreadV2,
   AtUri,
   type BskyAgent,
-  type RichText,
+  RichText,
 } from '@atproto/api'
 import {msg, plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -312,6 +312,22 @@ export const ComposePost = ({
     },
     [activePost.id],
   )
+
+  const onConvertActiveOverflowToThread = useCallback(() => {
+    const splitPosts = splitOverflowPostIntoThreadTexts(
+      activePost.richtext.text,
+    )
+    if (splitPosts.length < 2) {
+      return
+    }
+
+    setError('')
+    composerDispatch({
+      type: 'replace_post_with_thread',
+      postId: activePost.id,
+      texts: splitPosts,
+    })
+  }, [activePost.id, activePost.richtext.text, composerDispatch])
 
   const selectVideo = useCallback(
     (postId: string, asset: ImagePickerAsset) => {
@@ -1146,6 +1162,7 @@ export const ComposePost = ({
         currentLanguages={currentLanguages}
         onSelectLanguage={onSelectLanguage}
         openGallery={openGallery}
+        onConvertOverLimitToThread={onConvertActiveOverflowToThread}
       />
     </>
   )
@@ -1764,14 +1781,16 @@ function AltTextReminder({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={_(msg`Generate Alt Text with AI`)}
-            accessibilityHint=""
+            accessibilityHint={_(
+              msg`Automatically generate alt text for images in this post using AI. Requires configured OpenRouter API key.`,
+            )}
             onPress={handleGenerateAltText}
             disabled={isGenerating}>
             {isGenerating ? (
               <ActivityIndicator size="small" color={t.palette.primary_500} />
             ) : (
               <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
-                <Trans>Generate with Ai</Trans>
+                <Trans>Generate alt text</Trans>
               </Text>
             )}
           </Pressable>
@@ -1983,6 +2002,7 @@ function ComposerFooter({
   currentLanguages,
   onSelectLanguage,
   openGallery,
+  onConvertOverLimitToThread,
 }: {
   post: PostDraft
   dispatch: (action: PostAction) => void
@@ -1994,6 +2014,7 @@ function ComposerFooter({
   currentLanguages: string[]
   onSelectLanguage?: (language: string) => void
   openGallery?: boolean
+  onConvertOverLimitToThread: () => void
 }) {
   const t = useTheme()
   const {_} = useLingui()
@@ -2011,6 +2032,7 @@ function ComposerFooter({
   const video = media?.type === 'video' ? media.video : null
   const isMaxImages = images.length >= MAX_IMAGES
   const isMaxVideos = !!video
+  const isOverLimit = post.shortenedGraphemeLength > MAX_GRAPHEME_LENGTH
 
   let selectedAssetsCount = 0
   let isMediaSelectionDisabled = false
@@ -2092,6 +2114,10 @@ function ComposerFooter({
     [post.id, onSelectVideo, onImageAdd],
   )
 
+  const onPressConvertToThread = useCallback(() => {
+    onConvertOverLimitToThread()
+  }, [onConvertOverLimitToThread])
+
   return (
     <View
       style={[
@@ -2154,10 +2180,36 @@ function ComposerFooter({
           currentLanguages={currentLanguages}
           onSelectLanguage={onSelectLanguage}
         />
-        <CharProgress
-          count={post.shortenedGraphemeLength}
-          style={{width: 65}}
-        />
+        <View style={[a.flex_row, a.align_center, a.gap_sm]}>
+          {isOverLimit && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={_(msg`Convert long post into thread`)}
+              accessibilityHint={_(
+                msg`Splits your post into a thread and appends numbering`,
+              )}
+              onPress={onPressConvertToThread}>
+              <Text style={[a.text_xs, t.atoms.text_contrast_medium]}>
+                <Trans>Convert to thread</Trans>
+              </Text>
+            </Pressable>
+          )}
+
+          <Pressable
+            accessibilityRole={isOverLimit ? 'button' : undefined}
+            accessibilityLabel={
+              isOverLimit
+                ? _(msg`Convert long post into thread`)
+                : _(msg`Character count`)
+            }
+            accessibilityHint={_(msg`Shows character count for your post`)}
+            onPress={isOverLimit ? onPressConvertToThread : undefined}>
+            <CharProgress
+              count={post.shortenedGraphemeLength}
+              style={{width: 65}}
+            />
+          </Pressable>
+        </View>
       </View>
     </View>
   )
@@ -2343,6 +2395,137 @@ function isEmptyPost(post: PostDraft) {
     !post.embed.link &&
     !post.embed.quote
   )
+}
+
+function splitOverflowPostIntoThreadTexts(
+  text: string,
+  maxLength = MAX_GRAPHEME_LENGTH,
+): string[] {
+  const trimmed = text.trim()
+  if (!trimmed) return []
+
+  const words = trimmed.split(/\s+/)
+  if (words.length < 2) return []
+
+  const firstWord = words[0]
+  const rest = words.slice(1)
+
+  let totalGuess = 2
+  let parts: string[] = []
+
+  // Suffix length changes with total digit count; converge on a stable total.
+  for (let i = 0; i < 10; i++) {
+    parts = splitIntoThreadParts({
+      firstWord,
+      rest,
+      total: totalGuess,
+      maxLength,
+    })
+    if (parts.length <= 1) {
+      return []
+    }
+    if (parts.length === totalGuess) {
+      break
+    }
+    totalGuess = parts.length
+  }
+
+  const total = parts.length
+  const numbered = parts.map((part, idx) => `${part} (${idx + 1}/${total})`)
+
+  if (numbered.some(part => getGraphemeLength(part) > maxLength)) {
+    return []
+  }
+
+  return numbered
+}
+
+function splitIntoThreadParts({
+  firstWord,
+  rest,
+  total,
+  maxLength,
+}: {
+  firstWord: string
+  rest: string[]
+  total: number
+  maxLength: number
+}): string[] {
+  const firstPart = `${firstWord} 🧵`
+  const firstLimit = getPartContentLimit(1, total, maxLength)
+  if (getGraphemeLength(firstPart) > firstLimit) {
+    return []
+  }
+
+  const parts = [firstPart]
+
+  for (const originalWord of rest) {
+    let word = originalWord
+
+    if (parts.length === 1) {
+      // Keep post 1 fixed as "<first word> 🧵".
+      parts.push('')
+    }
+
+    while (word.length > 0) {
+      const partNumber = parts.length
+      const limit = getPartContentLimit(partNumber, total, maxLength)
+      if (limit <= 0) {
+        return parts
+      }
+
+      const current = parts[partNumber - 1]
+      const next = current ? `${current} ${word}` : word
+      if (getGraphemeLength(next) <= limit) {
+        parts[partNumber - 1] = next
+        break
+      }
+
+      if (current) {
+        parts.push('')
+        continue
+      }
+
+      // If a single word exceeds the limit, hard-wrap it by grapheme.
+      const [head, tail] = splitAtGrapheme(word, limit)
+      if (!head) {
+        return parts
+      }
+      parts[partNumber - 1] = head
+      word = tail
+      if (word.length > 0) {
+        parts.push('')
+      }
+    }
+  }
+
+  return parts.filter(Boolean)
+}
+
+function getPartContentLimit(
+  partNumber: number,
+  total: number,
+  maxLength: number,
+) {
+  return maxLength - getGraphemeLength(` (${partNumber}/${total})`)
+}
+
+function splitAtGrapheme(text: string, limit: number): [string, string] {
+  if (limit <= 0) return ['', text]
+  const graphemes = splitGraphemes(text)
+  return [graphemes.slice(0, limit).join(''), graphemes.slice(limit).join('')]
+}
+
+function getGraphemeLength(text: string): number {
+  return new RichText({text}).graphemeLength
+}
+
+function splitGraphemes(text: string): string[] {
+  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
+    const segmenter = new Intl.Segmenter(undefined, {granularity: 'grapheme'})
+    return Array.from(segmenter.segment(text), segment => segment.segment)
+  }
+  return Array.from(text)
 }
 
 function useHideKeyboardOnBackground() {
