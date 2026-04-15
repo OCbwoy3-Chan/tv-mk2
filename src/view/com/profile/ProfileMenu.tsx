@@ -7,10 +7,10 @@ import {useNavigation} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
 
 import {HITSLOP_20} from '#/lib/constants'
+import {useOpenLink} from '#/lib/hooks/useOpenLink'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
 import {shareText, shareUrl} from '#/lib/sharing'
-import {useOpenLink} from '#/lib/hooks/useOpenLink'
 import {toShareUrl, toShareUrlBsky} from '#/lib/strings/url-helpers'
 import {type Shadow} from '#/state/cache/types'
 import {useModalControls} from '#/state/modals'
@@ -20,6 +20,7 @@ import {
   useSetDeerVerificationTrust,
 } from '#/state/preferences/deer-verification'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useShowExternalShareButtons} from '#/state/preferences/external-share-buttons'
 import {Nux, useNux, useSaveNux} from '#/state/queries/nuxs'
 import {
   RQKEY as profileQueryKey,
@@ -72,7 +73,6 @@ import {GoLiveDisabledDialog} from '#/features/liveNow/components/GoLiveDisabled
 import {Dot} from '#/features/nuxs/components/Dot'
 import {Gradient} from '#/features/nuxs/components/Gradient'
 import {useDevMode} from '#/storage/hooks/dev-mode'
-import { useShowExternalShareButtons } from '#/state/preferences/external-share-buttons'
 
 let ProfileMenu = ({
   profile,
@@ -263,7 +263,10 @@ let ProfileMenu = ({
   }, [navigation, profile.handle])
 
   const onOpenProfileInPdsls = () => {
-    openLink(`https://pdsls.dev/at://${profile.did}/app.bsky.actor.profile/self`, true)
+    openLink(
+      `https://pdsls.dev/at://${profile.did}/app.bsky.actor.profile/self`,
+      true,
+    )
   }
 
   const onOpenRepoInPdsls = () => {
@@ -361,26 +364,28 @@ let ProfileMenu = ({
                 icon={IS_WEB ? ChainLinkIcon : ArrowOutOfBoxIcon}
               />
             </Menu.Item>
-            {showExternalShareButtons && <>
-              <Menu.Item
-                testID="profileDropdownOpenProfileInPdsls"
-                label={_(msg`Open profile in PDSls`)}
-                onPress={onOpenProfileInPdsls}>
-                <Menu.ItemText>
-                  <Trans>Open profile in PDSls</Trans>
-                </Menu.ItemText>
-                <Menu.ItemIcon icon={ExternalIcon} position="right" />
-              </Menu.Item>
-              <Menu.Item
-                testID="profileDropdownOpenRepoInPdsls"
-                label={_(msg`Open repo in PDSls`)}
-                onPress={onOpenRepoInPdsls}>
-                <Menu.ItemText>
-                  <Trans>Open repo in PDSls</Trans>
-                </Menu.ItemText>
-                <Menu.ItemIcon icon={ExternalIcon} position="right" />
-              </Menu.Item>
-            </>}
+            {showExternalShareButtons && (
+              <>
+                <Menu.Item
+                  testID="profileDropdownOpenProfileInPdsls"
+                  label={_(msg`Open profile in PDSls`)}
+                  onPress={onOpenProfileInPdsls}>
+                  <Menu.ItemText>
+                    <Trans>Open profile in PDSls</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={ExternalIcon} position="right" />
+                </Menu.Item>
+                <Menu.Item
+                  testID="profileDropdownOpenRepoInPdsls"
+                  label={_(msg`Open repo in PDSls`)}
+                  onPress={onOpenRepoInPdsls}>
+                  <Menu.ItemText>
+                    <Trans>Open repo in PDSls</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={ExternalIcon} position="right" />
+                </Menu.Item>
+              </>
+            )}
             <Menu.Item
               testID="profileHeaderDropdownSearchBtn"
               label={_(msg`Search posts`)}
