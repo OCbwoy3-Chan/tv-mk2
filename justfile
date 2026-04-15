@@ -21,7 +21,7 @@ prebuild-android:
 
 [group('build')]
 build-web: && postbuild-web
-    NODE_ENV=production rspack build
+    yarn build-web
 
 [group('build')]
 build-android-sideload: prebuild-android
@@ -34,6 +34,10 @@ build-android-gradle: prebuild-android
 
 [group('build')]
 postbuild-web:
+    # build system outputs some srcs and hrefs like src="static/"
+    # need to rewrite to be src="/static/" to handle non root pages
+    sed -i 's/\(src\|href\)="static/\1="\/static/g' web-build/index.html
+
     # we need to copy the static iframe html to support youtube embeds
     cp -r bskyweb/static/iframe/ web-build/iframe
     # copy well-known files to support app deeplinks too
@@ -55,7 +59,7 @@ dev-android-setup: prebuild-android
 
 [group('dev')]
 dev-web:
-    rspack serve
+    yarn web
 
 [group('dev')]
 dev-web-functions: build-web
