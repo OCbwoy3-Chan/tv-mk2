@@ -93,6 +93,10 @@ import {
   useShowExternalShareButtons,
 } from '#/state/preferences/external-share-buttons'
 import {
+  useFaviconService,
+  useSetFaviconService,
+} from '#/state/preferences/favicon-service'
+import {
   useHideFeedsPromoTab,
   useSetHideFeedsPromoTab,
 } from '#/state/preferences/hide-feeds-promo-tab'
@@ -175,7 +179,7 @@ import {Atom_Stroke2_Corner0_Rounded as AtomIcon} from '#/components/icons/Atom'
 import {ChainLink_Stroke2_Corner0_Rounded as ChainLinkIcon} from '#/components/icons/ChainLink'
 import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/Eye'
 import {Earth_Stroke2_Corner2_Rounded as EarthIcon} from '#/components/icons/Globe'
-import {Lab_Stroke2_Corner0_Rounded as _BeakerIcon} from '#/components/icons/Lab'
+import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import {PaintRoller_Stroke2_Corner2_Rounded as PaintRollerIcon} from '#/components/icons/PaintRoller'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {RaisingHand4Finger_Stroke2_Corner0_Rounded as RaisingHandIcon} from '#/components/icons/RaisingHand'
@@ -392,6 +396,103 @@ function CustomAppViewDidDialog({
               }>
               <ButtonText>
                 {did.length > 0 ? <Trans>Save</Trans> : <Trans>Reset</Trans>}
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+
+        <Dialog.Close />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
+  )
+}
+
+function FaviconServiceDialog({control}: {control: Dialog.DialogControlProps}) {
+  const pal = usePalette('default')
+  const {_} = useLingui()
+
+  const faviconService = useFaviconService()
+  const [url, setUrl] = useState(faviconService ?? '')
+  const [inputVersion, setInputVersion] = useState(0)
+  const setFaviconService = useSetFaviconService()
+
+  const updateInputValue = (nextUrl: string) => {
+    setUrl(nextUrl)
+    setInputVersion(v => v + 1)
+  }
+
+  const submit = () => {
+    setFaviconService(url.trim())
+    control.close()
+  }
+
+  const shouldDisable = () => {
+    return url.length > 0 && !url.includes('(pds)')
+  }
+
+  const presets = [
+    'https://twenty-icons.com/(pds)',
+    'https://favicon.im/(pds)?larger=true&throw-error-on-404=true',
+  ]
+
+  return (
+    <Dialog.Outer
+      control={control}
+      nativeOptions={{preventExpansion: true}}
+      onClose={() => updateInputValue(faviconService ?? '')}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner label={_(msg`Favicon Service URL`)}>
+        <View style={[a.gap_sm, a.pb_lg]}>
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>Favicon Service URL</Trans>
+          </Text>
+          <Text style={[a.text_sm, {color: pal.colors.textLight}]}>
+            <Trans>
+              (pds) is replaced with the domain of an account's host.
+            </Trans>
+          </Text>
+        </View>
+
+        <View style={a.gap_lg}>
+          <Dialog.Input
+            key={`favicon-service-input-${inputVersion}`}
+            label="Text input field"
+            autoFocus
+            style={[styles.textInput, pal.border, pal.text]}
+            onChangeText={value => setUrl(value)}
+            placeholder={persisted.defaults.faviconService}
+            placeholderTextColor={pal.colors.textLight}
+            onSubmitEditing={submit}
+            accessibilityHint={_(
+              msg`Enter the favicon service URL with (pds) as placeholder`,
+            )}
+            defaultValue={url}
+          />
+
+          <View style={[a.flex_row, a.flex_wrap, a.mb_xs]}>
+            {presets.map(preset => (
+              <Button
+                key={preset}
+                variant="ghost"
+                color="primary"
+                label={preset}
+                style={[a.px_sm, a.py_xs, a.rounded_sm, a.gap_sm]}
+                onPress={() => updateInputValue(preset)}>
+                <ButtonText>{preset}</ButtonText>
+              </Button>
+            ))}
+          </View>
+
+          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
+            <Button
+              label={_(msg`Save`)}
+              size="large"
+              onPress={submit}
+              variant="solid"
+              color="primary"
+              disabled={shouldDisable()}>
+              <ButtonText>
+                <Trans>Save</Trans>
               </ButtonText>
             </Button>
           </View>
@@ -1057,6 +1158,8 @@ export function RunesSettingsScreen({}: Props) {
   const [customAppViewDid] = useCustomAppViewDid()
   const setCustomAppViewDidControl = Dialog.useDialogControl()
 
+  const setFaviconServiceControl = Dialog.useDialogControl()
+
   return (
     <Layout.Screen>
       <Layout.Header.Outer>
@@ -1439,6 +1542,19 @@ export function RunesSettingsScreen({}: Props) {
             </Toggle.Item>
           </SettingsList.Group>
 
+          {pdsLabelEnabled && (
+            <SettingsList.Item>
+              <SettingsList.ItemIcon icon={StarIcon} />
+              <SettingsList.ItemText>
+                <Trans>Favicon service</Trans>
+              </SettingsList.ItemText>
+              <SettingsList.BadgeButton
+                label={_(msg`Change`)}
+                onPress={() => setFaviconServiceControl.open()}
+              />
+            </SettingsList.Item>
+          )}
+
           <SettingsList.Divider />
 
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
@@ -1512,7 +1628,7 @@ export function RunesSettingsScreen({}: Props) {
           <SettingsList.Divider />
 
           <SettingsList.Item>
-            <SettingsList.ItemIcon icon={_BeakerIcon} />
+            <SettingsList.ItemIcon icon={BeakerIcon} />
             <SettingsList.ItemText>
               <Trans>OpenRouter API Key</Trans>
             </SettingsList.ItemText>
@@ -1538,7 +1654,7 @@ export function RunesSettingsScreen({}: Props) {
 
           {openRouterConfigured && (
             <SettingsList.Item>
-              <SettingsList.ItemIcon icon={_BeakerIcon} />
+              <SettingsList.ItemIcon icon={BeakerIcon} />
               <SettingsList.ItemText>
                 <Trans>{`OpenRouter Model`}</Trans>
               </SettingsList.ItemText>
@@ -1566,7 +1682,7 @@ export function RunesSettingsScreen({}: Props) {
 
           {openRouterConfigured && (
             <SettingsList.Item>
-              <SettingsList.ItemIcon icon={_BeakerIcon} />
+              <SettingsList.ItemIcon icon={BeakerIcon} />
               <SettingsList.ItemText>
                 <Trans>Alt Text Prompt</Trans>
               </SettingsList.ItemText>
@@ -1800,6 +1916,7 @@ export function RunesSettingsScreen({}: Props) {
       </Layout.Content>
       <ConstellationInstanceDialog control={setConstellationInstanceControl} />
       <CustomAppViewDidDialog control={setCustomAppViewDidControl} />
+      <FaviconServiceDialog control={setFaviconServiceControl} />
       <TrustedVerifiersDialog control={setTrustedVerifiersDialogControl} />
       <LibreTranslateInstanceDialog
         control={setLibreTranslateInstanceControl}

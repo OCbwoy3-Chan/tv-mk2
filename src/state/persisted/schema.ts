@@ -183,6 +183,7 @@ const schema = z.object({
       hideBskyPds: z.boolean(),
     })
     .optional(),
+  faviconService: z.string().optional(),
 
   postReplacement: z.object({
     enabled: z.boolean().optional(),
@@ -323,6 +324,7 @@ export const defaults: Schema = {
     enabled: true,
     hideBskyPds: true,
   },
+  faviconService: 'https://twenty-icons.com/(pds)',
   showExternalShareButtons: false,
   translationServicePreference: 'google',
   libreTranslateInstance: 'https://libretranslate.com/',
