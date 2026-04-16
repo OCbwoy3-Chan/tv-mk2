@@ -1,6 +1,7 @@
 import {RichText} from '@atproto/api'
 import {i18n} from '@lingui/core'
 
+import {detectFacetsWithoutResolution} from '#/lib/strings/detect-facets'
 import {parseEmbedPlayerFromUrl} from '#/lib/strings/embed-player'
 import {
   createStarterPackGooglePlayUri,
@@ -327,7 +328,7 @@ describe('shortenLinks', () => {
     for (let i = 0; i < inputs.length; i++) {
       const input = inputs[i]
       const inputRT = new RichText({text: input})
-      inputRT.detectFacetsWithoutResolution()
+      detectFacetsWithoutResolution(inputRT)
       const outputRT = shortenLinks(inputRT)
       expect(outputRT.text).toEqual(outputs[i][0])
       expect(outputRT.facets?.length).toEqual(outputs[i][1].length)

@@ -45,6 +45,7 @@ import {
   type ThreadDraft,
 } from '#/view/com/composer/state/composer'
 import {createGIFDescription} from '../gif-alt-text'
+import {detectFacets} from '../strings/detect-facets'
 import {uploadBlob} from './upload-blob'
 
 export {uploadBlob}
@@ -215,7 +216,7 @@ async function resolveRT(agent: BskyAgent, richtext: RichText) {
     parseMarkdownLinks(trimmedText)
 
   let rt = new RichText({text: parsedText})
-  await rt.detectFacets(agent)
+  await detectFacets(agent, rt)
 
   if (markdownFacets.length > 0) {
     const nonOverlapping = (rt.facets || []).filter(f => {

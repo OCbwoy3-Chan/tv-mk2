@@ -24,6 +24,7 @@ import {splitGraphemes} from 'unicode-segmenter/grapheme'
 
 import {useColorSchemeStyle} from '#/lib/hooks/useColorSchemeStyle'
 import {blobToDataUri, isUriImage} from '#/lib/media/util'
+import {detectFacetsWithoutResolution} from '#/lib/strings/detect-facets'
 import {useActorAutocompleteFn} from '#/state/queries/actor-autocomplete'
 import {
   type LinkFacetMatch,
@@ -290,7 +291,7 @@ export function TextInput({
         const isPaste = window.event?.type === 'paste'
 
         const newRt = new RichText({text: newText})
-        newRt.detectFacetsWithoutResolution()
+        detectFacetsWithoutResolution(newRt)
 
         const markdownFacets: AppBskyRichtextFacet.Main[] = []
         const regex = /\[([^\]]+)\]\s*\(([^)]+)\)/g

@@ -19,6 +19,10 @@ import {isNative} from '@bsky.app/alf'
 
 import {useHideBottomBarBorderForScreen} from '#/lib/hooks/useHideBottomBarBorder'
 import {ScrollProvider} from '#/lib/ScrollContext'
+import {
+  detectFacets,
+  detectFacetsWithoutResolution,
+} from '#/lib/strings/detect-facets'
 import {shortenLinks, stripInvalidMentions} from '#/lib/strings/rich-text-manip'
 import {
   convertBskyAppUrlIfNeeded,
@@ -325,7 +329,7 @@ export function MessagesList({
       // detect facets without resolution first - this is used to see if there's
       // any post links in the text that we can embed. We do this first because
       // we want to remove the post link from the text, re-trim, then detect facets
-      rt.detectFacetsWithoutResolution()
+      detectFacetsWithoutResolution(rt)
 
       let embed: $Typed<AppBskyEmbedRecord.Main> | undefined
 
@@ -379,7 +383,7 @@ export function MessagesList({
         }
       }
 
-      await rt.detectFacets(agent)
+      await detectFacets(agent, rt)
 
       rt = shortenLinks(rt)
       rt = stripInvalidMentions(rt)

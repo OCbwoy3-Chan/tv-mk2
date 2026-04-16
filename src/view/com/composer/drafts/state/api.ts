@@ -8,6 +8,7 @@ import {resolveLink} from '#/lib/api/resolve'
 import {getDeviceName} from '#/lib/deviceName'
 import {getImageDim} from '#/lib/media/manip'
 import {mimeToExt} from '#/lib/media/video/util'
+import {detectFacetsWithoutResolution} from '#/lib/strings/detect-facets'
 import {shortenLinks} from '#/lib/strings/rich-text-manip'
 import {type ComposerImage} from '#/state/gallery'
 import {type Gif} from '#/state/queries/tenor'
@@ -420,7 +421,7 @@ export async function draftToComposerPosts(
   const posts = await Promise.all(
     draft.posts.map(async (post, index) => {
       const richtext = new RichText({text: post.text || ''})
-      richtext.detectFacetsWithoutResolution()
+      detectFacetsWithoutResolution(richtext)
 
       const embed: EmbedDraft = {
         quote: undefined,

@@ -2650,6 +2650,11 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
+"@easrng/tr58@0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@easrng/tr58/-/tr58-0.0.4.tgz#920492370f6312c797c8abb353a3a16ff875901b"
+  integrity sha512-PnUOpYeKCN9vjKgP0YWOVwvGv4F3Aw/v1sKomY1w4Sci7nltJ3yvbKFVKUF9t7eljdrMukuzMGndCUnFiqArhg==
+
 "@egjs/hammerjs@^2.0.17":
   version "2.0.17"
   resolved "https://registry.yarnpkg.com/@egjs/hammerjs/-/hammerjs-2.0.17.tgz#5dc02af75a6a06e4c2db0202cae38c9263895124"

@@ -17,6 +17,7 @@ import {getModerationCauseKey} from '#/lib/moderation'
 import {makeProfileLink} from '#/lib/routes/links'
 import {forceLTR} from '#/lib/strings/bidi'
 import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
+import {detectFacetsWithoutResolution} from '#/lib/strings/detect-facets'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
@@ -400,7 +401,7 @@ export function Description({
   const rt = useMemo(() => {
     if (!('description' in profile)) return
     const rt = new RichTextApi({text: profile.description || ''})
-    rt.detectFacetsWithoutResolution()
+    detectFacetsWithoutResolution(rt)
     return rt
   }, [profile])
   if (!rt) return null
