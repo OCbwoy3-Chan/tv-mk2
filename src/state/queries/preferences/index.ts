@@ -1,7 +1,8 @@
-import {useCallback} from 'react'
+import {useEffect, useMemo} from 'react'
 import {
   type AppBskyActorDefs,
   type BskyFeedViewPreference,
+  type BskyPreferences,
   type LabelPreference,
 } from '@atproto/api'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
@@ -37,6 +38,64 @@ export const preferencesQueryKey = createQueryKey(
   {persistedVersion: 1},
 )
 
+/**
+ * Some screens interpret missing prefs as "use defaults", which causes a
+ * visible flicker when the preferences query briefly has no data. Retain the
+ * last successful snapshot per account so those consumers stay stable.
+ */
+const lastKnownPreferencesByDid = new Map<string, UsePreferencesQueryResponse>()
+
+function normalizePreferences(
+  res: BskyPreferences,
+): UsePreferencesQueryResponse {
+  return {
+    ...res,
+    savedFeeds: res.savedFeeds.filter(f => f.type !== 'unknown'),
+    /**
+     * Special preference, only used for following feed, previously
+     * called `home`
+     */
+    feedViewPrefs: {
+      ...DEFAULT_HOME_FEED_PREFS,
+      ...(res.feedViewPrefs.home || {}),
+    },
+    threadViewPrefs: {
+      ...DEFAULT_THREAD_VIEW_PREFS,
+      ...(res.threadViewPrefs ?? {}),
+    },
+    userAge: res.birthDate ? getAge(res.birthDate) : undefined,
+  }
+}
+
+function ensureBirthDate(
+  preferences: UsePreferencesQueryResponse,
+): UsePreferencesQueryResponse {
+  if (!preferences.birthDate || preferences.birthDate instanceof Date) {
+    return preferences
+  }
+  return {
+    ...preferences,
+    birthDate: new Date(preferences.birthDate),
+  }
+}
+
+function applyAgeAssurancePreferences(
+  data: UsePreferencesQueryResponse,
+  aa: ReturnType<typeof useAgeAssurance>,
+) {
+  /**
+   * Prefs are all downstream of age assurance now. For logged-out
+   * users, we override moderation prefs based on AA state.
+   */
+  if (aa.state.access !== aa.Access.Full) {
+    return {
+      ...data,
+      moderationPrefs: makeAgeRestrictedModerationPrefs(data.moderationPrefs),
+    }
+  }
+  return data
+}
+
 export function usePreferencesQuery() {
   const agent = useAgent()
   const aa = useAgeAssurance()
@@ -54,59 +113,46 @@ export function usePreferencesQuery() {
         const res = await pdsAgent(agent).getPreferences()
 
         // save to local storage to ensure there are labels on initial requests
-        saveLabelers(
+        void saveLabelers(
           agent.did,
-          res.moderationPrefs.labelers.map(l => l.did),
+          res.moderationPrefs.labelers.map((l: {did: string}) => l.did),
         )
 
-        const preferences: UsePreferencesQueryResponse = {
-          ...res,
-          savedFeeds: res.savedFeeds.filter(f => f.type !== 'unknown'),
-          /**
-           * Special preference, only used for following feed, previously
-           * called `home`
-           */
-          feedViewPrefs: {
-            ...DEFAULT_HOME_FEED_PREFS,
-            ...(res.feedViewPrefs.home || {}),
-          },
-          threadViewPrefs: {
-            ...DEFAULT_THREAD_VIEW_PREFS,
-            ...(res.threadViewPrefs ?? {}),
-          },
-          userAge: res.birthDate ? getAge(res.birthDate) : undefined,
-        }
-        return preferences
+        return normalizePreferences(res)
       }
     },
-    select: useCallback(
-      (data: UsePreferencesQueryResponse) => {
-        /**
-         * Prefs are all downstream of age assurance now. For logged-out
-         * users, we override moderation prefs based on AA state.
-         */
-        if (aa.state.access !== aa.Access.Full) {
-          data = {
-            ...data,
-            moderationPrefs: makeAgeRestrictedModerationPrefs(
-              data.moderationPrefs,
-            ),
-          }
-        }
-        return data
-      },
-      [aa],
-    ),
   })
 
-  if (query.data?.birthDate) {
-    /**
-     * The persisted query cache stores dates as strings, but our code expects a `Date`.
-     */
-    query.data.birthDate = new Date(query.data.birthDate)
+  useEffect(() => {
+    if (agent.did && query.data) {
+      lastKnownPreferencesByDid.set(agent.did, ensureBirthDate(query.data))
+    }
+  }, [agent.did, query.data])
+
+  const stableData = useMemo(() => {
+    const data =
+      query.data ??
+      (agent.did ? lastKnownPreferencesByDid.get(agent.did) : undefined)
+    if (!data) {
+      return data
+    }
+    return applyAgeAssurancePreferences(ensureBirthDate(data), aa)
+  }, [aa, agent.did, query.data])
+
+  if (!stableData) {
+    return query
   }
 
-  return query
+  return {
+    ...query,
+    data: stableData,
+    error: null,
+    isError: false,
+    isLoading: false,
+    isPending: false,
+    isSuccess: true,
+    status: 'success',
+  }
 }
 
 export function useClearPreferencesMutation() {
