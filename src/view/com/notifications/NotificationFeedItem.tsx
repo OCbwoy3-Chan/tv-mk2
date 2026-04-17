@@ -504,7 +504,7 @@ let NotificationFeedItem = ({
     ) : (
       <Trans>{firstAuthorLink} liked your repost</Trans>
     )
-    icon = <RepostHeartIcon size="xl" style={[s.likeColor]} />
+    icon = <RepostHeartIcon size="xl" style={{color: t.palette.like}} />
   } else if (item.type === 'repost-via-repost') {
     a11yLabel = hasMultipleAuthors
       ? _(

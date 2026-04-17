@@ -98,7 +98,9 @@ let ShareMenuItems = ({
     } else {
       await ExpoClipboard.setStringAsync(url)
     }
-    Toast.show(_(msg`Copied to clipboard`), 'clipboard-check')
+    Toast.show(_(msg`Copied to clipboard`), {
+      type: 'success',
+    })
     onShareProp()
   }
 

@@ -1,44 +1,15 @@
 import {useQuery} from '@tanstack/react-query'
 
 import {useFaviconService} from '#/state/preferences/favicon-service'
+import {
+  getFaviconServiceUrl,
+  getPdsFallbackFaviconUrl,
+  isBridgedPdsUrl,
+  isBskyPdsUrl,
+} from '#/state/queries/pds-label.util'
 import {resolvePdsServiceUrl} from '#/state/queries/resolve-identity'
 
-const BSKY_PDS_HOSTNAMES = ['bsky.social', 'staging.bsky.dev']
-const BSKY_PDS_SUFFIX = '.bsky.network'
-const BRIDGY_FED_HOSTNAME = 'atproto.brid.gy'
-
-export function isBskyPdsUrl(url: string): boolean {
-  try {
-    const hostname = new URL(url).hostname
-    return (
-      BSKY_PDS_HOSTNAMES.includes(hostname) ||
-      hostname.endsWith(BSKY_PDS_SUFFIX)
-    )
-  } catch {
-    return false
-  }
-}
-
-export function isBridgedPdsUrl(url: string): boolean {
-  try {
-    return new URL(url).hostname === BRIDGY_FED_HOSTNAME
-  } catch {
-    return false
-  }
-}
-
-function getFaviconUrl(
-  pdsUrl: string,
-  faviconService: string,
-): string | undefined {
-  try {
-    const hostname = new URL(pdsUrl).hostname
-    // Replace the (pds) placeholder with the actual PDS domain
-    return faviconService.replace('(pds)', hostname)
-  } catch {
-    return undefined
-  }
-}
+export {getPdsFallbackFaviconUrl, isBridgedPdsUrl, isBskyPdsUrl}
 
 export const RQKEY_ROOT = 'pds-label'
 export const RQKEY = (did: string) => [RQKEY_ROOT, did]
@@ -78,7 +49,7 @@ export function usePdsFaviconQuery(pdsUrl: string | undefined) {
   return useQuery({
     queryKey,
     queryFn: () =>
-      isEnabled ? getFaviconUrl(pdsUrl!, faviconService!) : undefined,
+      isEnabled ? getFaviconServiceUrl(pdsUrl!, faviconService!) : undefined,
     enabled: isEnabled,
     staleTime: 1000 * 60 * 60, // 1 hour
   })

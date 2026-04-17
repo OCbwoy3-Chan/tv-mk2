@@ -173,6 +173,7 @@ function PdsInlineIcon({
   const icon = (
     <PdsBadgeIcon
       faviconUrl={faviconUrl}
+      pdsUrl={pdsUrl}
       isBsky={isBsky}
       isBridged={isBridged}
       size={dimensions}
