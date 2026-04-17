@@ -5,6 +5,7 @@ import {
 } from '@atproto-labs/identity-resolver'
 
 import {DOH_ENDPOINT} from '#/lib/constants'
+import {readPlcDirectory} from '#/state/preferences/plc-directory'
 import {createPublicAgent} from './agent'
 
 type AtprotoDid = `did:plc:${string}` | `did:web:${string}`
@@ -166,7 +167,7 @@ async function resolveDidDocument(
   signal?: AbortSignal,
 ): Promise<DidDocument> {
   const docUrl = did.startsWith('did:plc:')
-    ? `https://plc.directory/${did}`
+    ? `${readPlcDirectory()}/${did}`
     : `https://${did.substring(8)}/.well-known/did.json`
 
   const res = await fetch(docUrl, {
