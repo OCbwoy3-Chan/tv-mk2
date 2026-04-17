@@ -1,5 +1,7 @@
 import {BrowserOAuthClient} from '@atproto/oauth-client-browser'
 
+import {createIdentityResolver} from './identity-resolver'
+
 const OAUTH_BASE_URL: string =
   process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://witchsky.app'
 
@@ -177,7 +179,7 @@ function createWebOAuthClient() {
         application_type: 'web',
         dpop_bound_access_tokens: true,
       },
-      handleResolver: 'https://bsky.social',
+      identityResolver: createIdentityResolver(),
     })
   }
 
@@ -194,7 +196,7 @@ function createWebOAuthClient() {
       application_type: 'web',
       dpop_bound_access_tokens: true,
     },
-    handleResolver: 'https://bsky.social',
+    identityResolver: createIdentityResolver(),
   })
 }
 
