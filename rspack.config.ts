@@ -347,6 +347,9 @@ module.exports = {
 
   // Don't bundle node built-ins (shouldn't be needed on web)
   externalsPresets: {node: false},
+  node: {
+    __filename: false,
+  },
 
   stats: GENERATE_STATS ? 'verbose' : 'normal',
 
