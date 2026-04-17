@@ -157,6 +157,10 @@ import {
   useShowLinkInHandle,
 } from '#/state/preferences/show-link-in-handle.tsx'
 import {
+  useSetShowLinkInHandleOnlyOnWorkingLinks,
+  useShowLinkInHandleOnlyOnWorkingLinks,
+} from '#/state/preferences/show-link-in-handle-only-on-working-links'
+import {
   useLibreTranslateInstance,
   useSetLibreTranslateInstance,
   useSetTranslationServicePreference,
@@ -256,7 +260,7 @@ function ConstellationInstanceDialog({
             <Button
               label={_(msg`Save`)}
               size="large"
-              onPress={submit}
+              onPress={() => void submit()}
               variant="solid"
               color="primary"
               disabled={shouldDisable()}>
@@ -388,7 +392,7 @@ function CustomAppViewDidDialog({
             <Button
               label={_(msg`Save`)}
               size="large"
-              onPress={submit}
+              onPress={() => void submit()}
               variant="solid"
               color={did.length > 0 ? 'primary' : 'secondary'}
               disabled={
@@ -487,7 +491,7 @@ function FaviconServiceDialog({control}: {control: Dialog.DialogControlProps}) {
             <Button
               label={_(msg`Save`)}
               size="large"
-              onPress={submit}
+              onPress={() => void submit()}
               variant="solid"
               color="primary"
               disabled={shouldDisable()}>
@@ -563,7 +567,7 @@ function LibreTranslateInstanceDialog({
             <Button
               label={_(msg`Save`)}
               size="large"
-              onPress={submit}
+              onPress={() => void submit()}
               variant="solid"
               color="primary"
               disabled={shouldDisable()}>
@@ -637,7 +641,7 @@ function ImageCdnHostDialog({control}: {control: Dialog.DialogControlProps}) {
             <Button
               label={_(msg`Save`)}
               size="large"
-              onPress={submit}
+              onPress={() => void submit()}
               variant="solid"
               color="primary"
               disabled={shouldDisable()}>
@@ -773,7 +777,7 @@ function PostReplacementDialog({
             <Button
               label={_(msg`Save`)}
               size="large"
-              onPress={submit}
+              onPress={() => void submit()}
               variant="solid"
               color="primary"
               disabled={shouldDisable()}>
@@ -891,7 +895,7 @@ function OpenRouterApiKeyDialog({
             <Button
               label={_(msg`Save`)}
               size="large"
-              onPress={submit}
+              onPress={() => void submit()}
               variant="solid"
               color="primary">
               <ButtonText>
@@ -956,7 +960,7 @@ function OpenRouterModelDialog({
             <Button
               label={_(msg`Save`)}
               size="large"
-              onPress={submit}
+              onPress={() => void submit()}
               variant="solid"
               color="primary">
               <ButtonText>
@@ -1026,7 +1030,7 @@ function OpenRouterPromptDialog({
             <Button
               label={_(msg`Save`)}
               size="large"
-              onPress={submit}
+              onPress={() => void submit()}
               variant="solid"
               color="primary">
               <ButtonText>
@@ -1133,6 +1137,10 @@ export function RunesSettingsScreen({}: Props) {
 
   const showLinkInHandle = useShowLinkInHandle()
   const setShowLinkInHandle = useSetShowLinkInHandle()
+  const showLinkInHandleOnlyOnWorkingLinks =
+    useShowLinkInHandleOnlyOnWorkingLinks()
+  const setShowLinkInHandleOnlyOnWorkingLinks =
+    useSetShowLinkInHandleOnlyOnWorkingLinks()
 
   const handleInLinks = useHandleInLinks()
   const setHandleInLinks = useSetHandleInLinks()
@@ -1395,6 +1403,19 @@ export function RunesSettingsScreen({}: Props) {
               </Toggle.LabelText>
               <Toggle.Platform />
             </Toggle.Item>
+            {showLinkInHandle && (
+              <Toggle.Item
+                name="show_link_in_handle_only_on_working_links"
+                label={_(msg`Only show URL on handles with working links`)}
+                value={showLinkInHandleOnlyOnWorkingLinks}
+                onChange={value => setShowLinkInHandleOnlyOnWorkingLinks(value)}
+                style={[a.w_full]}>
+                <Toggle.LabelText style={[a.flex_1]}>
+                  <Trans>Only show URL on handles with working links</Trans>
+                </Toggle.LabelText>
+                <Toggle.Platform />
+              </Toggle.Item>
+            )}
 
             <Toggle.Item
               name="no_discover_fallback"

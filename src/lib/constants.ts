@@ -251,3 +251,5 @@ export const webLinks = {
   community: `https://bsky.social/about/support/community-guidelines`,
   communityDeprecated: `https://bsky.social/about/support/community-guidelines-deprecated`,
 }
+
+export const DOH_ENDPOINT = 'https://cloudflare-dns.com/dns-query'

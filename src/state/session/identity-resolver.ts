@@ -1,5 +1,10 @@
 import {type ComAtprotoIdentityDefs, isDid} from '@atproto/api'
+import {
+  type IdentityInfo,
+  type IdentityResolver,
+} from '@atproto-labs/identity-resolver'
 
+import {DOH_ENDPOINT} from '#/lib/constants'
 import {createPublicAgent} from './agent'
 
 type AtprotoDid = `did:plc:${string}` | `did:web:${string}`
@@ -15,19 +20,7 @@ type Service = {
   serviceEndpoint?: string
 }
 
-type IdentityResolver = {
-  resolve(
-    input: string,
-    options?: {signal?: AbortSignal},
-  ): Promise<{
-    did: AtprotoDid
-    didDoc: DidDocument
-    handle: string
-  }>
-}
-
 const HANDLE_INVALID = 'handle.invalid'
-const DOH_ENDPOINT = 'https://cloudflare-dns.com/dns-query'
 
 function asNormalizedHandle(input: string) {
   const handle = input.toLowerCase()
@@ -242,16 +235,12 @@ export function createIdentityResolver(): IdentityResolver {
     async resolve(
       input: string,
       options?: {signal?: AbortSignal},
-    ): Promise<{
-      did: AtprotoDid
-      didDoc: DidDocument
-      handle: string
-    }> {
+    ): Promise<IdentityInfo> {
       const identity = await resolveIdentityUsingAppView(input, options?.signal)
 
       return {
         did: identity.did as AtprotoDid,
-        didDoc: identity.didDoc as DidDocument,
+        didDoc: identity.didDoc as IdentityInfo['didDoc'],
         handle: identity.handle,
       }
     },

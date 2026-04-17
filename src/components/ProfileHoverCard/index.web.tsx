@@ -528,8 +528,8 @@ function Inner({
           ))}
       </View>
 
-      <Link to={profileURL} label={_(msg`View profile`)} onPress={hide}>
-        <View style={[a.pb_sm, a.flex_1]}>
+      <View style={[a.pb_sm, a.flex_1]}>
+        <Link to={profileURL} label={_(msg`View profile`)} onPress={hide}>
           <View style={[a.flex_row, a.align_center, a.pt_md, a.pb_xs]}>
             <Text
               numberOfLines={1}
@@ -556,10 +556,14 @@ function Inner({
               ]}
             />
           </View>
+        </Link>
 
-          <ProfileHeaderHandle profile={profileShadow} disableTaps />
-        </View>
-      </Link>
+        <ProfileHeaderHandle
+          profile={profileShadow}
+          disableAuxiliaryTaps
+          onLinkPress={hide}
+        />
+      </View>
 
       {isBlockedUser && (
         <View style={[a.flex_row, a.flex_wrap, a.gap_xs]}>
