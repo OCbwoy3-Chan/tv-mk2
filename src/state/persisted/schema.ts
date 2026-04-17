@@ -61,6 +61,7 @@ const schema = z.object({
     'reddwarf',
     'catppuccin',
     'evergarden',
+    'material3',
   ]),
   hue: z.number(),
   session: z.object({
