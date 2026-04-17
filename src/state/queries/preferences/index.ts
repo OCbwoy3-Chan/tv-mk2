@@ -5,6 +5,7 @@ import {
   type BskyPreferences,
   type LabelPreference,
 } from '@atproto/api'
+import {TID} from '@atproto/common-web'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
 import {PROD_DEFAULT_FEED} from '#/lib/constants'
@@ -94,6 +95,45 @@ function applyAgeAssurancePreferences(
     }
   }
   return data
+}
+
+type PreferencesMutationContext = {
+  previousPreferences: UsePreferencesQueryResponse | undefined
+}
+
+function updateCachedPreferences(
+  queryClient: ReturnType<typeof useQueryClient>,
+  updater: (data: UsePreferencesQueryResponse) => UsePreferencesQueryResponse,
+) {
+  queryClient.setQueryData<UsePreferencesQueryResponse | undefined>(
+    preferencesQueryKey,
+    previous => (previous ? updater(previous) : previous),
+  )
+}
+
+async function mutateCachedPreferences(
+  queryClient: ReturnType<typeof useQueryClient>,
+  updater: (data: UsePreferencesQueryResponse) => UsePreferencesQueryResponse,
+): Promise<PreferencesMutationContext> {
+  await queryClient.cancelQueries({queryKey: preferencesQueryKey})
+  const previousPreferences =
+    queryClient.getQueryData<UsePreferencesQueryResponse>(preferencesQueryKey)
+  updateCachedPreferences(queryClient, updater)
+  return {previousPreferences}
+}
+
+function restoreCachedPreferences(
+  queryClient: ReturnType<typeof useQueryClient>,
+  context: PreferencesMutationContext | undefined,
+) {
+  if (!context) return
+  queryClient.setQueryData(preferencesQueryKey, context.previousPreferences)
+}
+
+function refetchPreferences(queryClient: ReturnType<typeof useQueryClient>) {
+  void queryClient.invalidateQueries({
+    queryKey: preferencesQueryKey,
+  })
 }
 
 export function usePreferencesQuery() {
@@ -275,13 +315,25 @@ export function useOverwriteSavedFeedsMutation() {
   const queryClient = useQueryClient()
   const agent = useAgent()
 
-  return useMutation<void, unknown, AppBskyActorDefs.SavedFeed[]>({
+  return useMutation<
+    void,
+    unknown,
+    AppBskyActorDefs.SavedFeed[],
+    PreferencesMutationContext
+  >({
+    onMutate: savedFeeds =>
+      mutateCachedPreferences(queryClient, data => ({
+        ...data,
+        savedFeeds,
+      })),
+    onError: (_error, _savedFeeds, context) => {
+      restoreCachedPreferences(queryClient, context)
+    },
+    onSettled: () => {
+      refetchPreferences(queryClient)
+    },
     mutationFn: async savedFeeds => {
       await agent.overwriteSavedFeeds(savedFeeds)
-      // triggers a refetch
-      await queryClient.invalidateQueries({
-        queryKey: preferencesQueryKey,
-      })
     },
   })
 }
@@ -293,14 +345,27 @@ export function useAddSavedFeedsMutation() {
   return useMutation<
     void,
     unknown,
-    Pick<AppBskyActorDefs.SavedFeed, 'type' | 'value' | 'pinned'>[]
+    Pick<AppBskyActorDefs.SavedFeed, 'type' | 'value' | 'pinned'>[],
+    PreferencesMutationContext
   >({
+    onMutate: savedFeeds =>
+      mutateCachedPreferences(queryClient, data => ({
+        ...data,
+        savedFeeds: data.savedFeeds.concat(
+          savedFeeds.map(savedFeed => ({
+            ...savedFeed,
+            id: TID.nextStr(),
+          })),
+        ),
+      })),
+    onError: (_error, _savedFeeds, context) => {
+      restoreCachedPreferences(queryClient, context)
+    },
+    onSettled: () => {
+      refetchPreferences(queryClient)
+    },
     mutationFn: async savedFeeds => {
       await agent.addSavedFeeds(savedFeeds)
-      // triggers a refetch
-      await queryClient.invalidateQueries({
-        queryKey: preferencesQueryKey,
-      })
     },
   })
 }
@@ -309,13 +374,25 @@ export function useRemoveFeedMutation() {
   const queryClient = useQueryClient()
   const agent = useAgent()
 
-  return useMutation<void, unknown, Pick<AppBskyActorDefs.SavedFeed, 'id'>>({
+  return useMutation<
+    void,
+    unknown,
+    Pick<AppBskyActorDefs.SavedFeed, 'id'>,
+    PreferencesMutationContext
+  >({
+    onMutate: savedFeed =>
+      mutateCachedPreferences(queryClient, data => ({
+        ...data,
+        savedFeeds: data.savedFeeds.filter(feed => feed.id !== savedFeed.id),
+      })),
+    onError: (_error, _savedFeed, context) => {
+      restoreCachedPreferences(queryClient, context)
+    },
+    onSettled: () => {
+      refetchPreferences(queryClient)
+    },
     mutationFn: async savedFeed => {
       await agent.removeSavedFeeds([savedFeed.id])
-      // triggers a refetch
-      await queryClient.invalidateQueries({
-        queryKey: preferencesQueryKey,
-      })
     },
   })
 }
@@ -324,7 +401,49 @@ export function useReplaceForYouWithDiscoverFeedMutation() {
   const queryClient = useQueryClient()
   const agent = useAgent()
 
-  return useMutation({
+  return useMutation<
+    void,
+    unknown,
+    {
+      forYouFeedConfig: AppBskyActorDefs.SavedFeed | undefined
+      discoverFeedConfig: AppBskyActorDefs.SavedFeed | undefined
+    },
+    PreferencesMutationContext
+  >({
+    onMutate: ({forYouFeedConfig, discoverFeedConfig}) =>
+      mutateCachedPreferences(queryClient, data => {
+        let savedFeeds = data.savedFeeds
+
+        if (forYouFeedConfig) {
+          savedFeeds = savedFeeds.filter(
+            feed => feed.id !== forYouFeedConfig.id,
+          )
+        }
+
+        if (!discoverFeedConfig) {
+          savedFeeds = savedFeeds.concat({
+            type: 'feed',
+            value: PROD_DEFAULT_FEED('whats-hot'),
+            pinned: true,
+            id: TID.nextStr(),
+          })
+        } else {
+          savedFeeds = savedFeeds.map(feed =>
+            feed.id === discoverFeedConfig.id ? {...feed, pinned: true} : feed,
+          )
+        }
+
+        return {
+          ...data,
+          savedFeeds,
+        }
+      }),
+    onError: (_error, _variables, context) => {
+      restoreCachedPreferences(queryClient, context)
+    },
+    onSettled: () => {
+      refetchPreferences(queryClient)
+    },
     mutationFn: async ({
       forYouFeedConfig,
       discoverFeedConfig,
@@ -351,10 +470,6 @@ export function useReplaceForYouWithDiscoverFeedMutation() {
           },
         ])
       }
-      // triggers a refetch
-      await queryClient.invalidateQueries({
-        queryKey: preferencesQueryKey,
-      })
     },
   })
 }
@@ -363,14 +478,30 @@ export function useUpdateSavedFeedsMutation() {
   const queryClient = useQueryClient()
   const agent = useAgent()
 
-  return useMutation<void, unknown, AppBskyActorDefs.SavedFeed[]>({
+  return useMutation<
+    void,
+    unknown,
+    AppBskyActorDefs.SavedFeed[],
+    PreferencesMutationContext
+  >({
+    onMutate: feeds =>
+      mutateCachedPreferences(queryClient, data => {
+        const nextById = new Map(feeds.map(feed => [feed.id, feed]))
+        return {
+          ...data,
+          savedFeeds: data.savedFeeds.map(
+            feed => nextById.get(feed.id) ?? feed,
+          ),
+        }
+      }),
+    onError: (_error, _feeds, context) => {
+      restoreCachedPreferences(queryClient, context)
+    },
+    onSettled: () => {
+      refetchPreferences(queryClient)
+    },
     mutationFn: async feeds => {
       await agent.updateSavedFeeds(feeds)
-
-      // triggers a refetch
-      await queryClient.invalidateQueries({
-        queryKey: preferencesQueryKey,
-      })
     },
   })
 }
