@@ -93,7 +93,11 @@ const transpileModuleDirs = getTranspileModuleDirs(TRANSPILE_MODULES)
 /** @type {import('@rspack/core').Configuration} */
 module.exports = {
   mode: isProduction ? 'production' : 'development',
-  devtool: isProduction ? 'source-map' : 'eval-cheap-module-source-map',
+  // Avoid eval-based sourcemaps in development. Firefox resolves relative
+  // sourcemap URLs from injected devtools scripts like `installHook.js.map`
+  // against an `<anonymous code>` URL when the bundle is eval-backed, which
+  // produces noisy 404s in the console.
+  devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
 
   entry: {
     main: path.resolve(__dirname, 'index.web.js'),

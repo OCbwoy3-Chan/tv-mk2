@@ -13,6 +13,7 @@ import {useCloseAllActiveElements} from '#/state/util'
 import {Lightbox} from '#/view/com/lightbox/Lightbox'
 import {ModalsContainer} from '#/view/com/modals/Modal'
 import {ErrorBoundary} from '#/view/com/util/ErrorBoundary'
+import {LOGO_PATH, LOGO_VIEW_BOX} from '#/view/icons/Logo'
 import {Deactivated} from '#/screens/Deactivated'
 import {Takendown} from '#/screens/Takendown'
 import {atoms as a, select, useBreakpoints, useTheme} from '#/alf'
@@ -35,6 +36,35 @@ import {PassiveAnalytics} from '#/analytics/PassiveAnalytics'
 import {FlatNavigator, RoutesContainer} from '#/Navigation'
 import {Composer} from './Composer'
 import {DrawerContent} from './Drawer'
+
+function createFaviconDataUrl(color: string) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEW_BOX}"><path fill="${color}" d="${LOGO_PATH}"/></svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
+function upsertHeadLink({
+  rel,
+  href,
+  type,
+  sizes,
+}: {
+  rel: string
+  href: string
+  type?: string
+  sizes?: string
+}) {
+  let link = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`)
+
+  if (!link) {
+    link = document.createElement('link')
+    link.rel = rel
+    document.head.appendChild(link)
+  }
+
+  if (type) link.type = type
+  if (sizes) link.sizes = sizes
+  link.href = href
+}
 
 function ShellInner() {
   const t = useTheme()
@@ -76,6 +106,22 @@ function ShellInner() {
         color: ${color} !important;
       }
     `
+  }, [t.palette.primary_500])
+
+  useLayoutEffect(() => {
+    const faviconHref = createFaviconDataUrl(t.palette.primary_500)
+
+    upsertHeadLink({
+      rel: 'icon',
+      href: faviconHref,
+      type: 'image/svg+xml',
+      sizes: 'any',
+    })
+    upsertHeadLink({
+      rel: 'shortcut icon',
+      href: faviconHref,
+      type: 'image/svg+xml',
+    })
   }, [t.palette.primary_500])
 
   useEffect(() => {
