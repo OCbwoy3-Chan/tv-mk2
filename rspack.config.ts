@@ -365,11 +365,19 @@ module.exports = {
     splitChunks: {
       chunks: 'all',
       cacheGroups: {
+        framework: {
+          test: /[\\/]node_modules[\\/](react|react-dom|react-native-web|@react-navigation|expo|@expo)[\\/]/,
+          name: 'framework',
+          chunks: 'initial',
+          priority: 20,
+          reuseExistingChunk: true,
+        },
         vendor: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor',
-          chunks: 'all',
+          chunks: 'initial',
           priority: -10,
+          reuseExistingChunk: true,
         },
       },
     },

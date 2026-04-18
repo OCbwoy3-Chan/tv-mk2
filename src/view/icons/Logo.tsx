@@ -38,8 +38,8 @@ export const Logo = forwardRef(function LogoImpl(props: Props, ref) {
       <Image
         source={
           size > 100
-            ? require('../../../assets/kawaii.png')
-            : require('../../../assets/kawaii_smol.png')
+            ? require('../../../assets/kawaii.avif')
+            : require('../../../assets/kawaii_smol.avif')
         }
         accessibilityLabel="Witchsky"
         accessibilityHint=""
