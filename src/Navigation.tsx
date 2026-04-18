@@ -80,6 +80,7 @@ import {LogScreen} from '#/screens/Log'
 import {AuthCallback} from '#/screens/Login/AuthCallback'
 import {MessagesScreen} from '#/screens/Messages/ChatList'
 import {MessagesConversationScreen} from '#/screens/Messages/Conversation'
+import {MessagesConversationSettingsScreen} from '#/screens/Messages/ConversationSettings'
 import {MessagesInboxScreen} from '#/screens/Messages/Inbox'
 import {MessagesSettingsScreen} from '#/screens/Messages/Settings'
 import {ModerationScreen} from '#/screens/Moderation'
@@ -610,6 +611,11 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         name="MessagesConversation"
         getComponent={() => MessagesConversationScreen}
         options={{title: title(msg`Chat`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="MessagesConversationSettings"
+        getComponent={() => MessagesConversationSettingsScreen}
+        options={{title: title(msg`Group chat settings`), requireAuth: true}}
       />
       <Stack.Screen
         name="MessagesSettings"

@@ -9,8 +9,8 @@ import {
 import {useAgent} from '#/state/session'
 import {pdsAgent} from '#/state/session/agent'
 import {useAnalytics} from '#/analytics'
-import {IS_WEB} from '#/env'
 import * as env from '#/env'
+import {IS_WEB} from '#/env'
 import {
   type LiveEventFeed,
   type LiveEventFeedMetricContext,

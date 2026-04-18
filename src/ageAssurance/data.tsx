@@ -215,7 +215,9 @@ export async function prefetchServerState({agent}: {agent: AtpAgent}) {
   try {
     logger.debug(`prefetchServerState: resolving...`)
     const res = await networkRetry(3, () => getServerState())
-    qc.setQueryData<AppBskyAgeassuranceGetState.OutputSchema>(qk, res)
+    if (res) {
+      qc.setQueryData<AppBskyAgeassuranceGetState.OutputSchema>(qk, res)
+    }
   } catch (err) {
     const e = err as Error
     logger.warn(`prefetchServerState: failed`, {
@@ -228,10 +230,12 @@ export async function refetchServerState({agent}: {agent: AtpAgent}) {
   if (!did) return
   logger.debug(`refetchServerState: fetching...`)
   const res = await networkRetry(3, () => getServerState())
-  qc.setQueryData<AppBskyAgeassuranceGetState.OutputSchema>(
-    createServerStateQueryKey({did}),
-    res,
-  )
+  if (res) {
+    qc.setQueryData<AppBskyAgeassuranceGetState.OutputSchema>(
+      createServerStateQueryKey({did}),
+      res,
+    )
+  }
   return res
 }
 export function usePatchServerState() {

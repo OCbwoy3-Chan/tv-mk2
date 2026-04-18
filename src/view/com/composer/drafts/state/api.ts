@@ -27,6 +27,7 @@ import {type DraftPostDisplay, type DraftSummary} from './schema'
 import * as storage from './storage'
 
 const TENOR_HOSTNAME = 'media.tenor.com'
+const KLIPY_HOSTNAME = 'static.klipy.com'
 
 /**
  * Video data from a draft that needs to be restored by re-processing.
@@ -380,7 +381,7 @@ function parseGifFromUrl(
 ): {url: string; width: number; height: number; alt: string} | undefined {
   try {
     const url = new URL(uri)
-    if (url.hostname !== TENOR_HOSTNAME) {
+    if (url.hostname !== TENOR_HOSTNAME && url.hostname !== KLIPY_HOSTNAME) {
       return undefined
     }
 
@@ -397,6 +398,8 @@ function parseGifFromUrl(
     url.searchParams.delete('ww')
     url.searchParams.delete('hh')
     url.searchParams.delete('alt')
+    url.searchParams.delete('mp4')
+    url.searchParams.delete('webm')
 
     return {url: url.toString(), width, height, alt}
   } catch {

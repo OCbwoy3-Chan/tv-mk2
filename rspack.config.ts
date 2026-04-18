@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import rspack from '@rspack/core'
 import {RspackManifestPlugin} from 'rspack-manifest-plugin'
@@ -16,37 +17,78 @@ const expoPublicEnv = Object.fromEntries(
 )
 
 // Packages in node_modules that ship untranspiled JSX/Flow/modern syntax
-// and need to be run through babel-loader.
-const TRANSPILE_MODULES = [
-  'react-native',
-  'react-native-web',
-  '@react-native',
-  '@react-native-community',
-  'expo',
-  '@expo',
-  '@unimodules',
-  'unimodules',
-  '@discord',
-  'react-navigation',
-  '@react-navigation',
-  'native-base',
-  'normalize-url',
-  'react-native-svg',
-  '@sentry/react-native',
-  'sentry-expo',
-  'bcp-47-match',
-  'nanoid',
-  'react-native-web-webview',
-]
-
-/** Matches a file path against the TRANSPILE_MODULES list. */
-function isTranspileModule(filePath: string) {
-  return TRANSPILE_MODULES.some(mod => {
-    const sep = path.sep === '\\' ? '\\\\' : '/'
-    const pattern = new RegExp(`node_modules${sep}${mod.replace('/', sep)}`)
-    return pattern.test(filePath)
-  })
+// and need to be run through SWC.
+const TRANSPILE_MODULES = {
+  prefixes: [
+    'react-native',
+    'react-native-web',
+    'expo',
+    'unimodules',
+    'react-navigation',
+  ],
+  scopes: [
+    '@react-native',
+    '@react-native-community',
+    '@expo',
+    '@unimodules',
+    '@bsky.app',
+    '@discord',
+    '@react-navigation',
+  ],
+  packages: [
+    'native-base',
+    'normalize-url',
+    '@sentry/react-native',
+    'sentry-expo',
+    'bcp-47-match',
+    'nanoid',
+  ],
 }
+
+function getTranspileModuleDirs({
+  prefixes,
+  scopes,
+  packages,
+}: typeof TRANSPILE_MODULES) {
+  const nodeModulesDir = path.resolve(__dirname, 'node_modules')
+  const dirs = new Set<string>()
+
+  const readDirNames = (dir: string) => {
+    if (!fs.existsSync(dir)) return []
+    return fs
+      .readdirSync(dir, {withFileTypes: true})
+      .filter(entry => entry.isDirectory())
+      .map(entry => entry.name)
+  }
+
+  for (const entry of readDirNames(nodeModulesDir)) {
+    if (
+      prefixes.some(
+        prefix => entry === prefix || entry.startsWith(`${prefix}-`),
+      )
+    ) {
+      dirs.add(path.join(nodeModulesDir, entry))
+    }
+  }
+
+  for (const scope of scopes) {
+    const scopeDir = path.join(nodeModulesDir, scope)
+    for (const entry of readDirNames(scopeDir)) {
+      dirs.add(path.join(scopeDir, entry))
+    }
+  }
+
+  for (const pkg of packages) {
+    const pkgDir = path.join(nodeModulesDir, ...pkg.split('/'))
+    if (fs.existsSync(pkgDir)) {
+      dirs.add(pkgDir)
+    }
+  }
+
+  return [...dirs]
+}
+
+const transpileModuleDirs = getTranspileModuleDirs(TRANSPILE_MODULES)
 
 /** @type {import('@rspack/core').Configuration} */
 module.exports = {
@@ -167,7 +209,7 @@ module.exports = {
       // SWC loader which is much faster than babel for simple transforms.
       {
         test: /\.jsx?$/,
-        include: isTranspileModule,
+        include: transpileModuleDirs,
         use: {
           loader: 'swc-loader', // rspack swc-loader doesn't support flow yet
           options: {
@@ -187,9 +229,9 @@ module.exports = {
       },
       {
         test: /\.tsx?$/,
-        include: isTranspileModule,
+        include: transpileModuleDirs,
         use: {
-          loader: 'builtin:swc-loader',
+          loader: 'swc-loader',
           options: {
             jsc: {
               parser: {
