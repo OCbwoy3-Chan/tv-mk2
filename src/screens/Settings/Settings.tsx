@@ -187,12 +187,10 @@ export function SettingsScreen({}: Props) {
               <Trans>Privacy and security</Trans>
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
-          <SettingsList.LinkItem
-            to="/moderation"
-            label={l`Moderation and content filters`}>
+          <SettingsList.LinkItem to="/moderation" label={l`Moderation`}>
             <SettingsList.ItemIcon icon={HandIcon} />
             <SettingsList.ItemText>
-              <Trans>Moderation and content filters</Trans>
+              <Trans>Moderation</Trans>
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
