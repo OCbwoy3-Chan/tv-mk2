@@ -3,7 +3,7 @@ import rspack from '@rspack/core'
 import {RspackManifestPlugin} from 'rspack-manifest-plugin'
 import {sentryWebpackPlugin} from '@sentry/webpack-plugin'
 import {version} from './package.json'
-import { existsSync, readdirSync } from 'node:fs'
+import {existsSync, readdirSync} from 'node:fs'
 
 const GENERATE_STATS = process.env.GENERATE_STATS === '1'
 const isProduction = process.env.NODE_ENV === 'production'

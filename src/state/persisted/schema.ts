@@ -64,6 +64,25 @@ const schema = z.object({
     'material3',
   ]),
   hue: z.number(),
+  material3Accent: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/, {
+      message:
+        'Invalid color format. Must be a 7-character hex code (e.g., #RRGGBB).',
+    })
+    .default('#ee6300'),
+  material3Style: z
+    .enum([
+      'SPRITZ',
+      'TONAL_SPOT',
+      'VIBRANT',
+      'EXPRESSIVE',
+      'RAINBOW',
+      'FRUIT_SALAD',
+      'CONTENT',
+      'MONOCHROMATIC',
+    ])
+    .default('TONAL_SPOT'),
   session: z.object({
     accounts: z.array(accountSchema),
     currentAccount: currentAccountSchema.optional(),
@@ -225,6 +244,7 @@ export const defaults: Schema = {
   darkTheme: 'dim',
   colorScheme: 'witchsky',
   hue: 0,
+  material3Accent: '#ee6300',
   session: {
     accounts: [],
     currentAccount: undefined,

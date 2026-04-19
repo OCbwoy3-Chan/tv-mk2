@@ -14,12 +14,16 @@ type StateContext = {
   darkTheme: persisted.Schema['darkTheme']
   colorScheme: persisted.Schema['colorScheme']
   hue: persisted.Schema['hue']
+  material3Accent: persisted.Schema['material3Accent']
+  material3Style: persisted.Schema['material3Style']
 }
 type SetContext = {
   setColorMode: (v: persisted.Schema['colorMode']) => void
   setDarkTheme: (v: persisted.Schema['darkTheme']) => void
   setColorScheme: (v: persisted.Schema['colorScheme']) => void
   setHue: (v: persisted.Schema['hue']) => void
+  setMaterial3Accent: (v: persisted.Schema['material3Accent']) => void
+  setMaterial3Style: (v: persisted.Schema['material3Style']) => void
 }
 
 const stateContext = createContext<StateContext>({
@@ -27,6 +31,8 @@ const stateContext = createContext<StateContext>({
   darkTheme: 'dark',
   colorScheme: 'witchsky',
   hue: 0,
+  material3Accent: '#ee6300',
+  material3Style: 'TONAL_SPOT',
 })
 stateContext.displayName = 'ColorModeStateContext'
 const setContext = createContext<SetContext>({} as SetContext)
@@ -35,8 +41,16 @@ setContext.displayName = 'ColorModeSetContext'
 export function Provider({children}: PropsWithChildren<{}>) {
   const [colorMode, setColorMode] = useState(() => persisted.get('colorMode'))
   const [darkTheme, setDarkTheme] = useState(() => persisted.get('darkTheme'))
-  const [colorScheme, setColorScheme] = useState(persisted.get('colorScheme'))
-  const [hue, setHue] = useState(persisted.get('hue'))
+  const [colorScheme, setColorScheme] = useState(() =>
+    persisted.get('colorScheme'),
+  )
+  const [hue, setHue] = useState(() => persisted.get('hue'))
+  const [material3Accent, setMaterial3Accent] = useState(
+    () => persisted.get('material3Accent') ?? '#ee6300',
+  )
+  const [material3Style, setMaterial3Style] = useState(
+    () => persisted.get('material3Style') ?? 'TONAL_SPOT',
+  )
 
   const stateContextValue = useMemo(
     () => ({
@@ -44,27 +58,39 @@ export function Provider({children}: PropsWithChildren<{}>) {
       darkTheme,
       colorScheme,
       hue,
+      material3Accent,
+      material3Style,
     }),
-    [colorMode, darkTheme, colorScheme, hue],
+    [colorMode, darkTheme, colorScheme, hue, material3Accent, material3Style],
   )
 
   const setContextValue = useMemo(
     () => ({
       setColorMode: (_colorMode: persisted.Schema['colorMode']) => {
         setColorMode(_colorMode)
-        persisted.write('colorMode', _colorMode)
+        void persisted.write('colorMode', _colorMode)
       },
       setDarkTheme: (_darkTheme: persisted.Schema['darkTheme']) => {
         setDarkTheme(_darkTheme)
-        persisted.write('darkTheme', _darkTheme)
+        void persisted.write('darkTheme', _darkTheme)
       },
       setColorScheme: (_colorScheme: persisted.Schema['colorScheme']) => {
         setColorScheme(_colorScheme)
-        persisted.write('colorScheme', _colorScheme)
+        void persisted.write('colorScheme', _colorScheme)
       },
       setHue: (_hue: persisted.Schema['hue']) => {
         setHue(_hue)
-        persisted.write('hue', _hue)
+        void persisted.write('hue', _hue)
+      },
+      setMaterial3Accent: (
+        _material3Accent: persisted.Schema['material3Accent'],
+      ) => {
+        setMaterial3Accent(_material3Accent)
+        void persisted.write('material3Accent', _material3Accent)
+      },
+      setMaterial3Style: (_material3Style: persisted.Schema['material3Style']) => {
+        setMaterial3Style(_material3Style)
+        void persisted.write('material3Style', _material3Style)
       },
     }),
     [],
@@ -83,11 +109,25 @@ export function Provider({children}: PropsWithChildren<{}>) {
     const unsub4 = persisted.onUpdate('hue', nextHue => {
       setHue(nextHue)
     })
+    const unsub5 = persisted.onUpdate(
+      'material3Accent',
+      nextMaterial3Accent => {
+        setMaterial3Accent(nextMaterial3Accent)
+      },
+    )
+    const unsub6 = persisted.onUpdate(
+      'material3Style',
+      nextMaterial3Style => {
+        setMaterial3Style(nextMaterial3Style)
+      },
+    )
     return () => {
       unsub1()
       unsub2()
       unsub3()
       unsub4()
+      unsub5()
+      unsub6()
     }
   }, [])
 

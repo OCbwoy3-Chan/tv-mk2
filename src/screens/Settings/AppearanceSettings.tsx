@@ -1,4 +1,4 @@
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 import {Pressable, View} from 'react-native'
 import Animated, {
   FadeInUp,
@@ -14,6 +14,7 @@ import {
   type CommonNavigatorParams,
   type NativeStackScreenProps,
 } from '#/lib/routes/types'
+import {type Schema} from '#/state/persisted'
 import {
   useEnableSquareAvatars,
   useSetEnableSquareAvatars,
@@ -34,10 +35,11 @@ import {
   DEFAULT_PALETTE,
   EVERGARDEN_PALETTE,
   KITTY_PALETTE,
-  MATERIAL_3_PALETTE,
   REDDWARF_PALETTE,
   ZEPPELIN_PALETTE,
 } from '#/alf/themes'
+import {getMaterial3Colors} from '#/alf/util/material3Theme'
+import {useMaterialYouPalette} from '#/alf/util/materialYou'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import {Slider} from '#/components/forms/Slider'
 import * as Toggle from '#/components/forms/Toggle'
@@ -83,9 +85,22 @@ export function AppearanceSettingsScreen({}: Props) {
   const {fonts} = useAlf()
   const t = useTheme()
 
-  const {colorMode, colorScheme, darkTheme, hue} = useThemePrefs()
-  const {setColorMode, setColorScheme, setDarkTheme, setHue} =
-    useSetThemePrefs()
+  const {
+    colorMode,
+    colorScheme,
+    darkTheme,
+    hue,
+    material3Accent,
+    material3Style,
+  } = useThemePrefs()
+  const {
+    setColorMode,
+    setColorScheme,
+    setDarkTheme,
+    setHue,
+    setMaterial3Accent,
+    setMaterial3Style,
+  } = useSetThemePrefs()
 
   const kawaiiMode = useKawaiiMode()
   const setKawaiiMode = useSetKawaiiMode()
@@ -95,6 +110,12 @@ export function AppearanceSettingsScreen({}: Props) {
 
   const enableSquareButtons = useEnableSquareButtons()
   const setEnableSquareButtons = useSetEnableSquareButtons()
+
+  const material3Palette = useMaterialYouPalette()
+  const cachedScheme = useMemo(
+    () => getMaterial3Colors(material3Palette),
+    [material3Palette],
+  )
 
   const onChangeAppearance = useCallback(
     (value: 'light' | 'system' | 'dark') => {
@@ -177,15 +198,11 @@ export function AppearanceSettingsScreen({}: Props) {
       label: _(msg`Evergarden`),
       primary: EVERGARDEN_PALETTE.primary_500,
     },
-    ...(IS_ANDROID
-      ? [
-          {
-            name: 'material3',
-            label: _(msg`Material You`),
-            primary: MATERIAL_3_PALETTE.primary_500,
-          } satisfies ColorSchemeOption,
-        ]
-      : []),
+    {
+      name: 'material3',
+      label: _(msg`Material You`),
+      primary: cachedScheme.regular.primary_500,
+    },
   ]
 
   return (
@@ -260,17 +277,83 @@ export function AppearanceSettingsScreen({}: Props) {
                   selectedScheme={colorScheme}
                   onSchemeChange={onChangeScheme}
                 />
-                <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
-                  <Trans>Hue shift the colors:</Trans>
-                </Text>
-                <Slider
-                  value={hue}
-                  onValueChange={setHue}
-                  minimumValue={0}
-                  maximumValue={360}
-                  step={1}
-                  debounceFull={true}
-                />
+                {colorScheme === 'material3' && !IS_ANDROID && (
+                  <>
+                    <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
+                      <Trans>Accent hue:</Trans>
+                    </Text>
+                    <Slider
+                      value={hexToHue(material3Accent)}
+                      onValueChange={v => {
+                        setMaterial3Accent(hueToHex(v))
+                        setHue(0)
+                      }}
+                      minimumValue={0}
+                      maximumValue={360}
+                      step={1}
+                      debounceFull={true}
+                    />
+
+                    <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
+                      <Trans>Style:</Trans>
+                    </Text>
+                    <View style={[a.flex_row, a.flex_wrap, a.gap_sm]}>
+                      {MATERIAL3_STYLE_OPTIONS.map(({name, label}) => {
+                        const isSelected = material3Style === name
+                        return (
+                          <Pressable
+                            accessibilityRole="button"
+                            key={name}
+                            onPress={() => setMaterial3Style(name)}
+                            style={[
+                              a.flex_1,
+                              a.rounded_sm,
+                              a.align_center,
+                              a.px_sm,
+                              a.py_sm,
+                              a.border,
+                              {minWidth: '22%'},
+                              {
+                                borderColor: isSelected
+                                  ? t.palette.primary_500
+                                  : t.atoms.border_contrast_low.borderColor,
+                                borderWidth: 2,
+                                backgroundColor: isSelected
+                                  ? t.palette.primary_100
+                                  : t.atoms.bg.backgroundColor,
+                              },
+                            ]}>
+                            <Text
+                              style={[
+                                a.text_xs,
+                                a.font_bold,
+                                isSelected
+                                  ? {color: t.palette.primary_500}
+                                  : t.atoms.text,
+                              ]}>
+                              {label}
+                            </Text>
+                          </Pressable>
+                        )
+                      })}
+                    </View>
+                  </>
+                )}
+                {colorScheme !== 'material3' && (
+                  <>
+                    <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
+                      <Trans>Hue shift the colors:</Trans>
+                    </Text>
+                    <Slider
+                      value={hue}
+                      onValueChange={setHue}
+                      minimumValue={0}
+                      maximumValue={360}
+                      step={1}
+                      debounceFull={true}
+                    />
+                  </>
+                )}
               </View>
             </SettingsList.Group>
 
@@ -419,7 +502,7 @@ function ColorSchemeGrid({
                 borderColor: isSelected
                   ? primary
                   : t.atoms.border_contrast_low.borderColor,
-                borderWidth: isSelected ? 2 : 1,
+                borderWidth: 2,
               },
             ]}>
             <View
@@ -509,4 +592,66 @@ export function AppearanceToggleButtonGroup<T extends string>({
       </SettingsList.Group>
     </>
   )
+}
+
+const MATERIAL3_STYLE_OPTIONS: {
+  name: Schema['material3Style']
+  label: string
+}[] = [
+  {name: 'TONAL_SPOT', label: 'Tonal Spot'},
+  {name: 'VIBRANT', label: 'Vibrant'},
+  {name: 'EXPRESSIVE', label: 'Expressive'},
+  {name: 'SPRITZ', label: 'Spritz'},
+  {name: 'RAINBOW', label: 'Rainbow'},
+  {name: 'FRUIT_SALAD', label: 'Fruit Salad'},
+  {name: 'CONTENT', label: 'Content'},
+  {name: 'MONOCHROMATIC', label: 'Mono'},
+]
+
+function hueToHex(hue: number): string {
+  const h = hue / 60
+  const x = 1 - Math.abs((h % 2) - 1)
+  let r = 0,
+    g = 0,
+    b = 0
+  if (h < 1) {
+    r = 1
+    g = x
+  } else if (h < 2) {
+    r = x
+    g = 1
+  } else if (h < 3) {
+    g = 1
+    b = x
+  } else if (h < 4) {
+    g = x
+    b = 1
+  } else if (h < 5) {
+    r = x
+    b = 1
+  } else {
+    r = 1
+    b = x
+  }
+  const toHex = (v: number) =>
+    Math.round(v * 255)
+      .toString(16)
+      .padStart(2, '0')
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}
+
+function hexToHue(hex: string): number {
+  const r = parseInt(hex.slice(1, 3), 16) / 255
+  const g = parseInt(hex.slice(3, 5), 16) / 255
+  const b = parseInt(hex.slice(5, 7), 16) / 255
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const d = max - min
+  if (d === 0) return 0
+  let h = 0
+  if (max === r) h = ((g - b) / d) % 6
+  else if (max === g) h = (b - r) / d + 2
+  else h = (r - g) / d + 4
+  h = Math.round(h * 60)
+  return h < 0 ? h + 360 : h
 }

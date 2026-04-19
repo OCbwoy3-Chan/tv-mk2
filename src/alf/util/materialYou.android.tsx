@@ -1,4 +1,4 @@
-import {createContext, useEffect, useState} from 'react'
+import {createContext, use, useEffect, useState} from 'react'
 import {AppState} from 'react-native'
 import {
   getPalette,
@@ -7,15 +7,19 @@ import {
 } from '@assembless/react-native-material-you'
 
 let palette = getPaletteSync() as MaterialYouPalette
+
 export function getMaterialYouColor(
+  palette: MaterialYouPalette,
   color: [
     'system_accent1',
     'system_accent2',
     'system_accent3',
     'system_neutral1',
     'system_neutral2',
+    'system_error',
   ][number],
   shade: [0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000][number],
+  fallback: string = '#000000',
 ): string {
   const shades = [0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
   let shadeIndex = shades.findIndex(s => s === shade)
@@ -25,7 +29,7 @@ export function getMaterialYouColor(
     )
   }
 
-  return palette[color][shadeIndex]
+  return palette[color]?.[shadeIndex] || fallback
 }
 
 const colorsChangedCallbacks = new Set<() => void>()
@@ -36,8 +40,8 @@ AppState.addEventListener('focus', () => {
       // check if colors changed
       const colorsChanged = Object.keys(newPalette).some(key => {
         const colorKey = key as keyof MaterialYouPalette
-        return newPalette[colorKey].some(
-          (color, index) => color !== palette[colorKey][index],
+        return newPalette[colorKey]?.some(
+          (color, index) => color !== palette[colorKey]?.[index],
         )
       })
       if (colorsChanged) {
@@ -52,7 +56,7 @@ AppState.addEventListener('focus', () => {
     })
 })
 
-export function onMaterialYouPaletteChange(callback: () => void) {
+function onMaterialYouPaletteChange(callback: () => void) {
   colorsChangedCallbacks.add(callback)
   return () => {
     colorsChangedCallbacks.delete(callback)
@@ -61,23 +65,25 @@ export function onMaterialYouPaletteChange(callback: () => void) {
 
 const PaletteProvider = createContext(palette)
 
-// context forces a rerender when palette changes even if nothing uses it (because unfortunately, we're forced to use it
-// via Alf)
 export function MaterialYouPaletteProvider({
   children,
 }: React.PropsWithChildren) {
-  const [_palette, setPalette] = useState(palette)
+  const [thePalette, setThePalette] = useState(palette)
   useEffect(() => {
     const unsubscribe = onMaterialYouPaletteChange(() => {
-      setPalette(() => palette)
+      setThePalette(() => palette)
     })
 
     return unsubscribe
   }, [])
 
   return (
-    <PaletteProvider.Provider value={_palette}>
+    <PaletteProvider.Provider value={thePalette}>
       {children}
     </PaletteProvider.Provider>
   )
+}
+
+export function useMaterialYouPalette() {
+  return use(PaletteProvider)
 }

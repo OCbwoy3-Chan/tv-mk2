@@ -3,8 +3,7 @@ import {createContext, useContext} from 'react'
 import {type TextStyle, type ViewStyle} from 'react-native'
 import {type ThemeName} from '@bsky.app/alf'
 
-import {useThemePrefs} from '#/state/shell/color-mode'
-import {hueShifter, type SchemeType, selectScheme} from '#/alf'
+import {type SchemeType, useScheme} from '#/alf'
 import {themes} from '#/alf/themes'
 import {darkTheme, defaultTheme, dimTheme} from './themes'
 
@@ -124,12 +123,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   theme,
   children,
 }) => {
-  const {colorScheme, hue} = useThemePrefs()
+  const currentScheme = useScheme()
 
   const themeValue = useMemo(() => {
-    const currentScheme = hueShifter(selectScheme(colorScheme), hue)
     return getTheme(theme, currentScheme)
-  }, [theme, colorScheme, hue])
+  }, [theme, currentScheme])
 
   return (
     <ThemeContext.Provider value={themeValue}>{children}</ThemeContext.Provider>

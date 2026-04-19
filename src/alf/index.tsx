@@ -17,16 +17,18 @@ import {
   deerscheme,
   evergardenscheme,
   kittyscheme,
-  material3scheme,
   type Palette,
   reddwarfscheme,
   themes,
   witchskyscheme,
   zeppelinscheme,
 } from '#/alf/themes'
-import {IS_ANDROID} from '#/env'
 import {type Device} from '#/storage'
-import {MaterialYouPaletteProvider} from './util/materialYou'
+import {getMaterial3Colors} from './util/material3Theme'
+import {
+  MaterialYouPaletteProvider,
+  useMaterialYouPalette,
+} from './util/materialYou'
 
 export {
   type TextStyleProp,
@@ -153,42 +155,57 @@ export function hueShifter(scheme: SchemeType, hueShift: number): SchemeType {
   }
 }
 
-export function selectScheme(colorScheme: string | undefined): SchemeType {
-  switch (colorScheme) {
-    case 'witchsky':
-      return witchskyscheme
-    case 'bluesky':
-      return blueskyscheme
-    case 'blacksky':
-      return blackskyscheme
-    case 'deer':
-      return deerscheme
-    case 'zeppelin':
-      return zeppelinscheme
-    case 'kitty':
-      return kittyscheme
-    case 'reddwarf':
-      return reddwarfscheme
-    case 'catppuccin':
-      return catppuccinscheme
-    case 'evergarden':
-      return evergardenscheme
-    case 'material3':
-      if (IS_ANDROID) {
-        return material3scheme
-      }
-      return witchskyscheme
-    default:
-      return themes
-  }
+export function useScheme(): SchemeType {
+  const {hue, colorScheme} = useThemePrefs()
+  const palette = useMaterialYouPalette()
+
+  return useMemo(() => {
+    let currentScheme = themes
+    switch (colorScheme) {
+      case 'witchsky':
+        currentScheme = witchskyscheme
+        break
+      case 'bluesky':
+        currentScheme = blueskyscheme
+        break
+      case 'blacksky':
+        currentScheme = blackskyscheme
+        break
+      case 'deer':
+        currentScheme = deerscheme
+        break
+      case 'zeppelin':
+        currentScheme = zeppelinscheme
+        break
+      case 'kitty':
+        currentScheme = kittyscheme
+        break
+      case 'reddwarf':
+        currentScheme = reddwarfscheme
+        break
+      case 'catppuccin':
+        currentScheme = catppuccinscheme
+        break
+      case 'evergarden':
+        currentScheme = evergardenscheme
+        break
+      case 'material3':
+        currentScheme = getMaterial3Colors(palette).scheme
+        break
+      default:
+        currentScheme = themes
+        break
+    }
+
+    return hueShifter(currentScheme, hue)
+  }, [colorScheme, hue, palette])
 }
 
-export function ThemeProvider({
+function ThemeProviderInner({
   children,
   theme: themeName,
 }: React.PropsWithChildren<{theme: ThemeName}>) {
-  const {colorScheme, hue} = useThemePrefs()
-  const currentScheme = selectScheme(colorScheme)
+  const currentScheme = useScheme()
   const [fontScale, setFontScale] = useState<Alf['fonts']['scale']>(() =>
     getFontScale(),
   )
@@ -215,12 +232,10 @@ export function ThemeProvider({
   )
 
   const value = useMemo<Alf>(() => {
-    const shiftedThemes = hueShifter(currentScheme, hue)
-
     return {
-      themes: shiftedThemes,
+      themes: currentScheme,
       themeName: themeName,
-      theme: shiftedThemes[themeName],
+      theme: currentScheme[themeName],
       fonts: {
         scale: fontScale,
         scaleMultiplier: fontScaleMultiplier,
@@ -232,7 +247,6 @@ export function ThemeProvider({
     }
   }, [
     currentScheme,
-    hue,
     themeName,
     fontScale,
     fontScaleMultiplier,
@@ -241,9 +255,17 @@ export function ThemeProvider({
     setFontFamilyAndPersist,
   ])
 
+  return <Context.Provider value={value}>{children}</Context.Provider>
+}
+
+export function ThemeProvider({
+  children,
+  theme: themeName,
+}: React.PropsWithChildren<{theme: ThemeName}>) {
+  const {material3Accent, material3Style} = useThemePrefs()
   return (
-    <MaterialYouPaletteProvider>
-      <Context.Provider value={value}>{children}</Context.Provider>
+    <MaterialYouPaletteProvider accent={material3Accent} style={material3Style}>
+      <ThemeProviderInner theme={themeName}>{children}</ThemeProviderInner>
     </MaterialYouPaletteProvider>
   )
 }
