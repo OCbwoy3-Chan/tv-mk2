@@ -1,0 +1,80 @@
+diff --git a/node_modules/@assembless/react-native-material-you/android/build.gradle b/node_modules/@assembless/react-native-material-you/android/build.gradle
+index d9460ae..10e85c9 100644
+--- a/node_modules/@assembless/react-native-material-you/android/build.gradle
++++ b/node_modules/@assembless/react-native-material-you/android/build.gradle
+@@ -22,12 +22,12 @@ apply plugin: 'com.android.library'
+ apply plugin: 'kotlin-android'
+ 
+ android {
+-    compileSdkVersion 32
++    compileSdkVersion 35
+     // buildToolsVersion safeExtGet('buildToolsVersion', '30.0.3')
+ 
+     defaultConfig {
+         minSdkVersion safeExtGet('minSdkVersion', "23")
+-        targetSdkVersion safeExtGet('targetSdkVersion', "32")
++        targetSdkVersion safeExtGet('targetSdkVersion', "35")
+     }
+ }
+ 
+diff --git a/node_modules/@assembless/react-native-material-you/android/src/main/java/com/assembless/reactnativematerialyou/RNMaterialYouModule.kt b/node_modules/@assembless/react-native-material-you/android/src/main/java/com/assembless/reactnativematerialyou/RNMaterialYouModule.kt
+index 2d4cbf9..d868561 100644
+--- a/node_modules/@assembless/react-native-material-you/android/src/main/java/com/assembless/reactnativematerialyou/RNMaterialYouModule.kt
++++ b/node_modules/@assembless/react-native-material-you/android/src/main/java/com/assembless/reactnativematerialyou/RNMaterialYouModule.kt
+@@ -132,6 +132,26 @@ class RNMaterialYouModule(val reactContext: ReactApplicationContext) : ReactCont
+         colorMap.putArray("system_neutral1", system_neutral1);
+         colorMap.putArray("system_neutral2", system_neutral2);
+ 
++        if (android.os.Build.VERSION.SDK_INT >= 35) {
++            val system_error: WritableArray? = toWritableArray(arrayOf(
++                R.color.system_error_0,
++                R.color.system_error_10,
++                R.color.system_error_50,
++                R.color.system_error_100,
++                R.color.system_error_200,
++                R.color.system_error_300,
++                R.color.system_error_400,
++                R.color.system_error_500,
++                R.color.system_error_600,
++                R.color.system_error_700,
++                R.color.system_error_800,
++                R.color.system_error_900,
++                R.color.system_error_1000
++            ).map { colorToHex(it) });
++
++            colorMap.putArray("system_error", system_error);
++        }
++
+         return colorMap;
+     }
+ 
+diff --git a/node_modules/@assembless/react-native-material-you/lib/types.d.ts b/node_modules/@assembless/react-native-material-you/lib/types.d.ts
+index 91d097f..e234851 100644
+--- a/node_modules/@assembless/react-native-material-you/lib/types.d.ts
++++ b/node_modules/@assembless/react-native-material-you/lib/types.d.ts
+@@ -19,4 +19,9 @@ export declare type MaterialYouPalette = {
+      * Android API: [system_neutral2](https://developer.android.com/reference/android/R.color#system_neutral2_0)
+      */
+     system_neutral2: string[];
++    /**
++     * Android API: [system_error](https://developer.android.com/reference/android/R.color#system_error_0)
++     * Only available on Android 14+ / API level 35+
++     */
++    system_error?: string[];
+ };
+diff --git a/node_modules/@assembless/react-native-material-you/src/types.ts b/node_modules/@assembless/react-native-material-you/src/types.ts
+index 6f7ad57..f3273c6 100644
+--- a/node_modules/@assembless/react-native-material-you/src/types.ts
++++ b/node_modules/@assembless/react-native-material-you/src/types.ts
+@@ -18,5 +18,10 @@ export type MaterialYouPalette = {
+   /**
+    * Android API: [system_neutral2](https://developer.android.com/reference/android/R.color#system_neutral2_0)
+    */
+-  system_neutral2: string[]
++  system_neutral2: string[],
++  /**
++   * Android API: [system_error](https://developer.android.com/reference/android/R.color#system_error_0)
++   * Only available on Android 14+ / API level 35+
++   */
++  system_error?: string[]
+ }
