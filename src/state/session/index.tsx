@@ -481,14 +481,3 @@ export function useAgent(): AtpAgent {
   }
   return agent
 }
-
-export function useBlankPrefAuthedAgent(): Agent {
-  const agent = useContext(AgentContext)
-  if (!agent) {
-    throw Error('useAgent() must be below <SessionProvider>.')
-  }
-
-  return useMemo(() => {
-    return (agent as BskyAppAgent | OauthBskyAppAgent).cloneWithoutProxy()
-  }, [agent])
-}
