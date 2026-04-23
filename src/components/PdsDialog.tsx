@@ -10,7 +10,7 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {
-  getPdsFallbackFaviconUrl,
+  getPdsFallbackFaviconUrls,
   isBridgedPdsUrl,
   isBskyPdsUrl,
 } from '#/state/queries/pds-label.util'
@@ -247,24 +247,18 @@ function DbBadgeIcon({
 function FaviconBadgeIcon({
   size,
   borderRadius,
-  faviconUrl,
-  fallbackFaviconUrl,
+  faviconUrls,
 }: {
   size: number
   borderRadius: number
-  faviconUrl: string
-  fallbackFaviconUrl?: string
+  faviconUrls: string[]
 }) {
-  const getInitialUrl = () => {
-    if (!failedFaviconUrls.has(faviconUrl)) return faviconUrl
-    if (fallbackFaviconUrl && !failedFaviconUrls.has(fallbackFaviconUrl)) {
-      return fallbackFaviconUrl
-    }
-    return undefined
-  }
-  const [currentUrl, setCurrentUrl] = useState<string | undefined>(
-    getInitialUrl,
-  )
+  const t = useTheme()
+  const getNextUrl = (currentUrl?: string) =>
+    faviconUrls.find(
+      url => url !== currentUrl && url && !failedFaviconUrls.has(url),
+    )
+  const [currentUrl, setCurrentUrl] = useState<string | undefined>(getNextUrl)
   const [imageLoaded, setImageLoaded] = useState(false)
 
   if (!currentUrl) {
@@ -279,9 +273,12 @@ function FaviconBadgeIcon({
           width: size,
           height: size,
           borderRadius,
+          backgroundColor: t.atoms.bg_contrast_100.backgroundColor,
         },
       ]}>
-      <DbBadgeIcon size={size} borderRadius={borderRadius} />
+      {!imageLoaded ? (
+        <DbBadgeIcon size={size} borderRadius={borderRadius} />
+      ) : null}
       <Image
         key={currentUrl}
         source={{uri: currentUrl}}
@@ -301,16 +298,7 @@ function FaviconBadgeIcon({
           failedFaviconUrls.add(currentUrl)
           setImageLoaded(false)
 
-          if (
-            fallbackFaviconUrl &&
-            currentUrl !== fallbackFaviconUrl &&
-            !failedFaviconUrls.has(fallbackFaviconUrl)
-          ) {
-            setCurrentUrl(fallbackFaviconUrl)
-            return
-          }
-
-          setCurrentUrl(undefined)
+          setCurrentUrl(getNextUrl(currentUrl))
         }}
       />
     </View>
@@ -335,26 +323,20 @@ export function PdsBadgeIcon({
   const r = borderRadius ?? size / 5
   if (isBsky) return <BskyBadgeSVG size={size} />
   if (isBridged) return <FediverseBadgeSVG size={size} />
-  const fallbackFaviconUrl = pdsUrl
-    ? getPdsFallbackFaviconUrl(pdsUrl)
-    : undefined
-  if (faviconUrl)
+  const faviconCandidates = Array.from(
+    new Set(
+      [faviconUrl, ...(pdsUrl ? getPdsFallbackFaviconUrls(pdsUrl) : [])].filter(
+        Boolean,
+      ) as string[],
+    ),
+  )
+  if (faviconCandidates.length > 0)
     return (
       <FaviconBadgeIcon
-        key={`${faviconUrl}|${fallbackFaviconUrl ?? ''}`}
+        key={faviconCandidates.join('|')}
         size={size}
         borderRadius={r}
-        faviconUrl={faviconUrl}
-        fallbackFaviconUrl={fallbackFaviconUrl}
-      />
-    )
-  if (fallbackFaviconUrl)
-    return (
-      <FaviconBadgeIcon
-        key={fallbackFaviconUrl}
-        size={size}
-        borderRadius={r}
-        faviconUrl={fallbackFaviconUrl}
+        faviconUrls={faviconCandidates}
       />
     )
   return <DbBadgeIcon size={size} borderRadius={r} />

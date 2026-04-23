@@ -4,6 +4,7 @@ import {
   type IdentityResolver,
 } from '@atproto-labs/identity-resolver'
 
+import {getDidDocumentUrl} from '#/lib/atproto/did'
 import {DOH_ENDPOINT} from '#/lib/constants'
 import {readPlcDirectory} from '#/state/preferences/plc-directory'
 import {createPublicAgent} from './agent'
@@ -166,22 +167,37 @@ async function resolveDidDocument(
   did: AtprotoDid,
   signal?: AbortSignal,
 ): Promise<DidDocument> {
-  const docUrl = did.startsWith('did:plc:')
-    ? `${readPlcDirectory()}/${did}`
-    : `https://${did.substring(8)}/.well-known/did.json`
-
-  const res = await fetch(docUrl, {
-    headers: {
-      accept: 'application/did+ld+json, application/json',
-    },
-    signal,
-  })
-
-  if (!res.ok) {
-    throw new Error(`Failed to resolve DID document for ${did}`)
+  const docUrl = getDidDocumentUrl(did, readPlcDirectory())
+  if (!docUrl) {
+    throw new Error(`Unsupported DID method for ${did}`)
   }
 
-  return (await res.json()) as DidDocument
+  try {
+    const res = await fetch(docUrl, {
+      headers: {
+        accept: 'application/did+ld+json, application/json',
+      },
+      signal,
+    })
+
+    if (!res.ok) {
+      throw new Error(`Failed to resolve DID document for ${did}`)
+    }
+
+    return (await res.json()) as DidDocument
+  } catch (err) {
+    if (!did.startsWith('did:web:')) {
+      throw err
+    }
+
+    const agent = createPublicAgent()
+    try {
+      const res = await agent.com.atproto.identity.resolveDid({did}, {signal})
+      return res.data.didDoc as DidDocument
+    } finally {
+      agent.dispose()
+    }
+  }
 }
 
 async function getValidatedHandleFromDidDocument(

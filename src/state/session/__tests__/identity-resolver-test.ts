@@ -10,11 +10,28 @@ const mockResolveHandle: jest.MockedFunction<
     }
   }>
 > = jest.fn()
+const mockResolveDid: jest.MockedFunction<
+  (
+    params: {did: string},
+    options?: {signal?: AbortSignal},
+  ) => Promise<{
+    data: {
+      didDoc: Record<string, unknown>
+    }
+  }>
+> = jest.fn()
 const mockDispose: jest.MockedFunction<() => void> = jest.fn()
 
 jest.mock('../agent', () => ({
   createPublicAgent() {
     return {
+      com: {
+        atproto: {
+          identity: {
+            resolveDid: mockResolveDid,
+          },
+        },
+      },
       resolveHandle: mockResolveHandle,
       dispose: mockDispose,
     }
@@ -30,6 +47,7 @@ import {
 describe('appview identity resolver', () => {
   beforeEach(() => {
     mockResolveHandle.mockReset()
+    mockResolveDid.mockReset()
     mockDispose.mockReset()
     jest.restoreAllMocks()
   })
@@ -168,6 +186,79 @@ describe('appview identity resolver', () => {
         ],
       },
     })
+  })
+
+  it('resolves did:web path identities using the correct DID document URL', async () => {
+    mockResolveHandle.mockResolvedValueOnce({
+      data: {
+        did: 'did:web:alice.example:users:bob',
+      },
+    })
+    const fetchSpy = jest.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          id: 'did:web:alice.example:users:bob',
+          alsoKnownAs: ['at://alice.example'],
+          service: [
+            {
+              id: '#atproto_pds',
+              type: 'AtprotoPersonalDataServer',
+              serviceEndpoint: 'https://pds.alice.example',
+            },
+          ],
+        }),
+    } as Response)
+
+    const resolver = createIdentityResolver()
+    const identity = await resolver.resolve('did:web:alice.example:users:bob')
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      'https://alice.example/users/bob/did.json',
+      {
+        headers: {
+          accept: 'application/did+ld+json, application/json',
+        },
+        signal: undefined,
+      },
+    )
+    expect(identity.did).toBe('did:web:alice.example:users:bob')
+    expect(identity.handle).toBe('alice.example')
+  })
+
+  it('falls back to appview DID resolution when direct did:web fetching fails', async () => {
+    jest.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('CORS'))
+    mockResolveDid.mockResolvedValueOnce({
+      data: {
+        didDoc: {
+          id: 'did:web:alice.example',
+          alsoKnownAs: ['at://alice.example'],
+          service: [
+            {
+              id: '#atproto_pds',
+              type: 'AtprotoPersonalDataServer',
+              serviceEndpoint: 'https://pds.alice.example',
+            },
+          ],
+        },
+      },
+    })
+    mockResolveHandle.mockResolvedValueOnce({
+      data: {
+        did: 'did:web:alice.example',
+      },
+    })
+
+    const resolver = createIdentityResolver()
+    const identity = await resolver.resolve('did:web:alice.example')
+
+    expect(mockResolveDid).toHaveBeenCalledWith(
+      {did: 'did:web:alice.example'},
+      {signal: undefined},
+    )
+    expect(mockDispose).toHaveBeenCalled()
+    expect(identity.did).toBe('did:web:alice.example')
+    expect(identity.handle).toBe('alice.example')
   })
 
   it('extracts the pds service url from resolved identity info', () => {

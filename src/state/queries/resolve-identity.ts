@@ -1,7 +1,9 @@
 import {type Did, isDid} from '@atproto/api'
 import {useQuery} from '@tanstack/react-query'
 
+import {getDidDocumentUrl} from '#/lib/atproto/did'
 import {readPlcDirectory} from '#/state/preferences/plc-directory'
+import {createPublicAgent} from '#/state/session/agent'
 import {STALE} from '.'
 import {LRU} from './direct-fetch-record'
 const RQKEY_ROOT = 'resolve-identity'
@@ -31,18 +33,43 @@ export type Service = {
 
 const serviceCache = new LRU<string, DidDocument>()
 
+async function resolveDidDocumentUsingAppView(did: Did) {
+  const agent = createPublicAgent()
+  try {
+    const res = await agent.com.atproto.identity.resolveDid({did})
+    return res.data.didDoc as DidDocument
+  } finally {
+    agent.dispose()
+  }
+}
+
 export async function resolveDidDocument(did: Did) {
-  const cacheKey = did.startsWith('did:plc:')
-    ? `${readPlcDirectory()}|${did}`
-    : did
+  const plcDirectory = readPlcDirectory()
+  const cacheKey = did.startsWith('did:plc:') ? `${plcDirectory}|${did}` : did
 
   return await serviceCache.getOrTryInsertWith(cacheKey, async () => {
-    const docUrl = did.startsWith('did:plc:')
-      ? `${readPlcDirectory()}/${did}`
-      : `https://${did.substring(8)}/.well-known/did.json`
+    const docUrl = getDidDocumentUrl(did, plcDirectory)
+    if (!docUrl) {
+      throw new Error(`Unsupported DID method for ${did}`)
+    }
 
-    // TODO: we should probably validate this...
-    return await (await fetch(docUrl)).json()
+    try {
+      const res = await fetch(docUrl, {
+        headers: {
+          accept: 'application/did+ld+json, application/json',
+        },
+      })
+      if (!res.ok) {
+        throw new Error(`Failed to resolve DID document for ${did}`)
+      }
+
+      return (await res.json()) as DidDocument
+    } catch (err) {
+      if (!did.startsWith('did:web:')) {
+        throw err
+      }
+      return await resolveDidDocumentUsingAppView(did)
+    }
   })
 }
 

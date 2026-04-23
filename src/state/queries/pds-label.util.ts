@@ -1,6 +1,7 @@
 const BSKY_PDS_HOSTNAMES = ['bsky.social', 'staging.bsky.dev']
 const BSKY_PDS_SUFFIX = '.bsky.network'
 const BRIDGY_FED_HOSTNAME = 'atproto.brid.gy'
+const PDS_FAVICON_CANDIDATE_PATHS = ['/favicon.ico']
 
 export function isBskyPdsUrl(url: string): boolean {
   try {
@@ -35,9 +36,16 @@ export function getFaviconServiceUrl(
 }
 
 export function getPdsFallbackFaviconUrl(pdsUrl: string): string | undefined {
+  return getPdsFallbackFaviconUrls(pdsUrl)[0]
+}
+
+export function getPdsFallbackFaviconUrls(pdsUrl: string): string[] {
   try {
-    return new URL('/favicon.ico', pdsUrl).toString()
+    const origin = new URL(pdsUrl).origin
+    return PDS_FAVICON_CANDIDATE_PATHS.map(path =>
+      new URL(path, origin).toString(),
+    )
   } catch {
-    return undefined
+    return []
   }
 }

@@ -441,6 +441,7 @@ function FaviconServiceDialog({control}: {control: Dialog.DialogControlProps}) {
   const presets = [
     'https://twenty-icons.com/(pds)',
     'https://favicon.im/(pds)?larger=true&throw-error-on-404=true',
+    'https://favicon.blueat.net/(pds)?larger=true&throw-error-on-404=true',
   ]
 
   return (
