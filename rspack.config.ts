@@ -3,7 +3,7 @@ import rspack from '@rspack/core'
 import {RspackManifestPlugin} from 'rspack-manifest-plugin'
 import {sentryWebpackPlugin} from '@sentry/webpack-plugin'
 import {version} from './package.json'
-import {existsSync, readdirSync} from 'node:fs'
+import {existsSync, readdirSync, symlink} from 'node:fs'
 
 const GENERATE_STATS = process.env.GENERATE_STATS === '1'
 const isProduction = process.env.NODE_ENV === 'production'
@@ -61,6 +61,7 @@ function getTranspileModuleDirs({
   }
 
   for (const entry of readDirNames(nodeModulesDir)) {
+    console.log('Checking node_modules entry:', entry)
     if (
       prefixes.some(
         prefix => entry === prefix || entry.startsWith(`${prefix}-`),
@@ -88,6 +89,7 @@ function getTranspileModuleDirs({
 }
 
 const transpileModuleDirs = getTranspileModuleDirs(TRANSPILE_MODULES)
+const SWC_TRANSPILE_EXCLUDE = /node_modules[\\/]react-native-uuid[\\/]/
 
 /** @type {import('@rspack/core').Configuration} */
 module.exports = {
@@ -156,6 +158,7 @@ module.exports = {
     mainFields: ['browser', 'module', 'main'],
     // Allow importing without file extensions in ESM packages
     fullySpecified: false,
+    symlinks: false, // Don't resolve symlinks to support pnpm's node_modules structure
   },
 
   module: {
@@ -213,6 +216,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         include: transpileModuleDirs,
+        exclude: SWC_TRANSPILE_EXCLUDE,
         use: {
           loader: 'swc-loader', // rspack swc-loader doesn't support flow yet
           options: {
@@ -233,6 +237,7 @@ module.exports = {
       {
         test: /\.tsx?$/,
         include: transpileModuleDirs,
+        exclude: SWC_TRANSPILE_EXCLUDE,
         use: {
           loader: 'swc-loader',
           options: {

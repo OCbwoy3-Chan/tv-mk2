@@ -4,14 +4,14 @@ FROM node:20.11-alpine3.18 as build
 WORKDIR /app
 
 COPY ./bskyogcard/package.json ./
-COPY ./bskyogcard/yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY ./bskyogcard/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY ./bskyogcard ./
 
 # build then prune dev deps
-RUN yarn install-fonts && yarn build
-RUN yarn install --production --ignore-scripts --prefer-offline
+RUN pnpm install-fonts && pnpm build
+RUN pnpm install --production --ignore-scripts --prefer-offline
 
 # Uses assets from build stage to reduce build size
 FROM node:20.11-alpine3.18

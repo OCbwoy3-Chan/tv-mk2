@@ -4,14 +4,14 @@ FROM node:20.11-alpine3.18 as build
 WORKDIR /app
 
 COPY ./bskylink/package.json ./
-COPY ./bskylink/yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY ./bskylink/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY ./bskylink ./
 
 # build then prune dev deps
-RUN yarn build
-RUN yarn install --production --ignore-scripts --prefer-offline
+RUN pnpm build
+RUN pnpm install --production --ignore-scripts --prefer-offline
 
 # Uses assets from build stage to reduce build size
 FROM node:20.11-alpine3.18

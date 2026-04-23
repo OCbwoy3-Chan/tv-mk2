@@ -1,0 +1,40 @@
+
+packages:
+  - .
+  - bskyembed
+  - bskylink
+  - bskyogcard
+  - dev-env
+allowBuilds:
+  '@sentry/cli': true
+  '@swc/core': true
+  better-sqlite3: true
+  cbor-extract: true
+  core-js: true
+  core-js-pure: true
+  esbuild: true
+  postinstall-postinstall: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true
+
+allowUnusedPatches: false
+enableGlobalVirtualStore: false
+ignorePatchFailures: false
+nodeLinker: hoisted
+
+overrides:
+  '@expo/image-utils': "0.8.12"
+  '@react-native/babel-preset': "0.81.5"
+  '@react-native/normalize-colors': "0.81.5"
+  '@types/estree': "1.0.6"
+  metro: "0.83.3"
+  metro-config: "0.83.3"
+  metro-core: "0.83.3"
+  metro-runtime: "0.83.3"
+  metro-source-map: "0.83.3"
+  multiformats: "9.9.0"
+  react-native-compressor: "1.13.0"
+  react-native-mmkv: "npm:@bsky.app/react-native-mmkv@2.12.5"
+  sonner-native: "0.21.0"
+  unicode-segmenter: "0.14.5"

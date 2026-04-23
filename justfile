@@ -1,6 +1,6 @@
 export PATH := "./node_modules/.bin:" + env_var('PATH')
 
-# lots of just -> yarn, but this lets us chain yarn command deps
+# lots of just -> pnpm, but this lets us chain pnpm command deps
 
 [group('dist')]
 dist-build-web: intl build-web
@@ -13,7 +13,7 @@ dist-build-android-gradle: intl build-android-gradle
 
 [group('build')]
 intl:
-    yarn intl:build
+    pnpm intl:build
 
 [group('build')]
 prebuild-android:
@@ -21,7 +21,7 @@ prebuild-android:
 
 [group('build')]
 build-web: && postbuild-web
-    yarn build-web
+    pnpm build-web
 
 [group('build')]
 build-android-sideload: prebuild-android
@@ -55,11 +55,11 @@ postbuild-web:
 
 [group('dev')]
 dev-android-setup: prebuild-android
-    yarn android
+    pnpm android
 
 [group('dev')]
 dev-web:
-    yarn web
+    pnpm web
 
 [group('dev')]
 dev-web-functions: build-web
@@ -67,4 +67,4 @@ dev-web-functions: build-web
 
 [group('lint')]
 typecheck:
-    yarn typecheck
+    pnpm typecheck

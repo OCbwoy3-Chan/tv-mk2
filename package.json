@@ -5,7 +5,7 @@
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "yarn@1.22.22",
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
   "expo": {
     "autolinking": {
       "android": {
@@ -32,7 +32,7 @@
   },
   "scripts": {
     "prepare": "is-ci || husky install",
-    "postinstall": "patch-package && yarn intl:compile-if-needed",
+    "postinstall": "patch-package && pnpm intl:compile-if-needed",
     "prebuild": "EXPO_NO_GIT_STATUS=1 expo prebuild --clean",
     "windows-prebuild": "set EXPO_NO_GIT_STATUS=1&& expo prebuild --clean",
     "android": "expo run:android",
@@ -43,11 +43,11 @@
     "use-build-number": "./scripts/useBuildNumberEnv.sh",
     "use-build-number-with-bump": "./scripts/useBuildNumberEnvWithBump.sh",
     "build-web": "NODE_ENV=production rspack build && node ./scripts/post-web-build.js",
-    "build-all": "yarn intl:build && yarn use-build-number-with-bump eas build --platform all",
-    "build-ios": "yarn use-build-number-with-bump eas build -p ios",
-    "build-android": "yarn use-build-number-with-bump eas build -p android",
-    "build": "yarn use-build-number-with-bump eas build",
-    "build-embed": "cd bskyembed && yarn build && yarn build-snippet && cd .. && node ./scripts/post-embed-build.js",
+    "build-all": "pnpm intl:build && pnpm use-build-number-with-bump eas build --platform all",
+    "build-ios": "pnpm use-build-number-with-bump eas build -p ios",
+    "build-android": "pnpm use-build-number-with-bump eas build -p android",
+    "build": "pnpm use-build-number-with-bump eas build",
+    "build-embed": "cd bskyembed && pnpm build && pnpm build-snippet && cd .. && node ./scripts/post-embed-build.js",
     "start": "expo start --dev-client",
     "start:prod": "expo start --dev-client --no-dev --minify",
     "test": "NODE_ENV=test jest --forceExit --testTimeout=20000 --bail",
@@ -58,31 +58,31 @@
     "lint-native": "swiftlint ./modules && ktlint ./modules",
     "lint-native:fix": "swiftlint --fix ./modules && ktlint --format ./modules",
     "typecheck": "tsc --project ./tsconfig.check.json",
-    "e2e:mock-server": "cd dev-env && yarn start",
+    "e2e:mock-server": "cd dev-env && pnpm start",
     "e2e:build": "EXPO_PUBLIC_ENV=e2e NODE_ENV=test RN_SRC_EXT=e2e.ts,e2e.tsx expo run:ios",
     "e2e:build-android": "EXPO_PUBLIC_ENV=e2e NODE_ENV=test RN_SRC_EXT=e2e.ts,e2e.tsx expo run:android",
     "e2e:start": "EXPO_PUBLIC_ENV=e2e NODE_ENV=test RN_SRC_EXT=e2e.ts,e2e.tsx expo start -c",
     "e2e:run": "maestro test",
     "perf:test": "NODE_ENV=test maestro test",
     "perf:test:run": "NODE_ENV=test maestro test __e2e__/perf-test.yml",
-    "perf:test:measure": "NODE_ENV=test flashlight test --bundleId app.witchsky --testCommand \"yarn perf:test\" --duration 150000 --resultsFilePath .perf/results.json",
+    "perf:test:measure": "NODE_ENV=test flashlight test --bundleId app.witchsky --testCommand \"pnpm perf:test\" --duration 150000 --resultsFilePath .perf/results.json",
     "perf:test:results": "NODE_ENV=test flashlight report .perf/results.json",
     "perf:measure": "NODE_ENV=test flashlight measure",
-    "intl:build": "yarn intl:extract:all && yarn intl:compile",
+    "intl:build": "pnpm intl:extract:all && pnpm intl:compile",
     "intl:extract": "lingui extract --clean --locale en",
     "intl:extract:all": "lingui extract --clean",
     "intl:compile": "lingui compile",
-    "intl:compile-if-needed": "is-ci || [ -f src/locale/locales/en/messages.ts ] || yarn intl:compile",
+    "intl:compile-if-needed": "is-ci || [ -f src/locale/locales/en/messages.ts ] || pnpm intl:compile",
     "intl:pull": "crowdin download translations --verbose -b main",
     "intl:push": "crowdin push translations --verbose -b main",
     "intl:push-sources": "crowdin push sources --verbose -b main",
-    "intl:release": "yarn intl:pull && yarn intl:extract:all",
+    "intl:release": "pnpm intl:pull && pnpm intl:extract:all",
     "nuke": "rm -rf ./node_modules && rm -rf ./ios && rm -rf ./android",
     "update-extensions": "bash scripts/updateExtensions.sh",
-    "export": "npx expo export --dump-sourcemap && yarn upload-native-sourcemaps",
+    "export": "npx expo export --dump-sourcemap && pnpm upload-native-sourcemaps",
     "upload-native-sourcemaps": "npx sentry-expo-upload-sourcemaps dist",
     "make-deploy-bundle": "bash scripts/bundleUpdate.sh",
-    "generate-stats-file": "GENERATE_STATS=1 yarn build-web",
+    "generate-stats-file": "GENERATE_STATS=1 pnpm build-web",
     "icons:optimize": "svgo -f ./assets/icons"
   },
   "dependencies": {
@@ -325,20 +325,6 @@
     "vite-plugin-commonjs": "^0.10.4",
     "webpack-bundle-analyzer": "^4.10.1"
   },
-  "resolutions": {
-    "@react-native/babel-preset": "0.81.5",
-    "@react-native/normalize-colors": "0.81.5",
-    "**/@expo/image-utils": "0.8.12",
-    "**/multiformats": "9.9.0",
-    "unicode-segmenter": "0.14.5",
-    "@types/estree": "1.0.6",
-    "metro": "0.83.3",
-    "metro-core": "0.83.3",
-    "metro-config": "0.83.3",
-    "metro-runtime": "0.83.3",
-    "metro-source-map": "0.83.3",
-    "**/react-native-mmkv": "npm:@bsky.app/react-native-mmkv@2.12.5"
-  },
   "jest": {
     "preset": "jest-expo/ios",
     "setupFilesAfterEnv": [
@@ -400,7 +386,7 @@
     ]
   },
   "lockfile-lint": {
-    "path": "yarn.lock",
+    "path": "pnpm-lock.yaml",
     "allowedHosts": [
       "npm",
       "yarn"
