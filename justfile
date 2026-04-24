@@ -53,6 +53,9 @@ postbuild-web:
     cp src/style.css web-build/style.css
     cp src/style.css web-build/static/style.css
 
+    # copy the favicon
+    cp assets/favicon.png web-build/favicon.ico
+
 [group('dev')]
 dev-android-setup: prebuild-android
     pnpm android
