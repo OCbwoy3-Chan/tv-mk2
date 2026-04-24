@@ -39,7 +39,8 @@ export function LabelsOnMe({
   labels = labels.filter(
     l =>
       !l.val.startsWith('!') &&
-      !(l.val === 'bot' && l.src === currentAccount.did),
+      !(l.val === 'bot' && l.src === currentAccount.did) &&
+      !(l.val === 'pet' && l.src === currentAccount.did),
   )
   if (!labels.length) {
     return null

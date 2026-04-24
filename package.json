@@ -88,9 +88,9 @@
   "dependencies": {
     "@assembless/react-native-material-you": "1.0.0-beta.4",
     "@atproto/api": "^0.19.11",
-    "@atproto/syntax": "0.5.2",
     "@atproto/oauth-client-browser": "^0.3.41",
     "@atproto/oauth-client-expo": "^0.0.10",
+    "@atproto/syntax": "0.5.2",
     "@bitdrift/react-native": "^0.6.14",
     "@braintree/sanitize-url": "^6.0.4",
     "@bsky.app/alf": "^0.1.8",
@@ -322,7 +322,7 @@
     "swc-loader": "^0.2.7",
     "ts-plugin-sort-import-suggestions": "^1.0.4",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.0",
+    "typescript-eslint": "8.59.1-alpha.4",
     "vite": "^8.0.10",
     "vite-plugin-commonjs": "^0.10.4",
     "webpack-bundle-analyzer": "^4.10.2"
