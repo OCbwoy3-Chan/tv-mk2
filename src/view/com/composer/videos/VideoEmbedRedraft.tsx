@@ -1,6 +1,6 @@
 import {Platform, View} from 'react-native'
 import {type BlobRef} from '@atproto/api'
-import {BlueskyVideoView} from '@haileyok/bluesky-video'
+import {BlueskyVideoView} from '@bsky.app/video'
 
 import {atoms as a} from '#/alf'
 import {VideoEmbedInnerWeb} from '#/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerWeb'
@@ -13,7 +13,12 @@ interface Props {
   onRemove: () => void
 }
 
-export function VideoEmbedRedraft({blobRef, playlistUri, aspectRatio, onRemove}: Props) {
+export function VideoEmbedRedraft({
+  blobRef,
+  playlistUri,
+  aspectRatio,
+  onRemove,
+}: Props) {
   const cidString = blobRef.ref.toString()
   const aspectRatioValue = aspectRatio.width / aspectRatio.height || 16 / 9
   const thumbnailUrl = playlistUri.replace('playlist.m3u8', 'thumbnail.jpg')

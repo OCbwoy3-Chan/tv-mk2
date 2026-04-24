@@ -1,8 +1,6 @@
-import {useCallback} from 'react'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Plural, Trans} from '@lingui/react/macro'
-import {useFocusEffect} from '@react-navigation/native'
 
 import {useSetTitle} from '#/lib/hooks/useSetTitle'
 import {
@@ -13,7 +11,6 @@ import {makeRecordUri} from '#/lib/strings/url-helpers'
 import {usePostQuery} from '#/state/queries/post'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
-import {useSetMinimalShellMode} from '#/state/shell'
 import {PostRepostedBy as PostRepostedByComponent} from '#/view/com/post-thread/PostRepostedBy'
 import * as Layout from '#/components/Layout'
 
@@ -22,7 +19,6 @@ export const PostRepostedByScreen = ({route}: Props) => {
   const {_} = useLingui()
   const {name, rkey} = route.params
   const uri = makeRecordUri(name, 'app.bsky.feed.post', rkey)
-  const setMinimalShellMode = useSetMinimalShellMode()
   const {data: post} = usePostQuery(uri)
 
   const {data: resolvedDid} = useResolveDidQuery(name)
@@ -34,12 +30,6 @@ export const PostRepostedByScreen = ({route}: Props) => {
   if (post) {
     quoteCount = post.repostCount
   }
-
-  useFocusEffect(
-    useCallback(() => {
-      setMinimalShellMode(false)
-    }, [setMinimalShellMode]),
-  )
 
   return (
     <Layout.Screen>

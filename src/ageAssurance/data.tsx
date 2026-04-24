@@ -4,6 +4,7 @@ import {
   type AppBskyAgeassuranceGetConfig,
   type AppBskyAgeassuranceGetState,
   type AtpAgent,
+  type ChatBskyActorDeclaration,
   getAgeAssuranceRegionConfig,
 } from '@atproto/api'
 import {createAsyncStoragePersister} from '@tanstack/query-async-storage-persister'
@@ -18,6 +19,7 @@ import {
   hasSnoozedBirthdateUpdateForDid,
   snoozeBirthdateUpdateAllowedForDid,
 } from '#/state/birthdate'
+import {fetchActorDeclarationRecord} from '#/state/queries/messages/actor-declaration'
 import {useAgent, useSession} from '#/state/session'
 import {pdsAgent} from '#/state/session/agent'
 import * as debug from '#/ageAssurance/debug'
@@ -53,7 +55,7 @@ const [, cacheHydrationPromise] = persistQueryClient({
   persister,
 })
 
-function getDidFromAgentSession(agent: AtpAgent) {
+export function getDidFromAgentSession(agent: AtpAgent) {
   const sessionManager = agent.sessionManager
   if (!sessionManager || !sessionManager.did) return
   return sessionManager.did
@@ -296,11 +298,11 @@ export function useServerStateQuery() {
       const geolocation = device.get(['mergedGeolocation'])
       const isAArequired = Boolean(
         config &&
-          geolocation &&
-          !!getAgeAssuranceRegionConfig(config, {
-            countryCode: geolocation?.countryCode ?? '',
-            regionCode: geolocation?.regionCode,
-          }),
+        geolocation &&
+        !!getAgeAssuranceRegionConfig(config, {
+          countryCode: geolocation?.countryCode ?? '',
+          regionCode: geolocation?.regionCode,
+        }),
       )
 
       // only refetch when needed
@@ -319,19 +321,25 @@ export function useServerStateQuery() {
 
 export type OtherRequiredData = {
   birthdate: string | undefined
+  actorDeclaration?: ChatBskyActorDeclaration.Main
 }
 export function createOtherRequiredDataQueryKey({did}: {did: string}) {
   return ['otherRequiredData', did]
 }
-export async function getOtherRequiredData({
+async function getOtherRequiredData({
   agent,
 }: {
   agent: AtpAgent
 }): Promise<OtherRequiredData> {
   if (debug.enabled) return debug.resolve(debug.otherRequiredData)
-  const [prefs] = await Promise.all([pdsAgent(agent).getPreferences()])
+  const did = getDidFromAgentSession(pdsAgent(agent))
+  const [prefs, actorDeclaration] = await Promise.all([
+    pdsAgent(agent).getPreferences(),
+    fetchActorDeclarationRecord({did, agent: pdsAgent(agent)}),
+  ])
   const data: OtherRequiredData = {
     birthdate: prefs.birthDate ? prefs.birthDate.toISOString() : undefined,
+    actorDeclaration,
   }
 
   /**
@@ -349,7 +357,6 @@ export async function getOtherRequiredData({
     }
   }
 
-  const did = getDidFromAgentSession(agent)
   if (data && did && birthdateCache.has(did)) {
     /*
      * If birthdate was just set, use the local cache value. On subsequent
@@ -382,6 +389,26 @@ export function getOtherRequiredDataFromCache({
 }): OtherRequiredData | undefined {
   return qc.getQueryData<OtherRequiredData>(
     createOtherRequiredDataQueryKey({did}),
+  )
+}
+export function setOtherRequiredDataActorDeclarationCache({
+  did,
+  actorDeclaration,
+}: {
+  did: string
+  actorDeclaration: ChatBskyActorDeclaration.Main
+}) {
+  const prev = getOtherRequiredDataFromCache({did})
+  const next: OtherRequiredData = {
+    birthdate: prev?.birthdate,
+    actorDeclaration: {
+      ...(prev?.actorDeclaration || {}),
+      ...actorDeclaration,
+    },
+  }
+  qc.setQueryData<OtherRequiredData>(
+    createOtherRequiredDataQueryKey({did}),
+    next,
   )
 }
 export async function prefetchOtherRequiredData({agent}: {agent: AtpAgent}) {

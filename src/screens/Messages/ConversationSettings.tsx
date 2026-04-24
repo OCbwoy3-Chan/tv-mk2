@@ -1,6 +1,6 @@
 import {useMemo, useState} from 'react'
 import {Pressable, type StyleProp, View, type ViewStyle} from 'react-native'
-import {type ChatBskyConvoDefs, moderateProfile} from '@atproto/api'
+import {moderateProfile} from '@atproto/api'
 import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {StackActions, useNavigation} from '@react-navigation/native'
@@ -24,6 +24,7 @@ import {useEditGroupName} from '#/state/queries/messages/edit-group-name'
 import {useGetConvoAvailabilityQuery} from '#/state/queries/messages/get-convo-availability'
 import {useGetConvoForMembers} from '#/state/queries/messages/get-convo-for-members'
 import {useLeaveConvo} from '#/state/queries/messages/leave-conversation'
+import {useListJoinRequestsQuery} from '#/state/queries/messages/list-join-requests'
 import {useMuteConvo} from '#/state/queries/messages/mute-conversation'
 import {useProfileBlockMutationQueue} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
@@ -34,6 +35,7 @@ import {AvatarBubbles} from '#/components/AvatarBubbles'
 import {Button, type ButtonColor, ButtonIcon} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {AddMembersFlow} from '#/components/dms/AddMembersFlow'
+import {type ConvoWithDetails, parseConvoView} from '#/components/dms/util'
 import {Error} from '#/components/Error'
 import * as TextField from '#/components/forms/TextField'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
@@ -108,7 +110,7 @@ export function MessagesConversationSettingsScreen({route}: Props) {
         <Layout.Header.Slot />
       </Layout.Header.Outer>
       <ConvoProvider key={convoId} convoId={convoId}>
-        <SettingsInner />
+        <SettingsInner convoId={convoId} />
       </ConvoProvider>
     </Layout.Screen>
   )
@@ -118,7 +120,7 @@ function keyExtractor(item: Item) {
   return item.type === 'CHAT_MEMBER' ? item.profile.did : item.type
 }
 
-function SettingsInner() {
+function SettingsInner({convoId}: {convoId: string}) {
   const {t: l} = useLingui()
 
   const initialNumToRender = useInitialNumToRender({minItemHeight: 68})
@@ -126,10 +128,26 @@ function SettingsInner() {
 
   const convoState = useConvo()
   const {currentAccount} = useSession()
-  const primaryMember = convoState?.getPrimaryMember?.()
 
-  const data: bsky.profile.AnyProfileView[] = convoState.convo?.members ?? []
+  const convo = convoState.convo
+    ? parseConvoView(convoState.convo, currentAccount?.did)
+    : null
+  const primaryMember = convo?.primaryMember
+  const isOwner = !!primaryMember && primaryMember.did === currentAccount?.did
+
+  const data: bsky.profile.AnyProfileView[] = convo?.members ?? []
   const invites: string[] = []
+
+  const {data: joinRequestsData, hasNextPage: hasMoreRequests} =
+    useListJoinRequestsQuery({
+      convoId,
+      enabled: isOwner,
+    })
+  const requestCount =
+    joinRequestsData?.pages.reduce(
+      (sum, page) => sum + page.requests.length,
+      0,
+    ) ?? 0
 
   const items = [
     {
@@ -163,11 +181,24 @@ function SettingsInner() {
   function renderItem({item}: {item: Item}) {
     switch (item.type) {
       case 'MEMBERS_AND_REQUESTS':
-        return <MembersAndRequests memberCount={data.length} requestCount={5} />
+        return (
+          <MembersAndRequests
+            memberCount={data.length}
+            requestCount={requestCount}
+            hasMoreRequests={!!hasMoreRequests}
+            isOwner={isOwner}
+          />
+        )
       case 'ADD_MEMBERS_LINK':
-        return <AddMembersLink />
+        return <AddMembersLink isOwner={isOwner} />
       case 'CHAT_MEMBER':
-        return <Member profile={item.profile} status={item.status} />
+        return (
+          <Member
+            profile={item.profile}
+            status={item.status}
+            isOwner={isOwner}
+          />
+        )
       default:
         return null
     }
@@ -194,8 +225,8 @@ function SettingsInner() {
       initialNumToRender={initialNumToRender}
       keyExtractor={keyExtractor}
       ListHeaderComponent={
-        convoState.convo ? (
-          <SettingsHeader convo={convoState.convo} profiles={data} />
+        convo ? (
+          <SettingsHeader convo={convo} isOwner={isOwner} />
         ) : (
           <SettingsHeaderPlaceholder />
         )
@@ -211,20 +242,16 @@ function SettingsInner() {
 function MembersAndRequests({
   memberCount,
   requestCount,
+  hasMoreRequests,
+  isOwner,
 }: {
   memberCount: number
   requestCount: number
+  hasMoreRequests: boolean
+  isOwner: boolean
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
-
-  const convoState = useConvo()
-  const {currentAccount} = useSession()
-
-  const isOwner =
-    currentAccount?.did == null
-      ? false
-      : convoState.getPrimaryMember?.()?.did === currentAccount.did
 
   return (
     <View style={[a.flex_row, a.justify_between, a.mx_xl, a.mt_lg, a.mb_sm]}>
@@ -233,40 +260,43 @@ function MembersAndRequests({
           <Trans>Members</Trans>{' '}
         </Text>
         <Text
-          style={[
-            a.text_xs,
-            a.font_medium,
-            {color: t.palette.contrast_500},
-          ]}>{l`${memberCount}/${MEMBER_LIMIT}`}</Text>
+          style={[a.text_xs, a.font_medium, {color: t.palette.contrast_500}]}>
+          {l({
+            message: `${memberCount}/${MEMBER_LIMIT}`,
+            comment:
+              'The number of group chat members out of the total number of permitted users.',
+          })}
+        </Text>
       </View>
       {isOwner && requestCount > 0 ? (
         <InlineLinkText
           label={l`View incoming group chat requests`}
           style={[a.text_sm, a.text_right, a.font_semi_bold]}
           to="#">
-          {l`${plural(requestCount, {
-            one: '# request',
-            other: '# requests',
-          })}`}
+          {hasMoreRequests
+            ? l({
+                message: `${requestCount}+ requests`,
+                comment:
+                  'Displayed when there are more than 50 requests to join a group chat',
+              })
+            : l({
+                message: `${plural(requestCount, {
+                  one: '# request',
+                  other: '# requests',
+                })}`,
+                comment: 'The number of requests to join a group chat.',
+              })}
         </InlineLinkText>
       ) : null}
     </View>
   )
 }
 
-function AddMembersLink() {
+function AddMembersLink({isOwner}: {isOwner: boolean}) {
   const t = useTheme()
   const {t: l} = useLingui()
 
-  const convoState = useConvo()
-  const {currentAccount} = useSession()
-
   const addMembersControl = Dialog.useDialogControl()
-
-  const isOwner =
-    currentAccount?.did == null
-      ? false
-      : convoState.getPrimaryMember?.()?.did === currentAccount.did
 
   if (!isOwner) {
     return null
@@ -354,9 +384,11 @@ function AddMembersLink() {
 function Member({
   profile,
   status,
+  isOwner,
 }: {
   profile: Shadow<bsky.profile.AnyProfileView>
   status: 'owner' | 'member' | 'invited'
+  isOwner: boolean
 }) {
   const navigation = useNavigation<NavigationProp>()
   const t = useTheme()
@@ -388,7 +420,9 @@ function Member({
         break
     }
   } else {
-    statusBadge = <MemberMenu profile={profile} type={status} />
+    statusBadge = (
+      <MemberMenu profile={profile} type={status} isOwner={isOwner} />
+    )
   }
 
   return (
@@ -496,9 +530,11 @@ function StatusButton({
 function MemberMenu({
   profile,
   type,
+  isOwner,
 }: {
   profile: Shadow<bsky.profile.AnyProfileView>
   type: 'owner' | 'member' | 'invited'
+  isOwner: boolean
 }) {
   const navigation = useNavigation<NavigationProp>()
   const t = useTheme()
@@ -506,15 +542,8 @@ function MemberMenu({
   const ax = useAnalytics()
 
   const requireEmailVerification = useRequireEmailVerification()
-  const convoState = useConvo()
-  const {currentAccount} = useSession()
 
   const blockMemberPrompt = Prompt.usePromptControl()
-
-  const isOwner =
-    currentAccount?.did == null
-      ? false
-      : convoState.getPrimaryMember?.()?.did === currentAccount.did
 
   const {data: convoAvailability} = useGetConvoAvailabilityQuery(profile.did)
   const {mutate: initiateConvo} = useGetConvoForMembers({
@@ -652,7 +681,7 @@ function MemberMenu({
               label={l`Message ${displayName}`}
               onPress={handleMessageMember}>
               <Menu.ItemText>
-                <Trans>Message</Trans>
+                <Trans context="action">Message</Trans>
               </Menu.ItemText>
               <Menu.ItemIcon icon={MessageIcon} />
             </Menu.Item>
@@ -706,29 +735,22 @@ function MemberMenu({
 
 function SettingsHeader({
   convo,
-  profiles,
+  isOwner,
 }: {
-  convo: ChatBskyConvoDefs.ConvoView
-  profiles: bsky.profile.AnyProfileView[]
+  convo: ConvoWithDetails
+  isOwner: boolean
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
 
   const navigation = useNavigation<NavigationProp>()
-  const convoState = useConvo()
-  const {currentAccount} = useSession()
 
-  const groupName = convoState.getGroupInfo?.()?.name ?? ''
+  const groupName = convo.kind === 'group' ? convo.details.name : ''
   const [newGroupName, setNewGroupName] = useState(groupName)
 
   const [isLocked, setIsLocked] = useState(false)
 
-  const isOwner =
-    currentAccount?.did == null
-      ? false
-      : convoState.getPrimaryMember?.()?.did === currentAccount.did
-
-  const {mutate: editGroupName} = useEditGroupName(convo.id, {
+  const {mutate: editGroupName} = useEditGroupName(convo.view.id, {
     onError: e => {
       setNewGroupName(groupName)
       logger.error('Failed to edit group chat name', {message: e})
@@ -738,7 +760,7 @@ function SettingsHeader({
     },
   })
 
-  const {mutate: muteConvo} = useMuteConvo(convo.id, {
+  const {mutate: muteConvo} = useMuteConvo(convo.view.id, {
     onSuccess: data => {
       if (data.convo.muted) {
         Toast.show(l({message: 'Group chat muted', context: 'toast'}))
@@ -754,7 +776,7 @@ function SettingsHeader({
     },
   })
 
-  const {mutate: leaveConvo} = useLeaveConvo(convo.id, {
+  const {mutate: leaveConvo} = useLeaveConvo(convo.view.id, {
     onMutate: () => {
       navigation.dispatch(StackActions.pop(2))
     },
@@ -772,7 +794,7 @@ function SettingsHeader({
   const leaveChatPrompt = Prompt.usePromptControl()
 
   const handleToggleMute = () => {
-    muteConvo({mute: !convo?.muted})
+    muteConvo({mute: !convo.view.muted})
   }
 
   const handleLeaveChat = () => {
@@ -815,7 +837,7 @@ function SettingsHeader({
       <View
         style={[a.px_xl, a.py_4xl, a.border_b, t.atoms.border_contrast_low]}>
         <View style={[a.align_center, a.justify_center]}>
-          <AvatarBubbles profiles={profiles} />
+          <AvatarBubbles profiles={convo.members} />
         </View>
         <Text
           style={[
@@ -846,12 +868,14 @@ function SettingsHeader({
             a.pt_2xl,
           ]}>
           <SettingsButton
-            color={convo?.muted ? 'negative_subtle' : 'secondary'}
-            icon={convo?.muted ? BellOffIcon : BellIcon}
+            color={convo.view.muted ? 'negative_subtle' : 'secondary'}
+            icon={convo.view.muted ? BellOffIcon : BellIcon}
             label={
-              convo?.muted ? l`Unmute this group chat` : l`Mute this group chat`
+              convo.view.muted
+                ? l`Unmute this group chat`
+                : l`Mute this group chat`
             }
-            text={convo?.muted ? l`Muted` : l`Mute`}
+            text={convo.view.muted ? l`Muted` : l`Mute`}
             onPress={handleToggleMute}
           />
           {isOwner ? (
@@ -921,7 +945,6 @@ function SettingsHeader({
 
 function SettingsHeaderPlaceholder() {
   const t = useTheme()
-  const {t: l} = useLingui()
 
   return (
     <View style={[a.px_xl, a.py_4xl, a.border_b, t.atoms.border_contrast_low]}>
@@ -930,7 +953,7 @@ function SettingsHeaderPlaceholder() {
       </View>
       <Text
         style={[a.text_2xl, a.font_bold, a.text_center, a.pt_lg, t.atoms.text]}>
-        {l`…`}
+        …
       </Text>
       <Text
         style={[
@@ -1017,7 +1040,7 @@ function SettingsButtonPlaceholder() {
           a.pt_xs,
           t.atoms.text,
         ]}>
-        {l`…`}
+        …
       </Text>
     </View>
   )
@@ -1086,7 +1109,7 @@ function InviteLinkPrompt({
     <Prompt.Basic
       control={control}
       title={l`Invite link`}
-      description={l`An invite link lets people join this group chat without being added directly. You control who can use the link and whether they need your approval. You can disable the link at any time. Your name, avatar, and the name of the group chat will be visible to everyone`}
+      description={l`An invite link lets people join this group chat without being added directly. You control who can use the link and whether they need your approval. You can disable the link at any time. Your name, avatar, and the name of the group chat will be visible to everyone.`}
       confirmButtonCta={l`Get started`}
       cancelButtonCta={l`Cancel`}
       onConfirm={onConfirm}

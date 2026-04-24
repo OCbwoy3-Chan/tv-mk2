@@ -24,7 +24,6 @@ import {
   useUnreadNotificationsApi,
 } from '#/state/queries/notifications/unread'
 import {truncateAndInvalidate} from '#/state/queries/util'
-import {useSetMinimalShellMode} from '#/state/shell'
 import {NotificationFeed} from '#/view/com/notifications/NotificationFeed'
 import {Pager} from '#/view/com/pager/Pager'
 import {TabBar} from '#/view/com/pager/TabBar'
@@ -190,7 +189,6 @@ function NotificationsTab({
   setIsLoadingLatest: (v: boolean) => void
 }) {
   const {_} = useLingui()
-  const setMinimalShellMode = useSetMinimalShellMode()
   const [isScrolledDown, setIsScrolledDown] = useState(false)
   const scrollElRef = useRef<ListMethods>(null)
   const queryClient = useQueryClient()
@@ -201,8 +199,7 @@ function NotificationsTab({
   // =
   const scrollToTop = useCallback(() => {
     scrollElRef.current?.scrollToOffset({animated: IS_NATIVE, offset: 0})
-    setMinimalShellMode(false)
-  }, [scrollElRef, setMinimalShellMode])
+  }, [scrollElRef])
 
   const onPressLoadLatest = useCallback(() => {
     scrollToTop()
@@ -245,11 +242,10 @@ function NotificationsTab({
   useFocusEffect(
     useCallback(() => {
       if (isFocusedAndActive) {
-        setMinimalShellMode(false)
         logger.debug('NotificationsScreen: Focus')
         onFocusCheckLatest()
       }
-    }, [setMinimalShellMode, onFocusCheckLatest, isFocusedAndActive]),
+    }, [onFocusCheckLatest, isFocusedAndActive]),
   )
 
   useEffect(() => {

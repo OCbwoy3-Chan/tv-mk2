@@ -55,7 +55,7 @@ import {useHaptics} from '#/lib/haptics'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {logger} from '#/logger'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {atoms as a, platform, tokens, useTheme} from '#/alf'
+import {atoms as a, flatten, platform, tokens, useTheme} from '#/alf'
 import {
   Context,
   ItemContext,
@@ -528,7 +528,8 @@ export function AuxiliaryView({
     }
   })
 
-  const menuContext = useMemo(() => ({align}), [align])
+  const xOffset = (flatten(style)?.marginLeft as number) ?? 0
+  const menuContext = useMemo(() => ({align, xOffset}), [align, xOffset])
 
   const onLayout = useCallback(() => {
     if (!measurement) return
@@ -656,7 +657,8 @@ export function Outer({
     [context.measurement, frame.height, insets, translationSV],
   )
 
-  const menuContext = useMemo(() => ({align}), [align])
+  const xOffset = (flatten(style)?.marginLeft as number) ?? 0
+  const menuContext = useMemo(() => ({align, xOffset}), [align, xOffset])
 
   if (!context.isOpen || !context.measurement) return null
 
@@ -764,7 +766,7 @@ export function Item({
     onOut: onPressOut,
   } = useInteractionState()
   const id = useId()
-  const {align} = useContextMenuMenuContext()
+  const {align, xOffset: menuXOffset} = useContextMenuMenuContext()
 
   const {close, measurement, registerHoverable} = context
 
@@ -780,8 +782,8 @@ export function Item({
       const xOffset = position
         ? position.x
         : align === 'left'
-          ? measurement.x
-          : measurement.x + measurement.width - layout.width
+          ? measurement.x + menuXOffset
+          : measurement.x + measurement.width - layout.width - menuXOffset
 
       registerHoverable(
         id,
@@ -797,7 +799,16 @@ export function Item({
         },
       )
     },
-    [id, measurement, registerHoverable, close, onPress, align, position],
+    [
+      id,
+      measurement,
+      registerHoverable,
+      close,
+      onPress,
+      align,
+      menuXOffset,
+      position,
+    ],
   )
 
   const itemContext = useMemo(

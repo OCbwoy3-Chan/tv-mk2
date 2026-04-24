@@ -56,12 +56,12 @@ export function hasReachedReactionLimit(
   return myReactions.length >= EMOJI_REACTION_LIMIT
 }
 
-type GroupConvoMember = ChatBskyActorDefs.ProfileViewBasic & {
+export type GroupConvoMember = ChatBskyActorDefs.ProfileViewBasic & {
   // can be missing if account deleted
   kind?: $Typed<ChatBskyActorDefs.GroupConvoMember>
 }
 
-type DirectConvoMember = ChatBskyActorDefs.ProfileViewBasic & {
+export type DirectConvoMember = ChatBskyActorDefs.ProfileViewBasic & {
   kind: $Typed<ChatBskyActorDefs.DirectConvoMember>
 }
 
@@ -110,14 +110,16 @@ export function parseConvoView(
           owner = member as GroupConvoMember
         }
       } else {
-        throw new Error(
+        logger.warn(
           'Expected a GroupConvoMember, got an unknown kind of member',
         )
+        return null
       }
     }
 
     if (!owner) {
-      throw new Error('No owner found in group convo')
+      logger.warn('No owner found in group convo')
+      return null
     }
 
     return {
@@ -136,7 +138,8 @@ export function parseConvoView(
     const otherUser = convoView.members.find(m => m.did !== ownDid)
 
     if (!otherUser) {
-      throw new Error('No other user found in direct convo')
+      logger.warn('No other user found in direct convo')
+      return null
     }
 
     return {

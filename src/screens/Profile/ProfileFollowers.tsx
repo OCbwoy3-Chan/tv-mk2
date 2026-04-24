@@ -1,8 +1,6 @@
-import {useCallback} from 'react'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Plural} from '@lingui/react/macro'
-import {useFocusEffect} from '@react-navigation/native'
 
 import {useSetTitle} from '#/lib/hooks/useSetTitle'
 import {
@@ -12,7 +10,6 @@ import {
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
-import {useSetMinimalShellMode} from '#/state/shell'
 import {ProfileFollowers as ProfileFollowersComponent} from '#/view/com/profile/ProfileFollowers'
 import * as Layout from '#/components/Layout'
 
@@ -20,7 +17,6 @@ type Props = NativeStackScreenProps<CommonNavigatorParams, 'ProfileFollowers'>
 export const ProfileFollowersScreen = ({route}: Props) => {
   const {name} = route.params
   const {_} = useLingui()
-  const setMinimalShellMode = useSetMinimalShellMode()
 
   const {data: resolvedDid} = useResolveDidQuery(name)
   const {data: profile} = useProfileQuery({
@@ -28,12 +24,6 @@ export const ProfileFollowersScreen = ({route}: Props) => {
   })
 
   useSetTitle(profile ? _(msg`People following @${profile.handle}`) : undefined)
-
-  useFocusEffect(
-    useCallback(() => {
-      setMinimalShellMode(false)
-    }, [setMinimalShellMode]),
-  )
 
   return (
     <Layout.Screen testID="profileFollowersScreen">

@@ -23,15 +23,17 @@ import {
   PUBLIC_BSKY_SERVICE,
   TIMELINE_SAVED_FEED,
 } from '#/lib/constants'
-import {getAge} from '#/lib/strings/time'
 import {logger} from '#/logger'
 import {snoozeBirthdateUpdateAllowedForDid} from '#/state/birthdate'
+import {restrictChatSettings} from '#/state/queries/messages/restrictChatSettings'
 import {snoozeEmailConfirmationPrompt} from '#/state/shell/reminders'
 import {
   prefetchAgeAssuranceData,
   setBirthdateForDid,
   setCreatedAtForDid,
 } from '#/ageAssurance/data'
+import {getAndComputeAgeAssuranceState} from '#/ageAssurance/state'
+import {AgeAssuranceAccess} from '#/ageAssurance/types'
 import {features} from '#/analytics'
 import {emitNetworkConfirmed, emitNetworkLost} from '../events'
 import {readCustomAppViewDidUri} from '../preferences/custom-appview-did'
@@ -226,26 +228,13 @@ export async function createAgentAndCreateAccount(
         logger.info(`createAgentAndCreateAccount: failed to set initial feeds`)
         throw e
       }),
-      ...(getAge(birthDate) < 18
-        ? [
-            networkRetry(3, () => {
-              return pdsAgent(agent).com.atproto.repo.putRecord({
-                repo: account.did,
-                collection: 'chat.bsky.actor.declaration',
-                rkey: 'self',
-                record: {
-                  $type: 'chat.bsky.actor.declaration',
-                  allowIncoming: 'none',
-                },
-              })
-            }).catch(e => {
-              logger.info(
-                `createAgentAndCreateAccount: failed to set chat declaration`,
-              )
-              throw e
-            }),
-          ]
-        : []),
+      // wait for AA data to load first, then check state
+      aa.then(async () => {
+        const state = getAndComputeAgeAssuranceState({did: account.did})
+        if (state.access !== AgeAssuranceAccess.Full) {
+          restrictChatSettings({agent: pdsAgent(agent), did: account.did})
+        }
+      }),
     ]).then(promises => {
       const rejected = promises.filter(p => p.status === 'rejected')
       if (rejected.length > 0) {

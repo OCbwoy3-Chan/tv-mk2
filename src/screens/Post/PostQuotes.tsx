@@ -1,8 +1,6 @@
-import {useCallback} from 'react'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Plural, Trans} from '@lingui/react/macro'
-import {useFocusEffect} from '@react-navigation/native'
 
 import {useSetTitle} from '#/lib/hooks/useSetTitle'
 import {
@@ -13,14 +11,12 @@ import {makeRecordUri} from '#/lib/strings/url-helpers'
 import {usePostQuery} from '#/state/queries/post'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
-import {useSetMinimalShellMode} from '#/state/shell'
 import {PostQuotes as PostQuotesComponent} from '#/view/com/post-thread/PostQuotes'
 import * as Layout from '#/components/Layout'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'PostQuotes'>
 export const PostQuotesScreen = ({route}: Props) => {
   const {_} = useLingui()
-  const setMinimalShellMode = useSetMinimalShellMode()
   const {name, rkey} = route.params
   const uri = makeRecordUri(name, 'app.bsky.feed.post', rkey)
   const {data: post} = usePostQuery(uri)
@@ -34,12 +30,6 @@ export const PostQuotesScreen = ({route}: Props) => {
   if (post) {
     quoteCount = post.quoteCount
   }
-
-  useFocusEffect(
-    useCallback(() => {
-      setMinimalShellMode(false)
-    }, [setMinimalShellMode]),
-  )
 
   return (
     <Layout.Screen>

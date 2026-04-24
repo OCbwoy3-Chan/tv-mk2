@@ -2,7 +2,6 @@ import {useCallback, useMemo, useState} from 'react'
 import {type AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
-import {useFocusEffect} from '@react-navigation/native'
 
 import {useInitialNumToRender} from '#/lib/hooks/useInitialNumToRender'
 import {useSetTitle} from '#/lib/hooks/useSetTitle'
@@ -15,7 +14,6 @@ import {logger} from '#/logger'
 import {useProfileKnownFollowersQuery} from '#/state/queries/known-followers'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
-import {useSetMinimalShellMode} from '#/state/shell'
 import {ProfileCardWithFollowBtn} from '#/view/com/profile/ProfileCard'
 import {List} from '#/view/com/util/List'
 import {ViewHeader} from '#/view/com/util/ViewHeader'
@@ -48,7 +46,6 @@ type Props = NativeStackScreenProps<
 >
 export const ProfileKnownFollowersScreen = ({route}: Props) => {
   const {_} = useLingui()
-  const setMinimalShellMode = useSetMinimalShellMode()
   const initialNumToRender = useInitialNumToRender()
 
   const {name} = route.params
@@ -84,16 +81,16 @@ export const ProfileKnownFollowersScreen = ({route}: Props) => {
       logger.error('Failed to refresh followers', {message: err})
     }
     setIsPTRing(false)
-  }, [refetch, setIsPTRing])
+  }, [refetch])
 
-  const onEndReached = useCallback(async () => {
+  const onEndReached = async () => {
     if (isFetchingNextPage || !hasNextPage || !!error) return
     try {
       await fetchNextPage()
     } catch (err) {
       logger.error('Failed to load more followers', {message: err})
     }
-  }, [isFetchingNextPage, hasNextPage, error, fetchNextPage])
+  }
 
   const followers = useMemo(() => {
     if (data?.pages) {
@@ -103,12 +100,6 @@ export const ProfileKnownFollowersScreen = ({route}: Props) => {
   }, [data])
 
   const isError = Boolean(resolveError || error)
-
-  useFocusEffect(
-    useCallback(() => {
-      setMinimalShellMode(false)
-    }, [setMinimalShellMode]),
-  )
 
   if (followers.length < 1) {
     return (

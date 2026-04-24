@@ -4,7 +4,6 @@ import {type AppBskyFeedDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
-import {useFocusEffect} from '@react-navigation/native'
 import debounce from 'lodash.debounce'
 
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
@@ -25,7 +24,6 @@ import {
   useSearchPopularFeedsMutation,
 } from '#/state/queries/feed'
 import {useSession} from '#/state/session'
-import {useSetMinimalShellMode} from '#/state/shell'
 import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import {FAB} from '#/view/com/util/fab/FAB'
 import {List, type ListMethods} from '#/view/com/util/List'
@@ -128,7 +126,6 @@ export function FeedsScreen(_props: Props) {
     hasNextPage: hasNextPopularFeedsPage,
   } = useGetPopularFeedsQuery()
   const {_} = useLingui()
-  const setMinimalShellMode = useSetMinimalShellMode()
   const {
     data: searchResults,
     mutate: search,
@@ -196,12 +193,6 @@ export function FeedsScreen(_props: Props) {
     hasNextPopularFeedsPage,
     fetchNextPopularFeedsPage,
   ])
-
-  useFocusEffect(
-    useCallback(() => {
-      setMinimalShellMode(false)
-    }, [setMinimalShellMode]),
-  )
 
   const items = useMemo(() => {
     let slices: FlatlistSlice[] = []

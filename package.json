@@ -1,6 +1,6 @@
 {
   "name": "witchsky-app",
-  "version": "1.121.0",
+  "version": "1.122.0",
   "private": true,
   "engines": {
     "node": ">=18"
@@ -88,16 +88,19 @@
   "dependencies": {
     "@assembless/react-native-material-you": "1.0.0-beta.4",
     "@atproto/api": "^0.19.11",
+    "@atproto/syntax": "0.5.2",
     "@atproto/oauth-client-browser": "^0.3.41",
     "@atproto/oauth-client-expo": "^0.0.10",
     "@bitdrift/react-native": "^0.6.14",
     "@braintree/sanitize-url": "^6.0.4",
     "@bsky.app/alf": "^0.1.8",
+    "@bsky.app/expo-guess-language": "^0.2.8",
     "@bsky.app/expo-image-crop-tool": "^0.5.0",
     "@bsky.app/expo-scroll-edge-effect": "^0.1.4",
     "@bsky.app/expo-translate-text": "^0.2.9",
     "@bsky.app/sift": "^0.3.3",
     "@bsky.app/tapper": "^0.5.1",
+    "@bsky.app/video": "0.3.4",
     "@discord/bottom-sheet": "github:bluesky-social/react-native-bottom-sheet",
     "@easrng/tr58": "0.0.5",
     "@emoji-mart/data": "^1.2.1",
@@ -116,7 +119,6 @@
     "@fortawesome/react-native-fontawesome": "^0.3.2",
     "@growthbook/growthbook": "^1.6.5",
     "@growthbook/growthbook-react": "^1.6.5",
-    "@haileyok/bluesky-video": "0.3.2",
     "@ipld/dag-cbor": "^9.2.6",
     "@lingui/core": "^5.9.5",
     "@lingui/react": "^5.9.5",

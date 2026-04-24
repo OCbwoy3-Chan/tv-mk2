@@ -36,6 +36,9 @@ importers:
       '@atproto/oauth-client-expo':
         specifier: ^0.0.10
         version: 0.0.10(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
+      '@atproto/syntax':
+        specifier: 0.5.2
+        version: 0.5.2
       '@bitdrift/react-native':
         specifier: ^0.6.14
         version: 0.6.14(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
@@ -45,6 +48,9 @@ importers:
       '@bsky.app/alf':
         specifier: ^0.1.8
         version: 0.1.8(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
+      '@bsky.app/expo-guess-language':
+        specifier: ^0.2.8
+        version: 0.2.8(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       '@bsky.app/expo-image-crop-tool':
         specifier: ^0.5.0
         version: 0.5.0(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
@@ -60,6 +66,9 @@ importers:
       '@bsky.app/tapper':
         specifier: ^0.5.1
         version: 0.5.1(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
+      '@bsky.app/video':
+        specifier: 0.3.4
+        version: 0.3.4(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       '@discord/bottom-sheet':
         specifier: github:bluesky-social/react-native-bottom-sheet
         version: https://codeload.github.com/bluesky-social/react-native-bottom-sheet/tar.gz/28a87d1bb55e10fc355fa1455545a30734995908(@shopify/flash-list@2.3.1(@babel/runtime@7.25.9)(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(@types/react@19.2.14)(react-native-gesture-handler@2.28.0(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native-reanimated@3.19.5(@babel/core@7.25.2)(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
@@ -114,9 +123,6 @@ importers:
       '@growthbook/growthbook-react':
         specifier: ^1.6.5
         version: 1.6.5(react@19.1.0)
-      '@haileyok/bluesky-video':
-        specifier: 0.3.2
-        version: 0.3.2(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       '@ipld/dag-cbor':
         specifier: ^9.2.6
         version: 9.2.6
@@ -748,7 +754,7 @@ importers:
         version: 9.39.4
       '@preact/preset-vite':
         specifier: ^2.10.2
-        version: 2.10.5(@babel/core@7.25.2)(preact@10.29.1)(rollup@4.60.2)(vite@7.3.2(@types/node@20.19.39)(jiti@1.21.7)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))
+        version: 2.10.5(@babel/core@7.29.0)(preact@10.29.1)(rollup@4.60.2)(vite@7.3.2(@types/node@20.19.39)(jiti@1.21.7)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))
       '@vitejs/plugin-legacy':
         specifier: ^7.0.0
         version: 7.2.1(terser@5.46.1)(vite@7.3.2(@types/node@20.19.39)(jiti@1.21.7)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))
@@ -1140,6 +1146,9 @@ packages:
 
   '@atproto/syntax@0.4.3':
     resolution: {integrity: sha512-YoZUz40YAJr5nPwvCDWgodEOlt5IftZqPJvA0JDWjuZKD8yXddTwSzXSaKQAzGOpuM+/A3uXRtPzJJqlScc+iA==}
+
+  '@atproto/syntax@0.5.2':
+    resolution: {integrity: sha512-W41szOnkppoHr0iCUrzL8gy3OD6qmDyp1UvUgmTx2oFQfgbudpz51T/gznesiCcqiUT5obfHdx4PJ+WdlEOE7Q==}
 
   '@atproto/syntax@0.5.4':
     resolution: {integrity: sha512-9XJOpMAgsGFxMEIp8nJ8AIWv+krrY1xQMj+wULbbXhQztQV+9aZ0TbG9Jtn3Op2or8Kr6OqyWR4ga9Z189kKDw==}
@@ -2052,6 +2061,13 @@ packages:
       react: '*'
       react-native: '*'
 
+  '@bsky.app/expo-guess-language@0.2.8':
+    resolution: {integrity: sha512-krcQfMSJn39kaFRpaOWxLUW9rT04reoBqjQviu2fTGQWXWEImG25SJondSObVNyGXlmRMrltt72Sc+aRPpQeog==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+      react-native: '*'
+
   '@bsky.app/expo-image-crop-tool@0.5.0':
     resolution: {integrity: sha512-gmhQr2HWTRFyPO00fn5OmtiEVtikXusHMrN5Zoq26pu1VZX3zVE+aoc668etTqrvsQcm2Qu8fo96k5F3Wu+6wg==}
     peerDependencies:
@@ -2089,6 +2105,13 @@ packages:
 
   '@bsky.app/tapper@0.5.1':
     resolution: {integrity: sha512-roGmW6Fk9qE8N0u9d74XzX9+MUIr04PElOhfIg0pXtZ1buaORpasLBBC+i6WytxDP2p29CuFdzBXDaBhmcI/ow==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+      react-native: '*'
+
+  '@bsky.app/video@0.3.4':
+    resolution: {integrity: sha512-BTHfdS5hWlpBvMSNhYhsAoBnWtu4BCXYyK/DZ1wA/akXquJP3SuzEGL6B2V0Xdtg2E0rhjJD2njlTj69E64reg==}
     peerDependencies:
       expo: '*'
       react: '*'
@@ -2788,13 +2811,6 @@ packages:
     resolution: {integrity: sha512-rc1hOQtjIWGxcxpb9aHAfLpIctjEnsDehj0DAiVfBlmT84uvR0uUtN2hEi/ecvWVjXUGf5qPF4qEgiLOx1YIMQ==}
     engines: {node: '>=6'}
     hasBin: true
-
-  '@haileyok/bluesky-video@0.3.2':
-    resolution: {integrity: sha512-CJIS/4HW+x6xqONDZaUljQgMqaaZQnlFjt0afdCSO6VtFk5Fd/ocW+Tc4UulQ6zcCNiL6Y8HJR8sl/EIWHgPDw==}
-    peerDependencies:
-      expo: '*'
-      react: '*'
-      react-native: '*'
 
   '@hapi/accept@6.0.3':
     resolution: {integrity: sha512-p72f9k56EuF0n3MwlBNThyVE5PXX40g+aQh+C/xbKrfzahM2Oispv3AXmOIU51t3j77zay1qrX7IIziZXspMlw==}
@@ -12394,7 +12410,7 @@ snapshots:
       '@atproto/lexicon': 0.6.2
       '@atproto/repo': 0.8.13
       '@atproto/sync': 0.1.40
-      '@atproto/syntax': 0.5.4
+      '@atproto/syntax': 0.5.2
       '@atproto/xrpc-server': 0.10.20
       '@bufbuild/protobuf': 1.10.1
       '@connectrpc/connect': 1.7.0(@bufbuild/protobuf@1.10.1)
@@ -12438,7 +12454,7 @@ snapshots:
   '@atproto/bsync@0.0.25':
     dependencies:
       '@atproto/common': 0.5.16
-      '@atproto/syntax': 0.5.4
+      '@atproto/syntax': 0.5.2
       '@bufbuild/protobuf': 1.10.1
       '@connectrpc/connect': 1.7.0(@bufbuild/protobuf@1.10.1)
       '@connectrpc/connect-node': 1.7.0(@bufbuild/protobuf@1.10.1)(@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.1))
@@ -12663,7 +12679,7 @@ snapshots:
   '@atproto/lexicon@0.6.2':
     dependencies:
       '@atproto/common-web': 0.4.21
-      '@atproto/syntax': 0.5.4
+      '@atproto/syntax': 0.5.2
       iso-datestring-validator: 2.2.2
       multiformats: 9.9.0
       zod: 3.25.76
@@ -12754,7 +12770,7 @@ snapshots:
   '@atproto/oauth-scopes@0.3.2':
     dependencies:
       '@atproto/did': 0.3.0
-      '@atproto/syntax': 0.5.4
+      '@atproto/syntax': 0.5.2
 
   '@atproto/oauth-types@0.6.3':
     dependencies:
@@ -12878,7 +12894,7 @@ snapshots:
       '@atproto/identity': 0.4.12
       '@atproto/lexicon': 0.6.2
       '@atproto/repo': 0.8.13
-      '@atproto/syntax': 0.5.4
+      '@atproto/syntax': 0.5.2
       '@atproto/xrpc-server': 0.10.20
       multiformats: 9.9.0
       p-queue: 6.6.2
@@ -12891,6 +12907,10 @@ snapshots:
   '@atproto/syntax@0.3.4': {}
 
   '@atproto/syntax@0.4.3':
+    dependencies:
+      tslib: 2.8.1
+
+  '@atproto/syntax@0.5.2':
     dependencies:
       tslib: 2.8.1
 
@@ -13905,6 +13925,11 @@ snapshots:
       '@babel/core': 7.25.2
       '@babel/helper-plugin-utils': 7.28.6
 
+  '@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0)':
+    dependencies:
+      '@babel/core': 7.29.0
+      '@babel/helper-plugin-utils': 7.28.6
+
   '@babel/plugin-syntax-logical-assignment-operators@7.10.4(@babel/core@7.25.2)':
     dependencies:
       '@babel/core': 7.25.2
@@ -14512,6 +14537,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@babel/plugin-transform-react-jsx-development@7.27.1(@babel/core@7.29.0)':
+    dependencies:
+      '@babel/core': 7.29.0
+      '@babel/plugin-transform-react-jsx': 7.28.6(@babel/core@7.29.0)
+    transitivePeerDependencies:
+      - supports-color
+
   '@babel/plugin-transform-react-jsx-self@7.27.1(@babel/core@7.25.2)':
     dependencies:
       '@babel/core': 7.25.2
@@ -14529,6 +14561,17 @@ snapshots:
       '@babel/helper-module-imports': 7.28.6
       '@babel/helper-plugin-utils': 7.28.6
       '@babel/plugin-syntax-jsx': 7.28.6(@babel/core@7.25.2)
+      '@babel/types': 7.29.0
+    transitivePeerDependencies:
+      - supports-color
+
+  '@babel/plugin-transform-react-jsx@7.28.6(@babel/core@7.29.0)':
+    dependencies:
+      '@babel/core': 7.29.0
+      '@babel/helper-annotate-as-pure': 7.27.3
+      '@babel/helper-module-imports': 7.28.6
+      '@babel/helper-plugin-utils': 7.28.6
+      '@babel/plugin-syntax-jsx': 7.28.6(@babel/core@7.29.0)
       '@babel/types': 7.29.0
     transitivePeerDependencies:
       - supports-color
@@ -14943,6 +14986,13 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0)
       react-responsive: 10.0.1(react@19.1.0)
 
+  '@bsky.app/expo-guess-language@0.2.8(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      expo: 54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
+      lande: 1.0.10
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0)
+
   '@bsky.app/expo-image-crop-tool@0.5.0(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)':
     dependencies:
       expo: 54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
@@ -14974,6 +15024,12 @@ snapshots:
       react-native-safe-area-context: 5.6.2(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
 
   '@bsky.app/tapper@0.5.1(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      expo: 54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0)
+
+  '@bsky.app/video@0.3.4(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)':
     dependencies:
       expo: 54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       react: 19.1.0
@@ -15809,12 +15865,6 @@ snapshots:
       protobufjs: 7.5.5
       yargs: 17.7.2
 
-  '@haileyok/bluesky-video@0.3.2(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)':
-    dependencies:
-      expo: 54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
-      react: 19.1.0
-      react-native: 0.81.5(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0)
-
   '@hapi/accept@6.0.3':
     dependencies:
       '@hapi/boom': 10.0.1
@@ -16370,14 +16420,14 @@ snapshots:
 
   '@popperjs/core@2.11.8': {}
 
-  '@preact/preset-vite@2.10.5(@babel/core@7.25.2)(preact@10.29.1)(rollup@4.60.2)(vite@7.3.2(@types/node@20.19.39)(jiti@1.21.7)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))':
+  '@preact/preset-vite@2.10.5(@babel/core@7.29.0)(preact@10.29.1)(rollup@4.60.2)(vite@7.3.2(@types/node@20.19.39)(jiti@1.21.7)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))':
     dependencies:
-      '@babel/core': 7.25.2
-      '@babel/plugin-transform-react-jsx': 7.28.6(@babel/core@7.25.2)
-      '@babel/plugin-transform-react-jsx-development': 7.27.1(@babel/core@7.25.2)
+      '@babel/core': 7.29.0
+      '@babel/plugin-transform-react-jsx': 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-react-jsx-development': 7.27.1(@babel/core@7.29.0)
       '@prefresh/vite': 2.4.12(preact@10.29.1)(vite@7.3.2(@types/node@20.19.39)(jiti@1.21.7)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))
       '@rollup/pluginutils': 5.3.0(rollup@4.60.2)
-      babel-plugin-transform-hook-names: 1.0.2(@babel/core@7.25.2)
+      babel-plugin-transform-hook-names: 1.0.2(@babel/core@7.29.0)
       debug: 4.4.3
       magic-string: 0.30.21
       picocolors: 1.1.1
@@ -19435,9 +19485,9 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
 
-  babel-plugin-transform-hook-names@1.0.2(@babel/core@7.25.2):
+  babel-plugin-transform-hook-names@1.0.2(@babel/core@7.29.0):
     dependencies:
-      '@babel/core': 7.25.2
+      '@babel/core': 7.29.0
 
   babel-plugin-transform-remove-console@6.9.4: {}
 
