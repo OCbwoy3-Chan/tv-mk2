@@ -44,6 +44,7 @@ import {
   type PostDraft,
   type ThreadDraft,
 } from '#/view/com/composer/state/composer'
+import {IS_IOS, IS_WEB} from '#/env'
 import {createGIFDescription} from '../gif-alt-text'
 import {detectFacets} from '../strings/detect-facets'
 import {uploadBlob} from './upload-blob'
@@ -89,6 +90,11 @@ export async function post(
   const did = agent.assertDid
   const writes: $Typed<ComAtprotoRepoApplyWrites.Create>[] = []
   const uris: string[] = []
+  const via = IS_WEB
+    ? 'Witchsky Web App'
+    : IS_IOS
+      ? 'Witchsky for iPhone'
+      : 'Witchsky for Android'
 
   let now = new Date()
   let tid: TID | undefined
@@ -124,7 +130,8 @@ export async function post(
     const rt = await rtPromise
     const embed = await embedPromise
     const reply = await replyPromise
-    const record: AppBskyFeedPost.Record = {
+    const record: AppBskyFeedPost.Record & {via: string} = {
+      via,
       // IMPORTANT: $type has to exist, CID is calculated with the `$type` field
       // present and will produce the wrong CID if you omit it.
       $type: 'app.bsky.feed.post',
@@ -235,6 +242,10 @@ async function resolveRT(agent: BskyAgent, richtext: RichText) {
     rt.facets = [...nonOverlapping, ...markdownFacets].sort(
       (a, b) => a.index.byteStart - b.index.byteStart,
     )
+  }
+
+  if (rt.facets?.length === 0) {
+    delete rt.facets
   }
 
   rt = shortenLinks(rt)

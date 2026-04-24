@@ -579,6 +579,7 @@ function ExpandedPostDetails({
   const t = useTheme()
   const {i18n} = useLingui()
   const isRootPost = !('reply' in post.record)
+  const via = post.record.via as string | undefined
 
   return (
     <View style={[a.gap_md, a.pt_md, a.align_start]}>
@@ -587,12 +588,23 @@ function ExpandedPostDetails({
         <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
           {niceDate(i18n, post.indexedAt, 'dot separated')}
         </Text>
+        {via ? (
+          <Text
+            numberOfLines={1}
+            style={[a.text_sm, t.atoms.text_contrast_medium, {maxWidth: 160}]}>
+            {truncateVia(via)}
+          </Text>
+        ) : null}
         {isRootPost && (
           <WhoCanReply post={post} isThreadAuthor={isThreadAuthor} />
         )}
       </View>
     </View>
   )
+}
+
+function truncateVia(via: string) {
+  return via.length > 24 ? `${via.slice(0, 23)}…` : via
 }
 
 function BackdatedPostIndicator({post}: {post: AppBskyFeedDefs.PostView}) {
