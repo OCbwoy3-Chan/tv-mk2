@@ -13,7 +13,7 @@ import {
 } from 'expo-image-manipulator'
 import {type BlobRef} from '@atproto/api'
 import {transformExif} from '@uwx/exif-be-gone-web'
-import {toByteArray, fromByteArray} from 'base64-js'
+import {fromByteArray, toByteArray} from 'base64-js'
 import {nanoid} from 'nanoid/non-secure'
 
 import {POST_IMG_MAX} from '#/lib/constants'
@@ -437,8 +437,13 @@ function blobToDataUri(blob: Blob): Promise<string> {
   })
 }
 
-function arrayBufferToDataUri(buffer: Uint8Array | ArrayBufferLike, mime: string): string {
-  const base64 = fromByteArray(buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer))
+function arrayBufferToDataUri(
+  buffer: Uint8Array | ArrayBufferLike,
+  mime: string,
+): string {
+  const base64 = fromByteArray(
+    buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer),
+  )
   return `data:${mime};base64,${base64}`
 }
 

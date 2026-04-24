@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import type {PropsWithChildren} from 'react'
 
 import {type AppLanguage} from '#/locale/languages'
 import * as persisted from '#/state/persisted'
@@ -36,7 +37,7 @@ const apiContext = createContext<ApiContext>({
 })
 apiContext.displayName = 'LanguagePrefsApiContext'
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
+export function Provider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState(() => persisted.get('languagePrefs'))
 
   const setStateWrapped = useCallback(

@@ -1,29 +1,34 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['pdsLabel']
 type SetContext = (v: persisted.Schema['pdsLabel']) => void
 
-const stateContext = React.createContext<StateContext>(
-  persisted.defaults.pdsLabel,
-)
-const setContext = React.createContext<SetContext>(
+const stateContext = createContext<StateContext>(persisted.defaults.pdsLabel)
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['pdsLabel']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('pdsLabel'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('pdsLabel'))
 
-  const setStateWrapped = React.useCallback(
-    (pdsLabel: persisted.Schema['pdsLabel']) => {
+  const setStateWrapped = useMemo(
+    () => (pdsLabel: persisted.Schema['pdsLabel']) => {
       setState(pdsLabel)
       persisted.write('pdsLabel', pdsLabel)
     },
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('pdsLabel', next => {
       setState(next)
     })
@@ -39,7 +44,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function usePdsLabel() {
-  return React.useContext(stateContext) ?? persisted.defaults.pdsLabel!
+  return useContext(stateContext) ?? persisted.defaults.pdsLabel!
 }
 
 export function usePdsLabelEnabled() {
@@ -51,14 +56,14 @@ export function usePdsLabelHideBskyPds() {
 }
 
 export function useSetPdsLabel() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }
 
 export function useSetPdsLabelEnabled() {
   const pdsLabel = usePdsLabel()
   const setPdsLabel = useSetPdsLabel()
 
-  return React.useMemo(
+  return useMemo(
     () => (enabled: boolean) => setPdsLabel({...pdsLabel, enabled}),
     [pdsLabel, setPdsLabel],
   )
@@ -68,7 +73,7 @@ export function useSetPdsLabelHideBskyPds() {
   const pdsLabel = usePdsLabel()
   const setPdsLabel = useSetPdsLabel()
 
-  return React.useMemo(
+  return useMemo(
     () => (hideBskyPds: boolean) => setPdsLabel({...pdsLabel, hideBskyPds}),
     [pdsLabel, setPdsLabel],
   )

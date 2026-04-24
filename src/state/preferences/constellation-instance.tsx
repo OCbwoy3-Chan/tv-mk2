@@ -1,23 +1,28 @@
-import React from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
+import type {PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['constellationInstance']
 type SetContext = (v: persisted.Schema['constellationInstance']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.constellationInstance,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['constellationInstance']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(
-    persisted.get('constellationInstance'),
-  )
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('constellationInstance'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (constellationInstance: persisted.Schema['constellationInstance']) => {
       setState(constellationInstance)
       persisted.write('constellationInstance', constellationInstance)
@@ -25,7 +30,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate(
       'constellationInstance',
       nextConstellationInstance => {
@@ -44,11 +49,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useConstellationInstance() {
-  return (
-    React.useContext(stateContext) ?? persisted.defaults.constellationInstance!
-  )
+  return useContext(stateContext) ?? persisted.defaults.constellationInstance!
 }
 
 export function useSetConstellationInstance() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }

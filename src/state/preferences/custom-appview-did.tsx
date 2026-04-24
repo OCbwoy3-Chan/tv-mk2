@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback} from 'react'
 import {reloadAppAsync} from 'expo'
 import {isDid} from '@atproto/api'
 
@@ -17,7 +17,7 @@ export function useCustomAppViewDid() {
 export function useSetCustomAppViewDid() {
   const [, setCustomAppViewDid] = useCustomAppViewDid()
 
-  return React.useCallback(
+  return useCallback(
     (customAppViewDid: string | undefined) => {
       setCustomAppViewDid(customAppViewDid)
 

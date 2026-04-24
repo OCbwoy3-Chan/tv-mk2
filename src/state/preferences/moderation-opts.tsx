@@ -1,4 +1,5 @@
 import {createContext, useContext, useMemo} from 'react'
+import {type PropsWithChildren} from 'react'
 import {BskyAgent, type ModerationOpts} from '@atproto/api'
 
 import {useHiddenPosts, useLabelDefinitions} from '#/state/preferences'
@@ -21,7 +22,7 @@ export function useModerationOpts() {
   return useContext(moderationOptsContext)
 }
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
+export function Provider({children}: PropsWithChildren<{}>) {
   const override = useContext(moderationOptsOverrideContext)
   const {currentAccount} = useSession()
   const prefs = usePreferencesQuery()

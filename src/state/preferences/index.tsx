@@ -1,3 +1,5 @@
+import type {PropsWithChildren} from 'react'
+
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
 import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
 import {Provider as AutoplayProvider} from './autoplay'
@@ -97,7 +99,7 @@ export {
   useTranslationServicePreference,
 } from './translation-service-preference'
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
+export function Provider({children}: PropsWithChildren<{}>) {
   return (
     <LanguagesProvider>
       <AltTextRequiredProvider>

@@ -1,23 +1,28 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['showExternalShareButtons']
 type SetContext = (v: persisted.Schema['showExternalShareButtons']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.showExternalShareButtons,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['showExternalShareButtons']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(
-    persisted.get('showExternalShareButtons'),
-  )
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('showExternalShareButtons'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (
       showExternalShareButtons: persisted.Schema['showExternalShareButtons'],
     ) => {
@@ -27,7 +32,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate(
       'showExternalShareButtons',
       nextShowExternalShareButtons => {
@@ -46,9 +51,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useShowExternalShareButtons() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetShowExternalShareButtons() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }

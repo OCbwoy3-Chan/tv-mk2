@@ -1,23 +1,28 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['hideUnreplyablePosts']
 type SetContext = (v: persisted.Schema['hideUnreplyablePosts']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.hideUnreplyablePosts,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['hideUnreplyablePosts']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(
-    persisted.get('hideUnreplyablePosts'),
-  )
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('hideUnreplyablePosts'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (hideUnreplyablePosts: persisted.Schema['hideUnreplyablePosts']) => {
       setState(hideUnreplyablePosts)
       persisted.write('hideUnreplyablePosts', hideUnreplyablePosts)
@@ -25,7 +30,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('hideUnreplyablePosts', nextValue => {
       setState(nextValue)
     })
@@ -41,11 +46,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useHideUnreplyablePosts() {
-  return (
-    React.useContext(stateContext) ?? persisted.defaults.hideUnreplyablePosts
-  )
+  return useContext(stateContext) ?? persisted.defaults.hideUnreplyablePosts
 }
 
 export function useSetHideUnreplyablePosts() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }

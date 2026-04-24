@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
+import type {PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -18,7 +19,7 @@ stateContext.displayName = 'SubtitlesStateContext'
 const setContext = createContext<SetContext>((_: boolean) => {})
 setContext.displayName = 'SubtitlesSetContext'
 
-export function Provider({children}: {children: React.ReactNode}) {
+export function Provider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState(Boolean(persisted.get('subtitlesEnabled')))
 
   const setStateWrapped = useCallback(

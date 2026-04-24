@@ -1,14 +1,21 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['imageCdnHost']
 type SetContext = (v: persisted.Schema['imageCdnHost']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.imageCdnHost,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['imageCdnHost']) => {},
 )
 
@@ -16,10 +23,10 @@ const DEFAULT_IMAGE_CDN_ORIGIN = normalizeOrigin(
   persisted.defaults.imageCdnHost ?? '',
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('imageCdnHost'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('imageCdnHost'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (imageCdnHost: persisted.Schema['imageCdnHost']) => {
       setState(imageCdnHost)
       persisted.write('imageCdnHost', imageCdnHost)
@@ -27,7 +34,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('imageCdnHost', nextImageCdnHost => {
       setState(nextImageCdnHost)
     })
@@ -43,11 +50,11 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useImageCdnHost() {
-  return React.useContext(stateContext) ?? persisted.defaults.imageCdnHost!
+  return useContext(stateContext) ?? persisted.defaults.imageCdnHost!
 }
 
 export function useSetImageCdnHost() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }
 
 function normalizeOrigin(input: string) {

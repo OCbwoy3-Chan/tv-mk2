@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import type {PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -26,7 +27,7 @@ const apiContext = createContext<ApiContext>({
 })
 apiContext.displayName = 'HiddenPostsApiContext'
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
+export function Provider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState(persisted.get('hiddenPosts'))
 
   const setStateWrapped = useCallback(

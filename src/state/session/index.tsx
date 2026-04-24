@@ -8,7 +8,7 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react'
-import {type Agent, type AtpAgent, type AtpSessionEvent} from '@atproto/api'
+import {type AtpAgent, type AtpSessionEvent} from '@atproto/api'
 
 import * as persisted from '#/state/persisted'
 import {useCloseAllActiveElements} from '#/state/util'

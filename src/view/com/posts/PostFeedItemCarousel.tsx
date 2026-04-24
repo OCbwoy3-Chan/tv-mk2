@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback, useRef, useState} from 'react'
 import {Dimensions, ScrollView, View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -22,12 +22,12 @@ const CARD_INTERVAL = CARD_WIDTH + a.gap_md.gap
 export function PostFeedItemCarousel({items}: {items: FeedPostSlice[]}) {
   const t = useTheme()
   const {_} = useLingui()
-  const ref = React.useRef<ScrollView>(null)
-  const [scrollX, setScrollX] = React.useState(0)
+  const ref = useRef<ScrollView>(null)
+  const [scrollX, setScrollX] = useState(0)
 
   const enableSquareButtons = useEnableSquareButtons()
 
-  const scrollTo = React.useCallback(
+  const scrollTo = useCallback(
     (item: number) => {
       setScrollX(item)
 
@@ -40,12 +40,12 @@ export function PostFeedItemCarousel({items}: {items: FeedPostSlice[]}) {
     [ref],
   )
 
-  const scrollLeft = React.useCallback(() => {
+  const scrollLeft = useCallback(() => {
     const newPos = scrollX > 0 ? scrollX - 1 : items.length - 1
     scrollTo(newPos)
   }, [scrollTo, scrollX, items.length])
 
-  const scrollRight = React.useCallback(() => {
+  const scrollRight = useCallback(() => {
     const newPos = scrollX < items.length - 1 ? scrollX + 1 : 0
     scrollTo(newPos)
   }, [scrollTo, scrollX, items.length])

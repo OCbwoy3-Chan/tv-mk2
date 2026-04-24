@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
+import type {PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -20,7 +21,7 @@ const setContext = createContext<SetContext>(
 )
 setContext.displayName = 'LargeAltBadgeSetContext'
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
+export function Provider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState(persisted.get('largeAltBadgeEnabled'))
 
   const setStateWrapped = useCallback(

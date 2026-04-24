@@ -73,7 +73,7 @@ export function PostThread({uri}: {uri: string}) {
    * One query to rule them all
    */
   const thread = usePostThread({anchor: uri})
-  const {anchor, hasParents} = useMemo(() => {
+  const {anchor, hasParents} = (() => {
     let hasParents = false
     for (const item of thread.data.items) {
       if (item.type === 'threadPost' && item.depth === 0) {
@@ -82,7 +82,7 @@ export function PostThread({uri}: {uri: string}) {
       hasParents = true
     }
     return {hasParents}
-  }, [thread.data.items])
+  })()
 
   // Track post:view event when anchor post is viewed
   const seenPostUriRef = useRef<string | null>(null)

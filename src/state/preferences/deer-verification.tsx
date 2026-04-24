@@ -1,21 +1,29 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['deerVerification']
 type SetContext = (v: persisted.Schema['deerVerification']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.deerVerification,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['deerVerification']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('deerVerification'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('deerVerification'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (deerVerification: persisted.Schema['deerVerification']) => {
       setState(deerVerification)
       persisted.write('deerVerification', deerVerification)
@@ -23,7 +31,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('deerVerification', nextDeerVerification => {
       setState(nextDeerVerification)
     })
@@ -39,7 +47,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useDeerVerification() {
-  return React.useContext(stateContext) ?? persisted.defaults.deerVerification!
+  return useContext(stateContext) ?? persisted.defaults.deerVerification!
 }
 
 export function useDeerVerificationEnabled() {
@@ -57,14 +65,14 @@ export function useDeerVerificationTrusted(
 }
 
 export function useSetDeerVerification() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }
 
 export function useSetDeerVerificationEnabled() {
   const deerVerification = useDeerVerification()
   const setDeerVerification = useSetDeerVerification()
 
-  return React.useMemo(
+  return useMemo(
     () => (enabled: boolean) =>
       setDeerVerification({...deerVerification, enabled}),
     [deerVerification, setDeerVerification],
@@ -75,7 +83,7 @@ export function useSetDeerVerificationTrust() {
   const deerVerification = useDeerVerification()
   const setDeerVerification = useSetDeerVerification()
 
-  return React.useMemo(
+  return useMemo(
     () => ({
       add: (add: string) => {
         const trusted = new Set(deerVerification.trusted)

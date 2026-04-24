@@ -1,14 +1,21 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['plcDirectory']
 type SetContext = (v: persisted.Schema['plcDirectory']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.plcDirectory,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['plcDirectory']) => {},
 )
 
@@ -20,10 +27,10 @@ function normalizeOrigin(input: string) {
   }
 }
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('plcDirectory'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('plcDirectory'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (plcDirectory: persisted.Schema['plcDirectory']) => {
       setState(plcDirectory)
       persisted.write('plcDirectory', plcDirectory)
@@ -31,7 +38,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('plcDirectory', nextPlcDirectory => {
       setState(nextPlcDirectory)
     })
@@ -49,13 +56,13 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 export function usePlcDirectory() {
   return (
     normalizeOrigin(
-      React.useContext(stateContext) ?? persisted.defaults.plcDirectory!,
+      useContext(stateContext) ?? persisted.defaults.plcDirectory!,
     ) ?? persisted.defaults.plcDirectory!
   )
 }
 
 export function useSetPlcDirectory() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }
 
 export function readPlcDirectory() {

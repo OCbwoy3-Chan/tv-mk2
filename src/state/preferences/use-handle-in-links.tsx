@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import {reloadAppAsync} from 'expo'
 
 import * as persisted from '#/state/persisted'
@@ -7,17 +14,17 @@ import {IS_WEB} from '#/env'
 type StateContext = persisted.Schema['useHandleInLinks']
 type SetContext = (v: persisted.Schema['useHandleInLinks']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.useHandleInLinks,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['useHandleInLinks']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('useHandleInLinks'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('useHandleInLinks'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (useHandleInLinks: persisted.Schema['useHandleInLinks']) => {
       setState(useHandleInLinks)
       persisted.write('useHandleInLinks', useHandleInLinks)
@@ -25,7 +32,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('useHandleInLinks', nextUseHandleInLinks => {
       setState(nextUseHandleInLinks)
     })
@@ -41,13 +48,13 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useHandleInLinks() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetHandleInLinks() {
-  const set = React.useContext(setContext)
+  const set = useContext(setContext)
 
-  return React.useCallback(
+  return useCallback(
     (useHandleInLinks: persisted.Schema['useHandleInLinks']) => {
       set(useHandleInLinks)
 

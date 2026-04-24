@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -15,10 +22,10 @@ type SetContext = (
     | ((curr: PostReplacementState) => PostReplacementState),
 ) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.postReplacement as PostReplacementState,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (
     _:
       | PostReplacementState
@@ -26,8 +33,8 @@ const setContext = React.createContext<SetContext>(
   ) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, _setState] = React.useState<PostReplacementState>(() => {
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, _setState] = useState<PostReplacementState>(() => {
     const persistedState = persisted.get('postReplacement')
     return {
       enabled:
@@ -41,7 +48,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     }
   })
 
-  const setState = React.useCallback(
+  const setState = useCallback(
     (
       val:
         | PostReplacementState
@@ -56,7 +63,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('postReplacement', next => {
       setState({
         postName: next.postName ?? 'skeet',
@@ -74,9 +81,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function usePostReplacement() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetPostReplacement() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }

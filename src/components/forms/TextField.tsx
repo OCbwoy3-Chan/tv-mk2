@@ -1,4 +1,15 @@
-import React, {createContext, useContext, useMemo, useRef} from 'react'
+import {
+  Children,
+  type ComponentType,
+  createContext,
+  type ForwardedRef,
+  isValidElement,
+  type PropsWithChildren,
+  type RefObject,
+  useContext,
+  useMemo,
+  useRef,
+} from 'react'
 import {
   type AccessibilityProps,
   StyleSheet,
@@ -29,7 +40,7 @@ import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 
 const Context = createContext<{
-  inputRef: React.RefObject<TextInput | null> | null
+  inputRef: RefObject<TextInput | null> | null
   isInvalid: boolean
   hovered: boolean
   onHoverIn: () => void
@@ -49,9 +60,7 @@ const Context = createContext<{
 })
 Context.displayName = 'TextFieldContext'
 
-export type RootProps = React.PropsWithChildren<
-  {isInvalid?: boolean} & TextStyleProp
->
+export type RootProps = PropsWithChildren<{isInvalid?: boolean} & TextStyleProp>
 
 export function Root({children, isInvalid = false, style}: RootProps) {
   const inputRef = useRef<TextInput>(null)
@@ -88,9 +97,9 @@ export function Root({children, isInvalid = false, style}: RootProps) {
   // Check if any child has multiline prop
   const hasMultiline = useMemo(() => {
     let found = false
-    React.Children.forEach(children, child => {
+    Children.forEach(children, child => {
       if (
-        React.isValidElement(child) &&
+        isValidElement(child) &&
         (child.props as {multiline?: boolean})?.multiline
       ) {
         found = true
@@ -172,7 +181,7 @@ export type InputProps = Omit<
   value?: string
   onChangeText?: (value: string) => void
   isInvalid?: boolean
-  inputRef?: React.RefObject<TextInput | null> | React.ForwardedRef<TextInput>
+  inputRef?: RefObject<TextInput | null> | ForwardedRef<TextInput>
   /**
    * Note: this currently falls back to the label if not specified. However,
    * most new designs have no placeholder. We should eventually remove this fallback
@@ -324,7 +333,7 @@ export const Input = createInput(TextInput)
 export function LabelText({
   nativeID,
   children,
-}: React.PropsWithChildren<{nativeID?: string}>) {
+}: PropsWithChildren<{nativeID?: string}>) {
   const t = useTheme()
   return (
     <Text
@@ -335,7 +344,7 @@ export function LabelText({
   )
 }
 
-export function Icon({icon: Comp}: {icon: React.ComponentType<SVGIconProps>}) {
+export function Icon({icon: Comp}: {icon: ComponentType<SVGIconProps>}) {
   const t = useTheme()
   const ctx = useContext(Context)
   const {hover, focus, errorHover, errorFocus} = useMemo(() => {
@@ -389,7 +398,7 @@ export function SuffixText({
   label,
   accessibilityHint,
   style,
-}: React.PropsWithChildren<
+}: PropsWithChildren<
   TextStyleProp & {
     label: string
     accessibilityHint?: AccessibilityProps['accessibilityHint']

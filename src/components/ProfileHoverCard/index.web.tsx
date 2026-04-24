@@ -1,4 +1,4 @@
-import {memo, useCallback, useEffect, useMemo, useReducer, useRef} from 'react'
+import {memo, useEffect, useMemo, useReducer, useRef} from 'react'
 import {View} from 'react-native'
 import {
   type AppBskyActorDefs,
@@ -275,15 +275,15 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
 
   const prefetchProfileQuery = usePrefetchProfileQuery()
   const prefetchedProfile = useRef(false)
-  const prefetchIfNeeded = useCallback(async () => {
+  const prefetchIfNeeded = async () => {
     if (!prefetchedProfile.current) {
       prefetchedProfile.current = true
       prefetchProfileQuery(props.did)
     }
-  }, [prefetchProfileQuery, props.did])
+  }
 
   const didFireHover = useRef(false)
-  const onPointerMoveTarget = useCallback(() => {
+  const onPointerMoveTarget = () => {
     prefetchIfNeeded()
     // Conceptually we want something like onPointerEnter,
     // but we want to ignore entering only due to scrolling.
@@ -292,24 +292,24 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
       didFireHover.current = true
       dispatch('hovered-target')
     }
-  }, [prefetchIfNeeded])
+  }
 
-  const onPointerLeaveTarget = useCallback(() => {
+  const onPointerLeaveTarget = () => {
     didFireHover.current = false
     dispatch('unhovered-target')
-  }, [])
+  }
 
-  const onPointerEnterCard = useCallback(() => {
+  const onPointerEnterCard = () => {
     dispatch('hovered-card')
-  }, [])
+  }
 
-  const onPointerLeaveCard = useCallback(() => {
+  const onPointerLeaveCard = () => {
     dispatch('unhovered-card')
-  }, [])
+  }
 
-  const onPress = useCallback(() => {
+  const onPress = () => {
     dispatch('pressed')
-  }, [])
+  }
 
   const isVisible =
     currentState.stage === 'showing' ||
@@ -368,13 +368,13 @@ let Card = ({
 
   const status = useActorStatus(data)
 
-  const onPressOpenProfile = useCallback(() => {
+  const onPressOpenProfile = () => {
     if (!status.isActive || !data) return
     hide()
     navigation.push('Profile', {
       name: data.handle,
     })
-  }, [hide, navigation, status, data])
+  }
 
   return (
     <View

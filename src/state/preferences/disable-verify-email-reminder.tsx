@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -8,19 +15,19 @@ type StateContext = persisted.Schema['disableVerifyEmailReminder']
 // Same setter signature used across other preference modules
 type SetContext = (v: persisted.Schema['disableVerifyEmailReminder']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.disableVerifyEmailReminder,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['disableVerifyEmailReminder']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(
     persisted.get('disableVerifyEmailReminder'),
   )
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (value: persisted.Schema['disableVerifyEmailReminder']) => {
       setState(value)
       persisted.write('disableVerifyEmailReminder', value)
@@ -28,7 +35,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('disableVerifyEmailReminder', next => {
       setState(next)
     })
@@ -44,9 +51,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useDisableVerifyEmailReminder() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetDisableVerifyEmailReminder() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }

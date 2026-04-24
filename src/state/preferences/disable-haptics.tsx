@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
+import type {PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -18,7 +19,7 @@ stateContext.displayName = 'DisableHapticsStateContext'
 const setContext = createContext<SetContext>((_: boolean) => {})
 setContext.displayName = 'DisableHapticsSetContext'
 
-export function Provider({children}: {children: React.ReactNode}) {
+export function Provider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState(Boolean(persisted.get('disableHaptics')))
 
   const setStateWrapped = useCallback(

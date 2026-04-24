@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -8,17 +15,17 @@ type StateContext = persisted.Schema['enableSquareAvatars']
 // Same setter signature used across other preference modules
 type SetContext = (v: persisted.Schema['enableSquareAvatars']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.enableSquareAvatars,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['enableSquareAvatars']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('enableSquareAvatars'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('enableSquareAvatars'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (value: persisted.Schema['enableSquareAvatars']) => {
       setState(value)
       persisted.write('enableSquareAvatars', value)
@@ -26,7 +33,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('enableSquareAvatars', next => {
       setState(next)
     })
@@ -42,9 +49,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useEnableSquareAvatars() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetEnableSquareAvatars() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }

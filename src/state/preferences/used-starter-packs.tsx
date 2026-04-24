@@ -1,4 +1,5 @@
 import {createContext, useContext, useEffect, useState} from 'react'
+import type {ReactNode} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -10,7 +11,7 @@ stateContext.displayName = 'UsedStarterPacksStateContext'
 const setContext = createContext<SetContext>((_: boolean) => {})
 setContext.displayName = 'UsedStarterPacksSetContext'
 
-export function Provider({children}: {children: React.ReactNode}) {
+export function Provider({children}: {children: ReactNode}) {
   const [state, setState] = useState<StateContext>(() =>
     persisted.get('hasCheckedForStarterPack'),
   )

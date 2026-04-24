@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -8,17 +15,17 @@ type StateContext = persisted.Schema['disablePostsMetrics']
 // Same setter signature used across other preference modules
 type SetContext = (v: persisted.Schema['disablePostsMetrics']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.disablePostsMetrics,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['disablePostsMetrics']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('disablePostsMetrics'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('disablePostsMetrics'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (value: persisted.Schema['disablePostsMetrics']) => {
       setState(value)
       persisted.write('disablePostsMetrics', value)
@@ -26,7 +33,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('disablePostsMetrics', next => {
       setState(next)
     })
@@ -42,9 +49,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useDisablePostsMetrics() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetDisablePostsMetrics() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }

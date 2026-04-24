@@ -1,21 +1,28 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['directFetchRecords']
 type SetContext = (v: persisted.Schema['directFetchRecords']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.directFetchRecords,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['directFetchRecords']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('directFetchRecords'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('directFetchRecords'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (directFetchRecords: persisted.Schema['directFetchRecords']) => {
       setState(directFetchRecords)
       persisted.write('directFetchRecords', directFetchRecords)
@@ -23,7 +30,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('directFetchRecords', nextDirectFetchRecords => {
       setState(nextDirectFetchRecords)
     })
@@ -39,9 +46,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useDirectFetchRecords() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetDirectFetchRecords() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }

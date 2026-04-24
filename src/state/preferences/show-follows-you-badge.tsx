@@ -1,21 +1,28 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['showFollowsYouBadge']
 type SetContext = (v: persisted.Schema['showFollowsYouBadge']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.showFollowsYouBadge,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['showFollowsYouBadge']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('showFollowsYouBadge'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('showFollowsYouBadge'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (showFollowsYouBadge: persisted.Schema['showFollowsYouBadge']) => {
       setState(showFollowsYouBadge)
       persisted.write('showFollowsYouBadge', showFollowsYouBadge)
@@ -23,7 +30,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate(
       'showFollowsYouBadge',
       nextShowFollowsYouBadge => {
@@ -42,9 +49,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useShowFollowsYouBadge() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetShowFollowsYouBadge() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }

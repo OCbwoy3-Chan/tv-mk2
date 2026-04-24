@@ -785,7 +785,7 @@ export const ComposePost = ({
     }
   }, [onPressCancel, closeAllDialogs, closeAllModals])
 
-  const missingAltError = useMemo(() => {
+  const missingAltError = (() => {
     if (!requireAltTextEnabled) {
       return
     }
@@ -807,7 +807,7 @@ export const ComposePost = ({
         }
       }
     }
-  }, [thread, requireAltTextEnabled, l])
+  })()
 
   const canPost =
     !missingAltError &&

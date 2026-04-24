@@ -1,4 +1,3 @@
-import {useMemo} from 'react'
 import {type StyleProp, Text as RNText, type TextStyle} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -62,19 +61,16 @@ export function RichTextTag({
       optimisticUpsert?.find(
         m => m.value === tag && m.targets.includes('tag'),
       )) &&
-      !optimisticRemove?.find(m => m?.value === tag),
+    !optimisticRemove?.find(m => m?.value === tag),
   )
 
   /*
    * Mute word records that exactly match the tag in question.
    */
-  const removeableMuteWords = useMemo(() => {
-    return (
-      preferences?.moderationPrefs.mutedWords?.filter(word => {
-        return word.value === tag
-      }) || []
-    )
-  }, [tag, preferences?.moderationPrefs?.mutedWords])
+  const removeableMuteWords =
+    preferences?.moderationPrefs.mutedWords?.filter(word => {
+      return word.value === tag
+    }) || []
 
   return (
     <Menu.Root>

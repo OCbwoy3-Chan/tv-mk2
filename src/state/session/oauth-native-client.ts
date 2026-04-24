@@ -1,4 +1,5 @@
 import {ExpoOAuthClient} from '@atproto/oauth-client-expo'
+
 import {createIdentityResolver} from './identity-resolver'
 
 const OAUTH_BASE_URL: string =

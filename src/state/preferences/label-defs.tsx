@@ -3,6 +3,7 @@ import {
   type AppBskyLabelerDefs,
   type InterpretedLabelValueDefinition,
 } from '@atproto/api'
+import type {PropsWithChildren} from 'react'
 
 import {useLabelDefinitionsQuery} from '../queries/preferences'
 
@@ -17,7 +18,7 @@ const stateContext = createContext<StateContext>({
 })
 stateContext.displayName = 'LabelDefsStateContext'
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
+export function Provider({children}: PropsWithChildren<{}>) {
   const state = useLabelDefinitionsQuery()
   return <stateContext.Provider value={state}>{children}</stateContext.Provider>
 }

@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -9,37 +16,35 @@ type SetModelContext = (v: persisted.Schema['openRouterModel']) => void
 type PromptStateContext = persisted.Schema['openRouterPrompt']
 type SetPromptContext = (v: persisted.Schema['openRouterPrompt']) => void
 
-const apiKeyStateContext = React.createContext<ApiKeyStateContext>(
+const apiKeyStateContext = createContext<ApiKeyStateContext>(
   persisted.defaults.openRouterApiKey,
 )
-const setApiKeyContext = React.createContext<SetApiKeyContext>(
+const setApiKeyContext = createContext<SetApiKeyContext>(
   (_: persisted.Schema['openRouterApiKey']) => {},
 )
-const modelStateContext = React.createContext<ModelStateContext>(
+const modelStateContext = createContext<ModelStateContext>(
   persisted.defaults.openRouterModel,
 )
-const setModelContext = React.createContext<SetModelContext>(
+const setModelContext = createContext<SetModelContext>(
   (_: persisted.Schema['openRouterModel']) => {},
 )
-const promptStateContext = React.createContext<PromptStateContext>(
+const promptStateContext = createContext<PromptStateContext>(
   persisted.defaults.openRouterPrompt,
 )
-const setPromptContext = React.createContext<SetPromptContext>(
+const setPromptContext = createContext<SetPromptContext>(
   (_: persisted.Schema['openRouterPrompt']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [apiKeyState, setApiKeyState] = React.useState(
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [apiKeyState, setApiKeyState] = useState(
     persisted.get('openRouterApiKey'),
   )
-  const [modelState, setModelState] = React.useState(
-    persisted.get('openRouterModel'),
-  )
-  const [promptState, setPromptState] = React.useState(
+  const [modelState, setModelState] = useState(persisted.get('openRouterModel'))
+  const [promptState, setPromptState] = useState(
     persisted.get('openRouterPrompt'),
   )
 
-  const setApiKeyWrapped = React.useCallback(
+  const setApiKeyWrapped = useCallback(
     (openRouterApiKey: persisted.Schema['openRouterApiKey']) => {
       setApiKeyState(openRouterApiKey)
       persisted.write('openRouterApiKey', openRouterApiKey)
@@ -47,7 +52,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setApiKeyState],
   )
 
-  const setModelWrapped = React.useCallback(
+  const setModelWrapped = useCallback(
     (openRouterModel: persisted.Schema['openRouterModel']) => {
       setModelState(openRouterModel)
       persisted.write('openRouterModel', openRouterModel)
@@ -55,7 +60,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setModelState],
   )
 
-  const setPromptWrapped = React.useCallback(
+  const setPromptWrapped = useCallback(
     (openRouterPrompt: persisted.Schema['openRouterPrompt']) => {
       setPromptState(openRouterPrompt)
       persisted.write('openRouterPrompt', openRouterPrompt)
@@ -63,19 +68,19 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setPromptState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('openRouterApiKey', nextApiKey => {
       setApiKeyState(nextApiKey)
     })
   }, [setApiKeyWrapped])
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('openRouterModel', nextModel => {
       setModelState(nextModel)
     })
   }, [setModelWrapped])
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('openRouterPrompt', nextPrompt => {
       setPromptState(nextPrompt)
     })
@@ -99,27 +104,27 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useOpenRouterApiKey() {
-  return React.useContext(apiKeyStateContext)
+  return useContext(apiKeyStateContext)
 }
 
 export function useSetOpenRouterApiKey() {
-  return React.useContext(setApiKeyContext)
+  return useContext(setApiKeyContext)
 }
 
 export function useOpenRouterModel() {
-  return React.useContext(modelStateContext)
+  return useContext(modelStateContext)
 }
 
 export function useSetOpenRouterModel() {
-  return React.useContext(setModelContext)
+  return useContext(setModelContext)
 }
 
 export function useOpenRouterPrompt() {
-  return React.useContext(promptStateContext)
+  return useContext(promptStateContext)
 }
 
 export function useSetOpenRouterPrompt() {
-  return React.useContext(setPromptContext)
+  return useContext(setPromptContext)
 }
 
 export function useOpenRouterConfigured() {

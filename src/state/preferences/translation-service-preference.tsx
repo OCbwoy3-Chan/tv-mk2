@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -9,28 +16,28 @@ type SetInstanceContext = (
   v: persisted.Schema['libreTranslateInstance'],
 ) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.translationServicePreference,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['translationServicePreference']) => {},
 )
-const instanceStateContext = React.createContext<InstanceStateContext>(
+const instanceStateContext = createContext<InstanceStateContext>(
   persisted.defaults.libreTranslateInstance,
 )
-const setInstanceContext = React.createContext<SetInstanceContext>(
+const setInstanceContext = createContext<SetInstanceContext>(
   (_: persisted.Schema['libreTranslateInstance']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(
     persisted.get('translationServicePreference'),
   )
-  const [instanceState, setInstanceState] = React.useState(
+  const [instanceState, setInstanceState] = useState(
     persisted.get('libreTranslateInstance'),
   )
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (
       translationServicePreference: persisted.Schema['translationServicePreference'],
     ) => {
@@ -43,7 +50,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  const setInstanceStateWrapped = React.useCallback(
+  const setInstanceStateWrapped = useCallback(
     (libreTranslateInstance: persisted.Schema['libreTranslateInstance']) => {
       setInstanceState(libreTranslateInstance)
       persisted.write('libreTranslateInstance', libreTranslateInstance)
@@ -51,7 +58,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setInstanceState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate(
       'translationServicePreference',
       nextTranslationServicePreference => {
@@ -60,7 +67,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     )
   }, [setStateWrapped])
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('libreTranslateInstance', nextInstance => {
       setInstanceState(nextInstance)
     })
@@ -80,20 +87,20 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useTranslationServicePreference() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetTranslationServicePreference() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }
 
 export function useLibreTranslateInstance() {
   return (
-    React.useContext(instanceStateContext) ??
+    useContext(instanceStateContext) ??
     persisted.defaults.libreTranslateInstance!
   )
 }
 
 export function useSetLibreTranslateInstance() {
-  return React.useContext(setInstanceContext)
+  return useContext(setInstanceContext)
 }

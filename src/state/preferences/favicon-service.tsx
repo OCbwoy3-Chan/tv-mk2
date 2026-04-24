@@ -1,21 +1,28 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['faviconService']
 type SetContext = (v: persisted.Schema['faviconService']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.faviconService,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['faviconService']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(persisted.get('faviconService'))
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('faviconService'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (faviconService: persisted.Schema['faviconService']) => {
       setState(faviconService)
       persisted.write('faviconService', faviconService)
@@ -23,7 +30,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate('faviconService', next => {
       setState(next)
     })
@@ -39,10 +46,10 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useFaviconService() {
-  return React.useContext(stateContext) ?? persisted.defaults.faviconService
+  return useContext(stateContext) ?? persisted.defaults.faviconService
 }
 
 export function useSetFaviconService() {
-  const setFaviconService = React.useContext(setContext)
+  const setFaviconService = useContext(setContext)
   return setFaviconService
 }

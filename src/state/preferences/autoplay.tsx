@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
+import type {PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -18,7 +19,7 @@ stateContext.displayName = 'AutoplayStateContext'
 const setContext = createContext<SetContext>((_: boolean) => {})
 setContext.displayName = 'AutoplaySetContext'
 
-export function Provider({children}: {children: React.ReactNode}) {
+export function Provider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState(Boolean(persisted.get('disableAutoplay')))
 
   const setStateWrapped = useCallback(

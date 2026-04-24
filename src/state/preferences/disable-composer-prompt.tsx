@@ -1,4 +1,11 @@
-import React from 'react'
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -8,19 +15,17 @@ type StateContext = persisted.Schema['disableComposerPrompt']
 // Same setter signature used across other preference modules
 type SetContext = (v: persisted.Schema['disableComposerPrompt']) => void
 
-const stateContext = React.createContext<StateContext>(
+const stateContext = createContext<StateContext>(
   persisted.defaults.disableComposerPrompt,
 )
-const setContext = React.createContext<SetContext>(
+const setContext = createContext<SetContext>(
   (_: persisted.Schema['disableComposerPrompt']) => {},
 )
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
-  const [state, setState] = React.useState(
-    persisted.get('disableComposerPrompt'),
-  )
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('disableComposerPrompt'))
 
-  const setStateWrapped = React.useCallback(
+  const setStateWrapped = useCallback(
     (disableComposerPrompt: persisted.Schema['disableComposerPrompt']) => {
       setState(disableComposerPrompt)
       persisted.write('disableComposerPrompt', disableComposerPrompt)
@@ -28,7 +33,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     [setState],
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     return persisted.onUpdate(
       'disableComposerPrompt',
       nextDisableComposerPrompt => {
@@ -47,9 +52,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
 }
 
 export function useDisableComposerPrompt() {
-  return React.useContext(stateContext)
+  return useContext(stateContext)
 }
 
 export function useSetDisableComposerPrompt() {
-  return React.useContext(setContext)
+  return useContext(setContext)
 }
