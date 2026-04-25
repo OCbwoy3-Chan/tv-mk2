@@ -35,6 +35,5 @@ overrides:
   metro-source-map: "0.83.3"
   multiformats: "9.9.0"
   react-native-compressor: "1.13.0"
-  react-native-mmkv: "npm:@bsky.app/react-native-mmkv@2.12.5"
   sonner-native: "0.21.0"
   unicode-segmenter: "0.14.5"
