@@ -57,6 +57,16 @@ export function precachePost(
   queryClient.setQueryData(RQKEY(uri), post)
 }
 
+export function* findAllPostsInQueryData(
+  queryClient: QueryClient,
+  uri: string,
+): Generator<AppBskyFeedDefs.PostView, void> {
+  const post = queryClient.getQueryData<AppBskyFeedDefs.PostView>(RQKEY(uri))
+  if (post) {
+    yield post
+  }
+}
+
 export function useGetPost() {
   const queryClient = useQueryClient()
   const agent = useAgent()

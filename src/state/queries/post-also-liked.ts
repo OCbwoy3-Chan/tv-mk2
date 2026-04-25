@@ -1,7 +1,12 @@
 import {type AppBskyFeedDefs} from '@atproto/api'
-import {type InfiniteData, useInfiniteQuery} from '@tanstack/react-query'
+import {
+  type InfiniteData,
+  useInfiniteQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 import {STALE} from '#/state/queries'
+import {precachePost} from '#/state/queries/post'
 import {useAgent} from '#/state/session'
 import {IS_WEB} from '#/env'
 
@@ -93,6 +98,7 @@ export function usePostAlsoLikedQuery(
   opts?: {enabled?: boolean},
 ) {
   const agent = useAgent()
+  const queryClient = useQueryClient()
 
   return useInfiniteQuery<
     AlsoLikedPage,
@@ -132,6 +138,10 @@ export function usePostAlsoLikedQuery(
       const postsByUri = new Map(
         postsRes.data.posts.map(post => [post.uri, post] as const),
       )
+
+      for (const post of postsRes.data.posts) {
+        precachePost(queryClient, post.uri, post)
+      }
 
       return {
         cursor: data.cursor,

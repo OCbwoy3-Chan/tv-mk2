@@ -153,8 +153,35 @@ export function PostThread({uri}: {uri: string}) {
   const alsoLikedFeedEnabled = useAlsoLikedFeedEnabled()
   const alsoLikedAnchorUri =
     anchor?.type === 'threadPost' && isRoot ? anchor.value.post.uri : undefined
+  const [deferParents, setDeferParents] = useState(true)
+  const [alsoLikedReady, setAlsoLikedReady] = useState(false)
+  useEffect(() => {
+    const shouldEnable =
+      Boolean(alsoLikedAnchorUri) &&
+      alsoLikedFeedEnabled &&
+      !thread.state.isPlaceholderData &&
+      !deferParents
+
+    if (!shouldEnable) {
+      setAlsoLikedReady(false)
+      return
+    }
+
+    const timeout = setTimeout(() => {
+      startTransition(() => {
+        setAlsoLikedReady(true)
+      })
+    }, 0)
+
+    return () => clearTimeout(timeout)
+  }, [
+    alsoLikedAnchorUri,
+    alsoLikedFeedEnabled,
+    deferParents,
+    thread.state.isPlaceholderData,
+  ])
   const alsoLiked = usePostAlsoLikedQuery(alsoLikedAnchorUri, {
-    enabled: Boolean(alsoLikedAnchorUri) && alsoLikedFeedEnabled,
+    enabled: alsoLikedReady,
   })
   const alsoLikedPosts = useMemo(() => {
     const seen = new Set<string>()
@@ -188,7 +215,6 @@ export function PostThread({uri}: {uri: string}) {
    * On web, `onContentSizeChange` is used to get ahead of next paint and handle
    * this scrolling.
    */
-  const [deferParents, setDeferParents] = useState(true)
   /**
    * Used to flag whether we should scroll to the anchor post. On a cold load,
    * this is always true. And when a user changes thread parameters, we also
@@ -355,7 +381,7 @@ export function PostThread({uri}: {uri: string}) {
     }
     if (
       alsoLikedAnchorUri &&
-      alsoLikedFeedEnabled &&
+      alsoLikedReady &&
       !alsoLiked.isLoading &&
       !alsoLiked.isFetchingNextPage &&
       alsoLiked.hasNextPage
@@ -633,7 +659,7 @@ export function PostThread({uri}: {uri: string}) {
           ListFooterComponent={
             <ThreadAlsoLiked
               posts={alsoLikedPosts}
-              enabled={Boolean(alsoLikedAnchorUri) && alsoLikedFeedEnabled}
+              enabled={alsoLikedReady}
               isLoading={alsoLiked.isLoading}
               isFetchingNextPage={alsoLiked.isFetchingNextPage}
               error={alsoLiked.error}

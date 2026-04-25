@@ -11,6 +11,7 @@ import {batchedUpdates} from '#/lib/batchedUpdates'
 import {findAllPostsInQueryData as findAllPostsInBookmarksQueryData} from '#/state/queries/bookmarks/useBookmarksQuery'
 import {findAllPostsInQueryData as findAllPostsInExploreFeedPreviewsQueryData} from '#/state/queries/explore-feed-previews'
 import {findAllPostsInQueryData as findAllPostsInNotifsQueryData} from '#/state/queries/notifications/feed'
+import {findAllPostsInQueryData as findAllPostsInPostQueryData} from '#/state/queries/post'
 import {findAllPostsInQueryData as findAllPostsInFeedQueryData} from '#/state/queries/post-feed'
 import {findAllPostsInQueryData as findAllPostsInQuoteQueryData} from '#/state/queries/post-quotes'
 import {findAllPostsInQueryData as findAllPostsInSearchQueryData} from '#/state/queries/search-posts'
@@ -180,6 +181,9 @@ function* findPostsInCache(
     yield post
   }
   for (let post of findAllPostsInSearchQueryData(queryClient, uri)) {
+    yield post
+  }
+  for (let post of findAllPostsInPostQueryData(queryClient, uri)) {
     yield post
   }
   for (let post of findAllPostsInQuoteQueryData(queryClient, uri)) {
