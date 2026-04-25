@@ -1,4 +1,4 @@
-import {type JSX, useCallback, useMemo, useState} from 'react'
+import {type JSX, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {StyleSheet, View} from 'react-native'
 import {type AppBskyActorDefs} from '@atproto/api'
 import {msg, plural} from '@lingui/core/macro'
@@ -222,9 +222,11 @@ function ProfileCard() {
   )
 }
 
-function SwitchMenuItems({
+export function SwitchMenuItems({
   accounts,
   signOutPromptControl,
+  showExtraButtons,
+  onSelectAccount,
 }: {
   accounts:
     | {
@@ -233,10 +235,14 @@ function SwitchMenuItems({
       }[]
     | undefined
   signOutPromptControl: DialogControlProps
+  showExtraButtons?: boolean
+  onSelectAccount?: (account: SessionAccount) => void
 }) {
   const {_} = useLingui()
   const {setShowLoggedOut} = useLoggedOutViewControls()
   const closeEverything = useCloseAllActiveElements()
+
+  showExtraButtons = showExtraButtons ?? true
 
   const onAddAnotherAccount = () => {
     setShowLoggedOut(true)
@@ -256,13 +262,14 @@ function SwitchMenuItems({
                 key={other.account.did}
                 account={other.account}
                 profile={other.profile}
+                onSelectAccount={onSelectAccount}
               />
             ))}
           </Menu.Group>
           <Menu.Divider />
         </>
       )}
-      <SwitcherMenuProfileLink />
+      {showExtraButtons ? <SwitcherMenuProfileLink /> : undefined}
       <Menu.Item
         label={_(msg`Add another account`)}
         onPress={onAddAnotherAccount}>
@@ -271,12 +278,14 @@ function SwitchMenuItems({
           <Trans>Add another account</Trans>
         </Menu.ItemText>
       </Menu.Item>
-      <Menu.Item label={_(msg`Sign out`)} onPress={signOutPromptControl.open}>
-        <Menu.ItemIcon icon={LeaveIcon} />
-        <Menu.ItemText>
-          <Trans>Sign out</Trans>
-        </Menu.ItemText>
-      </Menu.Item>
+      {showExtraButtons ? (
+        <Menu.Item label={_(msg`Sign out`)} onPress={signOutPromptControl.open}>
+          <Menu.ItemIcon icon={LeaveIcon} />
+          <Menu.ItemText>
+            <Trans>Sign out</Trans>
+          </Menu.ItemText>
+        </Menu.Item>
+      ) : undefined}
     </Menu.Outer>
   )
 }
@@ -301,7 +310,7 @@ function SwitcherMenuProfileLink() {
           currentAccount?.handle
       : isTab(currentRouteInfo.name, pathName)
   const onProfilePress = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    (e: MouseEvent<HTMLAnchorElement>) => {
       if (e.ctrlKey || e.metaKey || e.altKey) {
         return
       }
@@ -334,9 +343,11 @@ function SwitcherMenuProfileLink() {
 function SwitchMenuItem({
   account,
   profile,
+  onSelectAccount,
 }: {
   account: SessionAccount
   profile: AppBskyActorDefs.ProfileViewDetailed | undefined
+  onSelectAccount?: (account: SessionAccount) => void
 }) {
   const {_} = useLingui()
   const {onPressSwitchAccount, pendingDid} = useAccountSwitcher()
@@ -353,7 +364,13 @@ function SwitchMenuItem({
           '@',
         )}`,
       )}
-      onPress={() => void onPressSwitchAccount(account, 'SwitchAccount')}>
+      onPress={() => {
+        if (onSelectAccount) {
+          onSelectAccount(account)
+        } else {
+          void onPressSwitchAccount(account, 'SwitchAccount')
+        }
+      }}>
       <View>
         <UserAvatar
           avatar={profile?.avatar}
@@ -403,7 +420,7 @@ function NavItem({count, hasNew, href, icon, iconFilled, label}: NavItemProps) {
       : isTab(currentRouteInfo.name, pathName)
   const navigation = useNavigation<NavigationProp>()
   const onPressWrapped = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    (e: MouseEvent<HTMLAnchorElement>) => {
       if (e.ctrlKey || e.metaKey || e.altKey) {
         return
       }

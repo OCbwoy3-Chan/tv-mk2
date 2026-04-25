@@ -85,7 +85,7 @@
                   just
                   fastmod
                   nodejs
-                  yarn
+                  pnpm
                   crowdin-cli
                   eas-cli
 

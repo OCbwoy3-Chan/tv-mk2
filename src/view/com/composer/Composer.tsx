@@ -1,6 +1,8 @@
 import {
   Fragment,
   memo,
+  type ReactNode,
+  type RefObject,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -106,10 +108,11 @@ import {
   useOpenRouterModel,
 } from '#/state/preferences/openrouter'
 import {usePreferencesQuery} from '#/state/queries/preferences'
-import {useProfileQuery} from '#/state/queries/profile'
+import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
 import {type Gif} from '#/state/queries/tenor'
-import {useAgent, useSession} from '#/state/session'
+import {useAgent, useSession, useSessionApi} from '#/state/session'
 import {useComposerControls} from '#/state/shell/composer'
+import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
@@ -134,6 +137,7 @@ import {VideoEmbedRedraft} from '#/view/com/composer/videos/VideoEmbedRedraft'
 import {VideoPreview} from '#/view/com/composer/videos/VideoPreview'
 import {VideoTranscodeProgress} from '#/view/com/composer/videos/VideoTranscodeProgress'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {SwitchMenuItems} from '#/view/shell/desktop/LeftNav'
 import {atoms as a, native, useBreakpoints, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
@@ -142,6 +146,7 @@ import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfoIcon} from '#/components
 import {EmojiArc_Stroke2_Corner0_Rounded as EmojiSmileIcon} from '#/components/icons/Emoji'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
+import * as Menu from '#/components/Menu'
 import {LazyQuoteEmbed} from '#/components/Post/Embed/LazyQuoteEmbed'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
@@ -205,15 +210,20 @@ export const ComposePost = ({
   logContext,
   cancelRef,
 }: Props & {
-  cancelRef?: React.RefObject<CancelRef | null>
+  cancelRef?: RefObject<CancelRef | null>
 }) => {
-  const {currentAccount} = useSession()
+  const {currentAccount, accounts} = useSession()
   const t = useTheme()
   const ax = useAnalytics()
   const agent = useAgent()
+  const sessionApi = useSessionApi()
   const queryClient = useQueryClient()
   const currentDid = currentAccount!.did
+
+  const [activeAccountDid, setActiveAccountDid] = useState<string>(currentDid)
+
   const {closeComposer} = useComposerControls()
+  const {requestSwitchToAccount} = useLoggedOutViewControls()
   const {t: l, i18n} = useLingui()
   const requireAltTextEnabled = useRequireAltTextEnabled()
   const omitViaField = useOmitViaField()
@@ -345,7 +355,6 @@ export const ComposePost = ({
       texts: splitPosts,
     })
   }, [activePost.id, activePost.richtext.text, composerDispatch])
-
   const selectVideo = useCallback(
     (postId: string, asset: ImagePickerAsset) => {
       const abortController = new AbortController()
@@ -902,13 +911,35 @@ export const ComposePost = ({
     setError('')
     setIsPublishing(true)
 
+    let currentAgent = agent
+    let ephemeralAgent: BskyAgent | undefined
     let postUri: string | undefined
     let postSuccessData: OnPostSuccessData
     try {
+      if (activeAccountDid && activeAccountDid !== currentAccount?.did) {
+        const activeAccount = accounts.find(a => a.did === activeAccountDid)
+        if (activeAccount) {
+          try {
+            ephemeralAgent = await sessionApi.createEphemeralAgent(activeAccount)
+            currentAgent = ephemeralAgent
+          } catch (e) {
+            logger.error('Composer: failed to create ephemeral agent for account switch', {
+              message: e instanceof Error ? e.message : String(e),
+            })
+            setIsPublishing(false)
+            requestSwitchToAccount({requestedAccount: activeAccount.did})
+            Toast.show(l`Please sign in as @${activeAccount.handle} to post as them`, {
+              type: 'warning',
+            })
+            return
+          }
+        }
+      }
+
       logger.info(`composer: posting...`)
       postUri = (
         await apilib.post(
-          agent,
+          currentAgent,
           queryClient,
           {
             thread: filteredThread,
@@ -940,7 +971,7 @@ export const ComposePost = ({
             5,
             _e => true,
             async () => {
-              const res = await agent.app.bsky.unspecced.getPostThreadV2({
+              const res = await currentAgent.app.bsky.unspecced.getPostThreadV2({
                 anchor: postUri!,
                 above: false,
                 below: filteredThread.posts.length - 1,
@@ -988,6 +1019,11 @@ export const ComposePost = ({
       setIsPublishing(false)
       return
     } finally {
+      if (ephemeralAgent && 'dispose' in ephemeralAgent) {
+        // @ts-ignore
+        ephemeralAgent.dispose()
+      }
+
       if (postUri) {
         let index = 0
         for (let post of filteredThread.posts) {
@@ -1096,7 +1132,7 @@ export const ComposePost = ({
     onPostSuccess,
     initQuote,
     replyTo,
-    setLangPrefs,
+    setPublishOnUpload,
     queryClient,
     navigation,
     composerState.draftId,
@@ -1105,6 +1141,12 @@ export const ComposePost = ({
     cleanupPublishedDraft,
     loadedDraftCreatedAt,
     emptyPostsPromptControl,
+    setLangPrefs,
+    accounts,
+    activeAccountDid,
+    currentAccount?.did,
+    sessionApi,
+    requestSwitchToAccount,
   ])
 
   const handleConfirmSkipEmpty = () => {
@@ -1305,8 +1347,10 @@ export const ComposePost = ({
                   canRemoveQuote={index > 0 || !initQuote}
                   onSelectVideo={selectVideo}
                   onClearVideo={clearVideo}
-                  onPublish={onComposerPostPublish}
                   onError={setError}
+                  onPublish={onComposerPostPublish}
+                  activeAccountDid={activeAccountDid}
+                  setActiveAccountDid={setActiveAccountDid}
                 />
                 {IS_WEBFooterSticky && post.id === activePost.id && (
                   <View style={styles.stickyFooterWeb}>{footer}</View>
@@ -1403,6 +1447,8 @@ let ComposerPost = memo(function ComposerPost({
   onSelectVideo,
   onError,
   onPublish,
+  activeAccountDid,
+  setActiveAccountDid,
 }: {
   post: PostDraft
   dispatch: (action: ComposerAction) => void
@@ -1418,11 +1464,12 @@ let ComposerPost = memo(function ComposerPost({
   onSelectVideo: (postId: string, asset: ImagePickerAsset) => void
   onError: (error: string) => void
   onPublish: (richtext: RichText) => void
+  activeAccountDid: string
+  setActiveAccountDid: (did: string) => void
 }) {
-  const {currentAccount} = useSession()
-  const currentDid = currentAccount!.did
+  const {currentAccount, accounts} = useSession()
   const {t: l} = useLingui()
-  const {data: currentProfile} = useProfileQuery({did: currentDid})
+  const {data: currentProfile} = useProfileQuery({did: activeAccountDid})
   const richtext = post.richtext
   const isTextOnly = !post.embed.link && !post.embed.quote && !post.embed.media
   const forceMinHeight = IS_WEB && isTextOnly && isActive
@@ -1432,6 +1479,7 @@ let ComposerPost = memo(function ComposerPost({
       : l`Add another post`
     : l`Anything but skeet`
   const discardPromptControl = Prompt.usePromptControl()
+  const signOutPromptControl = Prompt.usePromptControl()
 
   const enableSquareButtons = useEnableSquareButtons()
 
@@ -1490,6 +1538,17 @@ let ComposerPost = memo(function ComposerPost({
     [post.id, onSelectVideo, onImageAdd, l],
   )
 
+  const {data} = useProfilesQuery({
+    handles: accounts.map(acc => acc.did),
+  })
+  const profiles = data?.profiles
+
+  const allAccounts = accounts
+    .map(account => ({
+      account,
+      profile: profiles?.find(p => p.did === account.did),
+    }))
+
   useHideKeyboardOnBackground()
 
   return (
@@ -1502,12 +1561,37 @@ let ComposerPost = memo(function ComposerPost({
         isTextOnly && isLastPost && IS_NATIVE && a.flex_grow,
       ]}>
       <View style={[a.flex_row, IS_NATIVE && a.flex_1]}>
-        <UserAvatar
-          avatar={currentProfile?.avatar}
-          size={42}
-          type={currentProfile?.associated?.labeler ? 'labeler' : 'user'}
-          style={[a.mt_xs]}
-        />
+        <Menu.Root>
+          <Menu.Trigger label={l`Switch accounts`}>
+            {({props}) => (
+              <Button
+                label={props.accessibilityLabel}
+                {...props}
+                style={[
+                  a.transition_color,
+                  enableSquareButtons ? a.rounded_sm : a.rounded_full,
+                  a.self_start,
+                ]}>
+                <UserAvatar
+                  avatar={currentProfile?.avatar}
+                  size={42}
+                  type={
+                    currentProfile?.associated?.labeler ? 'labeler' : 'user'
+                  }
+                  style={[a.mt_xs]}
+                />
+              </Button>
+            )}
+          </Menu.Trigger>
+          {
+            <SwitchMenuItems
+              accounts={allAccounts}
+              signOutPromptControl={signOutPromptControl}
+              showExtraButtons={false}
+              onSelectAccount={account => setActiveAccountDid(account.did)}
+            />
+          }
+        </Menu.Root>
         <TextInput
           ref={textInputRef}
           style={[a.pt_xs]}
@@ -1632,7 +1716,7 @@ function ComposerTopBar({
   canSaveDraft: boolean
   textLength: number
   topBarAnimatedStyle: StyleProp<ViewStyle>
-  children?: React.ReactNode
+  children?: ReactNode
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
@@ -2738,7 +2822,7 @@ function ToolbarWrapper({
   children,
 }: {
   style: StyleProp<ViewStyle>
-  children: React.ReactNode
+  children: ReactNode
 }) {
   if (IS_WEB) return children
   return (

@@ -1,5 +1,6 @@
 import {
   createContext,
+  type PropsWithChildren,
   useCallback,
   useContext,
   useEffect,
@@ -64,6 +65,9 @@ const ApiContext = createContext<SessionApiContext>({
   resumeSession: async () => {},
   removeAccount: () => {},
   partialRefreshSession: async () => {},
+  createEphemeralAgent: async () => {
+    throw new Error('Not implemented')
+  },
 })
 ApiContext.displayName = 'SessionApiContext'
 
@@ -108,7 +112,7 @@ class SessionStore {
   }
 }
 
-export function Provider({children}: React.PropsWithChildren<{}>) {
+export function Provider({children}: PropsWithChildren<{}>) {
   const ax = useAnalyticsBase()
   const cancelPendingTask = useOneTaskAtATime()
   // eslint-disable-next-line react/hook-use-state
@@ -314,6 +318,33 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     })
   }, [store, state, cancelPendingTask])
 
+  const createEphemeralAgent = useCallback<
+    SessionApiContext['createEphemeralAgent']
+  >(
+    async storedAccount => {
+      if (storedAccount.isOauthSession) {
+        const {agent} = await oauthResumeSession(storedAccount)
+        return agent
+      }
+      const {agent} = await createAgentAndResume(
+        storedAccount,
+        (ephemeralAgent, accountDid, sessionEvent) => {
+          const refreshedAccount = agentToSessionAccount(ephemeralAgent)
+
+          store.dispatch({
+            type: 'received-agent-event',
+            agent: ephemeralAgent as any,
+            refreshedAccount,
+            accountDid,
+            sessionEvent,
+          })
+        },
+      )
+      return agent
+    },
+    [store],
+  )
+
   const removeAccount = useCallback<SessionApiContext['removeAccount']>(
     account => {
       addSessionDebugLog({
@@ -388,6 +419,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
       resumeSession,
       removeAccount,
       partialRefreshSession,
+      createEphemeralAgent,
     }),
     [
       createAccount,
@@ -397,6 +429,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
       resumeSession,
       removeAccount,
       partialRefreshSession,
+      createEphemeralAgent,
     ],
   )
 
