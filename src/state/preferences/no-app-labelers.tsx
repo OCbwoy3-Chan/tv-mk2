@@ -6,8 +6,10 @@ import {
   useEffect,
   useState,
 } from 'react'
+import {reloadAppAsync} from 'expo'
 
 import * as persisted from '#/state/persisted'
+import {IS_WEB} from '#/env'
 
 type StateContext = persisted.Schema['noAppLabelers']
 type SetContext = (v: persisted.Schema['noAppLabelers']) => void
@@ -26,6 +28,12 @@ export function Provider({children}: PropsWithChildren<{}>) {
     (noAppLabelers: persisted.Schema['noAppLabelers']) => {
       setState(noAppLabelers)
       persisted.write('noAppLabelers', noAppLabelers)
+
+      if (IS_WEB) {
+        window.location.reload()
+      } else {
+        void reloadAppAsync()
+      }
     },
     [setState],
   )

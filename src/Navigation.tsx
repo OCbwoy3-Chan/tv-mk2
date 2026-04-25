@@ -131,10 +131,10 @@ import {PrivacyAndSecuritySettingsScreen} from '#/screens/Settings/PrivacyAndSec
 import {RunesSettingsScreen} from '#/screens/Settings/RunesSettings'
 import {RunesBadgesSettingsScreen} from '#/screens/Settings/RunesSettings/BadgesSettings'
 import {RunesDisplaySettingsScreen} from '#/screens/Settings/RunesSettings/DisplaySettings'
+import {RunesExtraSettingsScreen} from '#/screens/Settings/RunesSettings/ExtraSettings'
 import {RunesImpressionsSettingsScreen} from '#/screens/Settings/RunesSettings/ImpressionsSettings'
 import {RunesInfrastructureSettingsScreen} from '#/screens/Settings/RunesSettings/InfrastructureSettings'
 import {RunesMenusSettingsScreen} from '#/screens/Settings/RunesSettings/MenusSettings'
-import {RunesOtherAdditionsSettingsScreen} from '#/screens/Settings/RunesSettings/OtherAdditionsSettings'
 import {RunesUsabilitySettingsScreen} from '#/screens/Settings/RunesSettings/UsabilitySettings'
 import {SettingsScreen} from '#/screens/Settings/Settings'
 import {ThreadPreferencesScreen} from '#/screens/Settings/ThreadPreferences'
@@ -463,9 +463,9 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         options={{title: title(msg`Infrastructure`), requireAuth: true}}
       />
       <Stack.Screen
-        name="RunesOtherAdditionsSettings"
-        getComponent={() => RunesOtherAdditionsSettingsScreen}
-        options={{title: title(msg`Other additions`), requireAuth: true}}
+        name="RunesExtraSettings"
+        getComponent={() => RunesExtraSettingsScreen}
+        options={{title: title(msg`Extra settings`), requireAuth: true}}
       />
       <Stack.Screen
         name="AppearanceSettings"

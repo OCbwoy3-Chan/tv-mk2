@@ -236,7 +236,7 @@ export function RunesInfrastructureSettingsScreen() {
 
       <SettingsList.Item>
         <Admonition type="warning" style={[a.flex_1]}>
-          <Trans>Restart the app after changing this setting.</Trans>
+          <Trans>Toggling this will reload the app.</Trans>
         </Admonition>
       </SettingsList.Item>
       <SettingsList.Item>

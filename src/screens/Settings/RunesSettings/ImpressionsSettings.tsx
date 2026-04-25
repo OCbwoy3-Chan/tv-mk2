@@ -43,7 +43,8 @@ import {
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import * as Toggle from '#/components/forms/Toggle'
-import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/Eye'
+import {Person_Stroke2_Corner0_Rounded as PersonIcon} from '#/components/icons/Person'
+import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesImpressionsSettingsScreen() {
@@ -73,7 +74,7 @@ export function RunesImpressionsSettingsScreen() {
   return (
     <RunesScreenLayout titleText={l`Impressions`}>
       <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-        <SettingsList.ItemIcon icon={VisibilityIcon} />
+        <SettingsList.ItemIcon icon={ReplyIcon} />
         <SettingsList.ItemText>
           <Trans>Posts</Trans>
         </SettingsList.ItemText>
@@ -134,7 +135,7 @@ export function RunesImpressionsSettingsScreen() {
         </Toggle.Item>
       </SettingsList.Group>
       <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-        <SettingsList.ItemIcon icon={VisibilityIcon} />
+        <SettingsList.ItemIcon icon={PersonIcon} />
         <SettingsList.ItemText>
           <Trans>Profiles</Trans>
         </SettingsList.ItemText>
@@ -161,6 +162,17 @@ export function RunesImpressionsSettingsScreen() {
           <Toggle.Platform />
         </Toggle.Item>
         <Toggle.Item
+          name="disable_posts_metrics"
+          label={l`Remove post counts`}
+          value={disablePostsMetrics}
+          onChange={value => setDisablePostsMetrics(value)}
+          style={[a.w_full]}>
+          <Toggle.LabelText style={[a.flex_1]}>
+            <Trans>Remove post counts</Trans>
+          </Toggle.LabelText>
+          <Toggle.Platform />
+        </Toggle.Item>
+        <Toggle.Item
           name="disable_followed_by_metrics"
           label={l`Remove "followed by" counts`}
           value={disableFollowedByMetrics}
@@ -179,17 +191,6 @@ export function RunesImpressionsSettingsScreen() {
           style={[a.w_full]}>
           <Toggle.LabelText style={[a.flex_1]}>
             <Trans>Show "Follows you" badge</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-        <Toggle.Item
-          name="disable_posts_metrics"
-          label={l`Remove post counts`}
-          value={disablePostsMetrics}
-          onChange={value => setDisablePostsMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove post counts</Trans>
           </Toggle.LabelText>
           <Toggle.Platform />
         </Toggle.Item>

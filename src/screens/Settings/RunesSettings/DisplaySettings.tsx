@@ -107,6 +107,20 @@ function PostReplacementDialog({
   const [singular, setSingular] = useState(postReplacement.postName)
   const [plural, setPlural] = useState(postReplacement.postsName)
   const [pluralManuallyEdited, setPluralManuallyEdited] = useState(false)
+  const [singularInputVersion, setSingularInputVersion] = useState(0)
+  const [pluralInputVersion, setPluralInputVersion] = useState(0)
+
+  const syncInputValues = (
+    nextSingular: string,
+    nextPlural: string,
+    manuallyEdited = false,
+  ) => {
+    setSingular(nextSingular)
+    setPlural(nextPlural)
+    setPluralManuallyEdited(manuallyEdited)
+    setSingularInputVersion(version => version + 1)
+    setPluralInputVersion(version => version + 1)
+  }
 
   const submit = async () => {
     setPostReplacement({
@@ -127,6 +141,7 @@ function PostReplacementDialog({
     setSingular(value)
     if (!pluralManuallyEdited) {
       setPlural(`${value}s`)
+      setPluralInputVersion(version => version + 1)
     }
   }
 
@@ -136,20 +151,16 @@ function PostReplacementDialog({
   }
 
   const handlePresetSelect = (singularForm: string, pluralForm: string) => {
-    setSingular(singularForm)
-    setPlural(pluralForm)
-    setPluralManuallyEdited(false)
+    syncInputValues(singularForm, pluralForm)
   }
 
   return (
     <Dialog.Outer
       control={control}
       nativeOptions={{preventExpansion: true}}
-      onClose={() => {
-        setSingular(postReplacement.postName)
-        setPlural(postReplacement.postsName)
-        setPluralManuallyEdited(false)
-      }}>
+      onClose={() =>
+        syncInputValues(postReplacement.postName, postReplacement.postsName)
+      }>
       <Dialog.Handle />
       <Dialog.ScrollableInner label={l`Custom post phrase`}>
         <Text style={[a.text_2xl, a.font_bold, a.pb_lg]}>
@@ -158,6 +169,7 @@ function PostReplacementDialog({
 
         <View style={a.gap_lg}>
           <Dialog.Input
+            key={`post-replacement-singular-input-${singularInputVersion}`}
             label="Singular form"
             autoFocus
             style={[styles.textInput, pal.border, pal.text]}
@@ -165,7 +177,7 @@ function PostReplacementDialog({
             placeholder="skeet"
             placeholderTextColor={pal.colors.textLight}
             accessibilityHint={l`Input the singular form (e.g., "skeet")`}
-            value={singular}
+            defaultValue={singular}
           />
           <View style={[a.flex_row, a.flex_wrap, a.gap_sm]}>
             {[
@@ -190,13 +202,14 @@ function PostReplacementDialog({
             ))}
           </View>
           <Dialog.Input
+            key={`post-replacement-plural-input-${pluralInputVersion}`}
             label="Plural form"
             style={[styles.textInput, pal.border, pal.text, a.mt_lg]}
             onChangeText={handlePluralChange}
             placeholder="skeets"
             placeholderTextColor={pal.colors.textLight}
             accessibilityHint={l`Input the plural form (e.g., "skeets")`}
-            value={plural}
+            defaultValue={plural}
           />
 
           <View style={IS_WEB && [a.flex_row, a.justify_end, a.pt_lg]}>

@@ -62,11 +62,11 @@ export function RunesSettingsScreen({}: Props) {
         </SettingsList.ItemText>
       </SettingsList.LinkItem>
       <SettingsList.LinkItem
-        to="/settings/runes/other-additions"
-        label={l`Other additions`}>
+        to="/settings/runes/extra"
+        label={l`Extra settings `}>
         <SettingsList.ItemIcon icon={BeakerIcon} />
         <SettingsList.ItemText>
-          <Trans>Other additions</Trans>
+          <Trans>Extra</Trans>
         </SettingsList.ItemText>
       </SettingsList.LinkItem>
     </RunesScreenLayout>

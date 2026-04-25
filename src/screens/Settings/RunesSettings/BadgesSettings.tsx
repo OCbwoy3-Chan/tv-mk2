@@ -51,27 +51,19 @@ export function RunesBadgesSettingsScreen() {
 
   return (
     <RunesScreenLayout titleText={l`Badges`}>
-      <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-        <SettingsList.ItemIcon icon={VerifiedIcon} />
-        <SettingsList.ItemText>
-          <Trans>Verification</Trans>
-        </SettingsList.ItemText>
-        <Toggle.Item
-          name="custom_verifications"
-          label={l`Select your own set of trusted verifiers, and operate as a verifier`}
-          value={deerVerificationEnabled}
-          onChange={value => setDeerVerificationEnabled(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>
-              Select your own set of trusted verifiers, and operate as a
-              verifier
-            </Trans>
-          </Toggle.LabelText>
+      <Toggle.Item
+        name="custom_verifications"
+        label={l`Select trusted verifiers and act as one`}
+        value={deerVerificationEnabled}
+        onChange={value => setDeerVerificationEnabled(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={VerifiedIcon} />
+          <SettingsList.ItemText>
+            <Trans>Select trusted verifiers and act as one</Trans>
+          </SettingsList.ItemText>
           <Toggle.Platform />
-        </Toggle.Item>
-      </SettingsList.Group>
-
+        </SettingsList.Item>
+      </Toggle.Item>
       <SettingsList.Item>
         <Admonition type="warning" style={[a.flex_1]}>
           <Trans>
@@ -84,7 +76,6 @@ export function RunesBadgesSettingsScreen() {
           </Trans>
         </Admonition>
       </SettingsList.Item>
-
       <SettingsList.Item>
         <SettingsList.ItemIcon icon={VerifiedIcon} />
         <SettingsList.ItemText>
@@ -128,7 +119,6 @@ export function RunesBadgesSettingsScreen() {
           </Toggle.Item>
         )}
       </SettingsList.Group>
-
       {pdsLabelEnabled && (
         <SettingsList.Item>
           <SettingsList.ItemIcon icon={StarIcon} />
