@@ -7,6 +7,10 @@ import {dynamicActivate} from '#/locale/i18n'
 import {dynamicActivate as dynamicActivateWeb} from '#/locale/i18n.web'
 import {type AppLanguage} from '#/locale/languages'
 import {
+  useAlsoLikedFeedEnabled,
+  useSetAlsoLikedFeedEnabled,
+} from '#/state/preferences/also-liked-feed-enabled'
+import {
   useHighQualityImages,
   useSetHighQualityImages,
 } from '#/state/preferences/high-quality-images'
@@ -28,6 +32,7 @@ import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import * as Toggle from '#/components/forms/Toggle'
+import {Heart2_Stroke2_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
 import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
@@ -41,6 +46,9 @@ export function RunesDisplaySettingsScreen() {
 
   const repostCarouselEnabled = useRepostCarouselEnabled()
   const setRepostCarouselEnabled = useSetRepostCarouselEnabled()
+
+  const alsoLikedFeedEnabled = useAlsoLikedFeedEnabled()
+  const setAlsoLikedFeedEnabled = useSetAlsoLikedFeedEnabled()
 
   const highQualityImages = useHighQualityImages()
   const setHighQualityImages = useSetHighQualityImages()
@@ -61,6 +69,19 @@ export function RunesDisplaySettingsScreen() {
           <SettingsList.ItemIcon icon={RepostIcon} />
           <SettingsList.ItemText>
             <Trans>Combine reposts into a horizontal carousel</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="also_liked_feed"
+        label={l`Show "Also liked" recommendations under post replies`}
+        value={alsoLikedFeedEnabled}
+        onChange={value => setAlsoLikedFeedEnabled(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={HeartIcon} />
+          <SettingsList.ItemText>
+            <Trans>Show "Also liked" recommendations under post replies</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

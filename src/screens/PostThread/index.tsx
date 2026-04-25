@@ -15,6 +15,8 @@ import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {usePostViewTracking} from '#/lib/hooks/usePostViewTracking'
 import {useFeedFeedback} from '#/state/feed-feedback'
+import {useAlsoLikedFeedEnabled} from '#/state/preferences/also-liked-feed-enabled'
+import {usePostAlsoLikedQuery} from '#/state/queries/post-also-liked'
 import {type ThreadViewOption} from '#/state/queries/preferences/useThreadPreferences'
 import {
   PostThreadContextProvider,
@@ -27,6 +29,7 @@ import {useShellLayout} from '#/state/shell/shell-layout'
 import {useUnstablePostSource} from '#/state/unstable-post-source'
 import {List, type ListMethods} from '#/view/com/util/List'
 import {HeaderDropdown} from '#/screens/PostThread/components/HeaderDropdown'
+import {ThreadAlsoLiked} from '#/screens/PostThread/components/ThreadAlsoLiked'
 import {ThreadComposePrompt} from '#/screens/PostThread/components/ThreadComposePrompt'
 import {ThreadError} from '#/screens/PostThread/components/ThreadError'
 import {
@@ -50,7 +53,6 @@ import {
 } from '#/screens/PostThread/components/ThreadItemTreePost'
 import {atoms as a, native, platform, useBreakpoints, web} from '#/alf'
 import * as Layout from '#/components/Layout'
-import {ListFooter} from '#/components/Lists'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE} from '#/env'
 
@@ -148,6 +150,22 @@ export function PostThread({uri}: {uri: string}) {
 
   const isRoot = !!anchor && anchor.value.post.record.reply === undefined
   const canReply = !anchor?.value.post?.viewer?.replyDisabled
+  const alsoLikedFeedEnabled = useAlsoLikedFeedEnabled()
+  const alsoLikedAnchorUri =
+    anchor?.type === 'threadPost' && isRoot ? anchor.value.post.uri : undefined
+  const alsoLiked = usePostAlsoLikedQuery(alsoLikedAnchorUri, {
+    enabled: Boolean(alsoLikedAnchorUri) && alsoLikedFeedEnabled,
+  })
+  const alsoLikedPosts = useMemo(() => {
+    const seen = new Set<string>()
+    return (alsoLiked.data?.pages ?? [])
+      .flatMap(page => page.posts)
+      .filter(post => {
+        if (seen.has(post.uri)) return false
+        seen.add(post.uri)
+        return true
+      })
+  }, [alsoLiked.data])
   const [maxParentCount, setMaxParentCount] = useState(PARENT_CHUNK_SIZE)
   const [maxChildrenCount, setMaxChildrenCount] = useState(CHILDREN_CHUNK_SIZE)
   const totalParentCount = useRef(0) // recomputed below
@@ -331,9 +349,19 @@ export function PostThread({uri}: {uri: string}) {
     if (thread.state.isFetching) return
     // can be true after `prepareForParamsUpdate` is called
     if (deferParents) return
-    // prevent any state mutations if we know we're done
-    if (maxChildrenCount >= totalChildrenCount.current) return
-    setMaxChildrenCount(prev => prev + CHILDREN_CHUNK_SIZE)
+    if (maxChildrenCount < totalChildrenCount.current) {
+      setMaxChildrenCount(prev => prev + CHILDREN_CHUNK_SIZE)
+      return
+    }
+    if (
+      alsoLikedAnchorUri &&
+      alsoLikedFeedEnabled &&
+      !alsoLiked.isLoading &&
+      !alsoLiked.isFetchingNextPage &&
+      alsoLiked.hasNextPage
+    ) {
+      void alsoLiked.fetchNextPage()
+    }
   }
 
   const slices = useMemo(() => {
@@ -543,6 +571,13 @@ export function PostThread({uri}: {uri: string}) {
   )
 
   const defaultListFooterHeight = hasParents ? windowHeight - 200 : undefined
+  const retryAlsoLiked = useCallback(() => {
+    if (alsoLikedPosts.length > 0) {
+      void alsoLiked.fetchNextPage()
+    } else {
+      void alsoLiked.refetch()
+    }
+  }, [alsoLiked, alsoLikedPosts.length])
 
   return (
     <PostThreadContextProvider context={thread.context}>
@@ -596,23 +631,20 @@ export function PostThread({uri}: {uri: string}) {
           desktopFixedHeight
           sideBorders={false}
           ListFooterComponent={
-            <ListFooter
-              /*
-               * On native, if `deferParents` is true, we need some extra buffer to
-               * account for the `on*ReachedThreshold` values.
-               *
-               * Otherwise, and on web, this value needs to be the height of
-               * the viewport _minus_ a sensible min-post height e.g. 200, so
-               * that there's enough scroll remaining to get the anchor post
-               * back to the top of the screen when handling scroll.
-               */
-              height={platform({
+            <ThreadAlsoLiked
+              posts={alsoLikedPosts}
+              enabled={Boolean(alsoLikedAnchorUri) && alsoLikedFeedEnabled}
+              isLoading={alsoLiked.isLoading}
+              isFetchingNextPage={alsoLiked.isFetchingNextPage}
+              error={alsoLiked.error}
+              onRetry={retryAlsoLiked}
+              spacerHeight={platform({
                 web: defaultListFooterHeight,
                 default: deferParents
                   ? windowHeight * 2
                   : defaultListFooterHeight,
               })}
-              style={isTombstoneView ? {borderTopWidth: 0} : undefined}
+              isTombstoneView={isTombstoneView}
             />
           }
           initialNumToRender={initialNumToRender}
