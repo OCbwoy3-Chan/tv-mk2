@@ -56,6 +56,7 @@ interface PostOpts {
   replyTo?: string
   onStateChange?: (state: string) => void
   langs?: string[]
+  omitViaField?: boolean
 }
 
 type FeatureFlags = {
@@ -130,8 +131,7 @@ export async function post(
     const rt = await rtPromise
     const embed = await embedPromise
     const reply = await replyPromise
-    const record: AppBskyFeedPost.Record & {via: string} = {
-      via,
+    const record: AppBskyFeedPost.Record & {via?: string} = {
       // IMPORTANT: $type has to exist, CID is calculated with the `$type` field
       // present and will produce the wrong CID if you omit it.
       $type: 'app.bsky.feed.post',
@@ -142,6 +142,9 @@ export async function post(
       embed,
       langs,
       labels,
+    }
+    if (!opts.omitViaField) {
+      record.via = via
     }
     writes.push({
       $type: 'com.atproto.repo.applyWrites#create',

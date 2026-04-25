@@ -191,6 +191,7 @@ const schema = z.object({
   enableSquareAvatars: z.boolean().optional(),
   enableSquareButtons: z.boolean().optional(),
   disableVerifyEmailReminder: z.boolean().optional(),
+  showViaClient: z.boolean().optional(),
   deerVerification: z
     .object({
       enabled: z.boolean(),
@@ -237,6 +238,7 @@ const schema = z.object({
   trendingVideoDisabled: z.boolean().optional(),
 
   autoLikeOnRepost: z.boolean().optional(),
+  omitViaField: z.boolean().optional(),
 })
 export type Schema = z.infer<typeof schema>
 
@@ -246,6 +248,7 @@ export const defaults: Schema = {
   colorScheme: 'witchsky',
   hue: 0,
   material3Accent: '#ee6300',
+  material3Style: 'TONAL_SPOT',
   session: {
     accounts: [],
     currentAccount: undefined,
@@ -317,6 +320,7 @@ export const defaults: Schema = {
   enableSquareAvatars: true,
   enableSquareButtons: true,
   disableVerifyEmailReminder: false,
+  showViaClient: true,
   deerVerification: {
     enabled: false,
     // https://witchsky.app/profile/did:plc:p2cp5gopk7mgjegy6wadk3ep/post/3lndyqyyr4k2k
@@ -370,6 +374,7 @@ export const defaults: Schema = {
   },
 
   autoLikeOnRepost: false,
+  omitViaField: false,
 }
 
 export function tryParse(rawData: string): Schema | undefined {

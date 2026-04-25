@@ -18,6 +18,10 @@ import {
   useRepostCarouselEnabled,
   useSetRepostCarouselEnabled,
 } from '#/state/preferences/repost-carousel-enabled'
+import {
+  useSetShowViaClient,
+  useShowViaClient,
+} from '#/state/preferences/show-via-client'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -27,6 +31,7 @@ import * as Toggle from '#/components/forms/Toggle'
 import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
+import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
@@ -39,6 +44,9 @@ export function RunesDisplaySettingsScreen() {
 
   const highQualityImages = useHighQualityImages()
   const setHighQualityImages = useSetHighQualityImages()
+
+  const showViaClient = useShowViaClient()
+  const setShowViaClient = useSetShowViaClient()
 
   const setPostReplacementDialogControl = Dialog.useDialogControl()
 
@@ -78,6 +86,19 @@ export function RunesDisplaySettingsScreen() {
           </Trans>
         </Admonition>
       </SettingsList.Item>
+      <Toggle.Item
+        name="show_via_client"
+        label={l`Show client used to post`}
+        value={showViaClient}
+        onChange={value => setShowViaClient(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={WindowIcon} />
+          <SettingsList.ItemText>
+            <Trans>Show client used to post</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
       <SettingsList.Item>
         <SettingsList.ItemIcon icon={PencilIcon} />
         <SettingsList.ItemText>

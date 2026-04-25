@@ -27,6 +27,7 @@ import {useDisableQuotesMetrics} from '#/state/preferences/disable-quotes-metric
 import {useDisableRepostsMetrics} from '#/state/preferences/disable-reposts-metrics'
 import {useDisableSavesMetrics} from '#/state/preferences/disable-saves-metrics'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useShowViaClient} from '#/state/preferences/show-via-client'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
@@ -578,6 +579,7 @@ function ExpandedPostDetails({
 }) {
   const t = useTheme()
   const {i18n} = useLingui()
+  const showViaClient = useShowViaClient()
   const isRootPost = !('reply' in post.record)
   const via = post.record.via as string | undefined
 
@@ -588,7 +590,7 @@ function ExpandedPostDetails({
         <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
           {niceDate(i18n, post.indexedAt, 'dot separated')}
         </Text>
-        {via ? (
+        {showViaClient && via ? (
           <Text
             numberOfLines={1}
             style={[a.text_sm, t.atoms.text_contrast_medium, {maxWidth: 160}]}>

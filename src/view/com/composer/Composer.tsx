@@ -99,6 +99,7 @@ import {
   useLanguagePrefs,
   useLanguagePrefsApi,
 } from '#/state/preferences/languages'
+import {useOmitViaField} from '#/state/preferences/omit-via-field'
 import {
   useOpenRouterApiKey,
   useOpenRouterConfigured,
@@ -215,6 +216,7 @@ export const ComposePost = ({
   const {closeComposer} = useComposerControls()
   const {t: l, i18n} = useLingui()
   const requireAltTextEnabled = useRequireAltTextEnabled()
+  const omitViaField = useOmitViaField()
   const langPrefs = useLanguagePrefs()
   const setLangPrefs = useLanguagePrefsApi()
   const textInputRef = useRef<TextInputRef>(null)
@@ -913,6 +915,7 @@ export const ComposePost = ({
             replyTo: replyTo?.uri,
             onStateChange: setPublishingStage,
             langs: currentLanguages,
+            omitViaField,
           },
           {
             highResolutionImages: ax.features.enabled(
@@ -1925,7 +1928,7 @@ function ComposerEmbeds({
               'playlistUri' in video && (
                 <View style={[a.relative, a.mt_lg]}>
                   <VideoEmbedRedraft
-                    blobRef={video.pendingPublish?.blobRef as any}
+                    blobRef={video.pendingPublish?.blobRef}
                     playlistUri={video.playlistUri}
                     aspectRatio={video.redraftDimensions}
                     onRemove={clearVideo}

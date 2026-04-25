@@ -40,6 +40,7 @@ import {Provider as LanguagesProvider} from './languages'
 import {Provider as LargeAltBadgeProvider} from './large-alt-badge'
 import {Provider as NoAppLabelersProvider} from './no-app-labelers'
 import {Provider as NoDiscoverProvider} from './no-discover-fallback'
+import {Provider as OmitViaFieldProvider} from './omit-via-field'
 import {Provider as OpenRouterProvider} from './openrouter'
 import {Provider as PdsLabelProvider} from './pds-label'
 import {Provider as PlcDirectoryProvider} from './plc-directory'
@@ -48,6 +49,7 @@ import {Provider as RepostCarouselProvider} from './repost-carousel-enabled'
 import {Provider as ShowFollowsYouBadgeProvider} from './show-follows-you-badge'
 import {Provider as ShowLinkInHandleProvider} from './show-link-in-handle'
 import {Provider as ShowLinkInHandleOnlyOnWorkingLinksProvider} from './show-link-in-handle-only-on-working-links'
+import {Provider as ShowViaClientProvider} from './show-via-client'
 import {Provider as SubtitlesProvider} from './subtitles'
 import {Provider as TranslationServicePreferenceProvider} from './translation-service-preference'
 import {Provider as TrendingSettingsProvider} from './trending'
@@ -86,6 +88,7 @@ export {
 export {useImageCdnHost, useSetImageCdnHost} from './image-cdn-host'
 export {useLabelDefinitions} from './label-defs'
 export {useLanguagePrefs, useLanguagePrefsApi} from './languages'
+export {useOmitViaField, useSetOmitViaField} from './omit-via-field'
 export {
   useOpenRouterApiKey,
   useOpenRouterConfigured,
@@ -152,23 +155,27 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                           <HideUnreplyablePostsProvider>
                                                                                             <EnableSquareAvatarsProvider>
                                                                                               <EnableSquareButtonsProvider>
-                                                                                                <PostNameReplacementProvider>
-                                                                                                  <DisableVerifyEmailReminderProvider>
-                                                                                                    <TranslationServicePreferenceProvider>
-                                                                                                      <OpenRouterProvider>
-                                                                                                        <DisableComposerPromptProvider>
-                                                                                                          <DisableTopOfFeedButtonProvider>
-                                                                                                            <DiscoverContextEnabledProvider>
-                                                                                                              {
-                                                                                                                children
-                                                                                                              }
-                                                                                                            </DiscoverContextEnabledProvider>
-                                                                                                          </DisableTopOfFeedButtonProvider>
-                                                                                                        </DisableComposerPromptProvider>
-                                                                                                      </OpenRouterProvider>
-                                                                                                    </TranslationServicePreferenceProvider>
-                                                                                                  </DisableVerifyEmailReminderProvider>
-                                                                                                </PostNameReplacementProvider>
+                                                                                                <ShowViaClientProvider>
+                                                                                                  <PostNameReplacementProvider>
+                                                                                                    <DisableVerifyEmailReminderProvider>
+                                                                                                      <TranslationServicePreferenceProvider>
+                                                                                                        <OpenRouterProvider>
+                                                                                                          <DisableComposerPromptProvider>
+                                                                                                            <DisableTopOfFeedButtonProvider>
+                                                                                                              <DiscoverContextEnabledProvider>
+                                                                                                                <OmitViaFieldProvider>
+                                                                                                                  {
+                                                                                                                    children
+                                                                                                                  }
+                                                                                                                </OmitViaFieldProvider>
+                                                                                                              </DiscoverContextEnabledProvider>
+                                                                                                            </DisableTopOfFeedButtonProvider>
+                                                                                                          </DisableComposerPromptProvider>
+                                                                                                        </OpenRouterProvider>
+                                                                                                      </TranslationServicePreferenceProvider>
+                                                                                                    </DisableVerifyEmailReminderProvider>
+                                                                                                  </PostNameReplacementProvider>
+                                                                                                </ShowViaClientProvider>
                                                                                               </EnableSquareButtonsProvider>
                                                                                             </EnableSquareAvatarsProvider>
                                                                                           </HideUnreplyablePostsProvider>
