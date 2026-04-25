@@ -18,6 +18,10 @@ import {
   useSetHideFeedsPromoTab,
 } from '#/state/preferences/hide-feeds-promo-tab'
 import {
+  useHideScaryFollowButtons,
+  useSetHideScaryFollowButtons,
+} from '#/state/preferences/hide-scary-follow-buttons'
+import {
   useHideSimilarAccountsRecomm,
   useSetHideSimilarAccountsRecomm,
 } from '#/state/preferences/hide-similar-accounts-recommendations'
@@ -40,6 +44,7 @@ import {Eye_Stroke2_Corner2_Rounded as EyeIcon} from '#/components/icons/Eye'
 import {EyeSlash_Stroke2_Corner0_Rounded as EyeSlashIcon} from '#/components/icons/EyeSlash'
 import {PencilLine_Stroke2_Corner2_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {PersonGroup_Stroke2_Corner2_Rounded as PersonGroupIcon} from '#/components/icons/Person'
+import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
@@ -60,6 +65,9 @@ export function RunesUsabilitySettingsScreen() {
 
   const hideUnreplyablePosts = useHideUnreplyablePosts()
   const setHideUnreplyablePosts = useSetHideUnreplyablePosts()
+
+  const hideScaryFollowButtons = useHideScaryFollowButtons()
+  const setHideScaryFollowButtons = useSetHideScaryFollowButtons()
 
   const disableComposerPrompt = useDisableComposerPrompt()
   const setDisableComposerPrompt = useSetDisableComposerPrompt()
@@ -146,6 +154,21 @@ export function RunesUsabilitySettingsScreen() {
           <SettingsList.ItemIcon icon={ArrowTopIcon} />
           <SettingsList.ItemText>
             <Trans>Disable top-of-feed button</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="hide_scary_follow_buttons"
+        label={l`Hide follow button on posts and scrolled profile header`}
+        value={hideScaryFollowButtons}
+        onChange={value => setHideScaryFollowButtons(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={PlusIcon} />
+          <SettingsList.ItemText>
+            <Trans>
+              Hide follow button on posts and scrolled profile header
+            </Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

@@ -27,6 +27,7 @@ import {useDisableQuotesMetrics} from '#/state/preferences/disable-quotes-metric
 import {useDisableRepostsMetrics} from '#/state/preferences/disable-reposts-metrics'
 import {useDisableSavesMetrics} from '#/state/preferences/disable-saves-metrics'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
 import {useShowViaClient} from '#/state/preferences/show-via-client'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
@@ -245,8 +246,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const onlyFollowersCanReply = !!threadgateRecord?.allow?.find(
     rule => rule.$type === 'app.bsky.feed.threadgate#followerRule',
   )
+  const hideScaryFollowButtons = useHideScaryFollowButtons()
   const showFollowButton =
-    currentAccount?.did !== post.author.did && !onlyFollowersCanReply
+    currentAccount?.did !== post.author.did &&
+    !onlyFollowersCanReply &&
+    !hideScaryFollowButtons
 
   const viaRepost = useMemo(() => {
     const reason = postSource?.post.reason

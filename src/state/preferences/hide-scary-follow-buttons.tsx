@@ -1,0 +1,54 @@
+import {
+  createContext,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
+
+import * as persisted from '#/state/persisted'
+
+type StateContext = persisted.Schema['hideScaryFollowButtons']
+type SetContext = (v: persisted.Schema['hideScaryFollowButtons']) => void
+
+const stateContext = createContext<StateContext>(
+  persisted.defaults.hideScaryFollowButtons,
+)
+const setContext = createContext<SetContext>(
+  (_: persisted.Schema['hideScaryFollowButtons']) => {},
+)
+
+export function Provider({children}: PropsWithChildren<{}>) {
+  const [state, setState] = useState(persisted.get('hideScaryFollowButtons'))
+
+  const setStateWrapped = useCallback(
+    (hideScaryFollowButtons: persisted.Schema['hideScaryFollowButtons']) => {
+      setState(hideScaryFollowButtons)
+      persisted.write('hideScaryFollowButtons', hideScaryFollowButtons)
+    },
+    [setState],
+  )
+
+  useEffect(() => {
+    return persisted.onUpdate('hideScaryFollowButtons', nextValue => {
+      setState(nextValue)
+    })
+  }, [setStateWrapped])
+
+  return (
+    <stateContext.Provider value={state}>
+      <setContext.Provider value={setStateWrapped}>
+        {children}
+      </setContext.Provider>
+    </stateContext.Provider>
+  )
+}
+
+export function useHideScaryFollowButtons() {
+  return useContext(stateContext) ?? persisted.defaults.hideScaryFollowButtons
+}
+
+export function useSetHideScaryFollowButtons() {
+  return useContext(setContext)
+}
