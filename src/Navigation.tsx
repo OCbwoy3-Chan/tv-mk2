@@ -104,6 +104,7 @@ import {AccessibilitySettingsScreen} from '#/screens/Settings/AccessibilitySetti
 import {AccountSettingsScreen} from '#/screens/Settings/AccountSettings'
 import {ActivityPrivacySettingsScreen} from '#/screens/Settings/ActivityPrivacySettings'
 import {AppearanceSettingsScreen} from '#/screens/Settings/AppearanceSettings'
+import {AppearanceColorThemeSettingsScreen} from '#/screens/Settings/AppearanceSettings/ColorThemeSettings'
 import {AppIconSettingsScreen} from '#/screens/Settings/AppIconSettings'
 import {AppPasswordsScreen} from '#/screens/Settings/AppPasswords'
 import {AutomationLabelSettingsScreen} from '#/screens/Settings/AutomationLabelSettings'
@@ -128,6 +129,13 @@ import {RepostsOnRepostsNotificationSettingsScreen} from '#/screens/Settings/Not
 import {PetLabelSettingsScreen} from '#/screens/Settings/PetLabelSettings'
 import {PrivacyAndSecuritySettingsScreen} from '#/screens/Settings/PrivacyAndSecuritySettings'
 import {RunesSettingsScreen} from '#/screens/Settings/RunesSettings'
+import {RunesBadgesSettingsScreen} from '#/screens/Settings/RunesSettings/BadgesSettings'
+import {RunesDisplaySettingsScreen} from '#/screens/Settings/RunesSettings/DisplaySettings'
+import {RunesImpressionsSettingsScreen} from '#/screens/Settings/RunesSettings/ImpressionsSettings'
+import {RunesInfrastructureSettingsScreen} from '#/screens/Settings/RunesSettings/InfrastructureSettings'
+import {RunesMenusSettingsScreen} from '#/screens/Settings/RunesSettings/MenusSettings'
+import {RunesOtherAdditionsSettingsScreen} from '#/screens/Settings/RunesSettings/OtherAdditionsSettings'
+import {RunesUsabilitySettingsScreen} from '#/screens/Settings/RunesSettings/UsabilitySettings'
 import {SettingsScreen} from '#/screens/Settings/Settings'
 import {ThreadPreferencesScreen} from '#/screens/Settings/ThreadPreferences'
 import {
@@ -425,10 +433,53 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         }}
       />
       <Stack.Screen
+        name="RunesMenusSettings"
+        getComponent={() => RunesMenusSettingsScreen}
+        options={{title: title(msg`Menus`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="RunesBadgesSettings"
+        getComponent={() => RunesBadgesSettingsScreen}
+        options={{title: title(msg`Badges`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="RunesImpressionsSettings"
+        getComponent={() => RunesImpressionsSettingsScreen}
+        options={{title: title(msg`Impressions`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="RunesUsabilitySettings"
+        getComponent={() => RunesUsabilitySettingsScreen}
+        options={{title: title(msg`Usability`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="RunesDisplaySettings"
+        getComponent={() => RunesDisplaySettingsScreen}
+        options={{title: title(msg`Display`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="RunesInfrastructureSettings"
+        getComponent={() => RunesInfrastructureSettingsScreen}
+        options={{title: title(msg`Infrastructure`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="RunesOtherAdditionsSettings"
+        getComponent={() => RunesOtherAdditionsSettingsScreen}
+        options={{title: title(msg`Other additions`), requireAuth: true}}
+      />
+      <Stack.Screen
         name="AppearanceSettings"
         getComponent={() => AppearanceSettingsScreen}
         options={{
           title: title(msg`Appearance`),
+          requireAuth: true,
+        }}
+      />
+      <Stack.Screen
+        name="AppearanceColorThemeSettings"
+        getComponent={() => AppearanceColorThemeSettingsScreen}
+        options={{
+          title: title(msg`Color Theme`),
           requireAuth: true,
         }}
       />

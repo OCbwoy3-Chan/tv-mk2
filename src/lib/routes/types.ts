@@ -50,7 +50,15 @@ export type CommonNavigatorParams = {
   PreferencesExternalEmbeds: undefined
   AccessibilitySettings: undefined
   AppearanceSettings: undefined
+  AppearanceColorThemeSettings: undefined
   RunesSettings: undefined
+  RunesMenusSettings: undefined
+  RunesBadgesSettings: undefined
+  RunesImpressionsSettings: undefined
+  RunesUsabilitySettings: undefined
+  RunesDisplaySettings: undefined
+  RunesInfrastructureSettings: undefined
+  RunesOtherAdditionsSettings: undefined
   AccountSettings: undefined
   AutomationLabelSettings: undefined
   PetLabelSettings: undefined

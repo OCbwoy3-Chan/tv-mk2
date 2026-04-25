@@ -1,5 +1,4 @@
-import {useCallback, useMemo} from 'react'
-import {Pressable, View} from 'react-native'
+import {useCallback} from 'react'
 import Animated, {
   FadeInUp,
   FadeOutUp,
@@ -14,7 +13,6 @@ import {
   type CommonNavigatorParams,
   type NativeStackScreenProps,
 } from '#/lib/routes/types'
-import {type Schema} from '#/state/persisted'
 import {
   useEnableSquareAvatars,
   useSetEnableSquareAvatars,
@@ -26,30 +24,13 @@ import {
 import {useKawaiiMode, useSetKawaiiMode} from '#/state/preferences/kawaii'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
 import {SettingsListItem as AppIconSettingsListItem} from '#/screens/Settings/AppIconSettings/SettingsListItem'
+import {ItemTextWithSubtitle} from '#/screens/Settings/NotificationSettings/components/ItemTextWithSubtitle'
 import {type Alf, atoms as a, native, useAlf, useTheme} from '#/alf'
-import {
-  BLACKSKY_PALETTE,
-  BLUESKY_PALETTE,
-  CATPPUCIN_PALETTE,
-  DEER_PALETTE,
-  DEFAULT_PALETTE,
-  EVERGARDEN_PALETTE,
-  KITTY_PALETTE,
-  REDDWARF_PALETTE,
-  ZEPPELIN_PALETTE,
-} from '#/alf/themes'
-import {getMaterial3Colors} from '#/alf/util/material3Theme'
-import {useMaterialYouPalette} from '#/alf/util/materialYou'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
-import {Slider} from '#/components/forms/Slider'
 import * as Toggle from '#/components/forms/Toggle'
 import {Circle_And_Square_Stroke1_Corner0_Rounded_Filled as SquareIcon} from '#/components/icons/CircleAndSquare'
 import {ColorPalette_Stroke2_Corner0_Rounded as ColorPaletteIcon} from '#/components/icons/ColorPalette'
 import {type Props as SVGIconProps} from '#/components/icons/common'
-import {
-  Heart2_Filled_Stroke2_Corner0_Rounded as HeartIconFilled,
-  Heart2_Stroke2_Corner0_Rounded as HeartIconOutline,
-} from '#/components/icons/Heart2'
 import {Moon_Stroke2_Corner0_Rounded as MoonIcon} from '#/components/icons/Moon'
 import {Phone_Stroke2_Corner0_Rounded as PhoneIcon} from '#/components/icons/Phone'
 import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
@@ -58,49 +39,17 @@ import {TitleCase_Stroke2_Corner0_Rounded as Aa} from '#/components/icons/TitleC
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
 import {IS_ANDROID, IS_INTERNAL, IS_NATIVE} from '#/env'
+import {getColorSchemeLabel, useColorSchemes} from './AppearanceSettings/shared'
 import * as SettingsList from './components/SettingsList'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AppearanceSettings'>
 
-type ColorSchemeName =
-  | 'witchsky'
-  | 'bluesky'
-  | 'blacksky'
-  | 'deer'
-  | 'zeppelin'
-  | 'kitty'
-  | 'reddwarf'
-  | 'catppuccin'
-  | 'evergarden'
-  | 'material3'
-
-type ColorSchemeOption = {
-  name: ColorSchemeName
-  label: string
-  primary: string
-}
-
 export function AppearanceSettingsScreen({}: Props) {
   const {_} = useLingui()
   const {fonts} = useAlf()
-  const t = useTheme()
 
-  const {
-    colorMode,
-    colorScheme,
-    darkTheme,
-    hue,
-    material3Accent,
-    material3Style,
-  } = useThemePrefs()
-  const {
-    setColorMode,
-    setColorScheme,
-    setDarkTheme,
-    setHue,
-    setMaterial3Accent,
-    setMaterial3Style,
-  } = useSetThemePrefs()
+  const {colorMode, colorScheme, darkTheme} = useThemePrefs()
+  const {setColorMode, setDarkTheme} = useSetThemePrefs()
 
   const kawaiiMode = useKawaiiMode()
   const setKawaiiMode = useSetKawaiiMode()
@@ -111,24 +60,14 @@ export function AppearanceSettingsScreen({}: Props) {
   const enableSquareButtons = useEnableSquareButtons()
   const setEnableSquareButtons = useSetEnableSquareButtons()
 
-  const material3Palette = useMaterialYouPalette()
-  const cachedScheme = useMemo(
-    () => getMaterial3Colors(material3Palette),
-    [material3Palette],
-  )
+  const colorSchemes = useColorSchemes()
+  const colorSchemeLabel = getColorSchemeLabel(colorSchemes, colorScheme)
 
   const onChangeAppearance = useCallback(
     (value: 'light' | 'system' | 'dark') => {
       setColorMode(value)
     },
     [setColorMode],
-  )
-
-  const onChangeScheme = useCallback(
-    (value: ColorSchemeName) => {
-      setColorScheme(value)
-    },
-    [setColorScheme],
   )
 
   const onChangeDarkTheme = useCallback(
@@ -151,59 +90,6 @@ export function AppearanceSettingsScreen({}: Props) {
     },
     [fonts],
   )
-
-  const colorSchemes: ColorSchemeOption[] = [
-    {
-      name: 'witchsky',
-      label: _(msg`Witchsky`),
-      primary: DEFAULT_PALETTE.primary_500,
-    },
-    {
-      name: 'bluesky',
-      label: _(msg`Bluesky`),
-      primary: BLUESKY_PALETTE.primary_500,
-    },
-    {
-      name: 'blacksky',
-      label: _(msg`Blacksky`),
-      primary: BLACKSKY_PALETTE.primary_500,
-    },
-    {
-      name: 'deer',
-      label: _(msg`Deer`),
-      primary: DEER_PALETTE.primary_500,
-    },
-    {
-      name: 'zeppelin',
-      label: _(msg`Zeppelin`),
-      primary: ZEPPELIN_PALETTE.primary_500,
-    },
-    {
-      name: 'kitty',
-      label: _(msg`Kitty`),
-      primary: KITTY_PALETTE.primary_500,
-    },
-    {
-      name: 'reddwarf',
-      label: _(msg`Red Dwarf`),
-      primary: REDDWARF_PALETTE.primary_500,
-    },
-    {
-      name: 'catppuccin',
-      label: _(msg`Catppuccin`),
-      primary: CATPPUCIN_PALETTE.primary_500,
-    },
-    {
-      name: 'evergarden',
-      label: _(msg`Evergarden`),
-      primary: EVERGARDEN_PALETTE.primary_500,
-    },
-    {
-      name: 'material3',
-      label: _(msg`Material You`),
-      primary: cachedScheme.regular.primary_500,
-    },
-  ]
 
   return (
     <LayoutAnimationConfig skipExiting skipEntering>
@@ -263,99 +149,16 @@ export function AppearanceSettingsScreen({}: Props) {
               </Animated.View>
             )}
 
-            <SettingsList.Group>
+            <SettingsList.LinkItem
+              to="/settings/appearance/color-theme"
+              label={_(msg`Color theme settings`)}
+              contentContainerStyle={[a.align_start]}>
               <SettingsList.ItemIcon icon={ColorPaletteIcon} />
-              <SettingsList.ItemText>
-                <Trans>Color Theme</Trans>
-              </SettingsList.ItemText>
-              <View style={[a.w_full, a.gap_md]}>
-                <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
-                  <Trans>Choose which color scheme to use:</Trans>
-                </Text>
-                <ColorSchemeGrid
-                  schemes={colorSchemes}
-                  selectedScheme={colorScheme}
-                  onSchemeChange={onChangeScheme}
-                />
-                {colorScheme === 'material3' && !IS_ANDROID && (
-                  <>
-                    <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
-                      <Trans>Accent hue:</Trans>
-                    </Text>
-                    <Slider
-                      value={hexToHue(material3Accent)}
-                      onValueChange={v => {
-                        setMaterial3Accent(hueToHex(v))
-                        setHue(0)
-                      }}
-                      minimumValue={0}
-                      maximumValue={360}
-                      step={1}
-                      debounceFull={true}
-                    />
-
-                    <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
-                      <Trans>Style:</Trans>
-                    </Text>
-                    <View style={[a.flex_row, a.flex_wrap, a.gap_sm]}>
-                      {MATERIAL3_STYLE_OPTIONS.map(({name, label}) => {
-                        const isSelected = material3Style === name
-                        return (
-                          <Pressable
-                            accessibilityRole="button"
-                            key={name}
-                            onPress={() => setMaterial3Style(name)}
-                            style={[
-                              a.flex_1,
-                              a.rounded_sm,
-                              a.align_center,
-                              a.px_sm,
-                              a.py_sm,
-                              a.border,
-                              {minWidth: '22%'},
-                              {
-                                borderColor: isSelected
-                                  ? t.palette.primary_500
-                                  : t.atoms.border_contrast_low.borderColor,
-                                borderWidth: 2,
-                                backgroundColor: isSelected
-                                  ? t.palette.primary_100
-                                  : t.atoms.bg.backgroundColor,
-                              },
-                            ]}>
-                            <Text
-                              style={[
-                                a.text_xs,
-                                a.font_bold,
-                                isSelected
-                                  ? {color: t.palette.primary_500}
-                                  : t.atoms.text,
-                              ]}>
-                              {label}
-                            </Text>
-                          </Pressable>
-                        )
-                      })}
-                    </View>
-                  </>
-                )}
-                {colorScheme !== 'material3' && (
-                  <>
-                    <Text style={[a.flex_1, t.atoms.text_contrast_medium]}>
-                      <Trans>Hue shift the colors:</Trans>
-                    </Text>
-                    <Slider
-                      value={hue}
-                      onValueChange={setHue}
-                      minimumValue={0}
-                      maximumValue={360}
-                      step={1}
-                      debounceFull={true}
-                    />
-                  </>
-                )}
-              </View>
-            </SettingsList.Group>
+              <ItemTextWithSubtitle
+                titleText={<Trans>Color Theme</Trans>}
+                subtitleText={colorSchemeLabel}
+              />
+            </SettingsList.LinkItem>
 
             <Animated.View layout={native(LinearTransition)}>
               <SettingsList.Divider />
@@ -472,72 +275,6 @@ export function AppearanceSettingsScreen({}: Props) {
   )
 }
 
-function ColorSchemeGrid({
-  schemes,
-  selectedScheme,
-  onSchemeChange,
-}: {
-  schemes: ColorSchemeOption[]
-  selectedScheme: ColorSchemeName
-  onSchemeChange: (scheme: ColorSchemeName) => void
-}) {
-  const t = useTheme()
-  return (
-    <View style={[a.flex_row, a.flex_wrap, a.gap_sm]}>
-      {schemes.map(({name, label, primary}) => {
-        const isSelected = selectedScheme === name
-        const HeartIcon = isSelected ? HeartIconFilled : HeartIconOutline
-        return (
-          <Pressable
-            accessibilityRole="button"
-            key={name}
-            onPress={() => onSchemeChange(name)}
-            style={[
-              a.flex_1,
-              a.rounded_md,
-              a.overflow_hidden,
-              {minWidth: '30%'},
-              a.border,
-              {
-                borderColor: isSelected
-                  ? primary
-                  : t.atoms.border_contrast_low.borderColor,
-                borderWidth: 2,
-              },
-            ]}>
-            <View
-              style={[
-                a.p_sm,
-                a.gap_xs,
-                {backgroundColor: t.atoms.bg.backgroundColor},
-              ]}>
-              <View
-                style={[
-                  a.w_full,
-                  a.rounded_xs,
-                  {backgroundColor: primary, height: 24},
-                ]}
-              />
-              <View
-                style={[
-                  a.flex_row,
-                  a.align_center,
-                  a.justify_center,
-                  a.gap_xs,
-                ]}>
-                <Text style={[a.text_sm, a.font_bold, t.atoms.text]}>
-                  {label}
-                </Text>
-                <HeartIcon size="xs" style={[{color: primary}]} />
-              </View>
-            </View>
-          </Pressable>
-        )
-      })}
-    </View>
-  )
-}
-
 export function AppearanceToggleButtonGroup<T extends string>({
   title,
   description,
@@ -592,66 +329,4 @@ export function AppearanceToggleButtonGroup<T extends string>({
       </SettingsList.Group>
     </>
   )
-}
-
-const MATERIAL3_STYLE_OPTIONS: {
-  name: Schema['material3Style']
-  label: string
-}[] = [
-  {name: 'TONAL_SPOT', label: 'Tonal Spot'},
-  {name: 'VIBRANT', label: 'Vibrant'},
-  {name: 'EXPRESSIVE', label: 'Expressive'},
-  {name: 'SPRITZ', label: 'Spritz'},
-  {name: 'RAINBOW', label: 'Rainbow'},
-  {name: 'FRUIT_SALAD', label: 'Fruit Salad'},
-  {name: 'CONTENT', label: 'Content'},
-  {name: 'MONOCHROMATIC', label: 'Mono'},
-]
-
-function hueToHex(hue: number): string {
-  const h = hue / 60
-  const x = 1 - Math.abs((h % 2) - 1)
-  let r = 0,
-    g = 0,
-    b = 0
-  if (h < 1) {
-    r = 1
-    g = x
-  } else if (h < 2) {
-    r = x
-    g = 1
-  } else if (h < 3) {
-    g = 1
-    b = x
-  } else if (h < 4) {
-    g = x
-    b = 1
-  } else if (h < 5) {
-    r = x
-    b = 1
-  } else {
-    r = 1
-    b = x
-  }
-  const toHex = (v: number) =>
-    Math.round(v * 255)
-      .toString(16)
-      .padStart(2, '0')
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
-}
-
-function hexToHue(hex: string): number {
-  const r = parseInt(hex.slice(1, 3), 16) / 255
-  const g = parseInt(hex.slice(3, 5), 16) / 255
-  const b = parseInt(hex.slice(5, 7), 16) / 255
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  const d = max - min
-  if (d === 0) return 0
-  let h = 0
-  if (max === r) h = ((g - b) / d) % 6
-  else if (max === g) h = (b - r) / d + 2
-  else h = (r - g) / d + 4
-  h = Math.round(h * 60)
-  return h < 0 ? h + 360 : h
 }
