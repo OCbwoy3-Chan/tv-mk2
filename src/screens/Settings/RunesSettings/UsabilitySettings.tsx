@@ -6,6 +6,10 @@ import {
   useSetDisableComposerPrompt,
 } from '#/state/preferences/disable-composer-prompt'
 import {
+  useDisableTopOfFeedButton,
+  useSetDisableTopOfFeedButton,
+} from '#/state/preferences/disable-top-of-feed-button'
+import {
   useDisableVerifyEmailReminder,
   useSetDisableVerifyEmailReminder,
 } from '#/state/preferences/disable-verify-email-reminder'
@@ -52,6 +56,9 @@ export function RunesUsabilitySettingsScreen() {
 
   const disableComposerPrompt = useDisableComposerPrompt()
   const setDisableComposerPrompt = useSetDisableComposerPrompt()
+
+  const disableTopOfFeedButton = useDisableTopOfFeedButton()
+  const setDisableTopOfFeedButton = useSetDisableTopOfFeedButton()
 
   const disableVerifyEmailReminder = useDisableVerifyEmailReminder()
   const setDisableVerifyEmailReminder = useSetDisableVerifyEmailReminder()
@@ -132,6 +139,17 @@ export function RunesUsabilitySettingsScreen() {
           style={[a.w_full]}>
           <Toggle.LabelText style={[a.flex_1]}>
             <Trans>Disable composer prompt</Trans>
+          </Toggle.LabelText>
+          <Toggle.Platform />
+        </Toggle.Item>
+        <Toggle.Item
+          name="disable_top_of_feed_button"
+          label={l`Disable top-of-feed button`}
+          value={disableTopOfFeedButton ?? false}
+          onChange={value => setDisableTopOfFeedButton(value)}
+          style={[a.w_full]}>
+          <Toggle.LabelText style={[a.flex_1]}>
+            <Trans>Disable top-of-feed button</Trans>
           </Toggle.LabelText>
           <Toggle.Platform />
         </Toggle.Item>

@@ -1,4 +1,4 @@
-import type {PropsWithChildren} from 'react'
+import {type PropsWithChildren} from 'react'
 
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
 import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
@@ -18,6 +18,7 @@ import {Provider as DisableQuotesMetricsProvider} from './disable-quotes-metrics
 import {Provider as DisableReplyMetricsProvider} from './disable-reply-metrics'
 import {Provider as DisableRepostsMetricsProvider} from './disable-reposts-metrics'
 import {Provider as DisableSavesMetricsProvider} from './disable-saves-metrics'
+import {Provider as DisableTopOfFeedButtonProvider} from './disable-top-of-feed-button'
 import {Provider as DisableVerifyEmailReminderProvider} from './disable-verify-email-reminder'
 import {Provider as DisableViaRepostNotificationProvider} from './disable-via-repost-notification'
 import {Provider as DiscoverContextEnabledProvider} from './discover-context-enabled'
@@ -63,6 +64,10 @@ export {
   useSetDisableComposerPrompt,
 } from './disable-composer-prompt'
 export {useHapticsDisabled, useSetHapticsDisabled} from './disable-haptics'
+export {
+  useDisableTopOfFeedButton,
+  useSetDisableTopOfFeedButton,
+} from './disable-top-of-feed-button'
 export {
   useDiscoverContextEnabled,
   useSetDiscoverContextEnabled,
@@ -152,11 +157,13 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                     <TranslationServicePreferenceProvider>
                                                                                                       <OpenRouterProvider>
                                                                                                         <DisableComposerPromptProvider>
-                                                                                                          <DiscoverContextEnabledProvider>
-                                                                                                            {
-                                                                                                              children
-                                                                                                            }
-                                                                                                          </DiscoverContextEnabledProvider>
+                                                                                                          <DisableTopOfFeedButtonProvider>
+                                                                                                            <DiscoverContextEnabledProvider>
+                                                                                                              {
+                                                                                                                children
+                                                                                                              }
+                                                                                                            </DiscoverContextEnabledProvider>
+                                                                                                          </DisableTopOfFeedButtonProvider>
                                                                                                         </DisableComposerPromptProvider>
                                                                                                       </OpenRouterProvider>
                                                                                                     </TranslationServicePreferenceProvider>

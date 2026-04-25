@@ -8,6 +8,7 @@ import {PressableScale} from '#/lib/custom-animations/PressableScale'
 import {useMinimalShellFabTransform} from '#/lib/hooks/useMinimalShellTransform'
 import {useWebMediaQueries} from '#/lib/hooks/useWebMediaQueries'
 import {clamp} from '#/lib/numbers'
+import {useDisableTopOfFeedButton} from '#/state/preferences/disable-top-of-feed-button'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useSession} from '#/state/session'
 import {atoms as a, useLayoutBreakpoints, useTheme, web} from '#/alf'
@@ -31,6 +32,7 @@ export function LoadLatestBtn({
   const fabMinimalShellTransform = useMinimalShellFabTransform()
   const insets = useSafeAreaInsets()
   const t = useTheme()
+  const disableTopOfFeedButton = useDisableTopOfFeedButton()
   const enableSquareButtons = useEnableSquareButtons()
   const {
     state: hovered,
@@ -48,6 +50,10 @@ export function LoadLatestBtn({
   const bottomPosition = isTablet
     ? {bottom: 50}
     : {bottom: clamp(insets.bottom, 15, 60) + 15}
+
+  if (disableTopOfFeedButton) {
+    return null
+  }
 
   return (
     <Animated.View
