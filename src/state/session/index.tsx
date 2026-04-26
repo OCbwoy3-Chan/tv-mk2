@@ -64,6 +64,7 @@ const ApiContext = createContext<SessionApiContext>({
   logoutEveryAccount: () => {},
   resumeSession: async () => {},
   removeAccount: () => {},
+  reorderAccounts: () => {},
   partialRefreshSession: async () => {},
   createEphemeralAgent: async () => {
     throw new Error('Not implemented')
@@ -324,7 +325,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
     async storedAccount => {
       if (storedAccount.isOauthSession) {
         const {agent} = await oauthResumeSession(storedAccount)
-        return agent
+        return agent as unknown as import('@atproto/api').BskyAgent
       }
       const {agent} = await createAgentAndResume(
         storedAccount,
@@ -340,7 +341,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
           })
         },
       )
-      return agent
+      return agent as import('@atproto/api').BskyAgent
     },
     [store],
   )
@@ -361,6 +362,15 @@ export function Provider({children}: PropsWithChildren<{}>) {
       clearAgeAssuranceDataForDid({did: account.did})
     },
     [store, cancelPendingTask],
+  )
+  const reorderAccounts = useCallback<SessionApiContext['reorderAccounts']>(
+    accounts => {
+      store.dispatch({
+        type: 'reordered-accounts',
+        accounts,
+      })
+    },
+    [store],
   )
   useEffect(() => {
     return persisted.onUpdate('session', nextSession => {
@@ -418,6 +428,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       logoutEveryAccount,
       resumeSession,
       removeAccount,
+      reorderAccounts,
       partialRefreshSession,
       createEphemeralAgent,
     }),
@@ -428,6 +439,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       logoutEveryAccount,
       resumeSession,
       removeAccount,
+      reorderAccounts,
       partialRefreshSession,
       createEphemeralAgent,
     ],

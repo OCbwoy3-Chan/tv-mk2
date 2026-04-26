@@ -1,6 +1,11 @@
 import {useState} from 'react'
 import {Alert, LayoutAnimation, Pressable, View} from 'react-native'
-import {useReducedMotion} from 'react-native-reanimated'
+import Animated, {
+  useAnimatedRef,
+  useReducedMotion,
+  useScrollViewOffset,
+} from 'react-native-reanimated'
+import {setStringAsync} from 'expo-clipboard'
 import {type AppBskyActorDefs, moderateProfile} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
@@ -24,6 +29,11 @@ import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
 import {useAgent} from '#/state/session'
 import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
 import {pdsAgent} from '#/state/session/agent'
+import {
+  type AccountSortOption,
+  sortAccountItems,
+  useAccountSwitcherSortSettings,
+} from '#/state/session/sorting'
 import {useOnboardingDispatch} from '#/state/shell'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useCloseAllActiveElements} from '#/state/util'
@@ -32,18 +42,23 @@ import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, platform, tokens, useBreakpoints, useTheme} from '#/alf'
 import {AgeAssuranceDismissibleNotice} from '#/components/ageAssurance/AgeAssuranceDismissibleNotice'
 import {AvatarStackWithFetch} from '#/components/AvatarStack'
-import {Button, ButtonText} from '#/components/Button'
+import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {useIsFindContactsFeatureEnabledBasedOnGeolocation} from '#/components/contacts/country-allowlist'
 import {useDialogControl} from '#/components/Dialog'
 import {SwitchAccountDialog} from '#/components/dialogs/SwitchAccount'
+import {SortableList} from '#/components/DraggableList'
 import {Accessibility_Stroke2_Corner2_Rounded as AccessibilityIcon} from '#/components/icons/Accessibility'
+import {ArrowRotateClockwise_Stroke2_Corner0_Rounded as ReverseIcon} from '#/components/icons/ArrowRotate'
 import {Bell_Stroke2_Corner0_Rounded as NotificationIcon} from '#/components/icons/Bell'
 import {BubbleInfo_Stroke2_Corner2_Rounded as BubbleInfoIcon} from '#/components/icons/BubbleInfo'
 import {ChevronTop_Stroke2_Corner0_Rounded as ChevronUpIcon} from '#/components/icons/Chevron'
+import {Clipboard_Stroke2_Corner2_Rounded as ClipboardIcon} from '#/components/icons/Clipboard'
 import {CodeBrackets_Stroke2_Corner2_Rounded as CodeBracketsIcon} from '#/components/icons/CodeBrackets'
 import {Contacts_Stroke2_Corner2_Rounded as ContactsIcon} from '#/components/icons/Contacts'
 import {DotGrid3x1_Stroke2_Corner0_Rounded as DotsHorizontal} from '#/components/icons/DotGrid'
 import {Eclipse_Stroke2_Corner0_Rounded as EclipseIcon} from '#/components/icons/Eclipse'
+import {Filter_Stroke2_Corner0_Rounded as SortIcon} from '#/components/icons/Filter'
+import {FloppyDisk_Stroke2_Corner0_Rounded as SaveIcon} from '#/components/icons/FloppyDisk'
 import {Earth_Stroke2_Corner2_Rounded as EarthIcon} from '#/components/icons/Globe'
 import {Lock_Stroke2_Corner2_Rounded as LockIcon} from '#/components/icons/Lock'
 import {PaintRoller_Stroke2_Corner2_Rounded as PaintRollerIcon} from '#/components/icons/PaintRoller'
@@ -68,13 +83,23 @@ import {IS_INTERNAL, IS_IOS, IS_NATIVE} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import {device, useStorage} from '#/storage'
 import {useActivitySubscriptionsNudged} from '#/storage/hooks/activity-subscriptions-nudged'
+import {useDevMode} from '#/storage/hooks/dev-mode'
+import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Settings'>
+type AccountListItem = {
+  account: SessionAccount
+  profile?: AppBskyActorDefs.ProfileViewDetailed
+}
+
 export function SettingsScreen({}: Props) {
   const ax = useAnalytics()
   const {t: l} = useLingui()
+  const t = useTheme()
   const reducedMotion = useReducedMotion()
-  const {logoutEveryAccount} = useSessionApi()
+  const scrollRef = useAnimatedRef<Animated.ScrollView>()
+  const scrollOffset = useScrollViewOffset(scrollRef)
+  const {logoutEveryAccount, reorderAccounts} = useSessionApi()
   const {accounts, currentAccount} = useSession()
   const switchAccountControl = useDialogControl()
   const signOutPromptControl = Prompt.usePromptControl()
@@ -82,13 +107,68 @@ export function SettingsScreen({}: Props) {
   const {data: otherProfiles} = useProfilesQuery({
     handles: accounts
       .filter(acc => acc.did !== currentAccount?.did)
-      .map(acc => acc.handle),
+      .map(acc => acc.did),
   })
   const {pendingDid, onPressSwitchAccount} = useAccountSwitcher()
+  const enableSquareButtons = useEnableSquareButtons()
   const [showAccounts, setShowAccounts] = useState(false)
+  const [isDraggingAccounts, setIsDraggingAccounts] = useState(false)
+  const [isCustomSortEditing, setIsCustomSortEditing] = useState(false)
+  const [customAccountsDraft, setCustomAccountsDraft] = useState<
+    AccountListItem[]
+  >([])
+  const {sortBy, setSortBy, reverse, setReverse} =
+    useAccountSwitcherSortSettings()
+  const [, , hiddenDidsSet] = useHiddenAccountsElsewhere()
   const [showDevOptions, setShowDevOptions] = useState(false)
   const findContactsEnabled =
     useIsFindContactsFeatureEnabledBasedOnGeolocation()
+  const allAccounts = accounts.map(account => ({
+    account,
+    profile:
+      account.did === currentAccount?.did
+        ? profile
+        : otherProfiles?.profiles?.find(p => p.did === account.did),
+  }))
+  const otherAccounts = allAccounts.filter(
+    item => item.account.did !== currentAccount?.did,
+  )
+  const displayedAccounts = isCustomSortEditing
+    ? customAccountsDraft
+    : sortAccountItems(otherAccounts, sortBy, reverse)
+
+  const onSelectAccountsSort = (nextSortBy: AccountSortOption) => {
+    if (nextSortBy === 'custom') {
+      setCustomAccountsDraft(sortAccountItems(allAccounts, sortBy, reverse))
+      setIsCustomSortEditing(true)
+      return
+    }
+    setSortBy(nextSortBy)
+    setIsCustomSortEditing(false)
+    setCustomAccountsDraft([])
+  }
+
+  const onToggleReverseAccounts = () => {
+    setReverse(!reverse)
+    if (isCustomSortEditing) {
+      setCustomAccountsDraft(prev => [...prev].reverse())
+    }
+  }
+
+  const onCancelCustomSort = () => {
+    setIsCustomSortEditing(false)
+    setCustomAccountsDraft([])
+  }
+
+  const onSaveCustomSort = () => {
+    const orderedAccounts = reverse
+      ? [...customAccountsDraft].reverse()
+      : customAccountsDraft
+    reorderAccounts(orderedAccounts.map(item => item.account))
+    setSortBy('custom')
+    setIsCustomSortEditing(false)
+    setCustomAccountsDraft([])
+  }
 
   return (
     <Layout.Screen>
@@ -101,7 +181,7 @@ export function SettingsScreen({}: Props) {
         </Layout.Header.Content>
         <Layout.Header.Slot />
       </Layout.Header.Outer>
-      <Layout.Content>
+      <Layout.Content ref={scrollRef} scrollEnabled={!isDraggingAccounts}>
         <SettingsList.Container>
           <AgeAssuranceDismissibleNotice style={[a.px_lg, a.pt_xs, a.pb_xl]} />
 
@@ -119,50 +199,194 @@ export function SettingsScreen({}: Props) {
           </View>
           {accounts.length > 1 ? (
             <>
-              <SettingsList.PressableItem
-                label={l`Switch account`}
-                accessibilityHint={l`Shows other accounts you can switch to`}
-                onPress={() => {
-                  if (!reducedMotion) {
-                    LayoutAnimation.configureNext(
-                      LayoutAnimation.Presets.easeInEaseOut,
-                    )
-                  }
-                  setShowAccounts(s => !s)
-                }}>
-                <SettingsList.ItemIcon icon={PersonGroupIcon} />
-                <SettingsList.ItemText>
-                  <Trans>Switch account</Trans>
-                </SettingsList.ItemText>
-                {showAccounts ? (
-                  <SettingsList.ItemIcon icon={ChevronUpIcon} size="md" />
-                ) : (
-                  <AvatarStackWithFetch
-                    profiles={accounts
-                      .map(acc => acc.did)
-                      .filter(did => did !== currentAccount?.did)
-                      .slice(0, 5)}
-                  />
+              <View style={[a.relative]}>
+                <SettingsList.PressableItem
+                  label={l`Switch account`}
+                  accessibilityHint={l`Shows other accounts you can switch to`}
+                  onPress={() => {
+                    if (!reducedMotion) {
+                      LayoutAnimation.configureNext(
+                        LayoutAnimation.Presets.easeInEaseOut,
+                      )
+                    }
+                    if (showAccounts) {
+                      setIsCustomSortEditing(false)
+                      setCustomAccountsDraft([])
+                    }
+                    setShowAccounts(s => !s)
+                  }}>
+                  <SettingsList.ItemIcon icon={PersonGroupIcon} />
+                  <SettingsList.ItemText
+                    style={[showAccounts && {paddingRight: 64}]}>
+                    <Trans>Switch account</Trans>
+                  </SettingsList.ItemText>
+                  {showAccounts ? (
+                    <SettingsList.ItemIcon icon={ChevronUpIcon} size="md" />
+                  ) : (
+                    <AvatarStackWithFetch
+                      profiles={sortAccountItems(otherAccounts, sortBy, reverse)
+                        .filter(item => !hiddenDidsSet.has(item.account.did))
+                        .map(item => item.account.did)
+                        .slice(0, 5)}
+                    />
+                  )}
+                </SettingsList.PressableItem>
+                {showAccounts && (
+                  <Menu.Root>
+                    <Menu.Trigger label={l`Sort accounts`}>
+                      {({props, state}) => (
+                        <Pressable
+                          {...props}
+                          style={[
+                            a.absolute,
+                            {top: 10, right: 48},
+                            a.p_xs,
+                            enableSquareButtons ? a.rounded_sm : a.rounded_full,
+                            (state.hovered || state.pressed) &&
+                              t.atoms.bg_contrast_25,
+                          ]}>
+                          <SortIcon size="md" style={t.atoms.text} />
+                        </Pressable>
+                      )}
+                    </Menu.Trigger>
+                    <Menu.Outer showCancel>
+                      <Menu.Group>
+                        <Menu.LabelText>
+                          <Trans>Sort accounts</Trans>
+                        </Menu.LabelText>
+                        <Menu.Item
+                          label={l`Alphabetical`}
+                          onPress={() => onSelectAccountsSort('alphabetical')}>
+                          <Menu.ItemRadio
+                            selected={
+                              (isCustomSortEditing ? 'custom' : sortBy) ===
+                              'alphabetical'
+                            }
+                          />
+                          <Menu.ItemText>
+                            <Trans>Alphabetical</Trans>
+                          </Menu.ItemText>
+                        </Menu.Item>
+                        <Menu.Item
+                          label={l`By date modified`}
+                          onPress={() => onSelectAccountsSort('dateModified')}>
+                          <Menu.ItemRadio
+                            selected={
+                              (isCustomSortEditing ? 'custom' : sortBy) ===
+                              'dateModified'
+                            }
+                          />
+                          <Menu.ItemText>
+                            <Trans>By date modified</Trans>
+                          </Menu.ItemText>
+                        </Menu.Item>
+                        <Menu.Item
+                          label={l`By date added`}
+                          onPress={() => onSelectAccountsSort('dateAdded')}>
+                          <Menu.ItemRadio
+                            selected={
+                              (isCustomSortEditing ? 'custom' : sortBy) ===
+                              'dateAdded'
+                            }
+                          />
+                          <Menu.ItemText>
+                            <Trans>By date added</Trans>
+                          </Menu.ItemText>
+                        </Menu.Item>
+                        <Menu.Item
+                          label={l`Custom`}
+                          onPress={() => onSelectAccountsSort('custom')}>
+                          <Menu.ItemRadio
+                            selected={
+                              (isCustomSortEditing ? 'custom' : sortBy) ===
+                              'custom'
+                            }
+                          />
+                          <Menu.ItemText>
+                            <Trans>Custom</Trans>
+                          </Menu.ItemText>
+                        </Menu.Item>
+                      </Menu.Group>
+                      <Menu.Divider />
+                      <Menu.Item
+                        label={l`Reverse order`}
+                        onPress={onToggleReverseAccounts}>
+                        <Menu.ItemRadio selected={reverse} />
+                        <Menu.ItemText>
+                          <Trans>Reverse order</Trans>
+                        </Menu.ItemText>
+                        <Menu.ItemIcon icon={ReverseIcon} position="right" />
+                      </Menu.Item>
+                    </Menu.Outer>
+                  </Menu.Root>
                 )}
-              </SettingsList.PressableItem>
+              </View>
               {showAccounts && (
                 <>
                   <SettingsList.Divider />
-                  {accounts
-                    .filter(acc => acc.did !== currentAccount?.did)
-                    .map(account => (
+                  {isCustomSortEditing ? (
+                    <SortableList
+                      data={customAccountsDraft}
+                      keyExtractor={item => item.account.did}
+                      itemHeight={48}
+                      scrollRef={scrollRef}
+                      scrollOffset={scrollOffset}
+                      onDragStart={() => setIsDraggingAccounts(true)}
+                      onDragEnd={() => setIsDraggingAccounts(false)}
+                      onReorder={setCustomAccountsDraft}
+                      renderItem={(item, dragHandle) => (
+                        <AccountRow
+                          key={item.account.did}
+                          account={item.account}
+                          profile={item.profile}
+                          pendingDid={pendingDid}
+                          disableSwitching
+                          dragHandle={dragHandle}
+                          onPressSwitchAccount={(account, logContext) =>
+                            void onPressSwitchAccount(account, logContext)
+                          }
+                        />
+                      )}
+                    />
+                  ) : (
+                    displayedAccounts.map(item => (
                       <AccountRow
-                        key={account.did}
-                        account={account}
-                        profile={otherProfiles?.profiles?.find(
-                          p => p.did === account.did,
-                        )}
+                        key={item.account.did}
+                        account={item.account}
+                        profile={item.profile}
                         pendingDid={pendingDid}
                         onPressSwitchAccount={(account, logContext) =>
                           void onPressSwitchAccount(account, logContext)
                         }
                       />
-                    ))}
+                    ))
+                  )}
+                  {isCustomSortEditing && (
+                    <View
+                      style={[a.flex_row, a.gap_sm, a.px_xl, a.pt_md, a.pb_sm]}>
+                      <Button
+                        label={l`Cancel`}
+                        onPress={onCancelCustomSort}
+                        color="secondary"
+                        size="small"
+                        style={[a.flex_1]}>
+                        <ButtonText>
+                          <Trans>Cancel</Trans>
+                        </ButtonText>
+                      </Button>
+                      <Button
+                        label={l`Save changes`}
+                        onPress={onSaveCustomSort}
+                        color="primary"
+                        size="small"
+                        style={[a.flex_1]}>
+                        <ButtonIcon icon={SaveIcon} />
+                        <ButtonText>
+                          <Trans>Save changes</Trans>
+                        </ButtonText>
+                      </Button>
+                    </View>
+                  )}
                   <AddAccountRow />
                 </>
               )}
@@ -580,11 +804,15 @@ function AccountRow({
   profile,
   account,
   pendingDid,
+  disableSwitching,
+  dragHandle,
   onPressSwitchAccount,
 }: {
   profile?: AppBskyActorDefs.ProfileViewDetailed
   account: SessionAccount
   pendingDid: string | null
+  disableSwitching?: boolean
+  dragHandle?: React.ReactNode
   onPressSwitchAccount: (
     account: SessionAccount,
     logContext: 'Settings',
@@ -597,19 +825,47 @@ function AccountRow({
   const removePromptControl = Prompt.usePromptControl()
   const {removeAccount} = useSessionApi()
   const {isActive: live} = useActorStatus(profile)
+  const [devModeEnabled] = useDevMode()
+  const [hiddenAccountsElsewhere, setHiddenAccountsElsewhere, hiddenDidsSet] =
+    useHiddenAccountsElsewhere()
 
   const enableSquareButtons = useEnableSquareButtons()
+  const isHiddenElsewhere = hiddenDidsSet.has(account.did)
 
   const onSwitchAccount = () => {
-    if (pendingDid) return
+    if (pendingDid || disableSwitching) return
     onPressSwitchAccount(account, 'Settings')
   }
 
+  const onToggleHideElsewhere = () => {
+    setHiddenAccountsElsewhere(
+      isHiddenElsewhere
+        ? hiddenAccountsElsewhere.filter(did => did !== account.did)
+        : [...hiddenAccountsElsewhere, account.did],
+    )
+    Toast.show(
+      isHiddenElsewhere
+        ? l`Account will show in other switchers again`
+        : l`Account hidden from other switchers`,
+    )
+  }
+
+  const onCopyDid = () => {
+    void setStringAsync(account.did)
+    Toast.show(l`DID copied to clipboard`)
+  }
+
   return (
-    <View style={[a.relative]}>
+    <View style={[a.relative, {backgroundColor: t.palette.white}]}>
       <SettingsList.PressableItem
         onPress={onSwitchAccount}
-        label={l`Switch account`}>
+        label={l`Switch account`}
+        disabled={Boolean(disableSwitching)}
+        contentContainerStyle={[
+          {
+            minHeight: 48,
+          },
+        ]}>
         {moderationOpts && profile ? (
           <UserAvatar
             size={28}
@@ -624,12 +880,19 @@ function AccountRow({
         )}
         <SettingsList.ItemText
           numberOfLines={1}
-          style={[a.pr_2xl, a.leading_snug]}>
+          style={[
+            a.leading_snug,
+            a.self_center,
+            !disableSwitching && a.pr_2xl,
+          ]}>
           {sanitizeHandle(account.handle, '@')}
         </SettingsList.ItemText>
         {pendingDid === account.did && <SettingsList.ItemIcon icon={Loader} />}
+        {disableSwitching ? (
+          <View style={[a.self_center]}>{dragHandle}</View>
+        ) : null}
       </SettingsList.PressableItem>
-      {!pendingDid && (
+      {!pendingDid && !disableSwitching && (
         <Menu.Root>
           <Menu.Trigger label={l`Account options`}>
             {({props, state}) => (
@@ -637,7 +900,7 @@ function AccountRow({
                 {...props}
                 style={[
                   a.absolute,
-                  {top: 10, right: tokens.space.lg},
+                  {top: 12, right: tokens.space.lg},
                   a.p_xs,
                   enableSquareButtons ? a.rounded_sm : a.rounded_full,
                   (state.hovered || state.pressed) && t.atoms.bg_contrast_25,
@@ -647,6 +910,29 @@ function AccountRow({
             )}
           </Menu.Trigger>
           <Menu.Outer showCancel>
+            <Menu.Item
+              label={
+                isHiddenElsewhere ? l`Hidden elsewhere` : l`Hide elsewhere`
+              }
+              onPress={onToggleHideElsewhere}>
+              <Menu.ItemText>
+                {isHiddenElsewhere ? (
+                  <Trans>Hidden elsewhere</Trans>
+                ) : (
+                  <Trans>Hide elsewhere</Trans>
+                )}
+              </Menu.ItemText>
+              <Menu.ItemRadio selected={isHiddenElsewhere} />
+            </Menu.Item>
+            {devModeEnabled ? (
+              <Menu.Item label={l`Copy DID`} onPress={onCopyDid}>
+                <Menu.ItemText>
+                  <Trans>Copy DID</Trans>
+                </Menu.ItemText>
+                <Menu.ItemIcon icon={ClipboardIcon} />
+              </Menu.Item>
+            ) : null}
+            <Menu.Divider />
             <Menu.Item
               label={l`Remove account`}
               onPress={() => removePromptControl.open()}>

@@ -11,6 +11,7 @@ import {sanitizeHandle} from '#/lib/strings/handles'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useProfilesQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession} from '#/state/session'
+import {useSortedAccountItems} from '#/state/session/sorting'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
@@ -20,6 +21,7 @@ import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
 import {useActorStatus} from '#/features/liveNow'
+import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
 
 export function AccountList({
   onSelectAccount,
@@ -36,9 +38,13 @@ export function AccountList({
   const t = useTheme()
   const {_} = useLingui()
   const enableSquareButtons = useEnableSquareButtons()
+  const [, , hiddenDidsSet] = useHiddenAccountsElsewhere()
   const {data: profiles} = useProfilesQuery({
     handles: accounts.map(acc => acc.did),
   })
+  const sortedAccounts = useSortedAccountItems(accounts).filter(
+    account => !hiddenDidsSet.has(account.did),
+  )
 
   const onPressAddAccount = useCallback(() => {
     onSelectOther()
@@ -53,7 +59,7 @@ export function AccountList({
         a.border,
         t.atoms.border_contrast_low,
       ]}>
-      {accounts.map(account => (
+      {sortedAccounts.map(account => (
         <Fragment key={account.did}>
           <AccountItem
             profile={profiles?.profiles.find(p => p.did === account.did)}

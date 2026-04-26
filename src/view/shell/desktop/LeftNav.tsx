@@ -25,6 +25,7 @@ import {useUnreadMessageCount} from '#/state/queries/messages/list-conversations
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useProfilesQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
+import {useSortedAccountItems} from '#/state/session/sorting'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useCloseAllActiveElements} from '#/state/util'
 import {LoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
@@ -77,6 +78,7 @@ import * as Prompt from '#/components/Prompt'
 import {Text} from '#/components/Typography'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useActorStatus} from '#/features/liveNow'
+import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
 import {PlatformInfo} from '../../../../modules/expo-bluesky-swiss-army'
 import {router} from '../../../routes'
 
@@ -241,6 +243,10 @@ export function SwitchMenuItems({
   const {_} = useLingui()
   const {setShowLoggedOut} = useLoggedOutViewControls()
   const closeEverything = useCloseAllActiveElements()
+  const [, , hiddenDidsSet] = useHiddenAccountsElsewhere()
+  const sortedAccounts = useSortedAccountItems(accounts ?? []).filter(
+    item => !hiddenDidsSet.has(item.account.did),
+  )
 
   showExtraButtons = showExtraButtons ?? true
 
@@ -251,13 +257,13 @@ export function SwitchMenuItems({
 
   return (
     <Menu.Outer>
-      {accounts && accounts.length > 0 && (
+      {sortedAccounts.length > 0 && (
         <>
           <Menu.Group>
             <Menu.LabelText>
               <Trans>Switch account</Trans>
             </Menu.LabelText>
-            {accounts.map(other => (
+            {sortedAccounts.map(other => (
               <SwitchMenuItem
                 key={other.account.did}
                 account={other.account}

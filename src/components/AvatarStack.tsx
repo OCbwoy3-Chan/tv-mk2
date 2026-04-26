@@ -95,10 +95,14 @@ export function AvatarStackWithFetch({
     return null
   }
 
+  const orderedProfiles = profiles
+    .map(did => data?.profiles?.find(profile => profile.did === did))
+    .filter(Boolean)
+
   return (
     <AvatarStack
       numPending={profiles.length}
-      profiles={data?.profiles || []}
+      profiles={orderedProfiles}
       size={size}
       backgroundColor={backgroundColor}
     />

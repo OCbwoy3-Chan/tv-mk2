@@ -46,6 +46,7 @@ export type SessionApiContext = {
     isSwitchingAccounts?: boolean,
   ) => Promise<void>
   removeAccount: (account: SessionAccount) => void
+  reorderAccounts: (accounts: SessionAccount[]) => void
   /**
    * Calls `getSession` and updates select fields on the current account and
    * `BskyAgent`. This is an alternative to `resumeSession`, which updates

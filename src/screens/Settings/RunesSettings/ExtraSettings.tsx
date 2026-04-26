@@ -25,10 +25,12 @@ import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import * as Toggle from '#/components/forms/Toggle'
 import {BellRinging_Stroke2_Corner0_Rounded as BellRingingIcon} from '#/components/icons/BellRinging'
+import {CodeBrackets_Stroke2_Corner2_Rounded as CodeBracketsIcon} from '#/components/icons/CodeBrackets'
 import {Explosion_Stroke2_Corner0_Rounded as ExplosionIcon} from '#/components/icons/Explosion'
 import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/Eye'
 import {LikeRepost_Stroke2_Corner2_Rounded as LikeRepostIcon} from '#/components/icons/Heart2'
 import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
+import {useDevMode} from '#/storage/hooks/dev-mode'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesExtraSettingsScreen() {
@@ -48,6 +50,7 @@ export function RunesExtraSettingsScreen() {
 
   const omitViaField = useOmitViaField()
   const setOmitViaField = useSetOmitViaField()
+  const [devMode, setDevMode] = useDevMode()
 
   return (
     <RunesScreenLayout titleText={l`Extra`}>
@@ -123,6 +126,19 @@ export function RunesExtraSettingsScreen() {
           <SettingsList.ItemIcon icon={ExplosionIcon} />
           <SettingsList.ItemText>
             <Trans>Don't include the 'via' field in own posts</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="dev_mode"
+        label={l`Developer mode`}
+        value={devMode}
+        onChange={value => setDevMode(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={CodeBracketsIcon} />
+          <SettingsList.ItemText>
+            <Trans>Developer mode</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

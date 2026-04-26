@@ -112,8 +112,8 @@ import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
 import {type Gif} from '#/state/queries/tenor'
 import {useAgent, useSession, useSessionApi} from '#/state/session'
 import {useComposerControls} from '#/state/shell/composer'
-import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
+import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
 import {DraftsButton} from '#/view/com/composer/drafts/DraftsButton'
@@ -212,7 +212,7 @@ export const ComposePost = ({
 }: Props & {
   cancelRef?: RefObject<CancelRef | null>
 }) => {
-  const {currentAccount, accounts} = useSession()
+  const {accounts} = useSession()
   const t = useTheme()
   const ax = useAnalytics()
   const agent = useAgent()
@@ -920,17 +920,24 @@ export const ComposePost = ({
         const activeAccount = accounts.find(a => a.did === activeAccountDid)
         if (activeAccount) {
           try {
-            ephemeralAgent = await sessionApi.createEphemeralAgent(activeAccount)
+            ephemeralAgent =
+              await sessionApi.createEphemeralAgent(activeAccount)
             currentAgent = ephemeralAgent
           } catch (e) {
-            logger.error('Composer: failed to create ephemeral agent for account switch', {
-              message: e instanceof Error ? e.message : String(e),
-            })
+            logger.error(
+              'Composer: failed to create ephemeral agent for account switch',
+              {
+                message: e instanceof Error ? e.message : String(e),
+              },
+            )
             setIsPublishing(false)
             requestSwitchToAccount({requestedAccount: activeAccount.did})
-            Toast.show(l`Please sign in as @${activeAccount.handle} to post as them`, {
-              type: 'warning',
-            })
+            Toast.show(
+              l`Please sign in as @${activeAccount.handle} to post as them`,
+              {
+                type: 'warning',
+              },
+            )
             return
           }
         }
@@ -971,12 +978,14 @@ export const ComposePost = ({
             5,
             _e => true,
             async () => {
-              const res = await currentAgent.app.bsky.unspecced.getPostThreadV2({
-                anchor: postUri!,
-                above: false,
-                below: filteredThread.posts.length - 1,
-                branchingFactor: 1,
-              })
+              const res = await currentAgent.app.bsky.unspecced.getPostThreadV2(
+                {
+                  anchor: postUri!,
+                  above: false,
+                  below: filteredThread.posts.length - 1,
+                  branchingFactor: 1,
+                },
+              )
               if (res.data.thread.length !== filteredThread.posts.length) {
                 throw new Error(`composer: app view is not ready`)
               }
@@ -1467,7 +1476,7 @@ let ComposerPost = memo(function ComposerPost({
   activeAccountDid: string
   setActiveAccountDid: (did: string) => void
 }) {
-  const {currentAccount, accounts} = useSession()
+  const {accounts} = useSession()
   const {t: l} = useLingui()
   const {data: currentProfile} = useProfileQuery({did: activeAccountDid})
   const richtext = post.richtext
@@ -1544,6 +1553,7 @@ let ComposerPost = memo(function ComposerPost({
   const profiles = data?.profiles
 
   const allAccounts = accounts
+    .filter(account => account.did !== activeAccountDid)
     .map(account => ({
       account,
       profile: profiles?.find(p => p.did === account.did),

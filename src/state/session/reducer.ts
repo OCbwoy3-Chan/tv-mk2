@@ -45,6 +45,10 @@ export type Action =
       accountDid: string
     }
   | {
+      type: 'reordered-accounts'
+      accounts: SessionAccount[]
+    }
+  | {
       type: 'logged-out-current-account'
     }
   | {
@@ -105,7 +109,11 @@ let reducer = (state: State, action: Action): State => {
         accounts: state.accounts.map(a => {
           if (a.did === accountDid) {
             if (refreshedAccount) {
-              return refreshedAccount
+              return {
+                ...refreshedAccount,
+                addedAt: a.addedAt,
+                lastActiveAt: a.lastActiveAt,
+              }
             } else {
               return {
                 ...a,
@@ -126,13 +134,22 @@ let reducer = (state: State, action: Action): State => {
     }
     case 'switched-to-account': {
       const {newAccount, newAgent} = action
+      const existingAccount = state.accounts.find(a => a.did === newAccount.did)
+      const now = new Date().toISOString()
+      const mergedAccount = {
+        ...existingAccount,
+        ...newAccount,
+        addedAt: existingAccount?.addedAt ?? now,
+        lastActiveAt: now,
+      }
       return {
-        accounts: [
-          newAccount,
-          ...state.accounts.filter(a => a.did !== newAccount.did),
-        ],
+        accounts: existingAccount
+          ? state.accounts.map(a =>
+              a.did === mergedAccount.did ? mergedAccount : a,
+            )
+          : [mergedAccount, ...state.accounts],
         currentAgentState: {
-          did: newAccount.did,
+          did: mergedAccount.did,
           agent: newAgent,
         },
         needsPersist: true,
@@ -163,6 +180,13 @@ let reducer = (state: State, action: Action): State => {
           state.currentAgentState.did === accountDid
             ? createPublicAgentState() // Log out if removing the current one.
             : state.currentAgentState,
+        needsPersist: true,
+      }
+    }
+    case 'reordered-accounts': {
+      return {
+        ...state,
+        accounts: action.accounts,
         needsPersist: true,
       }
     }

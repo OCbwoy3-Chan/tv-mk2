@@ -64,6 +64,13 @@ export type Device = {
   activitySubscriptionsNudged?: boolean
   threadgateNudged?: boolean
   customAppViewDid: string | undefined
+  hiddenAccountsElsewhere?: string[]
+  settingsAccountSwitcherSortBy?:
+    | 'alphabetical'
+    | 'dateModified'
+    | 'dateAdded'
+    | 'custom'
+  settingsAccountSwitcherReverse?: boolean
 
   /**
    * Policy update overlays. New IDs are required for each new announcement.

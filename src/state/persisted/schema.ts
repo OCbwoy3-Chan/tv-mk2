@@ -16,6 +16,8 @@ const accountSchema = z.object({
   service: z.string(),
   did: z.string(),
   handle: z.string(),
+  addedAt: z.string().optional(),
+  lastActiveAt: z.string().optional(),
   email: z.string().optional(),
   emailConfirmed: z.boolean().optional(),
   emailAuthFactor: z.boolean().optional(),
