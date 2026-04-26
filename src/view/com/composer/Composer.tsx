@@ -212,7 +212,7 @@ export const ComposePost = ({
 }: Props & {
   cancelRef?: RefObject<CancelRef | null>
 }) => {
-  const {accounts} = useSession()
+  const {accounts, currentAccount} = useSession()
   const t = useTheme()
   const ax = useAnalytics()
   const agent = useAgent()

@@ -26,6 +26,7 @@ import {useDisableLikesMetrics} from '#/state/preferences/disable-likes-metrics'
 import {useDisableQuotesMetrics} from '#/state/preferences/disable-quotes-metrics'
 import {useDisableRepostsMetrics} from '#/state/preferences/disable-reposts-metrics'
 import {useDisableSavesMetrics} from '#/state/preferences/disable-saves-metrics'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
 import {useShowViaClient} from '#/state/preferences/show-via-client'
@@ -593,14 +594,8 @@ function ExpandedPostDetails({
       <View style={[a.flex_row, a.align_center, a.flex_wrap, a.gap_sm]}>
         <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
           {niceDate(i18n, post.indexedAt, 'dot separated')}
+          {showViaClient && via ? ` · ${truncateVia(via)}` : null}
         </Text>
-        {showViaClient && via ? (
-          <Text
-            numberOfLines={1}
-            style={[a.text_sm, t.atoms.text_contrast_medium, {maxWidth: 160}]}>
-            {truncateVia(via)}
-          </Text>
-        ) : null}
         {isRootPost && (
           <WhoCanReply post={post} isThreadAuthor={isThreadAuthor} />
         )}
@@ -718,10 +713,15 @@ function getThreadAuthor(
 }
 
 export function ThreadItemAnchorSkeleton() {
+  const enableSquareAvatars = useEnableSquareAvatars()
+
   return (
     <View style={[a.p_lg, a.gap_md]}>
       <Skele.Row style={[a.align_center, a.gap_md]}>
-        <Skele.Circle size={42} />
+        <Skele.Circle
+          size={42}
+          style={enableSquareAvatars && {borderRadius: 8}}
+        />
 
         <Skele.Col>
           <Skele.Text style={[a.text_lg, {width: '20%'}]} />

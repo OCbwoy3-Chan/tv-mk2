@@ -21,6 +21,7 @@ import {
   type CommonNavigatorParams,
   type NativeStackScreenProps,
 } from '#/lib/routes/types'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useBookmarkMutation} from '#/state/queries/bookmarks/useBookmarkMutation'
 import {useBookmarksQuery} from '#/state/queries/bookmarks/useBookmarksQuery'
 import {Post} from '#/view/com/post/Post'
@@ -208,6 +209,7 @@ function BookmarkNotFound({
 }) {
   const t = useTheme()
   const {_} = useLingui()
+  const enableSquareAvatars = useEnableSquareAvatars()
   const {mutateAsync: bookmark} = useBookmarkMutation()
   const cleanError = useCleanError()
 
@@ -236,7 +238,7 @@ function BookmarkNotFound({
         !hideTopBorder && a.border_t,
         t.atoms.border_contrast_low,
       ]}>
-      <Skele.Circle size={42}>
+      <Skele.Circle size={42} style={enableSquareAvatars && {borderRadius: 8}}>
         <QuestionIcon size="lg" fill={t.atoms.text_contrast_low.color} />
       </Skele.Circle>
       <View style={[a.flex_1, a.gap_2xs]}>

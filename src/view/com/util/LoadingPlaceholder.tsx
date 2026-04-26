@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 
 import {s} from '#/lib/styles'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme} from '#/alf'
 import {Bubble_Stroke2_Corner2_Rounded as Bubble} from '#/components/icons/Bubble'
@@ -48,6 +49,7 @@ export function PostLoadingPlaceholder({
   style?: StyleProp<ViewStyle>
 }) {
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
   return (
     <View style={[styles.post, style]}>
       <LoadingPlaceholder
@@ -59,6 +61,7 @@ export function PostLoadingPlaceholder({
             position: 'relative',
             top: -6,
           },
+          enableSquareAvatars && {borderRadius: 8},
         ]}
       />
       <View style={[a.flex_1]}>
@@ -136,6 +139,7 @@ export function NotificationLoadingPlaceholder({
   style?: StyleProp<ViewStyle>
 }) {
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
   return (
     <View style={[styles.notification, style]}>
       <View style={[{width: 60}, a.align_end, a.pr_sm, a.pt_2xs]}>
@@ -146,7 +150,10 @@ export function NotificationLoadingPlaceholder({
           <LoadingPlaceholder
             width={35}
             height={35}
-            style={styles.smallAvatar}
+            style={[
+              styles.smallAvatar,
+              enableSquareAvatars && {borderRadius: 8},
+            ]}
           />
         </View>
         <LoadingPlaceholder width="90%" height={6} style={[s.mb5]} />

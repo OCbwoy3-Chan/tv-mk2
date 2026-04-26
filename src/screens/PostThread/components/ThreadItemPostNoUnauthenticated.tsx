@@ -1,6 +1,7 @@
 import {View} from 'react-native'
 import {Trans} from '@lingui/react/macro'
 
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {
   LINEAR_AVI_WIDTH,
@@ -18,6 +19,7 @@ export function ThreadItemPostNoUnauthenticated({
   item: Extract<ThreadItem, {type: 'threadPostNoUnauthenticated'}>
 }) {
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
 
   return (
     <View style={[{paddingHorizontal: OUTER_SPACE}]}>
@@ -39,7 +41,9 @@ export function ThreadItemPostNoUnauthenticated({
         </View>
       </View>
       <Skele.Row style={[a.align_center, a.gap_md]}>
-        <Skele.Circle size={LINEAR_AVI_WIDTH}>
+        <Skele.Circle
+          size={LINEAR_AVI_WIDTH}
+          style={enableSquareAvatars && {borderRadius: 8}}>
           <LockIcon size="md" fill={t.atoms.text_contrast_medium.color} />
         </Skele.Circle>
 

@@ -17,6 +17,7 @@ import {
   type Shadow,
   usePostShadow,
 } from '#/state/cache/post-shadow'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
@@ -413,6 +414,7 @@ function SubtleHoverWrapper({children}: {children: React.ReactNode}) {
 
 export function ThreadItemTreePostSkeleton({index}: {index: number}) {
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
   const even = index % 2 === 0
   return (
     <View
@@ -422,7 +424,10 @@ export function ThreadItemTreePostSkeleton({index}: {index: number}) {
         t.atoms.border_contrast_low,
       ]}>
       <Skele.Row style={[a.align_start, a.gap_xs]}>
-        <Skele.Circle size={TREE_AVI_WIDTH} />
+        <Skele.Circle
+          size={TREE_AVI_WIDTH}
+          style={enableSquareAvatars && {borderRadius: 8}}
+        />
 
         <Skele.Col style={[a.gap_xs]}>
           <Skele.Row style={[a.gap_sm]}>

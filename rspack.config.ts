@@ -89,7 +89,13 @@ function getTranspileModuleDirs({
 }
 
 const transpileModuleDirs = getTranspileModuleDirs(TRANSPILE_MODULES)
+const REANIMATED_BABEL_MODULES = ['react-native-keyboard-controller']
+const reanimatedBabelModuleDirs = REANIMATED_BABEL_MODULES.map(pkg =>
+  path.resolve(__dirname, 'node_modules', ...pkg.split('/')),
+).filter(existsSync)
 const SWC_TRANSPILE_EXCLUDE = /node_modules[\\/]react-native-uuid[\\/]/
+const REANIMATED_BABEL_EXCLUDE =
+  /node_modules[\\/]react-native-keyboard-controller[\\/]/
 
 /** @type {import('@rspack/core').Configuration} */
 module.exports = {
@@ -211,12 +217,41 @@ module.exports = {
           },
         },
       },
+      // Some published packages ship raw `"worklet"` functions and must go
+      // through Babel with the Reanimated plugin on web, matching Expo's
+      // webpack pipeline. SWC alone leaves those functions unworkletized.
+      {
+        test: /\.[jt]sx?$/,
+        include: reanimatedBabelModuleDirs,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            configFile: false,
+            babelrc: false,
+            cacheDirectory: true,
+            cacheCompression: false,
+            sourceType: 'unambiguous',
+            presets: [
+              [
+                'babel-preset-expo',
+                {
+                  lazyImports: true,
+                  native: {
+                    disableImportExportTransform: true,
+                  },
+                },
+              ],
+            ],
+            plugins: ['react-native-reanimated/plugin'],
+          },
+        },
+      },
       // node_modules that ship untranspiled JSX/Flow: use rspack's builtin
       // SWC loader which is much faster than babel for simple transforms.
       {
         test: /\.jsx?$/,
         include: transpileModuleDirs,
-        exclude: SWC_TRANSPILE_EXCLUDE,
+        exclude: [SWC_TRANSPILE_EXCLUDE, REANIMATED_BABEL_EXCLUDE],
         use: {
           loader: 'swc-loader', // rspack swc-loader doesn't support flow yet
           options: {
@@ -237,7 +272,7 @@ module.exports = {
       {
         test: /\.tsx?$/,
         include: transpileModuleDirs,
-        exclude: SWC_TRANSPILE_EXCLUDE,
+        exclude: [SWC_TRANSPILE_EXCLUDE, REANIMATED_BABEL_EXCLUDE],
         use: {
           loader: 'swc-loader',
           options: {

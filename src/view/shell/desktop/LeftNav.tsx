@@ -19,6 +19,7 @@ import {
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
 import {emitSoftReset} from '#/state/events'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useFetchHandle} from '#/state/queries/handle'
 import {useUnreadMessageCount} from '#/state/queries/messages/list-conversations'
@@ -109,6 +110,7 @@ function ProfileCard() {
   const {isActive: live} = useActorStatus(profile)
 
   const enableSquareButtons = useEnableSquareButtons()
+  const enableSquareAvatars = useEnableSquareAvatars()
 
   return (
     <View style={[a.my_md, !leftNavMinimal && [a.w_full, a.align_start]]}>
@@ -208,7 +210,10 @@ function ProfileCard() {
         <LoadingPlaceholder
           width={size}
           height={size}
-          style={[{borderRadius: size}, !leftNavMinimal && a.ml_lg]}
+          style={[
+            {borderRadius: enableSquareAvatars ? 8 : size},
+            !leftNavMinimal && a.ml_lg,
+          ]}
         />
       )}
       <Prompt.Basic

@@ -2,6 +2,7 @@ import {View} from 'react-native'
 import {moderateProfile} from '@atproto/api'
 
 import {logger} from '#/logger'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useProfilesQuery} from '#/state/queries/profile'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -22,6 +23,7 @@ export function AvatarStack({
   const translation = size / 3 // overlap by 1/3
   const t = useTheme()
   const moderationOpts = useModerationOpts()
+  const enableSquareAvatars = useEnableSquareAvatars()
 
   const isPending = (numPending && profiles.length === 0) || !moderationOpts
 
@@ -57,7 +59,7 @@ export function AvatarStack({
               left: i * -translation,
               borderWidth: 1,
               borderColor: backgroundColor ?? t.atoms.bg.backgroundColor,
-              borderRadius: 999,
+              borderRadius: enableSquareAvatars ? (size > 32 ? 8 : 3) : 999,
               zIndex: 3 - i,
             },
           ]}>
@@ -97,7 +99,9 @@ export function AvatarStackWithFetch({
 
   const orderedProfiles = profiles
     .map(did => data?.profiles?.find(profile => profile.did === did))
-    .filter(Boolean)
+    .filter((profile): profile is NonNullable<typeof profile> =>
+      Boolean(profile),
+    )
 
   return (
     <AvatarStack
