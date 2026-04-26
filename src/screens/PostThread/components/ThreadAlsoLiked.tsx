@@ -1,12 +1,19 @@
+import {useCallback} from 'react'
 import {View} from 'react-native'
 import {type AppBskyFeedDefs} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
+import {useQueryClient} from '@tanstack/react-query'
 
 import {cleanError} from '#/lib/strings/errors'
+import {unstableCacheProfileView} from '#/state/queries/profile'
+import {
+  buildPostSourceKey,
+  setUnstablePostSource,
+} from '#/state/unstable-post-source'
 import {Post} from '#/view/com/post/Post'
+import {PostLoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
-import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 
 export function ThreadAlsoLiked({
@@ -30,8 +37,18 @@ export function ThreadAlsoLiked({
 }) {
   const {t: l} = useLingui()
   const t = useTheme()
+  const queryClient = useQueryClient()
   const hasSection =
     enabled && (posts.length > 0 || isLoading || Boolean(error))
+  const onBeforePress = useCallback(
+    (post: AppBskyFeedDefs.PostView) => {
+      unstableCacheProfileView(queryClient, post.author)
+      setUnstablePostSource(buildPostSourceKey(post.uri, post.author.handle), {
+        post: {post},
+      })
+    },
+    [queryClient],
+  )
 
   return (
     <View>
@@ -47,13 +64,29 @@ export function ThreadAlsoLiked({
           </View>
 
           {posts.map((post, index) => (
-            <Post key={post.uri} post={post} hideTopBorder={index === 0} />
+            <Post
+              key={post.uri}
+              post={post}
+              hideTopBorder={index === 0}
+              onBeforePress={() => onBeforePress(post)}
+            />
           ))}
 
-          {(isLoading || isFetchingNextPage) && (
-            <View style={[a.align_center, a.py_xl]}>
-              <Loader size="xl" />
-            </View>
+          {isLoading && posts.length === 0 && (
+            <>
+              <PostLoadingPlaceholder
+                style={[a.border_t, t.atoms.border_contrast_low]}
+              />
+              <PostLoadingPlaceholder
+                style={[a.border_t, t.atoms.border_contrast_low]}
+              />
+            </>
+          )}
+
+          {isFetchingNextPage && (
+            <PostLoadingPlaceholder
+              style={[a.border_t, t.atoms.border_contrast_low]}
+            />
           )}
 
           {Boolean(error) && !isLoading && !isFetchingNextPage && (

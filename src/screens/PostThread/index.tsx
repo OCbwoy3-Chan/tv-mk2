@@ -154,34 +154,13 @@ export function PostThread({uri}: {uri: string}) {
   const alsoLikedAnchorUri =
     anchor?.type === 'threadPost' && isRoot ? anchor.value.post.uri : undefined
   const [deferParents, setDeferParents] = useState(true)
-  const [alsoLikedReady, setAlsoLikedReady] = useState(false)
-  useEffect(() => {
-    const shouldEnable =
-      Boolean(alsoLikedAnchorUri) &&
-      alsoLikedFeedEnabled &&
-      !thread.state.isPlaceholderData &&
-      !deferParents
-
-    if (!shouldEnable) {
-      setAlsoLikedReady(false)
-      return
-    }
-
-    const timeout = setTimeout(() => {
-      startTransition(() => {
-        setAlsoLikedReady(true)
-      })
-    }, 0)
-
-    return () => clearTimeout(timeout)
-  }, [
-    alsoLikedAnchorUri,
-    alsoLikedFeedEnabled,
-    deferParents,
-    thread.state.isPlaceholderData,
-  ])
+  const alsoLikedEnabled =
+    Boolean(alsoLikedAnchorUri) &&
+    alsoLikedFeedEnabled &&
+    !thread.state.isPlaceholderData &&
+    !deferParents
   const alsoLiked = usePostAlsoLikedQuery(alsoLikedAnchorUri, {
-    enabled: alsoLikedReady,
+    enabled: alsoLikedEnabled,
   })
   const alsoLikedPosts = useMemo(() => {
     const seen = new Set<string>()
@@ -381,7 +360,7 @@ export function PostThread({uri}: {uri: string}) {
     }
     if (
       alsoLikedAnchorUri &&
-      alsoLikedReady &&
+      alsoLikedEnabled &&
       !alsoLiked.isLoading &&
       !alsoLiked.isFetchingNextPage &&
       alsoLiked.hasNextPage
@@ -659,7 +638,7 @@ export function PostThread({uri}: {uri: string}) {
           ListFooterComponent={
             <ThreadAlsoLiked
               posts={alsoLikedPosts}
-              enabled={alsoLikedReady}
+              enabled={alsoLikedEnabled}
               isLoading={alsoLiked.isLoading}
               isFetchingNextPage={alsoLiked.isFetchingNextPage}
               error={alsoLiked.error}
