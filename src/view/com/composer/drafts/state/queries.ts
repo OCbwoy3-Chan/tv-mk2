@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import {decode} from '#/lib/storage-manifest/codec'
 import {isNetworkError} from '#/lib/strings/errors'
 import {useAgent} from '#/state/session'
 import {type ComposerState} from '#/view/com/composer/state/composer'
@@ -31,12 +32,23 @@ export function useDraftsQuery() {
       const res = await agent.app.bsky.draft.getDrafts({cursor: pageParam})
       return {
         cursor: res.data.cursor,
-        drafts: res.data.drafts.map(view =>
-          draftViewToSummary({
-            view,
-            analytics: ax,
-          }),
-        ),
+        drafts: res.data.drafts
+          .filter(view => {
+            const firstText = view.draft.posts[0]?.text ?? ''
+            if (!/^witchsky:storage/.test(firstText)) return true
+            try {
+              decode(view.draft.posts.map(p => p.text ?? ''))
+              return false // valid manifest — hide it
+            } catch {
+              return true // corrupt/partial — show it so the user can clean it up
+            }
+          })
+          .map(view =>
+            draftViewToSummary({
+              view,
+              analytics: ax,
+            }),
+          ),
       }
     },
     initialPageParam: undefined as string | undefined,

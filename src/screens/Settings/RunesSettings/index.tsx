@@ -4,6 +4,7 @@ import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {Atom_Stroke2_Corner0_Rounded as AtomIcon} from '#/components/icons/Atom'
+import {ArrowRotateClockwise_Stroke2_Corner0_Rounded as CloudSyncIcon} from '#/components/icons/ArrowRotate'
 import {DotGrid3x1_Stroke2_Corner0_Rounded as EllipsisIcon} from '#/components/icons/DotGrid'
 import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/Eye'
 import {Earth_Stroke2_Corner2_Rounded as EarthIcon} from '#/components/icons/Globe'
@@ -59,6 +60,14 @@ export function RunesSettingsScreen({}: Props) {
         <SettingsList.ItemIcon icon={EarthIcon} />
         <SettingsList.ItemText>
           <Trans>Infrastructure</Trans>
+        </SettingsList.ItemText>
+      </SettingsList.LinkItem>
+      <SettingsList.LinkItem
+        to="/settings/runes/settings-sync"
+        label={l`Cloud sync`}>
+        <SettingsList.ItemIcon icon={CloudSyncIcon} />
+        <SettingsList.ItemText>
+          <Trans>Settings Sync</Trans>
         </SettingsList.ItemText>
       </SettingsList.LinkItem>
       <SettingsList.LinkItem

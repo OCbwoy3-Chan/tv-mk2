@@ -72,6 +72,7 @@ import {
   features,
   setupDeviceId,
 } from '#/analytics'
+import {SettingsSyncGate} from '#/features/settingsSync'
 import {
   prefetchLiveEvents,
   Provider as LiveEventsProvider,
@@ -185,6 +186,7 @@ function InnerApp() {
                   key={currentAccount?.did}>
                   <AnalyticsFeaturesContext>
                     <QueryProvider currentDid={currentAccount?.did}>
+                      <SettingsSyncGate>
                       <PolicyUpdateOverlayProvider>
                         <LiveEventsProvider>
                           <AgeAssuranceV2Provider>
@@ -234,6 +236,7 @@ function InnerApp() {
                           </AgeAssuranceV2Provider>
                         </LiveEventsProvider>
                       </PolicyUpdateOverlayProvider>
+                      </SettingsSyncGate>
                     </QueryProvider>
                   </AnalyticsFeaturesContext>
                 </Fragment>

@@ -68,6 +68,10 @@ export async function write<K extends keyof Schema>(
   writeToStorage(_state)
   broadcast.postMessage({event: {type: UPDATE_EVENT, key}})
   broadcast.postMessage({event: UPDATE_EVENT}) // Backcompat while upgrading
+  // Also notify listeners in the current tab directly — BroadcastChannel
+  // only reaches other tabs, so without this, onUpdate() is silent for the
+  // tab that made the write (which breaks bulk writes like settings sync pull).
+  _emitter.emit('update:' + key)
 }
 write satisfies PersistedApi['write']
 

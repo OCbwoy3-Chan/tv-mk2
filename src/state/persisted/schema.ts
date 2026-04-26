@@ -247,6 +247,11 @@ const schema = z.object({
 
   autoLikeOnRepost: z.boolean().optional(),
   omitViaField: z.boolean().optional(),
+
+  // settings sync
+  settingsSyncEnabled: z.boolean().optional(),
+  settingsSyncDraftId: z.string().optional(),
+  syncOpenRouterApiKey: z.boolean().optional(),
 })
 export type Schema = z.infer<typeof schema>
 
@@ -365,6 +370,10 @@ export const defaults: Schema = {
 
   autoLikeOnRepost: false,
   omitViaField: false,
+
+  settingsSyncEnabled: false,
+  settingsSyncDraftId: undefined,
+  syncOpenRouterApiKey: false,
 }
 
 export function tryParse(rawData: string): Schema | undefined {

@@ -4,6 +4,7 @@ import {Provider as AlsoLikedCollapseByDefaultProvider} from './also-liked-colla
 import {Provider as AlsoLikedFeedProvider} from './also-liked-feed-enabled'
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
 import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
+import {Provider as SettingsSyncProvider} from './settings-sync'
 import {Provider as AutoplayProvider} from './autoplay'
 import {Provider as ConstellationProvider} from './constellation-enabled'
 import {Provider as ConstellationInstanceProvider} from './constellation-instance'
@@ -71,6 +72,7 @@ export {
   useRequireAltTextEnabled,
   useSetRequireAltTextEnabled,
 } from './alt-text-required'
+export {useSettingsSyncEnabled, useSetSettingsSyncEnabled} from './settings-sync'
 export {useAutoplayDisabled, useSetAutoplayDisabled} from './autoplay'
 export {
   useDisableComposerPrompt,
@@ -124,6 +126,7 @@ export {
 
 export function Provider({children}: PropsWithChildren<{}>) {
   return (
+    <SettingsSyncProvider>
     <LanguagesProvider>
       <AltTextRequiredProvider>
         <AutoLikeOnRepostProvider>
@@ -243,5 +246,6 @@ export function Provider({children}: PropsWithChildren<{}>) {
         </AutoLikeOnRepostProvider>
       </AltTextRequiredProvider>
     </LanguagesProvider>
+    </SettingsSyncProvider>
   )
 }
