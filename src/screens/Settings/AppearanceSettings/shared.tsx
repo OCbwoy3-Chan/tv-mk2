@@ -9,6 +9,7 @@ import {
   BLACKSKY_PALETTE,
   BLUESKY_PALETTE,
   CATPPUCIN_PALETTE,
+  CYAN_PALETTE,
   DEER_PALETTE,
   DEFAULT_PALETTE,
   EVERGARDEN_PALETTE,
@@ -34,6 +35,7 @@ export type ColorSchemeName =
   | 'reddwarf'
   | 'catppuccin'
   | 'evergarden'
+  | 'cyan base'
   | 'material3'
 
 export type ColorSchemeOption = {
@@ -96,6 +98,11 @@ export function useColorSchemes() {
         name: 'evergarden',
         label: _(msg`Evergarden`),
         primary: EVERGARDEN_PALETTE.primary_500,
+      },
+      {
+        name: 'cyan base',
+        label: _(msg`Cyan Base`),
+        primary: CYAN_PALETTE.primary_500,
       },
       {
         name: 'material3',

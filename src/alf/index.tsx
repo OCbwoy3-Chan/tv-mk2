@@ -14,6 +14,7 @@ import {
   blackskyscheme,
   blueskyscheme,
   catppuccinscheme,
+  cyanscheme,
   deerscheme,
   evergardenscheme,
   kittyscheme,
@@ -188,6 +189,9 @@ export function useScheme(): SchemeType {
         break
       case 'evergarden':
         currentScheme = evergardenscheme
+        break
+      case 'cyan base':
+        currentScheme = cyanscheme
         break
       case 'material3':
         currentScheme = getMaterial3Colors(palette).scheme
