@@ -32,7 +32,7 @@
   },
   "scripts": {
     "prepare": "is-ci || husky install",
-    "postinstall": "patch-package && pnpm intl:compile-if-needed",
+    "postinstall": "pnpm intl:compile-if-needed",
     "prebuild": "EXPO_NO_GIT_STATUS=1 expo prebuild --clean",
     "windows-prebuild": "set EXPO_NO_GIT_STATUS=1&& expo prebuild --clean",
     "android": "expo run:android",
@@ -83,7 +83,8 @@
     "upload-native-sourcemaps": "npx sentry-expo-upload-sourcemaps dist",
     "make-deploy-bundle": "bash scripts/bundleUpdate.sh",
     "generate-stats-file": "GENERATE_STATS=1 pnpm build-web",
-    "icons:optimize": "svgo -f ./assets/icons"
+    "icons:optimize": "svgo -f ./assets/icons",
+    "convert-patches-to-pnpm": "node ./scripts/patch-package-to-pnpm.mjs"
   },
   "dependencies": {
     "@assembless/react-native-material-you": "1.0.0-beta.4",
@@ -410,5 +411,36 @@
     "emptyHostname": false,
     "validatePackageNames": true,
     "validateIntegrity": true
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@assembless/react-native-material-you": "patches/@assembless__react-native-material-you.patch",
+      "@atproto/api@0.19.11": "patches/@atproto__api.patch",
+      "@atproto/oauth-client": "patches/@atproto__oauth-client.patch",
+      "@atproto/oauth-client-browser": "patches/@atproto__oauth-client-browser.patch",
+      "@atproto/oauth-client-expo": "patches/@atproto__oauth-client-expo.patch",
+      "@discord/bottom-sheet": "patches/@discord__bottom-sheet.patch",
+      "@sentry/react-native": "patches/@sentry__react-native.patch",
+      "expo-font": "patches/expo-font.patch",
+      "expo-glass-effect": "patches/expo-glass-effect.patch",
+      "expo-haptics": "patches/expo-haptics.patch",
+      "expo-image": "patches/expo-image.patch",
+      "expo-media-library": "patches/expo-media-library.patch",
+      "expo-modules-core": "patches/expo-modules-core.patch",
+      "expo-notifications": "patches/expo-notifications.patch",
+      "expo-paste-input": "patches/expo-paste-input.patch",
+      "expo-updates": "patches/expo-updates.patch",
+      "react-native": "patches/react-native.patch",
+      "react-native-compressor": "patches/react-native-compressor.patch",
+      "react-native-date-picker": "patches/react-native-date-picker.patch",
+      "react-native-drawer-layout": "patches/react-native-drawer-layout.patch",
+      "react-native-keyboard-controller": "patches/react-native-keyboard-controller.patch",
+      "react-native-pager-view": "patches/react-native-pager-view.patch",
+      "react-native-reanimated": "patches/react-native-reanimated.patch",
+      "react-native-svg": "patches/react-native-svg.patch",
+      "react-native-uitextview": "patches/react-native-uitextview.patch",
+      "react-native-view-shot": "patches/react-native-view-shot.patch",
+      "sonner-native": "patches/sonner-native.patch"
+    }
   }
 }
