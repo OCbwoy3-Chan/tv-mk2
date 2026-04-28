@@ -11,6 +11,7 @@ import {type AnyProfileView} from '#/types/bsky/profile'
 import {useConstellationInstance} from '../preferences/constellation-instance'
 import {
   useDeerVerificationEnabled,
+  useDeerVerificationTrustAppView,
   useDeerVerificationTrusted,
 } from '../preferences/deer-verification'
 import {
@@ -24,7 +25,6 @@ import {
 } from './constellation'
 import {LRU} from './direct-fetch-record'
 import {resolvePdsServiceUrl} from './resolve-identity'
-import {useCurrentAccountProfile} from './useCurrentAccountProfile'
 
 const RQKEY_ROOT = 'deer-verification'
 export const RQKEY = (did: string, trusted: Set<string>) => [
@@ -53,8 +53,8 @@ export function getTrustedConstellationVerifications(
     from_dids: Array.from(trusted),
   })
   return asyncGenDedupe(
-    asyncGenFilter(verificationLinks, (link) => trusted.has(link.did)),
-    (link) => link.did,
+    asyncGenFilter(verificationLinks, link => trusted.has(link.did)),
+    link => link.did,
   )
 }
 
@@ -84,7 +84,9 @@ async function getDeerVerificationLinkedRecords(
           const record = await verificationCache.getOrTryInsertWith(
             request,
             async () => {
-              const resp = await (await fetch(request)).json()
+              const resp = (await (await fetch(request)).json()) as {
+                value?: unknown
+              }
               return resp.value
             },
           )
@@ -124,11 +126,41 @@ function createVerificationViews(
   }))
 }
 
+function mergeVerificationViews(
+  appViewVerifications: VerificationView[],
+  deerVerifications: VerificationView[],
+) {
+  const merged = new Map<string, VerificationView>()
+
+  for (const verification of appViewVerifications) {
+    merged.set(verification.uri, verification)
+  }
+
+  for (const verification of deerVerifications) {
+    merged.set(verification.uri, verification)
+  }
+
+  return Array.from(merged.values())
+}
+
 function createVerificationState(
-  verifications: VerificationView[],
+  appViewVerifications: VerificationView[],
+  deerVerifications: VerificationView[],
   profile: AnyProfileView,
   trusted: Set<string>,
+  trustAppView: boolean,
 ): VerificationState {
+  const verifications = mergeVerificationViews(
+    appViewVerifications,
+    deerVerifications,
+  )
+  const appViewTrustedVerifierStatus = trustAppView
+    ? profile.verification?.trustedVerifierStatus
+    : undefined
+  const trustedVerifierStatus = trusted.has(profile.did)
+    ? 'valid'
+    : (appViewTrustedVerifierStatus ?? 'none')
+
   return {
     verifications,
     verifiedStatus:
@@ -137,7 +169,7 @@ function createVerificationState(
           ? 'valid'
           : 'invalid'
         : 'none',
-    trustedVerifierStatus: trusted.has(profile.did) ? 'valid' : 'none',
+    trustedVerifierStatus,
   }
 }
 
@@ -149,8 +181,8 @@ export function useDeerVerificationState({
   enabled?: boolean
 }) {
   const instance = useConstellationInstance()
-  const currentAccountProfile = useCurrentAccountProfile()
-  const trusted = useDeerVerificationTrusted(currentAccountProfile?.did)
+  const trusted = useDeerVerificationTrusted()
+  const trustAppView = useDeerVerificationTrustAppView()
 
   const linkedRecords = useQuery<LinkedRecord[] | undefined>({
     staleTime: STALE.HOURS.ONE,
@@ -168,11 +200,13 @@ export function useDeerVerificationState({
   })
 
   if (linkedRecords.data === undefined || profile === undefined) return
-  const verifications = createVerificationViews(linkedRecords.data, profile)
+  const deerVerifications = createVerificationViews(linkedRecords.data, profile)
   const verificationState = createVerificationState(
-    verifications,
+    trustAppView ? (profile.verification?.verifications ?? []) : [],
+    deerVerifications,
     profile,
     trusted,
+    trustAppView,
   )
 
   return verificationState

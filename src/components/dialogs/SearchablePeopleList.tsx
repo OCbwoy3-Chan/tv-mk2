@@ -77,12 +77,14 @@ export function SearchablePeopleList({
   title,
   showRecentConvos,
   sortByMessageDeclaration,
+  excludeSelf = true,
   onSelectChat,
   renderProfileCard,
 }: {
   title: string
   showRecentConvos?: boolean
   sortByMessageDeclaration?: boolean
+  excludeSelf?: boolean
 } & (
   | {
       renderProfileCard: (item: ProfileItem) => React.ReactNode
@@ -131,7 +133,7 @@ export function SearchablePeopleList({
     } else if (searchText.length) {
       if (results?.length) {
         for (const profile of results) {
-          if (profile.did === currentAccount?.did) continue
+          if (excludeSelf && profile.did === currentAccount?.did) continue
           _items.push({
             type: 'profile',
             key: profile.did,
@@ -242,6 +244,7 @@ export function SearchablePeopleList({
     results,
     isError,
     currentAccount?.did,
+    excludeSelf,
     follows,
     convos,
     showRecentConvos,

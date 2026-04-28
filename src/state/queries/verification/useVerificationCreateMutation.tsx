@@ -25,9 +25,7 @@ export function useVerificationCreateMutation() {
 
   const qc = useQueryClient()
   const deerVerificationEnabled = useDeerVerificationEnabled()
-  const deerVerificationTrusted = useDeerVerificationTrusted(
-    currentAccount?.did,
-  )
+  const deerVerificationTrusted = useDeerVerificationTrusted()
   const constellationInstance = useConstellationInstance()
 
   return useMutation({
@@ -86,7 +84,7 @@ export function useVerificationCreateMutation() {
     async onSuccess(_, {profile}) {
       ax.metric('verification:create', {})
       await updateProfileVerificationCache({profile})
-      qc.invalidateQueries({
+      await qc.invalidateQueries({
         queryKey: DEER_VERIFICATION_RQKEY(profile.did, deerVerificationTrusted),
       })
     },

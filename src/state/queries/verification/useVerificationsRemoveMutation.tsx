@@ -34,9 +34,7 @@ export function useVerificationsRemoveMutation() {
 
   const qc = useQueryClient()
   const deerVerificationEnabled = useDeerVerificationEnabled()
-  const deerVerificationTrusted = useDeerVerificationTrusted(
-    currentAccount?.did,
-  )
+  const deerVerificationTrusted = useDeerVerificationTrusted()
   const constellationInstance = useConstellationInstance()
 
   return useMutation({
@@ -102,7 +100,7 @@ export function useVerificationsRemoveMutation() {
     async onSuccess(_, {profile}) {
       ax.metric('verification:revoke', {})
       await updateProfileVerificationCache({profile})
-      qc.invalidateQueries({
+      await qc.invalidateQueries({
         queryKey: DEER_VERIFICATION_RQKEY(profile.did, deerVerificationTrusted),
       })
     },
