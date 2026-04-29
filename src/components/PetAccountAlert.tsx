@@ -23,8 +23,8 @@ export function PetAccountAlert({
 
   const isSelf = profile.did === currentAccount?.did
   const description = isSelf
-    ? l`You have marked this account as a pet account. You can remove it at any time from your account settings.`
-    : l`This account has been marked as a pet account by its owner.`
+    ? l`You have marked this account as a pet. You can remove this label at any time from your account settings.`
+    : l`This account has been marked as a pet by its owner.`
 
   return (
     <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>

@@ -24,20 +24,27 @@ import {useActorStatus} from '#/features/liveNow'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
 
 export function AccountList({
+  accounts: accountsProp,
   onSelectAccount,
   onSelectOther,
   otherLabel,
   pendingDid,
+  selectedDid,
+  showAddAccount = true,
 }: {
+  accounts?: SessionAccount[]
   onSelectAccount: (account: SessionAccount) => void
   onSelectOther: () => void
   otherLabel?: string
   pendingDid: string | null
+  selectedDid?: string | null
+  showAddAccount?: boolean
 }) {
-  const {currentAccount, accounts} = useSession()
+  const {currentAccount, accounts: sessionAccounts} = useSession()
   const t = useTheme()
   const {_} = useLingui()
   const enableSquareButtons = useEnableSquareButtons()
+  const accounts = accountsProp ?? sessionAccounts
   const [, , hiddenDidsSet] = useHiddenAccountsElsewhere()
   const {data: profiles} = useProfilesQuery({
     handles: accounts.map(acc => acc.did),
@@ -65,45 +72,50 @@ export function AccountList({
             profile={profiles?.profiles.find(p => p.did === account.did)}
             account={account}
             onSelect={onSelectAccount}
-            isCurrentAccount={account.did === currentAccount?.did}
+            isCurrentAccount={
+              account.did === (selectedDid ?? currentAccount?.did)
+            }
             isPendingAccount={account.did === pendingDid}
           />
           <View style={[a.border_b, t.atoms.border_contrast_low]} />
         </Fragment>
       ))}
-      <Button
-        testID="chooseAddAccountBtn"
-        style={[a.flex_1]}
-        onPress={pendingDid ? undefined : onPressAddAccount}
-        label={_(msg`Sign in to account that is not listed`)}>
-        {({hovered, pressed}) => (
-          <View
-            style={[
-              a.flex_1,
-              a.flex_row,
-              a.align_center,
-              a.p_lg,
-              a.gap_sm,
-              (hovered || pressed) && t.atoms.bg_contrast_25,
-            ]}>
+      {showAddAccount ? (
+        <Button
+          testID="chooseAddAccountBtn"
+          style={[a.flex_1]}
+          onPress={pendingDid ? undefined : onPressAddAccount}
+          label={_(msg`Sign in to account that is not listed`)}>
+          {({hovered, pressed}) => (
             <View
               style={[
-                t.atoms.bg_contrast_25,
-                enableSquareButtons ? a.rounded_sm : a.rounded_full,
-                {width: 48, height: 48},
-                a.justify_center,
+                a.flex_1,
+                a.flex_row,
                 a.align_center,
-                (hovered || pressed) && t.atoms.bg_contrast_50,
+                a.p_lg,
+                a.gap_sm,
+                (hovered || pressed) && t.atoms.bg_contrast_25,
               ]}>
-              <PlusIcon style={[t.atoms.text_contrast_low]} size="md" />
+              <View
+                style={[
+                  t.atoms.bg_contrast_25,
+                  enableSquareButtons ? a.rounded_sm : a.rounded_full,
+                  {width: 48, height: 48},
+                  a.justify_center,
+                  a.align_center,
+                  (hovered || pressed) && t.atoms.bg_contrast_50,
+                ]}>
+                <PlusIcon style={[t.atoms.text_contrast_low]} size="md" />
+              </View>
+              <Text
+                style={[a.flex_1, a.leading_tight, a.text_md, a.font_medium]}>
+                {otherLabel ?? <Trans>Other account</Trans>}
+              </Text>
+              <ChevronIcon size="md" style={[t.atoms.text_contrast_low]} />
             </View>
-            <Text style={[a.flex_1, a.leading_tight, a.text_md, a.font_medium]}>
-              {otherLabel ?? <Trans>Other account</Trans>}
-            </Text>
-            <ChevronIcon size="md" style={[t.atoms.text_contrast_low]} />
-          </View>
-        )}
-      </Button>
+          )}
+        </Button>
+      ) : null}
     </View>
   )
 }

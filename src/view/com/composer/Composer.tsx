@@ -108,7 +108,6 @@ import {
   useOpenRouterModel,
 } from '#/state/preferences/openrouter'
 import {usePreferencesQuery} from '#/state/queries/preferences'
-import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
 import {type Gif} from '#/state/queries/tenor'
 import {useAgent, useSession, useSessionApi} from '#/state/session'
 import {useComposerControls} from '#/state/shell/composer'
@@ -137,16 +136,15 @@ import {VideoEmbedRedraft} from '#/view/com/composer/videos/VideoEmbedRedraft'
 import {VideoPreview} from '#/view/com/composer/videos/VideoPreview'
 import {VideoTranscodeProgress} from '#/view/com/composer/videos/VideoTranscodeProgress'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
-import {SwitchMenuItems} from '#/view/shell/desktop/LeftNav'
 import {atoms as a, native, useBreakpoints, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as EmojiPicker from '#/components/EmojiPicker'
+import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfoIcon} from '#/components/icons/CircleInfo'
 import {EmojiArc_Stroke2_Corner0_Rounded as EmojiSmileIcon} from '#/components/icons/Emoji'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
-import * as Menu from '#/components/Menu'
 import {LazyQuoteEmbed} from '#/components/Post/Embed/LazyQuoteEmbed'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
@@ -1476,9 +1474,7 @@ let ComposerPost = memo(function ComposerPost({
   activeAccountDid: string
   setActiveAccountDid: (did: string) => void
 }) {
-  const {accounts} = useSession()
   const {t: l} = useLingui()
-  const {data: currentProfile} = useProfileQuery({did: activeAccountDid})
   const richtext = post.richtext
   const isTextOnly = !post.embed.link && !post.embed.quote && !post.embed.media
   const forceMinHeight = IS_WEB && isTextOnly && isActive
@@ -1488,7 +1484,6 @@ let ComposerPost = memo(function ComposerPost({
       : l`Add another post`
     : l`Anything but skeet`
   const discardPromptControl = Prompt.usePromptControl()
-  const signOutPromptControl = Prompt.usePromptControl()
 
   const enableSquareButtons = useEnableSquareButtons()
 
@@ -1547,18 +1542,6 @@ let ComposerPost = memo(function ComposerPost({
     [post.id, onSelectVideo, onImageAdd, l],
   )
 
-  const {data} = useProfilesQuery({
-    handles: accounts.map(acc => acc.did),
-  })
-  const profiles = data?.profiles
-
-  const allAccounts = accounts
-    .filter(account => account.did !== activeAccountDid)
-    .map(account => ({
-      account,
-      profile: profiles?.find(p => p.did === account.did),
-    }))
-
   useHideKeyboardOnBackground()
 
   return (
@@ -1571,37 +1554,28 @@ let ComposerPost = memo(function ComposerPost({
         isTextOnly && isLastPost && IS_NATIVE && a.flex_grow,
       ]}>
       <View style={[a.flex_row, IS_NATIVE && a.flex_1]}>
-        <Menu.Root>
-          <Menu.Trigger label={l`Switch accounts`}>
-            {({props}) => (
-              <Button
-                label={props.accessibilityLabel}
-                {...props}
-                style={[
-                  a.transition_color,
-                  enableSquareButtons ? a.rounded_sm : a.rounded_full,
-                  a.self_start,
-                ]}>
-                <UserAvatar
-                  avatar={currentProfile?.avatar}
-                  size={42}
-                  type={
-                    currentProfile?.associated?.labeler ? 'labeler' : 'user'
-                  }
-                  style={[a.mt_xs]}
-                />
-              </Button>
-            )}
-          </Menu.Trigger>
-          {
-            <SwitchMenuItems
-              accounts={allAccounts}
-              signOutPromptControl={signOutPromptControl}
-              showExtraButtons={false}
-              onSelectAccount={account => setActiveAccountDid(account.did)}
-            />
-          }
-        </Menu.Root>
+        <EphemeralAccountSwitcher
+          selectedDid={activeAccountDid}
+          title={l`Post from account`}
+          onSelectAccount={account => setActiveAccountDid(account.did)}
+          renderTrigger={({currentProfile, triggerProps}) => (
+            <Button
+              label={triggerProps.accessibilityLabel}
+              {...triggerProps}
+              style={[
+                a.transition_color,
+                enableSquareButtons ? a.rounded_sm : a.rounded_full,
+                a.self_start,
+              ]}>
+              <UserAvatar
+                avatar={currentProfile?.avatar}
+                size={42}
+                type={currentProfile?.associated?.labeler ? 'labeler' : 'user'}
+                style={[a.mt_xs]}
+              />
+            </Button>
+          )}
+        />
         <TextInput
           ref={textInputRef}
           style={[a.pt_xs]}

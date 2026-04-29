@@ -233,6 +233,8 @@ export function SwitchMenuItems({
   accounts,
   signOutPromptControl,
   showExtraButtons,
+  showAddAccount,
+  title,
   onSelectAccount,
 }: {
   accounts:
@@ -243,6 +245,8 @@ export function SwitchMenuItems({
     | undefined
   signOutPromptControl: DialogControlProps
   showExtraButtons?: boolean
+  showAddAccount?: boolean
+  title?: string
   onSelectAccount?: (account: SessionAccount) => void
 }) {
   const {_} = useLingui()
@@ -254,6 +258,8 @@ export function SwitchMenuItems({
   )
 
   showExtraButtons = showExtraButtons ?? true
+  showAddAccount = showAddAccount ?? true
+  const hasFooterItems = showExtraButtons || showAddAccount
 
   const onAddAnotherAccount = () => {
     setShowLoggedOut(true)
@@ -266,7 +272,7 @@ export function SwitchMenuItems({
         <>
           <Menu.Group>
             <Menu.LabelText>
-              <Trans>Switch account</Trans>
+              {title ?? <Trans>Switch account</Trans>}
             </Menu.LabelText>
             {sortedAccounts.map(other => (
               <SwitchMenuItem
@@ -277,18 +283,20 @@ export function SwitchMenuItems({
               />
             ))}
           </Menu.Group>
-          <Menu.Divider />
+          {hasFooterItems ? <Menu.Divider /> : null}
         </>
       )}
       {showExtraButtons ? <SwitcherMenuProfileLink /> : undefined}
-      <Menu.Item
-        label={_(msg`Add another account`)}
-        onPress={onAddAnotherAccount}>
-        <Menu.ItemIcon icon={PlusIcon} />
-        <Menu.ItemText>
-          <Trans>Add another account</Trans>
-        </Menu.ItemText>
-      </Menu.Item>
+      {showAddAccount ? (
+        <Menu.Item
+          label={_(msg`Add another account`)}
+          onPress={onAddAnotherAccount}>
+          <Menu.ItemIcon icon={PlusIcon} />
+          <Menu.ItemText>
+            <Trans>Add another account</Trans>
+          </Menu.ItemText>
+        </Menu.Item>
+      ) : null}
       {showExtraButtons ? (
         <Menu.Item label={_(msg`Sign out`)} onPress={signOutPromptControl.open}>
           <Menu.ItemIcon icon={LeaveIcon} />

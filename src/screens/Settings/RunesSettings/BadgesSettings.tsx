@@ -325,7 +325,7 @@ function TrustedVerifiersSection() {
         onPress={onToggleExpanded}>
         <SettingsList.ItemIcon icon={VerifiedIcon} />
         <SettingsList.ItemText>
-          <Trans>{`Trusted Verifiers`}</Trans>
+          <Trans>{`Trusted verifiers`}</Trans>
         </SettingsList.ItemText>
         {!isExpanded && (
           <SettingsList.BadgeText>
@@ -387,7 +387,7 @@ function TrustedVerifiersSection() {
       <Prompt.Basic
         control={resetTrustedVerifiersPromptControl}
         title={l`Are you sure?`}
-        description={l`This will clear your selected trusted verifiers and trust your current account again.`}
+        description={l`This will clear your selected trusted verifiers, resulting in only your account being active.`}
         confirmButtonCta={l`Reset all`}
         confirmButtonColor="negative"
         onConfirm={onResetAll}

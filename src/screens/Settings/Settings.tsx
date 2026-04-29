@@ -1,6 +1,7 @@
 import {useState} from 'react'
 import {Alert, LayoutAnimation, Pressable, View} from 'react-native'
-import Animated, {
+import type Animated from 'react-native-reanimated'
+import {
   useAnimatedRef,
   useReducedMotion,
   useScrollViewOffset,
@@ -856,7 +857,7 @@ function AccountRow({
   }
 
   return (
-    <View style={[a.relative, {backgroundColor: t.palette.white}]}>
+    <View style={[a.relative, t.atoms.bg]}>
       <SettingsList.PressableItem
         onPress={onSwitchAccount}
         label={l`Switch account`}
