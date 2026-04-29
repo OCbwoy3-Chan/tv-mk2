@@ -7,9 +7,9 @@ import {dynamicActivate} from '#/locale/i18n'
 import {dynamicActivate as dynamicActivateWeb} from '#/locale/i18n.web'
 import {type AppLanguage} from '#/locale/languages'
 import {
+  useAlsoLikedCollapseByDefault,
   useAlsoLikedFeedEnabled,
-  useSetAlsoLikedFeedEnabled,
-} from '#/state/preferences/also-liked-feed-enabled'
+} from '#/state/preferences'
 import {
   useHighQualityImages,
   useSetHighQualityImages,
@@ -39,6 +39,7 @@ import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/R
 import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
+import {ItemTextWithSubtitle} from '../NotificationSettings/components/ItemTextWithSubtitle'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesDisplaySettingsScreen() {
@@ -48,7 +49,7 @@ export function RunesDisplaySettingsScreen() {
   const setRepostCarouselEnabled = useSetRepostCarouselEnabled()
 
   const alsoLikedFeedEnabled = useAlsoLikedFeedEnabled()
-  const setAlsoLikedFeedEnabled = useSetAlsoLikedFeedEnabled()
+  const alsoLikedCollapseByDefault = useAlsoLikedCollapseByDefault()
 
   const highQualityImages = useHighQualityImages()
   const setHighQualityImages = useSetHighQualityImages()
@@ -60,6 +61,21 @@ export function RunesDisplaySettingsScreen() {
 
   return (
     <RunesScreenLayout titleText={l`Display`}>
+      <SettingsList.LinkItem
+        to="/settings/runes/display/also-liked"
+        label={l`Also liked`}
+        contentContainerStyle={[a.align_start]}>
+        <SettingsList.ItemIcon icon={HeartIcon} />
+        <ItemTextWithSubtitle
+          titleText={<Trans>Also liked</Trans>}
+          subtitleText={
+            <AlsoLikedDeclaration
+              enabled={alsoLikedFeedEnabled}
+              collapseByDefault={alsoLikedCollapseByDefault}
+            />
+          }
+        />
+      </SettingsList.LinkItem>
       <Toggle.Item
         name="repost_carousel"
         label={l`Combine reposts into a horizontal carousel`}
@@ -69,19 +85,6 @@ export function RunesDisplaySettingsScreen() {
           <SettingsList.ItemIcon icon={RepostIcon} />
           <SettingsList.ItemText>
             <Trans>Combine reposts into a horizontal carousel</Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
-      <Toggle.Item
-        name="also_liked_feed"
-        label={l`Show "Also liked" recommendations under post replies`}
-        value={alsoLikedFeedEnabled}
-        onChange={value => setAlsoLikedFeedEnabled(value)}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={HeartIcon} />
-          <SettingsList.ItemText>
-            <Trans>Show "Also liked" recommendations under post replies</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>
@@ -133,6 +136,24 @@ export function RunesDisplaySettingsScreen() {
       <PostReplacementDialog control={setPostReplacementDialogControl} />
     </RunesScreenLayout>
   )
+}
+
+function AlsoLikedDeclaration({
+  enabled,
+  collapseByDefault,
+}: {
+  enabled: boolean
+  collapseByDefault: boolean
+}) {
+  if (!enabled) {
+    return <Trans>Hidden in thread views</Trans>
+  }
+
+  if (collapseByDefault) {
+    return <Trans>Shown in thread views, collapsed by default</Trans>
+  }
+
+  return <Trans>Shown in thread views, expanded by default</Trans>
 }
 
 function PostReplacementDialog({

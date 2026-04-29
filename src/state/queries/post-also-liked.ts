@@ -8,11 +8,8 @@ import {
 import {STALE} from '#/state/queries'
 import {precachePost} from '#/state/queries/post'
 import {useAgent} from '#/state/session'
-import {IS_WEB} from '#/env'
 
 const ALSO_LIKED_URL = 'https://foryou.club/also-liked'
-const ALSO_LIKED_PROXY_PATH = '/api/also-liked'
-const ALSO_LIKED_PROXY_HOST = 'https://witchsky.app'
 const ALSO_LIKED_PAGE_SIZE = 10
 
 type AlsoLikedSkeletonResponse = {
@@ -29,65 +26,39 @@ async function fetchAlsoLikedSkeleton(
   postUri: string,
   pageParam: string | undefined,
 ) {
-  const urls = getAlsoLikedUrls(postUri, pageParam)
-  let lastError: Error | undefined
-
-  for (const url of urls) {
-    try {
-      const res = await fetch(url.toString())
-      if (!res.ok) {
-        lastError = new Error(
-          `Failed to load also liked recommendations (${res.status})`,
-        )
-        continue
-      }
-
-      const contentType = res.headers.get('content-type') || ''
-      if (!contentType.includes('application/json')) {
-        const body = await res.text()
-        lastError = new Error(
-          body.startsWith('<!DOCTYPE') || body.startsWith('<!doctype')
-            ? 'Also liked is unavailable from this web environment right now.'
-            : 'Also liked returned an unexpected response.',
-        )
-        continue
-      }
-
-      return (await res.json()) as AlsoLikedSkeletonResponse
-    } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err))
+  try {
+    const res = await fetch(getAlsoLikedUrl(postUri, pageParam).toString())
+    if (!res.ok) {
+      throw new Error(
+        `Failed to load also liked recommendations (${res.status})`,
+      )
     }
-  }
 
-  throw lastError || new Error('Failed to load also liked recommendations')
+    const contentType = res.headers.get('content-type') || ''
+    if (!contentType.includes('application/json')) {
+      const body = await res.text()
+      throw new Error(
+        body.startsWith('<!DOCTYPE') || body.startsWith('<!doctype')
+          ? 'Also liked is unavailable from this web environment right now.'
+          : 'Also liked returned an unexpected response.',
+      )
+    }
+
+    return (await res.json()) as AlsoLikedSkeletonResponse
+  } catch (err) {
+    throw err instanceof Error ? err : new Error(String(err))
+  }
 }
 
-function getAlsoLikedUrls(postUri: string, pageParam: string | undefined) {
-  const urls: URL[] = []
-  const appendParams = (url: URL) => {
-    url.searchParams.set('format', 'json')
-    url.searchParams.set('post', postUri)
-    url.searchParams.set('limit', String(ALSO_LIKED_PAGE_SIZE))
-    if (pageParam) {
-      url.searchParams.set('cursor', pageParam)
-    }
-    return url
+function getAlsoLikedUrl(postUri: string, pageParam: string | undefined) {
+  const url = new URL(ALSO_LIKED_URL)
+  url.searchParams.set('format', 'json')
+  url.searchParams.set('post', postUri)
+  url.searchParams.set('limit', String(ALSO_LIKED_PAGE_SIZE))
+  if (pageParam) {
+    url.searchParams.set('cursor', pageParam)
   }
-
-  if (IS_WEB) {
-    urls.push(
-      appendParams(new URL(ALSO_LIKED_PROXY_PATH, window.location.origin)),
-    )
-
-    const hostedProxyUrl = new URL(ALSO_LIKED_PROXY_PATH, ALSO_LIKED_PROXY_HOST)
-    if (hostedProxyUrl.origin !== window.location.origin) {
-      urls.push(appendParams(hostedProxyUrl))
-    }
-  } else {
-    urls.push(appendParams(new URL(ALSO_LIKED_URL)))
-  }
-
-  return urls
+  return url
 }
 
 export const RQKEY_ROOT = 'post-also-liked'

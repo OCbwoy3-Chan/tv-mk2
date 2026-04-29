@@ -129,6 +129,7 @@ import {RepostsOnRepostsNotificationSettingsScreen} from '#/screens/Settings/Not
 import {PetLabelSettingsScreen} from '#/screens/Settings/PetLabelSettings'
 import {PrivacyAndSecuritySettingsScreen} from '#/screens/Settings/PrivacyAndSecuritySettings'
 import {RunesSettingsScreen} from '#/screens/Settings/RunesSettings'
+import {RunesDisplayAlsoLikedSettingsScreen} from '#/screens/Settings/RunesSettings/AlsoLikedSettings'
 import {RunesBadgesSettingsScreen} from '#/screens/Settings/RunesSettings/BadgesSettings'
 import {RunesDisplaySettingsScreen} from '#/screens/Settings/RunesSettings/DisplaySettings'
 import {RunesExtraSettingsScreen} from '#/screens/Settings/RunesSettings/ExtraSettings'
@@ -456,6 +457,11 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         name="RunesDisplaySettings"
         getComponent={() => RunesDisplaySettingsScreen}
         options={{title: title(msg`Display`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="RunesDisplayAlsoLikedSettings"
+        getComponent={() => RunesDisplayAlsoLikedSettingsScreen}
+        options={{title: title(msg`Also liked`), requireAuth: true}}
       />
       <Stack.Screen
         name="RunesInfrastructureSettings"

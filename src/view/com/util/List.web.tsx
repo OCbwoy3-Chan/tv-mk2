@@ -31,6 +31,7 @@ export type ListProps<ItemT> = Omit<
   | 'contentOffset' // Pass headerOffset instead.
 > & {
   onScrolledDownChange?: (isScrolledDown: boolean) => void
+  onScrollOffsetChange?: (offsetY: number) => void
   headerOffset?: number
   refreshing?: boolean
   onRefresh?: () => void
@@ -68,6 +69,7 @@ function ListImpl<ItemT>(
     onEndReachedThreshold = 2,
     onRefresh: _unsupportedOnRefresh,
     onScrolledDownChange,
+    onScrollOffsetChange,
     onContentSizeChange,
     onItemSeen,
     renderItem,
@@ -235,11 +237,12 @@ function ListImpl<ItemT>(
     if (!isInsideVisibleTree) return
 
     const element = getScrollableNode()
+    const offsetY = Math.max(0, element?.scrollY ?? 0)
     contextScrollHandlers.onScroll?.(
       {
         contentOffset: {
           x: Math.max(0, element?.scrollX ?? 0),
-          y: Math.max(0, element?.scrollY ?? 0),
+          y: offsetY,
         },
         layoutMeasurement: {
           width: element?.clientWidth,
@@ -259,6 +262,8 @@ function ListImpl<ItemT>(
       >,
       null as any,
     )
+
+    onScrollOffsetChange?.(offsetY)
   })
 
   useEffect(() => {

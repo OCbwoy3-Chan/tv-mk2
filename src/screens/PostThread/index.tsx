@@ -15,6 +15,7 @@ import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {usePostViewTracking} from '#/lib/hooks/usePostViewTracking'
 import {useFeedFeedback} from '#/state/feed-feedback'
+import {useAlsoLikedCollapseByDefault} from '#/state/preferences/also-liked-collapse-by-default'
 import {useAlsoLikedFeedEnabled} from '#/state/preferences/also-liked-feed-enabled'
 import {usePostAlsoLikedQuery} from '#/state/queries/post-also-liked'
 import {type ThreadViewOption} from '#/state/queries/preferences/useThreadPreferences'
@@ -151,14 +152,22 @@ export function PostThread({uri}: {uri: string}) {
   const isRoot = !!anchor && anchor.value.post.record.reply === undefined
   const canReply = !anchor?.value.post?.viewer?.replyDisabled
   const alsoLikedFeedEnabled = useAlsoLikedFeedEnabled()
+  const alsoLikedCollapseByDefault = useAlsoLikedCollapseByDefault()
   const alsoLikedAnchorUri =
     anchor?.type === 'threadPost' && isRoot ? anchor.value.post.uri : undefined
   const [deferParents, setDeferParents] = useState(true)
-  const alsoLikedEnabled =
+  const [alsoLikedCollapsed, setAlsoLikedCollapsed] = useState(
+    alsoLikedCollapseByDefault,
+  )
+  useEffect(() => {
+    setAlsoLikedCollapsed(alsoLikedCollapseByDefault)
+  }, [alsoLikedAnchorUri, alsoLikedCollapseByDefault])
+  const alsoLikedVisible =
     Boolean(alsoLikedAnchorUri) &&
     alsoLikedFeedEnabled &&
     !thread.state.isPlaceholderData &&
     !deferParents
+  const alsoLikedEnabled = alsoLikedVisible && !alsoLikedCollapsed
   const alsoLiked = usePostAlsoLikedQuery(alsoLikedAnchorUri, {
     enabled: alsoLikedEnabled,
   })
@@ -179,6 +188,16 @@ export function PostThread({uri}: {uri: string}) {
   const listRef = useRef<ListMethods>(null)
   const anchorRef = useRef<View | null>(null)
   const headerRef = useRef<View | null>(null)
+  const alsoLikedHeaderRef = useRef<View | null>(null)
+  const currentScrollOffsetRef = useRef(0)
+  const scrollStateRequestIdRef = useRef(0)
+  const [isAlsoLikedFocused, setIsAlsoLikedFocused] = useState(false)
+
+  useEffect(() => {
+    if (!alsoLikedVisible || alsoLikedCollapsed) {
+      setIsAlsoLikedFocused(false)
+    }
+  }, [alsoLikedCollapsed, alsoLikedVisible])
 
   /*
    * On a cold load, parents are not prepended until the anchor post has
@@ -583,6 +602,68 @@ export function PostThread({uri}: {uri: string}) {
       void alsoLiked.refetch()
     }
   }, [alsoLiked, alsoLikedPosts.length])
+  const toggleAlsoLikedCollapsed = useCallback(() => {
+    setAlsoLikedCollapsed(current => !current)
+  }, [])
+  const handleScrollOffsetChange = useNonReactiveCallback((offsetY: number) => {
+    currentScrollOffsetRef.current = offsetY
+    if (offsetY <= 1) {
+      scrollStateRequestIdRef.current += 1
+      setIsAlsoLikedFocused(false)
+      return
+    }
+    scrollStateRequestIdRef.current += 1
+    updateAlsoLikedScrollState(offsetY, scrollStateRequestIdRef.current)
+  })
+  const updateAlsoLikedScrollState = useNonReactiveCallback(
+    (offsetY: number, requestId: number) => {
+      if (
+        !alsoLikedVisible ||
+        alsoLikedCollapsed ||
+        !alsoLikedHeaderRef.current ||
+        !headerRef.current
+      ) {
+        setIsAlsoLikedFocused(false)
+        return
+      }
+
+      measureViewRect(headerRef.current, headerRect => {
+        if (requestId !== scrollStateRequestIdRef.current) return
+        if (!headerRect) {
+          setIsAlsoLikedFocused(false)
+          return
+        }
+
+        measureViewRect(alsoLikedHeaderRef.current, alsoLikedRect => {
+          if (requestId !== scrollStateRequestIdRef.current) return
+          if (!alsoLikedRect) {
+            setIsAlsoLikedFocused(false)
+            return
+          }
+
+          const headerBottom = headerRect.y + headerRect.height
+          const focused = alsoLikedRect.y <= headerBottom
+
+          setIsAlsoLikedFocused(current =>
+            current === focused ? current : focused,
+          )
+        })
+      })
+    },
+  )
+
+  useEffect(() => {
+    scrollStateRequestIdRef.current += 1
+    updateAlsoLikedScrollState(
+      currentScrollOffsetRef.current,
+      scrollStateRequestIdRef.current,
+    )
+  }, [
+    alsoLikedCollapsed,
+    alsoLikedPosts.length,
+    alsoLikedVisible,
+    updateAlsoLikedScrollState,
+  ])
 
   return (
     <PostThreadContextProvider context={thread.context}>
@@ -590,7 +671,11 @@ export function PostThread({uri}: {uri: string}) {
         <Layout.Header.BackButton />
         <Layout.Header.Content>
           <Layout.Header.TitleText>
-            <Trans context="description">Post</Trans>
+            {isAlsoLikedFocused ? (
+              <Trans>Posts also liked</Trans>
+            ) : (
+              <Trans context="description">Post</Trans>
+            )}
           </Layout.Header.TitleText>
         </Layout.Header.Content>
         <Layout.Header.Slot>
@@ -622,6 +707,7 @@ export function PostThread({uri}: {uri: string}) {
           onEndReached={onEndReached}
           onEndReachedThreshold={4}
           onStartReachedThreshold={1}
+          onScrollOffsetChange={handleScrollOffsetChange}
           onItemSeen={item => {
             // Track post:view for parent posts and replies (non-anchor posts)
             if (item.type === 'threadPost' && item.depth !== 0) {
@@ -638,11 +724,20 @@ export function PostThread({uri}: {uri: string}) {
           ListFooterComponent={
             <ThreadAlsoLiked
               posts={alsoLikedPosts}
-              enabled={alsoLikedEnabled}
+              visible={alsoLikedVisible}
+              collapsed={alsoLikedCollapsed}
               isLoading={alsoLiked.isLoading}
+              showLoadingState={
+                !alsoLikedCollapsed &&
+                !alsoLiked.error &&
+                alsoLikedPosts.length === 0 &&
+                (!alsoLiked.isFetched || alsoLiked.isLoading)
+              }
               isFetchingNextPage={alsoLiked.isFetchingNextPage}
               error={alsoLiked.error}
               onRetry={retryAlsoLiked}
+              headerRef={alsoLikedHeaderRef}
+              onToggleCollapsed={toggleAlsoLikedCollapsed}
               spacerHeight={platform({
                 web: defaultListFooterHeight,
                 default: deferParents
@@ -695,4 +790,60 @@ function MobileComposePrompt({onPressReply}: {onPressReply: () => unknown}) {
 
 const keyExtractor = (item: ThreadItem) => {
   return item.key
+}
+
+type ViewRect = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+function measureViewRect(
+  view: View | null,
+  cb: (rect: ViewRect | null) => void,
+) {
+  const target = view as any
+  if (!target) {
+    cb(null)
+    return
+  }
+
+  if (typeof target.measureInWindow === 'function') {
+    target.measureInWindow(
+      (x: number, y: number, width: number, height: number) => {
+        cb({x, y, width, height})
+      },
+    )
+    return
+  }
+
+  if (typeof target.getBoundingClientRect === 'function') {
+    const rect = target.getBoundingClientRect()
+    cb({
+      x: rect.left,
+      y: rect.top,
+      width: rect.width,
+      height: rect.height,
+    })
+    return
+  }
+
+  if (typeof target.measure === 'function') {
+    target.measure(
+      (
+        _x: number,
+        _y: number,
+        width: number,
+        height: number,
+        pageX: number,
+        pageY: number,
+      ) => {
+        cb({x: pageX, y: pageY, width, height})
+      },
+    )
+    return
+  }
+
+  cb(null)
 }

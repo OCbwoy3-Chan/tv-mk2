@@ -30,6 +30,7 @@ export type ListProps<ItemT = any> = Omit<
   | 'progressViewOffset' // Can't be an animated value
 > & {
   onScrolledDownChange?: (isScrolledDown: boolean) => void
+  onScrollOffsetChange?: (offsetY: number) => void
   headerOffset?: number
   refreshing?: boolean
   onRefresh?: () => void
@@ -48,6 +49,7 @@ let List = forwardRef<ListMethods, ListProps>(
   (
     {
       onScrolledDownChange,
+      onScrollOffsetChange,
       refreshing,
       onRefresh,
       onItemSeen,
@@ -67,6 +69,11 @@ let List = forwardRef<ListMethods, ListProps>(
     const handleScrolledDownChange = useNonReactiveCallback(
       (didScrollDown: boolean) => {
         onScrolledDownChange?.(didScrollDown)
+      },
+    )
+    const handleScrollOffsetChange = useNonReactiveCallback(
+      (offsetY: number) => {
+        onScrollOffsetChange?.(offsetY)
       },
     )
 
@@ -95,6 +102,10 @@ let List = forwardRef<ListMethods, ListProps>(
           if (onScrolledDownChange != null) {
             runOnJS(handleScrolledDownChange)(didScrollDown)
           }
+        }
+
+        if (onScrollOffsetChange != null) {
+          runOnJS(handleScrollOffsetChange)(e.contentOffset.y)
         }
 
         if (IS_IOS) {
