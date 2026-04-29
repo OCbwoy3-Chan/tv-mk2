@@ -29,6 +29,7 @@ export default class Palette {
   static NEUTRAL1_CHROMA = 4
   static NEUTRAL2_CHROMA = 8
   static GOOGLE_BLUE = 0xff1b6ef3
+  static DEFAULT_SEED = '#EE6300'
 
   static getStyle(hue: number, chroma: number): StyleType {
     return {
@@ -204,7 +205,11 @@ export default class Palette {
     style: GenerationStyle = 'TONAL_SPOT',
   ): MaterialYouPalette {
     // Parse the HEX seed color string into an integer
-    seed = seed.toUpperCase().substring(1, 7)
+    const normalizedSeed =
+      typeof seed === 'string' && /^#[0-9a-fA-F]{6}$/.test(seed)
+        ? seed
+        : Palette.DEFAULT_SEED
+    seed = normalizedSeed.toUpperCase().substring(1, 7)
     const colorInt = parseInt('0xff' + seed, 16)
 
     let seedArgb

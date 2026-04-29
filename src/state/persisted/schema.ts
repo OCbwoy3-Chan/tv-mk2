@@ -394,7 +394,7 @@ export function tryParse(rawData: string): Schema | undefined {
   }
   const parsed = schema.safeParse(objData)
   if (parsed.success) {
-    return objData
+    return parsed.data
   } else {
     const errors =
       parsed.error?.errors?.map(e => ({
@@ -410,8 +410,8 @@ export function tryParse(rawData: string): Schema | undefined {
 
 export function tryStringify(value: Schema): string | undefined {
   try {
-    schema.parse(value)
-    return JSON.stringify(value)
+    const parsed = schema.parse(value)
+    return JSON.stringify(parsed)
   } catch (e) {
     logger.error(`persisted state: failed stringifying root state`, {
       message: e,
