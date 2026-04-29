@@ -10650,12 +10650,6 @@ packages:
       react-native: '*'
       react-native-reanimated: '>=3.0.0'
 
-  react-native-mmkv@3.3.3:
-    resolution: {integrity: sha512-GMsfOmNzx0p5+CtrCFRVtpOOMYNJXuksBVARSQrCFaZwjUyHJdQzcN900GGaFFNTxw2fs8s5Xje//RDKj9+PZA==}
-    peerDependencies:
-      react: '*'
-      react-native: '*'
-
   react-native-pager-view@6.8.0:
     resolution: {integrity: sha512-/wgFV8nB4TLnQ6j9e3TvNrHbPF5TINMZHaXt86GOV0NSJNMVGkWguniJVKrYLm85LL8KVhRkgdh43Rdu7PvW1A==}
     peerDependencies:
@@ -12882,7 +12876,7 @@ snapshots:
       expo: 54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       expo-web-browser: 15.0.10(expo@54.0.33(@babel/core@7.25.2)(react-native-webview@13.16.1(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))
       react-native: 0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0)
-      react-native-mmkv: 3.3.3(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
+      react-native-mmkv: '@bsky.app/react-native-mmkv@2.12.5(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)'
       react-native-url-polyfill: 3.0.0(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))
     transitivePeerDependencies:
       - react
@@ -24857,11 +24851,6 @@ snapshots:
       react-native: 0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0)
       react-native-is-edge-to-edge: 1.3.1(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
       react-native-reanimated: 3.19.5(patch_hash=c07ea02fe4c889e65498c2fb39d82e93a0745a06e7800850054fbf0cb95ee1e4)(@babel/core@7.25.2)(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
-
-  react-native-mmkv@3.3.3(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0):
-    dependencies:
-      react: 19.1.0
-      react-native: 0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0)
 
   react-native-pager-view@6.8.0(patch_hash=dc75f16661d6d3e8df3922bc4a116ae0475316979175aca7c9c44205f2261d4a)(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0):
     dependencies:
