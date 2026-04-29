@@ -18,6 +18,7 @@ import {findAllPostsInQueryData as findAllPostsInBookmarksQueryData} from '#/sta
 import {findAllPostsInQueryData as findAllPostsInExploreFeedPreviewsQueryData} from '#/state/queries/explore-feed-previews'
 import {findAllPostsInQueryData as findAllPostsInNotifsQueryData} from '#/state/queries/notifications/feed'
 import {findAllPostsInQueryData as findAllPostsInPostQueryData} from '#/state/queries/post'
+import {findAllPostsInQueryData as findAllPostsInAlsoLikedQueryData} from '#/state/queries/post-also-liked'
 import {findAllPostsInQueryData as findAllPostsInFeedQueryData} from '#/state/queries/post-feed'
 import {findAllPostsInQueryData as findAllPostsInQuoteQueryData} from '#/state/queries/post-quotes'
 import {findAllPostsInQueryData as findAllPostsInSearchQueryData} from '#/state/queries/search-posts'
@@ -261,6 +262,9 @@ export function* getThreadPlaceholderCandidates(
     yield postViewToThreadPlaceholder(post)
   }
   for (let post of findAllPostsInSearchQueryData(queryClient, uri)) {
+    yield postViewToThreadPlaceholder(post)
+  }
+  for (let post of findAllPostsInAlsoLikedQueryData(queryClient, uri)) {
     yield postViewToThreadPlaceholder(post)
   }
   for (let post of findAllPostsInPostQueryData(queryClient, uri)) {

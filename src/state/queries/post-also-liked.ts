@@ -1,6 +1,7 @@
-import {type AppBskyFeedDefs} from '@atproto/api'
+import {type AppBskyFeedDefs, AtUri} from '@atproto/api'
 import {
   type InfiniteData,
+  type QueryClient,
   useInfiniteQuery,
   useQueryClient,
 } from '@tanstack/react-query'
@@ -8,6 +9,7 @@ import {
 import {STALE} from '#/state/queries'
 import {precachePost} from '#/state/queries/post'
 import {useAgent} from '#/state/session'
+import {embedViewRecordToPostView, getEmbeddedPost} from './util'
 
 const ALSO_LIKED_URL = 'https://foryou.club/also-liked'
 const ALSO_LIKED_PAGE_SIZE = 10
@@ -122,4 +124,44 @@ export function usePostAlsoLikedQuery(
       }
     },
   })
+}
+
+export function* findAllPostsInQueryData(
+  queryClient: QueryClient,
+  uri: string,
+): Generator<AppBskyFeedDefs.PostView, void> {
+  const atUri = new AtUri(uri)
+  const queryDatas = queryClient.getQueriesData<InfiniteData<AlsoLikedPage>>({
+    queryKey: [RQKEY_ROOT],
+  })
+
+  for (const [_queryKey, queryData] of queryDatas) {
+    if (!queryData?.pages) {
+      continue
+    }
+
+    for (const page of queryData.pages) {
+      for (const post of page.posts) {
+        if (uriMatches(atUri, post)) {
+          yield post
+        }
+
+        const quotedPost = getEmbeddedPost(post.embed)
+        if (quotedPost && uriMatches(atUri, quotedPost)) {
+          yield embedViewRecordToPostView(quotedPost)
+        }
+      }
+    }
+  }
+}
+
+function uriMatches(
+  atUri: AtUri,
+  record: {uri: string; author: AppBskyFeedDefs.PostView['author']},
+) {
+  if (atUri.host.startsWith('did:')) {
+    return atUri.href === record.uri
+  }
+
+  return atUri.host === record.author.handle && record.uri.endsWith(atUri.rkey)
 }
