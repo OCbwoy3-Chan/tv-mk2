@@ -65,13 +65,13 @@ export function Provider({children}: PropsWithChildren<{}>) {
 
   useEffect(() => {
     return persisted.onUpdate('postReplacement', next => {
-      setState({
+      _setState({
         postName: next.postName ?? 'skeet',
         postsName: next.postsName ?? 'skeets',
-        enabled: next.enabled ?? true,
+        enabled: next.enabled ?? false,
       })
     })
-  }, [setState])
+  }, [])
 
   return (
     <stateContext.Provider value={state}>
