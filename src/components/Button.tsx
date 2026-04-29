@@ -235,6 +235,17 @@ export const Button = forwardRef<View, ButtonProps>(
     const onPointerLeave = useCallback(() => {
       clearLongPressTimer()
     }, [clearLongPressTimer])
+    const onContextMenu = useCallback(
+      (e: Event) => {
+        if (!onLongPressOuter || !IS_WEB || IS_WEB_TOUCH_DEVICE) return
+
+        e.preventDefault()
+        clearLongPressTimer()
+        longPressTriggeredRef.current = true
+        onLongPressOuter(e as unknown as GestureResponderEvent)
+      },
+      [clearLongPressTimer, onLongPressOuter],
+    )
     const onHoverIn = useCallback(
       (e: MouseEvent) => {
         setState(s => ({
@@ -604,7 +615,7 @@ export const Button = forwardRef<View, ButtonProps>(
               onPointerDown,
               onPointerUp,
               onPointerLeave,
-              onContextMenu: (e: Event) => e.preventDefault(),
+              onContextMenu,
             }
           : {}) as any)}
         // @ts-ignore - this will always be a pressable
@@ -630,7 +641,9 @@ export const Button = forwardRef<View, ButtonProps>(
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         onPress={onPress}
-        onLongPress={!IS_WEB || IS_WEB_TOUCH_DEVICE ? onLongPressOuter : undefined}
+        onLongPress={
+          !IS_WEB || IS_WEB_TOUCH_DEVICE ? onLongPressOuter : undefined
+        }
         onHoverIn={onHoverIn}
         onHoverOut={onHoverOut}
         onFocus={onFocus}
