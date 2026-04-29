@@ -12,9 +12,11 @@ import {
   useProfileFollowMutationQueue,
   useProfileQuery,
 } from '#/state/queries/profile'
-import {useRequireAuth} from '#/state/session'
+import {useRequireAuth, useSession} from '#/state/session'
 import {atoms as a, useBreakpoints} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
+import {useEphemeralFollowAction} from '#/components/hooks/useEphemeralFollowAction'
 import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import * as Toast from '#/components/Toast'
@@ -64,17 +66,25 @@ function PostThreadFollowBtnLoaded({
   const {_} = useLingui()
   const {gtMobile} = useBreakpoints()
   const profile = useProfileShadow(profileUnshadowed)
+  const {accounts, currentAccount} = useSession()
   const [queueFollow, queueUnfollow] = useProfileFollowMutationQueue(
     profile,
     'PostThreadItem',
   )
   const requireAuth = useRequireAuth()
+  const onSelectEphemeralAccount = useEphemeralFollowAction({
+    profile,
+    logContext: 'PostThreadItem',
+  })
 
   const isFollowing = !!profile.viewer?.following
   const isFollowedBy = !!profile.viewer?.followedBy
   const [wasFollowing, setWasFollowing] = useState<boolean>(isFollowing)
 
   const enableSquareButtons = useEnableSquareButtons()
+  const hasAlternateAccounts = accounts.some(
+    account => account.did !== currentAccount?.did,
+  )
 
   // This prevents the button from disappearing as soon as we follow.
   const showFollowBtn = useMemo(
@@ -141,10 +151,11 @@ function PostThreadFollowBtnLoaded({
 
   if (!showFollowBtn) return null
 
-  return (
+  const renderFollowButton = (onLongPress?: () => void) => (
     <Button
       testID="followBtn"
       label={_(msg`Follow ${profile.handle}`)}
+      onLongPress={onLongPress}
       onPress={onPress}
       size="small"
       color={isFollowing ? 'secondary' : 'secondary_inverted'}
@@ -166,5 +177,23 @@ function PostThreadFollowBtnLoaded({
         )}
       </ButtonText>
     </Button>
+  )
+
+  return (
+    currentAccount && hasAlternateAccounts ? (
+      <EphemeralAccountSwitcher
+        selectedDid={currentAccount.did}
+        title={_(msg`Follow as`)}
+        triggerBehavior="longPress"
+        onSelectAccount={account => {
+          void onSelectEphemeralAccount(account)
+        }}
+        renderTrigger={({triggerProps}) =>
+          renderFollowButton(triggerProps.onLongPress)
+        }
+      />
+    ) : (
+      renderFollowButton()
+    )
   )
 }

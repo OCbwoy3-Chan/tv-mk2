@@ -38,6 +38,7 @@ import {
   type ButtonProps,
   ButtonText,
 } from '#/components/Button'
+import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {Check_Stroke2_Corner0_Rounded as Check} from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {Link as InternalLink, type LinkProps} from '#/components/Link'
@@ -49,6 +50,7 @@ import {Text} from '#/components/Typography'
 import {type Metrics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
 import type * as bsky from '#/types/bsky'
+import {useEphemeralFollowAction} from './hooks/useEphemeralFollowAction'
 
 export function Default({
   profile,
@@ -479,6 +481,7 @@ export function FollowButtonInner({
   contextProfileDid,
   ...rest
 }: FollowButtonProps) {
+  const {currentAccount, accounts} = useSession()
   const {t: l} = useLingui()
   const profile = useProfileShadow(profileUnshadowed)
   const moderation = moderateProfile(profile, moderationOpts)
@@ -489,6 +492,14 @@ export function FollowButtonInner({
     contextProfileDid,
   )
   const isRound = Boolean(rest.shape && rest.shape === 'round')
+  const onSelectEphemeralAccount = useEphemeralFollowAction({
+    profile,
+    logContext,
+    onFollow,
+  })
+  const hasAlternateAccounts = accounts.some(
+    account => account.did !== currentAccount?.did,
+  )
 
   const onPressFollow = async (e: GestureResponderEvent) => {
     e.preventDefault()
@@ -561,39 +572,59 @@ export function FollowButtonInner({
     profile.viewer.blockingByList
   )
     return null
+  const viewer = profile.viewer
+
+  const renderFollowButton = (onLongPress?: () => void) =>
+    viewer.following ? (
+      <Button
+        label={unfollowLabel}
+        size="small"
+        variant="solid"
+        color="secondary"
+        {...rest}
+        onLongPress={onLongPress}
+        onPress={(e: GestureResponderEvent) => {
+          void onPressUnfollow(e)
+        }}>
+        {withIcon && (
+          <ButtonIcon icon={Check} position={isRound ? undefined : 'left'} />
+        )}
+        {isRound ? null : <ButtonText>{unfollowLabel}</ButtonText>}
+      </Button>
+    ) : (
+      <Button
+        label={followLabel}
+        size="small"
+        variant="solid"
+        color={colorInverted ? 'secondary_inverted' : 'primary'}
+        {...rest}
+        onLongPress={onLongPress}
+        onPress={(e: GestureResponderEvent) => {
+          void onPressFollow(e)
+        }}>
+        {withIcon && (
+          <ButtonIcon icon={Plus} position={isRound ? undefined : 'left'} />
+        )}
+        {isRound ? null : <ButtonText>{followLabel}</ButtonText>}
+      </Button>
+    )
 
   return (
     <View>
-      {profile.viewer.following ? (
-        <Button
-          label={unfollowLabel}
-          size="small"
-          variant="solid"
-          color="secondary"
-          {...rest}
-          onPress={(e: GestureResponderEvent) => {
-            void onPressUnfollow(e)
-          }}>
-          {withIcon && (
-            <ButtonIcon icon={Check} position={isRound ? undefined : 'left'} />
-          )}
-          {isRound ? null : <ButtonText>{unfollowLabel}</ButtonText>}
-        </Button>
+      {currentAccount && hasAlternateAccounts ? (
+        <EphemeralAccountSwitcher
+          selectedDid={currentAccount.did}
+          title={l`Follow as`}
+          triggerBehavior="longPress"
+          onSelectAccount={account => {
+            void onSelectEphemeralAccount(account)
+          }}
+          renderTrigger={({triggerProps}) =>
+            renderFollowButton(triggerProps.onLongPress)
+          }
+        />
       ) : (
-        <Button
-          label={followLabel}
-          size="small"
-          variant="solid"
-          color={colorInverted ? 'secondary_inverted' : 'primary'}
-          {...rest}
-          onPress={(e: GestureResponderEvent) => {
-            void onPressFollow(e)
-          }}>
-          {withIcon && (
-            <ButtonIcon icon={Plus} position={isRound ? undefined : 'left'} />
-          )}
-          {isRound ? null : <ButtonText>{followLabel}</ButtonText>}
-        </Button>
+        renderFollowButton()
       )}
     </View>
   )

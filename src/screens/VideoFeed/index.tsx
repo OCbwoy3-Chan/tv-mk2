@@ -85,6 +85,7 @@ import {atoms as a, ios, platform, ThemeProvider, useTheme} from '#/alf'
 import {setSystemUITheme} from '#/alf/util/systemUI'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {Divider} from '#/components/Divider'
+import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {ArrowLeft_Stroke2_Corner0_Rounded as ArrowLeftIcon} from '#/components/icons/Arrow'
 import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
 import {EyeSlash_Stroke2_Corner0_Rounded as Eye} from '#/components/icons/EyeSlash'
@@ -100,6 +101,7 @@ import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_ANDROID} from '#/env'
 import * as bsky from '#/types/bsky'
+import {useEphemeralFollowAction} from '#/components/hooks/useEphemeralFollowAction'
 import {Scrubber, VIDEO_PLAYER_BOTTOM_INSET} from './components/Scrubber'
 
 function createThreeVideoPlayers(
@@ -723,7 +725,7 @@ function Overlay({
   const {t: l} = useLingui()
   const t = useTheme()
   const {openComposer} = useOpenComposer()
-  const {currentAccount} = useSession()
+  const {accounts, currentAccount} = useSession()
   const navigation = useNavigation<NavigationProp>()
   const seekingAnimationSV = useSharedValue(0)
 
@@ -731,6 +733,14 @@ function Overlay({
   const [queueFollow, queueUnfollow] = useProfileFollowMutationQueue(
     profile,
     'ImmersiveVideo',
+  )
+  const onSelectEphemeralAccount = useEphemeralFollowAction({
+    profile,
+    logContext: 'ImmersiveVideo',
+  })
+  const hasAlternateAccounts = useMemo(
+    () => accounts.some(account => account.did !== currentAccount?.did),
+    [accounts, currentAccount?.did],
   )
 
   const rkey = new AtUri(post.uri).rkey
@@ -839,35 +849,80 @@ function Overlay({
                 {/* show button based on non-reactive version, so it doesn't hide on press */}
                 {post.author.did !== currentAccount?.did &&
                   !post.author.viewer?.following && (
-                    <Button
-                      label={
-                        profile.viewer?.following
-                          ? l`Following ${handle}`
-                          : l`Follow ${handle}`
-                      }
-                      accessibilityHint={
-                        profile.viewer?.following ? l`Unfollows the user` : ''
-                      }
-                      size="small"
-                      variant="solid"
-                      color="secondary_inverted"
-                      style={[a.mb_xs]}
-                      onPress={() =>
-                        profile.viewer?.following
-                          ? void queueUnfollow()
-                          : void queueFollow()
-                      }>
-                      {!!profile.viewer?.following && (
-                        <ButtonIcon icon={CheckIcon} />
-                      )}
-                      <ButtonText>
-                        {profile.viewer?.following ? (
-                          <Trans>Following</Trans>
-                        ) : (
-                          <Trans>Follow</Trans>
+                    currentAccount && hasAlternateAccounts ? (
+                      <EphemeralAccountSwitcher
+                        selectedDid={currentAccount.did}
+                        title={l`Follow as`}
+                        triggerBehavior="longPress"
+                        onSelectAccount={account => {
+                          void onSelectEphemeralAccount(account)
+                        }}
+                        renderTrigger={({triggerProps}) => (
+                          <Button
+                            label={
+                              profile.viewer?.following
+                                ? l`Following ${handle}`
+                                : l`Follow ${handle}`
+                            }
+                            accessibilityHint={
+                              profile.viewer?.following
+                                ? l`Unfollows the user`
+                                : ''
+                            }
+                            onLongPress={triggerProps.onLongPress}
+                            size="small"
+                            variant="solid"
+                            color="secondary_inverted"
+                            style={[a.mb_xs]}
+                            onPress={() =>
+                              profile.viewer?.following
+                                ? void queueUnfollow()
+                                : void queueFollow()
+                            }>
+                            {!!profile.viewer?.following && (
+                              <ButtonIcon icon={CheckIcon} />
+                            )}
+                            <ButtonText>
+                              {profile.viewer?.following ? (
+                                <Trans>Following</Trans>
+                              ) : (
+                                <Trans>Follow</Trans>
+                              )}
+                            </ButtonText>
+                          </Button>
                         )}
-                      </ButtonText>
-                    </Button>
+                      />
+                    ) : (
+                      <Button
+                        label={
+                          profile.viewer?.following
+                            ? l`Following ${handle}`
+                            : l`Follow ${handle}`
+                        }
+                        accessibilityHint={
+                          profile.viewer?.following ? l`Unfollows the user` : ''
+                        }
+                        size="small"
+                        variant="solid"
+                        color="secondary_inverted"
+                        style={[a.mb_xs]}
+                        onPress={() =>
+                          profile.viewer?.following
+                            ? void queueUnfollow()
+                            : void queueFollow()
+                        }>
+                        {!!profile.viewer?.following && (
+                          <ButtonIcon icon={CheckIcon} />
+                        )}
+                        <ButtonText>
+                          {profile.viewer?.following ? (
+                            <Trans>Following</Trans>
+                          ) : (
+                            <Trans>Follow</Trans>
+                          )}
+                        </ButtonText>
+                      </Button>
+                    )
                   )}
               </View>
               {record?.text?.trim() && (

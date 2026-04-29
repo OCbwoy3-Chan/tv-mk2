@@ -6,7 +6,7 @@ import {
   type AppBskyFeedThreadgate,
   type RichText as RichTextAPI,
 } from '@atproto/api'
-import {plural} from '@lingui/core/macro'
+import {msg, plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react/macro'
 
 import {CountWheel} from '#/lib/custom-animations/CountWheel'
@@ -24,7 +24,7 @@ import {
   usePostLikeMutationQueue,
   usePostRepostMutationQueue,
 } from '#/state/queries/post'
-import {useRequireAuth} from '#/state/session'
+import {useRequireAuth, useSession} from '#/state/session'
 import {
   ProgressGuideAction,
   useProgressGuideControls,
@@ -35,7 +35,9 @@ import {Reply as Bubble} from '#/components/icons/Reply'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
 import * as Toast from '#/components/Toast'
+import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {useAnalytics} from '#/analytics'
+import {useRunWithEphemeralAgent} from '../hooks/useRunWithEphemeralAgent'
 import {useAutoLikeOnRepost} from '../../state/preferences/auto-like-on-repost.tsx'
 import {BookmarkButton} from './BookmarkButton'
 import {
@@ -85,7 +87,9 @@ let PostControls = ({
   const {t: l} = useLingui()
   const {openComposer} = useOpenComposer()
   const {feedDescriptor} = useFeedFeedbackContext()
+  const {accounts, currentAccount} = useSession()
   const getPost = useGetPost()
+  const runWithEphemeralAgent = useRunWithEphemeralAgent()
   const [queueLike, queueUnlike] = usePostLikeMutationQueue(
     post,
     viaRepost,
@@ -242,23 +246,186 @@ let PostControls = ({
     })
   }
 
+  const onReplyAsAccount = (accountDid: string) => {
+    setTimeout(() => {
+      ax.metric('post:clickReply', {
+        uri: post.uri,
+        authorDid: post.author.did,
+        logContext,
+        feedDescriptor,
+      })
+      openComposer({
+        activeAccountDid: accountDid,
+        replyTo: {
+          uri: post.uri,
+          cid: post.cid,
+          text: record.text || '',
+          author: post.author,
+          embed: post.embed,
+          langs: record.langs,
+        },
+        onPost: onPostReply,
+        logContext: 'PostReply',
+      })
+    }, 0)
+  }
+
   const secondaryControlSpacingStyles = useSecondaryControlSpacingStyles({
     variant,
     big,
     gtPhone,
   })
+  const hasAlternateAccounts = accounts.some(
+    account => account.did !== currentAccount?.did,
+  )
+
+  const onSelectLikeAccount = async (account: (typeof accounts)[number]) => {
+    try {
+      const wasLiked = await runWithEphemeralAgent(account, async agent => {
+        const res = await agent.getPosts({uris: [post.uri]})
+        const target = res.data.posts[0]
+        const likeUri = target?.viewer?.like
+
+        if (likeUri) {
+          await agent.deleteLike(likeUri)
+          return true
+        }
+
+        await agent.like(post.uri, post.cid)
+        return false
+      })
+
+      Toast.show(
+        wasLiked
+          ? l`Removed like as @${account.handle}`
+          : l`Liked as @${account.handle}`,
+      )
+    } catch (e) {
+      Toast.show(l`An issue occurred, please try again.`, {
+        type: 'error',
+      })
+    }
+  }
+
+  const onSelectRepostAccount = async (account: (typeof accounts)[number]) => {
+    try {
+      const wasReposted = await runWithEphemeralAgent(account, async agent => {
+        const res = await agent.getPosts({uris: [post.uri]})
+        const target = res.data.posts[0]
+        const repostUri = target?.viewer?.repost
+
+        if (repostUri) {
+          await agent.deleteRepost(repostUri)
+          return true
+        }
+
+        await agent.repost(post.uri, post.cid)
+        return false
+      })
+
+      Toast.show(
+        wasReposted
+          ? l`Removed repost as @${account.handle}`
+          : l`Reposted as @${account.handle}`,
+      )
+    } catch (e) {
+      Toast.show(l`An issue occurred, please try again.`, {
+        type: 'error',
+      })
+    }
+  }
+
+  const onSelectBookmarkAccount = async (
+    account: (typeof accounts)[number],
+  ) => {
+    try {
+      const wasBookmarked = await runWithEphemeralAgent(account, async agent => {
+        const res = await agent.getPosts({uris: [post.uri]})
+        const target = res.data.posts[0]
+
+        if (target?.viewer?.bookmarked) {
+          await agent.app.bsky.bookmark.deleteBookmark({uri: post.uri})
+          return true
+        }
+
+        await agent.app.bsky.bookmark.createBookmark({
+          uri: post.uri,
+          cid: post.cid,
+        })
+        return false
+      })
+
+      Toast.show(
+        wasBookmarked
+          ? l`Removed save as @${account.handle}`
+          : l`Saved as @${account.handle}`,
+      )
+    } catch (e) {
+      Toast.show(l`An issue occurred, please try again.`, {
+        type: 'error',
+      })
+    }
+  }
+
+  const renderLikeButton = (onLongPress?: () => void) => (
+    <PostControlButton
+      testID="likeBtn"
+      big={big}
+      active={Boolean(post.viewer?.like)}
+      activeColor={t.palette.pink}
+      onPress={() => requireAuth(() => onPressToggleLike())}
+      onLongPress={onLongPress}
+      label={
+        post.viewer?.like
+          ? l({
+              message: `Unlike (${plural(post.likeCount || 0, {
+                one: '# like',
+                other: '# likes',
+              })})`,
+              comment:
+                'Accessibility label for the like button when the post has been liked, verb followed by number of likes and noun',
+            })
+          : l({
+              message: `Like (${plural(post.likeCount || 0, {
+                one: '# like',
+                other: '# likes',
+              })})`,
+              comment:
+                'Accessibility label for the like button when the post has not been liked, verb form followed by number of likes and noun form',
+            })
+      }>
+      <AnimatedLikeIcon
+        isLiked={Boolean(post.viewer?.like)}
+        big={big}
+        hasBeenToggled={hasLikeIconBeenToggled}
+      />
+      {!disableLikesMetrics ? (
+        <CountWheel
+          count={post.likeCount ?? 0}
+          isToggled={Boolean(post.viewer?.like)}
+          hasBeenToggled={hasLikeIconBeenToggled}
+          renderCount={({count}) => (
+            <PostControlButtonText testID="likeCount">
+              {formatPostStatCount(count)}
+            </PostControlButtonText>
+          )}
+        />
+      ) : null}
+    </PostControlButton>
+  )
 
   return (
-    <View
-      style={[
-        a.flex_row,
-        a.justify_between,
-        a.align_center,
-        !big && a.pt_2xs,
-        a.gap_md,
-        style,
-      ]}>
-      <View style={[a.flex_row, a.flex_1, {maxWidth: 320}]}>
+    <>
+      <View
+        style={[
+          a.flex_row,
+          a.justify_between,
+          a.align_center,
+          !big && a.pt_2xs,
+          a.gap_md,
+          style,
+        ]}>
+        <View style={[a.flex_row, a.flex_1, {maxWidth: 320}]}>
         <View
           style={[
             a.flex_1,
@@ -266,11 +433,18 @@ let PostControls = ({
             {marginLeft: big ? -2 : -6},
             replyDisabled ? {opacity: 0.6} : undefined,
           ]}>
-          <PostControlButton
-            testID="replyBtn"
-            onPress={
-              !replyDisabled
-                ? () =>
+          {currentAccount && hasAlternateAccounts && !replyDisabled ? (
+            <EphemeralAccountSwitcher
+              selectedDid={currentAccount.did}
+              title={l`Reply as`}
+              triggerBehavior="longPress"
+              onSelectAccount={account => {
+                onReplyAsAccount(account.did)
+              }}
+              renderTrigger={({triggerProps}) => (
+                <PostControlButton
+                  testID="replyBtn"
+                  onPress={() =>
                     requireAuth(() => {
                       ax.metric('post:clickReply', {
                         uri: post.uri,
@@ -280,97 +454,154 @@ let PostControls = ({
                       })
                       onPressReply()
                     })
-                : undefined
-            }
-            label={l({
-              message: `Reply (${plural(post.replyCount || 0, {
-                one: '# reply',
-                other: '# replies',
-              })})`,
-              comment:
-                'Accessibility label for the reply button, verb form followed by number of replies and noun form',
-            })}
-            big={big}>
-            <PostControlButtonIcon icon={Bubble} />
-            {typeof post.replyCount !== 'undefined' &&
-              post.replyCount > 0 &&
-              !disableReplyMetrics && (
-                <PostControlButtonText>
-                  {formatPostStatCount(post.replyCount)}
-                </PostControlButtonText>
+                  }
+                  onLongPress={triggerProps.onLongPress}
+                  label={l({
+                    message: `Reply (${plural(post.replyCount || 0, {
+                      one: '# reply',
+                      other: '# replies',
+                    })})`,
+                    comment:
+                      'Accessibility label for the reply button, verb form followed by number of replies and noun form',
+                  })}
+                  big={big}>
+                  <PostControlButtonIcon icon={Bubble} />
+                  {typeof post.replyCount !== 'undefined' &&
+                    post.replyCount > 0 &&
+                    !disableReplyMetrics && (
+                      <PostControlButtonText>
+                        {formatPostStatCount(post.replyCount)}
+                      </PostControlButtonText>
+                    )}
+                </PostControlButton>
               )}
-          </PostControlButton>
-        </View>
-        <View style={[a.flex_1, a.align_start]}>
-          <RepostButton
-            isReposted={!!post.viewer?.repost}
-            repostCount={
-              (!disableRepostsMetrics ? (post.repostCount ?? 0) : 0) +
-              (!disableQuotesMetrics ? (post.quoteCount ?? 0) : 0)
-            }
-            onRepost={() => void onRepost()}
-            onQuote={onQuote}
-            big={big}
-            embeddingDisabled={Boolean(post.viewer?.embeddingDisabled)}
-          />
-        </View>
-        <View style={[a.flex_1, a.align_start]}>
-          <PostControlButton
-            testID="likeBtn"
-            big={big}
-            active={Boolean(post.viewer?.like)}
-            activeColor={t.palette.pink}
-            onPress={() => requireAuth(() => onPressToggleLike())}
-            label={
-              post.viewer?.like
-                ? l({
-                    message: `Unlike (${plural(post.likeCount || 0, {
-                      one: '# like',
-                      other: '# likes',
-                    })})`,
-                    comment:
-                      'Accessibility label for the like button when the post has been liked, verb followed by number of likes and noun',
-                  })
-                : l({
-                    message: `Like (${plural(post.likeCount || 0, {
-                      one: '# like',
-                      other: '# likes',
-                    })})`,
-                    comment:
-                      'Accessibility label for the like button when the post has not been liked, verb form followed by number of likes and noun form',
-                  })
-            }>
-            <AnimatedLikeIcon
-              isLiked={Boolean(post.viewer?.like)}
-              big={big}
-              hasBeenToggled={hasLikeIconBeenToggled}
             />
-            {!disableLikesMetrics ? (
-              <CountWheel
-                count={post.likeCount ?? 0}
-                isToggled={Boolean(post.viewer?.like)}
-                hasBeenToggled={hasLikeIconBeenToggled}
-                renderCount={({count}) => (
-                  <PostControlButtonText testID="likeCount">
-                    {formatPostStatCount(count)}
+          ) : (
+            <PostControlButton
+              testID="replyBtn"
+              onPress={
+                !replyDisabled
+                  ? () =>
+                      requireAuth(() => {
+                        ax.metric('post:clickReply', {
+                          uri: post.uri,
+                          authorDid: post.author.did,
+                          logContext,
+                          feedDescriptor,
+                        })
+                        onPressReply()
+                      })
+                  : undefined
+              }
+              label={l({
+                message: `Reply (${plural(post.replyCount || 0, {
+                  one: '# reply',
+                  other: '# replies',
+                })})`,
+                comment:
+                  'Accessibility label for the reply button, verb form followed by number of replies and noun form',
+              })}
+              big={big}>
+              <PostControlButtonIcon icon={Bubble} />
+              {typeof post.replyCount !== 'undefined' &&
+                post.replyCount > 0 &&
+                !disableReplyMetrics && (
+                  <PostControlButtonText>
+                    {formatPostStatCount(post.replyCount)}
                   </PostControlButtonText>
                 )}
+            </PostControlButton>
+          )}
+        </View>
+          <View style={[a.flex_1, a.align_start]}>
+            {currentAccount && hasAlternateAccounts ? (
+              <EphemeralAccountSwitcher
+                selectedDid={currentAccount.did}
+                title={l`Repost as`}
+                triggerBehavior="longPress"
+                onSelectAccount={account => {
+                  void onSelectRepostAccount(account)
+                }}
+                renderTrigger={({triggerProps}) => (
+                  <RepostButton
+                    isReposted={!!post.viewer?.repost}
+                    repostCount={
+                      (!disableRepostsMetrics ? (post.repostCount ?? 0) : 0) +
+                      (!disableQuotesMetrics ? (post.quoteCount ?? 0) : 0)
+                    }
+                    onRepost={() => void onRepost()}
+                    onQuote={onQuote}
+                    onLongPress={triggerProps.onLongPress}
+                    big={big}
+                    embeddingDisabled={Boolean(post.viewer?.embeddingDisabled)}
+                  />
+                )}
               />
-            ) : null}
-          </PostControlButton>
+            ) : (
+              <RepostButton
+                isReposted={!!post.viewer?.repost}
+                repostCount={
+                  (!disableRepostsMetrics ? (post.repostCount ?? 0) : 0) +
+                  (!disableQuotesMetrics ? (post.quoteCount ?? 0) : 0)
+                }
+                onRepost={() => void onRepost()}
+                onQuote={onQuote}
+                big={big}
+                embeddingDisabled={Boolean(post.viewer?.embeddingDisabled)}
+              />
+            )}
+          </View>
+        <View style={[a.flex_1, a.align_start]}>
+          {currentAccount && hasAlternateAccounts ? (
+            <EphemeralAccountSwitcher
+              selectedDid={currentAccount.did}
+              title={l`Like as`}
+              triggerBehavior="longPress"
+              onSelectAccount={account => {
+                void onSelectLikeAccount(account)
+              }}
+              renderTrigger={({triggerProps}) =>
+                renderLikeButton(triggerProps.onLongPress)
+              }
+            />
+          ) : (
+            renderLikeButton()
+          )}
         </View>
         {/* Spacer! */}
         <View />
-      </View>
-      <View style={[a.flex_row, a.justify_end, secondaryControlSpacingStyles]}>
-        <BookmarkButton
-          post={post}
-          big={big}
-          logContext={logContext}
-          hitSlop={{
-            right: secondaryControlSpacingStyles.gap / 2,
-          }}
-        />
+        </View>
+        <View style={[a.flex_row, a.justify_end, secondaryControlSpacingStyles]}>
+        {currentAccount && hasAlternateAccounts ? (
+          <EphemeralAccountSwitcher
+            selectedDid={currentAccount.did}
+            title={l`Save as`}
+            triggerBehavior="longPress"
+            onSelectAccount={account => {
+              void onSelectBookmarkAccount(account)
+            }}
+            renderTrigger={({triggerProps}) => (
+              <BookmarkButton
+                post={post}
+                big={big}
+                logContext={logContext}
+                onLongPress={triggerProps.onLongPress}
+                hitSlop={{
+                  right: secondaryControlSpacingStyles.gap / 2,
+                }}
+              />
+            )}
+          />
+        ) : (
+          <BookmarkButton
+            post={post}
+            big={big}
+            logContext={logContext}
+            hitSlop={{
+              right: secondaryControlSpacingStyles.gap / 2,
+            }}
+          />
+        )}
         <ShareMenuButton
           testID="postShareBtn"
           post={post}
@@ -386,25 +617,26 @@ let PostControls = ({
           }}
           logContext={logContext}
         />
-        <PostMenuButton
-          testID="postDropdownBtn"
-          post={post}
-          postFeedContext={feedContext}
-          postReqId={reqId}
-          big={big}
-          record={record}
-          richText={richText}
-          timestamp={post.indexedAt}
-          threadgateRecord={threadgateRecord}
-          onShowLess={onShowLess}
-          hitSlop={{
-            left: secondaryControlSpacingStyles.gap / 2,
-          }}
-          logContext={logContext}
-          forceGoogleTranslate={forceGoogleTranslate}
-        />
+          <PostMenuButton
+            testID="postDropdownBtn"
+            post={post}
+            postFeedContext={feedContext}
+            postReqId={reqId}
+            big={big}
+            record={record}
+            richText={richText}
+            timestamp={post.indexedAt}
+            threadgateRecord={threadgateRecord}
+            onShowLess={onShowLess}
+            hitSlop={{
+              left: secondaryControlSpacingStyles.gap / 2,
+            }}
+            logContext={logContext}
+            forceGoogleTranslate={forceGoogleTranslate}
+          />
+        </View>
       </View>
-    </View>
+    </>
   )
 }
 PostControls = memo(PostControls)

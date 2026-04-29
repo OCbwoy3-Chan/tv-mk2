@@ -49,6 +49,7 @@ export type ComposerLogContext =
   | 'Other'
 
 export interface ComposerOpts {
+  activeAccountDid?: string
   replyTo?: ComposerOptsPostRef
   onPost?: (postUri: string | undefined) => void
   onPostSuccess?: (data: OnPostSuccessData) => void

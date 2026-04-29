@@ -47,6 +47,7 @@ export function Composer({winHeight}: {winHeight: number}) {
       aria-modal
       accessibilityViewIsModal>
       <ComposePost
+        activeAccountDid={state.activeAccountDid}
         replyTo={state.replyTo}
         onPost={state.onPost}
         onPostSuccess={state.onPostSuccess}

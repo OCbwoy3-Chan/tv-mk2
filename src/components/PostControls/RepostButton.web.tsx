@@ -19,6 +19,7 @@ interface Props {
   repostCount?: number
   onRepost: () => void
   onQuote: () => void
+  onLongPress?: () => void
   big?: boolean
   embeddingDisabled: boolean
 }
@@ -28,6 +29,7 @@ export const RepostButton = ({
   repostCount,
   onRepost,
   onQuote,
+  onLongPress,
   big,
   embeddingDisabled,
 }: Props) => {
@@ -49,6 +51,7 @@ export const RepostButton = ({
                 activeColor={t.palette.positive_500}
                 label={props.accessibilityLabel}
                 big={big}
+                onLongPress={onLongPress}
                 {...props}>
                 <PostControlButtonIcon icon={Repost} />
                 {typeof repostCount !== 'undefined' && repostCount > 0 && (

@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {
@@ -11,6 +12,7 @@ import {
   type GestureResponderEvent,
   type MouseEvent,
   type NativeSyntheticEvent,
+  type PointerEvent,
   Pressable,
   type PressableProps,
   type StyleProp,
@@ -26,6 +28,7 @@ import {useThemePrefs} from '#/state/shell'
 import {atoms as a, flatten, select, useTheme} from '#/alf'
 import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Text} from '#/components/Typography'
+import {IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
 
 /**
  * The `Button` component, and some extensions of it like `Link` are intended
@@ -142,6 +145,8 @@ export const Button = forwardRef<View, ButtonProps>(
       style,
       hoverStyle: hoverStyleProp,
       PressableComponent = Pressable,
+      onPress: onPressOuter,
+      onLongPress: onLongPressOuter,
       onPressIn: onPressInOuter,
       onPressOut: onPressOutOuter,
       onHoverIn: onHoverInOuter,
@@ -164,11 +169,20 @@ export const Button = forwardRef<View, ButtonProps>(
     const enableSquareButtons = useEnableSquareButtons()
 
     const t = useTheme()
+    const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const longPressTriggeredRef = useRef(false)
     const [state, setState] = useState({
       pressed: false,
       hovered: false,
       focused: false,
     })
+
+    const clearLongPressTimer = useCallback(() => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current)
+        longPressTimerRef.current = null
+      }
+    }, [])
 
     const onPressIn = useCallback(
       (e: GestureResponderEvent) => {
@@ -176,6 +190,7 @@ export const Button = forwardRef<View, ButtonProps>(
           ...s,
           pressed: true,
         }))
+        longPressTriggeredRef.current = false
         onPressInOuter?.(e)
       },
       [setState, onPressInOuter],
@@ -186,10 +201,40 @@ export const Button = forwardRef<View, ButtonProps>(
           ...s,
           pressed: false,
         }))
+        clearLongPressTimer()
         onPressOutOuter?.(e)
       },
-      [setState, onPressOutOuter],
+      [clearLongPressTimer, setState, onPressOutOuter],
     )
+    const onPress = useCallback(
+      (e: GestureResponderEvent) => {
+        if (longPressTriggeredRef.current) {
+          longPressTriggeredRef.current = false
+          return
+        }
+        onPressOuter?.(e)
+      },
+      [onPressOuter],
+    )
+    const onPointerDown = useCallback(
+      (e: PointerEvent) => {
+        if (onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE) {
+          clearLongPressTimer()
+          longPressTriggeredRef.current = false
+          longPressTimerRef.current = setTimeout(() => {
+            longPressTriggeredRef.current = true
+            onLongPressOuter(e as unknown as GestureResponderEvent)
+          }, 500)
+        }
+      },
+      [clearLongPressTimer, onLongPressOuter],
+    )
+    const onPointerUp = useCallback(() => {
+      clearLongPressTimer()
+    }, [clearLongPressTimer])
+    const onPointerLeave = useCallback(() => {
+      clearLongPressTimer()
+    }, [clearLongPressTimer])
     const onHoverIn = useCallback(
       (e: MouseEvent) => {
         setState(s => ({
@@ -554,6 +599,14 @@ export const Button = forwardRef<View, ButtonProps>(
         role="button"
         accessibilityHint={undefined} // optional
         {...rest}
+        {...((onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE
+          ? {
+              onPointerDown,
+              onPointerUp,
+              onPointerLeave,
+              onContextMenu: (e: Event) => e.preventDefault(),
+            }
+          : {}) as any)}
         // @ts-ignore - this will always be a pressable
         ref={ref}
         aria-label={label}
@@ -576,6 +629,8 @@ export const Button = forwardRef<View, ButtonProps>(
         ]}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
+        onPress={onPress}
+        onLongPress={!IS_WEB || IS_WEB_TOUCH_DEVICE ? onLongPressOuter : undefined}
         onHoverIn={onHoverIn}
         onHoverOut={onHoverOut}
         onFocus={onFocus}

@@ -24,6 +24,7 @@ interface Props {
   repostCount?: number
   onRepost: () => void
   onQuote: () => void
+  onLongPress?: () => void
   big?: boolean
   embeddingDisabled: boolean
 }
@@ -33,6 +34,7 @@ let RepostButton = ({
   repostCount,
   onRepost,
   onQuote,
+  onLongPress,
   big,
   embeddingDisabled,
 }: Props): React.ReactNode => {
@@ -44,7 +46,7 @@ let RepostButton = ({
 
   const onPress = () => requireAuth(() => dialogControl.open())
 
-  const onLongPress = () =>
+  const onDefaultLongPress = () =>
     requireAuth(() => {
       if (embeddingDisabled) {
         dialogControl.open()
@@ -54,14 +56,14 @@ let RepostButton = ({
     })
 
   return (
-    <>
+    <View>
       <PostControlButton
         testID="repostBtn"
         active={isReposted}
         activeColor={t.palette.positive_500}
         big={big}
         onPress={onPress}
-        onLongPress={onLongPress}
+        onLongPress={onLongPress ?? onDefaultLongPress}
         label={
           isReposted
             ? _(
@@ -103,13 +105,13 @@ let RepostButton = ({
           embeddingDisabled={embeddingDisabled}
         />
       </Dialog.Outer>
-    </>
+    </View>
   )
 }
 RepostButton = memo(RepostButton)
 export {RepostButton}
 
-let RepostButtonDialogInner = ({
+export const RepostButtonDialogInner = memo(function RepostButtonDialogInner({
   isReposted,
   onRepost,
   onQuote,
@@ -119,7 +121,7 @@ let RepostButtonDialogInner = ({
   onRepost: () => void
   onQuote: () => void
   embeddingDisabled: boolean
-}): React.ReactNode => {
+}): React.ReactNode {
   const t = useTheme()
   const {_} = useLingui()
   const playHaptic = useHaptics()
@@ -213,6 +215,4 @@ let RepostButtonDialogInner = ({
       </View>
     </Dialog.ScrollableInner>
   )
-}
-RepostButtonDialogInner = memo(RepostButtonDialogInner)
-export {RepostButtonDialogInner}
+})

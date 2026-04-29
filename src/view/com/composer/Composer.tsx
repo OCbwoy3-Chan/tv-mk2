@@ -196,6 +196,7 @@ type CancelRef = {
 
 type Props = ComposerOpts
 export const ComposePost = ({
+  activeAccountDid: initialActiveAccountDid,
   replyTo,
   onPost,
   onPostSuccess,
@@ -218,7 +219,13 @@ export const ComposePost = ({
   const queryClient = useQueryClient()
   const currentDid = currentAccount!.did
 
-  const [activeAccountDid, setActiveAccountDid] = useState<string>(currentDid)
+  const [activeAccountDid, setActiveAccountDid] = useState<string>(
+    initialActiveAccountDid ?? currentDid,
+  )
+
+  useEffect(() => {
+    setActiveAccountDid(initialActiveAccountDid ?? currentDid)
+  }, [initialActiveAccountDid, currentDid])
 
   const {closeComposer} = useComposerControls()
   const {requestSwitchToAccount} = useLoggedOutViewControls()

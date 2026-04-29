@@ -42,6 +42,7 @@ import {SubscribeProfileButton} from '#/components/activity-notifications/Subscr
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
 import {useDialogControl} from '#/components/Dialog'
+import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {MessageProfileButton} from '#/components/dms/MessageProfileButton'
 import {CalendarDays_Stroke2_Corner0_Rounded as CalendarDays} from '#/components/icons/CalendarDays'
 import {Globe_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
@@ -64,6 +65,7 @@ import {ProfileHeaderHandle} from './Handle'
 import {ProfileHeaderMetrics} from './Metrics'
 import {ProfileHeaderShell} from './Shell'
 import {ProfileHeaderSuggestedFollows} from './SuggestedFollows'
+import {useEphemeralFollowAction} from '#/components/hooks/useEphemeralFollowAction'
 
 interface Props {
   profile: AppBskyActorDefs.ProfileViewDetailed
@@ -318,7 +320,7 @@ export function HeaderStandardButtons({
   minimal?: boolean
 }) {
   const {_} = useLingui()
-  const {hasSession, currentAccount} = useSession()
+  const {accounts, hasSession, currentAccount} = useSession()
   const playHaptic = useHaptics()
   const requireAuth = useRequireAuth()
   const [queueFollow, queueUnfollow] = useProfileFollowMutationQueue(
@@ -329,6 +331,15 @@ export function HeaderStandardButtons({
   const editProfileControl = useDialogControl()
   const unblockPromptControl = Prompt.usePromptControl()
   const hideScaryFollowButtons = useHideScaryFollowButtons()
+  const onSelectEphemeralAccount = useEphemeralFollowAction({
+    profile,
+    logContext: 'ProfileHeader',
+    onFollow,
+    onUnfollow,
+  })
+  const hasAlternateAccounts = accounts.some(
+    account => account.did !== currentAccount?.did,
+  )
 
   const isMe = currentAccount?.did === profile.did
 
@@ -462,33 +473,80 @@ export function HeaderStandardButtons({
 
           {(!minimal || !profile.viewer?.following) &&
             !(minimal && hideScaryFollowButtons) && (
-              <Button
-                testID={profile.viewer?.following ? 'unfollowBtn' : 'followBtn'}
-                size="small"
-                color={profile.viewer?.following ? 'secondary' : 'primary'}
-                label={
-                  profile.viewer?.following
-                    ? _(msg`Unfollow ${profile.handle}`)
-                    : _(msg`Follow ${profile.handle}`)
-                }
-                onPress={
-                  profile.viewer?.following ? onPressUnfollow : onPressFollow
-                }>
-                {!profile.viewer?.following && <ButtonIcon icon={Plus} />}
-                <ButtonText>
-                  {profile.viewer?.following ? (
-                    profile.viewer?.followedBy ? (
-                      <Trans>Mutuals</Trans>
-                    ) : (
-                      <Trans>Following</Trans>
-                    )
-                  ) : profile.viewer?.followedBy ? (
-                    <Trans>Follow back</Trans>
-                  ) : (
-                    <Trans>Follow</Trans>
+              (currentAccount && hasAlternateAccounts ? (
+                <EphemeralAccountSwitcher
+                  selectedDid={currentAccount.did}
+                  title={_(msg`Follow as`)}
+                  triggerBehavior="longPress"
+                  onSelectAccount={account => {
+                    void onSelectEphemeralAccount(account)
+                  }}
+                  renderTrigger={({triggerProps}) => (
+                    <Button
+                      testID={
+                        profile.viewer?.following ? 'unfollowBtn' : 'followBtn'
+                      }
+                      size="small"
+                      color={
+                        profile.viewer?.following ? 'secondary' : 'primary'
+                      }
+                      label={
+                        profile.viewer?.following
+                          ? _(msg`Unfollow ${profile.handle}`)
+                          : _(msg`Follow ${profile.handle}`)
+                      }
+                      onLongPress={triggerProps.onLongPress}
+                      onPress={
+                        profile.viewer?.following
+                          ? onPressUnfollow
+                          : onPressFollow
+                      }>
+                      {!profile.viewer?.following && <ButtonIcon icon={Plus} />}
+                      <ButtonText>
+                        {profile.viewer?.following ? (
+                          profile.viewer?.followedBy ? (
+                            <Trans>Mutuals</Trans>
+                          ) : (
+                            <Trans>Following</Trans>
+                          )
+                        ) : profile.viewer?.followedBy ? (
+                          <Trans>Follow back</Trans>
+                        ) : (
+                          <Trans>Follow</Trans>
+                        )}
+                      </ButtonText>
+                    </Button>
                   )}
-                </ButtonText>
-              </Button>
+                />
+              ) : (
+                <Button
+                  testID={profile.viewer?.following ? 'unfollowBtn' : 'followBtn'}
+                  size="small"
+                  color={profile.viewer?.following ? 'secondary' : 'primary'}
+                  label={
+                    profile.viewer?.following
+                      ? _(msg`Unfollow ${profile.handle}`)
+                      : _(msg`Follow ${profile.handle}`)
+                  }
+                  onPress={
+                    profile.viewer?.following ? onPressUnfollow : onPressFollow
+                  }>
+                  {!profile.viewer?.following && <ButtonIcon icon={Plus} />}
+                  <ButtonText>
+                    {profile.viewer?.following ? (
+                      profile.viewer?.followedBy ? (
+                        <Trans>Mutuals</Trans>
+                      ) : (
+                        <Trans>Following</Trans>
+                      )
+                    ) : profile.viewer?.followedBy ? (
+                      <Trans>Follow back</Trans>
+                    ) : (
+                      <Trans>Follow</Trans>
+                    )}
+                  </ButtonText>
+                </Button>
+              ))
             )}
         </>
       ) : null}

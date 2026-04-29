@@ -22,11 +22,13 @@ export const BookmarkButton = memo(function BookmarkButton({
   big,
   logContext,
   hitSlop,
+  onLongPress,
 }: {
   post: Shadow<AppBskyFeedDefs.PostView>
   big?: boolean
   logContext: 'FeedItem' | 'PostThreadItem' | 'Post' | 'ImmersiveVideo'
   hitSlop?: Insets
+  onLongPress?: () => void
 }): React.ReactNode {
   const t = useTheme()
   const ax = useAnalytics()
@@ -144,6 +146,7 @@ export const BookmarkButton = memo(function BookmarkButton({
           : _(msg`Add to saved posts`)
       }
       onPress={onHandlePress}
+      onLongPress={onLongPress}
       hitSlop={hitSlop}>
       <PostControlButtonIcon icon={isBookmarked ? BookmarkFilled : Bookmark} />
     </PostControlButton>

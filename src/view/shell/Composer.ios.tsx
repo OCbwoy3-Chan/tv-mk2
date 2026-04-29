@@ -38,6 +38,7 @@ export function Composer({}: {winHeight: number}) {
         <TooltipSheetCompatProvider>
           <ComposePost
             cancelRef={ref}
+            activeAccountDid={state?.activeAccountDid}
             replyTo={state?.replyTo}
             onPost={state?.onPost}
             onPostSuccess={state?.onPostSuccess}
