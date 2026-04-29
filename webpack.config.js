@@ -39,6 +39,13 @@ module.exports = async function (env, argv) {
   ]
   if (env.mode === 'development') {
     config.plugins.push(new ReactRefreshWebpackPlugin())
+    config.devServer = config.devServer || {}
+    config.devServer.historyApiFallback = {
+      ...(config.devServer.historyApiFallback || {}),
+      // Handles like `xan.lol` contain dots, which the default history
+      // fallback treats as asset requests instead of app routes.
+      disableDotRule: true,
+    }
     // Reap zombie HMR WebSocket connections that linger after refresh.
     // Without this, dead sockets exhaust the browser's per-origin connection
     // pool and the dev server stops responding.

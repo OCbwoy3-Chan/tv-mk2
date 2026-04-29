@@ -434,7 +434,11 @@ module.exports = {
     },
     port: 19006,
     hot: true,
-    historyApiFallback: true,
+    historyApiFallback: {
+      // Handles like `xan.lol` contain dots, which the default history
+      // fallback treats as asset requests instead of app routes.
+      disableDotRule: true,
+    },
     compress: true,
   },
 
