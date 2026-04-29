@@ -21,6 +21,7 @@ import {logger} from '#/logger'
 import {useSetHasCheckedForStarterPack} from '#/state/preferences/used-starter-packs'
 import {useSessionApi} from '#/state/session'
 import {getWebOAuthClient} from '#/state/session/oauth-web-client'
+import {saveOAuthReturnUrl} from '#/state/session/oauth-web-return-url'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
@@ -204,6 +205,7 @@ function OAuthLoginFields({
     setIsProcessing(true)
 
     try {
+      saveOAuthReturnUrl()
       const client = getWebOAuthClient()
       await client.signIn(identifier)
       // Browser will redirect to authorization server
