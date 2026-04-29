@@ -56,6 +56,7 @@ export const router = new Router<AllNavigatableRoutes>({
   RunesUsabilityFeedSettings: '/settings/runes/usability/feeds',
   RunesDisplaySettings: '/settings/runes/display',
   RunesDisplayAlsoLikedSettings: '/settings/runes/display/also-liked',
+  RunesDisplayDensitySettings: '/settings/runes/display/density',
   RunesInfrastructureSettings: '/settings/runes/infrastructure',
   RunesExtraSettings: '/settings/runes/extra',
   RunesSettingsSyncSettings: '/settings/runes/settings-sync',

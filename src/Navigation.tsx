@@ -131,13 +131,14 @@ import {PrivacyAndSecuritySettingsScreen} from '#/screens/Settings/PrivacyAndSec
 import {RunesSettingsScreen} from '#/screens/Settings/RunesSettings'
 import {RunesDisplayAlsoLikedSettingsScreen} from '#/screens/Settings/RunesSettings/AlsoLikedSettings'
 import {RunesBadgesSettingsScreen} from '#/screens/Settings/RunesSettings/BadgesSettings'
+import {RunesDisplayDensitySettingsScreen} from '#/screens/Settings/RunesSettings/DensitySettings'
 import {RunesDisplaySettingsScreen} from '#/screens/Settings/RunesSettings/DisplaySettings'
-import {RunesSettingsSyncSettingsScreen} from '#/screens/Settings/RunesSettings/SettingsSyncSettings'
 import {RunesExtraSettingsScreen} from '#/screens/Settings/RunesSettings/ExtraSettings'
 import {RunesUsabilityFeedSettingsScreen} from '#/screens/Settings/RunesSettings/FeedSettings'
 import {RunesImpressionsSettingsScreen} from '#/screens/Settings/RunesSettings/ImpressionsSettings'
 import {RunesInfrastructureSettingsScreen} from '#/screens/Settings/RunesSettings/InfrastructureSettings'
 import {RunesMenusSettingsScreen} from '#/screens/Settings/RunesSettings/MenusSettings'
+import {RunesSettingsSyncSettingsScreen} from '#/screens/Settings/RunesSettings/SettingsSyncSettings'
 import {RunesUsabilitySettingsScreen} from '#/screens/Settings/RunesSettings/UsabilitySettings'
 import {SettingsScreen} from '#/screens/Settings/Settings'
 import {ThreadPreferencesScreen} from '#/screens/Settings/ThreadPreferences'
@@ -469,6 +470,11 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         name="RunesDisplayAlsoLikedSettings"
         getComponent={() => RunesDisplayAlsoLikedSettingsScreen}
         options={{title: title(msg`Also liked`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="RunesDisplayDensitySettings"
+        getComponent={() => RunesDisplayDensitySettingsScreen}
+        options={{title: title(msg`Density`), requireAuth: true}}
       />
       <Stack.Screen
         name="RunesInfrastructureSettings"

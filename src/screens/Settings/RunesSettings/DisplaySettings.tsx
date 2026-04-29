@@ -10,6 +10,8 @@ import {
   useAlsoLikedCollapseByDefault,
   useAlsoLikedFeedEnabled,
 } from '#/state/preferences'
+import {useAutoCompactAccountSwitcher} from '#/state/preferences/auto-compact-account-switcher'
+import {useCompactAccountSwitcher} from '#/state/preferences/compact-account-switcher'
 import {
   useHighQualityImages,
   useSetHighQualityImages,
@@ -35,6 +37,7 @@ import * as Toggle from '#/components/forms/Toggle'
 import {Heart2_Stroke2_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
 import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
+import {PersonGroup_Stroke2_Corner2_Rounded as PersonGroupIcon} from '#/components/icons/Person'
 import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
 import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
 import {Text} from '#/components/Typography'
@@ -74,6 +77,16 @@ export function RunesDisplaySettingsScreen() {
               collapseByDefault={alsoLikedCollapseByDefault}
             />
           }
+        />
+      </SettingsList.LinkItem>
+      <SettingsList.LinkItem
+        to="/settings/runes/display/density"
+        label={l`Density`}
+        contentContainerStyle={[a.align_start]}>
+        <SettingsList.ItemIcon icon={PersonGroupIcon} />
+        <ItemTextWithSubtitle
+          titleText={<Trans>Density</Trans>}
+          subtitleText={<AccountSwitcherDeclaration />}
         />
       </SettingsList.LinkItem>
       <Toggle.Item
@@ -154,6 +167,21 @@ function AlsoLikedDeclaration({
   }
 
   return <Trans>Shown in thread views, expanded by default</Trans>
+}
+
+function AccountSwitcherDeclaration() {
+  const compactAccountSwitcher = useCompactAccountSwitcher()
+  const autoCompactAccountSwitcher = useAutoCompactAccountSwitcher()
+
+  if (compactAccountSwitcher) {
+    return <Trans>Compact always on</Trans>
+  }
+
+  if (autoCompactAccountSwitcher) {
+    return <Trans>Auto-compact with 7+ accounts</Trans>
+  }
+
+  return <Trans>Default layout only</Trans>
 }
 
 function PostReplacementDialog({

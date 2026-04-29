@@ -8,6 +8,8 @@ import {Trans} from '@lingui/react/macro'
 import {isJwtExpired} from '#/lib/jwt'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {useAutoCompactAccountSwitcher} from '#/state/preferences/auto-compact-account-switcher'
+import {useCompactAccountSwitcher} from '#/state/preferences/compact-account-switcher'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useProfilesQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession} from '#/state/session'
@@ -44,6 +46,8 @@ export function AccountList({
   const t = useTheme()
   const {_} = useLingui()
   const enableSquareButtons = useEnableSquareButtons()
+  const useCompactSwitcher = useCompactAccountSwitcher()
+  const autoCompactSwitcher = useAutoCompactAccountSwitcher()
   const accounts = accountsProp ?? sessionAccounts
   const [, , hiddenDidsSet] = useHiddenAccountsElsewhere()
   const {data: profiles} = useProfilesQuery({
@@ -52,6 +56,9 @@ export function AccountList({
   const sortedAccounts = useSortedAccountItems(accounts).filter(
     account => !hiddenDidsSet.has(account.did),
   )
+  const shouldUseCompactSwitcher =
+    Boolean(useCompactSwitcher) ||
+    (Boolean(autoCompactSwitcher) && sortedAccounts.length > 6)
 
   const onPressAddAccount = useCallback(() => {
     onSelectOther()
@@ -61,7 +68,7 @@ export function AccountList({
     <View
       pointerEvents={pendingDid ? 'none' : 'auto'}
       style={[
-        a.rounded_lg,
+        shouldUseCompactSwitcher ? a.rounded_md : a.rounded_lg,
         a.overflow_hidden,
         a.border,
         t.atoms.border_contrast_low,
@@ -72,6 +79,7 @@ export function AccountList({
             profile={profiles?.profiles.find(p => p.did === account.did)}
             account={account}
             onSelect={onSelectAccount}
+            useCompactSwitcher={shouldUseCompactSwitcher}
             isCurrentAccount={
               account.did === (selectedDid ?? currentAccount?.did)
             }
@@ -92,26 +100,51 @@ export function AccountList({
                 a.flex_1,
                 a.flex_row,
                 a.align_center,
-                a.p_lg,
-                a.gap_sm,
+                shouldUseCompactSwitcher ? {height: 48} : a.p_lg,
+                shouldUseCompactSwitcher ? null : a.gap_sm,
                 (hovered || pressed) && t.atoms.bg_contrast_25,
               ]}>
-              <View
-                style={[
-                  t.atoms.bg_contrast_25,
-                  enableSquareButtons ? a.rounded_sm : a.rounded_full,
-                  {width: 48, height: 48},
-                  a.justify_center,
-                  a.align_center,
-                  (hovered || pressed) && t.atoms.bg_contrast_50,
-                ]}>
-                <PlusIcon style={[t.atoms.text_contrast_low]} size="md" />
-              </View>
-              <Text
-                style={[a.flex_1, a.leading_tight, a.text_md, a.font_medium]}>
-                {otherLabel ?? <Trans>Other account</Trans>}
-              </Text>
-              <ChevronIcon size="md" style={[t.atoms.text_contrast_low]} />
+              {shouldUseCompactSwitcher ? (
+                <>
+                  <Text
+                    style={[
+                      a.font_semi_bold,
+                      a.flex_1,
+                      a.flex_row,
+                      a.py_sm,
+                      a.leading_tight,
+                      t.atoms.text_contrast_medium,
+                      {paddingLeft: 56},
+                    ]}>
+                    {otherLabel ?? <Trans>Other account</Trans>}
+                  </Text>
+                  <ChevronIcon size="sm" style={[t.atoms.text, a.mr_md]} />
+                </>
+              ) : (
+                <>
+                  <View
+                    style={[
+                      t.atoms.bg_contrast_25,
+                      enableSquareButtons ? a.rounded_sm : a.rounded_full,
+                      {width: 48, height: 48},
+                      a.justify_center,
+                      a.align_center,
+                      (hovered || pressed) && t.atoms.bg_contrast_50,
+                    ]}>
+                    <PlusIcon style={[t.atoms.text_contrast_low]} size="md" />
+                  </View>
+                  <Text
+                    style={[
+                      a.flex_1,
+                      a.leading_tight,
+                      a.text_md,
+                      a.font_medium,
+                    ]}>
+                    {otherLabel ?? <Trans>Other account</Trans>}
+                  </Text>
+                  <ChevronIcon size="md" style={[t.atoms.text_contrast_low]} />
+                </>
+              )}
             </View>
           )}
         </Button>
@@ -124,12 +157,14 @@ function AccountItem({
   profile,
   account,
   onSelect,
+  useCompactSwitcher,
   isCurrentAccount,
   isPendingAccount,
 }: {
   profile?: AppBskyActorDefs.ProfileViewDetailed
   account: SessionAccount
   onSelect: (account: SessionAccount) => void
+  useCompactSwitcher: boolean
   isCurrentAccount: boolean
   isPendingAccount: boolean
 }) {
@@ -163,13 +198,14 @@ function AccountItem({
             a.flex_1,
             a.flex_row,
             a.align_center,
-            a.p_lg,
+            useCompactSwitcher ? a.px_md : a.p_lg,
             a.gap_sm,
+            useCompactSwitcher ? {height: 56} : null,
             (hovered || pressed || isPendingAccount) && t.atoms.bg_contrast_25,
           ]}>
           <UserAvatar
             avatar={profile?.avatar}
-            size={48}
+            size={useCompactSwitcher ? 36 : 48}
             type={profile?.associated?.labeler ? 'labeler' : 'user'}
             live={live}
             hideLiveBadge
@@ -179,7 +215,11 @@ function AccountItem({
             <View style={[a.flex_row, a.align_center, a.gap_xs]}>
               <Text
                 emoji
-                style={[a.font_medium, a.leading_tight, a.text_md]}
+                style={[
+                  useCompactSwitcher ? a.font_semi_bold : a.font_medium,
+                  a.leading_tight,
+                  useCompactSwitcher ? null : a.text_md,
+                ]}
                 numberOfLines={1}>
                 {sanitizeDisplayName(
                   profile?.displayName || profile?.handle || account.handle,
@@ -197,7 +237,7 @@ function AccountItem({
               style={[
                 a.leading_tight,
                 t.atoms.text_contrast_medium,
-                a.text_sm,
+                useCompactSwitcher ? null : a.text_sm,
               ]}>
               {sanitizeHandle(account.handle, '@')}
             </Text>
@@ -215,21 +255,30 @@ function AccountItem({
           </View>
 
           {isCurrentAccount ? (
-            <View
-              style={[
-                {
-                  width: 20,
-                  height: 20,
-                  backgroundColor: t.palette.positive_500,
-                },
-                enableSquareButtons ? a.rounded_sm : a.rounded_full,
-                a.justify_center,
-                a.align_center,
-              ]}>
-              <CheckIcon size="xs" style={[{color: t.palette.white}]} />
-            </View>
+            useCompactSwitcher ? (
+              <CheckIcon size="sm" style={[{color: t.palette.positive_500}]} />
+            ) : (
+              <View
+                style={[
+                  {
+                    width: 20,
+                    height: 20,
+                    backgroundColor: t.palette.positive_500,
+                  },
+                  enableSquareButtons ? a.rounded_sm : a.rounded_full,
+                  a.justify_center,
+                  a.align_center,
+                ]}>
+                <CheckIcon size="xs" style={[{color: t.palette.white}]} />
+              </View>
+            )
           ) : (
-            <ChevronIcon size="md" style={[t.atoms.text_contrast_low]} />
+            <ChevronIcon
+              size={useCompactSwitcher ? 'sm' : 'md'}
+              style={[
+                useCompactSwitcher ? t.atoms.text : t.atoms.text_contrast_low,
+              ]}
+            />
           )}
         </View>
       )}

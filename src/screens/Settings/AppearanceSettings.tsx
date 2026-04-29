@@ -60,7 +60,6 @@ export function AppearanceSettingsScreen({}: Props) {
 
   const enableSquareButtons = useEnableSquareButtons()
   const setEnableSquareButtons = useSetEnableSquareButtons()
-
   const colorSchemes = useColorSchemes()
   const colorSchemeLabel = getColorSchemeLabel(colorSchemes, colorScheme)
 
@@ -254,7 +253,6 @@ export function AppearanceSettingsScreen({}: Props) {
                   <Toggle.Platform />
                 </SettingsList.Item>
               </Toggle.Item>
-
               {IS_NATIVE && IS_INTERNAL && (
                 <>
                   <SettingsList.Divider />

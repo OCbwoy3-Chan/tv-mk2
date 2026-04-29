@@ -196,6 +196,8 @@ const schema = z.object({
   discoverContextEnabled: z.boolean().optional(),
   enableSquareAvatars: z.boolean().optional(),
   enableSquareButtons: z.boolean().optional(),
+  useCompactAccountSwitcher: z.boolean().optional(),
+  autoCompactAccountSwitcher: z.boolean().optional(),
   disableVerifyEmailReminder: z.boolean().optional(),
   showViaClient: z.boolean().optional(),
   deerVerification: z
@@ -335,6 +337,8 @@ export const defaults: Schema = {
   discoverContextEnabled: false,
   enableSquareAvatars: true,
   enableSquareButtons: true,
+  useCompactAccountSwitcher: false,
+  autoCompactAccountSwitcher: true,
   disableVerifyEmailReminder: false,
   showViaClient: true,
   deerVerification: {

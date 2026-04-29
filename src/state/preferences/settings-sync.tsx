@@ -5,10 +5,10 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
-import type {Schema} from '#/state/persisted/schema'
+import {type Schema} from '#/state/persisted/schema'
 
 // ---------------------------------------------------------------------------
 // Synced keys allowlist
@@ -65,6 +65,8 @@ export const SYNCED_PREFS_KEYS = [
   'discoverContextEnabled',
   'enableSquareAvatars',
   'enableSquareButtons',
+  'useCompactAccountSwitcher',
+  'autoCompactAccountSwitcher',
   'disableVerifyEmailReminder',
   'showViaClient',
   'deerVerification',
@@ -115,13 +117,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
     Boolean(persisted.get('settingsSyncEnabled')),
   )
 
-  const setStateWrapped = useCallback(
-    (value: boolean) => {
-      setState(value)
-      persisted.write('settingsSyncEnabled', value)
-    },
-    [],
-  )
+  const setStateWrapped = useCallback((value: boolean) => {
+    setState(value)
+    persisted.write('settingsSyncEnabled', value)
+  }, [])
 
   useEffect(() => {
     return persisted.onUpdate('settingsSyncEnabled', next => {
