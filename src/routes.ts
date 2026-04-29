@@ -53,6 +53,7 @@ export const router = new Router<AllNavigatableRoutes>({
   RunesBadgesSettings: '/settings/runes/badges',
   RunesImpressionsSettings: '/settings/runes/impressions',
   RunesUsabilitySettings: '/settings/runes/usability',
+  RunesUsabilityFeedSettings: '/settings/runes/usability/feeds',
   RunesDisplaySettings: '/settings/runes/display',
   RunesDisplayAlsoLikedSettings: '/settings/runes/display/also-liked',
   RunesInfrastructureSettings: '/settings/runes/infrastructure',
