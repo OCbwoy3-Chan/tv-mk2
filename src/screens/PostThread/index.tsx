@@ -191,6 +191,8 @@ export function PostThread({uri}: {uri: string}) {
   const alsoLikedHeaderRef = useRef<View | null>(null)
   const currentScrollOffsetRef = useRef(0)
   const scrollStateRequestIdRef = useRef(0)
+  const scrollStateAnimationFrameRef = useRef<number | null>(null)
+  const contentSizeAnimationFrameRef = useRef<number | null>(null)
   const [isAlsoLikedFocused, setIsAlsoLikedFocused] = useState(false)
 
   useEffect(() => {
@@ -232,60 +234,69 @@ export function PostThread({uri}: {uri: string}) {
    * The result being: any intentional change in view by the user will result
    * in the anchor being pinned as the first item.
    */
-  const onContentSizeChangeWebOnly = web(() => {
-    const list = listRef.current
-    const anchorElement = anchorRef.current as any as Element
-    const header = headerRef.current as any as Element
+  const onContentSizeChangeWebOnly = web(
+    useNonReactiveCallback(() => {
+      if (contentSizeAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(contentSizeAnimationFrameRef.current)
+      }
 
-    if (list && anchorElement && header && shouldHandleScroll.current) {
-      const anchorOffsetTop = anchorElement.getBoundingClientRect().top
-      const headerHeight = header.getBoundingClientRect().height
+      contentSizeAnimationFrameRef.current = requestAnimationFrame(() => {
+        contentSizeAnimationFrameRef.current = null
+        const list = listRef.current
+        const anchorElement = anchorRef.current as any as Element
+        const header = headerRef.current as any as Element
 
-      /*
-       * `deferParents` is `true` on a cold load, and always reset to
-       * `true` when params change via `prepareForParamsUpdate`.
-       *
-       * On a cold load or a push to a new post, on the first pass of this
-       * logic, the anchor post is the first item in the list. Therefore
-       * `anchorOffsetTop - headerHeight` will be 0.
-       *
-       * When a user changes thread params, on the first pass of this logic,
-       * the anchor post may not move (if there are no parents above it), or it
-       * may have gone off the screen above, because of the sudden lack of
-       * parents due to `deferParents === true`. This negative value (minus
-       * `headerHeight`) will result in a _negative_ `offset` value, which will
-       * scroll the anchor post _down_ to the top of the screen.
-       *
-       * However, `prepareForParamsUpdate` also resets scroll to `0`, so when a user
-       * changes params, the anchor post's offset will actually be equivalent
-       * to the `headerHeight` because of how the DOM is stacked on web.
-       * Therefore, `anchorOffsetTop - headerHeight` will once again be 0,
-       * which means the first pass in this case will result in no scroll.
-       *
-       * Then, once parents are prepended, this will fire again. Now, the
-       * `anchorOffsetTop` will be positive, which minus the header height,
-       * will give us a _positive_ offset, which will scroll the anchor post
-       * back _up_ to the top of the screen.
-       */
-      const offset = anchorOffsetTop - headerHeight
-      list.scrollToOffset({offset})
+        if (list && anchorElement && header && shouldHandleScroll.current) {
+          const anchorOffsetTop = anchorElement.getBoundingClientRect().top
+          const headerHeight = header.getBoundingClientRect().height
 
-      /*
-       * After we manage to do a positive adjustment, we need to ensure this
-       * doesn't run again until scroll handling is requested again via
-       * `shouldHandleScroll.current === true` and a params change via
-       * `prepareForParamsUpdate`.
-       *
-       * The `isRoot` here is needed because if we're looking at the anchor
-       * post, this handler will not fire after `deferParents` is set to
-       * `false`, since there are no parents to render above it. In this case,
-       * we want to make sure `shouldHandleScroll` is set to `false` right away
-       * so that subsequent size changes unrelated to a params change (like
-       * pagination) do not affect scroll.
-       */
-      if (offset > 0 || isRoot) shouldHandleScroll.current = false
-    }
-  })
+          /*
+           * `deferParents` is `true` on a cold load, and always reset to
+           * `true` when params change via `prepareForParamsUpdate`.
+           *
+           * On a cold load or a push to a new post, on the first pass of this
+           * logic, the anchor post is the first item in the list. Therefore
+           * `anchorOffsetTop - headerHeight` will be 0.
+           *
+           * When a user changes thread params, on the first pass of this logic,
+           * the anchor post may not move (if there are no parents above it), or it
+           * may have gone off the screen above, because of the sudden lack of
+           * parents due to `deferParents === true`. This negative value (minus
+           * `headerHeight`) will result in a _negative_ `offset` value, which will
+           * scroll the anchor post _down_ to the top of the screen.
+           *
+           * However, `prepareForParamsUpdate` also resets scroll to `0`, so when a user
+           * changes params, the anchor post's offset will actually be equivalent
+           * to the `headerHeight` because of how the DOM is stacked on web.
+           * Therefore, `anchorOffsetTop - headerHeight` will once again be 0,
+           * which means the first pass in this case will result in no scroll.
+           *
+           * Then, once parents are prepended, this will fire again. Now, the
+           * `anchorOffsetTop` will be positive, which minus the header height,
+           * will give us a _positive_ offset, which will scroll the anchor post
+           * back _up_ to the top of the screen.
+           */
+          const offset = anchorOffsetTop - headerHeight
+          list.scrollToOffset({offset})
+
+          /*
+           * After we manage to do a positive adjustment, we need to ensure this
+           * doesn't run again until scroll handling is requested again via
+           * `shouldHandleScroll.current === true` and a params change via
+           * `prepareForParamsUpdate`.
+           *
+           * The `isRoot` here is needed because if we're looking at the anchor
+           * post, this handler will not fire after `deferParents` is set to
+           * `false`, since there are no parents to render above it. In this case,
+           * we want to make sure `shouldHandleScroll` is set to `false` right away
+           * so that subsequent size changes unrelated to a params change (like
+           * pagination) do not affect scroll.
+           */
+          if (offset > 0 || isRoot) shouldHandleScroll.current = false
+        }
+      })
+    }),
+  )
 
   /**
    * Ditto the above, but for native.
@@ -605,18 +616,10 @@ export function PostThread({uri}: {uri: string}) {
   const toggleAlsoLikedCollapsed = useCallback(() => {
     setAlsoLikedCollapsed(current => !current)
   }, [])
-  const handleScrollOffsetChange = useNonReactiveCallback((offsetY: number) => {
-    currentScrollOffsetRef.current = offsetY
-    if (offsetY <= 1) {
-      scrollStateRequestIdRef.current += 1
-      setIsAlsoLikedFocused(false)
-      return
-    }
-    scrollStateRequestIdRef.current += 1
-    updateAlsoLikedScrollState(offsetY, scrollStateRequestIdRef.current)
-  })
-  const updateAlsoLikedScrollState = useNonReactiveCallback(
-    (offsetY: number, requestId: number) => {
+  const runAlsoLikedScrollStateUpdate = useNonReactiveCallback(
+    (requestId: number) => {
+      scrollStateAnimationFrameRef.current = null
+
       if (
         !alsoLikedVisible ||
         alsoLikedCollapsed ||
@@ -651,18 +654,49 @@ export function PostThread({uri}: {uri: string}) {
       })
     },
   )
+  const scheduleAlsoLikedScrollStateUpdate = useNonReactiveCallback(() => {
+    if (scrollStateAnimationFrameRef.current !== null) {
+      cancelAnimationFrame(scrollStateAnimationFrameRef.current)
+    }
+
+    const requestId = scrollStateRequestIdRef.current
+    scrollStateAnimationFrameRef.current = requestAnimationFrame(() => {
+      runAlsoLikedScrollStateUpdate(requestId)
+    })
+  })
+  const handleScrollOffsetChange = useNonReactiveCallback((offsetY: number) => {
+    currentScrollOffsetRef.current = offsetY
+    if (offsetY <= 1) {
+      scrollStateRequestIdRef.current += 1
+      setIsAlsoLikedFocused(false)
+      return
+    }
+    if (!alsoLikedVisible || alsoLikedCollapsed) {
+      return
+    }
+    scrollStateRequestIdRef.current += 1
+    scheduleAlsoLikedScrollStateUpdate()
+  })
+
+  useEffect(() => {
+    return () => {
+      if (scrollStateAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(scrollStateAnimationFrameRef.current)
+      }
+      if (contentSizeAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(contentSizeAnimationFrameRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     scrollStateRequestIdRef.current += 1
-    updateAlsoLikedScrollState(
-      currentScrollOffsetRef.current,
-      scrollStateRequestIdRef.current,
-    )
+    scheduleAlsoLikedScrollStateUpdate()
   }, [
     alsoLikedCollapsed,
     alsoLikedPosts.length,
     alsoLikedVisible,
-    updateAlsoLikedScrollState,
+    scheduleAlsoLikedScrollStateUpdate,
   ])
 
   return (

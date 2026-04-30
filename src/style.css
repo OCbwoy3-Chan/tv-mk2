@@ -374,6 +374,8 @@ input[type='range'][orient='vertical']::-moz-range-thumb {
 .radix-popover-content {
   animation-duration: 300ms;
   animation-timing-function: cubic-bezier(0.17, 0.73, 0.14, 1);
+}
+.radix-popover-content[data-state='open'] {
   will-change: transform, opacity;
 }
 .radix-popover-content[data-state='open'][data-side='top'] {

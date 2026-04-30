@@ -1,6 +1,9 @@
 import {MetricsClient} from './client'
 
 let appStateCallback: (state: string) => void
+const mockCaptureMessage = jest.fn()
+let mockMetricsApiHost: string | undefined = 'https://test.metrics.api'
+let mockSentryDsn: string | undefined
 
 jest.mock('#/lib/appState', () => ({
   onAppStateChange: jest.fn(cb => {
@@ -20,8 +23,17 @@ jest.mock('#/logger', () => ({
   },
 }))
 
+jest.mock('@sentry/react-native', () => ({
+  captureMessage: mockCaptureMessage,
+}))
+
 jest.mock('#/env', () => ({
-  METRICS_API_HOST: 'https://test.metrics.api',
+  get METRICS_API_HOST() {
+    return mockMetricsApiHost
+  },
+  get SENTRY_DSN() {
+    return mockSentryDsn
+  },
   IS_WEB: false,
 }))
 
@@ -30,17 +42,33 @@ type TestEvents = {
   view: {screen: string}
 }
 
+type FetchRequestBody = {
+  events: Array<{
+    event: string
+  }>
+}
+
+function parseFetchBody(options?: RequestInit): FetchRequestBody {
+  const {body} = options ?? {}
+  const raw =
+    typeof body === 'string' ? body : body == null ? '{}' : JSON.stringify(body)
+  return JSON.parse(raw) as FetchRequestBody
+}
+
 describe('MetricsClient', () => {
   let fetchMock: jest.Mock
-  let fetchRequests: {body: any}[]
+  let fetchRequests: {body: FetchRequestBody}[]
 
   beforeEach(() => {
     jest.useFakeTimers({advanceTimers: true})
+    mockMetricsApiHost = 'https://test.metrics.api'
+    mockSentryDsn = undefined
+    mockCaptureMessage.mockReset()
     fetchRequests = []
-    fetchMock = jest.fn().mockImplementation(async (_url, options) => {
-      const body = JSON.parse(options.body)
+    fetchMock = jest.fn().mockImplementation((_url, options?: RequestInit) => {
+      const body = parseFetchBody(options)
       fetchRequests.push({body})
-      return {ok: true, status: 200}
+      return Promise.resolve({ok: true, status: 200})
     })
     global.fetch = fetchMock
   })
@@ -90,22 +118,22 @@ describe('MetricsClient', () => {
   it('retries failed events once on 500 response', async () => {
     let requestCount = 0
 
-    fetchMock.mockImplementation(async (_url, options) => {
+    fetchMock.mockImplementation((_url, options?: RequestInit) => {
       requestCount++
-      const body = JSON.parse(options.body)
+      const body = parseFetchBody(options)
 
       if (requestCount === 1) {
         // First request fails with 500 - "Failed to fetch" triggers isNetworkError
-        return {
+        return Promise.resolve({
           ok: false,
           status: 500,
-          text: async () => 'Internal Server Error',
-        }
+          text: () => Promise.resolve('Internal Server Error'),
+        })
       }
 
       // Retry succeeds
       fetchRequests.push({body})
-      return {ok: true, status: 200}
+      return Promise.resolve({ok: true, status: 200})
     })
 
     const client = new MetricsClient<TestEvents>()
@@ -130,14 +158,14 @@ describe('MetricsClient', () => {
   it('does not retry more than once', async () => {
     let requestCount = 0
 
-    fetchMock.mockImplementation(async () => {
+    fetchMock.mockImplementation(() => {
       requestCount++
       // Always fail with network-like error
-      return {
+      return Promise.resolve({
         ok: false,
         status: 500,
-        text: async () => 'Internal Server Error',
-      }
+        text: () => Promise.resolve('Internal Server Error'),
+      })
     })
 
     const client = new MetricsClient<TestEvents>()
@@ -172,5 +200,35 @@ describe('MetricsClient', () => {
     await jest.advanceTimersByTimeAsync(0)
 
     expect(fetchRequests).toHaveLength(1)
+  })
+
+  it('sends metrics through sentry when metrics api host is unset', async () => {
+    mockMetricsApiHost = undefined
+    mockSentryDsn = 'https://public@example.glitchtip.com/1'
+
+    const client = new MetricsClient<TestEvents>()
+    client.track('click', {button: 'submit'})
+    client.track('view', {screen: 'home'})
+
+    await jest.advanceTimersByTimeAsync(10_000)
+
+    expect(fetchRequests).toHaveLength(0)
+    expect(mockCaptureMessage).toHaveBeenCalledTimes(2)
+    expect(mockCaptureMessage).toHaveBeenNthCalledWith(
+      1,
+      'metric:click',
+      expect.objectContaining({
+        level: 'info',
+        fingerprint: ['metric', 'click'],
+        tags: expect.objectContaining({
+          metric_name: 'click',
+          metric_source: 'app',
+        }),
+        extra: expect.objectContaining({
+          logger: 'metric',
+          payload: {button: 'submit'},
+        }),
+      }),
+    )
   })
 })
