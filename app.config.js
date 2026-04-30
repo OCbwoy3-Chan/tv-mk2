@@ -72,6 +72,7 @@ module.exports = function (_config) {
         infoPlist: {
           CADisableMinimumFrameDurationOnPhone: true,
           UIBackgroundModes: ['remote-notification'],
+          NSUserActivityTypes: ['INSendMessageIntent'],
           NSCameraUsageDescription:
             'Used for profile pictures, posts, and other kinds of content.',
           NSMicrophoneUsageDescription:
@@ -132,6 +133,7 @@ module.exports = function (_config) {
             .WITCHSKY_BUNDLE_ID
             ? `group.${process.env.WITCHSKY_BUNDLE_ID}`
             : 'group.app.witchsky',
+          'com.apple.developer.usernotifications.communication': true,
           // 'com.apple.developer.device-information.user-assigned-device-name': true,
         },
         privacyManifests: {

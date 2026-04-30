@@ -82,13 +82,24 @@ export type ButtonState = {
   focused: boolean
   pressed: boolean
   disabled: boolean
+  /**
+   * Alias for hovered || focused || pressed
+   */
+  interacting: boolean
 }
 
 export type ButtonContext = VariantProps & ButtonState
 
 type NonTextElements =
-  | React.ReactElement<any>
-  | Iterable<React.ReactElement<any> | null | undefined | boolean>
+  | React.ReactElement<unknown>
+  | Iterable<React.ReactElement<unknown> | null | undefined | boolean>
+
+type WebLongPressPressableProps = {
+  onPointerDown?: (e: PointerEvent) => void
+  onPointerUp?: () => void
+  onPointerLeave?: () => void
+  onContextMenu?: (e: Event) => void
+}
 
 export type ButtonProps = Pick<
   PressableProps,
@@ -114,7 +125,9 @@ export type ButtonProps = Pick<
     style?: StyleProp<ViewStyle>
     hoverStyle?: StyleProp<ViewStyle>
     children: NonTextElements | ((context: ButtonContext) => NonTextElements)
-    PressableComponent?: React.ComponentType<PressableProps>
+    PressableComponent?: React.ComponentType<
+      PressableProps & WebLongPressPressableProps
+    >
   }
 
 export type ButtonTextProps = TextProps &
@@ -125,6 +138,7 @@ const Context = createContext<VariantProps & ButtonState>({
   focused: false,
   pressed: false,
   disabled: false,
+  interacting: false,
 })
 Context.displayName = 'ButtonContext'
 
@@ -162,9 +176,7 @@ export const Button = forwardRef<View, ButtonProps>(
      * If a `color` is set, then we want to use the existing codepaths for
      * "solid" buttons. This is to maintain backwards compatibility.
      */
-    if (!variant && color) {
-      variant = 'solid'
-    }
+    const resolvedVariant = !variant && color ? 'solid' : variant
 
     const enableSquareButtons = useEnableSquareButtons()
 
@@ -296,7 +308,7 @@ export const Button = forwardRef<View, ButtonProps>(
        * deprecation of `variant` prop. This redundant `variant` check is here
        * just to make this handling easier to understand.
        */
-      if (variant === 'solid') {
+      if (resolvedVariant === 'solid') {
         if (color === 'primary') {
           if (!disabled) {
             baseStyles.push({
@@ -375,7 +387,7 @@ export const Button = forwardRef<View, ButtonProps>(
          * BEGIN DEPRECATED STYLES
          */
         if (color === 'primary') {
-          if (variant === 'outline') {
+          if (resolvedVariant === 'outline') {
             baseStyles.push(a.border, t.atoms.bg, {
               borderWidth: 1,
             })
@@ -392,7 +404,7 @@ export const Button = forwardRef<View, ButtonProps>(
                 borderColor: t.palette.primary_200,
               })
             }
-          } else if (variant === 'ghost') {
+          } else if (resolvedVariant === 'ghost') {
             if (!disabled) {
               baseStyles.push(t.atoms.bg)
               hoverStyles.push({
@@ -401,7 +413,7 @@ export const Button = forwardRef<View, ButtonProps>(
             }
           }
         } else if (color === 'secondary') {
-          if (variant === 'outline') {
+          if (resolvedVariant === 'outline') {
             baseStyles.push(a.border, t.atoms.bg, {
               borderWidth: 1,
             })
@@ -416,7 +428,7 @@ export const Button = forwardRef<View, ButtonProps>(
                 borderColor: t.palette.contrast_200,
               })
             }
-          } else if (variant === 'ghost') {
+          } else if (resolvedVariant === 'ghost') {
             if (!disabled) {
               baseStyles.push(t.atoms.bg)
               hoverStyles.push({
@@ -425,7 +437,7 @@ export const Button = forwardRef<View, ButtonProps>(
             }
           }
         } else if (color === 'secondary_inverted') {
-          if (variant === 'outline') {
+          if (resolvedVariant === 'outline') {
             baseStyles.push(a.border, t.atoms.bg, {
               borderWidth: 1,
             })
@@ -440,7 +452,7 @@ export const Button = forwardRef<View, ButtonProps>(
                 borderColor: t.palette.contrast_200,
               })
             }
-          } else if (variant === 'ghost') {
+          } else if (resolvedVariant === 'ghost') {
             if (!disabled) {
               baseStyles.push(t.atoms.bg)
               hoverStyles.push({
@@ -449,7 +461,7 @@ export const Button = forwardRef<View, ButtonProps>(
             }
           }
         } else if (color === 'negative') {
-          if (variant === 'outline') {
+          if (resolvedVariant === 'outline') {
             baseStyles.push(a.border, t.atoms.bg, {
               borderWidth: 1,
             })
@@ -466,7 +478,7 @@ export const Button = forwardRef<View, ButtonProps>(
                 borderColor: t.palette.negative_200,
               })
             }
-          } else if (variant === 'ghost') {
+          } else if (resolvedVariant === 'ghost') {
             if (!disabled) {
               baseStyles.push(t.atoms.bg)
               hoverStyles.push({
@@ -475,7 +487,7 @@ export const Button = forwardRef<View, ButtonProps>(
             }
           }
         } else if (color === 'negative_subtle') {
-          if (variant === 'outline') {
+          if (resolvedVariant === 'outline') {
             baseStyles.push(a.border, t.atoms.bg, {
               borderWidth: 1,
             })
@@ -492,7 +504,7 @@ export const Button = forwardRef<View, ButtonProps>(
                 borderColor: t.palette.negative_200,
               })
             }
-          } else if (variant === 'ghost') {
+          } else if (resolvedVariant === 'ghost') {
             if (!disabled) {
               baseStyles.push(t.atoms.bg)
               hoverStyles.push({
@@ -591,18 +603,19 @@ export const Button = forwardRef<View, ButtonProps>(
         baseStyles,
         hoverStyles,
       }
-    }, [t, variant, color, size, shape, disabled, enableSquareButtons])
+    }, [t, resolvedVariant, color, size, shape, disabled, enableSquareButtons])
 
     const context = useMemo<ButtonContext>(
       () => ({
         ...state,
-        variant,
+        interacting: state.hovered || state.focused || state.pressed,
+        variant: resolvedVariant,
         color,
         size,
         shape,
         disabled: disabled || false,
       }),
-      [state, variant, color, size, shape, disabled],
+      [state, resolvedVariant, color, size, shape, disabled],
     )
 
     return (
@@ -617,7 +630,7 @@ export const Button = forwardRef<View, ButtonProps>(
               onPointerLeave,
               onContextMenu,
             }
-          : {}) as any)}
+          : {}) satisfies WebLongPressPressableProps)}
         // @ts-ignore - this will always be a pressable
         ref={ref}
         aria-label={label}

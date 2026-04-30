@@ -1,4 +1,4 @@
-import {type TextStyle} from 'react-native'
+import {type FontVariant, type TextStyle} from 'react-native'
 
 import {IS_ANDROID, IS_WEB} from '#/env'
 import {type Device, device} from '#/storage'
@@ -128,10 +128,9 @@ export function applyFonts(
      * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant}
      */
     if (IS_WEB) {
-      // @ts-expect-error - web supports 'unicode' as a valid value for fontVariant
       style.fontVariant = (style.fontVariant || []).concat(
         'no-contextual',
-        'unicode',
+        'unicode' as FontVariant, // web supports 'unicode' as a valid value for fontVariant
       )
     } else {
       style.fontVariant = (style.fontVariant || []).concat('no-contextual')
