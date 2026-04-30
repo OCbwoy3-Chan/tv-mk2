@@ -214,7 +214,6 @@
     "normalize-url": "^8.1.1",
     "pako": "^2.1.0",
     "patch-package": "^8.0.1",
-    "postinstall-postinstall": "^2.1.0",
     "psl": "^1.15.0",
     "radix-ui": "^1.4.3",
     "react": "19.1.0",
