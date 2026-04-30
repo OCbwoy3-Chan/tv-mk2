@@ -115,6 +115,12 @@ module.exports = {
     filename: isProduction
       ? 'static/js/[name].[contenthash:8].js'
       : 'static/js/[name].js',
+    cssFilename: isProduction
+      ? 'static/css/[name].[contenthash:8].css'
+      : 'static/css/[name].css',
+    cssChunkFilename: isProduction
+      ? 'static/css/[name].[contenthash:8].chunk.css'
+      : 'static/css/[name].chunk.css',
     chunkFilename: isProduction
       ? 'static/js/[name].[contenthash:8].chunk.js'
       : 'static/js/[name].chunk.js',

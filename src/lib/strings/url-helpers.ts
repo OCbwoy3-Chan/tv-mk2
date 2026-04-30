@@ -27,15 +27,16 @@ const TRUSTED_REGEX = new RegExp(
     '|([\\w-]+\\.)?',
   )})|/|#)`,
 )
+const TLD_SET = new Set(TLDs)
 
 export function isValidDomain(str: string): boolean {
-  return !!TLDs.find(tld => {
-    let i = str.lastIndexOf(tld)
-    if (i === -1) {
-      return false
-    }
-    return str.charAt(i - 1) === '.' && i === str.length - tld.length
-  })
+  const domain = str.toLowerCase().replace(/\.$/, '')
+  const lastDot = domain.lastIndexOf('.')
+  if (lastDot <= 0 || lastDot === domain.length - 1) {
+    return false
+  }
+  const tld = domain.slice(lastDot + 1)
+  return TLD_SET.has(tld)
 }
 
 export function makeRecordUri(
@@ -118,10 +119,7 @@ export function isRelativeUrl(url: string): boolean {
 }
 
 export function isBskyRSSUrl(url: string): boolean {
-  return (
-    (isBskyAppUrl(url) || isRelativeUrl(url)) &&
-    /\/rss\/?$/.test(url)
-  )
+  return (isBskyAppUrl(url) || isRelativeUrl(url)) && /\/rss\/?$/.test(url)
 }
 
 export function isExternalUrl(url: string): boolean {

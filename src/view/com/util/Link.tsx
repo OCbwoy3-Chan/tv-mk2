@@ -445,6 +445,6 @@ function isModifiedEvent(e: React.MouseEvent): boolean {
     e.ctrlKey ||
     e.shiftKey ||
     e.altKey ||
-    (e.nativeEvent && e.nativeEvent.which === 2)
+    e.button === 1
   )
 }

@@ -88,9 +88,9 @@ export function EphemeralAccountSwitcher({
   if (!IS_WEB_TOUCH_DEVICE && triggerBehavior === 'longPress') {
     return (
       <Menu.Root control={menuControl}>
-        <Menu.Trigger label={l`Switch accounts`}>
+        <Menu.Trigger label={l`Switch accounts`} role="none">
           {({props}) => (
-            <View {...(props as any)}>
+            <View {...props}>
               {renderTrigger({
                 currentProfile,
                 triggerProps: {
