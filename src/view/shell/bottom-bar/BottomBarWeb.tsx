@@ -29,6 +29,7 @@ import {useSession} from '#/state/session'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useShellLayout} from '#/state/shell/shell-layout'
 import {useCloseAllActiveElements} from '#/state/util'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {Link} from '#/view/com/util/Link'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {Logo} from '#/view/icons/Logo'
@@ -71,6 +72,7 @@ export function BottomBarWeb() {
   const hideBorder = useHideBottomBarBorder()
   const accountSwitchControl = useDialogControl()
   const {data: profile} = useProfileQuery({did: currentAccount?.did})
+  const enableSquareAvatars = useEnableSquareAvatars()
   const iconWidth = 26
 
   const unreadMessageCount = useUnreadMessageCount()
@@ -199,7 +201,9 @@ export function BottomBarWeb() {
                           styles.ctrlIcon,
                           styles.profileIcon,
                           isActive && [
-                            styles.onProfile,
+                            enableSquareAvatars
+                              ? styles.onProfileSquare
+                              : styles.onProfile,
                             {borderColor: t.atoms.text.color},
                           ],
                         ]}>

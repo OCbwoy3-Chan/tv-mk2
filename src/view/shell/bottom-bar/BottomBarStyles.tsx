@@ -74,6 +74,6 @@ export const styles = StyleSheet.create({
   },
   onProfileSquare: {
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 3,
   },
 })

@@ -17,6 +17,7 @@ import {
 import {useIsFocused} from '@react-navigation/native'
 
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useSetLightStatusBar} from '#/state/shell/light-status-bar'
@@ -37,6 +38,7 @@ import {
 
 let ProfileHeaderLoading = (_props: {}): React.ReactNode => {
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
   return (
     <View style={t.atoms.bg}>
       <LoadingPlaceholder width="100%" height={150} style={{borderRadius: 0}} />
@@ -45,8 +47,13 @@ let ProfileHeaderLoading = (_props: {}): React.ReactNode => {
           t.atoms.bg,
           {borderColor: t.atoms.bg.backgroundColor},
           styles.avi,
+          enableSquareAvatars && styles.aviSquare,
         ]}>
-        <LoadingPlaceholder width={90} height={90} style={styles.br45} />
+        <LoadingPlaceholder
+          width={90}
+          height={90}
+          style={enableSquareAvatars ? styles.br8 : styles.br45}
+        />
       </View>
       <View style={styles.content}>
         <View style={[styles.buttonsLine]}>
@@ -229,6 +236,9 @@ const styles = StyleSheet.create({
     borderRadius: 47,
     borderWidth: 2,
   },
+  aviSquare: {
+    borderRadius: 10,
+  },
   content: {
     paddingTop: 12,
     paddingHorizontal: 16,
@@ -239,5 +249,6 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   br45: {borderRadius: 45},
+  br8: {borderRadius: 8},
   br50: {borderRadius: 50},
 })

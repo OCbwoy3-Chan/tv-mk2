@@ -110,8 +110,6 @@ let DefaultAvatar = ({
   const finalShape = overrideShape ?? (type === 'user' ? 'circle' : 'square')
   const t = useTheme()
 
-  const enableSquareAvatars = useEnableSquareAvatars()
-
   const aviStyle = useMemo(() => {
     if (finalShape === 'square') {
       return {borderRadius: size > 32 ? 8 : 3, overflow: 'hidden'} as const
@@ -206,7 +204,7 @@ let DefaultAvatar = ({
       fill="none"
       stroke="none"
       style={aviStyle}>
-      {enableSquareAvatars ? (
+      {finalShape === 'square' ? (
         <Rect
           x="0"
           y="0"
