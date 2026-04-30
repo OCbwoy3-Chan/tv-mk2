@@ -18,7 +18,6 @@ import chunk from 'lodash.chunk'
 
 import {until} from '#/lib/async/until'
 import {createStarterPackList} from '#/lib/generate-starterpack'
-import {detectFacets} from '#/lib/strings/detect-facets'
 import {
   createStarterPackUri,
   httpStarterPackUriToAtUri,
@@ -117,7 +116,7 @@ export function useCreateStarterPackMutation({
       let descriptionFacets: AppBskyRichtextFacet.Main[] | undefined
       if (description) {
         const rt = new RichText({text: description})
-        await detectFacets(agent, rt)
+        await rt.detectFacets(agent)
         descriptionFacets = rt.facets
       }
 
@@ -189,7 +188,7 @@ export function useEditStarterPackMutation({
       let descriptionFacets: AppBskyRichtextFacet.Main[] | undefined
       if (description) {
         const rt = new RichText({text: description})
-        await detectFacets(agent, rt)
+        await rt.detectFacets(agent)
         descriptionFacets = rt.facets
       }
 

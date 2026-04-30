@@ -156,9 +156,6 @@ importers:
       '@discord/bottom-sheet':
         specifier: github:bluesky-social/react-native-bottom-sheet
         version: https://codeload.github.com/bluesky-social/react-native-bottom-sheet/tar.gz/28a87d1bb55e10fc355fa1455545a30734995908(patch_hash=c1f55b9e514f17d0fb14cb8f63be8c29c13813dc92825ad1b068319a89b78058)(@shopify/flash-list@2.3.1(@babel/runtime@7.25.9)(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(@types/react@19.2.14)(react-native-gesture-handler@2.28.0(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native-reanimated@3.19.5(patch_hash=c07ea02fe4c889e65498c2fb39d82e93a0745a06e7800850054fbf0cb95ee1e4)(@babel/core@7.25.2)(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(patch_hash=1708bf9fa9265ebd463d53fa71c037e9387eb16fb483287e49616407b4dc342e)(@babel/core@7.25.2)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
-      '@easrng/tr58':
-        specifier: 0.0.5
-        version: 0.0.5
       '@emoji-mart/data':
         specifier: ^1.2.1
         version: 1.2.1
@@ -2297,9 +2294,6 @@ packages:
   '@discoveryjs/json-ext@0.5.7':
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
     engines: {node: '>=10.0.0'}
-
-  '@easrng/tr58@0.0.5':
-    resolution: {integrity: sha512-LJEAySm4hz77r+9Y2ULDQfTXYL3pp5QxedAITlHwkXBeivhQSLoVEwZHNkU9cByjfaldANZuHhqGKCivoLVeJg==}
 
   '@egjs/hammerjs@2.0.17':
     resolution: {integrity: sha512-XQsZgjm2EcVUiZQf11UBJQfmZeEmOW8DpI1gsFeln6w0ae0ii4dMQEQ0kjl6DspdWX1aGY1/loyXnP0JS06e/A==}
@@ -15325,8 +15319,6 @@ snapshots:
       '@types/react': 19.2.14
 
   '@discoveryjs/json-ext@0.5.7': {}
-
-  '@easrng/tr58@0.0.5': {}
 
   '@egjs/hammerjs@2.0.17':
     dependencies:

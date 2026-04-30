@@ -19,7 +19,6 @@ import {useLingui} from '@lingui/react/macro'
 import {POST_IMG_MAX} from '#/lib/constants'
 import {downloadAndResize} from '#/lib/media/manip'
 import {isUriImage} from '#/lib/media/util'
-import {detectFacetsWithoutResolution} from '#/lib/strings/detect-facets'
 import {getMentionAt, insertMentionAt} from '#/lib/strings/mention-manip'
 import {useTheme} from '#/lib/ThemeContext'
 import {
@@ -111,7 +110,7 @@ export function TextInput({
       }
 
       const newRt = new RichText({text: newText})
-      detectFacetsWithoutResolution(newRt)
+      newRt.detectFacetsWithoutResolution()
 
       const markdownFacets: AppBskyRichtextFacet.Main[] = []
       const regex = /\[([^\]]+)\]\s*\(([^)]+)\)/g

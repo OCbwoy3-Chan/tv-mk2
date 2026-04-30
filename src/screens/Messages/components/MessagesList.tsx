@@ -31,10 +31,6 @@ import {useScrollEdgeEffectRef} from '@bsky.app/expo-scroll-edge-effect'
 
 import {mergeRefs} from '#/lib/merge-refs'
 import {ScrollProvider} from '#/lib/ScrollContext'
-import {
-  detectFacets,
-  detectFacetsWithoutResolution,
-} from '#/lib/strings/detect-facets'
 import {shortenLinks, stripInvalidMentions} from '#/lib/strings/rich-text-manip'
 import {
   convertBskyAppUrlIfNeeded,
@@ -294,7 +290,7 @@ export function MessagesList({
       // detect facets without resolution first - this is used to see if there's
       // any post links in the text that we can embed. We do this first because
       // we want to remove the post link from the text, re-trim, then detect facets
-      detectFacetsWithoutResolution(rt)
+      rt.detectFacetsWithoutResolution()
 
       let embed: $Typed<AppBskyEmbedRecord.Main> | undefined
 
@@ -348,7 +344,7 @@ export function MessagesList({
         }
       }
 
-      await detectFacets(agent, rt)
+      await rt.detectFacets(agent)
 
       rt = shortenLinks(rt)
       rt = stripInvalidMentions(rt)

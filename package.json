@@ -103,7 +103,6 @@
     "@bsky.app/tapper": "^0.5.1",
     "@bsky.app/video": "0.3.4",
     "@discord/bottom-sheet": "github:bluesky-social/react-native-bottom-sheet",
-    "@easrng/tr58": "0.0.5",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@expo/html-elements": "^0.12.5",

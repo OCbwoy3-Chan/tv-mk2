@@ -22,7 +22,6 @@ import {
   type NativeStackScreenProps,
   type NavigationProp,
 } from '#/lib/routes/types'
-import {detectFacets} from '#/lib/strings/detect-facets'
 import {combinedDisplayName} from '#/lib/strings/display-names'
 import {cleanError} from '#/lib/strings/errors'
 import {isInvalidHandle} from '#/lib/strings/handles'
@@ -614,7 +613,7 @@ function useRichText(text: string): [RichTextAPI, boolean] {
     async function resolveRTFacets() {
       // new each time
       const resolvedRT = new RichTextAPI({text})
-      await detectFacets(agent, resolvedRT)
+      await resolvedRT.detectFacets(agent)
       if (!ignore) {
         setResolvedRT(resolvedRT)
       }

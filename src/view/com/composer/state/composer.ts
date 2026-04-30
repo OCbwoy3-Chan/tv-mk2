@@ -9,7 +9,6 @@ import {
 import {nanoid} from 'nanoid/non-secure'
 
 import {type SelfLabel} from '#/lib/moderation'
-import {detectFacetsWithoutResolution} from '#/lib/strings/detect-facets'
 import {insertMentionAt} from '#/lib/strings/mention-manip'
 import {parseMarkdownLinks, shortenLinks} from '#/lib/strings/rich-text-manip'
 import {
@@ -686,7 +685,7 @@ export function createComposerState({
    * we suggest at most 1 of each.
    */
   if (initText) {
-    detectFacetsWithoutResolution(initRichText)
+    initRichText.detectFacetsWithoutResolution()
     const detectedExtUris = new Map<string, LinkFacetMatch>()
     const detectedPostUris = new Map<string, LinkFacetMatch>()
     if (initRichText.facets) {
@@ -735,7 +734,7 @@ export function createComposerState({
     }
   } else if (initMention) {
     // highlight the mention
-    detectFacetsWithoutResolution(initRichText)
+    initRichText.detectFacetsWithoutResolution()
   }
 
   return {
@@ -773,7 +772,7 @@ export function createComposerState({
 function getShortenedLength(rt: RichText) {
   const {text} = parseMarkdownLinks(rt.text)
   const newRt = new RichText({text})
-  detectFacetsWithoutResolution(newRt)
+  newRt.detectFacetsWithoutResolution()
   return shortenLinks(newRt).graphemeLength
 }
 
@@ -786,7 +785,7 @@ function createPostDraftFromText(
   },
 ): PostDraft {
   const richtext = new RichText({text})
-  detectFacetsWithoutResolution(richtext)
+  richtext.detectFacetsWithoutResolution()
 
   return {
     id: overrides?.id ?? nanoid(),

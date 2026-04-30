@@ -16,7 +16,6 @@ import {
   type CommonNavigatorParams,
   type NavigationProp,
 } from '#/lib/routes/types'
-import {detectFacetsWithoutResolution} from '#/lib/strings/detect-facets'
 import {
   convertBskyAppUrlIfNeeded,
   isBskyPostUrl,
@@ -77,7 +76,7 @@ export function useExtractEmbedFromFacets(
   setEmbed: (embedUrl: string | undefined) => void,
 ) {
   const rt = new RichTextAPI({text: message})
-  detectFacetsWithoutResolution(rt)
+  rt.detectFacetsWithoutResolution()
 
   let uriFromFacet: string | undefined
 
