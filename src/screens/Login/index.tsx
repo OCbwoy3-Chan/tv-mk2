@@ -14,6 +14,7 @@ import {
   getPdsServiceUrlFromIdentityInfo,
   resolveIdentityUsingAppView,
 } from '#/state/session/identity-resolver'
+import {consumeOAuthCallbackError} from '#/state/session/oauth-web-return-url'
 import {useLoggedOutView} from '#/state/shell/logged-out'
 import {LoggedOutLayout} from '#/view/com/util/layouts/LoggedOutLayout'
 import {ForgotPasswordForm} from '#/screens/Login/ForgotPasswordForm'
@@ -107,10 +108,16 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
         error: String(serviceError),
       })
       ax.metric('signin:hostingProviderFailedResolution', {})
-    } else {
-      setError('')
     }
   }, [serviceError, serviceUrl, _, ax])
+
+  useEffect(() => {
+    const oauthCallbackError = consumeOAuthCallbackError()
+    if (oauthCallbackError) {
+      setError(oauthCallbackError)
+      setCurrentForm(Forms.Login)
+    }
+  }, [])
 
   const resolveIdentity = useCallback(async (identifier: string) => {
     setIsResolvingService(true)

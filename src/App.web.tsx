@@ -41,11 +41,20 @@ import {
   useSessionApi,
 } from '#/state/session'
 import {getWebOAuthClient} from '#/state/session/oauth-web-client'
-import {consumeOAuthReturnUrl} from '#/state/session/oauth-web-return-url'
-import {readLastActiveAccount} from '#/state/session/util'
+import {
+  consumeOAuthReturnUrl,
+  saveOAuthCallbackError,
+} from '#/state/session/oauth-web-return-url'
+import {
+  canAttemptSessionResume,
+  readLastActiveAccount,
+} from '#/state/session/util'
 import {Provider as ShellStateProvider} from '#/state/shell'
 import {Provider as ComposerProvider} from '#/state/shell/composer'
-import {Provider as LoggedOutViewProvider} from '#/state/shell/logged-out'
+import {
+  Provider as LoggedOutViewProvider,
+  useLoggedOutViewControls,
+} from '#/state/shell/logged-out'
 import {Provider as OnboardingProvider} from '#/state/shell/onboarding'
 import {Provider as ProgressGuideProvider} from '#/state/shell/progress-guide'
 import {Provider as SelectedFeedProvider} from '#/state/shell/selected-feed'
@@ -82,6 +91,7 @@ import * as Geo from '#/geolocation'
 import {Splash} from '#/Splash'
 import {BackgroundNotificationPreferencesProvider} from '../modules/expo-background-notification-handler/src/BackgroundNotificationHandlerProvider'
 import {Provider as HideBottomBarBorderProvider} from './lib/hooks/useHideBottomBarBorder'
+import {cleanError} from './lib/strings/errors'
 
 // For local development: the OAuth loopback spec requires IP-based origins
 // (127.0.0.1), not "localhost". The auth server redirects to 127.0.0.1, but
@@ -115,6 +125,7 @@ function InnerApp() {
   const [isReady, setIsReady] = useState(false)
   const {currentAccount} = useSession()
   const {resumeSession, login} = useSessionApi()
+  const {requestSwitchToAccount, setShowLoggedOut} = useLoggedOutViewControls()
   const theme = useColorModeTheme()
   const {t: l} = useLingui()
   const hasCheckedReferrer = useStarterPackEntry()
@@ -133,27 +144,71 @@ function InnerApp() {
       try {
         // Check for OAuth callback params first (loopback redirects to /)
         if (hasOAuthCallbackParams()) {
-          const client = getWebOAuthClient()
-          const result = await client.init()
-          if (result?.session) {
-            await login(
-              {
-                service: '',
-                identifier: '',
-                password: '',
-                oauthSession: result.session,
-              },
-              'LoginForm',
-            )
+          try {
+            const client = getWebOAuthClient()
+            const result = await client.init()
+            if (result?.session) {
+              await login(
+                {
+                  service: '',
+                  identifier: '',
+                  password: '',
+                  oauthSession: result.session,
+                },
+                'LoginForm',
+              )
 
-            const returnUrl = consumeOAuthReturnUrl()
-            if (returnUrl) {
-              window.location.replace(returnUrl)
+              const returnUrl = consumeOAuthReturnUrl()
+              if (returnUrl) {
+                window.location.replace(returnUrl)
+                return
+              }
+
+              // Clear hash fragment after processing
+              window.history.replaceState(null, '', window.location.pathname)
               return
             }
+          } catch (e) {
+            const error =
+              e instanceof Error ? cleanError(e.message) : cleanError(String(e))
+            logger.error('OAuth callback failed', {
+              error: e instanceof Error ? e.message : String(e),
+            })
 
-            // Clear hash fragment after processing
-            window.history.replaceState(null, '', window.location.pathname)
+            const returnUrl = consumeOAuthReturnUrl()
+            if (account && canAttemptSessionResume(account)) {
+              try {
+                await resumeSession(account, true)
+                setShowLoggedOut(false)
+                if (returnUrl) {
+                  window.history.replaceState(null, '', returnUrl)
+                } else {
+                  window.history.replaceState(
+                    null,
+                    '',
+                    window.location.pathname,
+                  )
+                }
+                return
+              } catch (resumeError) {
+                logger.error('OAuth callback recovery failed', {
+                  error:
+                    resumeError instanceof Error
+                      ? resumeError.message
+                      : String(resumeError),
+                })
+              }
+            }
+
+            saveOAuthCallbackError(error)
+            requestSwitchToAccount({
+              requestedAccount: account?.did ?? 'none',
+            })
+            if (returnUrl) {
+              window.history.replaceState(null, '', returnUrl)
+            } else {
+              window.history.replaceState(null, '', window.location.pathname)
+            }
             return
           }
         }
@@ -172,7 +227,7 @@ function InnerApp() {
     }
     const account = readLastActiveAccount()
     void onLaunch(account)
-  }, [resumeSession, login])
+  }, [resumeSession, login, requestSwitchToAccount, setShowLoggedOut])
 
   useEffect(() => {
     return listenSessionDropped(() => {

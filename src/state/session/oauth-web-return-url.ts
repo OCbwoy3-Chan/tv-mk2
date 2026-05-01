@@ -1,4 +1,5 @@
 const OAUTH_RETURN_URL_KEY = 'oauth_return_url'
+const OAUTH_CALLBACK_ERROR_KEY = 'oauth_callback_error'
 
 export function saveOAuthReturnUrl(url = window.location.href) {
   if (typeof window === 'undefined') return
@@ -22,4 +23,18 @@ export function consumeOAuthReturnUrl() {
   } catch {
     return undefined
   }
+}
+
+export function saveOAuthCallbackError(error: string) {
+  if (typeof window === 'undefined') return
+
+  window.sessionStorage.setItem(OAUTH_CALLBACK_ERROR_KEY, error)
+}
+
+export function consumeOAuthCallbackError() {
+  if (typeof window === 'undefined') return undefined
+
+  const error = window.sessionStorage.getItem(OAUTH_CALLBACK_ERROR_KEY)
+  window.sessionStorage.removeItem(OAUTH_CALLBACK_ERROR_KEY)
+  return error || undefined
 }
