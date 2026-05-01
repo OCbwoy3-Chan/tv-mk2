@@ -62,3 +62,16 @@ index b7dc3e4..8f4a8ef 100644
 +}
  //# sourceMappingURL=polyfill.web.js.map
 \ No newline at end of file
+diff --git a/package.json b/package.json
+index b30be1e..855fdf8 100644
+--- a/package.json
++++ b/package.json
+@@ -31,7 +31,7 @@
+   "dependencies": {
+     "core-js": "^3",
+     "expo-web-browser": "^15.0.8",
+-    "react-native-mmkv": "^3.3.3",
++    "react-native-mmkv": "npm:@bsky.app/react-native-mmkv@2.12.5",
+     "react-native-url-polyfill": "^3.0.0",
+     "@atproto-labs/simple-store": "^0.3.0",
+     "@atproto/oauth-client": "^0.6.0",
