@@ -50,6 +50,7 @@ export const SYNCED_PREFS_KEYS = [
   'disableViaRepostNotification',
   'disableComposerPrompt',
   'disableTopOfFeedButton',
+  'showAvatarFollowButton',
   'disableLikesMetrics',
   'disableRepostsMetrics',
   'disableQuotesMetrics',

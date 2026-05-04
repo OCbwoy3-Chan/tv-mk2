@@ -40,6 +40,7 @@ import {PostControls} from '#/components/PostControls'
 import {RichText} from '#/components/RichText'
 import {SubtleHover} from '#/components/SubtleHover'
 import * as bsky from '#/types/bsky'
+import {AviFollowButton} from '../posts/AviFollowButton'
 
 export function Post({
   post,
@@ -190,12 +191,14 @@ function PostInner({
         )}
         <View style={styles.layout}>
           <View style={styles.layoutAvi}>
-            <PreviewableUserAvatar
-              size={42}
-              profile={post.author}
-              moderation={moderation.ui('avatar')}
-              type={post.author.associated?.labeler ? 'labeler' : 'user'}
-            />
+            <AviFollowButton author={post.author} moderation={moderation}>
+              <PreviewableUserAvatar
+                size={42}
+                profile={post.author}
+                moderation={moderation.ui('avatar')}
+                type={post.author.associated?.labeler ? 'labeler' : 'user'}
+              />
+            </AviFollowButton>
           </View>
           <View
             style={[

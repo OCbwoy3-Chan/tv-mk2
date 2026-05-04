@@ -54,6 +54,7 @@ import {SubtleHover} from '#/components/SubtleHover'
 import {useAnalytics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
 import * as bsky from '#/types/bsky'
+import {AviFollowButton} from './AviFollowButton'
 import {PostFeedReason} from './PostFeedReason'
 
 interface FeedItemProps {
@@ -376,14 +377,16 @@ let FeedItemInner = ({
 
         <View style={styles.layout}>
           <View style={styles.layoutAvi}>
-            <PreviewableUserAvatar
-              size={42}
-              profile={post.author}
-              moderation={moderation.ui('avatar')}
-              type={post.author.associated?.labeler ? 'labeler' : 'user'}
-              onBeforePress={onOpenAuthor}
-              live={live}
-            />
+            <AviFollowButton author={post.author} moderation={moderation}>
+              <PreviewableUserAvatar
+                size={42}
+                profile={post.author}
+                moderation={moderation.ui('avatar')}
+                type={post.author.associated?.labeler ? 'labeler' : 'user'}
+                onBeforePress={onOpenAuthor}
+                live={live}
+              />
+            </AviFollowButton>
             {isThreadParent && (
               <View
                 style={[

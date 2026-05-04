@@ -20,6 +20,10 @@ import {
   useNoDiscoverFallback,
   useSetNoDiscoverFallback,
 } from '#/state/preferences/no-discover-fallback'
+import {
+  useSetShowAvatarFollowButton,
+  useShowAvatarFollowButton,
+} from '#/state/preferences/show-avatar-follow-button'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -28,6 +32,7 @@ import {ArrowTopCircle_Stroke2_Corner0_Rounded as ArrowTopIcon} from '#/componen
 import {Eye_Stroke2_Corner2_Rounded as EyeIcon} from '#/components/icons/Eye'
 import {EyeSlash_Stroke2_Corner0_Rounded as EyeSlashIcon} from '#/components/icons/EyeSlash'
 import {PencilLine_Stroke2_Corner2_Rounded as PencilIcon} from '#/components/icons/Pencil'
+import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
@@ -45,6 +50,9 @@ export function RunesUsabilityFeedSettingsScreen() {
 
   const disableTopOfFeedButton = useDisableTopOfFeedButton()
   const setDisableTopOfFeedButton = useSetDisableTopOfFeedButton()
+
+  const showAvatarFollowButton = useShowAvatarFollowButton()
+  const setShowAvatarFollowButton = useSetShowAvatarFollowButton()
 
   const hideUnreplyablePosts = useHideUnreplyablePosts()
   const setHideUnreplyablePosts = useSetHideUnreplyablePosts()
@@ -99,6 +107,19 @@ export function RunesUsabilityFeedSettingsScreen() {
           <SettingsList.ItemIcon icon={ArrowTopIcon} />
           <SettingsList.ItemText>
             <Trans>Disable top-of-feed button</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="show_avatar_follow_button"
+        label={l`Show plus icon on unfollowed feed avatars`}
+        value={showAvatarFollowButton}
+        onChange={value => setShowAvatarFollowButton(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={PlusIcon} />
+          <SettingsList.ItemText>
+            <Trans>Show plus icon on unfollowed feed avatars</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>
