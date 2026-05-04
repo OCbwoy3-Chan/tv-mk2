@@ -1,17 +1,27 @@
 const OAUTH_RETURN_URL_KEY = 'oauth_return_url'
 const OAUTH_CALLBACK_ERROR_KEY = 'oauth_callback_error'
 
-export function saveOAuthReturnUrl(url = window.location.href) {
-  if (typeof window === 'undefined') return
+function getSessionStorage() {
+  if (typeof window === 'undefined') return undefined
 
-  window.sessionStorage.setItem(OAUTH_RETURN_URL_KEY, url)
+  return window.sessionStorage
+}
+
+export function saveOAuthReturnUrl(url?: string) {
+  const sessionStorage = getSessionStorage()
+  if (!sessionStorage) return
+
+  const returnUrl = url ?? window.location.href
+
+  sessionStorage.setItem(OAUTH_RETURN_URL_KEY, returnUrl)
 }
 
 export function consumeOAuthReturnUrl() {
-  if (typeof window === 'undefined') return undefined
+  const sessionStorage = getSessionStorage()
+  if (!sessionStorage) return undefined
 
-  const savedUrl = window.sessionStorage.getItem(OAUTH_RETURN_URL_KEY)
-  window.sessionStorage.removeItem(OAUTH_RETURN_URL_KEY)
+  const savedUrl = sessionStorage.getItem(OAUTH_RETURN_URL_KEY)
+  sessionStorage.removeItem(OAUTH_RETURN_URL_KEY)
 
   if (!savedUrl) return undefined
 
@@ -26,15 +36,17 @@ export function consumeOAuthReturnUrl() {
 }
 
 export function saveOAuthCallbackError(error: string) {
-  if (typeof window === 'undefined') return
+  const sessionStorage = getSessionStorage()
+  if (!sessionStorage) return
 
-  window.sessionStorage.setItem(OAUTH_CALLBACK_ERROR_KEY, error)
+  sessionStorage.setItem(OAUTH_CALLBACK_ERROR_KEY, error)
 }
 
 export function consumeOAuthCallbackError() {
-  if (typeof window === 'undefined') return undefined
+  const sessionStorage = getSessionStorage()
+  if (!sessionStorage) return undefined
 
-  const error = window.sessionStorage.getItem(OAUTH_CALLBACK_ERROR_KEY)
-  window.sessionStorage.removeItem(OAUTH_CALLBACK_ERROR_KEY)
+  const error = sessionStorage.getItem(OAUTH_CALLBACK_ERROR_KEY)
+  sessionStorage.removeItem(OAUTH_CALLBACK_ERROR_KEY)
   return error || undefined
 }

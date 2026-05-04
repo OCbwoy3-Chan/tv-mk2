@@ -1,4 +1,4 @@
-import {type JSX, useCallback, useRef} from 'react'
+import {type JSX, useCallback, useRef, useState} from 'react'
 import * as Linking from 'expo-linking'
 import * as Notifications from 'expo-notifications'
 import {i18n, type MessageDescriptor} from '@lingui/core'
@@ -1047,8 +1047,14 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
 
   const disableVerifyEmailReminder = useDisableVerifyEmailReminder()
 
-  // Consume stored navigation state from account switch (native only)
-  const initialState = IS_NATIVE ? consumeStoredNavigationState() : undefined
+  // Consume stored navigation state exactly once for this mount.
+  // Account switches trigger session updates before the keyed shell subtree
+  // remounts, so consuming during render can clear the stored back stack too
+  // early and leave React Navigation to reconstruct only the active route.
+  const [initialState, setInitialState] = useState(() =>
+    IS_NATIVE ? consumeStoredNavigationState() : undefined,
+  )
+  void setInitialState
 
   /**
    * Handle navigation to a conversation, or prepares for account switch.
