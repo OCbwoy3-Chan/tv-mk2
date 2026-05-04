@@ -12,7 +12,7 @@ import {useAgent} from '#/state/session'
 import {embedViewRecordToPostView, getEmbeddedPost} from './util'
 
 const ALSO_LIKED_URL = 'https://foryou.club/also-liked'
-const ALSO_LIKED_PAGE_SIZE = 10
+export const ALSO_LIKED_PAGE_SIZE = 10
 
 type AlsoLikedSkeletonResponse = {
   cursor?: string

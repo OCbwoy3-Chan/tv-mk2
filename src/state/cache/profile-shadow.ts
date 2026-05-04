@@ -1,5 +1,9 @@
 import {useEffect, useMemo, useState} from 'react'
-import {type AppBskyActorDefs, type AppBskyNotificationDefs} from '@atproto/api'
+import {
+  type AppBskyActorDefs,
+  type AppBskyFeedDefs,
+  type AppBskyNotificationDefs,
+} from '@atproto/api'
 import {type QueryClient} from '@tanstack/react-query'
 import {EventEmitter} from 'eventemitter3'
 
@@ -155,6 +159,69 @@ export function usePostAuthorShadowFilter(data?: FeedPage[]) {
       return hasNew ? [...currentDids] : prev
     })
   }, [data])
+
+  useEffect(() => {
+    const unsubs: Array<() => void> = []
+
+    for (const did of trackedDids) {
+      function onUpdate(value: Partial<ProfileShadow>) {
+        setAuthors(prev => {
+          const prevValue = prev.get(did)
+          const next = new Map(prev)
+          next.set(did, {
+            blocked: Boolean(value.blockingUri ?? prevValue?.blocked ?? false),
+            muted: Boolean(value.muted ?? prevValue?.muted ?? false),
+          })
+          return next
+        })
+      }
+      emitter.addListener(did, onUpdate)
+      unsubs.push(() => {
+        emitter.removeListener(did, onUpdate)
+      })
+    }
+
+    return () => {
+      unsubs.map(fn => fn())
+    }
+  }, [trackedDids])
+
+  return useMemo(() => {
+    const dids: Array<string> = []
+
+    for (const [did, value] of authors.entries()) {
+      if (value.blocked || value.muted) {
+        dids.push(did)
+      }
+    }
+
+    return dids
+  }, [authors])
+}
+
+export function usePostViewAuthorShadowFilter(
+  posts?: AppBskyFeedDefs.PostView[],
+) {
+  const [trackedDids, setTrackedDids] = useState<string[]>(
+    () => posts?.map(post => post.author.did) ?? [],
+  )
+  const [authors, setAuthors] = useState(
+    new Map<string, {muted: boolean; blocked: boolean}>(),
+  )
+
+  useEffect(() => {
+    setTrackedDids(prev => {
+      const currentDids = new Set(prev)
+      let hasNew = false
+      for (const post of posts ?? []) {
+        if (!currentDids.has(post.author.did)) {
+          hasNew = true
+          currentDids.add(post.author.did)
+        }
+      }
+      return hasNew ? [...currentDids] : prev
+    })
+  }, [posts])
 
   useEffect(() => {
     const unsubs: Array<() => void> = []

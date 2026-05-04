@@ -8,16 +8,22 @@ import {
 } from 'react'
 import {useWindowDimensions, View} from 'react-native'
 import Animated, {useAnimatedStyle} from 'react-native-reanimated'
+import {moderatePost} from '@atproto/api'
 import {Trans} from '@lingui/react/macro'
 
 import {useInitialNumToRender} from '#/lib/hooks/useInitialNumToRender'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {usePostViewTracking} from '#/lib/hooks/usePostViewTracking'
+import {usePostViewAuthorShadowFilter} from '#/state/cache/profile-shadow'
 import {useFeedFeedback} from '#/state/feed-feedback'
 import {useAlsoLikedCollapseByDefault} from '#/state/preferences/also-liked-collapse-by-default'
 import {useAlsoLikedFeedEnabled} from '#/state/preferences/also-liked-feed-enabled'
-import {usePostAlsoLikedQuery} from '#/state/queries/post-also-liked'
+import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {
+  ALSO_LIKED_PAGE_SIZE,
+  usePostAlsoLikedQuery,
+} from '#/state/queries/post-also-liked'
 import {type ThreadViewOption} from '#/state/queries/preferences/useThreadPreferences'
 import {
   PostThreadContextProvider,
@@ -66,6 +72,7 @@ export function PostThread({uri}: {uri: string}) {
   const {hasSession} = useSession()
   const initialNumToRender = useInitialNumToRender()
   const {height: windowHeight} = useWindowDimensions()
+  const moderationOpts = useModerationOpts()
   const anchorPostSource = useUnstablePostSource(uri)
   const feedFeedback = useFeedFeedback(
     anchorPostSource?.feedSourceInfo,
@@ -159,9 +166,14 @@ export function PostThread({uri}: {uri: string}) {
   const [alsoLikedCollapsed, setAlsoLikedCollapsed] = useState(
     alsoLikedCollapseByDefault,
   )
+  const [maxAlsoLikedCount, setMaxAlsoLikedCount] =
+    useState(ALSO_LIKED_PAGE_SIZE)
   useEffect(() => {
     setAlsoLikedCollapsed(alsoLikedCollapseByDefault)
   }, [alsoLikedAnchorUri, alsoLikedCollapseByDefault])
+  useEffect(() => {
+    setMaxAlsoLikedCount(ALSO_LIKED_PAGE_SIZE)
+  }, [alsoLikedAnchorUri])
   const alsoLikedVisible =
     Boolean(alsoLikedAnchorUri) &&
     alsoLikedFeedEnabled &&
@@ -181,6 +193,22 @@ export function PostThread({uri}: {uri: string}) {
         return true
       })
   }, [alsoLiked.data])
+  const blockedOrMutedAlsoLikedAuthors =
+    usePostViewAuthorShadowFilter(alsoLikedPosts)
+  const filteredAlsoLikedPosts = useMemo(() => {
+    return alsoLikedPosts.filter(post => {
+      if (blockedOrMutedAlsoLikedAuthors.includes(post.author.did)) {
+        return false
+      }
+      if (!moderationOpts) {
+        return true
+      }
+      return !moderatePost(post, moderationOpts).ui('contentList').filter
+    })
+  }, [alsoLikedPosts, blockedOrMutedAlsoLikedAuthors, moderationOpts])
+  const visibleAlsoLikedPosts = useMemo(() => {
+    return filteredAlsoLikedPosts.slice(0, maxAlsoLikedCount)
+  }, [filteredAlsoLikedPosts, maxAlsoLikedCount])
   const [maxParentCount, setMaxParentCount] = useState(PARENT_CHUNK_SIZE)
   const [maxChildrenCount, setMaxChildrenCount] = useState(CHILDREN_CHUNK_SIZE)
   const totalParentCount = useRef(0) // recomputed below
@@ -200,6 +228,12 @@ export function PostThread({uri}: {uri: string}) {
       setIsAlsoLikedFocused(false)
     }
   }, [alsoLikedCollapsed, alsoLikedVisible])
+
+  useEffect(() => {
+    if (alsoLikedCollapsed) {
+      setMaxAlsoLikedCount(ALSO_LIKED_PAGE_SIZE)
+    }
+  }, [alsoLikedCollapsed])
 
   /*
    * On a cold load, parents are not prepended until the anchor post has
@@ -243,8 +277,8 @@ export function PostThread({uri}: {uri: string}) {
       contentSizeAnimationFrameRef.current = requestAnimationFrame(() => {
         contentSizeAnimationFrameRef.current = null
         const list = listRef.current
-        const anchorElement = anchorRef.current as any as Element
-        const header = headerRef.current as any as Element
+        const anchorElement = anchorRef.current as unknown as Element | null
+        const header = headerRef.current as unknown as Element | null
 
         if (list && anchorElement && header && shouldHandleScroll.current) {
           const anchorOffsetTop = anchorElement.getBoundingClientRect().top
@@ -388,14 +422,24 @@ export function PostThread({uri}: {uri: string}) {
       setMaxChildrenCount(prev => prev + CHILDREN_CHUNK_SIZE)
       return
     }
-    if (
-      alsoLikedAnchorUri &&
-      alsoLikedEnabled &&
-      !alsoLiked.isLoading &&
-      !alsoLiked.isFetchingNextPage &&
-      alsoLiked.hasNextPage
-    ) {
-      void alsoLiked.fetchNextPage()
+    if (alsoLikedAnchorUri && alsoLikedEnabled) {
+      if (visibleAlsoLikedPosts.length < filteredAlsoLikedPosts.length) {
+        setMaxAlsoLikedCount(current =>
+          Math.min(
+            current + ALSO_LIKED_PAGE_SIZE,
+            filteredAlsoLikedPosts.length,
+          ),
+        )
+        return
+      }
+
+      if (
+        !alsoLiked.isLoading &&
+        !alsoLiked.isFetchingNextPage &&
+        alsoLiked.hasNextPage
+      ) {
+        void alsoLiked.fetchNextPage()
+      }
     }
   }
 
@@ -739,7 +783,7 @@ export function PostThread({uri}: {uri: string}) {
           })}
           onStartReached={onStartReached}
           onEndReached={onEndReached}
-          onEndReachedThreshold={4}
+          onEndReachedThreshold={2}
           onStartReachedThreshold={1}
           onScrollOffsetChange={handleScrollOffsetChange}
           onItemSeen={item => {
@@ -757,15 +801,17 @@ export function PostThread({uri}: {uri: string}) {
           sideBorders={false}
           ListFooterComponent={
             <ThreadAlsoLiked
-              posts={alsoLikedPosts}
+              posts={visibleAlsoLikedPosts}
               visible={alsoLikedVisible}
               collapsed={alsoLikedCollapsed}
               isLoading={alsoLiked.isLoading}
               showLoadingState={
                 !alsoLikedCollapsed &&
                 !alsoLiked.error &&
-                alsoLikedPosts.length === 0 &&
-                (!alsoLiked.isFetched || alsoLiked.isLoading)
+                visibleAlsoLikedPosts.length === 0 &&
+                (!alsoLiked.isFetched ||
+                  alsoLiked.isLoading ||
+                  (alsoLiked.hasNextPage && alsoLiked.isFetchingNextPage))
               }
               isFetchingNextPage={alsoLiked.isFetchingNextPage}
               error={alsoLiked.error}
@@ -837,7 +883,29 @@ function measureViewRect(
   view: View | null,
   cb: (rect: ViewRect | null) => void,
 ) {
-  const target = view as any
+  const target = view as
+    | (View & {
+        measureInWindow?: (
+          callback: (
+            x: number,
+            y: number,
+            width: number,
+            height: number,
+          ) => void,
+        ) => void
+        getBoundingClientRect?: () => DOMRect
+        measure?: (
+          callback: (
+            x: number,
+            y: number,
+            width: number,
+            height: number,
+            pageX: number,
+            pageY: number,
+          ) => void,
+        ) => void
+      })
+    | null
   if (!target) {
     cb(null)
     return
