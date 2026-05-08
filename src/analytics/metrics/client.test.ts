@@ -1,7 +1,7 @@
 import {MetricsClient} from './client'
 
 let appStateCallback: (state: string) => void
-const mockCaptureMessage = jest.fn()
+const mockSentryLogInfo = jest.fn()
 let mockMetricsApiHost: string | undefined = 'https://test.metrics.api'
 let mockSentryDsn: string | undefined
 
@@ -24,7 +24,9 @@ jest.mock('#/logger', () => ({
 }))
 
 jest.mock('@sentry/react-native', () => ({
-  captureMessage: mockCaptureMessage,
+  logger: {
+    info: mockSentryLogInfo,
+  },
 }))
 
 jest.mock('#/env', () => ({
@@ -63,7 +65,7 @@ describe('MetricsClient', () => {
     jest.useFakeTimers({advanceTimers: true})
     mockMetricsApiHost = 'https://test.metrics.api'
     mockSentryDsn = undefined
-    mockCaptureMessage.mockReset()
+    mockSentryLogInfo.mockReset()
     fetchRequests = []
     fetchMock = jest.fn().mockImplementation((_url, options?: RequestInit) => {
       const body = parseFetchBody(options)
@@ -213,21 +215,15 @@ describe('MetricsClient', () => {
     await jest.advanceTimersByTimeAsync(10_000)
 
     expect(fetchRequests).toHaveLength(0)
-    expect(mockCaptureMessage).toHaveBeenCalledTimes(2)
-    expect(mockCaptureMessage).toHaveBeenNthCalledWith(
+    expect(mockSentryLogInfo).toHaveBeenCalledTimes(2)
+    expect(mockSentryLogInfo).toHaveBeenNthCalledWith(
       1,
       'metric:click',
       expect.objectContaining({
-        level: 'info',
-        fingerprint: ['metric', 'click'],
-        tags: expect.objectContaining({
-          metric_name: 'click',
-          metric_source: 'app',
-        }),
-        extra: expect.objectContaining({
-          logger: 'metric',
-          payload: {button: 'submit'},
-        }),
+        logger: 'metric',
+        metric_name: 'click',
+        metric_source: 'app',
+        payload: {button: 'submit'},
       }),
     )
   })

@@ -10,6 +10,9 @@ init({
   environment: env.ENV,
   dist: env.BUNDLE_IDENTIFIER,
   release: env.RELEASE_VERSION,
+  enableLogs: true,
+  enableAutoPerformanceTracing: true,
+  tracesSampleRate: env.IS_INTERNAL ? 1.0 : 0.05,
   ignoreErrors: [
     /*
      * Unknown internals errors

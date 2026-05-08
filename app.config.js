@@ -37,7 +37,12 @@ module.exports = function (_config) {
   // const UPDATES_ENABLED = !!UPDATES_CHANNEL
   const UPDATES_ENABLED = IS_TESTFLIGHT || IS_PRODUCTION
 
-  const USE_SENTRY = Boolean(process.env.SENTRY_AUTH_TOKEN)
+  const USE_SENTRY = Boolean(process.env.EXPO_PUBLIC_SENTRY_DSN)
+  const IOS_BUILD_NUMBER = process.env.BSKY_IOS_BUILD_NUMBER || '1'
+  const ANDROID_VERSION_CODE = Number.parseInt(
+    process.env.BSKY_ANDROID_VERSION_CODE || '1',
+    10,
+  )
 
   const IOS_ICON_FILE =
     PLATFORM === 'web' // web build doesn't like .icon files
@@ -65,6 +70,7 @@ module.exports = function (_config) {
         supportsTablet: false,
         bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
         appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'B3LX46C5HS',
+        buildNumber: IOS_BUILD_NUMBER,
         config: {
           usesNonExemptEncryption: false,
         },
@@ -204,6 +210,9 @@ module.exports = function (_config) {
         },
         googleServicesFile: './google-services.json',
         package: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
+        versionCode: Number.isFinite(ANDROID_VERSION_CODE)
+          ? ANDROID_VERSION_CODE
+          : 1,
         intentFilters: [
           {
             action: 'VIEW',

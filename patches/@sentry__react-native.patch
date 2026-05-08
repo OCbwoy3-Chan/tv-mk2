@@ -1,31 +1,28 @@
-diff --git a/dist/js/tools/sentryMetroSerializer.js b/dist/js/tools/sentryMetroSerializer.js
-index d7f2350..e9c0368 100644
---- a/dist/js/tools/sentryMetroSerializer.js
-+++ b/dist/js/tools/sentryMetroSerializer.js
-@@ -12,12 +12,9 @@ exports.createSentryMetroSerializer = exports.unstable_beforeAssetSerializationP
- const crypto = require("crypto");
- const utils_1 = require("./utils");
- const utils_2 = require("./vendor/metro/utils");
--let countLines;
--try {
--    countLines = require('metro/private/lib/countLines');
--}
--catch (e) {
--    countLines = require('metro/src/lib/countLines');
-+const newline = /\r\n?|\n|\u2028|\u2029/g;
-+function countLines(string) {
-+    return (string.match(newline) || []).length + 1;
+diff --git a/dist/js/tools/utils.js b/dist/js/tools/utils.js
+index 613e99e..121909f 100644
+--- a/dist/js/tools/utils.js
++++ b/dist/js/tools/utils.js
+@@ -9,6 +9,12 @@
+ catch (e) {
+     countLines = require('metro/src/lib/countLines');
  }
- const DEBUG_ID_PLACE_HOLDER = '__debug_id_place_holder__';
- const DEBUG_ID_MODULE_PATH = '__debugid__';
++countLines =
++    typeof countLines === 'function'
++        ? countLines
++        : typeof countLines === 'object' && typeof countLines.default === 'function'
++            ? countLines.default
++            : (string) => (string.match(/\r\n?|\n|\u2028|\u2029/g) || []).length + 1;
+ /**
+  * Returns minified Debug ID code snippet.
+  */
 diff --git a/scripts/expo-upload-sourcemaps.js b/scripts/expo-upload-sourcemaps.js
-index b3783b5..d5e3e45 100755
+index 7003b53..d62c38a 100755
 --- a/scripts/expo-upload-sourcemaps.js
 +++ b/scripts/expo-upload-sourcemaps.js
 @@ -218,7 +218,7 @@ for (const [assetGroupName, assets] of Object.entries(groupedAssets)) {
  
    const isHermes = assets.find(asset => asset.endsWith('.hbc'));
-   const windowsCallback = process.platform === "win32" ? 'node ' : '';
+   const windowsCallback = process.platform === 'win32' ? 'node ' : '';
 -  execSync(`${windowsCallback}${sentryCliBin} sourcemaps upload ${isHermes ? '--debug-id-reference' : ''} ${assets.join(' ')}`, {
 +  execSync(`${windowsCallback}${sentryCliBin} sourcemaps upload ${isHermes ? '--debug-id-reference' : ''} ${assets.join(' ')} --dist ${process.env.SENTRY_DIST}`, {
      env: {

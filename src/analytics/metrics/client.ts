@@ -133,19 +133,13 @@ export class MetricsClient<M extends Record<string, any>> {
 
   private sendBatchToSentry(events: Event<M>[]) {
     for (const event of events) {
-      Sentry.captureMessage(`metric:${String(event.event)}`, {
-        level: 'info',
-        fingerprint: ['metric', String(event.event)],
-        tags: {
-          metric_name: String(event.event),
-          metric_source: event.source,
-        },
-        extra: {
-          logger: 'metric',
-          eventTime: event.time,
-          payload: event.payload,
-          metadata: event.metadata,
-        },
+      Sentry.logger.info(`metric:${String(event.event)}`, {
+        logger: 'metric',
+        metric_name: String(event.event),
+        metric_source: event.source,
+        event_time: event.time,
+        payload: event.payload,
+        metadata: event.metadata,
       })
     }
   }

@@ -2,8 +2,6 @@
 
 Lets us specify the output directory for the sourcemaps via an environment variable.
 
-# @sentry/react-native/dist/js/tools/sentryMetroSerializer.js patch
+# @sentry/react-native/dist/js/tools/utils.js patch
 
-Patch of this: https://github.com/getsentry/sentry-react-native/issues/5180#issuecomment-3311772038
-
-Will be fixed in an upcoming release of @sentry/react-native - remove when available.
+Normalizes Metro's `countLines` export shape and falls back to a local implementation when needed.
