@@ -47,7 +47,10 @@ import {PreviewableUserAvatar, UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, platform, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {BellRinging_Filled_Corner0_Rounded as BellRingingIcon} from '#/components/icons/BellRinging'
-import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
+import {
+  Check_Stroke2_Corner0_Rounded as CheckIcon,
+  DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheckIcon,
+} from '#/components/icons/Check'
 import {
   ChevronBottom_Stroke2_Corner0_Rounded as ChevronDownIcon,
   ChevronTop_Stroke2_Corner0_Rounded as ChevronUpIcon,
@@ -835,7 +838,7 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
           size="small"
           style={[a.self_start]}
           onPress={onPressUnfollow}>
-          <ButtonIcon icon={CheckIcon} />
+          <ButtonIcon icon={isFollowedBy ? DoubleCheckIcon : CheckIcon} />
           <ButtonText>
             {isFollowedBy ? <Trans>Mutuals</Trans> : <Trans>Following</Trans>}
           </ButtonText>

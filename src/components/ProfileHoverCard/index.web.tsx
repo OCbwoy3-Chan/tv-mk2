@@ -30,7 +30,10 @@ import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {useFollowMethods} from '#/components/hooks/useFollowMethods'
 import {useRichText} from '#/components/hooks/useRichText'
-import {Check_Stroke2_Corner0_Rounded as Check} from '#/components/icons/Check'
+import {
+  Check_Stroke2_Corner0_Rounded as Check,
+  DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheck,
+} from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {
   KnownFollowers,
@@ -513,7 +516,14 @@ function Inner({
               onPress={profileShadow.viewer?.following ? unfollow : follow}>
               <ButtonIcon
                 position="left"
-                icon={profileShadow.viewer?.following ? Check : Plus}
+                icon={
+                  profileShadow.viewer?.following &&
+                  profileShadow.viewer?.followedBy
+                    ? DoubleCheck
+                    : profileShadow.viewer?.following
+                      ? Check
+                      : Plus
+                }
               />
               <ButtonText>
                 {profileShadow.viewer?.following

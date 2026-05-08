@@ -17,7 +17,10 @@ import {atoms as a, useBreakpoints} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {useEphemeralFollowAction} from '#/components/hooks/useEphemeralFollowAction'
-import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
+import {
+  Check_Stroke2_Corner0_Rounded as CheckIcon,
+  DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheckIcon,
+} from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import * as Toast from '#/components/Toast'
 import {IS_IOS} from '#/env'
@@ -161,7 +164,16 @@ function PostThreadFollowBtnLoaded({
       color={isFollowing ? 'secondary' : 'secondary_inverted'}
       style={enableSquareButtons ? [a.rounded_sm] : [a.rounded_full]}>
       {gtMobile && (
-        <ButtonIcon icon={isFollowing ? CheckIcon : PlusIcon} size="sm" />
+        <ButtonIcon
+          icon={
+            isFollowing && isFollowedBy
+              ? DoubleCheckIcon
+              : isFollowing
+                ? CheckIcon
+                : PlusIcon
+          }
+          size="sm"
+        />
       )}
       <ButtonText maxFontSizeMultiplier={2}>
         {!isFollowing ? (
@@ -179,21 +191,19 @@ function PostThreadFollowBtnLoaded({
     </Button>
   )
 
-  return (
-    currentAccount && hasAlternateAccounts ? (
-      <EphemeralAccountSwitcher
-        selectedDid={currentAccount.did}
-        title={_(msg`Follow as`)}
-        triggerBehavior="longPress"
-        onSelectAccount={account => {
-          void onSelectEphemeralAccount(account)
-        }}
-        renderTrigger={({triggerProps}) =>
-          renderFollowButton(triggerProps.onLongPress)
-        }
-      />
-    ) : (
-      renderFollowButton()
-    )
+  return currentAccount && hasAlternateAccounts ? (
+    <EphemeralAccountSwitcher
+      selectedDid={currentAccount.did}
+      title={_(msg`Follow as`)}
+      triggerBehavior="longPress"
+      onSelectAccount={account => {
+        void onSelectEphemeralAccount(account)
+      }}
+      renderTrigger={({triggerProps}) =>
+        renderFollowButton(triggerProps.onLongPress)
+      }
+    />
+  ) : (
+    renderFollowButton()
   )
 }

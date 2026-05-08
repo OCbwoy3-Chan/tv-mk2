@@ -38,7 +38,10 @@ import {
   ButtonText,
 } from '#/components/Button'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
-import {Check_Stroke2_Corner0_Rounded as Check} from '#/components/icons/Check'
+import {
+  Check_Stroke2_Corner0_Rounded as Check,
+  DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheck,
+} from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {Link as InternalLink, type LinkProps} from '#/components/Link'
 import * as Pills from '#/components/Pills'
@@ -586,7 +589,10 @@ export function FollowButtonInner({
           void onPressUnfollow(e)
         }}>
         {withIcon && (
-          <ButtonIcon icon={Check} position={isRound ? undefined : 'left'} />
+          <ButtonIcon
+            icon={viewer.followedBy ? DoubleCheck : Check}
+            position={isRound ? undefined : 'left'}
+          />
         )}
         {isRound ? null : <ButtonText>{unfollowLabel}</ButtonText>}
       </Button>
