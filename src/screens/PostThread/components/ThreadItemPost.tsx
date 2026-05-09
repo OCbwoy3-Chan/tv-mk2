@@ -1,5 +1,6 @@
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {View} from 'react-native'
+import {Pressable, View} from 'react-native'
+import Svg, {Defs, Mask, Path, Rect} from 'react-native-svg'
 import {
   type AppBskyFeedDefs,
   type AppBskyFeedThreadgate,
@@ -46,6 +47,10 @@ import {ShowMoreTextButton} from '#/components/Post/ShowMoreTextButton'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls, PostControlsSkeleton} from '#/components/PostControls'
 import {RichText} from '#/components/RichText'
+import {
+  useSelectionItem,
+  useSelectionStyles,
+} from '#/components/selection/SelectionScope'
 import * as Skele from '#/components/Skeleton'
 import {SubtleHover} from '#/components/SubtleHover'
 import {Text} from '#/components/Typography'
@@ -91,7 +96,10 @@ function ThreadItemPostDeleted({
   const t = useTheme()
 
   return (
-    <ThreadItemPostOuterWrapper item={item} overrides={overrides}>
+    <ThreadItemPostOuterWrapper
+      item={item}
+      overrides={overrides}
+      postForSelection={item.value.post}>
       <ThreadItemPostParentReplyLine item={item} />
 
       <View
@@ -127,17 +135,24 @@ function ThreadItemPostDeleted({
 const ThreadItemPostOuterWrapper = memo(function ThreadItemPostOuterWrapper({
   item,
   overrides,
+  postForSelection,
   children,
 }: Pick<ThreadItemPostProps, 'item' | 'overrides'> & {
+  postForSelection: AppBskyFeedDefs.PostView
   children: ReactNode
 }) {
   const t = useTheme()
   const showTopBorder =
     !item.ui.showParentReplyLine && overrides?.topBorder !== true
+  const selection = useSelectionItem(postForSelection, 'posts')
+  const selectionStyles = useSelectionStyles()
 
   return (
     <GalleryBleed>
-      <View
+      <Pressable
+        accessible={false}
+        onLongPress={selection.onEnterSelection}
+        onPress={selection.selectionActive ? selection.onSelect : undefined}
         style={[
           showTopBorder && [a.border_t, t.atoms.border_contrast_low],
           {paddingHorizontal: OUTER_SPACE},
@@ -146,9 +161,12 @@ const ThreadItemPostOuterWrapper = memo(function ThreadItemPostOuterWrapper({
             !item.ui.precedesChildReadMore && {
               paddingBottom: OUTER_SPACE / 2,
             },
+          selection.selected && selectionStyles.row,
         ]}>
-        {children}
-      </View>
+        <View pointerEvents={selection.selectionActive ? 'none' : 'auto'}>
+          {children}
+        </View>
+      </Pressable>
     </GalleryBleed>
   )
 })
@@ -193,8 +211,10 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   postShadow: Shadow<AppBskyFeedDefs.PostView>
 }) {
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
   const {openComposer} = useOpenComposer()
   const {currentAccount} = useSession()
+  const selection = useSelectionItem(postShadow, 'posts')
 
   const post = item.value.post
   const record = item.value.post.record
@@ -257,7 +277,10 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
 
   return (
     <SubtleHoverWrapper>
-      <ThreadItemPostOuterWrapper item={item} overrides={overrides}>
+      <ThreadItemPostOuterWrapper
+        item={item}
+        overrides={overrides}
+        postForSelection={postShadow}>
         <PostHider
           testID={`postThreadItem-by-${post.author.handle}`}
           href={postHref}
@@ -278,7 +301,44 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                 moderation={moderation.ui('avatar')}
                 type={post.author.associated?.labeler ? 'labeler' : 'user'}
                 live={live}
+                onPress={selection.selectionActive ? selection.onSelect : undefined}
+                onLongPress={selection.onEnterSelection}
+                disableNavigation={selection.selectionActive}
               />
+              {selection.selected ? (
+                <View
+                  pointerEvents="none"
+                  style={[
+                    a.absolute,
+                    {
+                      left: 0,
+                      top: 0,
+                      width: LINEAR_AVI_WIDTH,
+                      height: LINEAR_AVI_WIDTH,
+                      borderRadius: enableSquareAvatars ? 8 : 999,
+                      overflow: 'hidden',
+                    },
+                  ]}>
+                  <Svg width="100%" height="100%" viewBox="0 0 24 24">
+                    <Defs>
+                      <Mask id="selectedAviCutoutMaskThreadLinear">
+                        <Rect width="24" height="24" fill="white" />
+                        <Path
+                          d="M21.59 3.193a1 1 0 0 1 .217 1.397l-11.706 16a1 1 0 0 1-1.429.193l-6.294-5a1 1 0 1 1 1.244-1.566l5.48 4.353 11.09-15.16a1 1 0 0 1 1.398-.217Z"
+                          fill="black"
+                          transform="translate(3 3) scale(0.75)"
+                        />
+                      </Mask>
+                    </Defs>
+                    <Rect
+                      width="24"
+                      height="24"
+                      fill={t.palette.primary_500}
+                      mask="url(#selectedAviCutoutMaskThreadLinear)"
+                    />
+                  </Svg>
+                </View>
+              ) : null}
 
               {(item.ui.showChildReplyLine ||
                 item.ui.precedesChildReadMore) && (

@@ -1,5 +1,5 @@
 import {memo, useCallback, useMemo, useState} from 'react'
-import {View} from 'react-native'
+import {Pressable, View} from 'react-native'
 import {
   type AppBskyFeedDefs,
   type AppBskyFeedThreadgate,
@@ -43,6 +43,10 @@ import {ShowMoreTextButton} from '#/components/Post/ShowMoreTextButton'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls, PostControlsSkeleton} from '#/components/PostControls'
 import {RichText} from '#/components/RichText'
+import {
+  useSelectionItem,
+  useSelectionStyles,
+} from '#/components/selection/SelectionScope'
 import * as Skele from '#/components/Skeleton'
 import {SubtleHover} from '#/components/SubtleHover'
 import {Text} from '#/components/Typography'
@@ -122,17 +126,27 @@ function ThreadItemTreePostDeleted({
 const ThreadItemTreePostOuterWrapper = memo(
   function ThreadItemTreePostOuterWrapper({
     item,
+    postForSelection,
     children,
   }: {
     item: Extract<ThreadItem, {type: 'threadPost'}>
+    postForSelection?: AppBskyFeedDefs.PostView
     children: React.ReactNode
   }) {
     const t = useTheme()
     const indents = Math.max(0, item.ui.indent - 1)
+    const selection = useSelectionItem(
+      postForSelection ?? item.value.post,
+      'posts',
+    )
+    const selectionStyles = useSelectionStyles()
 
     return (
       <GalleryBleed>
-        <View
+        <Pressable
+          accessible={false}
+          onLongPress={selection.onEnterSelection}
+          onPress={selection.selectionActive ? selection.onSelect : undefined}
           style={[
             a.flex_row,
             item.ui.indent === 1 &&
@@ -140,6 +154,7 @@ const ThreadItemTreePostOuterWrapper = memo(
                 a.border_t,
                 t.atoms.border_contrast_low,
               ],
+            selection.selected && selectionStyles.row,
           ]}>
           {Array.from(Array(indents)).map((_, n: number) => {
             const isSkipped = item.ui.skippedIndentIndices.has(n)
@@ -157,8 +172,10 @@ const ThreadItemTreePostOuterWrapper = memo(
               />
             )
           })}
-          {children}
-        </View>
+          <View pointerEvents={selection.selectionActive ? 'none' : 'auto'}>
+            {children}
+          </View>
+        </Pressable>
       </GalleryBleed>
     )
   },
@@ -257,6 +274,7 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
 }): React.ReactNode {
   const {openComposer} = useOpenComposer()
   const {currentAccount} = useSession()
+  const selection = useSelectionItem(postShadow, 'posts')
 
   const post = item.value.post
   const record = item.value.post.record
@@ -316,7 +334,7 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
   }, [setLimitLines])
 
   return (
-    <ThreadItemTreePostOuterWrapper item={item}>
+    <ThreadItemTreePostOuterWrapper item={item} postForSelection={postShadow}>
       <SubtleHoverWrapper>
         <PostHider
           testID={`postThreadItem-by-${post.author.handle}`}
@@ -337,6 +355,10 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
                 avatarSize={TREE_AVI_WIDTH}
                 style={[a.pb_0]}
                 showAvatar
+                selectionActive={selection.selectionActive}
+                selected={selection.selected}
+                onSelect={selection.onSelect}
+                onEnterSelection={selection.onEnterSelection}
               />
               <View style={[a.flex_row]}>
                 <ThreadItemTreeReplyChildReplyLine item={item} />

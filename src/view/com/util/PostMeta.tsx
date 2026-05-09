@@ -1,5 +1,6 @@
 import {memo, useCallback} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
+import Svg, {Defs, Mask, Path, Rect} from 'react-native-svg'
 import {type AppBskyActorDefs, type ModerationDecision} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -13,6 +14,7 @@ import {sanitizeHandle} from '#/lib/strings/handles'
 import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {niceDate} from '#/lib/strings/time'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {atoms as a, platform, useTheme, web} from '#/alf'
 import {WebOnlyInlineLinkText} from '#/components/Link'
@@ -34,6 +36,10 @@ interface PostMetaOpts {
   showPronouns?: boolean
   avatarSize?: number
   onOpenAuthor?: () => void
+  selectionActive?: boolean
+  selected?: boolean
+  onSelect?: () => void
+  onEnterSelection?: () => void
   style?: StyleProp<ViewStyle>
 }
 
@@ -42,6 +48,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
   const {i18n, _} = useLingui()
 
   const author = useProfileShadow(opts.author)
+  const enableSquareAvatars = useEnableSquareAvatars()
   const displayName = author.displayName || author.handle
   const handle = author.handle
   // remove dumb typing when you update the atproto api package!!
@@ -74,7 +81,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
         opts.style,
       ]}>
       {opts.showAvatar && (
-        <View style={[a.self_center, a.mr_2xs]}>
+        <View style={[a.self_center, a.mr_2xs, a.relative]}>
           <PreviewableUserAvatar
             size={opts.avatarSize || 16}
             profile={author}
@@ -82,8 +89,44 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
             type={author.associated?.labeler ? 'labeler' : 'user'}
             live={live}
             hideLiveBadge
-            disableNavigation={opts.linkDisabled}
+            disableNavigation={opts.linkDisabled || opts.selectionActive}
+            onPress={opts.selectionActive ? opts.onSelect : undefined}
+            onLongPress={opts.onEnterSelection}
           />
+          {opts.selected ? (
+            <View
+              pointerEvents="none"
+              style={[
+                a.absolute,
+                {
+                  left: 0,
+                  top: 0,
+                  width: opts.avatarSize || 16,
+                  height: opts.avatarSize || 16,
+                  borderRadius: enableSquareAvatars ? 8 : 999,
+                  overflow: 'hidden',
+                },
+              ]}>
+              <Svg width="100%" height="100%" viewBox="0 0 24 24">
+                <Defs>
+                  <Mask id="selectedAviCutoutMaskPostMeta">
+                    <Rect width="24" height="24" fill="white" />
+                    <Path
+                      d="M21.59 3.193a1 1 0 0 1 .217 1.397l-11.706 16a1 1 0 0 1-1.429.193l-6.294-5a1 1 0 1 1 1.244-1.566l5.48 4.353 11.09-15.16a1 1 0 0 1 1.398-.217Z"
+                      fill="black"
+                      transform="translate(3 3) scale(0.75)"
+                    />
+                  </Mask>
+                </Defs>
+                <Rect
+                  width="24"
+                  height="24"
+                  fill={t.palette.primary_500}
+                  mask="url(#selectedAviCutoutMaskPostMeta)"
+                />
+              </Svg>
+            </View>
+          ) : null}
         </View>
       )}
       <View style={[a.flex_row, a.align_end, a.flex_shrink]}>

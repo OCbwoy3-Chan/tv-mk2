@@ -6,7 +6,9 @@ import {
   View,
   type ViewStyle,
 } from 'react-native'
+import Svg, {Defs, Mask, Path, Rect} from 'react-native-svg'
 import {
+  type AppBskyActorDefs,
   moderateProfile,
   type ModerationOpts,
   RichText as RichTextApi,
@@ -20,6 +22,7 @@ import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
@@ -47,6 +50,10 @@ import {Link as InternalLink, type LinkProps} from '#/components/Link'
 import * as Pills from '#/components/Pills'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {RichText} from '#/components/RichText'
+import {
+  useSelectionItem,
+  useSelectionStyles,
+} from '#/components/selection/SelectionScope'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {type Metrics} from '#/analytics'
@@ -55,7 +62,7 @@ import type * as bsky from '#/types/bsky'
 import {useEphemeralFollowAction} from './hooks/useEphemeralFollowAction'
 
 export function Default({
-  profile,
+  profile: profileUnshadowed,
   moderationOpts,
   logContext = 'ProfileCard',
   testID,
@@ -71,15 +78,48 @@ export function Default({
   contextProfileDid?: string
   onPress?: (e: GestureResponderEvent) => void
 }) {
+  const profileShadowed = useProfileShadow(profileUnshadowed)
+  const selection = useSelectionItem(
+    profileShadowed as unknown as AppBskyActorDefs.ProfileViewBasic,
+    'profiles',
+  )
+  const selectionStyles = useSelectionStyles()
+
   return (
-    <Link testID={testID} profile={profile} onPress={onPress}>
-      <Card
-        profile={profile}
-        moderationOpts={moderationOpts}
-        logContext={logContext}
-        position={position}
-        contextProfileDid={contextProfileDid}
-      />
+    <Link
+      testID={testID}
+      profile={profileUnshadowed}
+      style={[
+        a.flex_col,
+        a.w_full,
+        selection.selected && selectionStyles ? selectionStyles.row : undefined,
+      ]}
+      onPress={e => {
+        if (selection.selectionActive) {
+          selection.onSelect()
+          return false
+        }
+        return onPress?.(e)
+      }}
+      onLongPress={() => {
+        selection.onEnterSelection()
+      }}>
+      <View
+        pointerEvents={selection.selectionActive ? 'none' : 'auto'}
+        style={[a.w_full, a.overflow_hidden]}>
+        <Card
+          profile={profileUnshadowed}
+          moderationOpts={moderationOpts}
+          logContext={logContext}
+          position={position}
+          contextProfileDid={contextProfileDid}
+          selectionActive={selection.selectionActive}
+          onSelect={selection.onSelect}
+          onEnterSelection={selection.onEnterSelection}
+          selected={selection.selected}
+          selectionStyles={selectionStyles}
+        />
+      </View>
     </Link>
   )
 }
@@ -90,17 +130,35 @@ export function Card({
   logContext = 'ProfileCard',
   position,
   contextProfileDid,
+  selectionActive,
+  onSelect,
+  onEnterSelection,
+  selected,
+  selectionStyles,
 }: {
   profile: bsky.profile.AnyProfileView
   moderationOpts: ModerationOpts
   logContext?: 'ProfileCard' | 'StarterPackProfilesList'
   position?: number
   contextProfileDid?: string
+  selectionActive?: boolean
+  onSelect?: () => void
+  onEnterSelection?: () => void
+  selected?: boolean
+  selectionStyles?: ReturnType<typeof useSelectionStyles>
 }) {
   return (
     <Outer>
       <Header>
-        <Avatar profile={profile} moderationOpts={moderationOpts} />
+        <Avatar
+          profile={profile}
+          moderationOpts={moderationOpts}
+          onPress={selectionActive ? onSelect : undefined}
+          onLongPress={onEnterSelection}
+          disableNavigation={selectionActive}
+          selected={selected}
+          selectionStyles={selectionStyles}
+        />
         <NameAndHandle profile={profile} moderationOpts={moderationOpts} />
         <FollowButton
           profile={profile}
@@ -120,10 +178,22 @@ export function Card({
 
 export function Outer({
   children,
+  style,
 }: {
   children: React.ReactNode | React.ReactNode[]
+  style?: ViewStyleProp
 }) {
-  return <View style={[a.w_full, a.flex_1, a.gap_xs]}>{children}</View>
+  return (
+    <View
+      style={[
+        a.w_full,
+        a.flex_1,
+        a.gap_xs,
+        style,
+      ]}>
+      {children}
+    </View>
+  )
 }
 
 export function Header({
@@ -167,37 +237,89 @@ export function Avatar({
   profile,
   moderationOpts,
   onPress,
+  onLongPress,
   disabledPreview,
+  disableNavigation,
   liveOverride,
   size = 40,
+  selected,
+  selectionStyles,
 }: {
   profile: bsky.profile.AnyProfileView
   moderationOpts: ModerationOpts
   onPress?: () => void
+  onLongPress?: () => void
   disabledPreview?: boolean
+  disableNavigation?: boolean
   liveOverride?: boolean
   size?: number
+  selected?: boolean
+  selectionStyles?: ReturnType<typeof useSelectionStyles>
 }) {
   const moderation = moderateProfile(profile, moderationOpts)
+  const enableSquareAvatars = useEnableSquareAvatars()
 
   const {isActive: live} = useActorStatus(profile)
 
-  return disabledPreview ? (
-    <UserAvatar
-      size={size}
-      avatar={profile.avatar}
-      type={profile.associated?.labeler ? 'labeler' : 'user'}
-      moderation={moderation.ui('avatar')}
-      live={liveOverride ?? live}
-    />
-  ) : (
-    <PreviewableUserAvatar
-      size={size}
-      profile={profile}
-      moderation={moderation.ui('avatar')}
-      onBeforePress={onPress}
-      live={liveOverride ?? live}
-    />
+  return (
+    <View style={[a.relative]}>
+      {disabledPreview ? (
+        <UserAvatar
+          size={size}
+          avatar={profile.avatar}
+          type={profile.associated?.labeler ? 'labeler' : 'user'}
+          moderation={moderation.ui('avatar')}
+          live={liveOverride ?? live}
+        />
+      ) : (
+        <PreviewableUserAvatar
+          size={size}
+          profile={profile}
+          moderation={moderation.ui('avatar')}
+          onBeforePress={onPress}
+          onPress={disableNavigation ? onPress : undefined}
+          onLongPress={onLongPress}
+          disableNavigation={disableNavigation}
+          live={liveOverride ?? live}
+        />
+      )}
+      {selected && selectionStyles ? (
+        <>
+          <View
+            pointerEvents="none"
+            style={[
+              a.absolute,
+              {
+                left: 0,
+                top: 0,
+                width: size,
+                height: size,
+                borderRadius: enableSquareAvatars ? 8 : 999,
+                overflow: 'hidden',
+              },
+            ]}>
+            <Svg width="100%" height="100%" viewBox="0 0 24 24">
+              <Defs>
+                <Mask id="selectedAviCutoutMask">
+                  <Rect width="24" height="24" fill="white" />
+                  <Path
+                    d="M21.59 3.193a1 1 0 0 1 .217 1.397l-11.706 16a1 1 0 0 1-1.429.193l-6.294-5a1 1 0 1 1 1.244-1.566l5.48 4.353 11.09-15.16a1 1 0 0 1 1.398-.217Z"
+                    fill="black"
+                    transform="translate(3 3) scale(0.75)"
+                  />
+                </Mask>
+              </Defs>
+              <Rect
+                width="24"
+                height="24"
+                fill={selectionStyles.avatarBadge.backgroundColor}
+                mask="url(#selectedAviCutoutMask)"
+              />
+            </Svg>
+          </View>
+        </>
+      ) : null}
+    </View>
   )
 }
 

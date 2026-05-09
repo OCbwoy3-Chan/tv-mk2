@@ -1,5 +1,6 @@
 import {memo, useCallback, useMemo, useState} from 'react'
 import {StyleSheet, View} from 'react-native'
+import Svg, {Defs, Mask, Path, Rect} from 'react-native-svg'
 import {
   type AppBskyActorDefs,
   AppBskyFeedDefs,
@@ -23,6 +24,7 @@ import {
   usePostShadow,
 } from '#/state/cache/post-shadow'
 import {useFeedFeedbackContext} from '#/state/feed-feedback'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
@@ -50,6 +52,10 @@ import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls} from '#/components/PostControls'
 import {DiscoverDebug} from '#/components/PostControls/DiscoverDebug'
 import {RichText} from '#/components/RichText'
+import {
+  useSelectionItem,
+  useSelectionStyles,
+} from '#/components/selection/SelectionScope'
 import {SubtleHover} from '#/components/SubtleHover'
 import {useAnalytics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
@@ -173,9 +179,12 @@ let FeedItemInner = ({
   const {openComposer} = useOpenComposer()
   const pal = usePalette('default')
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
   const {currentAccount} = useSession()
 
   const [hover, setHover] = useState(false)
+  const selection = useSelectionItem(post as AppBskyFeedDefs.PostView, 'posts')
+  const selectionStyles = useSelectionStyles()
 
   const [href] = useMemo(() => {
     const urip = new AtUri(post.uri)
@@ -280,6 +289,7 @@ let FeedItemInner = ({
       borderTopWidth:
         hideTopBorder || isThreadChild ? 0 : StyleSheet.hairlineWidth,
     },
+    selection.selected && selectionStyles.row,
   ]
 
   /**
@@ -336,6 +346,15 @@ let FeedItemInner = ({
         href={href}
         noFeedback
         accessible={false}
+        onPress={() => {
+          if (selection.selectionActive) {
+            selection.onSelect()
+            return false
+          }
+        }}
+        onLongPress={() => {
+          selection.onEnterSelection()
+        }}
         onBeforePress={onBeforePress}
         dataSet={{feedContext}}
         onPointerEnter={() => {
@@ -344,114 +363,157 @@ let FeedItemInner = ({
         onPointerLeave={() => {
           setHover(false)
         }}>
-        <SubtleHover hover={hover} />
-        <View style={{flexDirection: 'row', gap: 10, paddingLeft: 8}}>
-          <View style={{width: isCarouselItem ? 0 : 42}}>
-            {isThreadChild && (
-              <View
-                style={[
-                  styles.replyLine,
-                  {
-                    backgroundColor: select(t.name, {
-                      light: t.palette.contrast_100,
-                      dim: t.palette.contrast_200,
-                      dark: t.palette.contrast_200,
-                    }),
-                    marginBottom: 4,
-                  },
-                ]}
-              />
-            )}
-          </View>
-
-          <View style={[a.pt_sm, a.flex_shrink]}>
-            {reason && (
-              <PostFeedReason
-                reason={reason}
-                moderation={moderation}
-                onOpenReposter={onOpenReposter}
-              />
-            )}
-          </View>
-        </View>
-
-        <View style={styles.layout}>
-          <View style={styles.layoutAvi}>
-            <AviFollowButton author={post.author} moderation={moderation}>
-              <PreviewableUserAvatar
-                size={42}
-                profile={post.author}
-                moderation={moderation.ui('avatar')}
-                type={post.author.associated?.labeler ? 'labeler' : 'user'}
-                onBeforePress={onOpenAuthor}
-                live={live}
-              />
-            </AviFollowButton>
-            {isThreadParent && (
-              <View
-                style={[
-                  styles.replyLine,
-                  {
-                    backgroundColor: select(t.name, {
-                      light: t.palette.contrast_100,
-                      dim: t.palette.contrast_200,
-                      dark: t.palette.contrast_200,
-                    }),
-                    marginTop: live ? 8 : 4,
-                  },
-                ]}
-              />
-            )}
-          </View>
-          <View
-            style={[
-              styles.layoutContent,
-              maybeApplyGalleryOffsetStyles('meta', {
-                post,
-                modui: moderation.ui('contentList'),
-                additionalCauses: additionalPostAlerts,
-              }),
-            ]}>
-            <PostMeta
-              author={post.author}
-              moderation={moderation}
-              timestamp={post.indexedAt}
-              postHref={href}
-              onOpenAuthor={onOpenAuthor}
-            />
-            {showReplyTo &&
-              (parentAuthor || isParentBlocked || isParentNotFound) && (
-                <PostRepliedTo
-                  parentAuthor={parentAuthor}
-                  isParentBlocked={isParentBlocked}
-                  isParentNotFound={isParentNotFound}
+        <SubtleHover hover={hover && !selection.selected} />
+        <View pointerEvents={selection.selectionActive ? 'none' : 'auto'}>
+          <View style={{flexDirection: 'row', gap: 10, paddingLeft: 8}}>
+            <View style={{width: isCarouselItem ? 0 : 42}}>
+              {isThreadChild && (
+                <View
+                  style={[
+                    styles.replyLine,
+                    {
+                      backgroundColor: select(t.name, {
+                        light: t.palette.contrast_100,
+                        dim: t.palette.contrast_200,
+                        dark: t.palette.contrast_200,
+                      }),
+                      marginBottom: 4,
+                    },
+                  ]}
                 />
               )}
-            <LabelsOnMyPost post={post} />
-            <PostContent
-              moderation={moderation}
-              richText={richText}
-              postEmbed={post.embed}
-              postAuthor={post.author}
-              onOpenEmbed={onOpenEmbed}
-              post={post}
-              additionalPostAlerts={additionalPostAlerts}
-            />
-            <PostControls
-              post={post}
-              record={record}
-              richText={richText}
-              onPressReply={onPressReply}
-              logContext="FeedItem"
-              feedContext={feedContext}
-              reqId={reqId}
-              threadgateRecord={threadgateRecord}
-              onShowLess={onShowLess}
-              viaRepost={viaRepost}
-            />
+            </View>
+
+            <View style={[a.pt_sm, a.flex_shrink]}>
+              {reason && (
+                <PostFeedReason
+                  reason={reason}
+                  moderation={moderation}
+                  onOpenReposter={onOpenReposter}
+                />
+              )}
+            </View>
           </View>
 
-          <DiscoverDebug feedContext={feedContext} />
+          <View style={styles.layout}>
+            <View style={styles.layoutAvi}>
+              <AviFollowButton author={post.author} moderation={moderation}>
+                <View style={[a.relative]}>
+                  <PreviewableUserAvatar
+                    size={42}
+                    profile={post.author}
+                    moderation={moderation.ui('avatar')}
+                    type={post.author.associated?.labeler ? 'labeler' : 'user'}
+                    onBeforePress={onOpenAuthor}
+                    onPress={selection.selectionActive ? selection.onSelect : undefined}
+                    onLongPress={selection.onEnterSelection}
+                    disableNavigation={selection.selectionActive}
+                    live={live}
+                  />
+                  {selection.selected ? (
+                    <>
+                      <View
+                        pointerEvents="none"
+                        style={[
+                          a.absolute,
+                          {
+                            left: 0,
+                            top: 0,
+                            width: 42,
+                            height: 42,
+                            borderRadius: enableSquareAvatars ? 8 : 999,
+                            overflow: 'hidden',
+                          },
+                        ]}>
+                        <Svg width="100%" height="100%" viewBox="0 0 24 24">
+                          <Defs>
+                            <Mask id="selectedAviCutoutMask">
+                              <Rect width="24" height="24" fill="white" />
+                              <Path
+                                d="M21.59 3.193a1 1 0 0 1 .217 1.397l-11.706 16a1 1 0 0 1-1.429.193l-6.294-5a1 1 0 1 1 1.244-1.566l5.48 4.353 11.09-15.16a1 1 0 0 1 1.398-.217Z"
+                                fill="black"
+                                transform="translate(3 3) scale(0.75)"
+                              />
+                            </Mask>
+                          </Defs>
+                          <Rect
+                            width="24"
+                            height="24"
+                            fill={t.palette.primary_500}
+                            mask="url(#selectedAviCutoutMask)"
+                          />
+                        </Svg>
+                      </View>
+                    </>
+                  ) : null}
+                </View>
+              </AviFollowButton>
+              {isThreadParent && (
+                <View
+                  style={[
+                    styles.replyLine,
+                    {
+                      backgroundColor: select(t.name, {
+                        light: t.palette.contrast_100,
+                        dim: t.palette.contrast_200,
+                        dark: t.palette.contrast_200,
+                      }),
+                      marginTop: live ? 8 : 4,
+                    },
+                  ]}
+                />
+              )}
+            </View>
+            <View
+              style={[
+                styles.layoutContent,
+                maybeApplyGalleryOffsetStyles('meta', {
+                  post,
+                  modui: moderation.ui('contentList'),
+                  additionalCauses: additionalPostAlerts,
+                }),
+              ]}>
+              <PostMeta
+                author={post.author}
+                moderation={moderation}
+                timestamp={post.indexedAt}
+                postHref={href}
+                onOpenAuthor={onOpenAuthor}
+              />
+              {showReplyTo &&
+                (parentAuthor || isParentBlocked || isParentNotFound) && (
+                  <PostRepliedTo
+                    parentAuthor={parentAuthor}
+                    isParentBlocked={isParentBlocked}
+                    isParentNotFound={isParentNotFound}
+                  />
+                )}
+              <LabelsOnMyPost post={post} />
+              <PostContent
+                moderation={moderation}
+                richText={richText}
+                postEmbed={post.embed}
+                postAuthor={post.author}
+                onOpenEmbed={onOpenEmbed}
+                post={post}
+                additionalPostAlerts={additionalPostAlerts}
+              />
+              <PostControls
+                post={post}
+                record={record}
+                richText={richText}
+                onPressReply={onPressReply}
+                logContext="FeedItem"
+                feedContext={feedContext}
+                reqId={reqId}
+                threadgateRecord={threadgateRecord}
+                onShowLess={onShowLess}
+                viaRepost={viaRepost}
+              />
+            </View>
+
+            <DiscoverDebug feedContext={feedContext} />
+          </View>
         </View>
       </Link>
     </GalleryBleed>

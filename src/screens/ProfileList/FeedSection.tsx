@@ -19,6 +19,7 @@ import {atoms as a} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {HashtagWide_Stroke1_Corner0_Rounded as HashtagWideIcon} from '#/components/icons/Hashtag'
 import {PersonPlus_Stroke2_Corner0_Rounded as PersonPlusIcon} from '#/components/icons/Person'
+import {SelectionScope} from '#/components/selection/SelectionScope'
 import {IS_NATIVE} from '#/env'
 
 interface SectionRef {
@@ -95,18 +96,22 @@ export function FeedSection({
 
   return (
     <View>
-      <PostFeed
-        testID="listFeed"
-        enabled={isFocused}
-        feed={feed}
-        pollInterval={60e3}
-        disablePoll={hasNew}
-        scrollElRef={scrollElRef}
-        onHasNew={setHasNew}
-        onScrolledDownChange={setIsScrolledDown}
-        renderEmptyState={renderPostsEmpty}
-        headerOffset={headerHeight}
-      />
+      <SelectionScope
+        kind="posts"
+        hasAdjacentFloatingButton={isScrolledDown || hasNew}>
+        <PostFeed
+          testID="listFeed"
+          enabled={isFocused}
+          feed={feed}
+          pollInterval={60e3}
+          disablePoll={hasNew}
+          scrollElRef={scrollElRef}
+          onHasNew={setHasNew}
+          onScrolledDownChange={setIsScrolledDown}
+          renderEmptyState={renderPostsEmpty}
+          headerOffset={headerHeight}
+        />
+      </SelectionScope>
       {(isScrolledDown || hasNew) && (
         <LoadLatestBtn
           onPress={onScrollToTop}

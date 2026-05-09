@@ -31,6 +31,7 @@ import {
 import {truncateAndInvalidate} from '#/state/queries/util'
 import {useSession} from '#/state/session'
 import {useHeaderOffset} from '#/components/hooks/useHeaderOffset'
+import {SelectionScope} from '#/components/selection/SelectionScope'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE} from '#/env'
 import {PostFeed} from '../posts/PostFeed'
@@ -142,24 +143,28 @@ export function FeedPage({
       // @ts-expect-error web only -sfn
       dataSet={{nosnippet: isDiscoverFeed ? '' : undefined}}>
       <MainScrollProvider>
-        <FeedFeedbackProvider value={feedFeedback}>
-          <PostFeed
-            testID={testID ? `${testID}-feed` : undefined}
-            enabled={isPageFocused || shouldPrefetch}
-            feed={feed}
-            feedParams={feedParams}
-            pollInterval={POLL_FREQ}
-            disablePoll={hasNew || !isPageFocused}
-            scrollElRef={scrollElRef}
-            onScrolledDownChange={setIsScrolledDown}
-            onHasNew={setHasNew}
-            renderEmptyState={renderEmptyState}
-            renderEndOfFeed={renderEndOfFeed}
-            headerOffset={headerOffset}
-            savedFeedConfig={savedFeedConfig}
-            isVideoFeed={isVideoFeed}
-          />
-        </FeedFeedbackProvider>
+        <SelectionScope
+          kind="posts"
+          hasAdjacentFloatingButton={isScrolledDown || hasNew}>
+          <FeedFeedbackProvider value={feedFeedback}>
+            <PostFeed
+              testID={testID ? `${testID}-feed` : undefined}
+              enabled={isPageFocused || shouldPrefetch}
+              feed={feed}
+              feedParams={feedParams}
+              pollInterval={POLL_FREQ}
+              disablePoll={hasNew || !isPageFocused}
+              scrollElRef={scrollElRef}
+              onScrolledDownChange={setIsScrolledDown}
+              onHasNew={setHasNew}
+              renderEmptyState={renderEmptyState}
+              renderEndOfFeed={renderEndOfFeed}
+              headerOffset={headerOffset}
+              savedFeedConfig={savedFeedConfig}
+              isVideoFeed={isVideoFeed}
+            />
+          </FeedFeedbackProvider>
+        </SelectionScope>
       </MainScrollProvider>
       {(isScrolledDown || hasNew) && (
         <LoadLatestBtn

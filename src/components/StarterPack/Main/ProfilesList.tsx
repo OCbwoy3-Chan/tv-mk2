@@ -21,6 +21,7 @@ import {type SectionRef} from '#/screens/Profile/Sections/types'
 import {atoms as a, useTheme} from '#/alf'
 import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
 import {Default as ProfileCard} from '#/components/ProfileCard'
+import {SelectionScope} from '#/components/selection/SelectionScope'
 import {IS_NATIVE, IS_WEB} from '#/env'
 
 function keyExtractor(item: AppBskyActorDefs.ProfileViewBasic, index: number) {
@@ -122,27 +123,29 @@ export const ProfilesList = forwardRef<SectionRef, ProfilesListProps>(
 
     if (data)
       return (
-        <List
-          data={getSortedProfiles()}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          ref={scrollElRef}
-          headerOffset={headerHeight}
-          ListFooterComponent={
-            <ListFooter
-              style={{paddingBottom: bottomBarOffset, borderTopWidth: 0}}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-          desktopFixedHeight
-          initialNumToRender={initialNumToRender}
-          refreshing={isPTRing}
-          onRefresh={async () => {
-            setIsPTRing(true)
-            await refetch()
-            setIsPTRing(false)
-          }}
-        />
+        <SelectionScope kind="profiles">
+          <List
+            data={getSortedProfiles()}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            ref={scrollElRef}
+            headerOffset={headerHeight}
+            ListFooterComponent={
+              <ListFooter
+                style={{paddingBottom: bottomBarOffset, borderTopWidth: 0}}
+              />
+            }
+            showsVerticalScrollIndicator={false}
+            desktopFixedHeight
+            initialNumToRender={initialNumToRender}
+            refreshing={isPTRing}
+            onRefresh={async () => {
+              setIsPTRing(true)
+              await refetch()
+              setIsPTRing(false)
+            }}
+          />
+        </SelectionScope>
       )
   },
 )

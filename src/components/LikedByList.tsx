@@ -11,6 +11,7 @@ import {useResolveUriQuery} from '#/state/queries/resolve-uri'
 import {ProfileCardWithFollowBtn} from '#/view/com/profile/ProfileCard'
 import {List} from '#/view/com/util/List'
 import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
+import {SelectionScope} from '#/components/selection/SelectionScope'
 
 function renderItem({item, index}: {item: GetLikes.Like; index: number}) {
   return (
@@ -94,24 +95,26 @@ export function LikedByList({uri}: {uri: string}) {
   }
 
   return (
-    <List
-      data={likes}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      refreshing={isPTRing}
-      onRefresh={onRefresh}
-      onEndReached={onEndReached}
-      ListFooterComponent={
-        <ListFooter
-          isFetchingNextPage={isFetchingNextPage}
-          error={cleanError(error)}
-          onRetry={fetchNextPage}
-        />
-      }
-      onEndReachedThreshold={3}
-      initialNumToRender={initialNumToRender}
-      windowSize={11}
-      sideBorders={false}
-    />
+    <SelectionScope kind="profiles">
+      <List
+        data={likes}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        refreshing={isPTRing}
+        onRefresh={onRefresh}
+        onEndReached={onEndReached}
+        ListFooterComponent={
+          <ListFooter
+            isFetchingNextPage={isFetchingNextPage}
+            error={cleanError(error)}
+            onRetry={fetchNextPage}
+          />
+        }
+        onEndReachedThreshold={3}
+        initialNumToRender={initialNumToRender}
+        windowSize={11}
+        sideBorders={false}
+      />
+    </SelectionScope>
   )
 }

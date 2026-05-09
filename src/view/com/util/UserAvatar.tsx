@@ -94,6 +94,8 @@ interface PreviewableUserAvatarProps extends BaseUserAvatarProps {
   disableHoverCard?: boolean
   disableNavigation?: boolean
   onBeforePress?: () => void
+  onPress?: () => void | false
+  onLongPress?: () => void
 }
 
 const BLUR_AMOUNT = IS_WEB ? 5 : 100
@@ -570,6 +572,8 @@ let PreviewableUserAvatar = ({
   disableHoverCard,
   disableNavigation,
   onBeforePress,
+  onPress: outerOnPress,
+  onLongPress,
   live,
   ...props
 }: PreviewableUserAvatarProps): React.ReactNode => {
@@ -581,15 +585,17 @@ let PreviewableUserAvatar = ({
   const playHaptic = useHaptics()
 
   const onPress = useCallback(() => {
+    const exitEarlyIfFalse = outerOnPress?.()
+    if (exitEarlyIfFalse === false) return
     onBeforePress?.()
     unstableCacheProfileView(queryClient, profile)
-  }, [profile, queryClient, onBeforePress])
+  }, [outerOnPress, profile, queryClient, onBeforePress])
 
   const onOpenLiveStatus = useCallback(() => {
     playHaptic('Light')
     ax.metric('live:card:open', {subject: profile.did, from: 'post'})
     liveControl.open()
-  }, [liveControl, playHaptic, profile.did])
+  }, [ax, liveControl, playHaptic, profile.did])
 
   const avatarEl = (
     <UserAvatar
@@ -609,7 +615,20 @@ let PreviewableUserAvatar = ({
   return (
     <ProfileHoverCard did={profile.did} disable={disableHoverCard}>
       {disableNavigation ? (
-        avatarEl
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={_(
+            msg`${sanitizeDisplayName(
+              profile.displayName || sanitizeHandle(profile.handle),
+            )}'s avatar`,
+          )}
+          accessibilityHint=""
+          onPress={() => {
+            onPress?.()
+          }}
+          onLongPress={onLongPress}>
+          {avatarEl}
+        </Pressable>
       ) : status.isActive && (IS_NATIVE || IS_WEB_TOUCH_DEVICE) ? (
         <>
           <Button
@@ -618,8 +637,8 @@ let PreviewableUserAvatar = ({
                 profile.displayName || sanitizeHandle(profile.handle),
               )}'s avatar`,
             )}
-            accessibilityHint={_(msg`Opens live status dialog`)}
-            onPress={onOpenLiveStatus}>
+          accessibilityHint={_(msg`Opens live status dialog`)}
+          onPress={onOpenLiveStatus}>
             {avatarEl}
           </Button>
           <LiveStatusDialog
@@ -642,6 +661,7 @@ let PreviewableUserAvatar = ({
             handle: profile.handle,
           })}
           onPress={onPress}
+          onLongPress={onLongPress}
           style={linkStyle}>
           {avatarEl}
         </Link>

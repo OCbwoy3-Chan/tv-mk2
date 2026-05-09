@@ -20,6 +20,7 @@ import {type ListRef} from '#/view/com/util/List'
 import {LoadLatestBtn} from '#/view/com/util/load-latest/LoadLatestBtn'
 import {atoms as a, ios, useTheme} from '#/alf'
 import {EditBig_Stroke1_Corner0_Rounded as EditIcon} from '#/components/icons/EditBig'
+import {SelectionScope} from '#/components/selection/SelectionScope'
 import {Text} from '#/components/Typography'
 import {IS_IOS, IS_NATIVE} from '#/env'
 import {type SectionRef} from './types'
@@ -63,7 +64,7 @@ export function ProfileFeedSection({
       animated: IS_NATIVE,
       offset: -headerHeight,
     })
-    truncateAndInvalidate(queryClient, FEED_RQKEY(feed))
+    void truncateAndInvalidate(queryClient, FEED_RQKEY(feed))
     setHasNew(false)
   }, [scrollElRef, headerHeight, queryClient, feed, setHasNew])
 
@@ -94,23 +95,27 @@ export function ProfileFeedSection({
 
   return (
     <View>
-      <PostFeed
-        testID="postsFeed"
-        enabled={isFocused}
-        feed={feed}
-        scrollElRef={scrollElRef}
-        onHasNew={setHasNew}
-        onScrolledDownChange={setIsScrolledDown}
-        renderEmptyState={renderPostsEmpty}
-        headerOffset={headerHeight}
-        progressViewOffset={ios(0)}
-        renderEndOfFeed={isVideoFeed ? undefined : ProfileEndOfFeed}
-        ignoreFilterFor={ignoreFilterFor}
-        initialNumToRender={
-          shouldUseAdjustedNumToRender ? adjustedInitialNumToRender : undefined
-        }
-        isVideoFeed={isVideoFeed}
-      />
+      <SelectionScope
+        kind="posts"
+        hasAdjacentFloatingButton={isScrolledDown || hasNew}>
+        <PostFeed
+          testID="postsFeed"
+          enabled={isFocused}
+          feed={feed}
+          scrollElRef={scrollElRef}
+          onHasNew={setHasNew}
+          onScrolledDownChange={setIsScrolledDown}
+          renderEmptyState={renderPostsEmpty}
+          headerOffset={headerHeight}
+          progressViewOffset={ios(0)}
+          renderEndOfFeed={isVideoFeed ? undefined : ProfileEndOfFeed}
+          ignoreFilterFor={ignoreFilterFor}
+          initialNumToRender={
+            shouldUseAdjustedNumToRender ? adjustedInitialNumToRender : undefined
+          }
+          isVideoFeed={isVideoFeed}
+        />
+      </SelectionScope>
       {(isScrolledDown || hasNew) && (
         <LoadLatestBtn
           onPress={onScrollToTop}

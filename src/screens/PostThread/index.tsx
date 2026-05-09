@@ -60,6 +60,7 @@ import {
 } from '#/screens/PostThread/components/ThreadItemTreePost'
 import {atoms as a, native, platform, useBreakpoints, web} from '#/alf'
 import * as Layout from '#/components/Layout'
+import {SelectionScope} from '#/components/selection/SelectionScope'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE} from '#/env'
 
@@ -772,77 +773,63 @@ export function PostThread({uri}: {uri: string}) {
           onRetry={thread.actions.refetch}
         />
       ) : (
-        <List
-          ref={listRef}
-          data={deferredSlices}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          onContentSizeChange={platform({
-            web: onContentSizeChangeWebOnly,
-            default: onContentSizeChangeNativeOnly,
-          })}
-          onStartReached={onStartReached}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={2}
-          onStartReachedThreshold={1}
-          onScrollOffsetChange={handleScrollOffsetChange}
-          onItemSeen={item => {
-            // Track post:view for parent posts and replies (non-anchor posts)
-            if (item.type === 'threadPost' && item.depth !== 0) {
-              trackThreadItemView(item.value.post)
-            }
-          }}
-          /**
-           * NATIVE ONLY
-           * {@link https://reactnative.dev/docs/scrollview#maintainvisiblecontentposition}
-           */
-          maintainVisibleContentPosition={{minIndexForVisible: 0}}
-          desktopFixedHeight
-          sideBorders={false}
-          ListFooterComponent={
-            <ThreadAlsoLiked
-              posts={visibleAlsoLikedPosts}
-              visible={alsoLikedVisible}
-              collapsed={alsoLikedCollapsed}
-              isLoading={alsoLiked.isLoading}
-              showLoadingState={
-                !alsoLikedCollapsed &&
-                !alsoLiked.error &&
-                visibleAlsoLikedPosts.length === 0 &&
-                (!alsoLiked.isFetched ||
-                  alsoLiked.isLoading ||
-                  (alsoLiked.hasNextPage && alsoLiked.isFetchingNextPage))
+        <SelectionScope kind="posts">
+          <List
+            ref={listRef}
+            data={deferredSlices}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            onContentSizeChange={platform({
+              web: onContentSizeChangeWebOnly,
+              default: onContentSizeChangeNativeOnly,
+            })}
+            onStartReached={onStartReached}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={2}
+            onStartReachedThreshold={1}
+            onScrollOffsetChange={handleScrollOffsetChange}
+            onItemSeen={item => {
+              if (item.type === 'threadPost' && item.depth !== 0) {
+                trackThreadItemView(item.value.post)
               }
-              isFetchingNextPage={alsoLiked.isFetchingNextPage}
-              error={alsoLiked.error}
-              onRetry={retryAlsoLiked}
-              headerRef={alsoLikedHeaderRef}
-              onToggleCollapsed={toggleAlsoLikedCollapsed}
-              spacerHeight={platform({
-                web: defaultListFooterHeight,
-                default: deferParents
-                  ? windowHeight * 2
-                  : defaultListFooterHeight,
-              })}
-              isTombstoneView={isTombstoneView}
-            />
-          }
-          initialNumToRender={initialNumToRender}
-          /**
-           * Default: 21
-           *
-           * Smaller for placeholder data so we don't waste time rendering skeletons
-           */
-          windowSize={thread.state.isPlaceholderData ? 1 : 7}
-          /**
-           * Default: 10
-           */
-          maxToRenderPerBatch={5}
-          /**
-           * Default: 50
-           */
-          updateCellsBatchingPeriod={100}
-        />
+            }}
+            maintainVisibleContentPosition={{minIndexForVisible: 0}}
+            desktopFixedHeight
+            sideBorders={false}
+            ListFooterComponent={
+              <ThreadAlsoLiked
+                posts={visibleAlsoLikedPosts}
+                visible={alsoLikedVisible}
+                collapsed={alsoLikedCollapsed}
+                isLoading={alsoLiked.isLoading}
+                showLoadingState={
+                  !alsoLikedCollapsed &&
+                  !alsoLiked.error &&
+                  visibleAlsoLikedPosts.length === 0 &&
+                  (!alsoLiked.isFetched ||
+                    alsoLiked.isLoading ||
+                    (alsoLiked.hasNextPage && alsoLiked.isFetchingNextPage))
+                }
+                isFetchingNextPage={alsoLiked.isFetchingNextPage}
+                error={alsoLiked.error}
+                onRetry={retryAlsoLiked}
+                headerRef={alsoLikedHeaderRef}
+                onToggleCollapsed={toggleAlsoLikedCollapsed}
+                spacerHeight={platform({
+                  web: defaultListFooterHeight,
+                  default: deferParents
+                    ? windowHeight * 2
+                    : defaultListFooterHeight,
+                })}
+                isTombstoneView={isTombstoneView}
+              />
+            }
+            initialNumToRender={initialNumToRender}
+            windowSize={thread.state.isPlaceholderData ? 1 : 7}
+            maxToRenderPerBatch={5}
+            updateCellsBatchingPeriod={100}
+          />
+        </SelectionScope>
       )}
 
       {!gtMobile && canReply && hasSession && (

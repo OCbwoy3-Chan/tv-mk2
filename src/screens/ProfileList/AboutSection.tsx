@@ -14,6 +14,7 @@ import {atoms as a, useBreakpoints} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {BulletList_Stroke1_Corner0_Rounded as ListIcon} from '#/components/icons/BulletList'
 import {PersonPlus_Stroke2_Corner0_Rounded as PersonPlusIcon} from '#/components/icons/Person'
+import {SelectionScope} from '#/components/selection/SelectionScope'
 import {IS_NATIVE} from '#/env'
 
 interface SectionRef {
@@ -117,15 +118,19 @@ export function AboutSection({
 
   return (
     <View>
-      <ListMembers
-        testID="listItems"
-        list={list.uri}
-        scrollElRef={scrollElRef}
-        renderHeader={renderHeader}
-        renderEmptyState={renderEmptyState}
-        headerOffset={headerHeight}
-        onScrolledDownChange={setIsScrolledDown}
-      />
+      <SelectionScope
+        kind="profiles"
+        hasAdjacentFloatingButton={isScrolledDown}>
+        <ListMembers
+          testID="listItems"
+          list={list.uri}
+          scrollElRef={scrollElRef}
+          renderHeader={renderHeader}
+          renderEmptyState={renderEmptyState}
+          headerOffset={headerHeight}
+          onScrolledDownChange={setIsScrolledDown}
+        />
+      </SelectionScope>
       {isScrolledDown && (
         <LoadLatestBtn
           onPress={onScrollToTop}

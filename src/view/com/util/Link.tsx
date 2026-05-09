@@ -39,7 +39,8 @@ type Event =
   | React.MouseEvent<HTMLAnchorElement, MouseEvent>
   | GestureResponderEvent
 
-interface Props extends React.ComponentProps<typeof TouchableOpacity> {
+interface Props
+  extends Omit<React.ComponentProps<typeof TouchableOpacity>, 'onPress'> {
   testID?: string
   style?: StyleProp<ViewStyle>
   href?: string
@@ -54,6 +55,7 @@ interface Props extends React.ComponentProps<typeof TouchableOpacity> {
   onPointerEnter?: () => void
   onPointerLeave?: () => void
   onBeforePress?: () => void
+  onPress?: (e?: Event) => void | false
 }
 
 /**
@@ -71,6 +73,7 @@ export const Link = memo(function Link({
   anchorNoUnderline,
   navigationAction,
   onBeforePress,
+  onPress: outerOnPress,
   accessibilityActions,
   onAccessibilityAction,
   dataSet: dataSetProp,
@@ -84,6 +87,8 @@ export const Link = memo(function Link({
 
   const onPress = useCallback(
     (e?: Event) => {
+      const exitEarlyIfFalse = outerOnPress?.(e)
+      if (exitEarlyIfFalse === false) return
       onBeforePress?.()
       if (typeof href === 'string') {
         return onPressInner(
@@ -96,7 +101,15 @@ export const Link = memo(function Link({
         )
       }
     },
-    [closeModal, navigation, navigationAction, href, openLink, onBeforePress],
+    [
+      closeModal,
+      navigation,
+      navigationAction,
+      href,
+      openLink,
+      onBeforePress,
+      outerOnPress,
+    ],
   )
 
   const accessibilityActionsWithActivate = [

@@ -1,8 +1,11 @@
 import {type GestureResponderEvent, View} from 'react-native'
+import {type AppBskyActorDefs} from '@atproto/api'
 
+import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {atoms as a, useTheme} from '#/alf'
 import * as ProfileCard from '#/components/ProfileCard'
+import {useSelectionItem, useSelectionStyles} from '#/components/selection/SelectionScope'
 import type * as bsky from '#/types/bsky'
 
 export function ProfileCardWithFollowBtn({
@@ -22,6 +25,12 @@ export function ProfileCardWithFollowBtn({
 }) {
   const t = useTheme()
   const moderationOpts = useModerationOpts()
+  const profileForSelection = useProfileShadow(profile)
+  const selection = useSelectionItem(
+    profileForSelection as unknown as AppBskyActorDefs.ProfileViewBasic,
+    'profiles',
+  )
+  const selectionStyles = useSelectionStyles()
 
   if (!moderationOpts) return null
 
@@ -31,6 +40,7 @@ export function ProfileCardWithFollowBtn({
         a.py_md,
         a.px_xl,
         !noBorder && [a.border_t, t.atoms.border_contrast_low],
+        selection.selected && selectionStyles.row,
       ]}>
       <ProfileCard.Default
         profile={profile}

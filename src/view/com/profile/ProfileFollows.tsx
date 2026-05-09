@@ -14,6 +14,7 @@ import {useSession} from '#/state/session'
 import {FindContactsBannerNUX} from '#/components/contacts/FindContactsBannerNUX'
 import {PeopleRemove2_Stroke1_Corner0_Rounded as PeopleRemoveIcon} from '#/components/icons/PeopleRemove2'
 import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
+import {SelectionScope} from '#/components/selection/SelectionScope'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB} from '#/env'
 import {List} from '../util/List'
@@ -198,28 +199,30 @@ export function ProfileFollows({name}: {name: string}) {
   }
 
   return (
-    <List
-      data={follows}
-      renderItem={renderItemWithContext}
-      keyExtractor={keyExtractor}
-      refreshing={isPTRing}
-      onRefresh={onRefresh}
-      onEndReached={onEndReached}
-      onEndReachedThreshold={4}
-      onItemSeen={onItemSeen}
-      ListHeaderComponent={<FindContactsBannerNUX />}
-      ListFooterComponent={
-        <ListFooter
-          isFetchingNextPage={isFetchingNextPage}
-          error={cleanError(error)}
-          onRetry={fetchNextPage}
-        />
-      }
-      // @ts-ignore our .web version only -prf
-      desktopFixedHeight
-      initialNumToRender={initialNumToRender}
-      windowSize={11}
-      sideBorders={false}
-    />
+    <SelectionScope kind="profiles">
+      <List
+        data={follows}
+        renderItem={renderItemWithContext}
+        keyExtractor={keyExtractor}
+        refreshing={isPTRing}
+        onRefresh={onRefresh}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={4}
+        onItemSeen={onItemSeen}
+        ListHeaderComponent={<FindContactsBannerNUX />}
+        ListFooterComponent={
+          <ListFooter
+            isFetchingNextPage={isFetchingNextPage}
+            error={cleanError(error)}
+            onRetry={fetchNextPage}
+          />
+        }
+        // @ts-ignore our .web version only -prf
+        desktopFixedHeight
+        initialNumToRender={initialNumToRender}
+        windowSize={11}
+        sideBorders={false}
+      />
+    </SelectionScope>
   )
 }

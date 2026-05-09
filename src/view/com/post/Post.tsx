@@ -1,5 +1,6 @@
 import {useCallback, useMemo, useState} from 'react'
 import {type StyleProp, StyleSheet, View, type ViewStyle} from 'react-native'
+import Svg, {Defs, Mask, Path, Rect} from 'react-native-svg'
 import {
   type AppBskyFeedDefs,
   AppBskyFeedPost,
@@ -19,6 +20,7 @@ import {
   type Shadow,
   usePostShadow,
 } from '#/state/cache/post-shadow'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {Link} from '#/view/com/util/Link'
@@ -38,6 +40,10 @@ import {ShowMoreTextButton} from '#/components/Post/ShowMoreTextButton'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls} from '#/components/PostControls'
 import {RichText} from '#/components/RichText'
+import {
+  useSelectionItem,
+  useSelectionStyles,
+} from '#/components/selection/SelectionScope'
 import {SubtleHover} from '#/components/SubtleHover'
 import * as bsky from '#/types/bsky'
 import {AviFollowButton} from '../posts/AviFollowButton'
@@ -119,7 +125,10 @@ function PostInner({
 }) {
   const queryClient = useQueryClient()
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
   const {openComposer} = useOpenComposer()
+  const selection = useSelectionItem(post as AppBskyFeedDefs.PostView, 'posts')
+  const selectionStyles = useSelectionStyles()
   const [limitLines, setLimitLines] = useState(
     () => countLines(richText?.text) >= MAX_POST_LINES,
   )
@@ -165,9 +174,21 @@ function PostInner({
           styles.outer,
           t.atoms.border_contrast_low,
           !hideTopBorder && a.border_t,
+          selection.selected && selectionStyles.row,
           style,
         ]}
         onBeforePress={onBeforePress}
+        onPress={() => {
+          if (selection.selectionActive) {
+            selection.onSelect()
+            return false
+          }
+          return undefined
+        }}
+        onLongPress={() => {
+          selection.onEnterSelection()
+          return false
+        }}
         onPointerEnter={() => {
           setHover(true)
         }}
@@ -192,12 +213,51 @@ function PostInner({
         <View style={styles.layout}>
           <View style={styles.layoutAvi}>
             <AviFollowButton author={post.author} moderation={moderation}>
-              <PreviewableUserAvatar
-                size={42}
-                profile={post.author}
-                moderation={moderation.ui('avatar')}
-                type={post.author.associated?.labeler ? 'labeler' : 'user'}
-              />
+              <View style={[a.relative]}>
+                <PreviewableUserAvatar
+                  size={42}
+                  profile={post.author}
+                  moderation={moderation.ui('avatar')}
+                  type={post.author.associated?.labeler ? 'labeler' : 'user'}
+                  onPress={selection.selectionActive ? selection.onSelect : undefined}
+                  onLongPress={selection.onEnterSelection}
+                  disableNavigation={selection.selectionActive}
+                />
+                {selection.selected ? (
+                  <View
+                    pointerEvents="none"
+                    style={[
+                      a.absolute,
+                      {
+                        left: 0,
+                        top: 0,
+                        width: 42,
+                        height: 42,
+                        borderRadius: enableSquareAvatars ? 8 : 999,
+                        overflow: 'hidden',
+                      },
+                    ]}>
+                    <Svg width="100%" height="100%" viewBox="0 0 24 24">
+                      <Defs>
+                        <Mask id="selectedAviCutoutMaskPost">
+                          <Rect width="24" height="24" fill="white" />
+                          <Path
+                            d="M21.59 3.193a1 1 0 0 1 .217 1.397l-11.706 16a1 1 0 0 1-1.429.193l-6.294-5a1 1 0 1 1 1.244-1.566l5.48 4.353 11.09-15.16a1 1 0 0 1 1.398-.217Z"
+                            fill="black"
+                            transform="translate(3 3) scale(0.75)"
+                          />
+                        </Mask>
+                      </Defs>
+                      <Rect
+                        width="24"
+                        height="24"
+                        fill={t.palette.primary_500}
+                        mask="url(#selectedAviCutoutMaskPost)"
+                      />
+                    </Svg>
+                  </View>
+                ) : null}
+              </View>
             </AviFollowButton>
           </View>
           <View
