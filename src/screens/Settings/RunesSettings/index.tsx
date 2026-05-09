@@ -67,7 +67,7 @@ export function RunesSettingsScreen({}: Props) {
         label={l`Cloud sync`}>
         <SettingsList.ItemIcon icon={CloudSyncIcon} />
         <SettingsList.ItemText>
-          <Trans>Settings Sync</Trans>
+          <Trans>Settings sync</Trans>
         </SettingsList.ItemText>
       </SettingsList.LinkItem>
       <SettingsList.LinkItem

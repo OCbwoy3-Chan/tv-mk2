@@ -5,7 +5,7 @@ Hey, witches! This is the codebase for the Witchsky app, based on [social.daniel
 Get the app itself:
 
 - **Web: [witchsky.app](https://witchsky.app)**
-- **iOS: App Store [Soon™](https://cat-bounce.com/)?**
+- **iOS: App Store [Soon™](https://cat-bounce.com/)? (Altstore source in the future?)**
 - **Android: Play Store Soon! ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)**
 
 <!-- <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://tangled.org/jollywhoppers.com/witchsky.app/">
@@ -15,90 +15,126 @@ alt="Get it on Obtainium" height="54" /></a> -->
 ## Improvements on Bluesky
 
 - Cooler name (and kawaii logo)
-- Color scheme options and hue slider (defaults to Witchsky orange)
+- Themes, hue slider, and Material You support
+- OAuth login option
+- Sort/filter accounts in account switchers
+- Hold/right click on interaction buttons to use another account
 - You can change "post" to any phrase you want in the UI
 - Choose between sharing witchsky.app or bsky.app links
 - Embed player works with [stream.place](https://stream.place/) links!
-- Open posts in PDSls and original pages of bridged posts
-- You can redraft posts
+- Open posts in PDSls and original fedi-bridged pages
+- You can delete and redraft (basically edit!) posts
 - Better defaults (alt text required 😉 autoplay off 🫨)
 - More unique repost icons
 - Can download videos
 - Stay on a page when switching accounts
 - 'Mutuals' in place of 'Following' when relevant
+- Pet label (option to toggle, & visibility for everyone else)
+- Account AI preferences screen
 - No age assurance or blocks based on location
 - No push notifications (hopefully will be added later)
 - Kept as up-to-date as possible (sporadically unstable as a result)
 
-### Experiments
+### Runes
 
-These are all available as options in a sub-page of the app's settings.
+These are all available as options in the Runes sub-page of the app's settings.
 
-- Toggle go.bsky.app link proxying for analytics
-- Toggle to see posts in quotes through blocks and detachments
-- Toggle for buttons to show original fedi posts and in PDSls
-- Toggle to trust your own preferred verifiers (and to operate as one yourself)
-- Toggle to change Constellation instance for custom features
-- Toggle to disable the default app labeler(s)
-
-#### Tweaks
-
-- Toggle to turn non-bsky.social handles into clickable links
-- Toggle to combine reposts in horizontal carousels
-- Toggle the following feed fallback to the discover feed
-- Toggle displaying images in higher quality
-- Toggle to only show a single tab if only one feed is pinned
-- Toggle to prevent others from getting notified when you interact with their reposts
-- Toggle similar account recommendations
-- Toggle to make all user avatars square (like labelers)
-- Toggle for more square-ish UI (still slightly rounded)
-- Toggle to remove the composer prompt at the top of the Following & Discover feeds
-- Toggle between handle and DID in URLs and share links
-- Change post translation provider (between Google, Kagi, Papago, and LibreTranslate)
-- Use an OpenRouter API key for generating image alt text when posting
-
-#### Metrics
-
-You can completely disable the visiblity of all metrics individually, including the number of:
-
-- likes
-- reposts
-- quotes
-- saves
-- replies
-- followers
-- following
-- & who someone's followed by
-
-## Upcoming or wishful features
-
-- Better OpenGraph support for sharing profiles & posts (including videos & fixing quotes)
-- Selecting a custom AppView
-- Seeing past blocks in threads (the nuclear block in reply chains)
-- Configure the location used to determine regional labelers
+- Menus
+  - Use handles in profile links instead of DIDs
+  - Show "Open original post" and "Open post in PDSls" buttons
+  - On non-bsky.social handles, show a link to that URL
+  - Only show URL on handles with working links
+- Badges
+  - Trusted verifiers
+    - Use own selection of trusted verifiers
+    - Trust verifiers from current AppView
+  - PDS badges
+    - Show a PDS badge next to the display name on profiles
+    - Hide PDS badge for Bluesky-hosted accounts
+    - Change favicon service
+- Impressions
+  - Posts
+    - Remove likes counts
+    - Remove reposts counts
+    - Remove quotes counts
+    - Remove saves counts
+    - Remove reply counts
+  - Profiles
+    - Remove followers counts
+    - Remove following counts
+    - Remove post counts
+    - Remove "followed by" avatars
+    - Show "Follows you" badge
+- Usability
+  - Feeds
+    - Do not fall back to discover feed
+    - Hide "Feeds ✨" tab when only one feed is selected
+    - Disable composer prompt
+    - Disable top-of-feed button
+    - Show plus icon on unfollowed feed avatars
+    - Hide posts that cannot be replied to from feeds
+  - Redirect through go.bsky.app
+  - Disable similar accounts recommendations
+  - Hide follow button on posts and scrolled profile header
+  - Disable verify email reminder
+- Display
+  - Also liked
+    - Show "Also liked" recommendations under post replies
+    - Collapse "Also liked" by default
+  - Density
+    - Account switcher
+      - Use compact account switcher
+      - Automatically use compact account switcher with more than 6 accounts
+  - Combine reposts into a horizontal carousel
+  - Display images in higher quality
+  - Show client used to post
+  - Change custom post phrase
+- Infrastructure
+  - Post translation provider
+    - Google Translate
+    - Kagi Translate
+    - Naver Papago
+    - LibreTranslate
+    - Change LibreTranslate instance
+  - Change image CDN
+  - Change PLC directory
+  - Change Constellation instance
+  - Set custom AppView DID
+  - Do not declare any default app labelers
+- Settings sync
+  - Sync settings between devices
+  - Include OpenRouter API key in synced settings
+  - Push settings to cloud
+  - Load settings from cloud
+- Extra
+  - Fetch records directly from PDS to fix broken quotes
+  - Auto-like what you repost
+  - Disable via repost notifications
+  - Show debug context for posts in Discover feed
+  - Don't include the 'via' field in own posts
+  - Developer mode
 
 ### TODO: Xan
 
 - [ ] Setup App Linking for Android (.well-known w/ app package fingerprint)
-- [ ] Fallback/email addresses to use witchsky.social in Automatic PDS detection
+- [ ] Make fallback email addresses use witchsky.social in Legacy sign-in automatic PDS detection
 - [ ] Change followed accounts [on onboarding](https://github.com/blacksky-algorithms/blacksky.community/commit/e36ee43efb4999f070860d7f70122e45b28c1e2b)
-- [ ] Join date & switch accounts in composer from a fork like [deer.aylac.top](https://github.com/ayla6/deer-social-test)
-- [ ] Visual replies indicator like the [Firmament userstyle](https://witchsky.app/profile/did:plc:jwhxcrf5uvl3vyw7nurecgt5/post/3m4rr3vzmak2a) (and likes?)
-- [ ] Put RunesSettings into separate subpages
-- [ ] After subpages for options, add [Outlinks page](https://witchsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3m5zjhhshic2g) &
+- [ ] Visual replies indicator like the [Firmament userstyle](https://witchsky.app/profile/did:plc:jwhxcrf5uvl3vyw7nurecgt5/post/3m4rr3vzmak2a)
+- [ ] Permit editing Menu options in Runes > Menus (remember [Outlinks page](https://witchsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3m5zjhhshic2g)?)
   - [ ] ShareMenuItems.tsx, ShareMenuItems.web.tsx
-- [ ] For profile meatball button, Open profile in PDSls & Open bridged OG fedi account page
-  - [ ] ProfileMenu.tsx
+- [ ] Add Open bridged OG fedi account page option to ProfileMenu.tsx
 - [ ] Witchsky PDS and .social site (list good songs containing 'bitch' in their titles for related site)
 
-### Even more wishful or far off
+### Upcoming or wishful features
 
 - [ ] Collapse labels past a customizable number (from the same labeler?) into a labeler clip "(+)"
 - [ ] Submit releases to the Google Play Store and iOS App Store
 - [ ] Move from [Cloudflare Pages](https://pages.cloudflare.com/) to [wisp.place](https://wisp.place/) (needs serverless for embeds)
-- [ ] Move TOS and privacy policy to Jollywhoppers website
+- [ ] Move Terms and Privacy policy to Jollywhoppers.com
 - [ ] Ignore `!no-unauthenticated` labels
-- [ ] Material 3 Expressive theming on Android (Liquid **ass on iOS)
+- [ ] Better OpenGraph support for sharing profiles & posts (including videos & fixing quotes)
+- [ ] Seeing past blocks in threads (the nuclear block in reply chains)
+
 
 ## Development Resources
 
@@ -162,4 +198,4 @@ Bluesky Social PBC has committed to a software patent non-aggression pledge. For
 
 ## P.S.
 
-We ❤️ you and all of the ways you support us. Thank you for making Bluesky & Witchsky so great! ^.^
+We ❤️ you and all of the ways you support us. Thank you for making Witchsky so great! ^.^

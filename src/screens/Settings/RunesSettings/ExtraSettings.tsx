@@ -56,16 +56,13 @@ export function RunesExtraSettingsScreen() {
     <RunesScreenLayout titleText={l`Extra`}>
       <Toggle.Item
         name="direct_fetch_records"
-        label={l`Fetch records directly from PDS to see through quote blocks`}
+        label={l`Fetch records directly from PDS to fix broken quotes`}
         value={directFetchRecords}
         onChange={value => setDirectFetchRecords(value)}>
         <SettingsList.Item>
           <SettingsList.ItemIcon icon={VisibilityIcon} />
           <SettingsList.ItemText>
-            <Trans>
-              Fetch records directly from PDS to see contents of blocked and
-              detached quotes
-            </Trans>
+            <Trans>Fetch records directly from PDS to fix broken quotes</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

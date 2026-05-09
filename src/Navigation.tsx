@@ -498,7 +498,7 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
       <Stack.Screen
         name="RunesSettingsSyncSettings"
         getComponent={() => RunesSettingsSyncSettingsScreen}
-        options={{title: title(msg`Settings Sync`), requireAuth: true}}
+        options={{title: title(msg`Settings sync`), requireAuth: true}}
       />
       <Stack.Screen
         name="AppearanceSettings"

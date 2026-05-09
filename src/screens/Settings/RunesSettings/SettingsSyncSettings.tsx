@@ -52,9 +52,10 @@ export function RunesSettingsSyncSettingsScreen() {
   const pullFromCloud = usePullFromCloud()
 
   const manifestQuery = useStorageManifestQuery({enabled: hasSession})
-  const decodedJson = manifestQuery.data != null
-    ? JSON.stringify(manifestQuery.data, null, 2)
-    : null
+  const decodedJson =
+    manifestQuery.data != null
+      ? JSON.stringify(manifestQuery.data, null, 2)
+      : null
 
   const isBusy = status.type === 'pushing' || status.type === 'pulling'
   const isError = status.type === 'error'
@@ -78,7 +79,7 @@ export function RunesSettingsSyncSettingsScreen() {
   }
 
   return (
-    <RunesScreenLayout titleText={l`Settings Sync`}>
+    <RunesScreenLayout titleText={l`Settings sync`}>
       <Toggle.Item
         name="cloud_sync_enabled"
         label={l`Sync settings between devices`}
@@ -113,9 +114,9 @@ export function RunesSettingsSyncSettingsScreen() {
         <Admonition type="info" style={[a.flex_1]}>
           <Trans>
             Settings are encoded and stored in a hidden draft post on your
-            account. This lets you sync your Witchsky preferences across
-            devices without any external service. Your session credentials are
-            never included.
+            account. This lets you sync your Witchsky preferences across devices
+            without any external service. Your session credentials are never
+            included.
           </Trans>
         </Admonition>
       </SettingsList.Item>
@@ -182,7 +183,8 @@ export function RunesSettingsSyncSettingsScreen() {
           <SettingsList.Divider />
           <SettingsList.Item>
             <View style={[a.flex_1, a.gap_xs]}>
-              <Text style={[a.text_sm, a.font_bold, t.atoms.text_contrast_medium]}>
+              <Text
+                style={[a.text_sm, a.font_bold, t.atoms.text_contrast_medium]}>
                 <Trans>Cloud data</Trans>
               </Text>
               {manifestQuery.isLoading ? (
