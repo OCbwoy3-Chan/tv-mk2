@@ -36,10 +36,11 @@ export async function compressIfNeeded(
     height: img.height,
     mode: 'stretch',
     maxSize,
+    outputMime: 'image/jpeg',
   })
   const finalImageMovedPath = await moveToPermanentPath(
     resizedImage.path,
-    '.jpg',
+    resizedImage.mime === 'image/jpeg' ? '.jpg' : '.webp',
   )
   const finalImg = {
     ...resizedImage,
@@ -240,12 +241,16 @@ interface DoResizeOpts {
   height: number
   mode: 'contain' | 'cover' | 'stretch'
   maxSize: number
+  outputMime?: 'image/jpeg' | 'image/webp'
 }
 
 async function doResize(
   localUri: string,
   opts: DoResizeOpts,
 ): Promise<PickerImage> {
+  const outputMime = opts.outputMime ?? 'image/webp'
+  const outputFormat =
+    outputMime === 'image/jpeg' ? SaveFormat.JPEG : SaveFormat.WEBP
   // We need to get the dimensions of the image before we resize it. Previously, the library we used allowed us to enter
   // a "max size", and it would do the "best possible size" calculation for us.
   // Now instead, we have to supply the final dimensions to the manipulation function instead.
@@ -270,7 +275,7 @@ async function doResize(
       localUri,
       [{resize: newDimensions}],
       {
-        format: SaveFormat.WEBP,
+        format: outputFormat,
         compress: qualityPercentage / 100,
       },
     )
@@ -288,7 +293,7 @@ async function doResize(
       minQualityPercentage = qualityPercentage
       newDataUri = {
         path: normalizePath(resizeRes.uri),
-        mime: 'image/webp',
+        mime: outputMime,
         size: fileInfo.size,
         width: resizeRes.width,
         height: resizeRes.height,

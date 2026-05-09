@@ -115,7 +115,7 @@ export function UserBanner({
 
   const onChangeEditImage = useCallback(
     async (image: ComposerImage) => {
-      const compressed = await compressImage(image)
+      const compressed = await compressImage(image, {outputMime: 'image/jpeg'})
       onSelectNewBanner?.(compressed)
     },
     [onSelectNewBanner],

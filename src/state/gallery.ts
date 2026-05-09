@@ -284,6 +284,7 @@ export async function compressImage(
   options?: {
     highResolution?: boolean
     increasedBlobSizeLimit?: boolean
+    outputMime?: 'image/jpeg' | 'image/webp'
   },
 ): Promise<PickerImage> {
   const res = await bypassCompression(img)
@@ -293,6 +294,9 @@ export async function compressImage(
 
   const source = img.transformed || img.source
   const highResolution = options?.highResolution ?? false
+  const outputMime = options?.outputMime ?? 'image/webp'
+  const outputFormat =
+    outputMime === 'image/jpeg' ? SaveFormat.JPEG : SaveFormat.WEBP
   let attempts = 0
   let maxDimension = highResolution ? 4000 : POST_IMG_MAX.width
   let maxBytes = options?.increasedBlobSizeLimit ? 2000000 : POST_IMG_MAX.size
@@ -329,7 +333,7 @@ export async function compressImage(
       [{resize: {width: w, height: h}}],
       {
         compress: qualityPercentage / 100,
-        format: SaveFormat.WEBP,
+        format: outputFormat,
         base64: true,
       },
     )
@@ -342,7 +346,7 @@ export async function compressImage(
         path: await moveIfNecessary(res.uri),
         width: res.width,
         height: res.height,
-        mime: 'image/webp',
+        mime: outputMime,
         size,
       }
     } else {

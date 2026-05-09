@@ -25,7 +25,7 @@ export async function openCamera(customOpts: ImagePickerOptions) {
 
   return {
     path: asset.uri,
-    mime: asset.mimeType ?? 'image/webp',
+    mime: asset.mimeType ?? 'image/jpeg',
     size: asset.fileSize ?? 0,
     width: asset.width,
     height: asset.height,
