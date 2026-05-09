@@ -279,13 +279,13 @@ function OAuthLoginFields({
       <View style={[a.pt_md]}>
         <Button
           testID="loginNextButton"
-          label={_(msg`Sign in`)}
+          label={_(msg`Login`)}
           accessibilityHint={_(msg`Opens your authorization server to sign in`)}
           color="primary"
           size="large"
           onPress={onPressNext}>
           <ButtonText>
-            <Trans>Sign in</Trans>
+            <Trans>Login</Trans>
           </ButtonText>
           {isProcessing && <ButtonIcon icon={Loader} />}
         </Button>

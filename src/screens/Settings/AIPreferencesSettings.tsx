@@ -13,7 +13,7 @@ import {
 } from '#/state/queries/ai-preferences'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
-import * as SegmentedControl from '#/components/forms/SegmentedControl'
+import * as ToggleButton from '#/components/forms/ToggleButton'
 import * as Layout from '#/components/Layout'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
@@ -38,7 +38,8 @@ export function AIPreferencesSettingsScreen({}: Props) {
 
   const categoryCopy = useCategoryCopy()
 
-  const onChange = (category: AIPreferenceCategory) => (value: TriState) => {
+  const onChange = (category: AIPreferenceCategory) => (values: string[]) => {
+    const value = values[0] as TriState | undefined
     if (value !== 'allow' && value !== 'deny' && value !== 'unset') return
     mutate({[category]: value})
   }
@@ -153,7 +154,7 @@ function CategoryRow({
   allowLabel: string
   unsetLabel: string
   denyLabel: string
-  onChange: (value: TriState) => void
+  onChange: (values: string[]) => void
 }) {
   const {t: l} = useLingui()
   const t = useTheme()
@@ -180,21 +181,20 @@ function CategoryRow({
         </Text>
       </View>
       <View style={[{minHeight: 35}, a.w_full]}>
-        <SegmentedControl.Root
-          type="radio"
+        <ToggleButton.Group
           label={l`Configure AI preference for: ${name}`}
-          value={value}
+          values={[value]}
           onChange={onChange}>
-          <SegmentedControl.Item value="allow" label={allowLabel}>
-            <SegmentedControl.ItemText>{allowLabel}</SegmentedControl.ItemText>
-          </SegmentedControl.Item>
-          <SegmentedControl.Item value="unset" label={unsetLabel}>
-            <SegmentedControl.ItemText>{unsetLabel}</SegmentedControl.ItemText>
-          </SegmentedControl.Item>
-          <SegmentedControl.Item value="deny" label={denyLabel}>
-            <SegmentedControl.ItemText>{denyLabel}</SegmentedControl.ItemText>
-          </SegmentedControl.Item>
-        </SegmentedControl.Root>
+          <ToggleButton.Button name="allow" label={allowLabel}>
+            <ToggleButton.ButtonText>{allowLabel}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+          <ToggleButton.Button name="unset" label={unsetLabel}>
+            <ToggleButton.ButtonText>{unsetLabel}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+          <ToggleButton.Button name="deny" label={denyLabel}>
+            <ToggleButton.ButtonText>{denyLabel}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+        </ToggleButton.Group>
       </View>
     </View>
   )

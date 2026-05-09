@@ -275,13 +275,13 @@ function OAuthLoginFields({
         <View style={a.flex_1} />
         <Button
           testID="loginNextButton"
-          label={_(msg`Sign in`)}
+          label={_(msg`Login`)}
           accessibilityHint={_(msg`Redirects to your authorization server`)}
           color="primary"
           size="large"
           onPress={onPressNext}>
           <ButtonText>
-            <Trans>Sign in</Trans>
+            <Trans>Login</Trans>
           </ButtonText>
           {isProcessing && <ButtonIcon icon={Loader} />}
         </Button>

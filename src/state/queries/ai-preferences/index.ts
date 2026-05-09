@@ -3,17 +3,21 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {logger} from '#/logger'
 import {STALE} from '#/state/queries'
 import {useAgent, useSession} from '#/state/session'
-import {buildGlobalRecord, type Patch} from './serde'
-import {AI_PREFERENCE_NSID, type AIPreferenceRecord} from './types'
+import {
+  AI_PREFERENCE_NSID,
+  buildGlobalRecord,
+  type Patch,
+  type AIPreferenceRecord,
+} from './serde'
 
-export {preferenceSetToTriStates} from './serde'
 export {
+  preferenceSetToTriStates,
   AI_PREFERENCE_CATEGORIES,
   AI_PREFERENCE_NSID,
   type AIPreferenceCategory,
   type AIPreferenceRecord,
   type TriState,
-} from './types'
+} from './serde'
 
 const RQKEY_ROOT = 'ai-preferences'
 
