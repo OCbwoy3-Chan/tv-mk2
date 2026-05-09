@@ -307,6 +307,7 @@ func serve(cctx *cli.Context) error {
 	e.GET("/settings/runes/other-additions", server.WebGeneric)
 	e.GET("/settings/appearance", server.WebGeneric)
 	e.GET("/settings/appearance/color-theme", server.WebGeneric)
+	e.GET("/settings/ai-preferences", server.WebGeneric)
 	e.GET("/settings/account", server.WebGeneric)
 	e.GET("/settings/automation-label", server.WebGeneric)
 	e.GET("/settings/privacy-and-security", server.WebGeneric)

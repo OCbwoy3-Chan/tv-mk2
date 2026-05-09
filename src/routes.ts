@@ -48,6 +48,7 @@ export const router = new Router<AllNavigatableRoutes>({
   PreferencesThreads: '/settings/threads',
   PreferencesExternalEmbeds: '/settings/external-embeds',
   AccessibilitySettings: '/settings/accessibility',
+  AIPreferencesSettings: '/settings/ai-preferences',
   RunesSettings: '/settings/runes',
   RunesMenusSettings: '/settings/runes/menus',
   RunesBadgesSettings: '/settings/runes/badges',
