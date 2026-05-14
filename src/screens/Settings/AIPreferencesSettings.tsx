@@ -5,8 +5,8 @@ import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {
   AI_PREFERENCE_CATEGORIES,
-  preferenceSetToTriStates,
   type AIPreferenceCategory,
+  preferenceSetToTriStates,
   type TriState,
   useAIPreferencesQuery,
   useUpdateAIPreferencesMutation,

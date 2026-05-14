@@ -817,7 +817,8 @@ export const ComposePost = ({
     }
   }, [onPressCancel, closeAllDialogs, closeAllModals])
 
-  const missingAltError = (() => {
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- restored memoization
+  const missingAltError = useMemo(() => {
     if (!requireAltTextEnabled) {
       return
     }
@@ -839,7 +840,7 @@ export const ComposePost = ({
         }
       }
     }
-  })()
+  }, [thread, requireAltTextEnabled, l])
 
   const canPost =
     !missingAltError &&

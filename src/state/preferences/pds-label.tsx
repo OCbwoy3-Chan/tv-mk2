@@ -1,6 +1,7 @@
 import {
   createContext,
   type PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -20,8 +21,8 @@ const setContext = createContext<SetContext>(
 export function Provider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState(persisted.get('pdsLabel'))
 
-  const setStateWrapped = useMemo(
-    () => (pdsLabel: persisted.Schema['pdsLabel']) => {
+  const setStateWrapped = useCallback(
+    (pdsLabel: persisted.Schema['pdsLabel']) => {
       setState(pdsLabel)
       persisted.write('pdsLabel', pdsLabel)
     },

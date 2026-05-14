@@ -20,8 +20,8 @@
  * manifest is self-authenticating.
  */
 
+import {sha256} from '@noble/hashes/sha2.js'
 import {gzip, inflate} from 'pako'
-import {sha256} from '@noble/hashes/sha256'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -152,9 +152,7 @@ export function decode(segments: string[]): unknown {
   const partial = lines.slice(0, -1).join('\n')
 
   // 1. Verify manifestHash
-  const expectedManifestHash = toHex(
-    sha256(new TextEncoder().encode(partial)),
-  )
+  const expectedManifestHash = toHex(sha256(new TextEncoder().encode(partial)))
   if (expectedManifestHash !== manifestHashField) {
     throw new Error('storage-manifest: manifestHash mismatch')
   }
@@ -194,7 +192,8 @@ export function decode(segments: string[]): unknown {
   }
 
   // Trim any padding byte that u15 decoding may have appended
-  const compressed = decoded.length === bytes ? decoded : decoded.subarray(0, bytes)
+  const compressed =
+    decoded.length === bytes ? decoded : decoded.subarray(0, bytes)
 
   // 6. sha256 check
   const actualHash = toHex(sha256(compressed))
@@ -207,14 +206,16 @@ export function decode(segments: string[]): unknown {
   try {
     jsonBytes = inflate(compressed)
   } catch (e) {
-    throw new Error(`storage-manifest: decompression failed: ${e}`)
+    const detail = e instanceof Error ? e.message : String(e)
+    throw new Error(`storage-manifest: decompression failed: ${detail}`)
   }
 
   // 8. Parse
   try {
     return JSON.parse(new TextDecoder().decode(jsonBytes))
   } catch (e) {
-    throw new Error(`storage-manifest: JSON parse failed: ${e}`)
+    const detail = e instanceof Error ? e.message : String(e)
+    throw new Error(`storage-manifest: JSON parse failed: ${detail}`)
   }
 }
 

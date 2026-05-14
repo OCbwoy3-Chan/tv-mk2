@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {
   LayoutAnimation,
   type StyleProp,
@@ -88,7 +88,8 @@ function ContentHiderActive({
   const blur = modui?.blurs[0]
   const desc = useModerationCauseDescription(blur)
 
-  const labelName = (() => {
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- restored memoization
+  const labelName = useMemo(() => {
     if (!modui?.blurs || !blur) {
       return undefined
     }
@@ -137,7 +138,16 @@ function ContentHiderActive({
       return desc.name
     }
     return [...new Set(selfBlurNames)].join(', ')
-  })()
+  }, [
+    _,
+    modui?.blurs,
+    blur,
+    desc.name,
+    desc.isSubjectAccount,
+    labelDefs,
+    i18n.locale,
+    globalLabelStrings,
+  ])
 
   return (
     <View testID={testID} style={[a.overflow_hidden, style]}>

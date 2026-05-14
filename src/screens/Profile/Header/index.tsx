@@ -17,8 +17,8 @@ import {
 import {useIsFocused} from '@react-navigation/native'
 
 import {sanitizeHandle} from '#/lib/strings/handles'
-import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useSetLightStatusBar} from '#/state/shell/light-status-bar'
 import {usePagerHeaderContext} from '#/view/com/pager/PagerHeaderContext'

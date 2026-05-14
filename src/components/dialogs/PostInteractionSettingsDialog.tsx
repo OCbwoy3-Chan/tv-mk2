@@ -352,7 +352,8 @@ export function PostInteractionSettingsForm({
     v => v.type === 'list',
   ).length
 
-  const toggleGroupValues = (() => {
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- restored memoization
+  const toggleGroupValues = useMemo(() => {
     const values: string[] = []
     for (const setting of threadgateAllowUISettings) {
       switch (setting.type) {
@@ -377,7 +378,7 @@ export function PostInteractionSettingsForm({
       }
     }
     return values
-  })()
+  }, [threadgateAllowUISettings])
 
   const toggleGroupOnChange = (values: string[]) => {
     const settings: ThreadgateAllowUISetting[] = []

@@ -83,7 +83,8 @@ export function PostThread({uri}: {uri: string}) {
    * One query to rule them all
    */
   const thread = usePostThread({anchor: uri})
-  const {anchor, hasParents} = (() => {
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- restored memoization
+  const {anchor, hasParents} = useMemo(() => {
     let hasParents = false
     for (const item of thread.data.items) {
       if (item.type === 'threadPost' && item.depth === 0) {
@@ -92,7 +93,7 @@ export function PostThread({uri}: {uri: string}) {
       hasParents = true
     }
     return {hasParents}
-  })()
+  }, [thread.data.items])
 
   // Track post:view event when anchor post is viewed
   const seenPostUriRef = useRef<string | null>(null)

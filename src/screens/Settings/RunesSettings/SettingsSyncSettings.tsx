@@ -2,16 +2,11 @@ import {useCallback, useState} from 'react'
 import {TextInput, View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {
-  useSettingsSyncStatus,
-  usePullFromCloud,
-  usePushToCloud,
-} from '#/features/settingsSync'
-import {
-  useSettingsSyncEnabled,
-  useSetSettingsSyncEnabled,
-} from '#/state/preferences'
 import * as persisted from '#/state/persisted'
+import {
+  useSetSettingsSyncEnabled,
+  useSettingsSyncEnabled,
+} from '#/state/preferences'
 import {useStorageManifestQuery} from '#/state/queries/storage-manifest'
 import {useSession} from '#/state/session'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
@@ -23,6 +18,11 @@ import {ArrowRotateClockwise_Stroke2_Corner0_Rounded as CloudSyncIcon} from '#/c
 import {Key_Stroke2_Corner2_Rounded as KeyIcon} from '#/components/icons/Key'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
+import {
+  usePullFromCloud,
+  usePushToCloud,
+  useSettingsSyncStatus,
+} from '#/features/settingsSync'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 function formatStatusLine(
@@ -201,6 +201,8 @@ export function RunesSettingsSyncSettingsScreen() {
                 </Text>
               ) : (
                 <TextInput
+                  accessibilityLabel={l`Current cloud data`}
+                  accessibilityHint=""
                   value={decodedJson}
                   editable={false}
                   multiline

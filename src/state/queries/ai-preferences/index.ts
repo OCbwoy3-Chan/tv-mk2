@@ -5,17 +5,17 @@ import {STALE} from '#/state/queries'
 import {useAgent, useSession} from '#/state/session'
 import {
   AI_PREFERENCE_NSID,
+  type AIPreferenceRecord,
   buildGlobalRecord,
   type Patch,
-  type AIPreferenceRecord,
 } from './serde'
 
 export {
-  preferenceSetToTriStates,
   AI_PREFERENCE_CATEGORIES,
   AI_PREFERENCE_NSID,
   type AIPreferenceCategory,
   type AIPreferenceRecord,
+  preferenceSetToTriStates,
   type TriState,
 } from './serde'
 

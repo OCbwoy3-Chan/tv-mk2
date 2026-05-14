@@ -1,4 +1,4 @@
-import {memo, useEffect, useMemo, useReducer, useRef} from 'react'
+import {memo, useCallback, useEffect, useMemo, useReducer, useRef} from 'react'
 import {View} from 'react-native'
 import {
   type AppBskyActorDefs,
@@ -278,15 +278,16 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
 
   const prefetchProfileQuery = usePrefetchProfileQuery()
   const prefetchedProfile = useRef(false)
-  const prefetchIfNeeded = async () => {
+  /* eslint-disable react-hooks/preserve-manual-memoization -- restored stable handlers */
+  const prefetchIfNeeded = useCallback(async () => {
     if (!prefetchedProfile.current) {
       prefetchedProfile.current = true
       prefetchProfileQuery(props.did)
     }
-  }
+  }, [prefetchProfileQuery, props.did])
 
   const didFireHover = useRef(false)
-  const onPointerMoveTarget = () => {
+  const onPointerMoveTarget = useCallback(() => {
     prefetchIfNeeded()
     // Conceptually we want something like onPointerEnter,
     // but we want to ignore entering only due to scrolling.
@@ -295,24 +296,26 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
       didFireHover.current = true
       dispatch('hovered-target')
     }
-  }
+  }, [prefetchIfNeeded])
 
-  const onPointerLeaveTarget = () => {
+  const onPointerLeaveTarget = useCallback(() => {
     didFireHover.current = false
     dispatch('unhovered-target')
-  }
+  }, [])
 
-  const onPointerEnterCard = () => {
+  const onPointerEnterCard = useCallback(() => {
     dispatch('hovered-card')
-  }
+  }, [])
 
-  const onPointerLeaveCard = () => {
+  const onPointerLeaveCard = useCallback(() => {
     dispatch('unhovered-card')
-  }
+  }, [])
 
-  const onPress = () => {
+  const onPress = useCallback(() => {
     dispatch('pressed')
-  }
+  }, [])
+
+  /* eslint-enable react-hooks/preserve-manual-memoization */
 
   const isVisible =
     currentState.stage === 'showing' ||
@@ -371,13 +374,16 @@ let Card = ({
 
   const status = useActorStatus(data)
 
-  const onPressOpenProfile = () => {
+  /* eslint-disable react-hooks/preserve-manual-memoization -- restored stable handler */
+  const onPressOpenProfile = useCallback(() => {
     if (!status.isActive || !data) return
     hide()
     navigation.push('Profile', {
       name: data.handle,
     })
-  }
+  }, [hide, navigation, status, data])
+
+  /* eslint-enable react-hooks/preserve-manual-memoization */
 
   return (
     <View
