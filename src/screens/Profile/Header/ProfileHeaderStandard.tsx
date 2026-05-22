@@ -64,6 +64,7 @@ import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {IS_IOS} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
+import {ProfileFronting} from '#/features/plurality/components/ProfileFronting'
 import {GermButton} from '../components/GermButton'
 import {EditProfileDialog} from './EditProfileDialog'
 import {ProfileHeaderHandle} from './Handle'
@@ -217,6 +218,7 @@ let ProfileHeaderStandard = ({
           {!isPlaceholderProfile && !isBlockedUser && (
             <View style={a.gap_md}>
               <ProfileHeaderMetrics profile={profile} />
+              <ProfileFronting profile={profile} />
               {descriptionRT && !moderation.ui('profileView').blur ? (
                 <View pointerEvents="auto">
                   <RichText
