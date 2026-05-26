@@ -12,7 +12,7 @@ init({
   release: env.RELEASE_VERSION,
   enableLogs: true,
   enableAutoPerformanceTracing: true,
-  tracesSampleRate: env.IS_INTERNAL ? 1.0 : 0.05,
+  tracesSampleRate: env.IS_INTERNAL ? 1.0 : 0.1,
   ignoreErrors: [
     /*
      * Unknown internals errors

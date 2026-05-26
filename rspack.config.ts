@@ -1,9 +1,12 @@
 import path from 'node:path'
+import {existsSync, readdirSync} from 'node:fs'
+import dotenv from 'dotenv'
 import rspack from '@rspack/core'
 import {RspackManifestPlugin} from 'rspack-manifest-plugin'
 import {sentryWebpackPlugin} from '@sentry/webpack-plugin'
 import {version} from './package.json'
-import {existsSync, readdirSync, symlink} from 'node:fs'
+
+dotenv.config({path: path.resolve(__dirname, '.env')})
 
 const GENERATE_STATS = process.env.GENERATE_STATS === '1'
 const isProduction = process.env.NODE_ENV === 'production'
