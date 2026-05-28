@@ -1,4 +1,4 @@
-import {memo, useCallback, useMemo} from 'react'
+import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {type AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -8,12 +8,14 @@ import {useQueryClient} from '@tanstack/react-query'
 
 import {HITSLOP_20} from '#/lib/constants'
 import {useOpenLink} from '#/lib/hooks/useOpenLink'
+import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
 import {shareText, shareUrl} from '#/lib/sharing'
 import {toShareUrl, toShareUrlBsky} from '#/lib/strings/url-helpers'
 import {type Shadow} from '#/state/cache/types'
 import {useModalControls} from '#/state/modals'
+import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {
   useDeerVerificationEnabled,
   useDeerVerificationTrusted,
@@ -59,6 +61,7 @@ import {
   ReportDialog,
   useReportDialogControl,
 } from '#/components/moderation/ReportDialog'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {useFullVerificationState} from '#/components/verification'
@@ -218,7 +221,12 @@ let ProfileMenu = ({
     }
   }, [ax, profile.viewer?.blocking, _, queueUnblock, queueBlock])
 
-  const onPressFollowAccount = useCallback(async () => {
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const followPromptControl = Prompt.usePromptControl()
+  const [confirmationAction, setConfirmationAction] =
+    useState<'follow' | 'unfollow'>('follow')
+
+  const executeFollow = useCallback(async () => {
     try {
       await queueFollow()
       Toast.show(_(msg({message: 'Account followed', context: 'toast'})))
@@ -232,7 +240,7 @@ let ProfileMenu = ({
     }
   }, [_, ax, queueFollow])
 
-  const onPressUnfollowAccount = useCallback(async () => {
+  const executeUnfollow = useCallback(async () => {
     try {
       await queueUnfollow()
       Toast.show(_(msg({message: 'Account unfollowed', context: 'toast'})))
@@ -245,6 +253,32 @@ let ProfileMenu = ({
       }
     }
   }, [_, ax, queueUnfollow])
+
+  const onPressFollowAccount = useCallback(() => {
+    if (confirmFollowUnfollow) {
+      setConfirmationAction('follow')
+      followPromptControl.open()
+    } else {
+      void executeFollow()
+    }
+  }, [confirmFollowUnfollow, executeFollow, followPromptControl])
+
+  const onPressUnfollowAccount = useCallback(() => {
+    if (confirmFollowUnfollow) {
+      setConfirmationAction('unfollow')
+      followPromptControl.open()
+    } else {
+      void executeUnfollow()
+    }
+  }, [confirmFollowUnfollow, executeUnfollow, followPromptControl])
+
+  const onConfirmFollowAction = useCallback(() => {
+    if (confirmationAction === 'follow') {
+      void executeFollow()
+    } else {
+      void executeUnfollow()
+    }
+  }, [confirmationAction, executeFollow, executeUnfollow])
 
   const onPressReportAccount = useCallback(() => {
     reportDialogControl.open()
@@ -682,6 +716,16 @@ let ProfileMenu = ({
         }
         confirmButtonColor={profile.viewer?.blocking ? undefined : 'negative'}
       />
+
+      {confirmFollowUnfollow && (
+        <FollowConfirmationDialog
+          control={followPromptControl}
+          displayName={sanitizeDisplayName(profile.displayName || profile.handle)}
+          handle={profile.handle}
+          actionType={confirmationAction}
+          onConfirm={onConfirmFollowAction}
+        />
+      )}
 
       <Prompt.Basic
         control={loggedOutWarningPromptControl}

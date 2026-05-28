@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {
   type GestureResponderEvent,
   type StyleProp,
@@ -20,6 +20,7 @@ import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
@@ -46,6 +47,8 @@ import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus
 import {Link as InternalLink, type LinkProps} from '#/components/Link'
 import * as Pills from '#/components/Pills'
 import {ProfileBadges} from '#/components/ProfileBadges'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
+import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
@@ -502,10 +505,11 @@ export function FollowButtonInner({
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const promptControl = Prompt.usePromptControl()
+  const [confirmationAction, setConfirmationAction] = useState<'follow' | 'unfollow'>('follow')
 
-  const onPressFollow = async (e: GestureResponderEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const executeFollow = async (e: GestureResponderEvent) => {
     try {
       await queueFollow()
       Toast.show(
@@ -526,9 +530,7 @@ export function FollowButtonInner({
     }
   }
 
-  const onPressUnfollow = async (e: GestureResponderEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const executeUnfollow = async (e: GestureResponderEvent) => {
     try {
       await queueUnfollow()
       Toast.show(
@@ -545,6 +547,36 @@ export function FollowButtonInner({
           type: 'error',
         })
       }
+    }
+  }
+
+  const onPressFollow = (e: GestureResponderEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (confirmFollowUnfollow) {
+      setConfirmationAction('follow')
+      promptControl.open()
+    } else {
+      void executeFollow(e)
+    }
+  }
+
+  const onPressUnfollow = (e: GestureResponderEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (confirmFollowUnfollow) {
+      setConfirmationAction('unfollow')
+      promptControl.open()
+    } else {
+      void executeUnfollow(e)
+    }
+  }
+
+  const onConfirm = (e: GestureResponderEvent) => {
+    if (confirmationAction === 'follow') {
+      void executeFollow(e)
+    } else if (confirmationAction === 'unfollow') {
+      void executeUnfollow(e)
     }
   }
 
@@ -630,6 +662,18 @@ export function FollowButtonInner({
         />
       ) : (
         renderFollowButton()
+      )}
+      {confirmFollowUnfollow && (
+        <FollowConfirmationDialog
+          control={promptControl}
+          displayName={sanitizeDisplayName(
+            profile.displayName || profile.handle,
+            moderation.ui('displayName'),
+          )}
+          handle={profile.handle}
+          actionType={confirmationAction}
+          onConfirm={onConfirm}
+        />
       )}
     </View>
   )

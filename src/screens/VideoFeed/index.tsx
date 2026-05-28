@@ -67,6 +67,7 @@ import {
   useFeedFeedback,
   useFeedFeedbackContext,
 } from '#/state/feed-feedback'
+import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useFeedInfo} from '#/state/queries/feed'
 import {usePostLikeMutationQueue} from '#/state/queries/post'
@@ -97,6 +98,8 @@ import {Link} from '#/components/Link'
 import {ListFooter} from '#/components/Lists'
 import * as Hider from '#/components/moderation/Hider'
 import {PostControls} from '#/components/PostControls'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
+import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
@@ -742,6 +745,44 @@ function Overlay({
     () => accounts.some(account => account.did !== currentAccount?.did),
     [accounts, currentAccount?.did],
   )
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const promptControl = Prompt.usePromptControl()
+  const [confirmationAction, setConfirmationAction] =
+    useState<'follow' | 'unfollow'>('follow')
+
+  const executeFollow = useCallback(async () => {
+    await queueFollow()
+  }, [queueFollow])
+
+  const executeUnfollow = useCallback(async () => {
+    await queueUnfollow()
+  }, [queueUnfollow])
+
+  const handleFollow = useCallback(() => {
+    if (confirmFollowUnfollow) {
+      setConfirmationAction('follow')
+      promptControl.open()
+    } else {
+      void executeFollow()
+    }
+  }, [confirmFollowUnfollow, executeFollow, promptControl])
+
+  const handleUnfollow = useCallback(() => {
+    if (confirmFollowUnfollow) {
+      setConfirmationAction('unfollow')
+      promptControl.open()
+    } else {
+      void executeUnfollow()
+    }
+  }, [confirmFollowUnfollow, executeUnfollow, promptControl])
+
+  const onConfirm = useCallback(() => {
+    if (confirmationAction === 'follow') {
+      void executeFollow()
+    } else {
+      void executeUnfollow()
+    }
+  }, [confirmationAction, executeFollow, executeUnfollow])
 
   const rkey = new AtUri(post.uri).rkey
   const record = bsky.dangerousIsType<AppBskyFeedPost.Record>(
@@ -789,6 +830,7 @@ function Overlay({
   }, [openComposer, post, record])
 
   return (
+    <>
     <Hider.Outer modui={mergedModui}>
       <Hider.Mask>
         <ModerationOverlay embed={embed} onPressShow={onPressShow} />
@@ -876,8 +918,8 @@ function Overlay({
                             style={[a.mb_xs]}
                             onPress={() =>
                               profile.viewer?.following
-                                ? void queueUnfollow()
-                                : void queueFollow()
+                                ? handleUnfollow()
+                                : handleFollow()
                             }>
                             {!!profile.viewer?.following && (
                               <ButtonIcon icon={CheckIcon} />
@@ -908,8 +950,8 @@ function Overlay({
                         style={[a.mb_xs]}
                         onPress={() =>
                           profile.viewer?.following
-                            ? void queueUnfollow()
-                            : void queueFollow()
+                            ? handleUnfollow()
+                            : handleFollow()
                         }>
                         {!!profile.viewer?.following && (
                           <ButtonIcon icon={CheckIcon} />
@@ -980,6 +1022,18 @@ function Overlay({
           */}
       </Hider.Content>
     </Hider.Outer>
+    {confirmFollowUnfollow && (
+      <FollowConfirmationDialog
+        control={promptControl}
+        displayName={sanitizeDisplayName(
+          post.author.displayName || post.author.handle,
+        )}
+        handle={post.author.handle}
+        actionType={confirmationAction}
+        onConfirm={onConfirm}
+      />
+    )}
+  </>
   )
 }
 

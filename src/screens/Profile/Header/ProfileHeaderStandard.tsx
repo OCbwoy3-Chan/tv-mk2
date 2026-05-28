@@ -1,4 +1,4 @@
-import {memo, useMemo, useState} from 'react'
+import {memo, useEffect, useMemo, useState} from 'react'
 import {View} from 'react-native'
 import {
   type AppBskyActorDefs,
@@ -21,6 +21,7 @@ import {
 } from '#/lib/strings/website'
 import {logger} from '#/logger'
 import {type Shadow, useProfileShadow} from '#/state/cache/profile-shadow'
+import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useDisableFollowedByMetrics} from '#/state/preferences/disable-followed-by-metrics'
 import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
 import {
@@ -59,6 +60,7 @@ import {
 import {Link} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import * as Prompt from '#/components/Prompt'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
@@ -335,6 +337,11 @@ export function HeaderStandardButtons({
   const editProfileControl = useDialogControl()
   const unblockPromptControl = Prompt.usePromptControl()
   const hideScaryFollowButtons = useHideScaryFollowButtons()
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const followPromptControl = Prompt.usePromptControl()
+  const [confirmationAction, setConfirmationAction] =
+    useState<'follow' | 'unfollow'>('follow')
+
   const onSelectEphemeralAccount = useEphemeralFollowAction({
     profile,
     logContext: 'ProfileHeader',
@@ -347,57 +354,83 @@ export function HeaderStandardButtons({
 
   const isMe = currentAccount?.did === profile.did
 
+  const executeFollow = async () => {
+    try {
+      await queueFollow()
+      onFollow?.()
+      Toast.show(
+        _(
+          msg`Following ${sanitizeDisplayName(
+            profile.displayName || profile.handle,
+            moderation.ui('displayName'),
+          )}`,
+        ),
+      )
+    } catch (err) {
+      const e = err as Error
+      if (e?.name !== 'AbortError') {
+        logger.error('Failed to follow', {message: String(e)})
+        Toast.show(_(msg`There was an issue! ${e.toString()}`), {
+          type: 'error',
+        })
+      }
+    }
+  }
+
+  const executeUnfollow = async () => {
+    try {
+      await queueUnfollow()
+      onUnfollow?.()
+      Toast.show(
+        _(
+          msg`No longer following ${sanitizeDisplayName(
+            profile.displayName || profile.handle,
+            moderation.ui('displayName'),
+          )}`,
+        ),
+        {type: 'default'},
+      )
+    } catch (err) {
+      const e = err as Error
+      if (e?.name !== 'AbortError') {
+        logger.error('Failed to unfollow', {message: String(e)})
+        Toast.show(_(msg`There was an issue! ${e.toString()}`), {
+          type: 'error',
+        })
+      }
+    }
+  }
+
   const onPressFollow = () => {
     playHaptic()
-    requireAuth(async () => {
-      try {
-        await queueFollow()
-        onFollow?.()
-        Toast.show(
-          _(
-            msg`Following ${sanitizeDisplayName(
-              profile.displayName || profile.handle,
-              moderation.ui('displayName'),
-            )}`,
-          ),
-        )
-      } catch (err) {
-        const e = err as Error
-        if (e?.name !== 'AbortError') {
-          logger.error('Failed to follow', {message: String(e)})
-          Toast.show(_(msg`There was an issue! ${e.toString()}`), {
-            type: 'error',
-          })
-        }
+    requireAuth(() => {
+      if (confirmFollowUnfollow) {
+        setConfirmationAction('follow')
+        followPromptControl.open()
+      } else {
+        void executeFollow()
       }
     })
   }
 
   const onPressUnfollow = () => {
     playHaptic()
-    requireAuth(async () => {
-      try {
-        await queueUnfollow()
-        onUnfollow?.()
-        Toast.show(
-          _(
-            msg`No longer following ${sanitizeDisplayName(
-              profile.displayName || profile.handle,
-              moderation.ui('displayName'),
-            )}`,
-          ),
-          {type: 'default'},
-        )
-      } catch (err) {
-        const e = err as Error
-        if (e?.name !== 'AbortError') {
-          logger.error('Failed to unfollow', {message: String(e)})
-          Toast.show(_(msg`There was an issue! ${e.toString()}`), {
-            type: 'error',
-          })
-        }
+    requireAuth(() => {
+      if (confirmFollowUnfollow) {
+        setConfirmationAction('unfollow')
+        followPromptControl.open()
+      } else {
+        void executeUnfollow()
       }
     })
+  }
+
+  const onConfirmFollowAction = () => {
+    if (confirmationAction === 'follow') {
+      void executeFollow()
+    } else {
+      void executeUnfollow()
+    }
   }
 
   const unblockAccount = async () => {
@@ -577,6 +610,18 @@ export function HeaderStandardButtons({
         confirmButtonCta={_(msg`Unblock`)}
         confirmButtonColor="negative"
       />
+      {confirmFollowUnfollow && (
+        <FollowConfirmationDialog
+          control={followPromptControl}
+          displayName={sanitizeDisplayName(
+            profile.displayName || profile.handle,
+            moderation.ui('displayName'),
+          )}
+          handle={profile.handle}
+          actionType={confirmationAction}
+          onConfirm={onConfirmFollowAction}
+        />
+      )}
     </>
   )
 }

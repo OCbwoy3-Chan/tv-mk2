@@ -2,6 +2,10 @@ import {Trans, useLingui} from '@lingui/react/macro'
 
 import {useGoLinksEnabled, useSetGoLinksEnabled} from '#/state/preferences'
 import {
+  useConfirmFollowUnfollow,
+  useSetConfirmFollowUnfollow,
+} from '#/state/preferences/confirm-follow-unfollow'
+import {
   useDisableVerifyEmailReminder,
   useSetDisableVerifyEmailReminder,
 } from '#/state/preferences/disable-verify-email-reminder'
@@ -18,6 +22,7 @@ import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import * as Toggle from '#/components/forms/Toggle'
 import {ArrowShareRight_Stroke2_Corner2_Rounded as ArrowShareRightIcon} from '#/components/icons/ArrowShareRight'
+import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
 import {Envelope_Stroke2_Corner2_Rounded as EnvelopeIcon} from '#/components/icons/Envelope'
 import {Newspaper_Stroke2_Corner2_Rounded as NewspaperIcon} from '#/components/icons/Newspaper'
 import {PersonGroup_Stroke2_Corner2_Rounded as PersonGroupIcon} from '#/components/icons/Person'
@@ -35,6 +40,9 @@ export function RunesUsabilitySettingsScreen() {
 
   const hideScaryFollowButtons = useHideScaryFollowButtons()
   const setHideScaryFollowButtons = useSetHideScaryFollowButtons()
+
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const setConfirmFollowUnfollow = useSetConfirmFollowUnfollow()
 
   const disableVerifyEmailReminder = useDisableVerifyEmailReminder()
   const setDisableVerifyEmailReminder = useSetDisableVerifyEmailReminder()
@@ -86,6 +94,19 @@ export function RunesUsabilitySettingsScreen() {
             <Trans>
               Hide follow button on posts and scrolled profile header
             </Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="confirm_follow_unfollow"
+        label={l`Confirm before following or unfollowing`}
+        value={confirmFollowUnfollow ?? false}
+        onChange={value => setConfirmFollowUnfollow(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={CheckIcon} />
+          <SettingsList.ItemText>
+            <Trans>Confirm before following or unfollowing</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

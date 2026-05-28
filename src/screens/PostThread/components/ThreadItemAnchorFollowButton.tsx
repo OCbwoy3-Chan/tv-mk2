@@ -6,7 +6,9 @@ import {Trans} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 
 import {logger} from '#/logger'
+import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   useProfileFollowMutationQueue,
@@ -22,6 +24,8 @@ import {
   DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheckIcon,
 } from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
+import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {IS_IOS} from '#/env'
 import {GrowthHack} from './GrowthHack'
@@ -79,6 +83,10 @@ function PostThreadFollowBtnLoaded({
     profile,
     logContext: 'PostThreadItem',
   })
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const promptControl = Prompt.usePromptControl()
+  const [confirmationAction, setConfirmationAction] =
+    useState<'follow' | 'unfollow'>('follow')
 
   const isFollowing = !!profile.viewer?.following
   const isFollowedBy = !!profile.viewer?.followedBy
@@ -122,35 +130,68 @@ function PostThreadFollowBtnLoaded({
     }
   }, [isFollowing, wasFollowing, navigation])
 
+  const executeFollow = useCallback(async () => {
+    try {
+      await queueFollow()
+    } catch (e: any) {
+      if (e?.name !== 'AbortError') {
+        logger.error('Failed to follow', {message: String(e)})
+        Toast.show(_(msg`There was an issue! ${e.toString()}`), {
+          type: 'error',
+        })
+      }
+    }
+  }, [queueFollow, _])
+
+  const executeUnfollow = useCallback(async () => {
+    try {
+      await queueUnfollow()
+    } catch (e: any) {
+      if (e?.name !== 'AbortError') {
+        logger.error('Failed to unfollow', {message: String(e)})
+        Toast.show(_(msg`There was an issue! ${e.toString()}`), {
+          type: 'error',
+        })
+      }
+    }
+  }, [queueUnfollow, _])
+
+  const onConfirm = useCallback(() => {
+    if (confirmationAction === 'follow') {
+      void executeFollow()
+    } else {
+      void executeUnfollow()
+    }
+  }, [confirmationAction, executeFollow, executeUnfollow])
+
   const onPress = useCallback(() => {
     if (!isFollowing) {
-      requireAuth(async () => {
-        try {
-          await queueFollow()
-        } catch (e: any) {
-          if (e?.name !== 'AbortError') {
-            logger.error('Failed to follow', {message: String(e)})
-            Toast.show(_(msg`There was an issue! ${e.toString()}`), {
-              type: 'error',
-            })
-          }
+      requireAuth(() => {
+        if (confirmFollowUnfollow) {
+          setConfirmationAction('follow')
+          promptControl.open()
+        } else {
+          void executeFollow()
         }
       })
     } else {
-      requireAuth(async () => {
-        try {
-          await queueUnfollow()
-        } catch (e: any) {
-          if (e?.name !== 'AbortError') {
-            logger.error('Failed to unfollow', {message: String(e)})
-            Toast.show(_(msg`There was an issue! ${e.toString()}`), {
-              type: 'error',
-            })
-          }
+      requireAuth(() => {
+        if (confirmFollowUnfollow) {
+          setConfirmationAction('unfollow')
+          promptControl.open()
+        } else {
+          void executeUnfollow()
         }
       })
     }
-  }, [isFollowing, requireAuth, queueFollow, _, queueUnfollow])
+  }, [
+    isFollowing,
+    requireAuth,
+    confirmFollowUnfollow,
+    executeFollow,
+    executeUnfollow,
+    promptControl,
+  ])
 
   if (!showFollowBtn) return null
 
@@ -191,19 +232,32 @@ function PostThreadFollowBtnLoaded({
     </Button>
   )
 
-  return currentAccount && hasAlternateAccounts ? (
-    <EphemeralAccountSwitcher
-      selectedDid={currentAccount.did}
-      title={_(msg`Follow as`)}
-      triggerBehavior="longPress"
-      onSelectAccount={account => {
-        void onSelectEphemeralAccount(account)
-      }}
-      renderTrigger={({triggerProps}) =>
-        renderFollowButton(triggerProps.onLongPress)
-      }
-    />
-  ) : (
-    renderFollowButton()
+  return (
+    <>
+      {currentAccount && hasAlternateAccounts ? (
+        <EphemeralAccountSwitcher
+          selectedDid={currentAccount.did}
+          title={_(msg`Follow as`)}
+          triggerBehavior="longPress"
+          onSelectAccount={account => {
+            void onSelectEphemeralAccount(account)
+          }}
+          renderTrigger={({triggerProps}) =>
+            renderFollowButton(triggerProps.onLongPress)
+          }
+        />
+      ) : (
+        renderFollowButton()
+      )}
+      {confirmFollowUnfollow && (
+        <FollowConfirmationDialog
+          control={promptControl}
+          displayName={sanitizeDisplayName(profile.displayName || profile.handle)}
+          handle={profile.handle}
+          actionType={confirmationAction}
+          onConfirm={onConfirm}
+        />
+      )}
+    </>
   )
 }

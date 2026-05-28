@@ -63,6 +63,7 @@ export const SYNCED_PREFS_KEYS = [
   'showFollowsYouBadge',
   'hideSimilarAccountsRecomm',
   'hideScaryFollowButtons',
+  'confirmFollowUnfollow',
   'discoverContextEnabled',
   'enableSquareAvatars',
   'enableSquareButtons',

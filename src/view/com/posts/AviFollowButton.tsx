@@ -1,4 +1,4 @@
-import {type ReactNode} from 'react'
+import {type ReactNode, useEffect, useState} from 'react'
 import {View} from 'react-native'
 import {type AppBskyActorDefs, type ModerationDecision} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
@@ -6,6 +6,7 @@ import {useLingui} from '@lingui/react'
 
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useShowAvatarFollowButton} from '#/state/preferences/show-avatar-follow-button'
 import {useSession} from '#/state/session'
 import * as Toast from '#/view/com/util/Toast'
@@ -13,6 +14,8 @@ import {atoms as a, select, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {useFollowMethods} from '#/components/hooks/useFollowMethods'
 import {PlusSmall_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
+import * as Prompt from '#/components/Prompt'
 
 export function AviFollowButton({
   author,
@@ -27,11 +30,13 @@ export function AviFollowButton({
   const t = useTheme()
   const profile = useProfileShadow(author)
   const showAvatarFollowButton = useShowAvatarFollowButton()
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const {follow} = useFollowMethods({
     profile,
     logContext: 'AvatarButton',
   })
   const {currentAccount, hasSession} = useSession()
+  const promptControl = Prompt.usePromptControl()
 
   const name = sanitizeDisplayName(
     profile.displayName || profile.handle,
@@ -40,9 +45,18 @@ export function AviFollowButton({
   const isFollowing =
     Boolean(profile.viewer?.following) || profile.did === currentAccount?.did
 
-  function onPress() {
+  function onConfirm() {
     follow()
     Toast.show(_(msg`Following ${name}`))
+  }
+
+  function onPress() {
+    if (confirmFollowUnfollow) {
+      promptControl.open()
+    } else {
+      follow()
+      Toast.show(_(msg`Following ${name}`))
+    }
   }
 
   if (!hasSession || !showAvatarFollowButton) {
@@ -104,6 +118,15 @@ export function AviFollowButton({
             </View>
           </View>
         </Button>
+      )}
+      {confirmFollowUnfollow && (
+        <FollowConfirmationDialog
+          control={promptControl}
+          displayName={name}
+          handle={profile.handle}
+          actionType="follow"
+          onConfirm={onConfirm}
+        />
       )}
     </View>
   )

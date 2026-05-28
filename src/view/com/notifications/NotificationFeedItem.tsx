@@ -35,6 +35,7 @@ import {niceDate} from '#/lib/strings/time'
 import {s} from '#/lib/styles'
 import {logger} from '#/logger'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {type FeedNotification} from '#/state/queries/notifications/feed'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
@@ -72,6 +73,8 @@ import {InlineLinkText, Link} from '#/components/Link'
 import * as MediaPreview from '#/components/MediaPreview'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
+import * as Prompt from '#/components/Prompt'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {Notification as StarterPackCard} from '#/components/StarterPack/StarterPackCard'
 import {SubtleHover} from '#/components/SubtleHover'
 import * as Toast from '#/components/Toast'
@@ -758,16 +761,17 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
     profileShadow,
     'ProfileCard',
   )
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const promptControl = Prompt.usePromptControl()
+  const [confirmationAction, setConfirmationAction] =
+    useState<'follow' | 'unfollow'>('follow')
 
   // Don't show button if not logged in or for own profile
   if (!hasSession || profile.did === currentAccount?.did) {
     return null
   }
 
-  const onPressFollow = async (e: GestureResponderEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
+  const executeFollow = async () => {
     try {
       await queueFollow()
       Toast.show(
@@ -786,10 +790,7 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
     }
   }
 
-  const onPressUnfollow = async (e: GestureResponderEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
+  const executeUnfollow = async () => {
     try {
       await queueUnfollow()
       Toast.show(
@@ -805,6 +806,38 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
           type: 'error',
         })
       }
+    }
+  }
+
+  const onPressFollow = (e: GestureResponderEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (confirmFollowUnfollow) {
+      setConfirmationAction('follow')
+      promptControl.open()
+    } else {
+      void executeFollow()
+    }
+  }
+
+  const onPressUnfollow = (e: GestureResponderEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (confirmFollowUnfollow) {
+      setConfirmationAction('unfollow')
+      promptControl.open()
+    } else {
+      void executeUnfollow()
+    }
+  }
+
+  const onConfirm = () => {
+    if (confirmationAction === 'follow') {
+      void executeFollow()
+    } else {
+      void executeUnfollow()
     }
   }
 
@@ -855,6 +888,15 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
             {isFollowedBy ? <Trans>Follow back</Trans> : <Trans>Follow</Trans>}
           </ButtonText>
         </Button>
+      )}
+      {confirmFollowUnfollow && (
+        <FollowConfirmationDialog
+          control={promptControl}
+          displayName={sanitizeDisplayName(profile.displayName || profile.handle)}
+          handle={profile.handle}
+          actionType={confirmationAction}
+          onConfirm={onConfirm}
+        />
       )}
     </View>
   )

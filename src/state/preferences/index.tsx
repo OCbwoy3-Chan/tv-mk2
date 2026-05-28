@@ -7,6 +7,7 @@ import {Provider as AutoCompactAccountSwitcherProvider} from './auto-compact-acc
 import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
 import {Provider as AutoplayProvider} from './autoplay'
 import {Provider as CompactAccountSwitcherProvider} from './compact-account-switcher'
+import {Provider as ConfirmFollowUnfollowProvider} from './confirm-follow-unfollow'
 import {Provider as ConstellationProvider} from './constellation-enabled'
 import {Provider as ConstellationInstanceProvider} from './constellation-instance'
 import {Provider as DeerVerificationProvider} from './deer-verification'
@@ -76,6 +77,10 @@ export {
   useSetRequireAltTextEnabled,
 } from './alt-text-required'
 export {useAutoplayDisabled, useSetAutoplayDisabled} from './autoplay'
+export {
+  useConfirmFollowUnfollow,
+  useSetConfirmFollowUnfollow,
+} from './confirm-follow-unfollow'
 export {
   useDisableComposerPrompt,
   useSetDisableComposerPrompt,
@@ -184,7 +189,8 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                               <ShowAvatarFollowButtonProvider>
                                                                                                 <HideSimilarAccountsRecommProvider>
                                                                                                   <HideScaryFollowButtonsProvider>
-                                                                                                    <HideUnreplyablePostsProvider>
+                                                                                                    <ConfirmFollowUnfollowProvider>
+                                                                                                      <HideUnreplyablePostsProvider>
                                                                                                       <EnableSquareAvatarsProvider>
                                                                                                         <EnableSquareButtonsProvider>
                                                                                                           <AutoCompactAccountSwitcherProvider>
@@ -215,6 +221,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                         </EnableSquareButtonsProvider>
                                                                                                       </EnableSquareAvatarsProvider>
                                                                                                     </HideUnreplyablePostsProvider>
+                                                                                                      </ConfirmFollowUnfollowProvider>
                                                                                                   </HideScaryFollowButtonsProvider>
                                                                                                 </HideSimilarAccountsRecommProvider>
                                                                                               </ShowAvatarFollowButtonProvider>

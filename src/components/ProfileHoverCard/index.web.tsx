@@ -1,4 +1,4 @@
-import {memo, useCallback, useEffect, useMemo, useReducer, useRef} from 'react'
+import {memo, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {View} from 'react-native'
 import {
   type AppBskyActorDefs,
@@ -16,6 +16,7 @@ import {type NavigationProp} from '#/lib/routes/types'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useDisableFollowedByMetrics} from '#/state/preferences/disable-followed-by-metrics'
 import {useDisableFollowersMetrics} from '#/state/preferences/disable-followers-metrics'
 import {useDisableFollowingMetrics} from '#/state/preferences/disable-following-metrics'
@@ -44,6 +45,11 @@ import {Loader} from '#/components/Loader'
 import * as Pills from '#/components/Pills'
 import {Portal} from '#/components/Portal'
 import {ProfileBadges} from '#/components/ProfileBadges'
+import * as Prompt from '#/components/Prompt'
+import {
+  FollowConfirmationDialog,
+  type FollowActionType,
+} from '#/components/dialogs/FollowConfirmationDialog'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {IS_WEB_TOUCH_DEVICE} from '#/env'
@@ -122,6 +128,14 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
   const {refs, floatingStyles} = useFloating({
     middleware: floatingMiddlewares,
   })
+
+  const followPromptControl = Prompt.usePromptControl()
+  const [followConfirmState, setFollowConfirmState] = useState<{
+    actionType: FollowActionType
+    onConfirm: () => void
+    displayName: string
+    handle: string
+  } | null>(null)
 
   const [currentState, dispatch] = useReducer(
     // Tip: console.log(state, action) when debugging.
@@ -347,11 +361,29 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
             onPointerEnter={onPointerEnterCard}
             onPointerLeave={onPointerLeaveCard}>
             <div style={{willChange: 'transform', ...animationStyle}}>
-              <Card did={props.did} hide={onPress} navigation={navigation} />
+              <Card
+                did={props.did}
+                hide={onPress}
+                navigation={navigation}
+                onRequestFollowConfirmation={params => {
+                  setFollowConfirmState(params)
+                  followPromptControl.open()
+                }}
+              />
             </div>
           </div>
         </Portal>
       )}
+      <FollowConfirmationDialog
+        control={followPromptControl}
+        displayName={followConfirmState?.displayName ?? ''}
+        handle={followConfirmState?.handle ?? ''}
+        actionType={followConfirmState?.actionType ?? 'follow'}
+        onConfirm={() => {
+          followConfirmState?.onConfirm()
+          setFollowConfirmState(null)
+        }}
+      />
     </View>
   )
 }
@@ -360,10 +392,17 @@ let Card = ({
   did,
   hide,
   navigation,
+  onRequestFollowConfirmation,
 }: {
   did: string
   hide: () => void
   navigation: NavigationProp
+  onRequestFollowConfirmation?: (params: {
+    actionType: FollowActionType
+    onConfirm: () => void
+    displayName: string
+    handle: string
+  }) => void
 }): React.ReactNode => {
   const t = useTheme()
 
@@ -408,7 +447,12 @@ let Card = ({
             onPressOpenProfile={onPressOpenProfile}
           />
         ) : (
-          <Inner profile={data} moderationOpts={moderationOpts} hide={hide} />
+          <Inner
+            profile={data}
+            moderationOpts={moderationOpts}
+            hide={hide}
+            onRequestFollowConfirmation={onRequestFollowConfirmation}
+          />
         )
       ) : (
         <View
@@ -430,10 +474,17 @@ function Inner({
   profile,
   moderationOpts,
   hide,
+  onRequestFollowConfirmation,
 }: {
   profile: AppBskyActorDefs.ProfileViewDetailed
   moderationOpts: ModerationOpts
   hide: () => void
+  onRequestFollowConfirmation?: (params: {
+    actionType: FollowActionType
+    onConfirm: () => void
+    displayName: string
+    handle: string
+  }) => void
 }) {
   const t = useTheme()
   const {_, i18n} = useLingui()
@@ -448,6 +499,7 @@ function Inner({
     profile: profileShadow,
     logContext: 'ProfileHoverCard',
   })
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const isBlockedUser =
     profile.viewer?.blocking ||
     profile.viewer?.blockedBy ||
@@ -478,6 +530,52 @@ function Inner({
   const disableFollowersMetrics = useDisableFollowersMetrics()
   const disableFollowingMetrics = useDisableFollowingMetrics()
   const disableFollowedByMetrics = useDisableFollowedByMetrics()
+
+  const handleFollow = useCallback(() => {
+    if (confirmFollowUnfollow && onRequestFollowConfirmation) {
+      onRequestFollowConfirmation({
+        actionType: 'follow',
+        onConfirm: follow,
+        displayName: sanitizeDisplayName(
+          profile.displayName || sanitizeHandle(profile.handle),
+          moderation.ui('displayName'),
+        ),
+        handle: profile.handle,
+      })
+    } else {
+      follow()
+    }
+  }, [
+    confirmFollowUnfollow,
+    follow,
+    onRequestFollowConfirmation,
+    profile.displayName,
+    profile.handle,
+    moderation,
+  ])
+
+  const handleUnfollow = useCallback(() => {
+    if (confirmFollowUnfollow && onRequestFollowConfirmation) {
+      onRequestFollowConfirmation({
+        actionType: 'unfollow',
+        onConfirm: unfollow,
+        displayName: sanitizeDisplayName(
+          profile.displayName || sanitizeHandle(profile.handle),
+          moderation.ui('displayName'),
+        ),
+        handle: profile.handle,
+      })
+    } else {
+      unfollow()
+    }
+  }, [
+    confirmFollowUnfollow,
+    unfollow,
+    onRequestFollowConfirmation,
+    profile.displayName,
+    profile.handle,
+    moderation,
+  ])
 
   return (
     <View>
@@ -519,7 +617,7 @@ function Inner({
                     : _(msg`Follow`)
               }
               style={enableSquareButtons ? [a.rounded_sm] : [a.rounded_full]}
-              onPress={profileShadow.viewer?.following ? unfollow : follow}>
+              onPress={profileShadow.viewer?.following ? handleUnfollow : handleFollow}>
               <ButtonIcon
                 position="left"
                 icon={
