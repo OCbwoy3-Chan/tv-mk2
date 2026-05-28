@@ -14,11 +14,14 @@ import {
   useProfileFollowMutationQueue,
   useProfileQuery,
 } from '#/state/queries/profile'
-import {useRequireAuth, useSession} from '#/state/session'
+import {type SessionAccount, useRequireAuth, useSession} from '#/state/session'
 import {atoms as a, useBreakpoints} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
-import {useEphemeralFollowAction} from '#/components/hooks/useEphemeralFollowAction'
+import {
+  useEphemeralFollowAction,
+  useEphemeralFollowIntent,
+} from '#/components/hooks/useEphemeralFollowAction'
 import {
   Check_Stroke2_Corner0_Rounded as CheckIcon,
   DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheckIcon,
@@ -83,10 +86,13 @@ function PostThreadFollowBtnLoaded({
     profile,
     logContext: 'PostThreadItem',
   })
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const promptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] =
     useState<'follow' | 'unfollow'>('follow')
+  const [pendingEphemeralAccount, setPendingEphemeralAccount] =
+    useState<SessionAccount | null>(null)
 
   const isFollowing = !!profile.viewer?.following
   const isFollowedBy = !!profile.viewer?.followedBy
@@ -157,12 +163,15 @@ function PostThreadFollowBtnLoaded({
   }, [queueUnfollow, _])
 
   const onConfirm = useCallback(() => {
-    if (confirmationAction === 'follow') {
+    if (pendingEphemeralAccount) {
+      void onSelectEphemeralAccount(pendingEphemeralAccount)
+      setPendingEphemeralAccount(null)
+    } else if (confirmationAction === 'follow') {
       void executeFollow()
     } else {
       void executeUnfollow()
     }
-  }, [confirmationAction, executeFollow, executeUnfollow])
+  }, [confirmationAction, executeFollow, executeUnfollow, pendingEphemeralAccount, onSelectEphemeralAccount])
 
   const onPress = useCallback(() => {
     if (!isFollowing) {
@@ -240,7 +249,16 @@ function PostThreadFollowBtnLoaded({
           title={_(msg`Follow as`)}
           triggerBehavior="longPress"
           onSelectAccount={account => {
-            void onSelectEphemeralAccount(account)
+            if (confirmFollowUnfollow) {
+              setPendingEphemeralAccount(account)
+              void (async () => {
+                const action = await getEphemeralFollowAction(account)
+                setConfirmationAction(action)
+                promptControl.open()
+              })()
+            } else {
+              void onSelectEphemeralAccount(account)
+            }
           }}
           renderTrigger={({triggerProps}) =>
             renderFollowButton(triggerProps.onLongPress)

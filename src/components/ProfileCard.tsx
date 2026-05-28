@@ -23,7 +23,7 @@ import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
-import {useSession} from '#/state/session'
+import {type SessionAccount, useSession} from '#/state/session'
 import {PreviewableUserAvatar, UserAvatar} from '#/view/com/util/UserAvatar'
 import {
   atoms as a,
@@ -55,7 +55,10 @@ import {Text} from '#/components/Typography'
 import {type Metrics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
 import type * as bsky from '#/types/bsky'
-import {useEphemeralFollowAction} from './hooks/useEphemeralFollowAction'
+import {
+  useEphemeralFollowAction,
+  useEphemeralFollowIntent,
+} from './hooks/useEphemeralFollowAction'
 
 export function Default({
   profile,
@@ -502,12 +505,15 @@ export function FollowButtonInner({
     logContext,
     onFollow,
   })
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const promptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] = useState<'follow' | 'unfollow'>('follow')
+  const [pendingEphemeralAccount, setPendingEphemeralAccount] =
+    useState<SessionAccount | null>(null)
 
   const executeFollow = async (e: GestureResponderEvent) => {
     try {
@@ -573,7 +579,10 @@ export function FollowButtonInner({
   }
 
   const onConfirm = (e: GestureResponderEvent) => {
-    if (confirmationAction === 'follow') {
+    if (pendingEphemeralAccount) {
+      void onSelectEphemeralAccount(pendingEphemeralAccount)
+      setPendingEphemeralAccount(null)
+    } else if (confirmationAction === 'follow') {
       void executeFollow(e)
     } else if (confirmationAction === 'unfollow') {
       void executeUnfollow(e)
@@ -654,7 +663,16 @@ export function FollowButtonInner({
           title={l`Follow as`}
           triggerBehavior="longPress"
           onSelectAccount={account => {
-            void onSelectEphemeralAccount(account)
+            if (confirmFollowUnfollow) {
+              setPendingEphemeralAccount(account)
+              void (async () => {
+                const action = await getEphemeralFollowAction(account)
+                setConfirmationAction(action)
+                promptControl.open()
+              })()
+            } else {
+              void onSelectEphemeralAccount(account)
+            }
           }}
           renderTrigger={({triggerProps}) =>
             renderFollowButton(triggerProps.onLongPress)

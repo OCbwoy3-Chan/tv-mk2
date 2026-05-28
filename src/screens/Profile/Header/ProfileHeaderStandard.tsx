@@ -28,7 +28,7 @@ import {
   useProfileBlockMutationQueue,
   useProfileFollowMutationQueue,
 } from '#/state/queries/profile'
-import {useRequireAuth, useSession} from '#/state/session'
+import {type SessionAccount, useRequireAuth, useSession} from '#/state/session'
 import {ProfileMenu} from '#/view/com/profile/ProfileMenu'
 import {
   atoms as a,
@@ -45,7 +45,10 @@ import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
 import {useDialogControl} from '#/components/Dialog'
 import {MessageProfileButton} from '#/components/dms/MessageProfileButton'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
-import {useEphemeralFollowAction} from '#/components/hooks/useEphemeralFollowAction'
+import {
+  useEphemeralFollowAction,
+  useEphemeralFollowIntent,
+} from '#/components/hooks/useEphemeralFollowAction'
 import {CalendarDays_Stroke2_Corner0_Rounded as CalendarDays} from '#/components/icons/CalendarDays'
 import {
   Check_Stroke2_Corner0_Rounded as Check,
@@ -341,6 +344,8 @@ export function HeaderStandardButtons({
   const followPromptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] =
     useState<'follow' | 'unfollow'>('follow')
+  const [pendingEphemeralAccount, setPendingEphemeralAccount] =
+    useState<SessionAccount | null>(null)
 
   const onSelectEphemeralAccount = useEphemeralFollowAction({
     profile,
@@ -348,6 +353,7 @@ export function HeaderStandardButtons({
     onFollow,
     onUnfollow,
   })
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )
@@ -426,7 +432,10 @@ export function HeaderStandardButtons({
   }
 
   const onConfirmFollowAction = () => {
-    if (confirmationAction === 'follow') {
+    if (pendingEphemeralAccount) {
+      void onSelectEphemeralAccount(pendingEphemeralAccount)
+      setPendingEphemeralAccount(null)
+    } else if (confirmationAction === 'follow') {
       void executeFollow()
     } else {
       void executeUnfollow()
@@ -516,7 +525,16 @@ export function HeaderStandardButtons({
                 title={_(msg`Follow as`)}
                 triggerBehavior="longPress"
                 onSelectAccount={account => {
-                  void onSelectEphemeralAccount(account)
+                  if (confirmFollowUnfollow) {
+                    setPendingEphemeralAccount(account)
+                    void (async () => {
+                      const action = await getEphemeralFollowAction(account)
+                      setConfirmationAction(action)
+                      followPromptControl.open()
+                    })()
+                  } else {
+                    void onSelectEphemeralAccount(account)
+                  }
                 }}
                 renderTrigger={({triggerProps}) => (
                   <Button

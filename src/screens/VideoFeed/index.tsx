@@ -76,7 +76,7 @@ import {
   usePostFeedQuery,
 } from '#/state/queries/post-feed'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
-import {useSession} from '#/state/session'
+import {type SessionAccount, useSession} from '#/state/session'
 import {useSetLightStatusBar} from '#/state/shell/light-status-bar'
 import {List} from '#/view/com/util/List'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -87,7 +87,10 @@ import {setSystemUITheme} from '#/alf/util/systemUI'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {Divider} from '#/components/Divider'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
-import {useEphemeralFollowAction} from '#/components/hooks/useEphemeralFollowAction'
+import {
+  useEphemeralFollowAction,
+  useEphemeralFollowIntent,
+} from '#/components/hooks/useEphemeralFollowAction'
 import {ArrowLeft_Stroke2_Corner0_Rounded as ArrowLeftIcon} from '#/components/icons/Arrow'
 import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
 import {EyeSlash_Stroke2_Corner0_Rounded as Eye} from '#/components/icons/EyeSlash'
@@ -741,6 +744,7 @@ function Overlay({
     profile,
     logContext: 'ImmersiveVideo',
   })
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
   const hasAlternateAccounts = useMemo(
     () => accounts.some(account => account.did !== currentAccount?.did),
     [accounts, currentAccount?.did],
@@ -749,6 +753,8 @@ function Overlay({
   const promptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] =
     useState<'follow' | 'unfollow'>('follow')
+  const [pendingEphemeralAccount, setPendingEphemeralAccount] =
+    useState<SessionAccount | null>(null)
 
   const executeFollow = useCallback(async () => {
     await queueFollow()
@@ -777,12 +783,15 @@ function Overlay({
   }, [confirmFollowUnfollow, executeUnfollow, promptControl])
 
   const onConfirm = useCallback(() => {
-    if (confirmationAction === 'follow') {
+    if (pendingEphemeralAccount) {
+      void onSelectEphemeralAccount(pendingEphemeralAccount)
+      setPendingEphemeralAccount(null)
+    } else if (confirmationAction === 'follow') {
       void executeFollow()
     } else {
       void executeUnfollow()
     }
-  }, [confirmationAction, executeFollow, executeUnfollow])
+  }, [confirmationAction, executeFollow, executeUnfollow, pendingEphemeralAccount, onSelectEphemeralAccount])
 
   const rkey = new AtUri(post.uri).rkey
   const record = bsky.dangerousIsType<AppBskyFeedPost.Record>(
@@ -897,7 +906,16 @@ function Overlay({
                         title={l`Follow as`}
                         triggerBehavior="longPress"
                         onSelectAccount={account => {
-                          void onSelectEphemeralAccount(account)
+                          if (confirmFollowUnfollow) {
+                            setPendingEphemeralAccount(account)
+                            void (async () => {
+                              const action = await getEphemeralFollowAction(account)
+                              setConfirmationAction(action)
+                              promptControl.open()
+                            })()
+                          } else {
+                            void onSelectEphemeralAccount(account)
+                          }
                         }}
                         renderTrigger={({triggerProps}) => (
                           <Button
