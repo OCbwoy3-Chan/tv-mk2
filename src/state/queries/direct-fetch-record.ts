@@ -1,11 +1,11 @@
 import {
+  type AppBskyActorDefs,
   type AppBskyEmbedRecord,
   type AppBskyFeedDefs,
   AppBskyFeedPost,
   AtUri,
   type BskyAgent,
 } from '@atproto/api'
-import {type ProfileViewBasic} from '@atproto/api/dist/client/types/app/bsky/actor/defs'
 import {useQuery} from '@tanstack/react-query'
 
 import {retry} from '#/lib/async/retry'
@@ -74,7 +74,7 @@ export async function directFetchEmbedRecord(
       view: {
         $type: 'app.bsky.embed.record#viewRecord',
         uri,
-        author: profile as ProfileViewBasic,
+        author: profile as AppBskyActorDefs.ProfileViewBasic,
         cid: 'directfetch',
         value: record,
         indexedAt: new Date().toISOString(),
@@ -115,7 +115,7 @@ export async function directFetchPostRecord(
     return {
       $type: 'app.bsky.feed.defs#postView',
       uri,
-      author: profile as ProfileViewBasic,
+      author: profile as AppBskyActorDefs.ProfileViewBasic,
       cid: 'directfetch',
       record,
       indexedAt: new Date().toISOString(),

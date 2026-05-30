@@ -1,10 +1,6 @@
 import {useState} from 'react'
 import {Image, View} from 'react-native'
 import Svg, {G, Path, Rect} from 'react-native-svg'
-import {
-  FontAwesomeIcon,
-  type FontAwesomeIconStyle,
-} from '@fortawesome/react-native-fontawesome'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -17,6 +13,7 @@ import {
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
+import {Database_Filled_Corner0_Rounded as DatabaseIcon} from '#/components/icons/Database'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
 
@@ -233,12 +230,10 @@ function DbBadgeIcon({
           backgroundColor: t.atoms.bg_contrast_100.backgroundColor,
         },
       ]}>
-      <FontAwesomeIcon
-        icon="database"
-        size={Math.round(size * 0.7)}
-        style={
-          {color: t.atoms.text_contrast_medium.color} as FontAwesomeIconStyle
-        }
+      <DatabaseIcon
+        width={Math.round(size * 0.7)}
+        height={Math.round(size * 0.7)}
+        fill={t.atoms.text_contrast_medium.color}
       />
     </View>
   )

@@ -22,8 +22,9 @@ import {useAccountSwitcher} from '#/lib/hooks/useAccountSwitcher'
 import {useColorSchemeStyle} from '#/lib/hooks/useColorSchemeStyle'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {
+  type ChatNotificationPayload,
   getNotificationPayload,
-  type NotificationPayload,
+  isChatNotificationPayload,
   notificationToURL,
   storePayloadForAccountSwitch,
 } from '#/lib/hooks/useNotificationHandler'
@@ -160,6 +161,7 @@ import {setNavigationMetadata} from '#/analytics/metadata'
 import {IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
 import {router} from '#/routes'
 import {Referrer} from '../modules/expo-bluesky-swiss-army'
+import {renderMessagesSplitViewLayout} from './screens/Messages/components/splitView/MessagesSplitViewLayout'
 
 const navigationRef = createNavigationContainerRef<AllNavigatorParams>()
 
@@ -691,26 +693,28 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         getComponent={() => TopicScreen}
         options={{title: title(msg`Topic`)}}
       />
-      <Stack.Screen
-        name="MessagesConversation"
-        getComponent={() => MessagesConversationScreen}
-        options={{title: title(msg`Chat`), requireAuth: true}}
-      />
-      <Stack.Screen
-        name="MessagesConversationSettings"
-        getComponent={() => MessagesConversationSettingsScreen}
-        options={{title: title(msg`Group chat settings`), requireAuth: true}}
-      />
-      <Stack.Screen
-        name="MessagesSettings"
-        getComponent={() => MessagesSettingsScreen}
-        options={{title: title(msg`Chat settings`), requireAuth: true}}
-      />
-      <Stack.Screen
-        name="MessagesInbox"
-        getComponent={() => MessagesInboxScreen}
-        options={{title: title(msg`Chat request inbox`), requireAuth: true}}
-      />
+      <Stack.Group screenLayout={renderMessagesSplitViewLayout}>
+        <Stack.Screen
+          name="MessagesConversation"
+          getComponent={() => MessagesConversationScreen}
+          options={{title: title(msg`Chat`), requireAuth: true}}
+        />
+        <Stack.Screen
+          name="MessagesConversationSettings"
+          getComponent={() => MessagesConversationSettingsScreen}
+          options={{title: title(msg`Group chat settings`), requireAuth: true}}
+        />
+        <Stack.Screen
+          name="MessagesSettings"
+          getComponent={() => MessagesSettingsScreen}
+          options={{title: title(msg`Chat settings`), requireAuth: true}}
+        />
+        <Stack.Screen
+          name="MessagesInbox"
+          getComponent={() => MessagesInboxScreen}
+          options={{title: title(msg`Chat request inbox`), requireAuth: true}}
+        />
+      </Stack.Group>
       <Stack.Screen
         name="NotificationsActivityList"
         getComponent={() => NotificationsActivityListScreen}
@@ -959,6 +963,7 @@ const FlatNavigator = ({
         name="Messages"
         getComponent={() => MessagesScreen}
         options={{title: title(msg`Messages`), requireAuth: true}}
+        layout={renderMessagesSplitViewLayout}
       />
       <Flat.Screen
         name="Start"
@@ -1066,14 +1071,14 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
   void setInitialState
 
   /**
-   * Handle navigation to a conversation, or prepares for account switch.
+   * Handle navigation to the messages tab, or prepares for account switch.
    *
    * Non-reactive because we need the latest data from some hooks
    * after an async call - sfn
    */
-  const handleChatMessage = useNonReactiveCallback(
-    (payload: Extract<NotificationPayload, {reason: 'chat-message'}>) => {
-      notyLogger.debug(`handleChatMessage`, {payload})
+  const handleChatNotification = useNonReactiveCallback(
+    (payload: ChatNotificationPayload) => {
+      notyLogger.debug(`handleChatNotification`, {payload})
 
       if (payload.recipientDid !== currentAccount?.did) {
         // handled in useNotificationHandler after account switch finishes
@@ -1086,7 +1091,13 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
         } else {
           setShowLoggedOut(true)
         }
-      } else {
+      } else if (
+        payload.reason === 'chat-message' ||
+        payload.reason === 'chat-reaction' ||
+        payload.reason === 'chat-added-to-group'
+      ) {
+        // chat-added-to-group routes to the convo because the recipient was
+        // just added and now has access.
         // @ts-expect-error nested navigators aren't typed -sfn
         navigate('MessagesTab', {
           screen: 'Messages',
@@ -1094,6 +1105,11 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
             pushToConversation: payload.convoId,
           },
         })
+      } else {
+        // chat-removed-from-group, chat-join-request-rejected: the convo is
+        // no longer accessible to the recipient, so just open the list.
+        // @ts-expect-error nested navigators aren't typed -sfn
+        navigate('MessagesTab', {screen: 'Messages'})
       }
     },
   )
@@ -1129,8 +1145,8 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
           causedBoot: true,
         })
 
-        if (payload.reason === 'chat-message') {
-          handleChatMessage(payload)
+        if (isChatNotificationPayload(payload)) {
+          handleChatNotification(payload)
         } else {
           const path = notificationToURL(payload)
 

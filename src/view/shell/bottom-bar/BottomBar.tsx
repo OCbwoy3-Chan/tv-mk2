@@ -17,6 +17,7 @@ import {useMinimalShellFooterTransform} from '#/lib/hooks/useMinimalShellTransfo
 import {useNavigationTabState} from '#/lib/hooks/useNavigationTabState'
 import {clamp} from '#/lib/numbers'
 import {getTabState, TabState} from '#/lib/routes/helpers'
+import {type SharedNavTab, TAB_TO_NAV_ITEM} from '#/lib/routes/tab-to-nav-item'
 import {emitSoftReset} from '#/state/events'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -52,16 +53,16 @@ import {
 } from '#/components/icons/Message'
 import {Text} from '#/components/Typography'
 import {useAgeAssurance} from '#/ageAssurance'
+import {useAnalytics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
 import {useDemoMode} from '#/storage/hooks/demo-mode'
 import {styles} from './BottomBarStyles'
-
-type TabOptions = 'Home' | 'Search' | 'Messages' | 'Notifications' | 'MyProfile'
 
 export function BottomBar({navigation}: BottomTabBarProps) {
   const {hasSession, currentAccount} = useSession()
   const t = useTheme()
   const {_} = useLingui()
+  const ax = useAnalytics()
   const safeAreaInsets = useSafeAreaInsets()
   const {footerHeight} = useShellLayout()
   const {isAtHome, isAtSearch, isAtNotifications, isAtMyProfile, isAtMessages} =
@@ -91,7 +92,11 @@ export function BottomBar({navigation}: BottomTabBarProps) {
   }, [requestSwitchToAccount, closeAllActiveElements])
 
   const onPressTab = useCallback(
-    (tab: TabOptions) => {
+    (tab: SharedNavTab) => {
+      ax.metric('nav:click', {
+        item: TAB_TO_NAV_ITEM[tab],
+        surface: 'bottomBar',
+      })
       const state = navigation.getState()
       const tabState = getTabState(state, tab)
       if (tabState === TabState.InsideAtRoot) {
@@ -119,7 +124,7 @@ export function BottomBar({navigation}: BottomTabBarProps) {
         dedupe(() => navigation.navigate(`${tab}Tab`))
       }
     },
-    [navigation, dedupe],
+    [navigation, dedupe, ax],
   )
   const onPressHome = useCallback(() => onPressTab('Home'), [onPressTab])
   const onPressSearch = useCallback(() => onPressTab('Search'), [onPressTab])
@@ -357,14 +362,13 @@ export function BottomBar({navigation}: BottomTabBarProps) {
   )
 }
 
-interface BtnProps
-  extends Pick<
-    React.ComponentProps<typeof PressableScale>,
-    | 'accessible'
-    | 'accessibilityRole'
-    | 'accessibilityHint'
-    | 'accessibilityLabel'
-  > {
+interface BtnProps extends Pick<
+  React.ComponentProps<typeof PressableScale>,
+  | 'accessible'
+  | 'accessibilityRole'
+  | 'accessibilityHint'
+  | 'accessibilityLabel'
+> {
   testID?: string
   icon: JSX.Element
   notificationCount?: string

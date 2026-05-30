@@ -1,5 +1,4 @@
 import {useCallback} from 'react'
-import {type AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -7,9 +6,9 @@ import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {logger} from '#/logger'
 import {type Shadow} from '#/state/cache/types'
 import {type SessionAccount} from '#/state/session'
+import {type FollowActionType} from '#/components/dialogs/FollowConfirmationDialog'
 import * as Toast from '#/components/Toast'
 import {type Metrics} from '#/analytics/metrics'
-import {type FollowActionType} from '#/components/dialogs/FollowConfirmationDialog'
 import type * as bsky from '#/types/bsky'
 import {useRunWithEphemeralAgent} from './useRunWithEphemeralAgent'
 
@@ -33,9 +32,7 @@ export function useEphemeralFollowAction({
       try {
         const result = await runWithEphemeralAgent(account, async agent => {
           const res = await agent.getProfile({actor: profile.did})
-          const target =
-            res.data as AppBskyActorDefs.ProfileViewDetailed
-          const followingUri = target.viewer?.following
+          const followingUri = res.data.viewer?.following
 
           if (followingUri) {
             await agent.deleteFollow(followingUri)
@@ -95,9 +92,7 @@ export function useEphemeralFollowIntent({
           account,
           async agent => {
             const res = await agent.getProfile({actor: profile.did})
-            const target =
-              res.data as AppBskyActorDefs.ProfileViewDetailed
-            return Boolean(target.viewer?.following)
+            return Boolean(res.data.viewer?.following)
           },
         )
 

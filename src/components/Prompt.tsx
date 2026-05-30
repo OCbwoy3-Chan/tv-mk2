@@ -1,7 +1,6 @@
 import {createContext, useCallback, useContext, useId, useMemo} from 'react'
 import {type GestureResponderEvent, View} from 'react-native'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
+import {useLingui} from '@lingui/react/macro'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, type TextStyleProp, useTheme, web} from '#/alf'
@@ -142,7 +141,7 @@ export function Cancel({
    */
   cta?: string
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const {close} = Dialog.useDialogContext()
   const onPress = useCallback(() => {
     close()
@@ -153,9 +152,9 @@ export function Cancel({
       variant="solid"
       color="secondary"
       size="large"
-      label={cta || _(msg`Cancel`)}
+      label={cta || l`Cancel`}
       onPress={onPress}>
-      <ButtonText>{cta || _(msg`Cancel`)}</ButtonText>
+      <ButtonText>{cta || l`Cancel`}</ButtonText>
     </Button>
   )
 }
@@ -194,7 +193,7 @@ export function Action({
   shouldCloseOnPress?: boolean
   testID?: string
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const {close} = Dialog.useDialogContext()
   const handleOnPress = useCallback(
     (e: GestureResponderEvent) => {
@@ -212,10 +211,10 @@ export function Action({
       color={color}
       disabled={disabled}
       size="large"
-      label={cta || _(msg`Confirm`)}
+      label={cta || l`Confirm`}
       onPress={handleOnPress}
       testID={testID}>
-      <ButtonText>{cta || _(msg`Confirm`)}</ButtonText>
+      <ButtonText>{cta || l`Confirm`}</ButtonText>
       {icon && <ButtonIcon icon={icon} />}
     </Button>
   )

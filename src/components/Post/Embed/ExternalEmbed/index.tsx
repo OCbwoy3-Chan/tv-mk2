@@ -8,7 +8,10 @@ import {useLingui} from '@lingui/react'
 import {parseAltFromGIFDescription} from '#/lib/gif-alt-text'
 import {useHaptics} from '#/lib/haptics'
 import {shareUrl} from '#/lib/sharing'
-import {parseEmbedPlayerFromUrl} from '#/lib/strings/embed-player'
+import {
+  exemptExternalEmbedSources,
+  parseEmbedPlayerFromUrl,
+} from '#/lib/strings/embed-player'
 import {toNiceDomain} from '#/lib/strings/url-helpers'
 import {useExternalEmbedsPrefs} from '#/state/preferences'
 import {useHighQualityImages} from '#/state/preferences/high-quality-images'
@@ -52,8 +55,9 @@ export const ExternalEmbed = ({
     : undefined
   const embedPlayerParams = useMemo(() => {
     const params = parseEmbedPlayerFromUrl(link.uri)
-
-    if (params && externalEmbedPrefs?.[params.source] !== 'hide') {
+    if (!params) return
+    const canShow = externalEmbedPrefs?.[params.source] !== 'hide'
+    if (canShow || exemptExternalEmbedSources.has(params.source)) {
       return params
     }
   }, [link.uri, externalEmbedPrefs])

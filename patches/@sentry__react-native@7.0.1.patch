@@ -1,0 +1,17 @@
+diff --git a/dist/js/tools/utils.js b/dist/js/tools/utils.js
+index 10bbde35a2514abbee82919b04d62aa1f4ad2378..7252d8e5ee37deb577cf213eb0abcdd1325568fb 100644
+--- a/dist/js/tools/utils.js
++++ b/dist/js/tools/utils.js
+@@ -9,6 +9,12 @@ try {
+ catch (e) {
+     countLines = require('metro/src/lib/countLines');
+ }
++countLines =
++    typeof countLines === 'function'
++        ? countLines
++        : typeof countLines === 'object' && typeof countLines.default === 'function'
++            ? countLines.default
++            : (string) => (string.match(/\r\n?|\n|\u2028|\u2029/g) || []).length + 1;
+ /**
+  * Returns minified Debug ID code snippet.
+  */

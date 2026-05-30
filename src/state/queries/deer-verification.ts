@@ -1,8 +1,8 @@
-import {AppBskyGraphVerification, AtUri} from '@atproto/api'
 import {
-  type VerificationState,
-  type VerificationView,
-} from '@atproto/api/dist/client/types/app/bsky/actor/defs'
+  type AppBskyActorDefs,
+  AppBskyGraphVerification,
+  AtUri,
+} from '@atproto/api'
 import {useQuery} from '@tanstack/react-query'
 
 import {STALE} from '#/state/queries'
@@ -115,7 +115,7 @@ async function getDeerVerificationLinkedRecords(
 function createVerificationViews(
   linkedRecords: LinkedRecord[],
   profile: AnyProfileView,
-): VerificationView[] {
+): AppBskyActorDefs.VerificationView[] {
   return linkedRecords.map(({link, record}) => ({
     issuer: link.did,
     isValid:
@@ -127,10 +127,10 @@ function createVerificationViews(
 }
 
 function mergeVerificationViews(
-  appViewVerifications: VerificationView[],
-  deerVerifications: VerificationView[],
+  appViewVerifications: AppBskyActorDefs.VerificationView[],
+  deerVerifications: AppBskyActorDefs.VerificationView[],
 ) {
-  const merged = new Map<string, VerificationView>()
+  const merged = new Map<string, AppBskyActorDefs.VerificationView>()
 
   for (const verification of appViewVerifications) {
     merged.set(verification.uri, verification)
@@ -144,12 +144,12 @@ function mergeVerificationViews(
 }
 
 function createVerificationState(
-  appViewVerifications: VerificationView[],
-  deerVerifications: VerificationView[],
+  appViewVerifications: AppBskyActorDefs.VerificationView[],
+  deerVerifications: AppBskyActorDefs.VerificationView[],
   profile: AnyProfileView,
   trusted: Set<string>,
   trustAppView: boolean,
-): VerificationState {
+): AppBskyActorDefs.VerificationState {
   const verifications = mergeVerificationViews(
     appViewVerifications,
     deerVerifications,

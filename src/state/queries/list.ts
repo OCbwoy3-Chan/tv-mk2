@@ -18,6 +18,7 @@ import {type ImageMeta} from '#/state/gallery'
 import {STALE} from '#/state/queries'
 import {useAgent, useSession} from '#/state/session'
 import {pdsAgent} from '#/state/session/agent'
+import {FEED_INFO_RQKEY_ROOT} from './feed'
 import {invalidate as invalidateMyLists} from './my-lists'
 import {RQKEY as PROFILE_LISTS_RQKEY} from './profile-lists'
 
@@ -181,6 +182,9 @@ export function useListMetadataMutation() {
       })
       queryClient.invalidateQueries({
         queryKey: RQKEY(variables.uri),
+      })
+      queryClient.invalidateQueries({
+        queryKey: [FEED_INFO_RQKEY_ROOT],
       })
     },
   })

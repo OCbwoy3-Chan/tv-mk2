@@ -1,4 +1,4 @@
-import {type ReactNode, useEffect, useState} from 'react'
+import {type ReactNode} from 'react'
 import {View} from 'react-native'
 import {type AppBskyActorDefs, type ModerationDecision} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
@@ -12,9 +12,9 @@ import {useSession} from '#/state/session'
 import * as Toast from '#/view/com/util/Toast'
 import {atoms as a, select, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {useFollowMethods} from '#/components/hooks/useFollowMethods'
 import {PlusSmall_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
-import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import * as Prompt from '#/components/Prompt'
 
 export function AviFollowButton({

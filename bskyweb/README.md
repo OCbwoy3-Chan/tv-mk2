@@ -10,7 +10,7 @@ like:
 # install nodejs
 nvm install
 nvm use
-npm install --global pnpm@10.33.0
+npm install --global pnpm
 
 # setup tools and deps (in top level of this repo)
 pnpm install --frozen-lockfile

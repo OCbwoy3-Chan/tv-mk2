@@ -29,6 +29,10 @@ import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {ProfileHeaderHandle} from '#/screens/Profile/Header/Handle'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import {
+  type FollowActionType,
+  FollowConfirmationDialog,
+} from '#/components/dialogs/FollowConfirmationDialog'
 import {useFollowMethods} from '#/components/hooks/useFollowMethods'
 import {useRichText} from '#/components/hooks/useRichText'
 import {
@@ -46,10 +50,6 @@ import * as Pills from '#/components/Pills'
 import {Portal} from '#/components/Portal'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import * as Prompt from '#/components/Prompt'
-import {
-  FollowConfirmationDialog,
-  type FollowActionType,
-} from '#/components/dialogs/FollowConfirmationDialog'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {IS_WEB_TOUCH_DEVICE} from '#/env'
@@ -310,24 +310,24 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
       didFireHover.current = true
       dispatch('hovered-target')
     }
-  }, [prefetchIfNeeded])
+  }, [prefetchIfNeeded, dispatch])
 
   const onPointerLeaveTarget = useCallback(() => {
     didFireHover.current = false
     dispatch('unhovered-target')
-  }, [])
+  }, [dispatch])
 
   const onPointerEnterCard = useCallback(() => {
     dispatch('hovered-card')
-  }, [])
+  }, [dispatch])
 
   const onPointerLeaveCard = useCallback(() => {
     dispatch('unhovered-card')
-  }, [])
+  }, [dispatch])
 
   const onPress = useCallback(() => {
     dispatch('pressed')
-  }, [])
+  }, [dispatch])
 
   /* eslint-enable react-hooks/preserve-manual-memoization */
 

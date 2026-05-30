@@ -60,6 +60,20 @@ export type Events = {
   'router:navigate': {
     from?: string
   }
+  'nav:click': {
+    item:
+      | 'home'
+      | 'search'
+      | 'chat'
+      | 'notifications'
+      | 'profile'
+      | 'feeds'
+      | 'lists'
+      | 'saved'
+      | 'settings'
+      | 'menu'
+    surface: 'bottomBar' | 'drawer' | 'drawerHeader' | 'topBar' | 'leftNav'
+  }
   'deepLink:referrerReceived': {
     to: string
     referrer: string
@@ -449,6 +463,7 @@ export type Events = {
       | 'ExploreSuggestedAccounts'
       | 'OnboardingSuggestedAccounts'
       | 'FindContacts'
+      | 'GroupChat'
   }
   'profile:followers:view': {
     contextProfileDid: string
@@ -554,6 +569,7 @@ export type Events = {
       | 'ExploreSuggestedAccounts'
       | 'OnboardingSuggestedAccounts'
       | 'FindContacts'
+      | 'GroupChat'
   }
   'chat:create': {
     logContext:
@@ -974,14 +990,25 @@ export type Events = {
   'share:press:recentDm': {}
   'share:press:embed': {}
 
+  'embed:standardSite:view': {url: string}
+  'embed:standardSite:article:press': {url: string}
+  'embed:standardSite:article:longPress': {url: string}
+  'embed:standardSite:publication:press': {url: string}
+  'embed:standardSite:publication:longPress': {url: string}
+  'embed:standardSite:publicationCta:press': {url: string}
+  'embed:standardSite:publicationCta:longPress': {url: string}
+  'embed:standardSite:subscribe:press': {url: string}
+  'embed:standardSite:subscribe:longPress': {url: string}
+  'embed:standardSite:authorHandle:press': {handle: string}
+
   'thread:click:showOtherReplies': {}
   'thread:click:hideReplyForMe': {}
   'thread:click:hideReplyForEveryone': {}
   'thread:preferences:load': {
-    [key: string]: any
+    [key: string]: unknown
   }
   'thread:preferences:update': {
-    [key: string]: any
+    [key: string]: unknown
   }
   'thread:click:headerMenuOpen': {}
   'thread:click:editOwnThreadgate': {}

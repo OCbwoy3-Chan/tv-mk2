@@ -13,6 +13,7 @@ import {type CommonNavigatorParams} from '#/lib/routes/types'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {Atom_Stroke2_Corner0_Rounded as AtomIcon} from '#/components/icons/Atom'
 import {BroomSparkle_Stroke2_Corner2_Rounded as BroomSparkleIcon} from '#/components/icons/BroomSparkle'
+import {Bubbles_Stroke2_Corner2_Rounded as BubblesIcon} from '#/components/icons/Bubble'
 import {CodeBrackets_Stroke2_Corner2_Rounded as CodeBracketsIcon} from '#/components/icons/CodeBrackets'
 import {CodeLines_Stroke2_Corner2_Rounded as CodeLinesIcon} from '#/components/icons/CodeLines'
 import {Globe_Stroke2_Corner0_Rounded as GlobeIcon} from '#/components/icons/Globe'
@@ -20,6 +21,8 @@ import {Newspaper_Stroke2_Corner2_Rounded as NewspaperIcon} from '#/components/i
 import {Wrench_Stroke2_Corner2_Rounded as WrenchIcon} from '#/components/icons/Wrench'
 import * as Layout from '#/components/Layout'
 import {Loader} from '#/components/Loader'
+import * as Prompt from '#/components/Prompt'
+import {SendErrorReportDialog} from '#/components/SendErrorReportDialog'
 import * as Toast from '#/components/Toast'
 import {getDeviceId} from '#/analytics/identifiers'
 import * as env from '#/env'
@@ -33,6 +36,7 @@ export function AboutSettingsScreen({}: Props) {
   const {_, i18n} = useLingui()
   const [devModeEnabled, setDevModeEnabled] = useDevMode()
   const [demoModeEnabled, setDemoModeEnabled] = useDemoMode()
+  const sendErrorReportControl = Prompt.usePromptControl()
 
   const {mutate: onClearImageCache, isPending: isClearingImageCache} =
     useMutation({
@@ -116,6 +120,14 @@ export function AboutSettingsScreen({}: Props) {
               <Trans>System log</Trans>
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
+          <SettingsList.PressableItem
+            onPress={() => sendErrorReportControl.open()}
+            label={_(msg`Send error report`)}>
+            <SettingsList.ItemIcon icon={BubblesIcon} />
+            <SettingsList.ItemText>
+              <Trans>Send error report</Trans>
+            </SettingsList.ItemText>
+          </SettingsList.PressableItem>
           {IS_NATIVE && (
             <SettingsList.PressableItem
               onPress={() => onClearImageCache()}
@@ -189,6 +201,7 @@ export function AboutSettingsScreen({}: Props) {
           )}
         </SettingsList.Container>
       </Layout.Content>
+      <SendErrorReportDialog control={sendErrorReportControl} />
     </Layout.Screen>
   )
 }

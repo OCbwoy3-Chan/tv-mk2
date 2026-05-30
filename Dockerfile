@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 #
 # Node
 #
-ENV NODE_VERSION=20
+ENV NODE_VERSION=24.15.0
 ENV NVM_DIR=/usr/share/nvm
 
 #
@@ -75,8 +75,8 @@ RUN \. "$NVM_DIR/nvm.sh" && \
   echo "EXPO_PUBLIC_SENTRY_DSN=$EXPO_PUBLIC_SENTRY_DSN" >> .env && \
   echo "EXPO_PUBLIC_OAUTH_BASE_URL=$EXPO_PUBLIC_OAUTH_BASE_URL" >> .env && \
   echo "EXPO_PUBLIC_OAUTH_CLIENT_NAME=$EXPO_PUBLIC_OAUTH_CLIENT_NAME" >> .env && \
-  npm install --global pnpm@10.33.0 && \
-  pnpm install && \
+  npm install --global pnpm@11.1.1 && \
+  pnpm install --frozen-lockfile && \
   pnpm intl:build 2>&1 | tee i18n.log && \
   if grep -q "invalid syntax" "i18n.log"; then echo "\n\nFound compilation errors!\n\n" && exit 1; else echo "\n\nNo compile errors!\n\n"; fi && \
   SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN SENTRY_RELEASE=$EXPO_PUBLIC_RELEASE_VERSION SENTRY_DIST=$EXPO_PUBLIC_BUNDLE_IDENTIFIER pnpm build-web

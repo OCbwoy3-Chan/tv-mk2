@@ -1,5 +1,5 @@
 import {createContext, useCallback, useContext, useMemo, useState} from 'react'
-import {createTheme, type Theme, type ThemeName} from '@bsky.app/alf'
+import {createTheme, type Theme, type ThemeName, utils as baseUtils} from '@bsky.app/alf'
 import chroma from 'chroma-js'
 
 import {useThemePrefs} from '#/state/shell/color-mode'
@@ -24,6 +24,7 @@ import {
   witchskyscheme,
   zeppelinscheme,
 } from '#/alf/themes'
+import {darken, lighten, rgbToHex} from '#/alf/util/colorGeneration'
 import {type Device} from '#/storage'
 import {getMaterial3Colors} from './util/material3Theme'
 import {
@@ -31,12 +32,7 @@ import {
   useMaterialYouPalette,
 } from './util/materialYou'
 
-export {
-  type TextStyleProp,
-  type Theme,
-  utils,
-  type ViewStyleProp,
-} from '@bsky.app/alf'
+export {type TextStyleProp, type Theme, type ViewStyleProp} from '@bsky.app/alf'
 export {atoms} from '#/alf/atoms'
 export * from '#/alf/breakpoints'
 export * from '#/alf/fonts'
@@ -45,6 +41,13 @@ export * from '#/alf/util/flatten'
 export * from '#/alf/util/platform'
 export * from '#/alf/util/themeSelector'
 export * from '#/alf/util/useGutters'
+export const utils = {
+  ...baseUtils,
+  rgbToHex,
+  lighten,
+  darken,
+}
+
 
 export type Alf = {
   themeName: ThemeName
@@ -208,7 +211,11 @@ export function useScheme(): SchemeType {
 function ThemeProviderInner({
   children,
   theme: themeName,
-}: React.PropsWithChildren<{theme: ThemeName}>) {
+  themesOverride,
+}: React.PropsWithChildren<{
+  theme: ThemeName
+  themesOverride?: Partial<typeof themes>
+}>) {
   const currentScheme = useScheme()
   const [fontScale, setFontScale] = useState<Alf['fonts']['scale']>(() =>
     getFontScale(),
@@ -236,10 +243,14 @@ function ThemeProviderInner({
   )
 
   const value = useMemo<Alf>(() => {
+    // Use currentScheme for Witchsky's custom theming, but allow themesOverride from upstream
+    const t = themesOverride
+      ? {...themes, ...themesOverride}
+      : currentScheme
     return {
-      themes: currentScheme,
+      themes: t,
       themeName: themeName,
-      theme: currentScheme[themeName],
+      theme: t[themeName],
       fonts: {
         scale: fontScale,
         scaleMultiplier: fontScaleMultiplier,
@@ -257,6 +268,7 @@ function ThemeProviderInner({
     fontFamily,
     setFontScaleAndPersist,
     setFontFamilyAndPersist,
+    themesOverride,
   ])
 
   return <Context.Provider value={value}>{children}</Context.Provider>

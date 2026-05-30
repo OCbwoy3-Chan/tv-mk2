@@ -33,5 +33,5 @@ adb reverse tcp:3000 tcp:3000
 1. Make sure Maestro is installed (optional: only for automated testing) by following the instructions above
 2. Install Flashlight by following [these instructions](https://docs.flashlight.dev/)
 3. The simplest way to get started is by running `pnpm perf:measure` which will run a live preview of the performance test results. You can [see a demo here](https://github.com/bamlab/flashlight/assets/4534323/4038a342-f145-4c3b-8cde-17949bf52612)
-4. The `pnpm perf:test:measure` will run the `scroll.yaml` test located in `__e2e__/maestro/scroll.yaml` and give the results in `.perf/results.json` which can be viewed by running `pnpm:perf:results`
+4. The `pnpm perf:test:measure` will run the `scroll.yaml` test located in `__e2e__/maestro/scroll.yaml` and give the results in `.perf/results.json` which can be viewed by running `pnpm perf:results`
 5. You can also run your own tests by running `pnpm perf:test <path_to_test>` where `<path_to_test>` is the path to your test file. For example, `pnpm perf:test __e2e__/maestro/scroll.yaml` will run the `scroll.yaml` test located in `__e2e__/maestro/scroll.yaml`.

@@ -1,0 +1,51 @@
+diff --git a/dist/index.js b/dist/index.js
+index 7ee0a4888a93e36d2d21fbd1fec4b27c5908743b..8e91857f50e448b8e5de7f9aa463321ebf479efa 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -15,8 +15,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.buildLoopbackClientId = void 0;
+-require("core-js/modules/esnext.symbol.async-dispose");
+-require("core-js/modules/esnext.symbol.dispose");
++
++if (typeof Symbol.dispose === 'undefined') {
++  Symbol.dispose = Symbol('Symbol.dispose');
++}
++if (typeof Symbol.asyncDispose === 'undefined') {
++  Symbol.asyncDispose = Symbol('Symbol.asyncDispose');
++}
++
+ __exportStar(require("@atproto/jwk-webcrypto"), exports);
+ __exportStar(require("@atproto/oauth-client"), exports);
+ __exportStar(require("./browser-oauth-client.js"), exports);
+diff --git a/dist/indexed-db/db-transaction.js b/dist/indexed-db/db-transaction.js
+index d67da557e45662c925d541f4072ed696a337c973..6605febbb49606a75c85dbb02868f46b35246f74 100644
+--- a/dist/indexed-db/db-transaction.js
++++ b/dist/indexed-db/db-transaction.js
+@@ -13,7 +13,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
+ var _DBTransaction_tx;
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.DBTransaction = void 0;
+-require("core-js/modules/esnext.symbol.dispose");
++if (typeof Symbol.dispose === 'undefined') {
++  Symbol.dispose = Symbol('Symbol.dispose');
++}
+ const db_object_store_js_1 = require("./db-object-store.js");
+ class DBTransaction {
+     constructor(tx) {
+diff --git a/dist/indexed-db/db.js b/dist/indexed-db/db.js
+index eaaf61a24e6cee0fc4da352a81feb5753b0dc9eb..4315b95f1f3db5c8d4d54af52f743bd0947d9172 100644
+--- a/dist/indexed-db/db.js
++++ b/dist/indexed-db/db.js
+@@ -13,7 +13,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
+ var _DB_db;
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.DB = void 0;
+-require("core-js/modules/esnext.symbol.dispose");
++if (typeof Symbol.dispose === 'undefined') {
++  Symbol.dispose = Symbol('Symbol.dispose');
++}
+ const db_transaction_js_1 = require("./db-transaction.js");
+ class DB {
+     static async open(dbName, migrations, txOptions) {

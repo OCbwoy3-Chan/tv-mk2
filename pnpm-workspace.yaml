@@ -1,40 +1,49 @@
-
-packages:
-  - .
-  - bskyembed
-  - bskylink
-  - bskyogcard
-  - dev-env
+nodeLinker: 'hoisted'
+autoInstallPeers: true # default: true
+strictPeerDependencies: false # default: false
+trustPolicy: 'no-downgrade' # default: off
+trustPolicyIgnoreAfter: 10080 # 7 days, default: undefined
+overrides:
+  '@react-native/babel-preset': '0.81.5'
+  '@react-native/normalize-colors': '0.81.5'
+  '@expo/image-utils': '0.8.12'
+  '@types/estree': '1.0.6'
+  'react-native-compressor': '1.13.0'
+  'react-native-reanimated': '3.19.1'
+  'psl': '1.9.0'
+  '@types/psl': '1.1.1'
+  'react-native-screens': '4.24.0'
 allowBuilds:
   '@sentry/cli': true
   '@swc/core': true
-  better-sqlite3: true
-  cbor-extract: true
   core-js: true
-  core-js-pure: true
-  esbuild: true
-  postinstall-postinstall: true
-  protobufjs: true
-  sharp: true
-  unrs-resolver: true
-
-allowUnusedPatches: false
-enableGlobalVirtualStore: false
-ignorePatchFailures: false
-nodeLinker: hoisted
-
-overrides:
-  '@expo/image-utils': "0.8.12"
-  '@react-native/babel-preset': "0.81.5"
-  '@react-native/normalize-colors': "0.81.5"
-  '@types/estree': "1.0.6"
-  metro: "0.83.3"
-  metro-config: "0.83.3"
-  metro-core: "0.83.3"
-  metro-runtime: "0.83.3"
-  metro-source-map: "0.83.3"
-  multiformats: "9.9.0"
-  react-native-compressor: "1.13.0"
-  react-native-mmkv: "npm:@bsky.app/react-native-mmkv@2.12.5"
-  sonner-native: "0.21.0"
-  unicode-segmenter: "0.14.5"
+  'core-js-pure': true
+  'esbuild': true
+  'unrs-resolver': true
+patchedDependencies:
+  '@assembless/react-native-material-you@1.0.0-beta.4': patches/@assembless__react-native-material-you@1.0.0-beta.4.patch
+  '@atproto/api@0.20.6': patches/@atproto__api@0.20.6.patch
+  '@atproto/oauth-client-expo@0.0.10': patches/@atproto__oauth-client-expo@0.0.10.patch
+  '@discord/bottom-sheet@4.6.1': patches/@discord__bottom-sheet@4.6.1.patch
+  'expo-glass-effect@55.0.8': patches/expo-glass-effect@55.0.8.patch
+  'expo-haptics@15.0.8': patches/expo-haptics@15.0.8.patch
+  'expo-image-picker@17.0.11': patches/expo-image-picker@17.0.11.patch
+  'expo-image@3.0.11': patches/expo-image@3.0.11.patch
+  'expo-media-library@18.2.1': patches/expo-media-library@18.2.1.patch
+  'expo-modules-core@3.0.30': patches/expo-modules-core@3.0.30.patch
+  'expo-notifications@0.32.17': patches/expo-notifications@0.32.17.patch
+  'expo-updates@29.0.17': patches/expo-updates@29.0.17.patch
+  'react-native-compressor@1.13.0': patches/react-native-compressor@1.13.0.patch
+  'react-native-date-picker@5.0.13': patches/react-native-date-picker@5.0.13.patch
+  'react-native-keyboard-controller@1.21.8': patches/react-native-keyboard-controller@1.21.8.patch
+  'react-native-pager-view@6.8.0': patches/react-native-pager-view@6.8.0.patch
+  'react-native-reanimated@3.19.1': patches/react-native-reanimated@3.19.1.patch
+  'react-native-svg@15.12.1': patches/react-native-svg@15.12.1.patch
+  'react-native-uitextview@1.4.0': patches/react-native-uitextview@1.4.0.patch
+  'react-native-view-shot@4.0.3': patches/react-native-view-shot@4.0.3.patch
+  'react-native@0.81.5': patches/react-native@0.81.5.patch
+  '@sentry/react-native@7.0.1': patches/@sentry__react-native@7.0.1.patch
+  'sonner-native@0.21.0': patches/sonner-native@0.21.0.patch
+minimumReleaseAgeExclude:
+  - '@atproto/*'
+  - '@bsky.app/*'

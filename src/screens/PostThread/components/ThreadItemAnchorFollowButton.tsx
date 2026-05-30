@@ -5,8 +5,8 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 
-import {logger} from '#/logger'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {logger} from '#/logger'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -17,6 +17,7 @@ import {
 import {type SessionAccount, useRequireAuth, useSession} from '#/state/session'
 import {atoms as a, useBreakpoints} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {
   useEphemeralFollowAction,
@@ -27,7 +28,6 @@ import {
   DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheckIcon,
 } from '#/components/icons/Check'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
-import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {IS_IOS} from '#/env'

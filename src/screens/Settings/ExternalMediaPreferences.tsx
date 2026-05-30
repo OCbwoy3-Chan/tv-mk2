@@ -9,6 +9,7 @@ import {
 import {
   type EmbedPlayerSource,
   embedPlayerSources,
+  exemptExternalEmbedSources,
   externalEmbedLabels,
 } from '#/lib/strings/embed-player'
 import {
@@ -57,8 +58,10 @@ export function ExternalMediaPreferencesScreen({}: Props) {
               <PrefSelector source="all" label="All" />
               <SettingsList.Divider />
               {Object.entries(externalEmbedLabels)
-                // TODO: Remove special case when we disable the old integration.
-                .filter(([key]) => key !== 'tenor')
+                .filter(
+                  ([key]) =>
+                    !exemptExternalEmbedSources.has(key as EmbedPlayerSource),
+                )
                 .map(([key, label]) => (
                   <Fragment key={key}>
                     <PrefSelector

@@ -1,5 +1,9 @@
 import {ScrollView, View} from 'react-native'
-import {moderateProfile, type ModerationOpts} from '@atproto/api'
+import {
+  type ChatBskyActorDefs,
+  moderateProfile,
+  type ModerationOpts,
+} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -33,7 +37,10 @@ export function RecentChats({
   const ax = useAnalytics()
   const control = useDialogContext()
   const {currentAccount} = useSession()
-  const {data} = useListConvosQuery({status: 'accepted'})
+  const {data} = useListConvosQuery({
+    status: 'accepted',
+    lockStatus: 'unlocked',
+  })
   const convos = data?.pages[0]?.convos?.slice(0, 10)
   const moderationOpts = useModerationOpts()
   const navigation = useNavigation<NavigationProp>()
@@ -67,8 +74,8 @@ export function RecentChats({
             if (!convo) return null
 
             if (
-              (convo.kind === 'direct' &&
-                convo.primaryMember.handle === 'missing.invalid') ||
+              !convo.primaryMember ||
+              convo.primaryMember.handle === 'missing.invalid' ||
               convo.view.muted
             ) {
               return null
@@ -78,6 +85,7 @@ export function RecentChats({
               <RecentChatItem
                 key={convo.view.id}
                 convo={convo}
+                primaryMember={convo.primaryMember}
                 onPress={() => onSelectChat(convo.view.id)}
                 moderationOpts={moderationOpts}
               />
@@ -104,15 +112,17 @@ function RecentChatItem({
   onPress,
   moderationOpts,
   convo,
+  primaryMember,
 }: {
   onPress: () => void
   moderationOpts: ModerationOpts
   convo: ConvoWithDetails
+  primaryMember: ChatBskyActorDefs.ProfileViewBasic
 }) {
   const {_} = useLingui()
   const t = useTheme()
 
-  const primaryProfile = useProfileShadow(convo.primaryMember)
+  const primaryProfile = useProfileShadow(primaryMember)
 
   const moderation = moderateProfile(primaryProfile, moderationOpts)
   const name =
@@ -143,7 +153,11 @@ function RecentChatItem({
         a.align_center,
       ]}>
       {convo.kind === 'group' ? (
-        <AvatarBubbles profiles={convo.members} size={WIDTH - 8} />
+        <AvatarBubbles
+          profiles={convo.members}
+          size={WIDTH - 8}
+          moderationOpts={moderationOpts}
+        />
       ) : (
         <UserAvatar
           avatar={primaryProfile.avatar}

@@ -1,4 +1,4 @@
-import {memo, useEffect, useMemo, useState} from 'react'
+import {memo, useMemo, useState} from 'react'
 import {View} from 'react-native'
 import {
   type AppBskyActorDefs,
@@ -43,6 +43,7 @@ import {SubscribeProfileButton} from '#/components/activity-notifications/Subscr
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
 import {useDialogControl} from '#/components/Dialog'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {MessageProfileButton} from '#/components/dms/MessageProfileButton'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {
@@ -63,7 +64,6 @@ import {
 import {Link} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import * as Prompt from '#/components/Prompt'
-import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'

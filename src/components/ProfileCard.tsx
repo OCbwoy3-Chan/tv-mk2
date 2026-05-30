@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {
   type GestureResponderEvent,
   type StyleProp,
@@ -38,6 +38,7 @@ import {
   type ButtonProps,
   ButtonText,
 } from '#/components/Button'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {
   Check_Stroke2_Corner0_Rounded as Check,
@@ -47,7 +48,6 @@ import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus
 import {Link as InternalLink, type LinkProps} from '#/components/Link'
 import * as Pills from '#/components/Pills'
 import {ProfileBadges} from '#/components/ProfileBadges'
-import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
