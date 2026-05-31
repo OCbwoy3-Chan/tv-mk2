@@ -9,6 +9,8 @@ import {
 } from 'react-native'
 
 import {HITSLOP_10} from '#/lib/constants'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {atoms as a} from '#/alf'
 import {type Props as IconProps} from '#/components/icons/common'
 
 type Props = {
@@ -28,7 +30,6 @@ type Props = {
 >
 
 const SIZE = 44
-const RADIUS = 24
 const ICON = 24
 
 export function CircleChromeButton({
@@ -39,6 +40,8 @@ export function CircleChromeButton({
   testID,
   ...rest
 }: Props) {
+  const enableSquareButtons = useEnableSquareButtons()
+
   return (
     <Pressable
       {...rest}
@@ -48,7 +51,11 @@ export function CircleChromeButton({
       hitSlop={HITSLOP_10}
       onPress={onPress}
       testID={testID}
-      style={({pressed}) => [styles.root, pressed && styles.pressed]}>
+      style={({pressed}) => [
+        styles.root,
+        enableSquareButtons ? a.rounded_sm : a.rounded_full,
+        pressed && styles.pressed,
+      ]}>
       <View style={styles.inner}>
         <Icon width={ICON} fill="#fff" style={iconStyle} />
       </View>
@@ -60,7 +67,6 @@ const styles = StyleSheet.create({
   root: {
     width: SIZE,
     height: SIZE,
-    borderRadius: RADIUS,
     overflow: 'hidden',
   },
   inner: {

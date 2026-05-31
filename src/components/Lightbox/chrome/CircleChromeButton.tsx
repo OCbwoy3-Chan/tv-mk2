@@ -9,6 +9,8 @@ import {
 import {BlurView} from 'expo-blur'
 
 import {HITSLOP_20} from '#/lib/constants'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {atoms as a} from '#/alf'
 import {type Props as IconProps} from '#/components/icons/common'
 
 type Props = {
@@ -28,7 +30,6 @@ type Props = {
 >
 
 const SIZE = 32
-const RADIUS = SIZE / 2
 const ICON = 18
 
 export function CircleChromeButton({
@@ -39,6 +40,8 @@ export function CircleChromeButton({
   testID,
   ...rest
 }: Props) {
+  const enableSquareButtons = useEnableSquareButtons()
+
   return (
     <Pressable
       {...rest}
@@ -48,7 +51,11 @@ export function CircleChromeButton({
       hitSlop={HITSLOP_20}
       onPress={onPress}
       testID={testID}
-      style={({pressed}) => [styles.root, pressed && styles.pressed]}>
+      style={({pressed}) => [
+        styles.root,
+        enableSquareButtons ? a.rounded_sm : a.rounded_full,
+        pressed && styles.pressed,
+      ]}>
       <BlurView intensity={20} tint="dark" style={styles.inner}>
         <Icon width={ICON} fill="#fff" style={iconStyle} />
       </BlurView>
@@ -60,7 +67,6 @@ const styles = StyleSheet.create({
   root: {
     width: SIZE,
     height: SIZE,
-    borderRadius: RADIUS,
     overflow: 'hidden',
   },
   inner: {

@@ -7,6 +7,7 @@ import {RemoveScrollBar} from 'react-remove-scroll-bar'
 
 import {saveImageToMediaLibrary} from '#/lib/media/manip'
 import {useA11y} from '#/state/a11y'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   atoms as a,
   flatten,
@@ -105,6 +106,7 @@ function LightboxGallery({
   const [isAltExpanded, setAltExpanded] = useState(false)
 
   const {gtPhone} = useBreakpoints()
+  const enableSquareButtons = useEnableSquareButtons()
 
   const canGoLeft = index >= 1
   const canGoRight = index < imgs.length - 1
@@ -195,7 +197,7 @@ function LightboxGallery({
             hoverStyle={styles.blurredBackdropHover}
             color="secondary"
             label={l`Previous image`}
-            shape="round"
+            shape={enableSquareButtons ? 'square' : 'round'}
             size={gtPhone ? 'large' : 'small'}>
             <ChevronLeftIcon
               size={gtPhone ? 'md' : 'sm'}
@@ -216,7 +218,7 @@ function LightboxGallery({
             hoverStyle={styles.blurredBackdropHover}
             color="secondary"
             label={l`Next image`}
-            shape="round"
+            shape={enableSquareButtons ? 'square' : 'round'}
             size={gtPhone ? 'large' : 'small'}>
             <ChevronRightIcon
               size={gtPhone ? 'md' : 'sm'}

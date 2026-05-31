@@ -1,6 +1,5 @@
 import {useCallback} from 'react'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
+import {useLingui} from '@lingui/react/macro'
 
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {logger} from '#/logger'
@@ -24,7 +23,7 @@ export function useEphemeralFollowAction({
   onFollow?: () => void
   onUnfollow?: () => void
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
 
   return useCallback(
@@ -46,20 +45,16 @@ export function useEphemeralFollowAction({
         if (result.followed) {
           onFollow?.()
           Toast.show(
-            _(
-              msg`Following ${sanitizeDisplayName(
-                profile.displayName || profile.handle,
-              )} as @${account.handle}`,
-            ),
+            l`Following ${sanitizeDisplayName(
+              profile.displayName || profile.handle,
+            )} as @${account.handle}`,
           )
         } else {
           onUnfollow?.()
           Toast.show(
-            _(
-              msg`No longer following ${sanitizeDisplayName(
-                profile.displayName || profile.handle,
-              )} as @${account.handle}`,
-            ),
+            l`No longer following ${sanitizeDisplayName(
+              profile.displayName || profile.handle,
+            )} as @${account.handle}`,
           )
         }
       } catch (e) {
@@ -68,12 +63,12 @@ export function useEphemeralFollowAction({
           targetDid: profile.did,
           accountDid: account.did,
         })
-        Toast.show(_(msg`An issue occurred, please try again.`), {
+        Toast.show(l`An issue occurred, please try again.`, {
           type: 'error',
         })
       }
     },
-    [_, onFollow, onUnfollow, profile, runWithEphemeralAgent],
+    [l, onFollow, onUnfollow, profile, runWithEphemeralAgent],
   )
 }
 
@@ -82,7 +77,7 @@ export function useEphemeralFollowIntent({
 }: {
   profile: Shadow<bsky.profile.AnyProfileView>
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
 
   return useCallback(
@@ -98,20 +93,17 @@ export function useEphemeralFollowIntent({
 
         return isFollowing ? 'unfollow' : 'follow'
       } catch (e) {
-        logger.error(
-          'useEphemeralFollowIntent: failed to load follow state',
-          {
-            message: String(e),
-            targetDid: profile.did,
-            accountDid: account.did,
-          },
-        )
-        Toast.show(_(msg`An issue occurred, please try again.`), {
+        logger.error('useEphemeralFollowIntent: failed to load follow state', {
+          message: String(e),
+          targetDid: profile.did,
+          accountDid: account.did,
+        })
+        Toast.show(l`An issue occurred, please try again.`, {
           type: 'error',
         })
         return 'follow'
       }
     },
-    [_, profile, runWithEphemeralAgent],
+    [l, profile, runWithEphemeralAgent],
   )
 }
