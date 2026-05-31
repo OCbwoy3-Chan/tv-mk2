@@ -8,6 +8,7 @@ import {
   init,
   refresh,
   setAttributes,
+  setForcedFeatureValues,
 } from '#/analytics/features'
 import {
   getAndMigrateDeviceId,
@@ -25,7 +26,7 @@ import {type Metrics, metrics} from '#/analytics/metrics'
 import * as refParams from '#/analytics/misc/refParams'
 import * as env from '#/env'
 import {useGeolocationServiceResponse} from '#/geolocation/service'
-import {device} from '#/storage'
+import {device, useStorage} from '#/storage'
 
 export * as utils from '#/analytics/utils'
 export const features = {init, refresh}
@@ -180,6 +181,7 @@ export function AnalyticsFeaturesContext({
   children: React.ReactNode
 }) {
   const parentContext = useContext(Context)
+  const [featureGateOverrides] = useStorage(device, ['featureGateOverrides'])
 
   /**
    * Side-effects: we need to synchronously set these during the same render
@@ -187,6 +189,7 @@ export function AnalyticsFeaturesContext({
    * the singleton GrowthBook instance.
    */
   setAttributes(parentContext.metadata)
+  setForcedFeatureValues(featureGateOverrides)
   feats.setTrackingCallback((experiment, result) => {
     parentContext.metric('experiment:viewed', {
       experimentId: experiment.key,

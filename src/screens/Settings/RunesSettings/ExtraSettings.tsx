@@ -140,6 +140,14 @@ export function RunesExtraSettingsScreen() {
           <Toggle.Platform />
         </SettingsList.Item>
       </Toggle.Item>
+      <SettingsList.LinkItem
+        to="/settings/runes/extra/feature-gates"
+        label={l`Feature gates`}>
+        <SettingsList.ItemIcon icon={BeakerIcon} />
+        <SettingsList.ItemText>
+          <Trans>Feature gates</Trans>
+        </SettingsList.ItemText>
+      </SettingsList.LinkItem>
     </RunesScreenLayout>
   )
 }

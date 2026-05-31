@@ -116,6 +116,7 @@ These are all available as options in the Runes sub-page of the app's settings.
   - Show debug context for posts in Discover feed
   - Don't include the 'via' field in own posts
   - Developer mode
+  - Feature gates
 
 ### TODO: Xan
 

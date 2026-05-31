@@ -37,6 +37,10 @@ export const features = new GrowthBook({
  */
 export const init = Promise.resolve()
 
+export function setForcedFeatureValues(overrides?: Record<string, boolean>) {
+  features.setForcedFeatures(new Map(Object.entries(overrides ?? {})))
+}
+
 /**
  * Refresh feature gates from GrowthBook. Updates attributes based on the
  * provided account, if any.

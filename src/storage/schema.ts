@@ -56,6 +56,8 @@ export type Device = {
    */
   mergedGeolocation?: Geolocation
 
+  featureGateOverrides?: Record<string, boolean>
+
   trendingBetaEnabled: boolean
   devMode: boolean
   demoMode: boolean
