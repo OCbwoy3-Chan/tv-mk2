@@ -356,7 +356,12 @@ export function PublicationCard({
           <View style={[a.flex_1, a.gap_2xs]}>
             <Text
               numberOfLines={1}
-              style={[a.text_md, a.font_semi_bold, t.atoms.text]}>
+              style={[
+                a.text_md,
+                a.font_semi_bold,
+                t.atoms.text,
+                a.leading_snug,
+              ]}>
               {view.source?.title}
             </Text>
             <StandardSiteMetaRow
@@ -387,7 +392,7 @@ export function PublicationCard({
         )}
 
         {!gtPhone && (
-          <View style={[view.description && a.pt_sm]}>
+          <View style={[a.pt_sm]}>
             <SubscribeButton
               preview={preview}
               view={view}
@@ -615,6 +620,7 @@ export function PublicationFooter({
             style={[
               a.text_sm,
               a.font_medium,
+              a.leading_tight,
               t.atoms.text,
               interacted && a.underline,
             ]}>
