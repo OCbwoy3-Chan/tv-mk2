@@ -13,6 +13,7 @@ overrides:
   'psl': '1.9.0'
   '@types/psl': '1.1.1'
   'react-native-screens': '4.24.0'
+  'react-native-mmkv': 'npm:@bsky.app/react-native-mmkv@2.12.5'
 allowBuilds:
   '@sentry/cli': true
   '@swc/core': true
@@ -23,6 +24,7 @@ allowBuilds:
 patchedDependencies:
   '@assembless/react-native-material-you@1.0.0-beta.4': patches/@assembless__react-native-material-you@1.0.0-beta.4.patch
   '@atproto/api@0.20.6': patches/@atproto__api@0.20.6.patch
+  '@atproto/oauth-client@0.6.1': patches/@atproto__oauth-client@0.6.1.patch
   '@atproto/oauth-client-expo@0.0.10': patches/@atproto__oauth-client-expo@0.0.10.patch
   '@discord/bottom-sheet@4.6.1': patches/@discord__bottom-sheet@4.6.1.patch
   'expo-glass-effect@55.0.8': patches/expo-glass-effect@55.0.8.patch

@@ -8,8 +8,6 @@ import {
   type Facet,
   RichText,
 } from '@atproto/api'
-import {isViewRecord} from '@atproto/api/dist/client/types/app/bsky/embed/record'
-import {isThreadViewPost} from '@atproto/api/dist/client/types/app/bsky/feed/defs'
 
 import {html, renderHandleString} from '../../[handleOrDID].ts'
 
@@ -79,7 +77,7 @@ export function expandPostTextRich(
   ) {
     // no idea why this is needed lol
     const record = embed.record.record ?? embed.record
-    if (isViewRecord(record)) {
+    if (AppBskyEmbedRecord.isViewRecord(record)) {
       const quote = `↘️ quoting ${renderHandleString(record.author)}:\n\n${
         record.value.text
       }`
@@ -95,7 +93,7 @@ export function expandPostTextRich(
   }
 
   // prepend reply header
-  if (isThreadViewPost(postView.parent)) {
+  if (AppBskyFeedDefs.isThreadViewPost(postView.parent)) {
     const header = `↩️ reply to ${renderHandleString(
       postView.parent.post.author,
     )}:`
