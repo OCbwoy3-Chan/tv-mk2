@@ -32,6 +32,7 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - 'Mutuals' in place of 'Following' when relevant
 - Pet label (option to toggle, & visibility for everyone else)
 - Account AI preferences screen
+- No unread notifications badge limit (30+)
 - No age assurance or blocks based on location
 - No push notifications (hopefully will be added later)
 - Kept as up-to-date as possible (sporadically unstable as a result)

@@ -168,12 +168,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
             fetchAdditionalData: !!invalidate,
           })
           const unreadCount = countUnread(page)
-          const unreadCountStr =
-            unreadCount >= 30
-              ? '30+'
-              : unreadCount === 0
-                ? ''
-                : String(unreadCount)
+          const unreadCountStr = unreadCount === 0 ? '' : String(unreadCount)
 
           // track last sync
           const now = new Date()
