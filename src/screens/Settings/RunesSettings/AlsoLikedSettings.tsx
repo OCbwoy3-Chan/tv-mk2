@@ -62,7 +62,8 @@ export function RunesDisplayAlsoLikedSettingsScreen() {
               For You
             </SimpleInlineLinkText>{' '}
             feed. Posts must have likes, reposts, or have been created in the
-            last 90 days to appear. Learn more at{' '}
+            last 90 days to appear. The poster is counted as a liker. Learn more
+            at{' '}
             <SimpleInlineLinkText
               to="https://foryou.club/"
               label={l`for you dot club`}>

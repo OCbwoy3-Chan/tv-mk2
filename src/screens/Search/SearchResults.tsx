@@ -20,6 +20,7 @@ import {Post} from '#/view/com/post/Post'
 import {ProfileCardWithFollowBtn} from '#/view/com/profile/ProfileCard'
 import {List} from '#/view/com/util/List'
 import {atoms as a, useTheme, web} from '#/alf'
+import {Button, ButtonText} from '#/components/Button'
 import * as FeedCard from '#/components/FeedCard'
 import * as Layout from '#/components/Layout'
 import {InlineLinkText} from '#/components/Link'
@@ -125,10 +126,19 @@ function EmptyState({
   messageText,
   error,
   children,
+  button,
+  buttonAlign = 'center',
 }: {
   messageText: React.ReactNode
   error?: string
   children?: React.ReactNode
+  button?: {
+    label: string
+    text: string
+    onPress: () => void
+    disabled?: boolean
+  }
+  buttonAlign?: 'left' | 'center'
 }) {
   const t = useTheme()
 
@@ -159,9 +169,68 @@ function EmptyState({
           )}
 
           {children}
+
+          {button && (
+            <View
+              style={[
+                a.mt_lg,
+                buttonAlign === 'left' ? a.align_start : a.align_center,
+              ]}>
+              <Button
+                label={button.label}
+                color="primary"
+                size="small"
+                disabled={button.disabled}
+                onPress={button.onPress}>
+                <ButtonText>{button.text}</ButtonText>
+              </Button>
+            </View>
+          )}
         </View>
       </View>
     </Layout.Content>
+  )
+}
+
+function SearchResultsFooter({
+  hasNextPage,
+  isFetchingNextPage,
+  onLoadMore,
+}: {
+  hasNextPage?: boolean
+  isFetchingNextPage?: boolean
+  onLoadMore: () => void
+}) {
+  const t = useTheme()
+  const {t: l} = useLingui()
+
+  if (isFetchingNextPage) {
+    return <ListFooter isFetchingNextPage />
+  }
+
+  return (
+    <View
+      style={[
+        a.w_full,
+        a.align_center,
+        a.border_t,
+        a.pb_lg,
+        t.atoms.border_contrast_low,
+        {height: 180, paddingTop: 30},
+      ]}>
+      <View style={[a.px_lg]}>
+        <Button
+          label={l`Load more`}
+          color="primary"
+          size="small"
+          disabled={!hasNextPage}
+          onPress={onLoadMore}>
+          <ButtonText>
+            <Trans>{hasNextPage ? 'Load more' : 'Load more'}</Trans>
+          </ButtonText>
+        </Button>
+      </View>
+    </View>
   )
 }
 
@@ -376,14 +445,24 @@ let SearchScreenPostResults = ({
               }}
               desktopFixedHeight
               ListFooterComponent={
-                <ListFooter
+                <SearchResultsFooter
                   isFetchingNextPage={isFetchingNextPage}
                   hasNextPage={hasNextPage}
+                  onLoadMore={onEndReached}
                 />
               }
             />
           ) : (
-            <EmptyState messageText={<NoResultsText query={query} />} />
+            <EmptyState
+              messageText={<NoResultsText query={query} />}
+              buttonAlign="left"
+              button={{
+                label: l`Load more`,
+                text: l`Load more`,
+                onPress: onEndReached,
+                disabled: isFetchingNextPage,
+              }}
+            />
           )}
         </>
       ) : (
@@ -495,14 +574,24 @@ let SearchScreenUserResults = ({
           onEndReached={onEndReached}
           desktopFixedHeight
           ListFooterComponent={
-            <ListFooter
+            <SearchResultsFooter
               hasNextPage={hasNextPage && hasSession}
               isFetchingNextPage={isFetchingNextPage}
+              onLoadMore={onEndReached}
             />
           }
         />
       ) : (
-        <EmptyState messageText={<NoResultsText query={query} />} />
+        <EmptyState
+          messageText={<NoResultsText query={query} />}
+          buttonAlign="left"
+          button={{
+            label: l`Load more`,
+            text: l`Load more`,
+            onPress: onEndReached,
+            disabled: isFetchingNextPage || !hasSession,
+          }}
+        />
       )}
     </>
   ) : (
