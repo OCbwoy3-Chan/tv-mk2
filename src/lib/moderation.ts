@@ -12,6 +12,7 @@ import {
 
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {isIgnoredAppLabeler} from '#/state/preferences/ignored-app-labelers'
 import {type AppModerationCause} from '#/components/Pills'
 
 export const ADULT_CONTENT_LABELS = ['sexual', 'nudity', 'porn'] as const
@@ -96,6 +97,10 @@ export function isAppLabeler(
   return BskyAgent.appLabelers.includes(labeler.creator.did)
 }
 
+export function getActiveAppLabelers() {
+  return BskyAgent.appLabelers.filter(did => !isIgnoredAppLabeler(did))
+}
+
 export function isLabelerSubscribed(
   labeler:
     | string
@@ -104,6 +109,9 @@ export function isLabelerSubscribed(
   modOpts: ModerationOpts,
 ) {
   labeler = typeof labeler === 'string' ? labeler : labeler.creator.did
+  if (isIgnoredAppLabeler(labeler)) {
+    return false
+  }
   if (isAppLabeler(labeler)) {
     return true
   }

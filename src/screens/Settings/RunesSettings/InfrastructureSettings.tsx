@@ -19,10 +19,6 @@ import {
   useSetImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
 import {
-  useNoAppLabelers,
-  useSetNoAppLabelers,
-} from '#/state/preferences/no-app-labelers'
-import {
   usePlcDirectory,
   useSetPlcDirectory,
 } from '#/state/preferences/plc-directory'
@@ -42,7 +38,6 @@ import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import * as Toggle from '#/components/forms/Toggle'
 import {Earth_Stroke2_Corner2_Rounded as EarthIcon} from '#/components/icons/Globe'
-import {RaisingHand4Finger_Stroke2_Corner0_Rounded as RaisingHandIcon} from '#/components/icons/RaisingHand'
 import {Star_Stroke2_Corner0_Rounded as StarIcon} from '#/components/icons/Star'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
@@ -67,9 +62,6 @@ export function RunesInfrastructureSettingsScreen() {
 
   const [customAppViewDid] = useCustomAppViewDid()
   const setCustomAppViewDidControl = Dialog.useDialogControl()
-
-  const noAppLabelers = useNoAppLabelers()
-  const setNoAppLabelers = useSetNoAppLabelers()
   const restartPromptControl = Dialog.useDialogControl()
 
   return (
@@ -218,44 +210,6 @@ export function RunesInfrastructureSettingsScreen() {
           label={customAppViewDid ? l`Change` : l`Set`}
           onPress={() => setCustomAppViewDidControl.open()}
         />
-      </SettingsList.Item>
-
-      <SettingsList.Divider />
-
-      <Toggle.Item
-        name="no_app_labelers"
-        label={l`Do not declare any app labelers`}
-        value={noAppLabelers}
-        onChange={value => {
-          setNoAppLabelers(value)
-          restartPromptControl.open()
-        }}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={RaisingHandIcon} />
-          <SettingsList.ItemText>
-            <Trans>Do not declare any default app labelers</Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
-
-      <SettingsList.Item>
-        <Admonition type="tip" style={[a.flex_1]}>
-          <Trans>
-            Some AppViews will default to using an app labeler if you have no
-            labelers, so consider subscribing to at least one labeler if you
-            have issues.
-          </Trans>
-        </Admonition>
-      </SettingsList.Item>
-      <SettingsList.Item>
-        <Admonition type="info" style={[a.flex_1]}>
-          <Trans>
-            App labelers are mandatory top-level labelers that can perform
-            "takedowns". This setting does not influence geolocation-based
-            labelers.
-          </Trans>
-        </Admonition>
       </SettingsList.Item>
 
       <ConstellationInstanceDialog control={setConstellationInstanceControl} />

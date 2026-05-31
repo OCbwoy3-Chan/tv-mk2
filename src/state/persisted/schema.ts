@@ -1,3 +1,4 @@
+import {BSKY_LABELER_DID} from '@atproto/api'
 import {z} from 'zod'
 
 import {DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
@@ -169,7 +170,7 @@ const schema = z.object({
   goLinksEnabled: z.boolean().optional(),
   constellationEnabled: z.boolean().optional(),
   directFetchRecords: z.boolean().optional(),
-  noAppLabelers: z.boolean().optional(),
+  ignoredAppLabelers: z.array(z.string()).optional(),
   noDiscoverFallback: z.boolean().optional(),
   repostCarouselEnabled: z.boolean().optional(),
   alsoLikedFeedEnabled: z.boolean().optional(),
@@ -312,7 +313,7 @@ export const defaults: Schema = {
   goLinksEnabled: true,
   constellationEnabled: true,
   directFetchRecords: true,
-  noAppLabelers: false,
+  ignoredAppLabelers: [],
   noDiscoverFallback: false,
   repostCarouselEnabled: false,
   alsoLikedFeedEnabled: true,
@@ -398,7 +399,17 @@ export function tryParse(rawData: string): Schema | undefined {
   }
   const parsed = schema.safeParse(objData)
   if (parsed.success) {
-    return parsed.data
+    const data = parsed.data
+    if (
+      (objData as {noAppLabelers?: boolean}).noAppLabelers &&
+      !data.ignoredAppLabelers?.length
+    ) {
+      return {
+        ...data,
+        ignoredAppLabelers: [BSKY_LABELER_DID],
+      }
+    }
+    return data
   } else {
     const errors =
       parsed.error?.errors?.map(e => ({

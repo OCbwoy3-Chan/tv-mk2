@@ -3,6 +3,11 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {z} from 'zod'
 
 import {MAX_LABELERS} from '#/lib/constants'
+import {isAppLabeler} from '#/lib/moderation'
+import {
+  addIgnoredAppLabeler,
+  removeIgnoredAppLabeler,
+} from '#/state/preferences/ignored-app-labelers'
 import {GCTIME, STALE} from '#/state/queries'
 import {
   preferencesQueryKey,
@@ -141,13 +146,24 @@ export function useLabelerSubscriptionMutation() {
       }
 
       if (subscribe) {
-        const labelerCount = labelerDids.length - invalidLabelers.length
-        if (labelerCount >= MAX_LABELERS) {
-          throw new Error('MAX_LABELERS')
+        if (isAppLabeler(did)) {
+          removeIgnoredAppLabeler(did)
+        } else {
+          const labelerCount = labelerDids.length - invalidLabelers.length
+          if (labelerCount >= MAX_LABELERS) {
+            throw new Error('MAX_LABELERS')
+          }
+          await pdsAgent(agent).addLabeler(did)
         }
-        await pdsAgent(agent).addLabeler(did)
       } else {
-        await pdsAgent(agent).removeLabeler(did)
+        if (isAppLabeler(did)) {
+          addIgnoredAppLabeler(did)
+          await pdsAgent(agent)
+            .removeLabeler(did)
+            .catch(() => {})
+        } else {
+          await pdsAgent(agent).removeLabeler(did)
+        }
       }
     },
     async onSuccess() {

@@ -39,7 +39,7 @@ export const SYNCED_PREFS_KEYS = [
   'goLinksEnabled',
   'constellationEnabled',
   'directFetchRecords',
-  'noAppLabelers',
+  'ignoredAppLabelers',
   'noDiscoverFallback',
   'repostCarouselEnabled',
   'alsoLikedFeedEnabled',

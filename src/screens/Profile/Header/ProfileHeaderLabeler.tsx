@@ -14,10 +14,11 @@ import {Plural, Trans} from '@lingui/react/macro'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {MAX_LABELERS} from '#/lib/constants'
 import {useHaptics} from '#/lib/haptics'
-import {isAppLabeler} from '#/lib/moderation'
+import {isAppLabeler, isLabelerSubscribed} from '#/lib/moderation'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {type Shadow} from '#/state/cache/types'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useLabelerSubscriptionMutation} from '#/state/queries/labeler'
 import {useLikeMutation, useUnlikeMutation} from '#/state/queries/like'
 import {usePreferencesQuery} from '#/state/queries/preferences'
@@ -248,6 +249,7 @@ export function HeaderLabelerButtons({
   const playHaptic = useHaptics()
   const editProfileControl = useDialogControl()
   const {data: preferences} = usePreferencesQuery()
+  const moderationOpts = useModerationOpts()
   const {
     mutateAsync: toggleSubscription,
     variables,
@@ -255,7 +257,11 @@ export function HeaderLabelerButtons({
   } = useLabelerSubscriptionMutation()
   const isSubscribed =
     variables?.subscribe ??
-    preferences?.moderationPrefs.labelers.find(l => l.did === profile.did)
+    (moderationOpts
+      ? !!isLabelerSubscribed(profile.did, moderationOpts)
+      : !!preferences?.moderationPrefs.labelers.find(
+          l => l.did === profile.did,
+        ))
 
   const cantSubscribePrompt = Prompt.usePromptControl()
 
@@ -304,7 +310,7 @@ export function HeaderLabelerButtons({
           </Button>
           <EditProfileDialog profile={profile} control={editProfileControl} />
         </>
-      ) : !isAppLabeler(profile.did) && !minimal ? (
+      ) : !minimal ? (
         // hidden in the minimal header, because it's not shadowed so the two buttons
         // can get out of sync. if you want to reenable, you'll need to add shadowing
         // to the subscribed state -sfn

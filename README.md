@@ -103,7 +103,6 @@ These are all available as options in the Runes sub-page of the app's settings.
   - Change PLC directory
   - Change Constellation instance
   - Set custom AppView DID
-  - Do not declare any default app labelers
 - Settings sync
   - Sync settings between devices
   - Include OpenRouter API key in synced settings

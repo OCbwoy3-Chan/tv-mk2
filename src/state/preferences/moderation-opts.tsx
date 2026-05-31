@@ -1,8 +1,10 @@
 import {createContext, useContext, useMemo} from 'react'
 import {type PropsWithChildren} from 'react'
-import {BskyAgent, type ModerationOpts} from '@atproto/api'
+import {type ModerationOpts} from '@atproto/api'
 
+import {getActiveAppLabelers} from '#/lib/moderation'
 import {useHiddenPosts, useLabelDefinitions} from '#/state/preferences'
+import {useIgnoredAppLabelers} from '#/state/preferences/ignored-app-labelers'
 import {DEFAULT_LOGGED_OUT_LABEL_PREFERENCES} from '#/state/queries/preferences/moderation'
 import {useSession} from '#/state/session'
 import {usePreferencesQuery} from '../queries/preferences'
@@ -28,6 +30,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const prefs = usePreferencesQuery()
   const {labelDefs} = useLabelDefinitions()
   const hiddenPosts = useHiddenPosts() // TODO move this into pds-stored prefs
+  const ignoredAppLabelers = useIgnoredAppLabelers()
 
   const userDid = currentAccount?.did
   const moderationPrefs = prefs.data?.moderationPrefs
@@ -43,8 +46,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
       prefs: {
         ...moderationPrefs,
         labelers: moderationPrefs.labelers.length
-          ? moderationPrefs.labelers
-          : BskyAgent.appLabelers.map(did => ({
+          ? moderationPrefs.labelers.filter(
+              l => !ignoredAppLabelers.includes(l.did),
+            )
+          : getActiveAppLabelers().map(did => ({
               did,
               labels: DEFAULT_LOGGED_OUT_LABEL_PREFERENCES,
             })),
@@ -52,7 +57,14 @@ export function Provider({children}: PropsWithChildren<{}>) {
       },
       labelDefs,
     }
-  }, [override, userDid, labelDefs, moderationPrefs, hiddenPosts])
+  }, [
+    override,
+    userDid,
+    labelDefs,
+    moderationPrefs,
+    hiddenPosts,
+    ignoredAppLabelers,
+  ])
 
   return (
     <moderationOptsContext.Provider value={value}>
