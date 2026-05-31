@@ -1,8 +1,6 @@
 import {useCallback} from 'react'
-import {reloadAppAsync} from 'expo'
 import {isDid} from '@atproto/api'
 
-import {IS_WEB} from '#/env'
 import {device, useStorage} from '#/storage'
 
 export function useCustomAppViewDid() {
@@ -20,12 +18,6 @@ export function useSetCustomAppViewDid() {
   return useCallback(
     (customAppViewDid: string | undefined) => {
       setCustomAppViewDid(customAppViewDid)
-
-      if (IS_WEB) {
-        window.location.reload()
-      } else {
-        void reloadAppAsync()
-      }
     },
     [setCustomAppViewDid],
   )

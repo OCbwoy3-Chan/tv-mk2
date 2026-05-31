@@ -26,6 +26,7 @@ import {
   usePlcDirectory,
   useSetPlcDirectory,
 } from '#/state/preferences/plc-directory'
+import {RestartRequiredPrompt} from '#/state/preferences/restart-required-prompt'
 import {
   useLibreTranslateInstance,
   useSetLibreTranslateInstance,
@@ -69,6 +70,7 @@ export function RunesInfrastructureSettingsScreen() {
 
   const noAppLabelers = useNoAppLabelers()
   const setNoAppLabelers = useSetNoAppLabelers()
+  const restartPromptControl = Dialog.useDialogControl()
 
   return (
     <RunesScreenLayout titleText={l`Infrastructure`}>
@@ -224,7 +226,10 @@ export function RunesInfrastructureSettingsScreen() {
         name="no_app_labelers"
         label={l`Do not declare any app labelers`}
         value={noAppLabelers}
-        onChange={value => setNoAppLabelers(value)}>
+        onChange={value => {
+          setNoAppLabelers(value)
+          restartPromptControl.open()
+        }}>
         <SettingsList.Item>
           <SettingsList.ItemIcon icon={RaisingHandIcon} />
           <SettingsList.ItemText>
@@ -235,14 +240,9 @@ export function RunesInfrastructureSettingsScreen() {
       </Toggle.Item>
 
       <SettingsList.Item>
-        <Admonition type="warning" style={[a.flex_1]}>
-          <Trans>Toggling this will reload the app.</Trans>
-        </Admonition>
-      </SettingsList.Item>
-      <SettingsList.Item>
         <Admonition type="tip" style={[a.flex_1]}>
           <Trans>
-            Some App Views will default to using an app labeler if you have no
+            Some AppViews will default to using an app labeler if you have no
             labelers, so consider subscribing to at least one labeler if you
             have issues.
           </Trans>
@@ -259,12 +259,18 @@ export function RunesInfrastructureSettingsScreen() {
       </SettingsList.Item>
 
       <ConstellationInstanceDialog control={setConstellationInstanceControl} />
-      <CustomAppViewDidDialog control={setCustomAppViewDidControl} />
+      <CustomAppViewDidDialog
+        control={setCustomAppViewDidControl}
+        onRestartRequired={() => {
+          restartPromptControl.open()
+        }}
+      />
       <LibreTranslateInstanceDialog
         control={setLibreTranslateInstanceControl}
       />
       <ImageCdnHostDialog control={setImageCdnHostControl} />
       <PlcDirectoryDialog control={setPlcDirectoryControl} />
+      <RestartRequiredPrompt control={restartPromptControl} />
     </RunesScreenLayout>
   )
 }
@@ -335,8 +341,10 @@ function ConstellationInstanceDialog({
 
 function CustomAppViewDidDialog({
   control,
+  onRestartRequired,
 }: {
   control: Dialog.DialogControlProps
+  onRestartRequired: () => void
 }) {
   const pal = usePalette('default')
   const {t: l} = useLingui()
@@ -353,12 +361,14 @@ function CustomAppViewDidDialog({
     if (did.length === 0) {
       control.close(() => {
         setCustomAppViewDid(undefined)
+        onRestartRequired()
       })
       return
     }
     if (!bskyAppViewService?.serviceEndpoint) return
     control.close(() => {
       setCustomAppViewDid(did)
+      onRestartRequired()
     })
   }
 

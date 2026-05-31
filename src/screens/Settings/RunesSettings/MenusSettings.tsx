@@ -16,6 +16,8 @@ import {
   useHandleInLinks,
   useSetHandleInLinks,
 } from '#/state/preferences/use-handle-in-links'
+import {RestartRequiredPrompt} from '#/state/preferences/restart-required-prompt'
+import * as Dialog from '#/components/Dialog'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import * as Toggle from '#/components/forms/Toggle'
 import {ArrowShareRight_Stroke2_Corner2_Rounded as ArrowShareRightIcon} from '#/components/icons/ArrowShareRight'
@@ -28,6 +30,7 @@ export function RunesMenusSettingsScreen() {
 
   const handleInLinks = useHandleInLinks()
   const setHandleInLinks = useSetHandleInLinks()
+  const restartPromptControl = Dialog.useDialogControl()
 
   const showExternalShareButtons = useShowExternalShareButtons()
   const setShowExternalShareButtons = useSetShowExternalShareButtons()
@@ -45,7 +48,10 @@ export function RunesMenusSettingsScreen() {
         name="use_handle_in_links"
         label={l`Use handles in profile links instead of DIDs (requires restart)`}
         value={handleInLinks ?? false}
-        onChange={value => setHandleInLinks(value)}>
+        onChange={value => {
+          setHandleInLinks(value)
+          restartPromptControl.open()
+        }}>
         <SettingsList.Item>
           <SettingsList.ItemIcon icon={AtIcon} />
           <SettingsList.ItemText>
@@ -97,6 +103,10 @@ export function RunesMenusSettingsScreen() {
           </SettingsList.Item>
         </Toggle.Item>
       )}
+
+      <RestartRequiredPrompt
+        control={restartPromptControl}
+      />
     </RunesScreenLayout>
   )
 }

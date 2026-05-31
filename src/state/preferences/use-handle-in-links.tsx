@@ -6,10 +6,8 @@ import {
   useEffect,
   useState,
 } from 'react'
-import {reloadAppAsync} from 'expo'
 
 import * as persisted from '#/state/persisted'
-import {IS_WEB} from '#/env'
 
 type StateContext = persisted.Schema['useHandleInLinks']
 type SetContext = (v: persisted.Schema['useHandleInLinks']) => void
@@ -57,12 +55,6 @@ export function useSetHandleInLinks() {
   return useCallback(
     (useHandleInLinks: persisted.Schema['useHandleInLinks']) => {
       set(useHandleInLinks)
-
-      if (IS_WEB) {
-        window.location.reload()
-      } else {
-        void reloadAppAsync()
-      }
     },
     [set],
   )

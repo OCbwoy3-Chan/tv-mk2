@@ -1,10 +1,20 @@
 import {StyleSheet, View} from 'react-native'
+import React from 'react'
 
 import {usePalette} from '#/lib/hooks/usePalette'
 import {InfoCircleIcon} from '#/lib/icons'
 import {Text} from '#/view/com/util/text/Text'
 import {atoms as a, useTheme} from '#/alf'
 import {Loader} from '#/components/Loader'
+
+function extractTextFromChildren(children: React.ReactNode): string {
+  if (children == null) return ''
+  if (typeof children === 'string') return children
+  if (typeof children === 'number') return String(children)
+  if (Array.isArray(children)) return children.map(extractTextFromChildren).join(' ')
+  if (React.isValidElement(children)) return extractTextFromChildren((children as any).props?.children)
+  return ''
+}
 
 export function PostPlaceholder({
   children,
@@ -15,10 +25,16 @@ export function PostPlaceholder({
 }) {
   const t = useTheme()
   const pal = usePalette('default')
+
+  const text = extractTextFromChildren(children).trim().toLowerCase()
+  const isDeleted = /\bdeleted\b/.test(text)
+
+  const showLoader = Boolean(directFetchEnabled) && !isDeleted
+
   return (
     <View
       style={[styles.errorContainer, a.border, t.atoms.border_contrast_low]}>
-      {directFetchEnabled ? (
+      {showLoader ? (
         <Loader size={'md'} style={pal.text} />
       ) : (
         <InfoCircleIcon size={18} style={pal.text} />
