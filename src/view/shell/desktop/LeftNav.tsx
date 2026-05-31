@@ -222,7 +222,10 @@ function ProfileCard({minimal}: {minimal: boolean}) {
         <LoadingPlaceholder
           width={LARGE_ELEMENT_SIZE}
           height={LARGE_ELEMENT_SIZE}
-          style={[enableSquareAvatars ? a.rounded_sm : a.rounded_full, !minimal && a.ml_lg]}
+          style={[
+            enableSquareAvatars ? a.rounded_sm : a.rounded_full,
+            !minimal && a.ml_lg,
+          ]}
         />
       )}
       <Prompt.Basic
@@ -297,9 +300,7 @@ export function SwitchMenuItems({
       )}
       {showExtraButtons ? <SwitcherMenuProfileLink /> : undefined}
       {showAddAccount ? (
-        <Menu.Item
-          label={l`Add another account`}
-          onPress={onAddAnotherAccount}>
+        <Menu.Item label={l`Add another account`} onPress={onAddAnotherAccount}>
           <Menu.ItemIcon icon={PlusIcon} />
           <Menu.ItemText>
             <Trans>Add another account</Trans>
@@ -632,10 +633,18 @@ function ComposeBtn({minimal}: {minimal: boolean}) {
         onPress={() => void onPressCompose()}
         size="large"
         color="primary"
-        style={enableSquareButtons ? [a.rounded_sm] : [
-          a.rounded_full,
-          minimal && {width: LARGE_ELEMENT_SIZE, height: LARGE_ELEMENT_SIZE},
-        ]}>
+        shape={minimal && enableSquareButtons ? 'square' : 'default'}
+        style={
+          enableSquareButtons
+            ? [a.rounded_sm]
+            : [
+                a.rounded_full,
+                minimal && {
+                  width: LARGE_ELEMENT_SIZE,
+                  height: LARGE_ELEMENT_SIZE,
+                },
+              ]
+        }>
         <ButtonIcon icon={EditBigIcon} size={minimal ? 'lg' : 'sm'} />
         {!minimal && (
           <ButtonText>

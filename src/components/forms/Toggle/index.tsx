@@ -166,6 +166,7 @@ export function Item({
   ...rest
 }: ItemProps) {
   const t = useTheme()
+  const enableSquareButtons = useEnableSquareButtons()
 
   const {
     values: selectedValues,
@@ -214,8 +215,12 @@ export function Item({
 
   const highlightStyle = highlightRow
     ? selected
-      ? [a.rounded_full, a.p_md, {backgroundColor: t.palette.primary_50}]
-      : [a.rounded_full, a.p_md]
+      ? [
+          enableSquareButtons ? a.rounded_sm : a.rounded_full,
+          a.p_md,
+          {backgroundColor: t.palette.primary_50},
+        ]
+      : [enableSquareButtons ? a.rounded_sm : a.rounded_full, a.p_md]
     : null
 
   return (
