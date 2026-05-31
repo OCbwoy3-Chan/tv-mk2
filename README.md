@@ -25,6 +25,7 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - Open posts in PDSls and original fedi-bridged pages
 - You can delete and redraft (basically edit!) posts
 - Better defaults (alt text required 😉 autoplay off 🫨)
+- Read your chat threads with deleted/deactivated accounts
 - More unique repost icons
 - Can download videos
 - Stay on a page when switching accounts
@@ -76,6 +77,7 @@ These are all available as options in the Runes sub-page of the app's settings.
   - Redirect through go.bsky.app
   - Disable similar accounts recommendations
   - Hide follow button on posts and scrolled profile header
+  - Confirm before following or unfollowing
   - Disable verify email reminder
 - Display
   - Also liked

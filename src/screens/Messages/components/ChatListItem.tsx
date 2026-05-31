@@ -1,5 +1,5 @@
 import {useCallback, useMemo, useState} from 'react'
-import {type GestureResponderEvent, View} from 'react-native'
+import {View} from 'react-native'
 import {
   ChatBskyConvoDefs,
   moderateProfile,
@@ -152,7 +152,7 @@ function DirectChatItem({
       accessibilityHint={
         !isDeletedAccount
           ? l`Go to conversation with ${profile.handle}`
-          : l`This conversation is with a deleted or a deactivated account. Press for options`
+          : l`Go to conversation with a deleted or a deactivated account`
       }
       showMenu={showMenu}
       selected={selected}
@@ -388,23 +388,14 @@ function BaseChatItem({
     setShowActions(true)
   }, [])
 
-  const onPress = useCallback(
-    (e: GestureResponderEvent) => {
-      for (const member of convo.view.members) {
-        unstableCacheProfileView(queryClient, member)
-      }
-      precacheConvoQuery(queryClient, convo.view)
-      void decrementBadgeCount(convo.view.unreadCount)
-      if (isDeletedAccount) {
-        e.preventDefault()
-        menuControl.open()
-        return false
-      } else {
-        ax.metric('chat:open', {logContext: 'ChatsList'})
-      }
-    },
-    [ax, isDeletedAccount, menuControl, queryClient, convo],
-  )
+  const onPress = useCallback(() => {
+    for (const member of convo.view.members) {
+      unstableCacheProfileView(queryClient, member)
+    }
+    precacheConvoQuery(queryClient, convo.view)
+    void decrementBadgeCount(convo.view.unreadCount)
+    ax.metric('chat:open', {logContext: 'ChatsList'})
+  }, [ax, queryClient, convo])
 
   const onLongPress = useCallback(() => {
     playHaptic()
