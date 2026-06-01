@@ -17,6 +17,7 @@ import {
   useEnableSquareAvatars,
   useSetEnableSquareAvatars,
 } from '#/state/preferences/enable-square-avatars'
+import {useCompactPosts, useSetCompactPosts} from '#/state/preferences'
 import {
   useEnableSquareButtons,
   useSetEnableSquareButtons,
@@ -35,6 +36,7 @@ import {Person_Stroke2_Corner0_Rounded as PersonIcon} from '#/components/icons/P
 import {Phone_Stroke2_Corner0_Rounded as PhoneIcon} from '#/components/icons/Phone'
 import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
 import {TextSize_Stroke2_Corner0_Rounded as TextSize} from '#/components/icons/TextSize'
+import {Tree_Stroke2_Corner0_Rounded as TreeIcon} from '#/components/icons/Tree'
 import {TitleCase_Stroke2_Corner0_Rounded as Aa} from '#/components/icons/TitleCase'
 import {Window_Stroke2_Corner2_Rounded as SquareIcon} from '#/components/icons/Window'
 import * as Layout from '#/components/Layout'
@@ -57,6 +59,8 @@ export function AppearanceSettingsScreen({}: Props) {
 
   const enableSquareAvatars = useEnableSquareAvatars()
   const setEnableSquareAvatars = useSetEnableSquareAvatars()
+  const compactPosts = useCompactPosts()
+  const setCompactPosts = useSetCompactPosts()
 
   const enableSquareButtons = useEnableSquareButtons()
   const setEnableSquareButtons = useSetEnableSquareButtons()
@@ -211,6 +215,19 @@ export function AppearanceSettingsScreen({}: Props) {
                 value={fonts.scale}
                 onChange={onChangeFontScale}
               />
+              <Toggle.Item
+                name="compact_posts"
+                label={_(msg`Use compact view for posts`)}
+                value={compactPosts}
+                onChange={value => setCompactPosts(value)}>
+                <SettingsList.Item>
+                  <SettingsList.ItemIcon icon={TreeIcon} />
+                  <SettingsList.ItemText>
+                    <Trans>Use compact view for posts</Trans>
+                  </SettingsList.ItemText>
+                  <Toggle.Platform />
+                </SettingsList.Item>
+              </Toggle.Item>
 
               <SettingsList.Divider />
 

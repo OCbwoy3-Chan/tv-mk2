@@ -26,6 +26,7 @@ import {useFeedFeedbackContext} from '#/state/feed-feedback'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
+import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {
   buildPostSourceKey,
   setUnstablePostSource,
@@ -174,6 +175,7 @@ let FeedItemInner = ({
   const pal = usePalette('default')
   const t = useTheme()
   const {currentAccount} = useSession()
+  const compactPosts = useCompactPosts()
 
   const [hover, setHover] = useState(false)
 
@@ -273,9 +275,12 @@ let FeedItemInner = ({
     styles.outer,
     {
       borderColor: pal.colors.border,
+      paddingTop: compactPosts ? 2 : undefined,
       paddingBottom:
         isThreadLastChild || (!isThreadChild && !isThreadParent)
-          ? 8
+          ? compactPosts
+            ? 2
+            : 8
           : undefined,
       borderTopWidth:
         hideTopBorder || isThreadChild ? 0 : StyleSheet.hairlineWidth,
@@ -345,7 +350,12 @@ let FeedItemInner = ({
           setHover(false)
         }}>
         <SubtleHover hover={hover} />
-        <View style={{flexDirection: 'row', gap: 10, paddingLeft: 8}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            gap: compactPosts ? 8 : 10,
+            paddingLeft: compactPosts ? 6 : 8,
+          }}>
           <View style={{width: isCarouselItem ? 0 : 42}}>
             {isThreadChild && (
               <View
@@ -364,7 +374,7 @@ let FeedItemInner = ({
             )}
           </View>
 
-          <View style={[a.pt_sm, a.flex_shrink]}>
+          <View style={[compactPosts ? a.pt_2xs : a.pt_sm, a.flex_shrink]}>
             {reason && (
               <PostFeedReason
                 reason={reason}
@@ -376,10 +386,10 @@ let FeedItemInner = ({
         </View>
 
         <View style={styles.layout}>
-          <View style={styles.layoutAvi}>
+          <View style={[styles.layoutAvi, compactPosts && styles.layoutAviCompact]}>
             <AviFollowButton author={post.author} moderation={moderation}>
               <PreviewableUserAvatar
-                size={42}
+                size={compactPosts ? 34 : 42}
                 profile={post.author}
                 moderation={moderation.ui('avatar')}
                 type={post.author.associated?.labeler ? 'labeler' : 'user'}
@@ -429,6 +439,7 @@ let FeedItemInner = ({
               )}
             <LabelsOnMyPost post={post} />
             <PostContent
+              compactPosts={!!compactPosts}
               moderation={moderation}
               richText={richText}
               postEmbed={post.embed}
@@ -438,6 +449,7 @@ let FeedItemInner = ({
               additionalPostAlerts={additionalPostAlerts}
             />
             <PostControls
+              variant={compactPosts ? 'compact' : undefined}
               post={post}
               record={record}
               richText={richText}
@@ -460,6 +472,7 @@ let FeedItemInner = ({
 FeedItemInner = memo(FeedItemInner)
 
 let PostContent = ({
+  compactPosts,
   post,
   moderation,
   richText,
@@ -468,6 +481,7 @@ let PostContent = ({
   onOpenEmbed,
   additionalPostAlerts,
 }: {
+  compactPosts: boolean
   moderation: ModerationDecision
   richText: RichTextAPI
   postEmbed: AppBskyFeedDefs.PostView['embed']
@@ -497,7 +511,10 @@ let PostContent = ({
       testID="contentHider-post"
       modui={moderation.ui('contentList')}
       ignoreMute
-      childContainerStyle={styles.contentHiderChild}>
+      childContainerStyle={[
+        styles.contentHiderChild,
+        compactPosts && styles.contentHiderChildCompact,
+      ]}>
       <PostAlerts
         modui={moderation.ui('contentList')}
         style={[a.pb_xs]}
@@ -563,6 +580,10 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
     paddingRight: 10,
   },
+  layoutAviCompact: {
+    paddingLeft: 6,
+    paddingRight: 8,
+  },
   layoutContent: {
     flex: 1,
   },
@@ -572,6 +593,9 @@ const styles = StyleSheet.create({
   },
   contentHiderChild: {
     marginTop: 6,
+  },
+  contentHiderChildCompact: {
+    marginTop: 2,
   },
   embed: {
     marginBottom: 6,

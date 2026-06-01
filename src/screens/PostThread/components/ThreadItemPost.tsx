@@ -18,6 +18,7 @@ import {
   usePostShadow,
 } from '#/state/cache/post-shadow'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
+import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
@@ -92,7 +93,11 @@ function ThreadItemPostDeleted({
 
   return (
     <ThreadItemPostOuterWrapper item={item} overrides={overrides}>
-      <ThreadItemPostParentReplyLine item={item} />
+      <ThreadItemPostParentReplyLine
+        item={item}
+        avatarSize={LINEAR_AVI_WIDTH}
+        compactPosts={false}
+      />
 
       <View
         style={[
@@ -132,6 +137,7 @@ const ThreadItemPostOuterWrapper = memo(function ThreadItemPostOuterWrapper({
   children: ReactNode
 }) {
   const t = useTheme()
+  const compactPosts = useCompactPosts()
   const showTopBorder =
     !item.ui.showParentReplyLine && overrides?.topBorder !== true
 
@@ -140,11 +146,11 @@ const ThreadItemPostOuterWrapper = memo(function ThreadItemPostOuterWrapper({
       <View
         style={[
           showTopBorder && [a.border_t, t.atoms.border_contrast_low],
-          {paddingHorizontal: OUTER_SPACE},
+          {paddingHorizontal: compactPosts ? OUTER_SPACE - 2 : OUTER_SPACE},
           // If there's no next child, add a little padding to bottom
           !item.ui.showChildReplyLine &&
             !item.ui.precedesChildReadMore && {
-              paddingBottom: OUTER_SPACE / 2,
+              paddingBottom: compactPosts ? OUTER_SPACE / 3 : OUTER_SPACE / 2,
             },
         ]}>
         {children}
@@ -159,17 +165,23 @@ const ThreadItemPostOuterWrapper = memo(function ThreadItemPostOuterWrapper({
 const ThreadItemPostParentReplyLine = memo(
   function ThreadItemPostParentReplyLine({
     item,
-  }: Pick<ThreadItemPostProps, 'item'>) {
+    avatarSize,
+    compactPosts,
+  }: {
+    item: Extract<ThreadItem, {type: 'threadPost'}>
+    avatarSize: number
+    compactPosts: boolean
+  }) {
     const t = useTheme()
     return (
-      <View style={[a.flex_row, {height: 12}]}>
-        <View style={{width: LINEAR_AVI_WIDTH}}>
+      <View style={[a.flex_row, {height: compactPosts ? 8 : 12}]}>
+        <View style={{width: avatarSize}}>
           {item.ui.showParentReplyLine && (
             <View
               style={[
                 a.mx_auto,
                 a.flex_1,
-                a.mb_xs,
+                compactPosts ? a.mb_2xs : a.mb_xs,
                 {
                   width: REPLY_LINE_WIDTH,
                   backgroundColor: t.atoms.border_contrast_low.borderColor,
@@ -195,6 +207,8 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   const t = useTheme()
   const {openComposer} = useOpenComposer()
   const {currentAccount} = useSession()
+  const compactPosts = useCompactPosts()
+  const avatarSize = compactPosts ? 34 : LINEAR_AVI_WIDTH
 
   const post = item.value.post
   const record = item.value.post.record
@@ -264,16 +278,20 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
           disabled={overrides?.moderation === true}
           modui={moderation.ui('contentList')}
           hiderStyle={[a.pl_0, a.pr_2xs, a.bg_transparent]}
-          iconSize={LINEAR_AVI_WIDTH}
+          iconSize={avatarSize}
           iconStyles={[a.mr_xs]}
           profile={post.author}
           interpretFilterAsBlur>
-          <ThreadItemPostParentReplyLine item={item} />
+          <ThreadItemPostParentReplyLine
+            item={item}
+            avatarSize={avatarSize}
+            compactPosts={!!compactPosts}
+          />
 
-          <View style={[a.flex_row, a.gap_md]}>
+          <View style={[a.flex_row, compactPosts ? a.gap_sm : a.gap_md]}>
             <View>
               <PreviewableUserAvatar
-                size={LINEAR_AVI_WIDTH}
+                size={avatarSize}
                 profile={post.author}
                 moderation={moderation.ui('avatar')}
                 type={post.author.associated?.labeler ? 'labeler' : 'user'}
@@ -285,7 +303,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                 <View
                   style={[
                     a.mx_auto,
-                    a.mt_xs,
+                    compactPosts ? a.mt_2xs : a.mt_xs,
                     a.flex_1,
                     {
                       width: REPLY_LINE_WIDTH,
@@ -303,7 +321,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                 timestamp={post.indexedAt}
                 postHref={postHref}
                 style={[
-                  a.pb_xs,
+                  compactPosts ? a.pb_0 : a.pb_xs,
                   maybeApplyGalleryOffsetStyles('meta', {
                     post,
                     modui: moderation.ui('contentList'),
@@ -311,7 +329,10 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                   }),
                 ]}
               />
-              <LabelsOnMyPost post={post} style={[a.pb_xs]} />
+              <LabelsOnMyPost
+                post={post}
+                style={[compactPosts ? a.pb_2xs : a.pb_xs]}
+              />
               <PostAlerts
                 modui={moderation.ui('contentList')}
                 style={[a.pb_2xs]}
@@ -354,6 +375,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                 </View>
               )}
               <PostControls
+                variant={compactPosts ? 'compact' : undefined}
                 post={postShadow}
                 record={record}
                 richText={richText}

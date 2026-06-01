@@ -65,6 +65,7 @@ export const SYNCED_PREFS_KEYS = [
   'hideScaryFollowButtons',
   'confirmFollowUnfollow',
   'discoverContextEnabled',
+  'compactPosts',
   'enableSquareAvatars',
   'enableSquareButtons',
   'useCompactAccountSwitcher',

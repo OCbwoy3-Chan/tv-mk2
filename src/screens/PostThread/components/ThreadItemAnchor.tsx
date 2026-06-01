@@ -26,6 +26,7 @@ import {useDisableLikesMetrics} from '#/state/preferences/disable-likes-metrics'
 import {useDisableQuotesMetrics} from '#/state/preferences/disable-quotes-metrics'
 import {useDisableRepostsMetrics} from '#/state/preferences/disable-reposts-metrics'
 import {useDisableSavesMetrics} from '#/state/preferences/disable-saves-metrics'
+import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
@@ -145,12 +146,28 @@ function ThreadItemAnchorDeleted({isRoot}: {isRoot: boolean}) {
   )
 }
 
-function ThreadItemAnchorParentReplyLine({isRoot}: {isRoot: boolean}) {
+function ThreadItemAnchorParentReplyLine({
+  isRoot,
+  compactPosts = false,
+}: {
+  isRoot: boolean
+  compactPosts?: boolean
+}) {
   const t = useTheme()
+  const avatarSize = compactPosts ? 34 : 42
+  const sidePadding = compactPosts ? OUTER_SPACE - 2 : OUTER_SPACE
 
   return !isRoot ? (
-    <View style={[a.pl_lg, a.flex_row, a.pb_xs, {height: a.pt_lg.paddingTop}]}>
-      <View style={{width: 42}}>
+    <View
+      style={[
+        a.flex_row,
+        compactPosts ? a.pb_2xs : a.pb_xs,
+        {
+          paddingLeft: sidePadding,
+          height: compactPosts ? a.pt_md.paddingTop : a.pt_lg.paddingTop,
+        },
+      ]}>
+      <View style={{width: avatarSize}}>
         <View
           style={[
             {
@@ -189,6 +206,10 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const {currentAccount, hasSession} = useSession()
   const feedFeedback = useFeedFeedback(postSource?.feedSourceInfo, hasSession)
   const formatPostStatCount = useFormatPostStatCount()
+  const compactPosts = useCompactPosts()
+  const isCompactPosts = !!compactPosts
+  const avatarSize = isCompactPosts ? 34 : 42
+  const sidePadding = isCompactPosts ? OUTER_SPACE - 2 : OUTER_SPACE
 
   const post = postShadow
   const record = item.value.post.record
@@ -206,6 +227,12 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 
   const threadRootUri = record.reply?.root?.uri || post.uri
   const authorHref = makeProfileLink(post.author)
+  const displayName = sanitizeDisplayName(
+    post.author.displayName || sanitizeHandle(post.author.handle),
+    moderation.ui('displayName'),
+  )
+  const isAllLowercaseDisplayName =
+    displayName === displayName.toLowerCase() && /[a-z]/.test(displayName)
   const isThreadAuthor = getThreadAuthor(post, record) === currentAccount?.did
 
   // disable metrics
@@ -325,20 +352,29 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 
   return (
     <>
-      <ThreadItemAnchorParentReplyLine isRoot={isRoot} />
+      <ThreadItemAnchorParentReplyLine
+        isRoot={isRoot}
+        compactPosts={isCompactPosts}
+      />
       <GalleryBleed>
         <View
           testID={`postThreadItem-by-${post.author.handle}`}
           style={[
             {
-              paddingHorizontal: OUTER_SPACE,
+              paddingHorizontal: sidePadding,
             },
-            isRoot && [a.pt_lg],
+            isRoot && [isCompactPosts ? a.pt_md : a.pt_lg],
           ]}>
-          <View style={[a.flex_row, a.gap_md, a.pb_md]}>
+          <View
+            style={[
+              a.flex_row,
+              a.align_start,
+              isCompactPosts ? a.gap_sm : a.gap_md,
+              isCompactPosts ? a.pb_sm : a.pb_md,
+            ]}>
             <View collapsable={false}>
               <PreviewableUserAvatar
-                size={42}
+                size={avatarSize}
                 profile={post.author}
                 moderation={moderation.ui('avatar')}
                 type={post.author.associated?.labeler ? 'labeler' : 'user'}
@@ -348,11 +384,13 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
             </View>
             <Link
               to={authorHref}
-              style={[a.flex_1]}
-              label={sanitizeDisplayName(
-                post.author.displayName || sanitizeHandle(post.author.handle),
-                moderation.ui('displayName'),
-              )}
+              style={[
+                a.flex_1,
+                isCompactPosts && {
+                  marginTop: isAllLowercaseDisplayName ? -4 : -3,
+                },
+              ]}
+              label={displayName}
               onPress={onOpenAuthor}>
               <View style={[a.flex_1, a.align_start]}>
                 <ProfileHoverCard did={post.author.did} style={[a.w_full]}>
@@ -361,20 +399,22 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       emoji
                       style={[
                         a.flex_shrink,
-                        a.text_lg,
+                        isCompactPosts ? a.text_md : a.text_lg,
                         a.font_semi_bold,
                         a.leading_snug,
                       ]}
                       numberOfLines={1}>
-                      {sanitizeDisplayName(
-                        post.author.displayName ||
-                          sanitizeHandle(post.author.handle),
-                        moderation.ui('displayName'),
-                      )}
+                      {displayName}
                     </Text>
 
                     <View
-                      style={[a.pl_xs, a.flex_row, a.gap_2xs, a.align_center]}>
+                      style={[
+                        a.pl_xs,
+                        a.flex_row,
+                        a.gap_2xs,
+                        a.align_center,
+                        isCompactPosts && {marginTop: 1},
+                      ]}>
                       <ProfileBadges
                         profile={authorShadow}
                         size="md"
@@ -384,7 +424,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   </View>
                   <Text
                     style={[
-                      a.text_md,
+                      isCompactPosts ? a.text_sm : a.text_md,
                       a.leading_snug,
                       t.atoms.text_contrast_medium,
                     ]}
@@ -394,24 +434,27 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                 </ProfileHoverCard>
               </View>
             </Link>
-            <View collapsable={false} style={[a.self_center]}>
+            <View collapsable={false} style={[a.self_start]}>
               <ThreadItemAnchorFollowButton
                 did={post.author.did}
                 enabled={showFollowButton}
               />
             </View>
           </View>
-          <View style={[a.pb_sm]}>
-            <LabelsOnMyPost post={post} style={[a.pb_sm]} />
+          <View style={[isCompactPosts ? a.pb_2xs : a.pb_sm]}>
+            <LabelsOnMyPost
+              post={post}
+              style={[isCompactPosts ? a.pb_2xs : a.pb_sm]}
+            />
             <ContentHider
               modui={moderation.ui('contentView')}
               ignoreMute
-              childContainerStyle={[a.pt_sm]}>
+              childContainerStyle={[isCompactPosts ? a.pt_2xs : a.pt_sm]}>
               <PostAlerts
                 modui={moderation.ui('contentView')}
-                size="lg"
+                size={isCompactPosts ? 'sm' : 'lg'}
                 includeMute
-                style={[a.pb_sm]}
+                style={[isCompactPosts ? a.pb_2xs : a.pb_sm]}
                 additionalCauses={additionalPostAlerts}
               />
               {richText?.text ? (
@@ -419,14 +462,20 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   enableTags
                   selectable
                   value={richText}
-                  style={[a.flex_1, a.text_lg]}
+                  style={[a.flex_1, isCompactPosts ? a.text_md : a.text_lg]}
                   authorHandle={post.author.handle}
                   shouldProxyLinks={true}
                 />
               ) : undefined}
-              <TranslatedPost post={post} postTextStyle={[a.text_lg]} />
+              <TranslatedPost
+                post={post}
+                postTextStyle={[isCompactPosts ? a.text_md : a.text_lg]}
+              />
               {post.embed && (
-                <View style={[richText?.text ? a.py_xs : []]}>
+                <View
+                  style={[
+                    richText?.text ? (isCompactPosts ? a.py_2xs : a.py_xs) : [],
+                  ]}>
                   <Embed
                     embed={post.embed}
                     moderation={moderation}
@@ -439,6 +488,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
             <ExpandedPostDetails
               post={item.value.post}
               isThreadAuthor={isThreadAuthor}
+              compactPosts={isCompactPosts}
             />
             {(post.repostCount !== 0 && !disableRepostsMetrics) ||
             (post.likeCount !== 0 && !disableLikesMetrics) ||
@@ -456,8 +506,8 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   },
                   a.border_t,
                   a.border_b,
-                  a.mt_md,
-                  a.py_md,
+                  isCompactPosts ? a.mt_sm : a.mt_md,
+                  isCompactPosts ? a.py_sm : a.py_md,
                   t.atoms.border_contrast_low,
                 ]}>
                 {post.repostCount != null &&
@@ -546,15 +596,16 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
             ) : null}
             <View
               style={[
-                a.pt_sm,
+                isCompactPosts ? a.pt_2xs : a.pt_sm,
                 a.pb_2xs,
-                {
+                !isCompactPosts && {
                   marginLeft: -5,
                 },
               ]}>
               <FeedFeedbackProvider value={feedFeedback}>
                 <PostControls
-                  big
+                  big={!isCompactPosts}
+                  variant={isCompactPosts ? 'compact' : undefined}
                   post={postShadow}
                   record={record}
                   richText={richText}
@@ -578,9 +629,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 function ExpandedPostDetails({
   post,
   isThreadAuthor,
+  compactPosts,
 }: {
   post: Extract<ThreadItem, {type: 'threadPost'}>['value']['post']
   isThreadAuthor: boolean
+  compactPosts: boolean
 }) {
   const t = useTheme()
   const {i18n} = useLingui()
@@ -589,7 +642,12 @@ function ExpandedPostDetails({
   const via = post.record.via as string | undefined
 
   return (
-    <View style={[a.gap_md, a.pt_md, a.align_start]}>
+    <View
+      style={[
+        compactPosts ? a.gap_sm : a.gap_md,
+        compactPosts ? a.pt_sm : a.pt_md,
+        a.align_start,
+      ]}>
       <BackdatedPostIndicator post={post} />
       <View style={[a.flex_row, a.align_center, a.flex_wrap, a.gap_sm]}>
         <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>

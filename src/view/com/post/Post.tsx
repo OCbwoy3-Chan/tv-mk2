@@ -20,6 +20,7 @@ import {
   usePostShadow,
 } from '#/state/cache/post-shadow'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {Link} from '#/view/com/util/Link'
 import {PostMeta} from '#/view/com/util/PostMeta'
@@ -120,6 +121,7 @@ function PostInner({
   const queryClient = useQueryClient()
   const t = useTheme()
   const {openComposer} = useOpenComposer()
+  const compactPosts = useCompactPosts()
   const [limitLines, setLimitLines] = useState(
     () => countLines(richText?.text) >= MAX_POST_LINES,
   )
@@ -165,6 +167,7 @@ function PostInner({
           styles.outer,
           t.atoms.border_contrast_low,
           !hideTopBorder && a.border_t,
+          compactPosts && styles.outerCompact,
           style,
         ]}
         onBeforePress={onBeforePress}
@@ -193,7 +196,7 @@ function PostInner({
           <View style={styles.layoutAvi}>
             <AviFollowButton author={post.author} moderation={moderation}>
               <PreviewableUserAvatar
-                size={42}
+                size={compactPosts ? 34 : 42}
                 profile={post.author}
                 moderation={moderation.ui('avatar')}
                 type={post.author.associated?.labeler ? 'labeler' : 'user'}
@@ -263,6 +266,7 @@ function PostInner({
               ) : null}
             </ContentHider>
             <PostControls
+              variant={compactPosts ? 'compact' : undefined}
               post={post}
               record={record}
               richText={richText}
@@ -284,6 +288,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     // @ts-ignore web only -prf
     cursor: 'pointer',
+  },
+  outerCompact: {
+    paddingTop: 6,
+    paddingBottom: 3,
   },
   layout: {
     flexDirection: 'row',
