@@ -109,7 +109,7 @@ export function TabBar({
               ref={node => {
                 itemRefs.current[i] = node as any
               }}
-              style={styles.item}
+              style={[styles.item, a.rounded_sm]}
               hoverStyle={t.atoms.bg_contrast_25}
               onPress={() => onPressItem(i)}
               accessibilityRole="tab">

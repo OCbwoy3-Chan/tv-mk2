@@ -425,7 +425,7 @@ function TabBarItem({
     <View onLayout={handleLayout} style={{flexGrow: 1}}>
       <PressableWithHover
         testID={`${testID}-selector-${index}`}
-        style={styles.item}
+        style={[styles.item, a.rounded_sm]}
         hoverStyle={t.atoms.bg_contrast_25}
         onPress={() => onPressItem(index)}
         accessibilityRole="tab">
