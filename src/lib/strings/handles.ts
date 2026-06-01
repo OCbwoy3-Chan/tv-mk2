@@ -29,6 +29,17 @@ export function isInvalidHandle(handle: string): boolean {
   return handle === 'handle.invalid'
 }
 
+export function profileIdentifier(info: {did: string; handle: string}): string {
+  if (
+    info.handle &&
+    !isInvalidHandle(info.handle) &&
+    isValidHandle(info.handle)
+  ) {
+    return info.handle
+  }
+  return info.did
+}
+
 export function sanitizeHandle(
   handle: string,
   prefix = '',

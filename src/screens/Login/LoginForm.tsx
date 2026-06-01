@@ -23,7 +23,7 @@ import {useSetHasCheckedForStarterPack} from '#/state/preferences/used-starter-p
 import {useSessionApi} from '#/state/session'
 import {getNativeOAuthClient} from '#/state/session/oauth-native-client'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
-import {atoms as a, ios, useTheme} from '#/alf'
+import {atoms as a, ios, native, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {FormError} from '#/components/forms/FormError'
 import {HostingProvider} from '#/components/forms/HostingProvider'
@@ -34,6 +34,7 @@ import {Ticket_Stroke2_Corner0_Rounded as Ticket} from '#/components/icons/Ticke
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {IS_IOS} from '#/env'
+import {HandleAutocompleteInput} from './components/HandleAutocompleteInput'
 import {FormContainer} from './FormContainer'
 
 type ServiceDescription = ComAtprotoServerDescribeServer.OutputSchema
@@ -245,35 +246,20 @@ function OAuthLoginFields({
 
   return (
     <>
-      <View>
+      <View style={[a.relative, a.z_20, native({overflow: 'visible'})]}>
         <TextField.LabelText>
           <Trans>Account</Trans>
         </TextField.LabelText>
-        <View style={[a.gap_sm]}>
-          <TextField.Root>
-            <TextField.Icon icon={At} />
-            <TextField.Input
-              testID="loginUsernameInput"
-              label={_(msg`Username or handle`)}
-              autoCapitalize="none"
-              autoFocus={!IS_IOS}
-              autoCorrect={false}
-              autoComplete="username"
-              returnKeyType="done"
-              textContentType="username"
-              defaultValue={initialHandle || ''}
-              onChangeText={v => {
-                identifierValueRef.current = v
-              }}
-              onSubmitEditing={onPressNext}
-              blurOnSubmit={false}
-              editable={!isProcessing}
-              accessibilityHint={_(
-                msg`Enter your handle (e.g. alice.bsky.social)`,
-              )}
-            />
-          </TextField.Root>
-        </View>
+        <HandleAutocompleteInput
+          initialValue={initialHandle || ''}
+          label={_(msg`Handle, DID, or PDS address`)}
+          autoFocus={!IS_IOS}
+          editable={!isProcessing}
+          onValueChange={v => {
+            identifierValueRef.current = v
+          }}
+          onSubmit={onPressNext}
+        />
       </View>
       <FormError error={error} />
       <View style={[a.pt_md]}>

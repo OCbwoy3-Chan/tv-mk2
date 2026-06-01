@@ -1,6 +1,6 @@
 import {type AppBskyGraphDefs, AtUri} from '@atproto/api'
 
-import {isInvalidHandle, isValidHandle} from '#/lib/strings/handles'
+import {profileIdentifier} from '#/lib/strings/handles'
 import * as persisted from '#/state/persisted'
 
 export function makeProfileLink(
@@ -11,13 +11,7 @@ export function makeProfileLink(
   ...segments: string[]
 ) {
   const useHandle = persisted.get('useHandleInLinks') ?? false
-  const identifier =
-    useHandle &&
-    info.handle &&
-    !isInvalidHandle(info.handle) &&
-    isValidHandle(info.handle)
-      ? info.handle
-      : info.did
+  const identifier = useHandle ? profileIdentifier(info) : info.did
   return [`/profile`, identifier, ...segments].join('/')
 }
 

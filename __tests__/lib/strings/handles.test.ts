@@ -1,4 +1,28 @@
-import {type IsValidHandle, validateServiceHandle} from '#/lib/strings/handles'
+import {
+  type IsValidHandle,
+  profileIdentifier,
+  validateServiceHandle,
+} from '#/lib/strings/handles'
+
+describe('profileIdentifier', () => {
+  it('returns handle when valid', () => {
+    expect(
+      profileIdentifier({did: 'did:plc:abc', handle: 'alice.bsky.social'}),
+    ).toBe('alice.bsky.social')
+  })
+
+  it('returns did for handle.invalid', () => {
+    expect(
+      profileIdentifier({did: 'did:plc:abc', handle: 'handle.invalid'}),
+    ).toBe('did:plc:abc')
+  })
+
+  it('returns did for malformed handles', () => {
+    expect(profileIdentifier({did: 'did:plc:abc', handle: 'not a handle'})).toBe(
+      'did:plc:abc',
+    )
+  })
+})
 
 describe('handle validation', () => {
   const valid = [
