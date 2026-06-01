@@ -7,6 +7,7 @@ import {
   type PropsWithChildren,
   type RefObject,
   useContext,
+  useCallback,
   useMemo,
   useRef,
 } from 'react'
@@ -38,6 +39,46 @@ import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
+
+function getTabbableElements(container: HTMLElement) {
+  const nodes: HTMLElement[] = []
+  const walker = document.createTreeWalker(
+    container,
+    NodeFilter.SHOW_ELEMENT,
+    {
+      acceptNode: node => {
+        if (!(node instanceof HTMLElement)) return NodeFilter.FILTER_SKIP
+        if (
+          node.tagName === 'INPUT' &&
+          (node as HTMLInputElement).type === 'hidden'
+        ) {
+          return NodeFilter.FILTER_SKIP
+        }
+        if (node.disabled || node.hidden) return NodeFilter.FILTER_SKIP
+        return node.tabIndex >= 0
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP
+      },
+    },
+  )
+  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement)
+  return nodes
+}
+
+function focusTabSibling(from: HTMLElement, reverse: boolean) {
+  const root =
+    (from.closest('[role="dialog"]') as HTMLElement | null) ??
+    document.body
+  const tabbables = getTabbableElements(root)
+  const active = document.activeElement as HTMLElement | null
+  let index = active ? tabbables.indexOf(active) : -1
+  if (index === -1) index = tabbables.indexOf(from)
+  if (index === -1) return
+  const nextIndex = reverse
+    ? (index - 1 + tabbables.length) % tabbables.length
+    : (index + 1) % tabbables.length
+  tabbables[nextIndex]?.focus()
+}
 
 const Context = createContext<{
   inputRef: RefObject<TextInput | null> | null
@@ -228,6 +269,36 @@ export function createInput(Component: typeof TextInput) {
 
     const refs = mergeRefs([ctx.inputRef, inputRef!].filter(Boolean))
 
+    const tabListenerRef = useRef<{
+      el: HTMLElement
+      handler: (e: KeyboardEvent) => void
+    } | null>(null)
+
+    const attachTabHandler = useCallback(
+      (node: TextInput | null) => {
+        if (tabListenerRef.current) {
+          tabListenerRef.current.el.removeEventListener(
+            'keydown',
+            tabListenerRef.current.handler,
+          )
+          tabListenerRef.current = null
+        }
+        if (!IS_WEB || !rest.multiline || !node) return
+
+        const el = node as unknown as HTMLElement
+        const handler = (e: KeyboardEvent) => {
+          if (e.key !== 'Tab') return
+          e.preventDefault()
+          focusTabSibling(el, e.shiftKey)
+        }
+        el.addEventListener('keydown', handler)
+        tabListenerRef.current = {el, handler}
+      },
+      [rest.multiline],
+    )
+
+    const inputRefs = mergeRefs([refs, attachTabHandler])
+
     const flattened = StyleSheet.flatten([
       a.relative,
       a.z_20,
@@ -290,7 +361,7 @@ export function createInput(Component: typeof TextInput) {
           selectionHandleColor={t.palette.primary_500}
           {...rest}
           accessibilityLabel={label}
-          ref={refs}
+          ref={inputRefs}
           value={value}
           onChangeText={onChangeText}
           onFocus={e => {
