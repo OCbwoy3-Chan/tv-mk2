@@ -1,4 +1,4 @@
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {Children, cloneElement, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   Animated,
   type GestureResponderEvent,
@@ -244,30 +244,29 @@ let NotificationFeedItem = ({
 
   const firstAuthorLink = (
     <ProfileHoverCard did={firstAuthor.profile.did} inline>
-      <InlineLinkText
-        key={firstAuthor.href}
-        style={[t.atoms.text, a.font_semi_bold, a.text_md, a.leading_tight]}
-        to={firstAuthor.href}
-        disableMismatchWarning
-        emoji
-        label={_(msg`Go to ${firstAuthorName}'s profile`)}>
-        {forceLTR(firstAuthorName)}
+      <View style={[a.flex_row, a.align_center, a.flex_shrink]}>
+        <InlineLinkText
+          key={firstAuthor.href}
+          style={[t.atoms.text, a.font_semi_bold, a.text_md, a.leading_tight]}
+          to={firstAuthor.href}
+          disableMismatchWarning
+          emoji
+          label={_(msg`Go to ${firstAuthorName}'s profile`)}>
+          {forceLTR(firstAuthorName)}
+        </InlineLinkText>
         <ProfileBadges
           profile={firstAuthor.profile}
           size="md"
+          pdsInteractive={false}
           style={[
-            a.relative,
+            a.pl_2xs,
+            a.self_center,
             {
-              // weird stuff here
-              paddingTop: platform({android: 2}),
-              marginBottom: platform({ios: -6}),
-              top: platform({web: 2}),
-              paddingLeft: 3,
-              paddingRight: 2,
+              marginTop: platform({web: 1, ios: 0, android: -1}),
             },
           ]}
         />
-      </InlineLinkText>
+      </View>
     </ProfileHoverCard>
   )
   const additionalAuthorsCount = authors.length - 1
@@ -649,18 +648,16 @@ let NotificationFeedItem = ({
                 visible={isAuthorsExpanded}
                 authors={authors}
               />
-              <Text
+              <View
                 style={[
                   a.flex_row,
                   a.flex_wrap,
+                  a.align_center,
                   {paddingTop: 6},
                   a.self_start,
-                  a.text_md,
-                  a.leading_snug,
                 ]}
-                accessibilityHint=""
                 accessibilityLabel={a11yLabel}>
-                {notificationContent}
+                <NotificationContent content={notificationContent} />
                 <TimeElapsed timestamp={item.notification.indexedAt}>
                   {({timeElapsed}) => (
                     <>
@@ -677,7 +674,7 @@ let NotificationFeedItem = ({
                     </>
                   )}
                 </TimeElapsed>
-              </Text>
+              </View>
             </ExpandListPressable>
             {(item.type === 'follow' && !hasMultipleAuthors && !isFollowBack) ||
             (item.type === 'contact-match' &&
@@ -729,6 +726,47 @@ let NotificationFeedItem = ({
 }
 NotificationFeedItem = memo(NotificationFeedItem)
 export {NotificationFeedItem}
+
+function NotificationContent({
+  content,
+}: {
+  content: React.ReactElement<{component?: typeof NotificationSentence}>
+}) {
+  return cloneElement(content, {component: NotificationSentence})
+}
+
+function NotificationSentence({children}: {children: React.ReactNode}) {
+  const t = useTheme()
+  return (
+    <View style={[a.flex_row, a.flex_wrap, a.align_center, a.flex_shrink]}>
+      {renderInlineTransChildren(children, t)}
+    </View>
+  )
+}
+
+function renderInlineTransChildren(
+  children: React.ReactNode,
+  t: ReturnType<typeof useTheme>,
+): React.ReactNode {
+  return Children.map(children, (child, i) => {
+    if (typeof child === 'string') {
+      if (!child) {
+        return null
+      }
+      return (
+        <Text
+          key={`notification-str-${i}`}
+          style={[a.text_md, a.leading_snug, t.atoms.text]}>
+          {child}
+        </Text>
+      )
+    }
+    if (Array.isArray(child)) {
+      return renderInlineTransChildren(child, t)
+    }
+    return child
+  })
+}
 
 function ExpandListPressable({
   hasMultipleAuthors,
@@ -1040,6 +1078,7 @@ function ExpandedAuthorsList({
   authors: Author[]
 }) {
   const heightInterp = useAnimatedValue(visible ? 1 : 0)
+  const [shouldRenderAuthors, setShouldRenderAuthors] = useState(visible)
   const targetHeight =
     authors.length * (EXPANDED_AUTHOR_EL_HEIGHT + 10) /*10=margin*/
   const heightStyle = {
@@ -1052,10 +1091,18 @@ function ExpandedAuthorsList({
       useNativeDriver: false,
     }).start()
   }, [heightInterp, visible])
+  useEffect(() => {
+    if (visible) {
+      setShouldRenderAuthors(true)
+      return
+    }
+    const timeout = setTimeout(() => setShouldRenderAuthors(false), 200)
+    return () => clearTimeout(timeout)
+  }, [visible])
 
   return (
     <Animated.View style={[a.overflow_hidden, heightStyle]}>
-      {visible &&
+      {shouldRenderAuthors &&
         authors.map(author => (
           <ExpandedAuthorCard key={author.profile.did} author={author} />
         ))}
@@ -1104,6 +1151,7 @@ function ExpandedAuthorCard({author}: {author: Author}) {
           <ProfileBadges
             profile={author.profile}
             size="md"
+            pdsInteractive={false}
             style={[a.pl_2xs, a.self_center]}
           />
           <Text
