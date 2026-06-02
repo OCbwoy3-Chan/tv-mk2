@@ -17,10 +17,49 @@ import {type EmbedType} from '#/types/bsky/post'
 const RQKEY_ROOT = 'direct-fetch-record'
 export const RQKEY = (uri: string) => [RQKEY_ROOT, uri]
 
+export type DirectFetchUnavailableReason =
+  | 'repo_not_found'
+  | 'account_suspended'
+
+export type DirectFetchEmbedRecordResult =
+  | {
+      record: EmbedType<'post'>
+      unavailableReason?: undefined
+    }
+  | {
+      record?: undefined
+      unavailableReason: DirectFetchUnavailableReason
+    }
+
+function getErrorMessage(e: unknown) {
+  return e instanceof Error ? e.message : String(e)
+}
+
+function isRepoNotFoundError(e: unknown) {
+  const message = getErrorMessage(e)
+  return (
+    message.includes('Could not find repo:') ||
+    message.includes('Could not locate repo:')
+  )
+}
+
+function isAccountSuspendedError(e: unknown) {
+  return getErrorMessage(e).includes('Account has been suspended')
+}
+
 export async function directFetchRecordAndProfile(
   agent: BskyAgent,
   uri: string,
-) {
+): Promise<
+  | {
+      profile: AppBskyActorDefs.ProfileViewDetailed
+      record: unknown
+    }
+  | {
+      unavailableReason: DirectFetchUnavailableReason
+    }
+  | undefined
+> {
   const urip = new AtUri(uri)
 
   if (!urip.host.startsWith('did:')) {
@@ -56,6 +95,12 @@ export async function directFetchRecordAndProfile(
     return {profile, record}
   } catch (e) {
     console.error(e)
+    if (isRepoNotFoundError(e)) {
+      return {unavailableReason: 'repo_not_found'}
+    }
+    if (isAccountSuspendedError(e)) {
+      return {unavailableReason: 'account_suspended'}
+    }
     return undefined
   }
 }
@@ -63,22 +108,25 @@ export async function directFetchRecordAndProfile(
 export async function directFetchEmbedRecord(
   agent: BskyAgent,
   uri: string,
-): Promise<EmbedType<'post'> | undefined> {
+): Promise<DirectFetchEmbedRecordResult | undefined> {
   const res = await directFetchRecordAndProfile(agent, uri)
   if (res === undefined) return undefined
+  if ('unavailableReason' in res) return res
   const {profile, record} = res
 
   if (record && bsky.validate(record, AppBskyFeedPost.validateRecord)) {
     return {
-      type: 'post',
-      view: {
-        $type: 'app.bsky.embed.record#viewRecord',
-        uri,
-        author: profile as AppBskyActorDefs.ProfileViewBasic,
-        cid: 'directfetch',
-        value: record,
-        indexedAt: new Date().toISOString(),
-      } satisfies AppBskyEmbedRecord.ViewRecord,
+      record: {
+        type: 'post',
+        view: {
+          $type: 'app.bsky.embed.record#viewRecord',
+          uri,
+          author: profile as AppBskyActorDefs.ProfileViewBasic,
+          cid: 'directfetch',
+          value: record,
+          indexedAt: new Date().toISOString(),
+        } satisfies AppBskyEmbedRecord.ViewRecord,
+      },
     }
   } else {
     return undefined
@@ -93,7 +141,7 @@ export function useDirectFetchEmbedRecord({
   enabled?: boolean
 }) {
   const agent = useAgent()
-  return useQuery<EmbedType<'post'> | undefined>({
+  return useQuery<DirectFetchEmbedRecordResult | undefined>({
     staleTime: STALE.HOURS.ONE,
     queryKey: RQKEY(uri || ''),
     async queryFn() {
@@ -108,7 +156,7 @@ export async function directFetchPostRecord(
   uri: string,
 ): Promise<AppBskyFeedDefs.PostView | undefined> {
   const res = await directFetchRecordAndProfile(agent, uri)
-  if (res === undefined) return undefined
+  if (res === undefined || 'unavailableReason' in res) return undefined
   const {profile, record} = res
 
   if (record && bsky.validate(record, AppBskyFeedPost.validateRecord)) {

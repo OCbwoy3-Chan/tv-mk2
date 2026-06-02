@@ -210,7 +210,8 @@ function RecordEmbed({
       )
     }
     case 'post_blocked': {
-      const record = directRecord.data
+      const directFetchResult = directRecord.data
+      const record = directFetchResult?.record
       if (record !== undefined) {
         return (
           <DirectFetchEmbed
@@ -221,14 +222,24 @@ function RecordEmbed({
         )
       }
 
+      const directFetchPending = shouldDirectFetch && directRecord.isPending
+
       return (
-        <PostPlaceholderText directFetchEnabled={directFetchEnabled}>
-          <Trans>Blocked</Trans>
+        <PostPlaceholderText directFetchEnabled={directFetchPending}>
+          {directFetchResult?.unavailableReason === 'account_suspended' ? (
+            <Trans>Author account suspended</Trans>
+          ) : directFetchResult?.unavailableReason === 'repo_not_found' ? (
+            <Trans>Author account unavailable</Trans>
+          ) : shouldDirectFetch && !directFetchPending ? (
+            <Trans>Post unavailable</Trans>
+          ) : (
+            <Trans>Blocked</Trans>
+          )}
         </PostPlaceholderText>
       )
     }
     case 'post_detached': {
-      const record = directRecord.data
+      const record = directRecord.data?.record
       if (record !== undefined) {
         return (
           <DirectFetchEmbed
@@ -243,7 +254,7 @@ function RecordEmbed({
       return (
         <PostDetachedEmbed
           embed={embed}
-          directFetchEnabled={directFetchEnabled}
+          directFetchEnabled={shouldDirectFetch && directRecord.isPending}
         />
       )
     }
