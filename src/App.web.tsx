@@ -49,6 +49,7 @@ import {
 } from '#/state/session/util'
 import {Provider as ShellStateProvider} from '#/state/shell'
 import {Provider as ComposerProvider} from '#/state/shell/composer'
+import {Provider as LandingProvider} from '#/state/shell/landing'
 import {
   Provider as LoggedOutViewProvider,
   useLoggedOutViewControls,
@@ -56,13 +57,12 @@ import {
 import {Provider as OnboardingProvider} from '#/state/shell/onboarding'
 import {Provider as ProgressGuideProvider} from '#/state/shell/progress-guide'
 import {Provider as SelectedFeedProvider} from '#/state/shell/selected-feed'
-import {Provider as StarterPackProvider} from '#/state/shell/starter-pack'
 import {Provider as HiddenRepliesProvider} from '#/state/threadgate-hidden-replies'
 import {Shell} from '#/view/shell/index'
 import {ThemeProvider as Alf} from '#/alf'
 import {useColorModeTheme} from '#/alf/util/useColorModeTheme'
 import {Provider as ContextMenuProvider} from '#/components/ContextMenu'
-import {useStarterPackEntry} from '#/components/hooks/useStarterPackEntry'
+import {useLandingEntry} from '#/components/hooks/useLandingEntry'
 import {Provider as IntentDialogProvider} from '#/components/intents/IntentDialogs'
 import {Provider as LightboxStateProvider} from '#/components/Lightbox/state'
 import {Provider as PolicyUpdateOverlayProvider} from '#/components/PolicyUpdateOverlay'
@@ -127,7 +127,7 @@ function InnerApp() {
   const {requestSwitchToAccount, setShowLoggedOut} = useLoggedOutViewControls()
   const theme = useColorModeTheme()
   const {t: l} = useLingui()
-  const hasCheckedReferrer = useStarterPackEntry()
+  const hasCheckedLanding = useLandingEntry()
 
   // init
   useEffect(() => {
@@ -240,7 +240,7 @@ function InnerApp() {
     <Alf theme={theme}>
       <ThemeProvider theme={theme}>
         <ContextMenuProvider>
-          <Splash isReady={isReady && hasCheckedReferrer}>
+          <Splash isReady={isReady && hasCheckedLanding}>
             <VideoVolumeProvider>
               <ActiveVideoProvider>
                 <Fragment
@@ -343,9 +343,9 @@ function App() {
                           <DialogStateProvider>
                             <LightboxStateProvider>
                               <PortalProvider>
-                                <StarterPackProvider>
+                                <LandingProvider>
                                   <InnerApp />
-                                </StarterPackProvider>
+                                </LandingProvider>
                               </PortalProvider>
                             </LightboxStateProvider>
                           </DialogStateProvider>

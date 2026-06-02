@@ -350,7 +350,7 @@ function ListImpl<ItemT>(
         style,
         disableFullWindowScroll && {
           flex: 1,
-          overflowY: 'scroll',
+          overflowY: isWithinSplitView ? 'auto' : 'scroll',
         },
       ]}
       ref={nativeRef as unknown as React.RefObject<View>}>

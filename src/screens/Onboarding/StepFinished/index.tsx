@@ -29,11 +29,11 @@ import {RQKEY as profileRQKey} from '#/state/queries/profile'
 import {useAgent} from '#/state/session'
 import {pdsAgent} from '#/state/session/agent'
 import {useOnboardingDispatch} from '#/state/shell'
-import {useProgressGuideControls} from '#/state/shell/progress-guide'
 import {
   useActiveStarterPack,
   useSetActiveStarterPack,
-} from '#/state/shell/starter-pack'
+} from '#/state/shell/landing'
+import {useProgressGuideControls} from '#/state/shell/progress-guide'
 import {
   OnboardingControls,
   OnboardingHeaderSlot,

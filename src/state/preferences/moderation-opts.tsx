@@ -1,8 +1,6 @@
-import {createContext, useContext, useMemo} from 'react'
-import {type PropsWithChildren} from 'react'
-import {type ModerationOpts} from '@atproto/api'
+import {createContext, useContext, useMemo, type PropsWithChildren} from 'react'
+import {AtpAgent, type ModerationOpts} from '@atproto/api'
 
-import {getActiveAppLabelers} from '#/lib/moderation'
 import {useHiddenPosts, useLabelDefinitions} from '#/state/preferences'
 import {useIgnoredAppLabelers} from '#/state/preferences/ignored-app-labelers'
 import {DEFAULT_LOGGED_OUT_LABEL_PREFERENCES} from '#/state/queries/preferences/moderation'
@@ -49,7 +47,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
           ? moderationPrefs.labelers.filter(
               l => !ignoredAppLabelers.includes(l.did),
             )
-          : getActiveAppLabelers().map(did => ({
+          : AtpAgent.appLabelers.map(did => ({
               did,
               labels: DEFAULT_LOGGED_OUT_LABEL_PREFERENCES,
             })),

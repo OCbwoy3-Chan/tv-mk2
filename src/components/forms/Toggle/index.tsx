@@ -214,13 +214,12 @@ export function Item({
   )
 
   const highlightStyle = highlightRow
-    ? selected
-      ? [
-          enableSquareButtons ? a.rounded_sm : a.rounded_full,
-          a.p_md,
-          {backgroundColor: t.palette.primary_50},
-        ]
-      : [enableSquareButtons ? a.rounded_sm : a.rounded_full, a.p_md]
+    ? [
+        enableSquareButtons ? a.rounded_sm : a.rounded_full,
+        a.p_md,
+        hovered && t.atoms.bg_contrast_25,
+        selected && {backgroundColor: t.palette.primary_50},
+      ]
     : null
 
   return (
@@ -595,6 +594,7 @@ export function RadioWithLabel({
         style={[
           a.font_medium,
           a.flex_1,
+          a.text_md,
           a.leading_tight,
           selected ? t.atoms.text : t.atoms.text_contrast_high,
         ]}>

@@ -23,7 +23,7 @@ allowBuilds:
   'unrs-resolver': true
 patchedDependencies:
   '@assembless/react-native-material-you@1.0.0-beta.4': patches/@assembless__react-native-material-you@1.0.0-beta.4.patch
-  '@atproto/api@0.20.6': patches/@atproto__api@0.20.6.patch
+  '@atproto/api@0.20.8': patches/@atproto__api@0.20.8.patch
   '@atproto/oauth-client@0.6.1': patches/@atproto__oauth-client@0.6.1.patch
   '@atproto/oauth-client-expo@0.0.10': patches/@atproto__oauth-client-expo@0.0.10.patch
   '@discord/bottom-sheet@4.6.1': patches/@discord__bottom-sheet@4.6.1.patch
@@ -37,6 +37,7 @@ patchedDependencies:
   'expo-updates@29.0.17': patches/expo-updates@29.0.17.patch
   'react-native-compressor@1.13.0': patches/react-native-compressor@1.13.0.patch
   'react-native-date-picker@5.0.13': patches/react-native-date-picker@5.0.13.patch
+  'react-native-drawer-layout@4.2.3': patches/react-native-drawer-layout@4.2.3.patch
   'react-native-keyboard-controller@1.21.8': patches/react-native-keyboard-controller@1.21.8.patch
   'react-native-pager-view@6.8.0': patches/react-native-pager-view@6.8.0.patch
   'react-native-reanimated@3.19.1': patches/react-native-reanimated@3.19.1.patch
