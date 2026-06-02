@@ -97,6 +97,7 @@ export function ProfileHeaderHandle({
             to={`https://${profile.handle}`}
             label={profile.handle}
             numberOfLines={1}
+            disableMismatchWarning
             style={[a.text_md, a.leading_tight, web({direction: 'ltr'})]}
             onPress={onLinkPress}>
             {sanitized}

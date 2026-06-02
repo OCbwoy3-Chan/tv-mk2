@@ -35,7 +35,6 @@ import {
   type NavigationProp,
 } from '#/lib/routes/types'
 import {richTextToString} from '#/lib/strings/rich-text-helpers'
-import {restoreLinks} from '#/lib/strings/rich-text-manip'
 import {toShareUrl} from '#/lib/strings/url-helpers'
 import {useTranslate} from '#/lib/translation'
 import {getPostLanguageTags} from '#/locale/helpers'
@@ -375,7 +374,7 @@ let PostMenuItems = ({
     }
 
     openComposer({
-      text: restoreLinks(record.text, record.facets),
+      text: richTextToString(richText, true),
       imageUris,
       videoUri,
       onPost: () => {
