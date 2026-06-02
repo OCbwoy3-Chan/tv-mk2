@@ -21,6 +21,7 @@ import {
 } from '#/lib/strings/website'
 import {logger} from '#/logger'
 import {type Shadow, useProfileShadow} from '#/state/cache/profile-shadow'
+import {useShowGermDmButton} from '#/state/preferences'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useDisableFollowedByMetrics} from '#/state/preferences/disable-followed-by-metrics'
 import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
@@ -97,6 +98,7 @@ let ProfileHeaderStandard = ({
     useProfileShadow<AppBskyActorDefs.ProfileViewDetailed>(profileUnshadowed)
   const {currentAccount} = useSession()
   const {_, i18n} = useLingui()
+  const showGermDmButton = useShowGermDmButton()
   const moderation = useMemo(
     () => moderateProfile(profile, moderationOpts),
     [profile, moderationOpts],
@@ -236,7 +238,7 @@ let ProfileHeaderStandard = ({
                 </View>
               ) : undefined}
 
-              {profile.associated?.germ && (
+              {showGermDmButton && profile.associated?.germ && (
                 <GermButton germ={profile.associated.germ} profile={profile} />
               )}
 
@@ -342,8 +344,9 @@ export function HeaderStandardButtons({
   const hideScaryFollowButtons = useHideScaryFollowButtons()
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const followPromptControl = Prompt.usePromptControl()
-  const [confirmationAction, setConfirmationAction] =
-    useState<'follow' | 'unfollow'>('follow')
+  const [confirmationAction, setConfirmationAction] = useState<
+    'follow' | 'unfollow'
+  >('follow')
   const [pendingEphemeralAccount, setPendingEphemeralAccount] =
     useState<SessionAccount | null>(null)
 
