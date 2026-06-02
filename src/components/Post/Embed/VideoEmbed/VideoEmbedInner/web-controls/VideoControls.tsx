@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Pressable, View} from 'react-native'
+import {Pressable, type GestureResponderEvent, View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -171,14 +171,46 @@ export function Controls({
     setFocused(true)
   }, [active, setActive, setFocused])
 
-  const onPressEmptySpace = useCallback(() => {
-    if (!focused) {
+  const emptySpacePressTimeoutRef =
+    useRef<ReturnType<typeof setTimeout>>(undefined)
+  const emptySpaceRef = useRef<HTMLDivElement>(null)
+
+  const onPressEmptySpace = useCallback(
+    (evt: GestureResponderEvent) => {
+      const clickCount = (evt.nativeEvent as unknown as {detail?: number})
+        .detail
+      if (clickCount && clickCount > 1) return
+
+      clearTimeout(emptySpacePressTimeoutRef.current)
+      emptySpacePressTimeoutRef.current = setTimeout(() => {
+        if (!focused) {
+          drawFocus()
+          if (autoplayDisabled) play()
+        } else {
+          togglePlayPause()
+        }
+      }, 200)
+    },
+    [togglePlayPause, drawFocus, focused, autoplayDisabled, play],
+  )
+
+  const onDoubleClickEmptySpace = useCallback(
+    (evt: React.MouseEvent<HTMLDivElement>) => {
+      if (!emptySpaceRef.current?.contains(evt.target as Node)) return
+
+      evt.stopPropagation()
+      clearTimeout(emptySpacePressTimeoutRef.current)
       drawFocus()
-      if (autoplayDisabled) play()
-    } else {
-      togglePlayPause()
+      toggleFullscreen()
+    },
+    [drawFocus, toggleFullscreen],
+  )
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(emptySpacePressTimeoutRef.current)
     }
-  }, [togglePlayPause, drawFocus, focused, autoplayDisabled, play])
+  }, [])
 
   const onPressPlayPause = useCallback(() => {
     drawFocus()
@@ -331,28 +363,31 @@ export function Controls({
       onPointerMove={onHoverWithTimeout}
       onPointerLeave={onEndHoverWithTimeout}
       onPointerDown={onPointerDown}
+      onDoubleClick={onDoubleClickEmptySpace}
       onFocus={onFocus}
       onBlur={onBlur}
       onKeyDown={onKeyDown}>
-      <Pressable
-        accessibilityRole="button"
-        onPointerEnter={onPointerMoveEmptySpace}
-        onPointerMove={onPointerMoveEmptySpace}
-        onPointerLeave={onPointerLeaveEmptySpace}
-        accessibilityLabel={
-          !focused
-            ? _(msg`Unmute video`)
-            : playing
-              ? _(msg`Pause video`)
-              : _(msg`Play video`)
-        }
-        accessibilityHint=""
-        style={[
-          a.flex_1,
-          web({cursor: showCursor || !playing ? 'pointer' : 'none'}),
-        ]}
-        onPress={onPressEmptySpace}
-      />
+      <div ref={emptySpaceRef} style={{display: 'flex', flex: 1, minHeight: 0}}>
+        <Pressable
+          accessibilityRole="button"
+          onPointerEnter={onPointerMoveEmptySpace}
+          onPointerMove={onPointerMoveEmptySpace}
+          onPointerLeave={onPointerLeaveEmptySpace}
+          accessibilityLabel={
+            !focused
+              ? _(msg`Unmute video`)
+              : playing
+                ? _(msg`Pause video`)
+                : _(msg`Play video`)
+          }
+          accessibilityHint=""
+          style={[
+            a.flex_1,
+            web({cursor: showCursor || !playing ? 'pointer' : 'none'}),
+          ]}
+          onPress={onPressEmptySpace}
+        />
+      </div>
       {!showControls && !focused && duration > 0 && (
         <TimeIndicator time={Math.floor(duration - currentTime)} />
       )}
