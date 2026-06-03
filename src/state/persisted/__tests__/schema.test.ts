@@ -1,4 +1,5 @@
 import {defaults, tryParse, tryStringify} from '../schema'
+import {normalizeData} from '../util'
 
 describe('persisted schema helpers', () => {
   const partialState = {
@@ -37,5 +38,15 @@ describe('persisted schema helpers', () => {
     const reparsed = JSON.parse(raw!)
     expect(reparsed.material3Accent).toBe('#ee6300')
     expect(reparsed.material3Style).toBe('TONAL_SPOT')
+  })
+
+  it('fills optional settings from defaults object when absent from storage', () => {
+    const parsed = tryParse(JSON.stringify(partialState))
+
+    expect(parsed).toBeDefined()
+    expect(normalizeData(parsed!).thumbnailFormat).toBe(
+      defaults.thumbnailFormat,
+    )
+    expect(normalizeData(parsed!).downloadFormat).toBe(defaults.downloadFormat)
   })
 })
