@@ -3,12 +3,19 @@ import {type AppBskyActorDefs} from '@atproto/api'
 import {msg, plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
+import {
+  type CountsMetricsDisplay,
+  formatCountsMetricNumber,
+  shouldShowCountsMetricLabelOnly,
+  shouldShowProfileCountsMetric,
+} from '#/lib/metrics-display'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type Shadow} from '#/state/cache/types'
-import {useDisableFollowersMetrics} from '#/state/preferences/disable-followers-metrics'
-import {useDisableFollowingMetrics} from '#/state/preferences/disable-following-metrics'
-import {useDisablePostsMetrics} from '#/state/preferences/disable-posts-metrics'
-import {formatCount} from '#/view/com/util/numeric/format'
+import {
+  useFollowersMetricsDisplay,
+  useFollowingMetricsDisplay,
+  usePostsMetricsDisplay,
+} from '#/state/preferences/metrics-display-preference'
 import {atoms as a, useTheme} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
@@ -18,71 +25,134 @@ export function ProfileHeaderMetrics({
 }: {
   profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
 }) {
-  const t = useTheme()
-  const {_, i18n} = useLingui()
-  const following = formatCount(i18n, profile.followsCount || 0)
-  const followers = formatCount(i18n, profile.followersCount || 0)
-  const pluralizedFollowers = plural(profile.followersCount || 0, {
-    one: 'follower',
-    other: 'followers',
-  })
-  const pluralizedFollowings = plural(profile.followsCount || 0, {
-    one: 'following',
-    other: 'following',
-  })
+  const {_} = useLingui()
+  const followersMetricsDisplay = useFollowersMetricsDisplay()
+  const followingMetricsDisplay = useFollowingMetricsDisplay()
+  const postsMetricsDisplay = usePostsMetricsDisplay()
 
-  // disable metrics
-  const disableFollowersMetrics = useDisableFollowersMetrics()
-  const disableFollowingMetrics = useDisableFollowingMetrics()
-  const disablePostsMetrics = useDisablePostsMetrics()
+  const followersCount = profile.followersCount || 0
+  const followingCount = profile.followsCount || 0
+  const postsCount = profile.postsCount || 0
+
+  const showFollowers = shouldShowProfileCountsMetric(
+    followersMetricsDisplay,
+    followersCount,
+  )
+  const showFollowing = shouldShowProfileCountsMetric(
+    followingMetricsDisplay,
+    followingCount,
+  )
+  const showPosts = shouldShowProfileCountsMetric(
+    postsMetricsDisplay,
+    postsCount,
+  )
+
+  if (!showFollowers && !showFollowing && !showPosts) {
+    return null
+  }
 
   return (
-    <>
-      {disableFollowersMetrics &&
-      disableFollowingMetrics &&
-      disablePostsMetrics ? null : (
-        <View
-          style={[a.flex_row, a.gap_sm, a.align_center]}
-          pointerEvents="box-none">
-          {!disableFollowersMetrics ? (
-            <InlineLinkText
-              testID="profileHeaderFollowersButton"
-              style={[a.flex_row, t.atoms.text]}
-              to={makeProfileLink(profile, 'followers')}
-              label={`${profile.followersCount || 0} ${pluralizedFollowers}`}>
-              <Text style={[a.font_semi_bold, a.text_md]}>{followers} </Text>
-              <Text style={[t.atoms.text_contrast_medium, a.text_md]}>
-                {pluralizedFollowers}
-              </Text>
-            </InlineLinkText>
-          ) : null}
-          {!disableFollowingMetrics ? (
-            <InlineLinkText
-              testID="profileHeaderFollowsButton"
-              style={[a.flex_row, t.atoms.text]}
-              to={makeProfileLink(profile, 'follows')}
-              label={_(msg`${profile.followsCount || 0} following`)}>
-              <Text style={[a.font_semi_bold, a.text_md]}>{following} </Text>
-              <Text style={[t.atoms.text_contrast_medium, a.text_md]}>
-                {pluralizedFollowings}
-              </Text>
-            </InlineLinkText>
-          ) : null}
-          {!disablePostsMetrics ? (
-            <Text style={[a.font_semi_bold, t.atoms.text, a.text_md]}>
-              {formatCount(i18n, profile.postsCount || 0)}{' '}
-              <Text
-                style={[
-                  t.atoms.text_contrast_medium,
-                  a.font_normal,
-                  a.text_md,
-                ]}>
-                {plural(profile.postsCount || 0, {one: 'post', other: 'posts'})}
-              </Text>
-            </Text>
-          ) : null}
-        </View>
-      )}
-    </>
+    <View
+      style={[a.flex_row, a.gap_sm, a.align_center]}
+      pointerEvents="box-none">
+      {showFollowers ? (
+        <ProfileCountLink
+          testID="profileHeaderFollowersButton"
+          to={makeProfileLink(profile, 'followers')}
+          label={`${followersCount} ${plural(followersCount, {
+            one: 'follower',
+            other: 'followers',
+          })}`}
+          display={followersMetricsDisplay}
+          count={followersCount}
+          labelText={plural(followersCount, {
+            one: 'follower',
+            other: 'followers',
+          })}
+        />
+      ) : null}
+      {showFollowing ? (
+        <ProfileCountLink
+          testID="profileHeaderFollowsButton"
+          to={makeProfileLink(profile, 'follows')}
+          label={_(msg`${followingCount} following`)}
+          display={followingMetricsDisplay}
+          count={followingCount}
+          labelText={plural(followingCount, {
+            one: 'following',
+            other: 'following',
+          })}
+        />
+      ) : null}
+      {showPosts ? (
+        <ProfileCountText
+          display={postsMetricsDisplay}
+          count={postsCount}
+          labelText={plural(postsCount, {one: 'post', other: 'posts'})}
+        />
+      ) : null}
+    </View>
+  )
+}
+
+export function ProfileCountLink({
+  testID,
+  to,
+  label,
+  display,
+  count,
+  labelText,
+  onPress,
+}: {
+  testID: string
+  to: string
+  label: string
+  display: CountsMetricsDisplay
+  count: number
+  labelText: string
+  onPress?: () => void
+}) {
+  const t = useTheme()
+
+  return (
+    <InlineLinkText
+      testID={testID}
+      style={[a.flex_row, t.atoms.text]}
+      to={to}
+      label={label}
+      onPress={onPress}>
+      <ProfileCountText display={display} count={count} labelText={labelText} />
+    </InlineLinkText>
+  )
+}
+
+export function ProfileCountText({
+  display,
+  count,
+  labelText,
+}: {
+  display: CountsMetricsDisplay
+  count: number
+  labelText: string
+}) {
+  const t = useTheme()
+  const {i18n} = useLingui()
+  const labelOnly = shouldShowCountsMetricLabelOnly(display, count)
+
+  if (labelOnly) {
+    return (
+      <Text style={[a.font_normal, t.atoms.text_contrast_medium, a.text_md]}>
+        {labelText}
+      </Text>
+    )
+  }
+
+  return (
+    <Text style={[a.font_semi_bold, t.atoms.text, a.text_md]}>
+      {formatCountsMetricNumber(i18n, display, count)}{' '}
+      <Text style={[t.atoms.text_contrast_medium, a.font_normal, a.text_md]}>
+        {labelText}
+      </Text>
+    </Text>
   )
 }

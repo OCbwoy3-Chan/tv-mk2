@@ -14,16 +14,7 @@ import {Provider as ConstellationInstanceProvider} from './constellation-instanc
 import {Provider as DeerVerificationProvider} from './deer-verification'
 import {Provider as DirectFetchRecordsProvider} from './direct-fetch-records'
 import {Provider as DisableComposerPromptProvider} from './disable-composer-prompt'
-import {Provider as DisableFollowedByMetricsProvider} from './disable-followed-by-metrics'
-import {Provider as DisableFollowersMetricsProvider} from './disable-followers-metrics'
-import {Provider as DisableFollowingMetricsProvider} from './disable-following-metrics'
 import {Provider as DisableHapticsProvider} from './disable-haptics'
-import {Provider as DisableLikesMetricsProvider} from './disable-likes-metrics'
-import {Provider as DisablePostsMetricsProvider} from './disable-posts-metrics'
-import {Provider as DisableQuotesMetricsProvider} from './disable-quotes-metrics'
-import {Provider as DisableReplyMetricsProvider} from './disable-reply-metrics'
-import {Provider as DisableRepostsMetricsProvider} from './disable-reposts-metrics'
-import {Provider as DisableSavesMetricsProvider} from './disable-saves-metrics'
 import {Provider as DisableTopOfFeedButtonProvider} from './disable-top-of-feed-button'
 import {Provider as DisableVerifyEmailReminderProvider} from './disable-verify-email-reminder'
 import {Provider as DisableViaRepostNotificationProvider} from './disable-via-repost-notification'
@@ -48,6 +39,7 @@ import {Provider as KawaiiProvider} from './kawaii'
 import {Provider as LanguagesProvider} from './languages'
 import {Provider as LargeAltBadgeProvider} from './large-alt-badge'
 import {Provider as LoadSmallPNGsProvider} from './load-small-pngs'
+import {MetricsDisplayPreferencesProvider} from './metrics-display-preference'
 import {Provider as NoDiscoverProvider} from './no-discover-fallback'
 import {Provider as OmitViaFieldProvider} from './omit-via-field'
 import {Provider as OpenRouterProvider} from './openrouter'
@@ -189,69 +181,53 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                           <KawaiiProvider>
                                                                             <HideFeedsPromoTabProvider>
                                                                               <DisableViaRepostNotificationProvider>
-                                                                                <DisableLikesMetricsProvider>
-                                                                                  <DisableRepostsMetricsProvider>
-                                                                                    <DisableQuotesMetricsProvider>
-                                                                                      <DisableSavesMetricsProvider>
-                                                                                        <DisableReplyMetricsProvider>
-                                                                                          <DisableFollowersMetricsProvider>
-                                                                                            <DisableFollowingMetricsProvider>
-                                                                                              <DisableFollowedByMetricsProvider>
-                                                                                                <DisablePostsMetricsProvider>
-                                                                                                  <ShowFollowsYouBadgeProvider>
-                                                                                                    <ShowAvatarFollowButtonProvider>
-                                                                                                      <ShowGermDmButtonProvider>
-                                                                                                        <HideSimilarAccountsRecommProvider>
-                                                                                                          <HideScaryFollowButtonsProvider>
-                                                                                                            <ConfirmFollowUnfollowProvider>
-                                                                                                              <HideUnreplyablePostsProvider>
-                                                                                                                <CompactPostsProvider>
-                                                                                                                  <EnableSquareAvatarsProvider>
-                                                                                                                    <EnableSquareButtonsProvider>
-                                                                                                                      <AutoCompactAccountSwitcherProvider>
-                                                                                                                        <CompactAccountSwitcherProvider>
-                                                                                                                          <ShowViaClientProvider>
-                                                                                                                            <PostNameReplacementProvider>
-                                                                                                                              <DisableVerifyEmailReminderProvider>
-                                                                                                                                <TranslationServicePreferenceProvider>
-                                                                                                                                  <OpenRouterProvider>
-                                                                                                                                    <DisableComposerPromptProvider>
-                                                                                                                                      <DisableTopOfFeedButtonProvider>
-                                                                                                                                        <DiscoverContextEnabledProvider>
-                                                                                                                                          <OmitViaFieldProvider>
-                                                                                                                                            {
-                                                                                                                                              children
-                                                                                                                                            }
-                                                                                                                                          </OmitViaFieldProvider>
-                                                                                                                                        </DiscoverContextEnabledProvider>
-                                                                                                                                      </DisableTopOfFeedButtonProvider>
-                                                                                                                                    </DisableComposerPromptProvider>
-                                                                                                                                  </OpenRouterProvider>
-                                                                                                                                </TranslationServicePreferenceProvider>
-                                                                                                                              </DisableVerifyEmailReminderProvider>
-                                                                                                                            </PostNameReplacementProvider>
-                                                                                                                          </ShowViaClientProvider>
-                                                                                                                        </CompactAccountSwitcherProvider>
-                                                                                                                      </AutoCompactAccountSwitcherProvider>
-                                                                                                                    </EnableSquareButtonsProvider>
-                                                                                                                  </EnableSquareAvatarsProvider>
-                                                                                                                </CompactPostsProvider>
-                                                                                                              </HideUnreplyablePostsProvider>
-                                                                                                            </ConfirmFollowUnfollowProvider>
-                                                                                                          </HideScaryFollowButtonsProvider>
-                                                                                                        </HideSimilarAccountsRecommProvider>
-                                                                                                      </ShowGermDmButtonProvider>
-                                                                                                    </ShowAvatarFollowButtonProvider>
-                                                                                                  </ShowFollowsYouBadgeProvider>
-                                                                                                </DisablePostsMetricsProvider>
-                                                                                              </DisableFollowedByMetricsProvider>
-                                                                                            </DisableFollowingMetricsProvider>
-                                                                                          </DisableFollowersMetricsProvider>
-                                                                                        </DisableReplyMetricsProvider>
-                                                                                      </DisableSavesMetricsProvider>
-                                                                                    </DisableQuotesMetricsProvider>
-                                                                                  </DisableRepostsMetricsProvider>
-                                                                                </DisableLikesMetricsProvider>
+                                                                                <MetricsDisplayPreferencesProvider>
+                                                                                  <ShowFollowsYouBadgeProvider>
+                                                                                    <ShowAvatarFollowButtonProvider>
+                                                                                      <ShowGermDmButtonProvider>
+                                                                                        <HideSimilarAccountsRecommProvider>
+                                                                                          <HideScaryFollowButtonsProvider>
+                                                                                            <ConfirmFollowUnfollowProvider>
+                                                                                              <HideUnreplyablePostsProvider>
+                                                                                                <CompactPostsProvider>
+                                                                                                  <EnableSquareAvatarsProvider>
+                                                                                                    <EnableSquareButtonsProvider>
+                                                                                                      <AutoCompactAccountSwitcherProvider>
+                                                                                                        <CompactAccountSwitcherProvider>
+                                                                                                          <ShowViaClientProvider>
+                                                                                                            <PostNameReplacementProvider>
+                                                                                                              <DisableVerifyEmailReminderProvider>
+                                                                                                                <TranslationServicePreferenceProvider>
+                                                                                                                  <OpenRouterProvider>
+                                                                                                                    <DisableComposerPromptProvider>
+                                                                                                                      <DisableTopOfFeedButtonProvider>
+                                                                                                                        <DiscoverContextEnabledProvider>
+                                                                                                                          <OmitViaFieldProvider>
+                                                                                                                            {
+                                                                                                                              children
+                                                                                                                            }
+                                                                                                                          </OmitViaFieldProvider>
+                                                                                                                        </DiscoverContextEnabledProvider>
+                                                                                                                      </DisableTopOfFeedButtonProvider>
+                                                                                                                    </DisableComposerPromptProvider>
+                                                                                                                  </OpenRouterProvider>
+                                                                                                                </TranslationServicePreferenceProvider>
+                                                                                                              </DisableVerifyEmailReminderProvider>
+                                                                                                            </PostNameReplacementProvider>
+                                                                                                          </ShowViaClientProvider>
+                                                                                                        </CompactAccountSwitcherProvider>
+                                                                                                      </AutoCompactAccountSwitcherProvider>
+                                                                                                    </EnableSquareButtonsProvider>
+                                                                                                  </EnableSquareAvatarsProvider>
+                                                                                                </CompactPostsProvider>
+                                                                                              </HideUnreplyablePostsProvider>
+                                                                                            </ConfirmFollowUnfollowProvider>
+                                                                                          </HideScaryFollowButtonsProvider>
+                                                                                        </HideSimilarAccountsRecommProvider>
+                                                                                      </ShowGermDmButtonProvider>
+                                                                                    </ShowAvatarFollowButtonProvider>
+                                                                                  </ShowFollowsYouBadgeProvider>
+                                                                                </MetricsDisplayPreferencesProvider>
                                                                               </DisableViaRepostNotificationProvider>
                                                                             </HideFeedsPromoTabProvider>
                                                                           </KawaiiProvider>

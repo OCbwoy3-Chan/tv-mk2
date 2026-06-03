@@ -12,12 +12,18 @@ import {useLingui} from '@lingui/react/macro'
 import {CountWheel} from '#/lib/custom-animations/CountWheel'
 import {AnimatedLikeIcon} from '#/lib/custom-animations/LikeIcon'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
+import {
+  shouldShowCountsMetricLabelOnly,
+  shouldShowCountsMetricRow,
+} from '#/lib/metrics-display'
 import {type Shadow} from '#/state/cache/types'
 import {useFeedFeedbackContext} from '#/state/feed-feedback'
-import {useDisableLikesMetrics} from '#/state/preferences/disable-likes-metrics'
-import {useDisableQuotesMetrics} from '#/state/preferences/disable-quotes-metrics'
-import {useDisableReplyMetrics} from '#/state/preferences/disable-reply-metrics'
-import {useDisableRepostsMetrics} from '#/state/preferences/disable-reposts-metrics'
+import {
+  useLikesMetricsDisplay,
+  useQuotesMetricsDisplay,
+  useReplyMetricsDisplay,
+  useRepostsMetricsDisplay,
+} from '#/state/preferences/metrics-display-preference'
 import {
   useGetPost,
   usePostLikeMutationQueue,
@@ -39,6 +45,7 @@ import {useAnalytics} from '#/analytics'
 import {useAutoLikeOnRepost} from '../../state/preferences/auto-like-on-repost.tsx'
 import {useRunWithEphemeralAgent} from '../hooks/useRunWithEphemeralAgent'
 import {BookmarkButton} from './BookmarkButton'
+import {MetricCountLabel} from './MetricCountLabel'
 import {
   PostControlButton,
   PostControlButtonIcon,
@@ -111,15 +118,13 @@ let PostControls = ({
   )
   const replyDisabled = post.viewer?.replyDisabled
   const {gtPhone} = useBreakpoints()
-  const formatPostStatCount = useFormatPostStatCount()
+  const likesMetricsDisplay = useLikesMetricsDisplay()
+  const repostsMetricsDisplay = useRepostsMetricsDisplay()
+  const replyMetricsDisplay = useReplyMetricsDisplay()
+  const quotesMetricsDisplay = useQuotesMetricsDisplay()
+  const formatPostStatCount = useFormatPostStatCount(likesMetricsDisplay)
 
   const [hasLikeIconBeenToggled, setHasLikeIconBeenToggled] = useState(false)
-
-  // disable metrics
-  const disableLikesMetrics = useDisableLikesMetrics()
-  const disableRepostsMetrics = useDisableRepostsMetrics()
-  const disableReplyMetrics = useDisableReplyMetrics()
-  const disableQuotesMetrics = useDisableQuotesMetrics()
 
   const autoLikeOnRepost = useAutoLikeOnRepost()
 
@@ -399,17 +404,32 @@ let PostControls = ({
         big={big}
         hasBeenToggled={hasLikeIconBeenToggled}
       />
-      {!disableLikesMetrics ? (
-        <CountWheel
-          count={post.likeCount ?? 0}
-          isToggled={Boolean(post.viewer?.like)}
-          hasBeenToggled={hasLikeIconBeenToggled}
-          renderCount={({count}) => (
-            <PostControlButtonText testID="likeCount">
-              {formatPostStatCount(count)}
-            </PostControlButtonText>
-          )}
-        />
+      {shouldShowCountsMetricRow(likesMetricsDisplay) ? (
+        shouldShowCountsMetricLabelOnly(
+          likesMetricsDisplay,
+          post.likeCount ?? 0,
+        ) ? (
+          <MetricCountLabel
+            display={likesMetricsDisplay}
+            count={post.likeCount ?? 0}
+            testID="likeCount"
+            labelOnly={plural(post.likeCount ?? 0, {
+              one: 'like',
+              other: 'likes',
+            })}
+          />
+        ) : (
+          <CountWheel
+            count={post.likeCount ?? 0}
+            isToggled={Boolean(post.viewer?.like)}
+            hasBeenToggled={hasLikeIconBeenToggled}
+            renderCount={({count}) => (
+              <PostControlButtonText testID="likeCount">
+                {formatPostStatCount(count)}
+              </PostControlButtonText>
+            )}
+          />
+        )
       ) : null}
     </PostControlButton>
   )
@@ -466,13 +486,14 @@ let PostControls = ({
                     })}
                     big={big}>
                     <PostControlButtonIcon icon={Bubble} />
-                    {typeof post.replyCount !== 'undefined' &&
-                      post.replyCount > 0 &&
-                      !disableReplyMetrics && (
-                        <PostControlButtonText>
-                          {formatPostStatCount(post.replyCount)}
-                        </PostControlButtonText>
-                      )}
+                    <MetricCountLabel
+                      display={replyMetricsDisplay}
+                      count={post.replyCount ?? 0}
+                      labelOnly={plural(post.replyCount ?? 0, {
+                        one: 'reply',
+                        other: 'replies',
+                      })}
+                    />
                   </PostControlButton>
                 )}
               />
@@ -503,13 +524,14 @@ let PostControls = ({
                 })}
                 big={big}>
                 <PostControlButtonIcon icon={Bubble} />
-                {typeof post.replyCount !== 'undefined' &&
-                  post.replyCount > 0 &&
-                  !disableReplyMetrics && (
-                    <PostControlButtonText>
-                      {formatPostStatCount(post.replyCount)}
-                    </PostControlButtonText>
-                  )}
+                <MetricCountLabel
+                  display={replyMetricsDisplay}
+                  count={post.replyCount ?? 0}
+                  labelOnly={plural(post.replyCount ?? 0, {
+                    one: 'reply',
+                    other: 'replies',
+                  })}
+                />
               </PostControlButton>
             )}
           </View>
@@ -526,8 +548,17 @@ let PostControls = ({
                   <RepostButton
                     isReposted={!!post.viewer?.repost}
                     repostCount={
-                      (!disableRepostsMetrics ? (post.repostCount ?? 0) : 0) +
-                      (!disableQuotesMetrics ? (post.quoteCount ?? 0) : 0)
+                      (shouldShowCountsMetricRow(repostsMetricsDisplay)
+                        ? (post.repostCount ?? 0)
+                        : 0) +
+                      (shouldShowCountsMetricRow(quotesMetricsDisplay)
+                        ? (post.quoteCount ?? 0)
+                        : 0)
+                    }
+                    metricsDisplay={
+                      (post.repostCount ?? 0) > 0
+                        ? repostsMetricsDisplay
+                        : quotesMetricsDisplay
                     }
                     onRepost={() => void onRepost()}
                     onQuote={onQuote}
@@ -541,8 +572,17 @@ let PostControls = ({
               <RepostButton
                 isReposted={!!post.viewer?.repost}
                 repostCount={
-                  (!disableRepostsMetrics ? (post.repostCount ?? 0) : 0) +
-                  (!disableQuotesMetrics ? (post.quoteCount ?? 0) : 0)
+                  (shouldShowCountsMetricRow(repostsMetricsDisplay)
+                    ? (post.repostCount ?? 0)
+                    : 0) +
+                  (shouldShowCountsMetricRow(quotesMetricsDisplay)
+                    ? (post.quoteCount ?? 0)
+                    : 0)
+                }
+                metricsDisplay={
+                  (post.repostCount ?? 0) > 0
+                    ? repostsMetricsDisplay
+                    : quotesMetricsDisplay
                 }
                 onRepost={() => void onRepost()}
                 onQuote={onQuote}

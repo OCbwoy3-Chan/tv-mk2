@@ -1,4 +1,12 @@
-import {memo, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import {View} from 'react-native'
 import {
   type AppBskyActorDefs,
@@ -10,6 +18,10 @@ import {msg, plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {useNavigation} from '@react-navigation/native'
 
+import {
+  isFollowedByMetricHidden,
+  shouldShowProfileCountsMetric,
+} from '#/lib/metrics-display'
 import {getModerationCauseKey} from '#/lib/moderation'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
@@ -17,16 +29,18 @@ import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
-import {useDisableFollowedByMetrics} from '#/state/preferences/disable-followed-by-metrics'
-import {useDisableFollowersMetrics} from '#/state/preferences/disable-followers-metrics'
-import {useDisableFollowingMetrics} from '#/state/preferences/disable-following-metrics'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {
+  useFollowedByMetricsDisplay,
+  useFollowersMetricsDisplay,
+  useFollowingMetricsDisplay,
+} from '#/state/preferences/metrics-display-preference'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {usePrefetchProfileQuery, useProfileQuery} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
-import {formatCount} from '#/view/com/util/numeric/format'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {ProfileHeaderHandle} from '#/screens/Profile/Header/Handle'
+import {ProfileCountLink} from '#/screens/Profile/Header/Metrics'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {
@@ -44,7 +58,7 @@ import {
   KnownFollowers,
   shouldShowKnownFollowers,
 } from '#/components/KnownFollowers'
-import {InlineLinkText, Link} from '#/components/Link'
+import {Link} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import * as Pills from '#/components/Pills'
 import {Portal} from '#/components/Portal'
@@ -292,7 +306,7 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
 
   const prefetchProfileQuery = usePrefetchProfileQuery()
   const prefetchedProfile = useRef(false)
-  /* eslint-disable react-hooks/preserve-manual-memoization -- restored stable handlers */
+
   const prefetchIfNeeded = useCallback(async () => {
     if (!prefetchedProfile.current) {
       prefetchedProfile.current = true
@@ -328,8 +342,6 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
   const onPress = useCallback(() => {
     dispatch('pressed')
   }, [dispatch])
-
-  /* eslint-enable react-hooks/preserve-manual-memoization */
 
   const isVisible =
     currentState.stage === 'showing' ||
@@ -413,7 +425,6 @@ let Card = ({
 
   const status = useActorStatus(data)
 
-  /* eslint-disable react-hooks/preserve-manual-memoization -- restored stable handler */
   const onPressOpenProfile = useCallback(() => {
     if (!status.isActive || !data) return
     hide()
@@ -421,8 +432,6 @@ let Card = ({
       name: data.handle,
     })
   }, [hide, navigation, status, data])
-
-  /* eslint-enable react-hooks/preserve-manual-memoization */
 
   return (
     <View
@@ -486,8 +495,7 @@ function Inner({
     handle: string
   }) => void
 }) {
-  const t = useTheme()
-  const {_, i18n} = useLingui()
+  const {_} = useLingui()
   const {currentAccount} = useSession()
   const moderation = useMemo(
     () => moderateProfile(profile, moderationOpts),
@@ -504,8 +512,11 @@ function Inner({
     profile.viewer?.blocking ||
     profile.viewer?.blockedBy ||
     profile.viewer?.blockingByList
-  const following = formatCount(i18n, profile.followsCount || 0)
-  const followers = formatCount(i18n, profile.followersCount || 0)
+  const followersMetricsDisplay = useFollowersMetricsDisplay()
+  const followingMetricsDisplay = useFollowingMetricsDisplay()
+  const followedByMetricsDisplay = useFollowedByMetricsDisplay()
+  const followersCount = profile.followersCount || 0
+  const followingCount = profile.followsCount || 0
   const pluralizedFollowers = plural(profile.followersCount || 0, {
     one: 'follower',
     other: 'followers',
@@ -525,11 +536,6 @@ function Inner({
   const isLabeler = profile.associated?.labeler
 
   const enableSquareButtons = useEnableSquareButtons()
-
-  // disable metrics
-  const disableFollowersMetrics = useDisableFollowersMetrics()
-  const disableFollowingMetrics = useDisableFollowingMetrics()
-  const disableFollowedByMetrics = useDisableFollowedByMetrics()
 
   const handleFollow = useCallback(() => {
     if (confirmFollowUnfollow && onRequestFollowConfirmation) {
@@ -617,7 +623,9 @@ function Inner({
                     : _(msg`Follow`)
               }
               style={enableSquareButtons ? [a.rounded_sm] : [a.rounded_full]}
-              onPress={profileShadow.viewer?.following ? handleUnfollow : handleFollow}>
+              onPress={
+                profileShadow.viewer?.following ? handleUnfollow : handleFollow
+              }>
               <ButtonIcon
                 position="left"
                 icon={
@@ -694,35 +702,42 @@ function Inner({
 
       {!isBlockedUser && (
         <>
-          {disableFollowersMetrics && disableFollowingMetrics ? null : (
+          {!shouldShowProfileCountsMetric(
+            followersMetricsDisplay,
+            followersCount,
+          ) &&
+          !shouldShowProfileCountsMetric(
+            followingMetricsDisplay,
+            followingCount,
+          ) ? null : (
             <View style={[a.flex_row, a.flex_wrap, a.gap_md, a.pt_xs]}>
-              {!disableFollowersMetrics ? (
-                <InlineLinkText
+              {shouldShowProfileCountsMetric(
+                followersMetricsDisplay,
+                followersCount,
+              ) ? (
+                <ProfileCountLink
+                  testID="profileHoverCardFollowersButton"
                   to={makeProfileLink(profile, 'followers')}
-                  label={`${followers} ${pluralizedFollowers}`}
-                  style={[t.atoms.text]}
-                  onPress={hide}>
-                  <Text style={[a.text_md, a.font_semi_bold]}>
-                    {followers}{' '}
-                  </Text>
-                  <Text style={[t.atoms.text_contrast_medium]}>
-                    {pluralizedFollowers}
-                  </Text>
-                </InlineLinkText>
+                  label={`${followersCount} ${pluralizedFollowers}`}
+                  display={followersMetricsDisplay}
+                  count={followersCount}
+                  labelText={pluralizedFollowers}
+                  onPress={hide}
+                />
               ) : null}
-              {!disableFollowingMetrics ? (
-                <InlineLinkText
+              {shouldShowProfileCountsMetric(
+                followingMetricsDisplay,
+                followingCount,
+              ) ? (
+                <ProfileCountLink
+                  testID="profileHoverCardFollowsButton"
                   to={makeProfileLink(profile, 'follows')}
-                  label={_(msg`${following} following`)}
-                  style={[t.atoms.text]}
-                  onPress={hide}>
-                  <Text style={[a.text_md, a.font_semi_bold]}>
-                    {following}{' '}
-                  </Text>
-                  <Text style={[t.atoms.text_contrast_medium]}>
-                    {pluralizedFollowings}
-                  </Text>
-                </InlineLinkText>
+                  label={_(msg`${followingCount} following`)}
+                  display={followingMetricsDisplay}
+                  count={followingCount}
+                  labelText={pluralizedFollowings}
+                  onPress={hide}
+                />
               ) : null}
             </View>
           )}
@@ -738,13 +753,14 @@ function Inner({
           ) : undefined}
 
           {!isMe &&
-            !disableFollowedByMetrics &&
+            !isFollowedByMetricHidden(followedByMetricsDisplay) &&
             shouldShowKnownFollowers(profile.viewer?.knownFollowers) && (
               <View style={[a.flex_row, a.align_center, a.gap_sm, a.pt_md]}>
                 <KnownFollowers
                   profile={profile}
                   moderationOpts={moderationOpts}
                   onLinkPress={hide}
+                  followedByDisplay={followedByMetricsDisplay}
                 />
               </View>
             )}

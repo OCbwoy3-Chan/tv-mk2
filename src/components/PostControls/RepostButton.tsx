@@ -5,23 +5,21 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {useHaptics} from '#/lib/haptics'
+import {type CountsMetricsDisplay} from '#/lib/metrics-display'
 import {useRequireAuth} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {CloseQuote_Stroke2_Corner1_Rounded as QuoteIcon} from '#/components/icons/Quote'
 import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
-import {useFormatPostStatCount} from '#/components/PostControls/util'
+import {MetricCountLabel} from '#/components/PostControls/MetricCountLabel'
 import {Text} from '#/components/Typography'
-import {
-  PostControlButton,
-  PostControlButtonIcon,
-  PostControlButtonText,
-} from './PostControlButton'
+import {PostControlButton, PostControlButtonIcon} from './PostControlButton'
 
 interface Props {
   isReposted: boolean
   repostCount?: number
+  metricsDisplay?: CountsMetricsDisplay
   onRepost: () => void
   onQuote: () => void
   onLongPress?: () => void
@@ -32,6 +30,7 @@ interface Props {
 let RepostButton = ({
   isReposted,
   repostCount,
+  metricsDisplay = 'visible',
   onRepost,
   onQuote,
   onLongPress,
@@ -42,7 +41,6 @@ let RepostButton = ({
   const {_} = useLingui()
   const requireAuth = useRequireAuth()
   const dialogControl = Dialog.useDialogControl()
-  const formatPostStatCount = useFormatPostStatCount()
 
   const onPress = () => requireAuth(() => dialogControl.open())
 
@@ -88,11 +86,17 @@ let RepostButton = ({
               )
         }>
         <PostControlButtonIcon icon={RepostIcon} />
-        {typeof repostCount !== 'undefined' && repostCount > 0 && (
-          <PostControlButtonText testID="repostCount">
-            {formatPostStatCount(repostCount)}
-          </PostControlButtonText>
-        )}
+        {typeof repostCount !== 'undefined' ? (
+          <MetricCountLabel
+            display={metricsDisplay}
+            count={repostCount}
+            testID="repostCount"
+            labelOnly={plural(repostCount, {
+              one: 'repost',
+              other: 'reposts',
+            })}
+          />
+        ) : null}
       </PostControlButton>
       <Dialog.Outer
         control={dialogControl}

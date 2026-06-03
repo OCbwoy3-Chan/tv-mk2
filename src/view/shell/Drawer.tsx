@@ -9,21 +9,27 @@ import {StackActions, useNavigation} from '@react-navigation/native'
 import {FEEDBACK_FORM_URL, HELP_DESK_URL} from '#/lib/constants'
 import {type PressableScale} from '#/lib/custom-animations/PressableScale'
 import {useNavigationTabState} from '#/lib/hooks/useNavigationTabState'
+import {
+  formatCountsMetricNumber,
+  shouldShowCountsMetricLabelOnly,
+  shouldShowProfileCountsMetric,
+} from '#/lib/metrics-display'
 import {getTabState, TabState} from '#/lib/routes/helpers'
 import {type SharedNavTab, TAB_TO_NAV_ITEM} from '#/lib/routes/tab-to-nav-item'
 import {type NavigationProp} from '#/lib/routes/types'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {colors} from '#/lib/styles'
 import {emitSoftReset} from '#/state/events'
-import {useDisableFollowersMetrics} from '#/state/preferences/disable-followers-metrics'
-import {useDisableFollowingMetrics} from '#/state/preferences/disable-following-metrics'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useKawaiiMode} from '#/state/preferences/kawaii'
+import {
+  useFollowersMetricsDisplay,
+  useFollowingMetricsDisplay,
+} from '#/state/preferences/metrics-display-preference'
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useProfileQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession} from '#/state/session'
 import {useSetDrawerOpen} from '#/state/shell'
-import {formatCount} from '#/view/com/util/numeric/format'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {NavSignupCard} from '#/view/shell/NavSignupCard'
 import {atoms as a, tokens, useTheme, web} from '#/alf'
@@ -77,9 +83,18 @@ let DrawerProfileCard = ({
   const {data: profile} = useProfileQuery({did: account.did})
   const {isActive: live} = useActorStatus(profile)
 
-  // disable metrics
-  const disableFollowersMetrics = useDisableFollowersMetrics()
-  const disableFollowingMetrics = useDisableFollowingMetrics()
+  const followersMetricsDisplay = useFollowersMetricsDisplay()
+  const followingMetricsDisplay = useFollowingMetricsDisplay()
+  const followersCount = profile?.followersCount ?? 0
+  const followingCount = profile?.followsCount ?? 0
+  const showFollowers = shouldShowProfileCountsMetric(
+    followersMetricsDisplay,
+    followersCount,
+  )
+  const showFollowing = shouldShowProfileCountsMetric(
+    followingMetricsDisplay,
+    followingCount,
+  )
 
   return (
     <TouchableOpacity
@@ -113,33 +128,47 @@ let DrawerProfileCard = ({
           {sanitizeHandle(account.handle, '@')}
         </Text>
       </View>
-      {disableFollowersMetrics && disableFollowingMetrics ? null : (
+      {!showFollowers && !showFollowing ? null : (
         <Text style={[a.text_md, t.atoms.text_contrast_medium]}>
-          {!disableFollowersMetrics ? (
+          {showFollowers ? (
             <Trans>
-              <Text style={[a.text_md, a.font_semi_bold]}>
-                {formatCount(i18n, profile?.followersCount ?? 0)}
-              </Text>{' '}
-              <Plural
-                value={profile?.followersCount || 0}
-                one="follower"
-                other="followers"
-              />
+              {!shouldShowCountsMetricLabelOnly(
+                followersMetricsDisplay,
+                followersCount,
+              ) ? (
+                <Text style={[a.text_md, a.font_semi_bold]}>
+                  {formatCountsMetricNumber(
+                    i18n,
+                    followersMetricsDisplay,
+                    followersCount,
+                  )}
+                </Text>
+              ) : null}{' '}
+              <Plural value={followersCount} one="follower" other="followers" />
             </Trans>
           ) : null}
-          {!disableFollowersMetrics && !disableFollowingMetrics ? (
+          {showFollowers && showFollowing ? (
             <Text style={[a.text_md, t.atoms.text_contrast_medium]}>
               {' '}
               &middot;{' '}
             </Text>
           ) : null}
-          {!disableFollowingMetrics ? (
+          {showFollowing ? (
             <Trans>
-              <Text style={[a.text_md, a.font_semi_bold]}>
-                {formatCount(i18n, profile?.followsCount ?? 0)}
-              </Text>{' '}
+              {!shouldShowCountsMetricLabelOnly(
+                followingMetricsDisplay,
+                followingCount,
+              ) ? (
+                <Text style={[a.text_md, a.font_semi_bold]}>
+                  {formatCountsMetricNumber(
+                    i18n,
+                    followingMetricsDisplay,
+                    followingCount,
+                  )}
+                </Text>
+              ) : null}{' '}
               <Plural
-                value={profile?.followsCount || 0}
+                value={followingCount}
                 one="following"
                 other="following"
               />

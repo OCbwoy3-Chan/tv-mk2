@@ -9,21 +9,21 @@ import {
 
 import * as persisted from '#/state/persisted'
 
-type StateContext = persisted.Schema['showFollowsYouBadge']
-type SetContext = (v: persisted.Schema['showFollowsYouBadge']) => void
+type StateContext = boolean
+type SetContext = (v: boolean) => void
 
 const stateContext = createContext<StateContext>(
-  persisted.defaults.showFollowsYouBadge,
+  Boolean(persisted.defaults.showFollowsYouBadge),
 )
-const setContext = createContext<SetContext>(
-  (_: persisted.Schema['showFollowsYouBadge']) => {},
-)
+const setContext = createContext<SetContext>((_: boolean) => {})
 
 export function Provider({children}: PropsWithChildren<{}>) {
-  const [state, setState] = useState(persisted.get('showFollowsYouBadge'))
+  const [state, setState] = useState(
+    Boolean(persisted.get('showFollowsYouBadge')),
+  )
 
   const setStateWrapped = useCallback(
-    (showFollowsYouBadge: persisted.Schema['showFollowsYouBadge']) => {
+    (showFollowsYouBadge: boolean) => {
       setState(showFollowsYouBadge)
       persisted.write('showFollowsYouBadge', showFollowsYouBadge)
     },
@@ -31,12 +31,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
   )
 
   useEffect(() => {
-    return persisted.onUpdate(
-      'showFollowsYouBadge',
-      nextShowFollowsYouBadge => {
-        setState(nextShowFollowsYouBadge)
-      },
-    )
+    return persisted.onUpdate('showFollowsYouBadge', next => {
+      setState(Boolean(next))
+    })
   }, [setStateWrapped])
 
   return (

@@ -12,6 +12,7 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {useHaptics} from '#/lib/haptics'
+import {isFollowedByMetricHidden} from '#/lib/metrics-display'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {formatJoinDate, niceDate} from '#/lib/strings/time'
@@ -23,8 +24,8 @@ import {logger} from '#/logger'
 import {type Shadow, useProfileShadow} from '#/state/cache/profile-shadow'
 import {useShowGermDmButton} from '#/state/preferences'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
-import {useDisableFollowedByMetrics} from '#/state/preferences/disable-followed-by-metrics'
 import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
+import {useFollowedByMetricsDisplay} from '#/state/preferences/metrics-display-preference'
 import {
   useProfileBlockMutationQueue,
   useProfileFollowMutationQueue,
@@ -153,7 +154,7 @@ let ProfileHeaderStandard = ({
   const {isActive: live} = useActorStatus(profile)
 
   // disable metrics
-  const disableFollowedByMetrics = useDisableFollowedByMetrics()
+  const followedByMetricsDisplay = useFollowedByMetricsDisplay()
 
   return (
     <>
@@ -243,13 +244,14 @@ let ProfileHeaderStandard = ({
               )}
 
               {!isMe &&
-                !disableFollowedByMetrics &&
+                !isFollowedByMetricHidden(followedByMetricsDisplay) &&
                 !isBlockedUser &&
                 shouldShowKnownFollowers(profile.viewer?.knownFollowers) && (
                   <View style={[a.flex_row, a.align_center, a.gap_sm]}>
                     <KnownFollowers
                       profile={profile}
                       moderationOpts={moderationOpts}
+                      followedByDisplay={followedByMetricsDisplay}
                     />
                   </View>
                 )}

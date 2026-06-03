@@ -1,6 +1,10 @@
 import {parse} from 'bcp-47'
 
 import {dedupArray} from '#/lib/functions'
+import {
+  migrateCountsMetricsDisplay,
+  migrateFollowedByMetricsDisplay,
+} from '#/lib/metrics-display'
 import {logger} from '#/logger'
 import {defaults, type Schema} from '#/state/persisted/schema'
 
@@ -37,8 +41,50 @@ export function hydrateWithDefaults(data: Schema): Schema {
   return hydrateRecord(defaults, data)
 }
 
+function migrateMetricsDisplayPrefs(data: Schema): Schema {
+  return {
+    ...data,
+    likesMetricsDisplay: migrateCountsMetricsDisplay(
+      data.likesMetricsDisplay,
+      data.disableLikesMetrics,
+    ),
+    repostsMetricsDisplay: migrateCountsMetricsDisplay(
+      data.repostsMetricsDisplay,
+      data.disableRepostsMetrics,
+    ),
+    quotesMetricsDisplay: migrateCountsMetricsDisplay(
+      data.quotesMetricsDisplay,
+      data.disableQuotesMetrics,
+    ),
+    savesMetricsDisplay: migrateCountsMetricsDisplay(
+      data.savesMetricsDisplay,
+      data.disableSavesMetrics,
+    ),
+    replyMetricsDisplay: migrateCountsMetricsDisplay(
+      data.replyMetricsDisplay,
+      data.disableReplyMetrics,
+    ),
+    followersMetricsDisplay: migrateCountsMetricsDisplay(
+      data.followersMetricsDisplay,
+      data.disableFollowersMetrics,
+    ),
+    followingMetricsDisplay: migrateCountsMetricsDisplay(
+      data.followingMetricsDisplay,
+      data.disableFollowingMetrics,
+    ),
+    postsMetricsDisplay: migrateCountsMetricsDisplay(
+      data.postsMetricsDisplay,
+      data.disablePostsMetrics,
+    ),
+    followedByMetricsDisplay: migrateFollowedByMetricsDisplay(
+      data.followedByMetricsDisplay,
+      data.disableFollowedByMetrics,
+    ),
+  }
+}
+
 export function normalizeData(data: Schema) {
-  const next = hydrateWithDefaults(data)
+  const next = hydrateWithDefaults(migrateMetricsDisplayPrefs(data))
 
   /**
    * Normalize language prefs to ensure that these values only contain 2-letter

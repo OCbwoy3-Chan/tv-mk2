@@ -1,200 +1,352 @@
+import {type ComponentProps, type ReactNode} from 'react'
+import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {
-  useDisableFollowedByMetrics,
-  useSetDisableFollowedByMetrics,
-} from '#/state/preferences/disable-followed-by-metrics'
+  type CountsMetricsDisplay,
+  type FollowedByMetricsDisplay,
+} from '#/lib/metrics-display'
 import {
-  useDisableFollowersMetrics,
-  useSetDisableFollowersMetrics,
-} from '#/state/preferences/disable-followers-metrics'
-import {
-  useDisableFollowingMetrics,
-  useSetDisableFollowingMetrics,
-} from '#/state/preferences/disable-following-metrics'
-import {
-  useDisableLikesMetrics,
-  useSetDisableLikesMetrics,
-} from '#/state/preferences/disable-likes-metrics'
-import {
-  useDisablePostsMetrics,
-  useSetDisablePostsMetrics,
-} from '#/state/preferences/disable-posts-metrics'
-import {
-  useDisableQuotesMetrics,
-  useSetDisableQuotesMetrics,
-} from '#/state/preferences/disable-quotes-metrics'
-import {
-  useDisableReplyMetrics,
-  useSetDisableReplyMetrics,
-} from '#/state/preferences/disable-reply-metrics'
-import {
-  useDisableRepostsMetrics,
-  useSetDisableRepostsMetrics,
-} from '#/state/preferences/disable-reposts-metrics'
-import {
-  useDisableSavesMetrics,
-  useSetDisableSavesMetrics,
-} from '#/state/preferences/disable-saves-metrics'
+  useFollowedByMetricsDisplay,
+  useFollowersMetricsDisplay,
+  useFollowingMetricsDisplay,
+  useLikesMetricsDisplay,
+  usePostsMetricsDisplay,
+  useQuotesMetricsDisplay,
+  useReplyMetricsDisplay,
+  useRepostsMetricsDisplay,
+  useSavesMetricsDisplay,
+  useSetFollowedByMetricsDisplay,
+  useSetFollowersMetricsDisplay,
+  useSetFollowingMetricsDisplay,
+  useSetLikesMetricsDisplay,
+  useSetPostsMetricsDisplay,
+  useSetQuotesMetricsDisplay,
+  useSetReplyMetricsDisplay,
+  useSetRepostsMetricsDisplay,
+  useSetSavesMetricsDisplay,
+} from '#/state/preferences/metrics-display-preference'
 import {
   useSetShowFollowsYouBadge,
   useShowFollowsYouBadge,
 } from '#/state/preferences/show-follows-you-badge'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import {atoms as a} from '#/alf'
+import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import * as Toggle from '#/components/forms/Toggle'
+import * as ToggleButton from '#/components/forms/ToggleButton'
 import {Person_Stroke2_Corner0_Rounded as PersonIcon} from '#/components/icons/Person'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
+import {Text} from '#/components/Typography'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesImpressionsSettingsScreen() {
   const {t: l} = useLingui()
 
-  const disableLikesMetrics = useDisableLikesMetrics()
-  const setDisableLikesMetrics = useSetDisableLikesMetrics()
-  const disableRepostsMetrics = useDisableRepostsMetrics()
-  const setDisableRepostsMetrics = useSetDisableRepostsMetrics()
-  const disableQuotesMetrics = useDisableQuotesMetrics()
-  const setDisableQuotesMetrics = useSetDisableQuotesMetrics()
-  const disableSavesMetrics = useDisableSavesMetrics()
-  const setDisableSavesMetrics = useSetDisableSavesMetrics()
-  const disableReplyMetrics = useDisableReplyMetrics()
-  const setDisableReplyMetrics = useSetDisableReplyMetrics()
-  const disableFollowersMetrics = useDisableFollowersMetrics()
-  const setDisableFollowersMetrics = useSetDisableFollowersMetrics()
-  const disableFollowingMetrics = useDisableFollowingMetrics()
-  const setDisableFollowingMetrics = useSetDisableFollowingMetrics()
-  const disableFollowedByMetrics = useDisableFollowedByMetrics()
-  const setDisableFollowedByMetrics = useSetDisableFollowedByMetrics()
-  const disablePostsMetrics = useDisablePostsMetrics()
-  const setDisablePostsMetrics = useSetDisablePostsMetrics()
+  const likesMetricsDisplay = useLikesMetricsDisplay()
+  const setLikesMetricsDisplay = useSetLikesMetricsDisplay()
+  const repostsMetricsDisplay = useRepostsMetricsDisplay()
+  const setRepostsMetricsDisplay = useSetRepostsMetricsDisplay()
+  const quotesMetricsDisplay = useQuotesMetricsDisplay()
+  const setQuotesMetricsDisplay = useSetQuotesMetricsDisplay()
+  const savesMetricsDisplay = useSavesMetricsDisplay()
+  const setSavesMetricsDisplay = useSetSavesMetricsDisplay()
+  const replyMetricsDisplay = useReplyMetricsDisplay()
+  const setReplyMetricsDisplay = useSetReplyMetricsDisplay()
+  const followersMetricsDisplay = useFollowersMetricsDisplay()
+  const setFollowersMetricsDisplay = useSetFollowersMetricsDisplay()
+  const followingMetricsDisplay = useFollowingMetricsDisplay()
+  const setFollowingMetricsDisplay = useSetFollowingMetricsDisplay()
+  const postsMetricsDisplay = usePostsMetricsDisplay()
+  const setPostsMetricsDisplay = useSetPostsMetricsDisplay()
+  const followedByMetricsDisplay = useFollowedByMetricsDisplay()
+  const setFollowedByMetricsDisplay = useSetFollowedByMetricsDisplay()
   const showFollowsYouBadge = useShowFollowsYouBadge()
   const setShowFollowsYouBadge = useSetShowFollowsYouBadge()
 
+  const countsLabels = useCountsDisplayLabels()
+  const followedByLabels = useFollowedByDisplayLabels()
+
   return (
     <RunesScreenLayout titleText={l`Impressions`}>
-      <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-        <SettingsList.ItemIcon icon={ReplyIcon} />
-        <SettingsList.ItemText>
-          <Trans>Posts</Trans>
-        </SettingsList.ItemText>
-        <Toggle.Item
-          name="disable_likes_metrics"
-          label={l`Remove likes counts`}
-          value={disableLikesMetrics}
-          onChange={value => setDisableLikesMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove likes counts</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-        <Toggle.Item
-          name="disable_reposts_metrics"
-          label={l`Remove reposts counts`}
-          value={disableRepostsMetrics}
-          onChange={value => setDisableRepostsMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove reposts counts</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-        <Toggle.Item
-          name="disable_quotes_metrics"
-          label={l`Remove quotes counts`}
-          value={disableQuotesMetrics}
-          onChange={value => setDisableQuotesMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove quotes counts</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-        <Toggle.Item
-          name="disable_saves_metrics"
-          label={l`Remove saves counts`}
-          value={disableSavesMetrics}
-          onChange={value => setDisableSavesMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove saves counts</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-        <Toggle.Item
-          name="disable_reply_metrics"
-          label={l`Remove reply counts`}
-          value={disableReplyMetrics}
-          onChange={value => setDisableReplyMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove reply counts</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-      </SettingsList.Group>
-      <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-        <SettingsList.ItemIcon icon={PersonIcon} />
-        <SettingsList.ItemText>
-          <Trans>Profiles</Trans>
-        </SettingsList.ItemText>
-        <Toggle.Item
-          name="disable_followers_metrics"
-          label={l`Remove followers counts`}
-          value={disableFollowersMetrics}
-          onChange={value => setDisableFollowersMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove followers counts</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-        <Toggle.Item
-          name="disable_following_metrics"
-          label={l`Remove following counts`}
-          value={disableFollowingMetrics}
-          onChange={value => setDisableFollowingMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove following counts</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-        <Toggle.Item
-          name="disable_posts_metrics"
-          label={l`Remove post counts`}
-          value={disablePostsMetrics}
-          onChange={value => setDisablePostsMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove post counts</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-        <Toggle.Item
-          name="disable_followed_by_metrics"
-          label={l`Remove "followed by" counts`}
-          value={disableFollowedByMetrics}
-          onChange={value => setDisableFollowedByMetrics(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Remove "followed by" avatars</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-        <Toggle.Item
-          name="show_follows_you_badge"
-          label={l`Show "Follows you" badge`}
-          value={showFollowsYouBadge}
-          onChange={value => setShowFollowsYouBadge(value)}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Show "Follows you" badge</Trans>
-          </Toggle.LabelText>
-          <Toggle.Platform />
-        </Toggle.Item>
-      </SettingsList.Group>
+      <ImpressionsSectionHeader icon={ReplyIcon} label={l`Posts`} />
+      <CountsMetricRow
+        name={l`Likes`}
+        value={likesMetricsDisplay}
+        labels={countsLabels}
+        onChange={setLikesMetricsDisplay}
+      />
+      <CountsMetricRow
+        name={l`Reposts`}
+        value={repostsMetricsDisplay}
+        labels={countsLabels}
+        onChange={setRepostsMetricsDisplay}
+      />
+      <CountsMetricRow
+        name={l`Quotes`}
+        value={quotesMetricsDisplay}
+        labels={countsLabels}
+        onChange={setQuotesMetricsDisplay}
+      />
+      <CountsMetricRow
+        name={l`Saves`}
+        value={savesMetricsDisplay}
+        labels={countsLabels}
+        onChange={setSavesMetricsDisplay}
+      />
+      <CountsMetricRow
+        name={l`Replies`}
+        value={replyMetricsDisplay}
+        labels={countsLabels}
+        onChange={setReplyMetricsDisplay}
+      />
+
+      <SettingsList.Divider style={[a.mt_0]} />
+      <ImpressionsSectionHeader icon={PersonIcon} label={l`Profiles`} />
+      <CountsMetricRow
+        name={l`Followers`}
+        value={followersMetricsDisplay}
+        labels={countsLabels}
+        onChange={setFollowersMetricsDisplay}
+      />
+      <CountsMetricRow
+        name={l`Following`}
+        value={followingMetricsDisplay}
+        labels={countsLabels}
+        onChange={setFollowingMetricsDisplay}
+      />
+      <CountsMetricRow
+        name={l`Posts`}
+        value={postsMetricsDisplay}
+        labels={countsLabels}
+        onChange={setPostsMetricsDisplay}
+      />
+      <FollowedByMetricRow
+        name={l`"Followed by" avatars`}
+        value={followedByMetricsDisplay}
+        labels={followedByLabels}
+        onChange={setFollowedByMetricsDisplay}
+      />
+      <SettingsList.Divider style={[a.mt_0, a.mb_0]} />
+      <FollowsYouLabelToggle
+        enabled={showFollowsYouBadge}
+        onChange={setShowFollowsYouBadge}
+      />
     </RunesScreenLayout>
   )
+}
+
+function ImpressionsSectionHeader({
+  icon,
+  label,
+}: {
+  icon: ComponentProps<typeof SettingsList.ItemIcon>['icon']
+  label: string
+}) {
+  return (
+    <SettingsList.Item style={[a.py_xs]}>
+      <SettingsList.ItemIcon icon={icon} />
+      <SettingsList.ItemText>{label}</SettingsList.ItemText>
+    </SettingsList.Item>
+  )
+}
+
+function FollowsYouLabelToggle({
+  enabled,
+  onChange,
+}: {
+  enabled: boolean
+  onChange: (value: boolean) => void
+}) {
+  const {t: l} = useLingui()
+  const t = useTheme()
+
+  return (
+    <View style={[a.w_full, a.px_lg, a.py_md]}>
+      <View
+        style={[
+          a.w_full,
+          a.rounded_md,
+          a.overflow_hidden,
+          t.atoms.bg_contrast_25,
+        ]}>
+        <View
+          style={[
+            a.w_full,
+            a.py_lg,
+            a.px_lg,
+            a.flex_row,
+            a.align_center,
+            a.justify_between,
+          ]}>
+          <Text style={[a.font_semi_bold, t.atoms.text_contrast_high]}>
+            <Trans>Enable extra "Follows you" label</Trans>
+          </Text>
+          <Toggle.Item
+            label={l`Toggle to enable or disable the extra Follows you label`}
+            name="show_follows_you_badge"
+            value={enabled}
+            onChange={onChange}>
+            <View style={[a.flex_row, a.align_center, a.gap_sm]}>
+              <Text style={[t.atoms.text_contrast_medium]}>
+                {enabled ? <Trans>Enabled</Trans> : <Trans>Disabled</Trans>}
+              </Text>
+              <Toggle.Switch />
+            </View>
+          </Toggle.Item>
+        </View>
+      </View>
+    </View>
+  )
+}
+
+function CountsMetricRow({
+  name,
+  value,
+  labels,
+  onChange,
+}: {
+  name: string
+  value: CountsMetricsDisplay
+  labels: Record<CountsMetricsDisplay, string>
+  onChange: (value: CountsMetricsDisplay) => void
+}) {
+  const {t: l} = useLingui()
+  const {gtPhone} = useBreakpoints()
+
+  const handleChange = (values: string[]) => {
+    const next = values[0] as CountsMetricsDisplay | undefined
+    if (
+      next === 'hidden' ||
+      next === 'lite' ||
+      next === 'visible' ||
+      next === 'exact'
+    ) {
+      onChange(next)
+    }
+  }
+
+  return (
+    <MetricRowLayout>
+      <View style={[a.gap_xs, a.flex_1]}>
+        <Text style={[a.font_semi_bold, gtPhone ? a.text_sm : a.text_md]}>
+          {name}
+        </Text>
+      </View>
+      <View style={[{minHeight: 35}, a.w_full]}>
+        <ToggleButton.Group
+          label={l`Configure impression display for: ${name}`}
+          values={[value]}
+          onChange={handleChange}>
+          <ToggleButton.Button name="hidden" label={labels.hidden}>
+            <ToggleButton.ButtonText>{labels.hidden}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+          <ToggleButton.Button name="lite" label={labels.lite}>
+            <ToggleButton.ButtonText>{labels.lite}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+          <ToggleButton.Button name="visible" label={labels.visible}>
+            <ToggleButton.ButtonText>{labels.visible}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+          <ToggleButton.Button name="exact" label={labels.exact}>
+            <ToggleButton.ButtonText>{labels.exact}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+        </ToggleButton.Group>
+      </View>
+    </MetricRowLayout>
+  )
+}
+
+function FollowedByMetricRow({
+  name,
+  value,
+  labels,
+  onChange,
+}: {
+  name: string
+  value: FollowedByMetricsDisplay
+  labels: Record<FollowedByMetricsDisplay, string>
+  onChange: (value: FollowedByMetricsDisplay) => void
+}) {
+  const {t: l} = useLingui()
+  const {gtPhone} = useBreakpoints()
+
+  const handleChange = (values: string[]) => {
+    const next = values[0] as FollowedByMetricsDisplay | undefined
+    if (
+      next === 'hidden' ||
+      next === 'lite' ||
+      next === 'visible' ||
+      next === 'names'
+    ) {
+      onChange(next)
+    }
+  }
+
+  return (
+    <MetricRowLayout>
+      <View style={[a.gap_xs, a.flex_1]}>
+        <Text style={[a.font_semi_bold, gtPhone ? a.text_sm : a.text_md]}>
+          {name}
+        </Text>
+      </View>
+      <View style={[{minHeight: 35}, a.w_full]}>
+        <ToggleButton.Group
+          label={l`Configure impression display for: ${name}`}
+          values={[value]}
+          onChange={handleChange}>
+          <ToggleButton.Button name="hidden" label={labels.hidden}>
+            <ToggleButton.ButtonText>{labels.hidden}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+          <ToggleButton.Button name="lite" label={labels.lite}>
+            <ToggleButton.ButtonText>{labels.lite}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+          <ToggleButton.Button name="visible" label={labels.visible}>
+            <ToggleButton.ButtonText>{labels.visible}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+          <ToggleButton.Button name="names" label={labels.names}>
+            <ToggleButton.ButtonText>{labels.names}</ToggleButton.ButtonText>
+          </ToggleButton.Button>
+        </ToggleButton.Group>
+      </View>
+    </MetricRowLayout>
+  )
+}
+
+function MetricRowLayout({children}: {children: ReactNode}) {
+  return (
+    <View
+      style={[
+        a.w_full,
+        a.flex_row,
+        a.gap_sm,
+        a.px_lg,
+        a.py_lg,
+        a.justify_between,
+        a.flex_wrap,
+      ]}>
+      {children}
+    </View>
+  )
+}
+
+function useCountsDisplayLabels(): Record<CountsMetricsDisplay, string> {
+  const {t: l} = useLingui()
+  return {
+    hidden: l`Hidden`,
+    lite: l`Lite`,
+    visible: l`Visible`,
+    exact: l`Exact`,
+  }
+}
+
+function useFollowedByDisplayLabels(): Record<
+  FollowedByMetricsDisplay,
+  string
+> {
+  const {t: l} = useLingui()
+  return {
+    hidden: l`Hidden`,
+    lite: l`Lite`,
+    visible: l`Visible`,
+    names: l`Names`,
+  }
 }

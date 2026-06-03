@@ -1,22 +1,20 @@
-import {msg} from '@lingui/core/macro'
+import {msg, plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
+import {type CountsMetricsDisplay} from '#/lib/metrics-display'
 import {useRequireAuth, useSession} from '#/state/session'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {useTheme} from '#/alf'
 import {CloseQuote_Stroke2_Corner1_Rounded as Quote} from '#/components/icons/Quote'
 import {Repost_Stroke2_Corner2_Rounded as Repost} from '#/components/icons/Repost'
 import * as Menu from '#/components/Menu'
-import {
-  PostControlButton,
-  PostControlButtonIcon,
-  PostControlButtonText,
-} from './PostControlButton'
-import {useFormatPostStatCount} from './util'
+import {MetricCountLabel} from './MetricCountLabel'
+import {PostControlButton, PostControlButtonIcon} from './PostControlButton'
 
 interface Props {
   isReposted: boolean
   repostCount?: number
+  metricsDisplay?: CountsMetricsDisplay
   onRepost: () => void
   onQuote: () => void
   onLongPress?: () => void
@@ -27,6 +25,7 @@ interface Props {
 export const RepostButton = ({
   isReposted,
   repostCount,
+  metricsDisplay = 'visible',
   onRepost,
   onQuote,
   onLongPress,
@@ -37,7 +36,6 @@ export const RepostButton = ({
   const {_} = useLingui()
   const {hasSession} = useSession()
   const requireAuth = useRequireAuth()
-  const formatPostStatCount = useFormatPostStatCount()
 
   return hasSession ? (
     <EventStopper onKeyDown={false}>
@@ -54,11 +52,17 @@ export const RepostButton = ({
                 onLongPress={onLongPress}
                 {...props}>
                 <PostControlButtonIcon icon={Repost} />
-                {typeof repostCount !== 'undefined' && repostCount > 0 && (
-                  <PostControlButtonText testID="repostCount">
-                    {formatPostStatCount(repostCount)}
-                  </PostControlButtonText>
-                )}
+                {typeof repostCount !== 'undefined' ? (
+                  <MetricCountLabel
+                    display={metricsDisplay}
+                    count={repostCount}
+                    testID="repostCount"
+                    labelOnly={plural(repostCount, {
+                      one: 'repost',
+                      other: 'reposts',
+                    })}
+                  />
+                ) : null}
               </PostControlButton>
             )
           }}
@@ -106,11 +110,17 @@ export const RepostButton = ({
       label={_(msg`Repost or quote post`)}
       big={big}>
       <PostControlButtonIcon icon={Repost} />
-      {typeof repostCount !== 'undefined' && repostCount > 0 && (
-        <PostControlButtonText testID="repostCount">
-          {formatPostStatCount(repostCount)}
-        </PostControlButtonText>
-      )}
+      {typeof repostCount !== 'undefined' ? (
+        <MetricCountLabel
+          display={metricsDisplay}
+          count={repostCount}
+          testID="repostCount"
+          labelOnly={plural(repostCount, {
+            one: 'repost',
+            other: 'reposts',
+          })}
+        />
+      ) : null}
     </PostControlButton>
   )
 }

@@ -49,4 +49,33 @@ describe('persisted schema helpers', () => {
     )
     expect(normalizeData(parsed!).downloadFormat).toBe(defaults.downloadFormat)
   })
+
+  it('migrates legacy disable metrics booleans to display modes', () => {
+    const parsed = tryParse(
+      JSON.stringify({
+        ...partialState,
+        disableLikesMetrics: true,
+        disableFollowedByMetrics: true,
+      }),
+    )
+
+    const normalized = normalizeData(parsed!)
+    expect(normalized.likesMetricsDisplay).toBe('hidden')
+    expect(normalized.followedByMetricsDisplay).toBe('hidden')
+    expect(normalized.repostsMetricsDisplay).toBe('visible')
+  })
+
+  it('migrates legacy accessible display mode to lite', () => {
+    const parsed = tryParse(
+      JSON.stringify({
+        ...partialState,
+        likesMetricsDisplay: 'accessible',
+        followedByMetricsDisplay: 'accessible',
+      }),
+    )
+
+    expect(parsed).toBeDefined()
+    expect(parsed!.likesMetricsDisplay).toBe('lite')
+    expect(parsed!.followedByMetricsDisplay).toBe('lite')
+  })
 })

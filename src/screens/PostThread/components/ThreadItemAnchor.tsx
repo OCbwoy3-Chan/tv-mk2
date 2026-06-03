@@ -11,6 +11,12 @@ import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
+import {
+  type CountsMetricsDisplay,
+  formatCountsMetricNumber,
+  shouldShowCountsMetricLabelOnly,
+  shouldShowThreadExpandedMetric,
+} from '#/lib/metrics-display'
 import {makeProfileLink} from '#/lib/routes/links'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
@@ -22,14 +28,16 @@ import {
 } from '#/state/cache/post-shadow'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {FeedFeedbackProvider, useFeedFeedback} from '#/state/feed-feedback'
-import {useDisableLikesMetrics} from '#/state/preferences/disable-likes-metrics'
-import {useDisableQuotesMetrics} from '#/state/preferences/disable-quotes-metrics'
-import {useDisableRepostsMetrics} from '#/state/preferences/disable-reposts-metrics'
-import {useDisableSavesMetrics} from '#/state/preferences/disable-saves-metrics'
 import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
+import {
+  useLikesMetricsDisplay,
+  useQuotesMetricsDisplay,
+  useRepostsMetricsDisplay,
+  useSavesMetricsDisplay,
+} from '#/state/preferences/metrics-display-preference'
 import {useShowViaClient} from '#/state/preferences/show-via-client'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
@@ -57,7 +65,6 @@ import {type AppModerationCause} from '#/components/Pills'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls, PostControlsSkeleton} from '#/components/PostControls'
-import {useFormatPostStatCount} from '#/components/PostControls/util'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import * as Prompt from '#/components/Prompt'
@@ -205,7 +212,6 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const {openComposer} = useOpenComposer()
   const {currentAccount, hasSession} = useSession()
   const feedFeedback = useFeedFeedback(postSource?.feedSourceInfo, hasSession)
-  const formatPostStatCount = useFormatPostStatCount()
   const compactPosts = useCompactPosts()
   const isCompactPosts = !!compactPosts
   const avatarSize = isCompactPosts ? 34 : 42
@@ -235,11 +241,10 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
     displayName === displayName.toLowerCase() && /[a-z]/.test(displayName)
   const isThreadAuthor = getThreadAuthor(post, record) === currentAccount?.did
 
-  // disable metrics
-  const disableLikesMetrics = useDisableLikesMetrics()
-  const disableRepostsMetrics = useDisableRepostsMetrics()
-  const disableQuotesMetrics = useDisableQuotesMetrics()
-  const disableSavesMetrics = useDisableSavesMetrics()
+  const likesMetricsDisplay = useLikesMetricsDisplay()
+  const repostsMetricsDisplay = useRepostsMetricsDisplay()
+  const quotesMetricsDisplay = useQuotesMetricsDisplay()
+  const savesMetricsDisplay = useSavesMetricsDisplay()
 
   const likesHref = useMemo(() => {
     const urip = new AtUri(post.uri)
@@ -490,10 +495,22 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
               isThreadAuthor={isThreadAuthor}
               compactPosts={isCompactPosts}
             />
-            {(post.repostCount !== 0 && !disableRepostsMetrics) ||
-            (post.likeCount !== 0 && !disableLikesMetrics) ||
-            (post.quoteCount !== 0 && !disableQuotesMetrics) ||
-            (post.bookmarkCount !== 0 && !disableSavesMetrics) ? (
+            {shouldShowThreadExpandedMetric(
+              repostsMetricsDisplay,
+              post.repostCount,
+            ) ||
+            shouldShowThreadExpandedMetric(
+              likesMetricsDisplay,
+              post.likeCount,
+            ) ||
+            shouldShowThreadExpandedMetric(
+              quotesMetricsDisplay,
+              post.quoteCount,
+            ) ||
+            shouldShowThreadExpandedMetric(
+              savesMetricsDisplay,
+              post.bookmarkCount,
+            ) ? (
               // Show this section unless we're *sure* it has no engagement.
               <View
                 style={[
@@ -510,87 +527,59 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   isCompactPosts ? a.py_sm : a.py_md,
                   t.atoms.border_contrast_low,
                 ]}>
-                {post.repostCount != null &&
-                post.repostCount !== 0 &&
-                !disableRepostsMetrics ? (
+                {shouldShowThreadExpandedMetric(
+                  repostsMetricsDisplay,
+                  post.repostCount,
+                ) ? (
                   <Link to={repostsHref} label={l`Reposts of this post`}>
-                    <Text
+                    <ThreadExpandedMetricText
                       testID="repostCount-expanded"
-                      style={[a.text_md, t.atoms.text_contrast_medium]}>
-                      <Trans comment="Repost count display, the <0> tags enclose the number of reposts in bold (will never be 0)">
-                        <Text
-                          style={[a.text_md, a.font_semi_bold, t.atoms.text]}>
-                          {formatPostStatCount(post.repostCount)}
-                        </Text>{' '}
-                        <Plural
-                          value={post.repostCount}
-                          one="repost"
-                          other="reposts"
-                        />
-                      </Trans>
-                    </Text>
+                      display={repostsMetricsDisplay}
+                      count={post.repostCount!}
+                      one="repost"
+                      other="reposts"
+                    />
                   </Link>
                 ) : null}
-                {post.quoteCount != null &&
-                post.quoteCount !== 0 &&
-                !post.viewer?.embeddingDisabled &&
-                !disableQuotesMetrics ? (
+                {shouldShowThreadExpandedMetric(
+                  quotesMetricsDisplay,
+                  post.quoteCount,
+                ) && !post.viewer?.embeddingDisabled ? (
                   <Link to={quotesHref} label={l`Quotes of this post`}>
-                    <Text
+                    <ThreadExpandedMetricText
                       testID="quoteCount-expanded"
-                      style={[a.text_md, t.atoms.text_contrast_medium]}>
-                      <Trans comment="Quote count display, the <0> tags enclose the number of quotes in bold (will never be 0)">
-                        <Text
-                          style={[a.text_md, a.font_semi_bold, t.atoms.text]}>
-                          {formatPostStatCount(post.quoteCount)}
-                        </Text>{' '}
-                        <Plural
-                          value={post.quoteCount}
-                          one="quote"
-                          other="quotes"
-                        />
-                      </Trans>
-                    </Text>
+                      display={quotesMetricsDisplay}
+                      count={post.quoteCount!}
+                      one="quote"
+                      other="quotes"
+                    />
                   </Link>
                 ) : null}
-                {post.likeCount != null &&
-                post.likeCount !== 0 &&
-                !disableLikesMetrics ? (
+                {shouldShowThreadExpandedMetric(
+                  likesMetricsDisplay,
+                  post.likeCount,
+                ) ? (
                   <Link to={likesHref} label={l`Likes on this post`}>
-                    <Text
+                    <ThreadExpandedMetricText
                       testID="likeCount-expanded"
-                      style={[a.text_md, t.atoms.text_contrast_medium]}>
-                      <Trans comment="Like count display, the <0> tags enclose the number of likes in bold (will never be 0)">
-                        <Text
-                          style={[a.text_md, a.font_semi_bold, t.atoms.text]}>
-                          {formatPostStatCount(post.likeCount)}
-                        </Text>{' '}
-                        <Plural
-                          value={post.likeCount}
-                          one="like"
-                          other="likes"
-                        />
-                      </Trans>
-                    </Text>
+                      display={likesMetricsDisplay}
+                      count={post.likeCount!}
+                      one="like"
+                      other="likes"
+                    />
                   </Link>
                 ) : null}
-                {post.bookmarkCount != null &&
-                post.bookmarkCount !== 0 &&
-                !disableSavesMetrics ? (
-                  <Text
+                {shouldShowThreadExpandedMetric(
+                  savesMetricsDisplay,
+                  post.bookmarkCount,
+                ) ? (
+                  <ThreadExpandedMetricText
                     testID="bookmarkCount-expanded"
-                    style={[a.text_md, t.atoms.text_contrast_medium]}>
-                    <Trans comment="Save count display, the <0> tags enclose the number of saves in bold (will never be 0)">
-                      <Text style={[a.text_md, a.font_semi_bold, t.atoms.text]}>
-                        {formatPostStatCount(post.bookmarkCount)}
-                      </Text>{' '}
-                      <Plural
-                        value={post.bookmarkCount}
-                        one="save"
-                        other="saves"
-                      />
-                    </Trans>
-                  </Text>
+                    display={savesMetricsDisplay}
+                    count={post.bookmarkCount!}
+                    one="save"
+                    other="saves"
+                  />
                 ) : null}
               </View>
             ) : null}
@@ -753,6 +742,43 @@ function BackdatedPostIndicator({post}: {post: AppBskyFeedDefs.PostView}) {
         </Prompt.Actions>
       </Prompt.Outer>
     </>
+  )
+}
+
+function ThreadExpandedMetricText({
+  testID,
+  display,
+  count,
+  one,
+  other,
+}: {
+  testID: string
+  display: CountsMetricsDisplay
+  count: number
+  one: string
+  other: string
+}) {
+  const t = useTheme()
+  const {i18n} = useLingui()
+  const labelOnly = shouldShowCountsMetricLabelOnly(display, count)
+
+  if (labelOnly) {
+    return (
+      <Text testID={testID} style={[a.text_md, t.atoms.text_contrast_medium]}>
+        <Plural value={count} one={one} other={other} />
+      </Text>
+    )
+  }
+
+  return (
+    <Text testID={testID} style={[a.text_md, t.atoms.text_contrast_medium]}>
+      <Trans comment="Metric count display, the <0> tags enclose the number in bold (will never be 0)">
+        <Text style={[a.text_md, a.font_semi_bold, t.atoms.text]}>
+          {formatCountsMetricNumber(i18n, display, count)}
+        </Text>{' '}
+        <Plural value={count} one={one} other={other} />
+      </Trans>
+    </Text>
   )
 }
 

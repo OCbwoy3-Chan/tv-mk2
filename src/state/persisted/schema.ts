@@ -2,6 +2,10 @@ import {BSKY_LABELER_DID} from '@atproto/api'
 import {z} from 'zod'
 
 import {DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
+import {
+  countsMetricsDisplaySchema,
+  followedByMetricsDisplaySchema,
+} from '#/lib/metrics-display'
 import {deviceLanguageCodes, deviceLocales} from '#/locale/deviceLocales'
 import {findSupportedAppLanguage} from '#/locale/helpers'
 import {logger} from '#/logger'
@@ -183,15 +187,33 @@ const schema = z.object({
   disableComposerPrompt: z.boolean().optional(),
   disableTopOfFeedButton: z.boolean().optional(),
   showAvatarFollowButton: z.boolean().optional(),
+  /** @deprecated Migrated to likesMetricsDisplay */
   disableLikesMetrics: z.boolean().optional(),
+  /** @deprecated Migrated to repostsMetricsDisplay */
   disableRepostsMetrics: z.boolean().optional(),
+  /** @deprecated Migrated to quotesMetricsDisplay */
   disableQuotesMetrics: z.boolean().optional(),
+  /** @deprecated Migrated to savesMetricsDisplay */
   disableSavesMetrics: z.boolean().optional(),
+  /** @deprecated Migrated to replyMetricsDisplay */
   disableReplyMetrics: z.boolean().optional(),
+  /** @deprecated Migrated to followersMetricsDisplay */
   disableFollowersMetrics: z.boolean().optional(),
+  /** @deprecated Migrated to followingMetricsDisplay */
   disableFollowingMetrics: z.boolean().optional(),
+  /** @deprecated Migrated to followedByMetricsDisplay */
   disableFollowedByMetrics: z.boolean().optional(),
+  /** @deprecated Migrated to postsMetricsDisplay */
   disablePostsMetrics: z.boolean().optional(),
+  likesMetricsDisplay: countsMetricsDisplaySchema.optional(),
+  repostsMetricsDisplay: countsMetricsDisplaySchema.optional(),
+  quotesMetricsDisplay: countsMetricsDisplaySchema.optional(),
+  savesMetricsDisplay: countsMetricsDisplaySchema.optional(),
+  replyMetricsDisplay: countsMetricsDisplaySchema.optional(),
+  followersMetricsDisplay: countsMetricsDisplaySchema.optional(),
+  followingMetricsDisplay: countsMetricsDisplaySchema.optional(),
+  followedByMetricsDisplay: followedByMetricsDisplaySchema.optional(),
+  postsMetricsDisplay: countsMetricsDisplaySchema.optional(),
   showFollowsYouBadge: z.boolean().optional(),
   hideSimilarAccountsRecomm: z.boolean().optional(),
   hideScaryFollowButtons: z.boolean().optional(),
@@ -333,15 +355,15 @@ export const defaults: Schema = {
   disableComposerPrompt: true,
   disableTopOfFeedButton: false,
   showAvatarFollowButton: false,
-  disableLikesMetrics: false,
-  disableRepostsMetrics: false,
-  disableQuotesMetrics: false,
-  disableSavesMetrics: false,
-  disableReplyMetrics: false,
-  disableFollowersMetrics: false,
-  disableFollowingMetrics: false,
-  disableFollowedByMetrics: false,
-  disablePostsMetrics: false,
+  likesMetricsDisplay: 'visible',
+  repostsMetricsDisplay: 'visible',
+  quotesMetricsDisplay: 'visible',
+  savesMetricsDisplay: 'visible',
+  replyMetricsDisplay: 'visible',
+  followersMetricsDisplay: 'visible',
+  followingMetricsDisplay: 'visible',
+  followedByMetricsDisplay: 'names',
+  postsMetricsDisplay: 'visible',
   showFollowsYouBadge: false,
   hideSimilarAccountsRecomm: true,
   hideScaryFollowButtons: false,
