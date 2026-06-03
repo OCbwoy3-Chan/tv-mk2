@@ -139,6 +139,10 @@ export function useLink({
 
   const onPress = useCallback(
     (e: GestureResponderEvent) => {
+      if (IS_WEB && isModifiedClickEvent(e)) {
+        return
+      }
+
       const exitEarlyIfFalse = outerOnPress?.(e)
 
       if (exitEarlyIfFalse === false) return
@@ -279,16 +283,21 @@ export function useLink({
     (e: GestureResponderEvent) => {
       const exitEarlyIfFalse = outerOnLongPress?.(e)
       if (exitEarlyIfFalse === false) return
-      return IS_NATIVE && shareOnLongPress ? handleLongPress() : undefined
+      if (shareOnLongPress) {
+        return handleLongPress()
+      }
     },
     [outerOnLongPress, handleLongPress, shareOnLongPress],
   )
+
+  const hasLongPress =
+    shareOnLongPress || (IS_NATIVE ? !!outerOnLongPress : false)
 
   return {
     isExternal,
     href,
     onPress,
-    onLongPress,
+    onLongPress: hasLongPress ? onLongPress : undefined,
   }
 }
 

@@ -11,9 +11,11 @@ const onMouseUp = (e: React.MouseEvent & {target: HTMLElement}) => {
   )
 }
 
-const onMouseDown = (e: React.MouseEvent) => {
+const onMouseDown = (e: React.MouseEvent & {target: HTMLElement}) => {
   // Prevents the middle click scroll from enabling
-  if (e.button !== 1) return
+  if (e.button !== 1 || e.target.closest('a') || e.target.tagName === 'A') {
+    return
+  }
   e.preventDefault()
 }
 

@@ -1,23 +1,22 @@
 when:
-  - event: ["manual"]
+  - event: ["push"]
     branch: ["main"]
 
 engine: "nixery"
 
 dependencies:
   nixpkgs:
-    - nodejs-slim_20
-    - yarn
+    - nodejs
+    - pnpm
     - justbuild
-    - wrangler
 
 steps: 
   - name: Install dependencies
-    command: "yarn install --frozen-lockfile"
+    command: "pnpm install --frozen-lockfile && pnpm add -g wrangler"
 
   - name: Build
     command: "just dist-build-web"
 
   - name: Publish to Cloudflare Pages
     command: |
-      wrangler pages deploy ./web-build --project-name=witchsky
+      wrangler pages deploy --branch canary

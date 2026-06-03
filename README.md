@@ -56,18 +56,11 @@ These are all available as options in the Runes sub-page of the app's settings.
     - Hide PDS badge for Bluesky-hosted accounts
     - Change favicon service
 - Impressions
-  - Posts
-    - Remove likes counts
-    - Remove reposts counts
-    - Remove quotes counts
-    - Remove saves counts
-    - Remove reply counts
-  - Profiles
-    - Remove followers counts
-    - Remove following counts
-    - Remove post counts
-    - Remove "followed by" avatars
-    - Show "Follows you" badge
+  - Set visibility (Hidden, Lite, Visible, or Exact) of
+    - Post like, repost, quote, save, and reply counts
+    - Profile follower, following, and post counts
+    - "Followed by" avatars on profiles
+    - Extra "Follows you" label
 - Usability
   - Feeds
     - Do not fall back to discover feed

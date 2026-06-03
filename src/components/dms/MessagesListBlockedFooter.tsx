@@ -3,6 +3,7 @@ import {View} from 'react-native'
 import {type ModerationDecision} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
 
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useProfileBlockMutationQueue} from '#/state/queries/profile'
 import {atoms as a, useTheme} from '#/alf'
@@ -31,6 +32,7 @@ export function MessagesListBlockedFooter({
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
+  const enableSquareButtons = useEnableSquareButtons()
   const recipient = useProfileShadow(initialRecipient)
   const [_queueBlock, queueUnblock] = useProfileBlockMutationQueue(recipient)
 
@@ -66,7 +68,7 @@ export function MessagesListBlockedFooter({
           a.justify_center,
           a.p_lg,
           t.atoms.bg_contrast_50,
-          {borderRadius: 40},
+          {borderRadius: enableSquareButtons ? 20 : 40},
         ]}>
         <PersonXIcon fill={t.atoms.text.color} size="lg" style={[a.mb_xs]} />
         <Text

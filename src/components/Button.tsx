@@ -231,6 +231,8 @@ export const Button = forwardRef<View, ButtonProps>(
     const onPointerDown = useCallback(
       (e: PointerEvent) => {
         if (onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE) {
+          const button = (e as unknown as globalThis.MouseEvent).button
+          if (button != null && button !== 0) return
           clearLongPressTimer()
           longPressTriggeredRef.current = false
           longPressTimerRef.current = setTimeout(() => {
