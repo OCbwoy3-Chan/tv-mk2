@@ -1,18 +1,21 @@
 when:
-  - event: ["push"]
+  - event: ["manuel"]
     branch: ["main"]
 
 engine: "nixery"
 
 dependencies:
-  nixpkgs:
-    - nodejs
-    - pnpm
-    - justbuild
+  nixpkgs/nixpkgs-unstable:
+    - nodejs_26
+    - corepack
+    - just
 
 steps: 
   - name: Install dependencies
-    command: "pnpm install --frozen-lockfile && pnpm add -g wrangler"
+    command: |
+      corepack enable pnpm
+      export PATH="/tangled/home/.local/share/pnpm/bin:$PATH"
+      pnpm add -g wrangler
 
   - name: Build
     command: "just dist-build-web"
