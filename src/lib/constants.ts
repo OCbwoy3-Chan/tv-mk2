@@ -7,7 +7,8 @@ import {
   CHAT_PROXY_DID,
   ENV_APPVIEW_DID_PROXY,
   ENV_PUBLIC_BSKY_SERVICE,
-  IS_DEV} from '#/env'
+  IS_DEV,
+} from '#/env'
 export const LOCAL_DEV_SERVICE =
   Platform.OS === 'android' ? 'http://10.0.2.2:2583' : 'http://localhost:2583'
 export const STAGING_SERVICE = 'https://staging.bsky.dev'
@@ -255,3 +256,6 @@ export const webLinks = {
 }
 
 export const DOH_ENDPOINT = 'https://cloudflare-dns.com/dns-query'
+
+export const PNG_IMG_MAX_BYTE = 100_000
+export const PNG_IMG_MAX_SIZE = 300

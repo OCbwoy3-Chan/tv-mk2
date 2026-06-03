@@ -3,6 +3,7 @@ import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {usePalette} from '#/lib/hooks/usePalette'
+import {IMAGE_FORMATS} from '#/lib/media/image-formats'
 import {dynamicActivate} from '#/locale/i18n'
 import {dynamicActivate as dynamicActivateWeb} from '#/locale/i18n.web'
 import {type AppLanguage} from '#/locale/languages'
@@ -14,9 +15,17 @@ import {
 import {useAutoCompactAccountSwitcher} from '#/state/preferences/auto-compact-account-switcher'
 import {useCompactAccountSwitcher} from '#/state/preferences/compact-account-switcher'
 import {
-  useHighQualityImages,
-  useSetHighQualityImages,
-} from '#/state/preferences/high-quality-images'
+  useDownloadFormat,
+  useSetDownloadFormat,
+} from '#/state/preferences/download-format'
+import {
+  useFullsizeFormat,
+  useSetFullsizeFormat,
+} from '#/state/preferences/fullsize-format'
+import {
+  useLoadAsPngs,
+  useSetLoadAsPngs,
+} from '#/state/preferences/load-small-pngs'
 import {
   usePostReplacement,
   useSetPostReplacement,
@@ -25,9 +34,12 @@ import {
   useSetShowViaClient,
   useShowViaClient,
 } from '#/state/preferences/show-via-client'
+import {
+  useSetThumbnailFormat,
+  useThumbnailFormat,
+} from '#/state/preferences/thumbnail-format'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
-import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import * as Toggle from '#/components/forms/Toggle'
@@ -36,6 +48,7 @@ import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Ima
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {PersonGroup_Stroke2_Corner2_Rounded as PersonGroupIcon} from '#/components/icons/Person'
 import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
+import * as Select from '#/components/Select'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {ItemTextWithSubtitle} from '../NotificationSettings/components/ItemTextWithSubtitle'
@@ -47,11 +60,17 @@ export function RunesDisplaySettingsScreen() {
   const alsoLikedFeedEnabled = useAlsoLikedFeedEnabled()
   const alsoLikedCollapseByDefault = useAlsoLikedCollapseByDefault()
 
-  const highQualityImages = useHighQualityImages()
-  const setHighQualityImages = useSetHighQualityImages()
-
   const showViaClient = useShowViaClient()
   const setShowViaClient = useSetShowViaClient()
+
+  const thumbnailFormat = useThumbnailFormat() ?? 'webp'
+  const setThumbnailFormat = useSetThumbnailFormat()
+  const fullsizeFormat = useFullsizeFormat() ?? 'webp'
+  const setFullsizeFormat = useSetFullsizeFormat()
+  const downloadFormat = useDownloadFormat() ?? 'jpeg'
+  const setDownloadFormat = useSetDownloadFormat()
+  const loadAsPngs = useLoadAsPngs()
+  const setLoadAsPngs = useSetLoadAsPngs()
 
   const setPostReplacementDialogControl = Dialog.useDialogControl()
 
@@ -83,27 +102,6 @@ export function RunesDisplaySettingsScreen() {
         />
       </SettingsList.LinkItem>
       <Toggle.Item
-        name="high_quality_images"
-        label={l`Display images in higher quality`}
-        value={highQualityImages}
-        onChange={value => setHighQualityImages(value)}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={ImageIcon} />
-          <SettingsList.ItemText>
-            <Trans>Display images in higher quality</Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
-      <SettingsList.Item>
-        <Admonition type="info" style={[a.flex_1]}>
-          <Trans>
-            Images will be served as PNG instead of WEBP. Images will take
-            longer to load and use more bandwidth.
-          </Trans>
-        </Admonition>
-      </SettingsList.Item>
-      <Toggle.Item
         name="show_via_client"
         label={l`Show client used to post`}
         value={showViaClient}
@@ -127,6 +125,94 @@ export function RunesDisplaySettingsScreen() {
         />
       </SettingsList.Item>
       <PostReplacementDialog control={setPostReplacementDialogControl} />
+
+      <SettingsList.Divider />
+      <SettingsList.Group contentContainerStyle={[a.gap_sm]} iconInset={false}>
+        <SettingsList.ItemIcon icon={ImageIcon} />
+        <SettingsList.ItemText>
+          <Trans>Images</Trans>
+        </SettingsList.ItemText>
+        <View style={[a.gap_md, a.w_full, a.pt_xs]}>
+          <Text style={[a.font_bold]}>
+            <Trans>Thumbnail format</Trans>
+          </Text>
+          <Select.Root
+            value={thumbnailFormat}
+            onValueChange={value => setThumbnailFormat(value)}>
+            <Select.Trigger label={l`Select thumbnail format`}>
+              <Select.ValueText />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Content
+              label={l`Thumbnail format`}
+              renderItem={({label, value}) => (
+                <Select.Item value={value} label={label}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{label}</Select.ItemText>
+                </Select.Item>
+              )}
+              items={IMAGE_FORMATS}
+            />
+          </Select.Root>
+        </View>
+        <View style={[a.gap_md, a.w_full]}>
+          <Text style={[a.font_bold]}>
+            <Trans>Full-size format</Trans>
+          </Text>
+          <Select.Root
+            value={fullsizeFormat}
+            onValueChange={value => setFullsizeFormat(value)}>
+            <Select.Trigger label={l`Select full-size format`}>
+              <Select.ValueText />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Content
+              label={l`Full-size format`}
+              renderItem={({label, value}) => (
+                <Select.Item value={value} label={label}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{label}</Select.ItemText>
+                </Select.Item>
+              )}
+              items={IMAGE_FORMATS}
+            />
+          </Select.Root>
+        </View>
+        <View style={[a.gap_md, a.w_full]}>
+          <Text style={[a.font_bold]}>
+            <Trans>Download format</Trans>
+          </Text>
+          <Select.Root
+            value={downloadFormat}
+            onValueChange={value => setDownloadFormat(value)}>
+            <Select.Trigger label={l`Select download format`}>
+              <Select.ValueText />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Content
+              label={l`Download format`}
+              renderItem={({label, value}) => (
+                <Select.Item value={value} label={label}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{label}</Select.ItemText>
+                </Select.Item>
+              )}
+              items={IMAGE_FORMATS}
+            />
+          </Select.Root>
+        </View>
+        <Toggle.Item
+          name="load_as_pngs"
+          label={l`Load especially small images as PNGs`}
+          value={loadAsPngs}
+          onChange={value => setLoadAsPngs(value)}
+          style={[a.w_full, a.mt_xs]}>
+          <Toggle.Checkbox />
+          <Toggle.LabelText style={[a.flex_1]}>
+            <Trans>Load especially small images as PNGs</Trans>
+          </Toggle.LabelText>
+        </Toggle.Item>
+      </SettingsList.Group>
     </RunesScreenLayout>
   )
 }

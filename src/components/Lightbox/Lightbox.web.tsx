@@ -7,6 +7,7 @@ import {RemoveScrollBar} from 'react-remove-scroll-bar'
 
 import {saveImageToMediaLibrary} from '#/lib/media/manip'
 import {useA11y} from '#/state/a11y'
+import {useDownloadFormat} from '#/state/preferences/download-format'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   atoms as a,
@@ -107,6 +108,7 @@ function LightboxGallery({
 
   const {gtPhone} = useBreakpoints()
   const enableSquareButtons = useEnableSquareButtons()
+  const downloadFormat = useDownloadFormat()
 
   const canGoLeft = index >= 1
   const canGoRight = index < imgs.length - 1
@@ -309,7 +311,10 @@ function LightboxGallery({
             <Menu.Item
               label={l`Download image`}
               onPress={() => {
-                saveImageToMediaLibrary({uri: img.uri}).then(
+                saveImageToMediaLibrary({
+                  uri: img.uri,
+                  format: downloadFormat ?? 'jpeg',
+                }).then(
                   () => {
                     Toast.show(l`Image saved`)
                   },

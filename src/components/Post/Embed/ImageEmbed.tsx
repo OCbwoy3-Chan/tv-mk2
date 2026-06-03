@@ -2,11 +2,14 @@ import {InteractionManager, View} from 'react-native'
 import {type AnimatedRef} from 'react-native-reanimated'
 import {Image} from 'expo-image'
 
-import {useHighQualityImages} from '#/state/preferences/high-quality-images'
+import {resolveEmbedImageUris} from '#/lib/media/embed-image-formats'
+import {useFullsizeFormat} from '#/state/preferences/fullsize-format'
 import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
+import {useLoadAsPngs} from '#/state/preferences/load-small-pngs'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {atoms as a, tokens} from '#/alf'
 import {AutoSizedImage} from '#/components/images/AutoSizedImage'
 import {Gallery} from '#/components/images/Gallery'
@@ -26,24 +29,27 @@ export function ImageEmbed({
 }) {
   const ax = useAnalytics()
   const {openLightbox} = useLightboxControls()
-  const highQualityImages = useHighQualityImages()
+  const fullsizeFormat = useFullsizeFormat()
+  const thumbnailFormat = useThumbnailFormat()
+  const loadAsPngs = useLoadAsPngs()
   const imageCdnHost = useImageCdnHost()
   const {images} = embed.view
   const galleryEnabled = ax.features.enabled(ax.features.PostGalleryEmbedEnable)
 
   if (images.length > 0) {
-    const items = images.map(img => ({
-      uri: applyImageTransforms(img.fullsize, {
-        imageCdnHost,
-        highQualityImages,
-      }),
-      thumbUri: applyImageTransforms(img.thumb, {
-        imageCdnHost,
-        highQualityImages,
-      }),
-      alt: img.alt,
-      dimensions: img.aspectRatio ?? null,
-    }))
+    const items = images.map(img => {
+      const {fullsize, thumb} = resolveEmbedImageUris(img, {
+        thumbnailFormat: thumbnailFormat ?? 'webp',
+        fullsizeFormat: fullsizeFormat ?? 'webp',
+        loadAsPngs: loadAsPngs ?? true,
+      })
+      return {
+        uri: applyImageTransforms(fullsize, {imageCdnHost}),
+        thumbUri: applyImageTransforms(thumb, {imageCdnHost}),
+        alt: img.alt,
+        dimensions: img.aspectRatio ?? null,
+      }
+    })
     const onPress = (
       index: number,
       refs: AnimatedRef<any>[],

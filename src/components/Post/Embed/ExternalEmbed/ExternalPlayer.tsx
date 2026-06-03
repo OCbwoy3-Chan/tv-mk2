@@ -26,11 +26,11 @@ import {
   getPlayerAspect,
 } from '#/lib/strings/embed-player'
 import {useExternalEmbedsPrefs} from '#/state/preferences'
-import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {atoms as a, useTheme} from '#/alf'
 import {useDialogControl} from '#/components/Dialog'
@@ -136,7 +136,7 @@ export function ExternalPlayer({
   const windowDims = useWindowDimensions()
   const externalEmbedsPrefs = useExternalEmbedsPrefs()
   const consentDialogControl = useDialogControl()
-  const highQualityImages = useHighQualityImages()
+  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
   const [isPlayerActive, setIsPlayerActive] = useState(false)
@@ -237,7 +237,7 @@ export function ExternalPlayer({
               source={{
                 uri: applyImageTransforms(link.thumb, {
                   imageCdnHost,
-                  highQualityImages,
+                  format: thumbnailFormat,
                 }),
               }}
               accessibilityIgnoresInvertColors

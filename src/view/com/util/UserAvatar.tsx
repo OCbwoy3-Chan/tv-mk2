@@ -38,11 +38,11 @@ import {
   createComposerImage,
 } from '#/state/gallery'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
-import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
 import {EditImageDialog} from '#/view/com/composer/photos/EditImageDialog'
 import {atoms as a, tokens, useTheme} from '#/alf'
@@ -253,7 +253,7 @@ let UserAvatar = ({
 
   const finalShape =
     overrideShape ?? (type === 'user' ? avishapeforce : 'square')
-  const highQualityImages = useHighQualityImages()
+  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
   const aviStyle = useMemo(() => {
@@ -343,7 +343,7 @@ let UserAvatar = ({
           source={{
             uri: applyImageTransforms(
               hackModifyThumbnailPath(avatar, size < 90),
-              {imageCdnHost, highQualityImages},
+              {imageCdnHost, format: thumbnailFormat},
             ),
           }}
           blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
@@ -357,7 +357,7 @@ let UserAvatar = ({
           source={{
             uri: applyImageTransforms(
               hackModifyThumbnailPath(avatar, size < 90),
-              {imageCdnHost, highQualityImages},
+              {imageCdnHost, format: thumbnailFormat},
             ),
           }}
           blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
@@ -398,7 +398,7 @@ let EditableUserAvatar = ({
   const editImageDialogControl = useDialogControl()
 
   const sheetWrapper = useSheetWrapper()
-  const highQualityImages = useHighQualityImages()
+  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
   const enableSquareAvatars = useEnableSquareAvatars()
@@ -519,7 +519,7 @@ let EditableUserAvatar = ({
                   source={{
                     uri: applyImageTransforms(avatar, {
                       imageCdnHost,
-                      highQualityImages,
+                      format: thumbnailFormat,
                     }),
                   }}
                   accessibilityRole="image"

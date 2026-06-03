@@ -3,6 +3,7 @@ import * as MediaLibrary from 'expo-media-library'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
+import {useDownloadFormat} from '#/state/preferences/download-format'
 import * as Toast from '#/components/Toast'
 import {IS_NATIVE} from '#/env'
 import {saveImageToMediaLibrary} from './manip'
@@ -12,6 +13,7 @@ import {saveImageToMediaLibrary} from './manip'
  */
 export function useSaveImageToMediaLibrary() {
   const {_} = useLingui()
+  const downloadFormat = useDownloadFormat()
   const [permissionResponse, requestPermission, getPermission] =
     MediaLibrary.usePermissions({
       granularPermissions: ['photo'],
@@ -24,7 +26,10 @@ export function useSaveImageToMediaLibrary() {
 
       async function save() {
         try {
-          await saveImageToMediaLibrary({uri})
+          await saveImageToMediaLibrary({
+            uri,
+            format: downloadFormat ?? 'jpeg',
+          })
 
           Toast.show(_(msg`Image saved`))
         } catch (e: any) {
@@ -63,6 +68,6 @@ export function useSaveImageToMediaLibrary() {
         }
       }
     },
-    [permissionResponse, requestPermission, getPermission, _],
+    [permissionResponse, requestPermission, getPermission, downloadFormat, _],
   )
 }

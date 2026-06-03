@@ -16,11 +16,12 @@ import {type NavigationProp} from '#/lib/routes/types'
 import {type Shadow} from '#/state/cache/types'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {useHighQualityImages} from '#/state/preferences/high-quality-images'
+import {useFullsizeFormat} from '#/state/preferences/fullsize-format'
 import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {useSession} from '#/state/session'
 import {LoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -65,7 +66,8 @@ let ProfileHeaderShell = ({
   const {top: topInset} = useSafeAreaInsets()
   const playHaptic = useHaptics()
   const liveStatusControl = useDialogControl()
-  const highQualityImages = useHighQualityImages()
+  const fullsizeFormat = useFullsizeFormat()
+  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
   const enableSquareAvatars = useEnableSquareAvatars()
   const enableSquareButtons = useEnableSquareButtons()
@@ -90,10 +92,13 @@ let ProfileHeaderShell = ({
       openLightbox({
         images: [
           {
-            uri: applyImageTransforms(uri, {imageCdnHost, highQualityImages}),
+            uri: applyImageTransforms(uri, {
+              imageCdnHost,
+              format: fullsizeFormat,
+            }),
             thumbUri: applyImageTransforms(uri, {
               imageCdnHost,
-              highQualityImages,
+              format: thumbnailFormat,
             }),
             thumbRect: null,
             thumbRef,
@@ -121,7 +126,13 @@ let ProfileHeaderShell = ({
         index: 0,
       })
     },
-    [openLightbox, imageCdnHost, highQualityImages, enableSquareAvatars],
+    [
+      openLightbox,
+      imageCdnHost,
+      fullsizeFormat,
+      thumbnailFormat,
+      enableSquareAvatars,
+    ],
   )
 
   const isMe = useMemo(

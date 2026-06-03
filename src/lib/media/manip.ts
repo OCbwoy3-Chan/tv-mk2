@@ -17,11 +17,12 @@ import * as MediaLibrary from 'expo-media-library'
 import * as Sharing from 'expo-sharing'
 
 import {POST_IMG_MAX} from '#/lib/constants'
+import {formatToFileExt} from '#/lib/media/image-formats'
 import {logger} from '#/logger'
 import {IS_ANDROID, IS_IOS} from '#/env'
 import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
-import {convertCdnPreset} from './util'
+import {getDownloadImageUri} from './util'
 import {mimeToExt} from './video/util'
 
 export async function compressIfNeeded(
@@ -103,19 +104,29 @@ export async function shareImageModal({uri}: {uri: string}) {
 const ALBUM_NAME = 'Bluesky'
 
 /**
- * Saves an image to the user's device. Uses the CDN's `download` preset
- * which uses the JPEG version with the Content-Disposition header set to
- * `attachment; filename=<filename>`. On native this saves to the media library;
- * on web it triggers a browser download.
+ * Saves an image to the user's device. Uses the CDN's `download` preset with the
+ * chosen format suffix. On native this saves to the media library; on web it
+ * triggers a browser download.
  */
-export async function saveImageToMediaLibrary({uri}: {uri: string}) {
-  const downloadUri = convertCdnPreset(uri, 'download')
+export async function saveImageToMediaLibrary({
+  uri,
+  format = 'jpeg',
+}: {
+  uri: string
+  format?: string
+}) {
+  const downloadUri = getDownloadImageUri(uri, format)
   const downloadedPath = await downloadImage(
     downloadUri,
     String(uuid.v4()),
     20e3,
   )
-  const imagePath = await moveToPermanentPath(downloadedPath, '.jpg')
+  const dotIndex = downloadedPath.lastIndexOf('.')
+  const ext =
+    dotIndex >= 0
+      ? downloadedPath.slice(dotIndex)
+      : `.${formatToFileExt(format)}`
+  const imagePath = await moveToPermanentPath(downloadedPath, ext)
 
   // save
   try {

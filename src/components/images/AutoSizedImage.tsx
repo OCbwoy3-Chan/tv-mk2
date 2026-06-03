@@ -12,12 +12,12 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {type Dimensions} from '#/lib/media/types'
-import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
 import {useLargeAltBadgeEnabled} from '#/state/preferences/large-alt-badge'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {atoms as a, useTheme, web} from '#/alf'
 import {ArrowsDiagonalOut_Stroke2_Corner0_Rounded as Fullscreen} from '#/components/icons/ArrowsDiagonal'
 import {MediaInsetBorder} from '#/components/MediaInsetBorder'
@@ -90,7 +90,7 @@ export function AutoSizedImage({
   const largeAlt = useLargeAltBadgeEnabled()
   const containerRef = useAnimatedRef()
   const fetchedDimsRef = useRef<{width: number; height: number} | null>(null)
-  const highQualityImages = useHighQualityImages()
+  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
   let aspectRatio: number | undefined
@@ -124,7 +124,7 @@ export function AutoSizedImage({
         style={[a.w_full, a.h_full]}
         source={applyImageTransforms(image.thumb, {
           imageCdnHost,
-          highQualityImages,
+          format: thumbnailFormat,
         })}
         accessible={true} // Must set for `accessibilityLabel` to work
         accessibilityIgnoresInvertColors

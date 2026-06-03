@@ -213,7 +213,12 @@ const schema = z.object({
       trusted: z.array(z.string()),
     })
     .optional(),
+  /** @deprecated Use thumbnailFormat and fullsizeFormat instead */
   highQualityImages: z.boolean().optional(),
+  thumbnailFormat: z.string().optional(),
+  fullsizeFormat: z.string().optional(),
+  downloadFormat: z.string().optional(),
+  loadAsPngs: z.boolean().optional(),
   imageCdnHost: z.string().optional(),
   plcDirectory: z.string().optional(),
   hideUnreplyablePosts: z.boolean().optional(),
@@ -357,6 +362,10 @@ export const defaults: Schema = {
     trusted: [],
   },
   highQualityImages: false,
+  thumbnailFormat: 'webp',
+  fullsizeFormat: 'webp',
+  downloadFormat: 'jpeg',
+  loadAsPngs: true,
   imageCdnHost: 'https://cdn.bsky.app',
   plcDirectory: 'https://plc.directory',
   hideUnreplyablePosts: false,
@@ -403,14 +412,22 @@ export function tryParse(rawData: string): Schema | undefined {
   }
   const parsed = schema.safeParse(objData)
   if (parsed.success) {
-    const data = parsed.data
+    let data = parsed.data
     if (
       (objData as {noAppLabelers?: boolean}).noAppLabelers &&
       !data.ignoredAppLabelers?.length
     ) {
-      return {
+      data = {
         ...data,
         ignoredAppLabelers: [BSKY_LABELER_DID],
+      }
+    }
+    if (data.highQualityImages) {
+      data = {
+        ...data,
+        thumbnailFormat: data.thumbnailFormat ?? 'png',
+        fullsizeFormat: data.fullsizeFormat ?? 'png',
+        loadAsPngs: data.loadAsPngs ?? true,
       }
     }
     return data

@@ -14,11 +14,11 @@ import {
 } from '#/lib/strings/embed-player'
 import {toNiceDomain} from '#/lib/strings/url-helpers'
 import {useExternalEmbedsPrefs} from '#/state/preferences'
-import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {atoms as a, useTheme} from '#/alf'
 import {Divider} from '#/components/Divider'
 import {Earth_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
@@ -44,13 +44,13 @@ export const ExternalEmbed = ({
   const t = useTheme()
   const playHaptic = useHaptics()
   const externalEmbedPrefs = useExternalEmbedsPrefs()
-  const highQualityImages = useHighQualityImages()
+  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
   const niceUrl = toNiceDomain(link.uri)
   const imageUri = link.thumb
     ? applyImageTransforms(link.thumb, {
         imageCdnHost,
-        highQualityImages,
+        format: thumbnailFormat,
       })
     : undefined
   const embedPlayerParams = useMemo(() => {

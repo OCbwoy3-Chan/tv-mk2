@@ -2,6 +2,7 @@ import {useCallback} from 'react'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
+import {useDownloadFormat} from '#/state/preferences/download-format'
 import * as Toast from '#/components/Toast'
 import {IS_NATIVE} from '#/env'
 import {saveImageToMediaLibrary} from './manip'
@@ -14,6 +15,7 @@ import {saveImageToMediaLibrary} from './manip'
  */
 export function useSaveImageToMediaLibrary() {
   const {_} = useLingui()
+  const downloadFormat = useDownloadFormat()
   return useCallback(
     async (uri: string) => {
       if (!IS_NATIVE) {
@@ -21,12 +23,15 @@ export function useSaveImageToMediaLibrary() {
       }
 
       try {
-        await saveImageToMediaLibrary({uri})
+        await saveImageToMediaLibrary({
+          uri,
+          format: downloadFormat ?? 'jpeg',
+        })
         Toast.show(_(msg`Image saved`))
       } catch (e: any) {
         Toast.show(_(msg`Failed to save image: ${String(e)}`), {type: 'error'})
       }
     },
-    [_],
+    [downloadFormat, _],
   )
 }

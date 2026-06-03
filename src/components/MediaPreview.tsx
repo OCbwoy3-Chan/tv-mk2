@@ -4,11 +4,11 @@ import {type AppBskyFeedDefs} from '@atproto/api'
 import {Trans} from '@lingui/react/macro'
 
 import {isGifEmbed} from '#/lib/strings/embed-player'
-import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {atoms as a, useTheme} from '#/alf'
 import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import {Text} from '#/components/Typography'
@@ -101,13 +101,13 @@ export function ImageItem({
   children?: React.ReactNode
 }) {
   const t = useTheme()
-  const highQualityImages = useHighQualityImages()
+  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
   const transformedThumbnail = thumbnail
     ? applyImageTransforms(thumbnail, {
         imageCdnHost,
-        highQualityImages,
+        format: thumbnailFormat,
       })
     : undefined
 

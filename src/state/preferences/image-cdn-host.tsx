@@ -99,26 +99,19 @@ export function maybeModifyImageCdnHost(src: string, imageCdnHost?: string) {
   return modifyImageCdnHost(src, nextOrigin) ?? src
 }
 
+import {modifyImageFormat} from '#/lib/media/util'
+
 /**
- * Combined image transformation pipeline: applies high-quality image format
- * transformation first (on original CDN), then applies CDN host rewrite.
+ * Combined image transformation pipeline: applies image format, then CDN host
+ * rewrite.
  */
 export function applyImageTransforms(
   src: string,
   options: {
     imageCdnHost?: string
-    highQualityImages?: boolean
+    format?: string
   },
 ) {
-  // Import is deferred to avoid circular dependency
-  const {maybeModifyHighQualityImage} =
-    require('./high-quality-images') as typeof import('./high-quality-images')
-
-  // First apply quality transformation on original CDN
-  const withQuality = maybeModifyHighQualityImage(
-    src,
-    options.highQualityImages,
-  )
-  // Then apply CDN host replacement
-  return maybeModifyImageCdnHost(withQuality, options.imageCdnHost)
+  const withFormat = modifyImageFormat(src, options.format ?? 'webp')
+  return maybeModifyImageCdnHost(withFormat, options.imageCdnHost)
 }

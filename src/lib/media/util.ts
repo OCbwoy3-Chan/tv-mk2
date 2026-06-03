@@ -47,3 +47,14 @@ const IMGPROXY_PRESET_RE =
 export function convertCdnPreset(uri: string, preset: ImgproxyPreset): string {
   return uri.replace(IMGPROXY_PRESET_RE, `$1${preset}$3`)
 }
+
+export function modifyImageFormat(uri: string, format: string) {
+  const atPosition = uri.lastIndexOf('@')
+  return atPosition === -1
+    ? `${uri}@${format}`
+    : uri.slice(0, atPosition + 1) + format
+}
+
+export function getDownloadImageUri(uri: string, format: string) {
+  return modifyImageFormat(convertCdnPreset(uri, 'download'), format)
+}

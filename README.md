@@ -22,17 +22,18 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - You can change "post" to any phrase you want in the UI
 - Choose between sharing witchsky.app or bsky.app links
 - Embed player works with [stream.place](https://stream.place/) links!
-- Open posts in PDSls and original fedi-bridged pages
+- Open posts in PDSls and original bridged fedi instances 
 - You can delete and redraft (basically edit!) posts
 - Better defaults (alt text required 😉 autoplay off 🫨)
 - Read your chat threads with deleted/deactivated accounts
-- More unique repost icons
+- Unique repost icons in notifications
+- Repost carousels in following feed
 - Can download videos
 - Stay on a page when switching accounts
 - 'Mutuals' in place of 'Following' when relevant
 - Pet label (option to toggle, & visibility for everyone else)
 - Account AI preferences screen
-- No unread notifications badge limit (30+)
+- No unread notifications badge limit (✗30+)
 - No age assurance or blocks based on location
 - No push notifications (hopefully will be added later)
 - Kept as up-to-date as possible (sporadically unstable as a result)
@@ -88,10 +89,15 @@ These are all available as options in the Runes sub-page of the app's settings.
     - Account switcher
       - Use compact account switcher
       - Automatically use compact account switcher with more than 6 accounts
-  - Combine reposts into a horizontal carousel
-  - Display images in higher quality
+    - Anything else
+      - Compact posts
   - Show client used to post
   - Change custom post phrase
+  - Images
+    - Thumbnail format
+    - Full-size format
+    - Download format
+    - Load especially small images as PNGs
 - Infrastructure
   - Post translation provider
     - Google Translate
@@ -120,13 +126,12 @@ These are all available as options in the Runes sub-page of the app's settings.
 ### TODO: Xan
 
 - [ ] Setup App Linking for Android (.well-known w/ app package fingerprint)
-- [ ] Make fallback email addresses use witchsky.social in Legacy sign-in automatic PDS detection
 - [ ] Change followed accounts [on onboarding](https://github.com/blacksky-algorithms/blacksky.community/commit/e36ee43efb4999f070860d7f70122e45b28c1e2b)
 - [ ] Visual replies indicator like the [Firmament userstyle](https://witchsky.app/profile/did:plc:jwhxcrf5uvl3vyw7nurecgt5/post/3m4rr3vzmak2a)
 - [ ] Permit editing Menu options in Runes > Menus (remember [Outlinks page](https://witchsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3m5zjhhshic2g)?)
   - [ ] ShareMenuItems.tsx, ShareMenuItems.web.tsx
 - [ ] Add Open bridged OG fedi account page option to ProfileMenu.tsx
-- [ ] Witchsky PDS and .social site (list good songs containing 'bitch' in their titles for related site)
+- [ ] Witchsky PDS and .social site (list good songs containing 'bitch' in their titles on related site)
 
 ### Upcoming or wishful features
 

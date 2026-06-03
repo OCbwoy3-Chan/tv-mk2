@@ -8,12 +8,12 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {type Dimensions} from '#/lib/media/types'
-import {useHighQualityImages} from '#/state/preferences/high-quality-images'
 import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
 import {useLargeAltBadgeEnabled} from '#/state/preferences/large-alt-badge'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {atoms as a, useTheme} from '#/alf'
 import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import {PostEmbedViewContext} from '#/components/Post/Embed/types'
@@ -53,7 +53,7 @@ export function GalleryItem({
   const t = useTheme()
   const {_} = useLingui()
   const largeAltBadge = useLargeAltBadgeEnabled()
-  const highQualityImages = useHighQualityImages()
+  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
   const image = images[index]
   const hasAlt = !!image.alt
@@ -86,7 +86,7 @@ export function GalleryItem({
           source={{
             uri: applyImageTransforms(image.thumb, {
               imageCdnHost,
-              highQualityImages,
+              format: thumbnailFormat,
             }),
           }}
           style={[a.flex_1]}

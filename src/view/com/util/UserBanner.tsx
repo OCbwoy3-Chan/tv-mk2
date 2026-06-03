@@ -20,11 +20,12 @@ import {
   compressImage,
   createComposerImage,
 } from '#/state/gallery'
-import {useHighQualityImages} from '#/state/preferences/high-quality-images'
+import {useFullsizeFormat} from '#/state/preferences/fullsize-format'
 import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {EditImageDialog} from '#/view/com/composer/photos/EditImageDialog'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {atoms as a, tokens, useTheme} from '#/alf'
@@ -57,7 +58,8 @@ export function UserBanner({
   const sheetWrapper = useSheetWrapper()
   const [rawImage, setRawImage] = useState<ComposerImage | undefined>()
   const editImageDialogControl = useDialogControl()
-  const highQualityImages = useHighQualityImages()
+  const fullsizeFormat = useFullsizeFormat()
+  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
   const onOpenCamera = useCallback(async () => {
@@ -139,7 +141,7 @@ export function UserBanner({
                     source={{
                       uri: applyImageTransforms(banner, {
                         imageCdnHost,
-                        highQualityImages,
+                        format: thumbnailFormat,
                       }),
                     }}
                     accessible={true}
@@ -228,7 +230,10 @@ export function UserBanner({
       style={[styles.bannerImage, t.atoms.bg_contrast_25]}
       contentFit="cover"
       source={{
-        uri: applyImageTransforms(banner, {imageCdnHost, highQualityImages}),
+        uri: applyImageTransforms(banner, {
+          imageCdnHost,
+          format: fullsizeFormat,
+        }),
       }}
       blurRadius={moderation?.blur ? 100 : 0}
       accessible={true}

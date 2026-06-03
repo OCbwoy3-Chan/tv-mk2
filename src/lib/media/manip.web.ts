@@ -1,7 +1,8 @@
 import {POST_IMG_MAX} from '#/lib/constants'
+import {formatToFileExt} from '#/lib/media/image-formats'
 import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
-import {blobToDataUri, convertCdnPreset, getDataUriSize} from './util'
+import {blobToDataUri, getDataUriSize, getDownloadImageUri} from './util'
 import {mimeToExt} from './video/util'
 
 export async function compressIfNeeded(
@@ -52,14 +53,20 @@ export async function shareImageModal(_opts: {uri: string}) {
 }
 
 /**
- * Saves an image to the user's device. Uses the CDN's `download` preset
- * which serves a JPEG with `Content-Disposition: attachment`. On web this
- * triggers a browser download via a temporary anchor — no fetch needed.
+ * Saves an image to the user's device. Uses the CDN's `download` preset with the
+ * chosen format suffix. On web this triggers a browser download via a temporary
+ * anchor — no fetch needed.
  */
-export async function saveImageToMediaLibrary({uri}: {uri: string}) {
-  const downloadUri = convertCdnPreset(uri, 'download')
+export async function saveImageToMediaLibrary({
+  uri,
+  format = 'jpeg',
+}: {
+  uri: string
+  format?: string
+}) {
+  const downloadUri = getDownloadImageUri(uri, format)
   const segments = downloadUri.split('/')
-  const filename = `bluesky-${segments.at(-1) ?? 'image'}.jpg`
+  const filename = `bluesky-${segments.at(-1) ?? 'image'}.${formatToFileExt(format)}`
   downloadUrl(downloadUri, filename)
 }
 
