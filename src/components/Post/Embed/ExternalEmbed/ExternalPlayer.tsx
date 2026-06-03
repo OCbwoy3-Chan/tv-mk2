@@ -126,9 +126,11 @@ function Player({
 export function ExternalPlayer({
   link,
   params,
+  preview,
 }: {
   link: AppBskyEmbedExternal.ViewExternal
   params: EmbedPlayerParams
+  preview?: boolean
 }) {
   const t = useTheme()
   const navigation = useNavigation<NavigationProp>()
@@ -235,10 +237,12 @@ export function ExternalPlayer({
             <Image
               style={[a.flex_1]}
               source={{
-                uri: applyImageTransforms(link.thumb, {
-                  imageCdnHost,
-                  format: thumbnailFormat,
-                }),
+                uri: preview
+                  ? link.thumb
+                  : applyImageTransforms(link.thumb, {
+                      imageCdnHost,
+                      format: thumbnailFormat,
+                    }),
               }}
               accessibilityIgnoresInvertColors
               loading="lazy"

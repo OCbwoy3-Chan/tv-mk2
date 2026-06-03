@@ -53,7 +53,7 @@ export const ExternalEmbedGif = ({
     <View style={[a.overflow_hidden, t.atoms.border_contrast_medium]}>
       {linkInfo ? (
         <View style={{pointerEvents: 'auto'}}>
-          <ExternalEmbed link={linkInfo} hideAlt />
+          <ExternalEmbed link={linkInfo} hideAlt preview />
         </View>
       ) : error ? (
         <Container style={[a.align_start, a.p_md, a.gap_xs]}>
@@ -113,6 +113,7 @@ export const ExternalEmbedLink = ({
               thumb: data.thumb?.source.path,
             }}
             hideAlt
+            preview
           />
         )
       } else if (data.kind === 'feed') {

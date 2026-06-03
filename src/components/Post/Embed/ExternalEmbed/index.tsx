@@ -34,11 +34,13 @@ export const ExternalEmbed = ({
   onOpen,
   style,
   hideAlt,
+  preview,
 }: {
   link: AppBskyEmbedExternal.ViewExternal
   onOpen?: () => void
   style?: StyleProp<ViewStyle>
   hideAlt?: boolean
+  preview?: boolean
 }) => {
   const {_} = useLingui()
   const t = useTheme()
@@ -48,10 +50,12 @@ export const ExternalEmbed = ({
   const imageCdnHost = useImageCdnHost()
   const niceUrl = toNiceDomain(link.uri)
   const imageUri = link.thumb
-    ? applyImageTransforms(link.thumb, {
-        imageCdnHost,
-        format: thumbnailFormat,
-      })
+    ? preview
+      ? link.thumb
+      : applyImageTransforms(link.thumb, {
+          imageCdnHost,
+          format: thumbnailFormat,
+        })
     : undefined
   const embedPlayerParams = useMemo(() => {
     const params = parseEmbedPlayerFromUrl(link.uri)
@@ -126,7 +130,11 @@ export const ExternalEmbed = ({
           {embedPlayerParams?.isGif ? (
             <ExternalGif link={link} params={embedPlayerParams} />
           ) : embedPlayerParams ? (
-            <ExternalPlayer link={link} params={embedPlayerParams} />
+            <ExternalPlayer
+              link={link}
+              params={embedPlayerParams}
+              preview={preview}
+            />
           ) : undefined}
 
           <View

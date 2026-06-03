@@ -126,19 +126,10 @@ function EmptyState({
   messageText,
   error,
   children,
-  button,
-  buttonAlign = 'center',
 }: {
   messageText: React.ReactNode
   error?: string
   children?: React.ReactNode
-  button?: {
-    label: string
-    text: string
-    onPress: () => void
-    disabled?: boolean
-  }
-  buttonAlign?: 'left' | 'center'
 }) {
   const t = useTheme()
 
@@ -169,23 +160,6 @@ function EmptyState({
           )}
 
           {children}
-
-          {button && (
-            <View
-              style={[
-                a.mt_lg,
-                buttonAlign === 'left' ? a.align_start : a.align_center,
-              ]}>
-              <Button
-                label={button.label}
-                color="primary"
-                size="small"
-                disabled={button.disabled}
-                onPress={button.onPress}>
-                <ButtonText>{button.text}</ButtonText>
-              </Button>
-            </View>
-          )}
         </View>
       </View>
     </Layout.Content>
@@ -208,6 +182,10 @@ function SearchResultsFooter({
     return <ListFooter isFetchingNextPage />
   }
 
+  if (!hasNextPage) {
+    return <ListFooter hasNextPage={false} showEndMessage />
+  }
+
   return (
     <View
       style={[
@@ -223,10 +201,9 @@ function SearchResultsFooter({
           label={l`Load more`}
           color="primary"
           size="small"
-          disabled={!hasNextPage}
           onPress={onLoadMore}>
           <ButtonText>
-            <Trans>{hasNextPage ? 'Load more' : 'Load more'}</Trans>
+            <Trans>Load more</Trans>
           </ButtonText>
         </Button>
       </View>
@@ -453,16 +430,7 @@ let SearchScreenPostResults = ({
               }
             />
           ) : (
-            <EmptyState
-              messageText={<NoResultsText query={query} />}
-              buttonAlign="left"
-              button={{
-                label: l`Load more`,
-                text: l`Load more`,
-                onPress: onEndReached,
-                disabled: isFetchingNextPage,
-              }}
-            />
+            <EmptyState messageText={<NoResultsText query={query} />} />
           )}
         </>
       ) : (
@@ -582,16 +550,7 @@ let SearchScreenUserResults = ({
           }
         />
       ) : (
-        <EmptyState
-          messageText={<NoResultsText query={query} />}
-          buttonAlign="left"
-          button={{
-            label: l`Load more`,
-            text: l`Load more`,
-            onPress: onEndReached,
-            disabled: isFetchingNextPage || !hasSession,
-          }}
-        />
+        <EmptyState messageText={<NoResultsText query={query} />} />
       )}
     </>
   ) : (
