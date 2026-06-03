@@ -287,11 +287,15 @@ export async function compressImage(
     highResolution?: boolean
     increasedBlobSizeLimit?: boolean
     outputMime?: 'image/jpeg' | 'image/webp'
+    /** When true, always re-encode even if the source is already small enough. */
+    forceEncode?: boolean
   },
 ): Promise<PickerImage> {
-  const res = await bypassCompression(img)
-  if (res) {
-    return res
+  if (!options?.forceEncode) {
+    const res = await bypassCompression(img)
+    if (res) {
+      return res
+    }
   }
 
   const source = img.transformed || img.source

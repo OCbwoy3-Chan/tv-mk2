@@ -17,6 +17,7 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
+import {POST_IMG_MAX} from '#/lib/constants'
 import {useHaptics} from '#/lib/haptics'
 import {
   useCameraPermission,
@@ -404,6 +405,14 @@ let EditableUserAvatar = ({
 
   const circular = type !== 'algo' && type !== 'list' && !enableSquareAvatars
 
+  const avatarCompressOpts = useMemo(
+    () =>
+      type === 'list'
+        ? {outputMime: 'image/jpeg' as const}
+        : {outputMime: 'image/webp' as const, forceEncode: true},
+    [type],
+  )
+
   const aviStyle = useMemo(() => {
     if (!circular) {
       return {
@@ -429,9 +438,11 @@ let EditableUserAvatar = ({
         await openCamera({
           aspect: [1, 1],
         }),
+        POST_IMG_MAX.size,
+        avatarCompressOpts,
       ),
     )
-  }, [onSelectNewAvatar, requestCameraAccessIfNeeded])
+  }, [onSelectNewAvatar, requestCameraAccessIfNeeded, avatarCompressOpts])
 
   const onOpenLibrary = useCallback(async () => {
     if (!(await requestPhotoAccessIfNeeded())) {
@@ -457,6 +468,8 @@ let EditableUserAvatar = ({
               shape: circular ? 'circle' : 'rectangle',
               aspectRatio: 1,
             }),
+            POST_IMG_MAX.size,
+            avatarCompressOpts,
           ),
         )
       } else {
@@ -475,6 +488,7 @@ let EditableUserAvatar = ({
     sheetWrapper,
     editImageDialogControl,
     circular,
+    avatarCompressOpts,
   ])
 
   const onRemoveAvatar = useCallback(() => {
@@ -483,10 +497,13 @@ let EditableUserAvatar = ({
 
   const onChangeEditImage = useCallback(
     async (image: ComposerImage) => {
-      const compressed = await compressImage(image, {outputMime: 'image/jpeg'})
+      const compressed = await compressImage(image, {
+        ...avatarCompressOpts,
+        forceEncode: true,
+      })
       onSelectNewAvatar(compressed)
     },
-    [onSelectNewAvatar],
+    [onSelectNewAvatar, avatarCompressOpts],
   )
 
   return (

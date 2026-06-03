@@ -1,21 +1,28 @@
+import {POST_IMG_MAX} from '#/lib/constants'
 import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
-import {blobToDataUri, getDataUriSize} from './util'
+import {blobToDataUri, convertCdnPreset, getDataUriSize} from './util'
 import {mimeToExt} from './video/util'
 
 export async function compressIfNeeded(
   img: PickerImage,
-  maxSize: number,
+  maxSize: number = POST_IMG_MAX.size,
+  opts?: {outputMime?: 'image/jpeg' | 'image/webp'; forceEncode?: boolean},
 ): Promise<PickerImage> {
-  if (img.size < maxSize) {
+  const outputMime = opts?.outputMime ?? 'image/jpeg'
+  const needsReencode =
+    opts?.forceEncode || img.size >= maxSize || img.mime !== outputMime
+
+  if (!needsReencode) {
     return img
   }
+
   return await doResize(img.path, {
     width: img.width,
     height: img.height,
     mode: 'stretch',
     maxSize,
-    outputMime: 'image/jpeg',
+    outputMime: opts?.outputMime ?? 'image/jpeg',
   })
 }
 
@@ -44,9 +51,16 @@ export async function shareImageModal(_opts: {uri: string}) {
   throw new Error('TODO')
 }
 
-export async function saveImageToMediaLibrary(_opts: {uri: string}) {
-  // TODO
-  throw new Error('TODO')
+/**
+ * Saves an image to the user's device. Uses the CDN's `download` preset
+ * which serves a JPEG with `Content-Disposition: attachment`. On web this
+ * triggers a browser download via a temporary anchor — no fetch needed.
+ */
+export async function saveImageToMediaLibrary({uri}: {uri: string}) {
+  const downloadUri = convertCdnPreset(uri, 'download')
+  const segments = downloadUri.split('/')
+  const filename = `bluesky-${segments.at(-1) ?? 'image'}.jpg`
+  downloadUrl(downloadUri, filename)
 }
 
 export async function downloadVideoWeb({uri}: {uri: string}) {

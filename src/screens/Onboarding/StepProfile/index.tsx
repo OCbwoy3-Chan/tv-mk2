@@ -212,7 +212,10 @@ export function StepProfile() {
         }
       }
     }
-    image = await compressIfNeeded(image, 1000000)
+    image = await compressIfNeeded(image, 1000000, {
+      outputMime: 'image/webp',
+      forceEncode: true,
+    })
 
     // If we are on mobile, prefetching the image will load the image into memory before we try and display it,
     // stopping any brief flickers.

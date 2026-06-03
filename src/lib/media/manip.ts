@@ -27,16 +27,22 @@ import {mimeToExt} from './video/util'
 export async function compressIfNeeded(
   img: PickerImage,
   maxSize: number = POST_IMG_MAX.size,
+  opts?: {outputMime?: 'image/jpeg' | 'image/webp'; forceEncode?: boolean},
 ): Promise<PickerImage> {
-  if (img.size < maxSize) {
+  const outputMime = opts?.outputMime ?? 'image/jpeg'
+  const needsReencode =
+    opts?.forceEncode || img.size >= maxSize || img.mime !== outputMime
+
+  if (!needsReencode) {
     return img
   }
+
   const resizedImage = await doResize(normalizePath(img.path), {
     width: img.width,
     height: img.height,
     mode: 'stretch',
     maxSize,
-    outputMime: 'image/jpeg',
+    outputMime,
   })
   const finalImageMovedPath = await moveToPermanentPath(
     resizedImage.path,

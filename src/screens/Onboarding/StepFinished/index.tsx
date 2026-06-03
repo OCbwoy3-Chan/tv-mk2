@@ -14,6 +14,7 @@ import {Trans} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
 import {uploadBlob} from '#/lib/api'
+import {upsertActorProfile} from '#/lib/api/upsert-profile'
 import {
   BSKY_APP_ACCOUNT_DID,
   DISCOVER_SAVED_FEED,
@@ -146,7 +147,7 @@ export function StepFinished() {
               ? uploadBlob(agent, imageUri, imageMime)
               : undefined
 
-          await agent.upsertProfile(async existing => {
+          await upsertActorProfile(agent, async existing => {
             let next: Un$Typed<AppBskyActorProfile.Record> = existing ?? {}
 
             if (blobPromise) {

@@ -20,6 +20,7 @@ import {
 } from '@tanstack/react-query'
 
 import {uploadBlob} from '#/lib/api'
+import {upsertActorProfile} from '#/lib/api/upsert-profile'
 import {until} from '#/lib/async/until'
 import {useToggleMutationQueue} from '#/lib/hooks/useToggleMutationQueue'
 import {updateProfileShadow} from '#/state/cache/profile-shadow'
@@ -172,7 +173,7 @@ export function useProfileUpdateMutation() {
           newUserBanner.mime,
         )
       }
-      await agent.upsertProfile(async existing => {
+      await upsertActorProfile(agent, async existing => {
         let next: Un$Typed<AppBskyActorProfile.Record> = existing || {}
         if (typeof updates === 'function') {
           next = updates(next)
