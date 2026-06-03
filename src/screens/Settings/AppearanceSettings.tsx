@@ -17,11 +17,14 @@ import {
   useEnableSquareAvatars,
   useSetEnableSquareAvatars,
 } from '#/state/preferences/enable-square-avatars'
-import {useCompactPosts, useSetCompactPosts} from '#/state/preferences'
 import {
   useEnableSquareButtons,
   useSetEnableSquareButtons,
 } from '#/state/preferences/enable-square-buttons'
+import {
+  useRepostCarouselEnabled,
+  useSetRepostCarouselEnabled,
+} from '#/state/preferences/repost-carousel-enabled'
 import {useKawaiiMode, useSetKawaiiMode} from '#/state/preferences/kawaii'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
 import {SettingsListItem as AppIconSettingsListItem} from '#/screens/Settings/AppIconSettings/SettingsListItem'
@@ -34,9 +37,9 @@ import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Moon_Stroke2_Corner0_Rounded as MoonIcon} from '#/components/icons/Moon'
 import {Person_Stroke2_Corner0_Rounded as PersonIcon} from '#/components/icons/Person'
 import {Phone_Stroke2_Corner0_Rounded as PhoneIcon} from '#/components/icons/Phone'
+import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
 import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
 import {TextSize_Stroke2_Corner0_Rounded as TextSize} from '#/components/icons/TextSize'
-import {Tree_Stroke2_Corner0_Rounded as TreeIcon} from '#/components/icons/Tree'
 import {TitleCase_Stroke2_Corner0_Rounded as Aa} from '#/components/icons/TitleCase'
 import {Window_Stroke2_Corner2_Rounded as SquareIcon} from '#/components/icons/Window'
 import * as Layout from '#/components/Layout'
@@ -59,8 +62,9 @@ export function AppearanceSettingsScreen({}: Props) {
 
   const enableSquareAvatars = useEnableSquareAvatars()
   const setEnableSquareAvatars = useSetEnableSquareAvatars()
-  const compactPosts = useCompactPosts()
-  const setCompactPosts = useSetCompactPosts()
+
+  const repostCarouselEnabled = useRepostCarouselEnabled()
+  const setRepostCarouselEnabled = useSetRepostCarouselEnabled()
 
   const enableSquareButtons = useEnableSquareButtons()
   const setEnableSquareButtons = useSetEnableSquareButtons()
@@ -216,14 +220,14 @@ export function AppearanceSettingsScreen({}: Props) {
                 onChange={onChangeFontScale}
               />
               <Toggle.Item
-                name="compact_posts"
-                label={_(msg`Use compact view for posts`)}
-                value={compactPosts}
-                onChange={value => setCompactPosts(value)}>
+                name="repost_carousel"
+                label={_(msg`Combine reposts into a horizontal carousel`)}
+                value={repostCarouselEnabled}
+                onChange={value => setRepostCarouselEnabled(value)}>
                 <SettingsList.Item>
-                  <SettingsList.ItemIcon icon={TreeIcon} />
+                  <SettingsList.ItemIcon icon={RepostIcon} />
                   <SettingsList.ItemText>
-                    <Trans>Use compact view for posts</Trans>
+                    <Trans>Combine reposts into a horizontal carousel</Trans>
                   </SettingsList.ItemText>
                   <Toggle.Platform />
                 </SettingsList.Item>

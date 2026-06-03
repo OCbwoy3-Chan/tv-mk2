@@ -649,13 +649,7 @@ let NotificationFeedItem = ({
                 authors={authors}
               />
               <View
-                style={[
-                  a.flex_row,
-                  a.flex_wrap,
-                  a.align_center,
-                  {paddingTop: 6},
-                  a.self_start,
-                ]}
+                style={[a.flex_row, a.align_center, {paddingTop: 6}, a.self_start]}
                 accessibilityLabel={a11yLabel}>
                 <NotificationContent content={notificationContent} />
                 <TimeElapsed timestamp={item.notification.indexedAt}>
