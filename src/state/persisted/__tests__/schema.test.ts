@@ -50,6 +50,16 @@ describe('persisted schema helpers', () => {
     expect(normalizeData(parsed!).downloadFormat).toBe(defaults.downloadFormat)
   })
 
+  it('preserves external embed prefs when defaults object is empty', () => {
+    const parsed = tryParse(JSON.stringify(partialState))
+
+    expect(parsed).toBeDefined()
+    expect(
+      normalizeData({...parsed!, externalEmbeds: {youtube: 'show'}})
+        .externalEmbeds,
+    ).toEqual({youtube: 'show'})
+  })
+
   it('migrates legacy disable metrics booleans to display modes', () => {
     const parsed = tryParse(
       JSON.stringify({

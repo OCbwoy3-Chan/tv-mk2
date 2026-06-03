@@ -30,6 +30,14 @@ function hydrateRecord<T extends Record<string, unknown>>(
       out[key] = value
     }
   }
+  // Keys stored in data but absent from defaults (e.g. externalEmbeds sources).
+  for (const key of Object.keys(dataObj) as (keyof T)[]) {
+    if (key in defaultObj) continue
+    const value = dataObj[key]
+    if (value !== undefined) {
+      out[key] = value
+    }
+  }
   return out
 }
 
