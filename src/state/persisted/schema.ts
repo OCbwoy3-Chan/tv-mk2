@@ -286,6 +286,9 @@ const schema = z.object({
   settingsSyncEnabled: z.boolean().optional(),
   settingsSyncDraftId: z.string().optional(),
   syncOpenRouterApiKey: z.boolean().optional(),
+  // Skip the next startup pull after a restart-required setting change so
+  // local edits are not overwritten by stale cloud data.
+  settingsSyncSkipNextPull: z.boolean().optional(),
 })
 export type Schema = z.infer<typeof schema>
 
@@ -418,6 +421,7 @@ export const defaults: Schema = {
   settingsSyncEnabled: false,
   settingsSyncDraftId: undefined,
   syncOpenRouterApiKey: false,
+  settingsSyncSkipNextPull: false,
 }
 
 export function tryParse(rawData: string): Schema | undefined {

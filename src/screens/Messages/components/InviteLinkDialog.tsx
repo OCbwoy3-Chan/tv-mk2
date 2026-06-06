@@ -361,7 +361,7 @@ export function InviteLinkDialog({
                   label={l`Disable`}
                   icon={ChainLinkBrokenIcon}
                   color="negative_subtle"
-                  style={[a.flex_1, a.rounded_full]}
+                  style={[a.flex_1]}
                   onPress={() => setStep(Step.CONFIRM_DISABLE)}>
                   <Trans>Disable</Trans>
                 </StackedButton>
@@ -371,7 +371,7 @@ export function InviteLinkDialog({
                 label={l`Post link`}
                 icon={EditIcon}
                 color="primary_subtle"
-                style={[a.flex_1, a.rounded_full]}
+                style={[a.flex_1]}
                 onPress={() => {
                   control.close(() => {
                     openComposer({
@@ -387,7 +387,7 @@ export function InviteLinkDialog({
                 label={l`Share`}
                 icon={ArrowShareRightIcon}
                 color="primary_subtle"
-                style={[a.flex_1, a.rounded_full]}
+                style={[a.flex_1]}
                 onPress={() => {
                   void shareUrl(joinLinkURI)
                 }}>

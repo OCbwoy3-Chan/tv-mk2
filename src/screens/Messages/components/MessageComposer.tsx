@@ -273,12 +273,13 @@ function SubmitButton({
 }) {
   const {t: l} = useLingui()
   const t = useTheme()
+  const enableSquareButtons = useEnableSquareButtons()
 
   return (
     <GlassView
       isInteractive
       glassEffectStyle="regular"
-      style={[a.rounded_full]}
+      style={[enableSquareButtons ? a.rounded_sm : a.rounded_full]}
       tintColor={disabled ? t.palette.contrast_100 : t.palette.primary_500}
       fallbackStyle={{
         backgroundColor: disabled
@@ -291,7 +292,7 @@ function SubmitButton({
         accessibilityHint=""
         hitSlop={HITSLOP_10}
         style={[
-          a.rounded_full,
+          enableSquareButtons ? a.rounded_sm : a.rounded_full,
           a.align_center,
           a.justify_center,
           {height: MIN_HEIGHT, width: MIN_HEIGHT},

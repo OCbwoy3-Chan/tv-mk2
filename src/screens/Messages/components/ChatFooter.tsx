@@ -1,5 +1,6 @@
 import {View} from 'react-native'
 
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme} from '#/alf'
 import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Text} from '#/components/Typography'
@@ -15,6 +16,7 @@ export function ChatFooter({
   icon: React.ComponentType<SVGIconProps>
 }>) {
   const t = useTheme()
+  const enableSquareButtons = useEnableSquareButtons()
 
   return (
     <View style={[a.p_lg]}>
@@ -24,7 +26,7 @@ export function ChatFooter({
           a.align_center,
           a.justify_between,
           a.p_md,
-          a.rounded_full,
+          enableSquareButtons ? a.rounded_sm : a.rounded_full,
           t.atoms.bg_contrast_50,
         ]}>
         <View

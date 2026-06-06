@@ -13,6 +13,7 @@ import {type NavigationProp} from '#/lib/routes/types'
 import {isNetworkError} from '#/lib/strings/errors'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {logger} from '#/logger'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useJoinLinkPreviewsQuery} from '#/state/queries/join-links'
 import {useRequestJoinGroupChat} from '#/state/queries/messages/request-join-group-chat'
@@ -44,11 +45,15 @@ import {ProfileBadges} from '../ProfileBadges'
 
 export function GroupChatJoinDialog() {
   const {groupChatJoinDialogControl, groupChatJoinState} = useIntentDialogs()
+  const enableSquareButtons = useEnableSquareButtons()
 
   return (
     <Dialog.Outer
       control={groupChatJoinDialogControl}
-      nativeOptions={{preventExpansion: true}}>
+      nativeOptions={{
+        preventExpansion: true,
+        cornerRadius: enableSquareButtons ? a.rounded_sm.borderRadius : 20,
+      }}>
       <Dialog.Handle />
       <GroupChatJoinDialogInner code={groupChatJoinState?.code} />
     </Dialog.Outer>
@@ -57,11 +62,17 @@ export function GroupChatJoinDialog() {
 
 function GroupChatJoinDialogInner({code}: {code?: string}) {
   const {t: l} = useLingui()
+  const enableSquareButtons = useEnableSquareButtons()
 
   return (
     <Dialog.ScrollableInner
       label={l`Join group chat`}
-      style={[web({maxWidth: 400, borderRadius: 36})]}>
+      style={[
+        web({
+          maxWidth: 400,
+          borderRadius: enableSquareButtons ? 18 : 36,
+        }),
+      ]}>
       <View style={[a.gap_2xl, a.align_center]}>
         <GroupChatJoinDialogContent code={code} />
       </View>

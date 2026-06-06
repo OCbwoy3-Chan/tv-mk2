@@ -5,6 +5,7 @@ import {Trans, useLingui} from '@lingui/react/macro'
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
 import {logger} from '#/logger'
 import {useAddGroupMembers} from '#/state/queries/messages/add-group-members'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -25,6 +26,7 @@ export function AddMembersLink({
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
+  const enableSquareButtons = useEnableSquareButtons()
 
   const addMembersControl = Dialog.useDialogControl()
 
@@ -86,7 +88,7 @@ export function AddMembersLink({
                   a.align_center,
                   a.justify_center,
                   a.p_lg,
-                  a.rounded_full,
+                  enableSquareButtons ? a.rounded_sm : a.rounded_full,
                   interacting
                     ? t.atoms.bg_contrast_100
                     : t.atoms.bg_contrast_50,

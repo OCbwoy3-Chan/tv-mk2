@@ -6,6 +6,7 @@ import {isBlockedOrBlocking} from '#/lib/moderation/blocked-and-muted'
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
 import {logger} from '#/logger'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {useRequireAuth, useSession} from '#/state/session'
@@ -14,8 +15,10 @@ import {
   type ConvoWithDetails,
   type GroupConvoMember,
 } from '#/components/dms/util'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {createStaticClick, SimpleInlineLinkText} from '#/components/Link'
 import * as ProfileCard from '#/components/ProfileCard'
+import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {MemberMenu} from './MemberMenu'
@@ -44,10 +47,12 @@ export function Member({
 
   const [queueFollow] = useProfileFollowMutationQueue(profile, 'GroupChat')
   const requireAuth = useRequireAuth()
+  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const promptControl = Prompt.usePromptControl()
 
   const isFollowing = !!profile.viewer?.following
 
-  const handleFollow = () => {
+  const executeFollow = () => {
     requireAuth(async () => {
       try {
         await queueFollow()
@@ -62,6 +67,18 @@ export function Member({
         }
       }
     })
+  }
+
+  const handleFollow = () => {
+    if (confirmFollowUnfollow) {
+      promptControl.open()
+    } else {
+      executeFollow()
+    }
+  }
+
+  const onConfirmFollow = () => {
+    executeFollow()
   }
 
   if (!moderationOpts) {
@@ -147,6 +164,15 @@ export function Member({
         )}
         {statusBadge}
       </View>
+      {confirmFollowUnfollow && (
+        <FollowConfirmationDialog
+          control={promptControl}
+          displayName={displayName}
+          handle={profile.handle}
+          actionType="follow"
+          onConfirm={onConfirmFollow}
+        />
+      )}
     </SubtleHoverWrapper>
   )
 }

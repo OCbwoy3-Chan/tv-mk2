@@ -45,7 +45,7 @@ import {Post} from '#/view/com/post/Post'
 import {formatCount} from '#/view/com/util/numeric/format'
 import {TimeElapsed} from '#/view/com/util/TimeElapsed'
 import {PreviewableUserAvatar, UserAvatar} from '#/view/com/util/UserAvatar'
-import {atoms as a, platform, useTheme} from '#/alf'
+import {atoms as a, native, platform, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {BellRinging_Filled_Corner0_Rounded as BellRingingIcon} from '#/components/icons/BellRinging'
@@ -649,25 +649,13 @@ let NotificationFeedItem = ({
                 authors={authors}
               />
               <View
-                style={[a.flex_row, a.align_center, {paddingTop: 6}, a.self_start]}
+                style={[{paddingTop: 6}, a.self_start]}
                 accessibilityLabel={a11yLabel}>
-                <NotificationContent content={notificationContent} />
-                <TimeElapsed timestamp={item.notification.indexedAt}>
-                  {({timeElapsed}) => (
-                    <>
-                      {/* make sure there's whitespace around the middot -sfn */}
-                      <Text style={[a.text_md, t.atoms.text_contrast_medium]}>
-                        {' '}
-                        &middot;{' '}
-                      </Text>
-                      <Text
-                        style={[a.text_md, t.atoms.text_contrast_medium]}
-                        title={niceTimestamp}>
-                        {timeElapsed}
-                      </Text>
-                    </>
-                  )}
-                </TimeElapsed>
+                <NotificationContent
+                  content={notificationContent}
+                  timestamp={item.notification.indexedAt}
+                  niceTimestamp={niceTimestamp}
+                />
               </View>
             </ExpandListPressable>
             {(item.type === 'follow' && !hasMultipleAuthors && !isFollowBack) ||
@@ -723,17 +711,69 @@ export {NotificationFeedItem}
 
 function NotificationContent({
   content,
+  timestamp,
+  niceTimestamp,
 }: {
   content: React.ReactElement<{component?: typeof NotificationSentence}>
+  timestamp: string
+  niceTimestamp: string
 }) {
-  return cloneElement(content, {component: NotificationSentence})
+  function Wrapper({children}: {children: React.ReactNode}) {
+    return (
+      <NotificationSentence
+        timestamp={timestamp}
+        niceTimestamp={niceTimestamp}>
+        {children}
+      </NotificationSentence>
+    )
+  }
+  return cloneElement(content, {component: Wrapper})
 }
 
-function NotificationSentence({children}: {children: React.ReactNode}) {
+function NotificationTimestamp({
+  timestamp,
+  niceTimestamp,
+}: {
+  timestamp: string
+  niceTimestamp: string
+}) {
   const t = useTheme()
   return (
-    <View style={[a.flex_row, a.flex_wrap, a.align_center, a.flex_shrink]}>
+    <TimeElapsed timestamp={timestamp}>
+      {({timeElapsed}) => (
+        <Text
+          style={[
+            a.text_md,
+            a.leading_snug,
+            t.atoms.text_contrast_medium,
+            native({includeFontPadding: false}),
+          ]}
+          title={niceTimestamp}>
+          {' '}&middot;{' '}
+          {timeElapsed}
+        </Text>
+      )}
+    </TimeElapsed>
+  )
+}
+
+function NotificationSentence({
+  children,
+  timestamp,
+  niceTimestamp,
+}: {
+  children: React.ReactNode
+  timestamp: string
+  niceTimestamp: string
+}) {
+  const t = useTheme()
+  return (
+    <View style={[a.flex_row, a.flex_wrap, a.align_baseline, a.flex_shrink]}>
       {renderInlineTransChildren(children, t)}
+      <NotificationTimestamp
+        timestamp={timestamp}
+        niceTimestamp={niceTimestamp}
+      />
     </View>
   )
 }

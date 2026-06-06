@@ -17,7 +17,8 @@ import {type Schema} from '#/state/persisted/schema'
 //   session, invites, reminders, onboarding, pdsAddressHistory,
 //   hasCheckedForStarterPack, mutedThreads (deprecated),
 //   lastSelectedHomeFeed (deprecated UI state),
-//   settingsSyncEnabled, settingsSyncDraftId  (the mechanism, not the content)
+//   settingsSyncEnabled, settingsSyncDraftId, settingsSyncSkipNextPull
+//   (the mechanism, not the content)
 
 export const SYNCED_PREFS_KEYS = [
   'colorMode',

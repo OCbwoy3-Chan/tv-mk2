@@ -228,7 +228,7 @@ export function MessageInput({
         <GlassView
           isInteractive
           glassEffectStyle="regular"
-          style={[a.rounded_full]}
+          style={[enableSquareButtons ? a.rounded_sm : a.rounded_full]}
           tintColor={
             submitDisabled ? t.palette.contrast_100 : t.palette.primary_500
           }

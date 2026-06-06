@@ -15,6 +15,7 @@ import {
 } from '@atproto/api'
 
 import {useSession} from '#/state/session'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme} from '#/alf'
 import {Person_Filled_Corner2_Rounded as PersonIcon} from '#/components/icons/Person'
@@ -138,6 +139,8 @@ function AvatarBubble({
   moderation?: ModerationUI
 }) {
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
+  const borderRadius = avatarBorderRadius(size, enableSquareAvatars)
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{translateX: x}, {translateY: y}, {scale: scale.get()}],
@@ -147,7 +150,7 @@ function AvatarBubble({
     <Animated.View
       style={[
         a.absolute,
-        a.rounded_full,
+        {borderRadius},
         a.flex_grow_0,
         includeProfileBorder && {
           borderColor: t.atoms.text_inverted.color,
@@ -174,15 +177,16 @@ function AvatarBubble({
 
 function AvatarPlaceholder({size}: {size: number}) {
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
+  const borderRadius = avatarBorderRadius(size, enableSquareAvatars)
 
   return (
     <View
       style={[
         a.align_center,
         a.justify_center,
-        a.rounded_full,
+        {borderRadius, width: size, height: size},
         t.atoms.bg_contrast_200,
-        {width: size, height: size},
       ]}>
       <PersonIcon
         width={size * 0.5}
@@ -191,6 +195,13 @@ function AvatarPlaceholder({size}: {size: number}) {
       />
     </View>
   )
+}
+
+function avatarBorderRadius(size: number, square: boolean) {
+  if (square) {
+    return size > 32 ? 8 : 3
+  }
+  return Math.floor(size / 2)
 }
 
 function getLayouts(count: number): Layout[] {

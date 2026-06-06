@@ -3,8 +3,10 @@ import {View} from 'react-native'
 import {useSift} from '@bsky.app/sift'
 import {StackActions, useNavigation} from '@react-navigation/native'
 
+import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
 import {atoms as a} from '#/alf'
+import {router} from '#/routes'
 import {
   Autocomplete as AutocompleteBase,
   type AutocompleteItem,
@@ -50,7 +52,9 @@ export function DesktopSearch() {
     if (item.type === 'profile') {
       onClearText()
       sift.elements.input.blur()
-      navigation.navigate('Profile', {name: item.profile.handle})
+      const [screen, params] = router.matchPath(makeProfileLink(item.profile))
+      // @ts-expect-error TODO: type matchPath well enough that it can be plugged into navigation.navigate directly
+      navigation.navigate(screen, params)
     } else if (item.type === 'search') {
       onClearText()
       sift.elements.input.blur()

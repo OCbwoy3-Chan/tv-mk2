@@ -1,6 +1,7 @@
 import {View} from 'react-native'
 import {Trans} from '@lingui/react/macro'
 
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, type ButtonProps} from '#/components/Button'
 import {Text} from '#/components/Typography'
@@ -12,6 +13,7 @@ export function EditTextButton({
   ...props
 }: ButtonProps & {value: string}) {
   const t = useTheme()
+  const enableSquareButtons = useEnableSquareButtons()
 
   return (
     <View style={[a.relative]}>
@@ -20,7 +22,7 @@ export function EditTextButton({
         style={[
           a.flex_1,
           a.justify_between,
-          a.rounded_full,
+          enableSquareButtons ? a.rounded_sm : a.rounded_full,
           a.border,
           t.atoms.bg,
           t.atoms.border_contrast_low,
@@ -43,7 +45,7 @@ export function EditTextButton({
             {typeof children === 'function' ? children(context) : children}
             <View
               style={[
-                a.rounded_full,
+                enableSquareButtons ? a.rounded_sm : a.rounded_full,
                 t.atoms.bg_contrast_50,
                 {paddingHorizontal: 10, paddingVertical: 8},
               ]}>

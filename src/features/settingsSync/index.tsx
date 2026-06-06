@@ -54,12 +54,16 @@ type SettingsSyncContextValue = {
   status: SyncStatus
   pushToCloud: () => void
   pullFromCloud: () => void
+  flushPushToCloud: () => Promise<void>
+  prepareForRestart: () => Promise<void>
 }
 
 const SettingsSyncContext = createContext<SettingsSyncContextValue>({
   status: {type: 'idle'},
   pushToCloud: () => {},
   pullFromCloud: () => {},
+  flushPushToCloud: async () => {},
+  prepareForRestart: async () => {},
 })
 SettingsSyncContext.displayName = 'SettingsSyncContext'
 
@@ -103,10 +107,45 @@ export function SettingsSyncGate({children}: PropsWithChildren<{}>) {
     }
   }, [currentDid])
 
+  const flushPushToCloud = useCallback(async () => {
+    if (!settingsSyncEnabled || !hasSession) return
+
+    if (pushTimerRef.current) {
+      clearTimeout(pushTimerRef.current)
+      pushTimerRef.current = null
+    }
+
+    setStatus({type: 'pushing'})
+    await pushMutation.mutateAsync(undefined)
+    setStatus({type: 'pushed', at: new Date()})
+  }, [settingsSyncEnabled, hasSession, pushMutation])
+
+  const prepareForRestart = useCallback(async () => {
+    if (!settingsSyncEnabled || !hasSession) return
+
+    try {
+      await flushPushToCloud()
+    } catch (e) {
+      logger.error('settings-sync: pre-restart push failed', {
+        safeMessage: String(e),
+      })
+    }
+
+    await persisted.write('settingsSyncSkipNextPull', true)
+  }, [settingsSyncEnabled, hasSession, flushPushToCloud])
+
   // Auto-pull once per account when we have a session and sync is enabled
   useEffect(() => {
     if (!hasSession || !settingsSyncEnabled || hasPulledRef.current) return
     hasPulledRef.current = true
+
+    if (persisted.get('settingsSyncSkipNextPull')) {
+      void persisted.write('settingsSyncSkipNextPull', false)
+      logger.debug('settings-sync: skipped startup pull after restart', {
+        did: currentDid,
+      })
+      return
+    }
 
     logger.debug('settings-sync: auto-pulling on startup', {did: currentDid})
     setStatus({type: 'pulling'})
@@ -192,7 +231,14 @@ export function SettingsSyncGate({children}: PropsWithChildren<{}>) {
   }, [pullMutation])
 
   return (
-    <SettingsSyncContext.Provider value={{status, pushToCloud, pullFromCloud}}>
+    <SettingsSyncContext.Provider
+      value={{
+        status,
+        pushToCloud,
+        pullFromCloud,
+        flushPushToCloud,
+        prepareForRestart,
+      }}>
       {children}
     </SettingsSyncContext.Provider>
   )
@@ -212,4 +258,8 @@ export function usePushToCloud() {
 
 export function usePullFromCloud() {
   return useContext(SettingsSyncContext).pullFromCloud
+}
+
+export function usePrepareSettingsSyncForRestart() {
+  return useContext(SettingsSyncContext).prepareForRestart
 }

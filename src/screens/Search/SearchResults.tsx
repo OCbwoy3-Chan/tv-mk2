@@ -126,10 +126,19 @@ function EmptyState({
   messageText,
   error,
   children,
+  button,
+  buttonAlign = 'center',
 }: {
   messageText: React.ReactNode
   error?: string
   children?: React.ReactNode
+  button?: {
+    label: string
+    text: string
+    onPress: () => void
+    disabled?: boolean
+  }
+  buttonAlign?: 'left' | 'center'
 }) {
   const t = useTheme()
 
@@ -160,6 +169,23 @@ function EmptyState({
           )}
 
           {children}
+
+          {button && (
+            <View
+              style={[
+                a.mt_lg,
+                buttonAlign === 'left' ? a.align_start : a.align_center,
+              ]}>
+              <Button
+                label={button.label}
+                color="primary"
+                size="small"
+                disabled={button.disabled}
+                onPress={button.onPress}>
+                <ButtonText>{button.text}</ButtonText>
+              </Button>
+            </View>
+          )}
         </View>
       </View>
     </Layout.Content>
@@ -430,7 +456,20 @@ let SearchScreenPostResults = ({
               }
             />
           ) : (
-            <EmptyState messageText={<NoResultsText query={query} />} />
+            <EmptyState
+              messageText={<NoResultsText query={query} />}
+              buttonAlign="left"
+              button={
+                hasNextPage
+                  ? {
+                      label: l`Load more`,
+                      text: l`Load more`,
+                      onPress: onEndReached,
+                      disabled: isFetchingNextPage,
+                    }
+                  : undefined
+              }
+            />
           )}
         </>
       ) : (
@@ -550,7 +589,20 @@ let SearchScreenUserResults = ({
           }
         />
       ) : (
-        <EmptyState messageText={<NoResultsText query={query} />} />
+        <EmptyState
+          messageText={<NoResultsText query={query} />}
+          buttonAlign="left"
+          button={
+            hasNextPage && hasSession
+              ? {
+                  label: l`Load more`,
+                  text: l`Load more`,
+                  onPress: onEndReached,
+                  disabled: isFetchingNextPage,
+                }
+              : undefined
+          }
+        />
       )}
     </>
   ) : (

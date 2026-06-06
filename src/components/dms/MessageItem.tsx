@@ -185,6 +185,10 @@ let MessageItem = ({
   const pendingColor = t.palette.primary_300
   const borderRadius = enableSquareButtons ? 4 : 18
 
+  const displayNameInset = enableSquareButtons
+    ? a.ml_sm.marginLeft
+    : DISPLAY_NAME_INSET
+
   const rt = new RichTextAPI({text: message.text, facets: message.facets})
 
   const hasEmbedAndText =
@@ -436,7 +440,7 @@ let MessageItem = ({
                   t.atoms.text_contrast_medium,
                   a.pt_xs,
                   a.pb_2xs,
-                  {paddingLeft: DISPLAY_NAME_INSET},
+                  {paddingLeft: displayNameInset},
                 ]}
                 emoji>
                 {displayName}

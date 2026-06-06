@@ -103,28 +103,6 @@ export function AccessibilitySettingsScreen({}: Props) {
               <Toggle.Platform />
             </Toggle.Item>
           </SettingsList.Group>
-          {IS_NATIVE && (
-            <>
-              <SettingsList.Divider />
-              <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-                <SettingsList.ItemIcon icon={HapticIcon} />
-                <SettingsList.ItemText>
-                  <Trans>Haptics</Trans>
-                </SettingsList.ItemText>
-                <Toggle.Item
-                  name="haptics"
-                  label={l`Disable haptic feedback`}
-                  value={hapticsDisabled ?? false}
-                  onChange={value => setHapticsDisabled(value)}
-                  style={[a.w_full]}>
-                  <Toggle.LabelText style={[a.flex_1]}>
-                    <Trans>Disable haptic feedback</Trans>
-                  </Toggle.LabelText>
-                  <Toggle.Platform />
-                </Toggle.Item>
-              </SettingsList.Group>
-            </>
-          )}
 
           <SettingsList.Item>
             <SettingsList.ItemIcon icon={BeakerIcon} />
@@ -134,7 +112,7 @@ export function AccessibilitySettingsScreen({}: Props) {
             <SettingsList.BadgeButton
               label={openRouterConfigured ? l`Change` : l`Set`}
               onPress={() => setOpenRouterApiKeyControl.open()}
-            />
+              />
           </SettingsList.Item>
 
           <SettingsList.Item>
@@ -160,7 +138,7 @@ export function AccessibilitySettingsScreen({}: Props) {
               <SettingsList.BadgeButton
                 label={l`Change`}
                 onPress={() => setOpenRouterModelControl.open()}
-              />
+                />
             </SettingsList.Item>
           )}
 
@@ -188,7 +166,7 @@ export function AccessibilitySettingsScreen({}: Props) {
               <SettingsList.BadgeButton
                 label={l`Change`}
                 onPress={() => setOpenRouterPromptControl.open()}
-              />
+                />
             </SettingsList.Item>
           )}
 
@@ -203,6 +181,29 @@ export function AccessibilitySettingsScreen({}: Props) {
             </SettingsList.Item>
           )}
 
+          {IS_NATIVE && (
+            <>
+              <SettingsList.Divider />
+              <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
+                <SettingsList.ItemIcon icon={HapticIcon} />
+                <SettingsList.ItemText>
+                  <Trans>Haptics</Trans>
+                </SettingsList.ItemText>
+                <Toggle.Item
+                  name="haptics"
+                  label={l`Disable haptic feedback`}
+                  value={hapticsDisabled ?? false}
+                  onChange={value => setHapticsDisabled(value)}
+                  style={[a.w_full]}>
+                  <Toggle.LabelText style={[a.flex_1]}>
+                    <Trans>Disable haptic feedback</Trans>
+                  </Toggle.LabelText>
+                  <Toggle.Platform />
+                </Toggle.Item>
+              </SettingsList.Group>
+            </>
+          )}
+          
           <OpenRouterApiKeyDialog control={setOpenRouterApiKeyControl} />
           <OpenRouterModelDialog control={setOpenRouterModelControl} />
           <OpenRouterPromptDialog control={setOpenRouterPromptControl} />

@@ -3,6 +3,7 @@ import {useCallback} from 'react'
 import {useLingui} from '@lingui/react/macro'
 import {reloadAppAsync} from 'expo'
 
+import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
 import {IS_WEB} from '#/env'
 import * as Prompt from '#/components/Prompt'
 
@@ -14,16 +15,19 @@ export function RestartRequiredPrompt({
   onConfirm?: () => void
 }) {
   const {t: l} = useLingui()
+  const prepareSettingsSyncForRestart = usePrepareSettingsSyncForRestart()
 
-  const handleConfirm = useCallback(() => {
+  const handleConfirm = useCallback(async () => {
     onConfirm?.()
+
+    await prepareSettingsSyncForRestart()
 
     if (IS_WEB) {
       window.location.reload()
     } else {
-      void reloadAppAsync()
+      await reloadAppAsync()
     }
-  }, [onConfirm])
+  }, [onConfirm, prepareSettingsSyncForRestart])
 
   return (
     <Prompt.Basic

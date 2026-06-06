@@ -996,6 +996,8 @@ export type StackedButtonProps = Omit<
   }
 
 export function StackedButton({children, ...props}: StackedButtonProps) {
+  const enableSquareButtons = useEnableSquareButtons()
+
   return (
     <Button
       {...props}
@@ -1005,7 +1007,7 @@ export function StackedButton({children, ...props}: StackedButtonProps) {
         {
           height: 72,
           paddingHorizontal: 16,
-          borderRadius: 20,
+          borderRadius: enableSquareButtons ? 4 : 20,
           gap: 4,
         },
         props.style,

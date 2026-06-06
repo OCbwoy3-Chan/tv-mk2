@@ -15,7 +15,7 @@ import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useSession} from '#/state/session'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {useIsWithinSplitView} from '#/screens/Messages/components/splitView/context'
-import {atoms as a, useTheme, web} from '#/alf'
+import {atoms as a, android, useTheme, web} from '#/alf'
 import {AvatarBubbles} from '#/components/AvatarBubbles'
 import {ButtonIcon} from '#/components/Button'
 import {ConvoMenu} from '#/components/dms/ConvoMenu'
@@ -130,9 +130,15 @@ function ProfileHeaderReady({
             disableHoverCard={moderation.blocked}
           />
           <View style={[a.flex_1]}>
-            <View style={[a.flex_row, a.align_center, a.flex_1, web(a.mb_2xs)]}>
+            <View
+              style={[a.flex_row, a.align_center, web(a.flex_1), web(a.mb_2xs)]}>
               <Text
-                style={[a.text_lg, a.font_semi_bold, a.flex_shrink]}
+                style={[
+                  a.text_lg,
+                  a.font_semi_bold,
+                  a.flex_shrink,
+                  android({includeFontPadding: false}),
+                ]}
                 numberOfLines={1}>
                 {displayName}
               </Text>
@@ -141,7 +147,11 @@ function ProfileHeaderReady({
             </View>
             {handle ? (
               <Text
-                style={[a.text_xs, t.atoms.text_contrast_high]}
+                style={[
+                  a.text_xs,
+                  t.atoms.text_contrast_high,
+                  android({includeFontPadding: false}),
+                ]}
                 numberOfLines={1}>
                 {handle}
               </Text>
