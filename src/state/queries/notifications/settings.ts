@@ -22,10 +22,7 @@ export function useNotificationSettingsQuery({
   return useQuery({
     queryKey: RQKEY,
     queryFn: async () => {
-      const response = await agent.app.bsky.notification.getPreferences(
-        {},
-        {headers: {'atproto-proxy': ''}},
-      )
+      const response = await agent.app.bsky.notification.getPreferences({})
       return response.data.preferences
     },
     enabled,
