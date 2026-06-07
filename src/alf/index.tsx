@@ -24,7 +24,12 @@ import {
   witchskyscheme,
   zeppelinscheme,
 } from '#/alf/themes'
-import {darken, lighten, rgbToHex} from '#/alf/util/colorGeneration'
+import {
+  contrastRatio,
+  darken,
+  lighten,
+  rgbToHex,
+} from '#/alf/util/colorGeneration'
 import {type Device} from '#/storage'
 import {getMaterial3Colors} from './util/material3Theme'
 import {
@@ -46,6 +51,7 @@ export const utils = {
   rgbToHex,
   lighten,
   darken,
+  contrastRatio,
 }
 
 

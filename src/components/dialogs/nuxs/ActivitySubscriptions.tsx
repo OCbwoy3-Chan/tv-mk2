@@ -116,6 +116,7 @@ export function ActivitySubscriptionsNUX() {
                 alt={_(
                   msg`A screenshot of a profile page with a bell icon next to the follow button, indicating the new activity notifications feature.`,
                 )}
+                useAppleWebpCodec
               />
             </View>
           </View>

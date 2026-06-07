@@ -67,10 +67,6 @@ export class MetricsClient<M extends Record<string, any>> {
   }
 
   private async sendBatch(events: Event<M>[], isRetry: boolean = false) {
-    logger.debug(`sendBatch: ${events.length}`, {
-      isRetry,
-    })
-
     const metricsApiHost = env.METRICS_API_HOST
     if (metricsApiHost) {
       await this.sendBatchToEndpoint(metricsApiHost, events, isRetry)

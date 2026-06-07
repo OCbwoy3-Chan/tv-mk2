@@ -158,12 +158,10 @@ let List = forwardRef<ListMethods, ListProps>(
       )
     }
 
-    let contentOffset
     if (headerOffset != null) {
       style = addStyle(style, {
         paddingTop: headerOffset,
       })
-      contentOffset = {x: 0, y: headerOffset * -1}
     }
 
     return (
@@ -181,7 +179,6 @@ let List = forwardRef<ListMethods, ListProps>(
           ...props.scrollIndicatorInsets,
         }}
         indicatorStyle={t.scheme === 'dark' ? 'white' : 'black'}
-        contentOffset={contentOffset}
         refreshControl={refreshControl}
         onScroll={scrollHandler}
         scrollsToTop={scrollsToTop}

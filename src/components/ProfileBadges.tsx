@@ -1,4 +1,4 @@
-import {useWindowDimensions, View} from 'react-native'
+import {View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -9,6 +9,7 @@ import {
 } from '#/state/preferences/pds-label'
 import {usePdsFaviconQuery, usePdsLabelQuery} from '#/state/queries/pds-label'
 import {atoms as a, useAlf, type ViewStyleProp} from '#/alf'
+import {useNativeFontScale} from '#/alf/util/dimensions'
 import {BotBadge, BotBadgeButton, isBotAccount} from '#/components/BotBadge'
 import {Button} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -44,11 +45,13 @@ export function ProfileBadges({
   pdsInteractive = true,
   size,
   style,
+  allowFontScaling = true,
 }: ViewStyleProp & {
   profile: bsky.profile.AnyProfileView
   interactive?: boolean
   pdsInteractive?: boolean
   size: Size
+  allowFontScaling?: boolean
 }) {
   const shadowed = useProfileShadow(profile)
   const verification = useSimpleVerificationState({profile})
@@ -62,7 +65,7 @@ export function ProfileBadges({
       ? pdsData.pdsUrl
       : undefined,
   )
-  const {fontScale: nativeScaleMultiplier} = useWindowDimensions()
+  const nativeScaleMultiplier = useNativeFontScale()
   const {
     fonts: {scaleMultiplier: alfScaleMultiplier},
   } = useAlf()
@@ -87,10 +90,12 @@ export function ProfileBadges({
 
   const isOnTheSmallSide = size === 'xs' || size === 'sm'
 
-  const verificationIconWidth =
-    verificationIconSizes[size] * nativeScaleMultiplier * alfScaleMultiplier
-  const botIconWidth =
-    botIconSizes[size] * nativeScaleMultiplier * alfScaleMultiplier
+  const scaleMultiplier = allowFontScaling
+    ? nativeScaleMultiplier * alfScaleMultiplier
+    : 1
+
+  const verificationIconWidth = verificationIconSizes[size] * scaleMultiplier
+  const botIconWidth = botIconSizes[size] * scaleMultiplier
 
   return (
     <View

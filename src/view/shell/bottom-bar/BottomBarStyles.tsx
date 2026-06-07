@@ -67,6 +67,11 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'transparent',
   },
+  profileIconSquare: {
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
   messagesIcon: {},
   onProfile: {
     borderWidth: 1,

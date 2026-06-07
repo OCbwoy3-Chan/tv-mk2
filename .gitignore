@@ -137,3 +137,4 @@ bskyweb/static/media/*.svg
 
 # superpowers plugin plans/specs — local-only workspace
 docs/superpowers/
+.claude/worktrees

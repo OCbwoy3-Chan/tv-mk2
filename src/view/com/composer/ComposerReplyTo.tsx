@@ -2,6 +2,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {LayoutAnimation, Pressable, View} from 'react-native'
 import {Image} from 'expo-image'
 import {
+  AppBskyEmbedGallery,
   AppBskyEmbedImages,
   AppBskyEmbedRecord,
   AppBskyEmbedRecordWithMedia,
@@ -62,11 +63,14 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
   const images = useMemo(() => {
     if (AppBskyEmbedImages.isView(embed)) {
       return embed.images
-    } else if (
-      AppBskyEmbedRecordWithMedia.isView(embed) &&
-      AppBskyEmbedImages.isView(embed.media)
-    ) {
-      return embed.media.images
+    } else if (AppBskyEmbedGallery.isView(embed)) {
+      return galleryItemsToImages(embed.items)
+    } else if (AppBskyEmbedRecordWithMedia.isView(embed)) {
+      if (AppBskyEmbedImages.isView(embed.media)) {
+        return embed.media.images
+      } else if (AppBskyEmbedGallery.isView(embed.media)) {
+        return galleryItemsToImages(embed.media.items)
+      }
     }
   }, [embed])
 
@@ -147,6 +151,22 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
   )
 }
 
+function galleryItemsToImages(
+  items: AppBskyEmbedGallery.View['items'],
+): AppBskyEmbedImages.ViewImage[] {
+  // The reply-to thumbnail only renders up to 4 tiles; slicing here keeps
+  // the existing layout switch valid for galleries up to 10 items.
+  return items
+    .filter(AppBskyEmbedGallery.isViewImage)
+    .slice(0, 4)
+    .map(item => ({
+      thumb: item.thumbnail,
+      fullsize: item.fullsize,
+      alt: item.alt,
+      aspectRatio: item.aspectRatio,
+    }))
+}
+
 function ComposerReplyToImages({
   images,
 }: {
@@ -169,8 +189,8 @@ function ComposerReplyToImages({
         <Image
           source={{uri: images[0].thumb}}
           style={[a.flex_1]}
-          cachePolicy="memory-disk"
           accessibilityIgnoresInvertColors
+          useAppleWebpCodec
         />
       )) ||
         (images.length === 2 && (
@@ -178,14 +198,14 @@ function ComposerReplyToImages({
             <Image
               source={{uri: images[0].thumb}}
               style={[a.flex_1]}
-              cachePolicy="memory-disk"
               accessibilityIgnoresInvertColors
+              useAppleWebpCodec
             />
             <Image
               source={{uri: images[1].thumb}}
               style={[a.flex_1]}
-              cachePolicy="memory-disk"
               accessibilityIgnoresInvertColors
+              useAppleWebpCodec
             />
           </View>
         )) ||
@@ -194,21 +214,21 @@ function ComposerReplyToImages({
             <Image
               source={{uri: images[0].thumb}}
               style={[a.flex_1]}
-              cachePolicy="memory-disk"
               accessibilityIgnoresInvertColors
+              useAppleWebpCodec
             />
             <View style={[a.flex_1, a.gap_2xs]}>
               <Image
                 source={{uri: images[1].thumb}}
                 style={[a.flex_1]}
-                cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
+                useAppleWebpCodec
               />
               <Image
                 source={{uri: images[2].thumb}}
                 style={[a.flex_1]}
-                cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
+                useAppleWebpCodec
               />
             </View>
           </View>
@@ -219,28 +239,28 @@ function ComposerReplyToImages({
               <Image
                 source={{uri: images[0].thumb}}
                 style={[a.flex_1]}
-                cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
+                useAppleWebpCodec
               />
               <Image
                 source={{uri: images[1].thumb}}
                 style={[a.flex_1]}
-                cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
+                useAppleWebpCodec
               />
             </View>
             <View style={[a.flex_1, a.flex_row, a.gap_2xs]}>
               <Image
                 source={{uri: images[2].thumb}}
                 style={[a.flex_1]}
-                cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
+                useAppleWebpCodec
               />
               <Image
                 source={{uri: images[3].thumb}}
                 style={[a.flex_1]}
-                cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
+                useAppleWebpCodec
               />
             </View>
           </View>

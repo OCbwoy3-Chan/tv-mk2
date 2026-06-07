@@ -1,12 +1,9 @@
 import {useRef} from 'react'
+import {LayoutAnimation, ScrollView, StyleSheet, View} from 'react-native'
 import {
-  LayoutAnimation,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native'
-import {useSafeAreaInsets} from 'react-native-safe-area-context'
+  useSafeAreaFrame,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context'
 import {BlurView} from 'expo-blur'
 import {useLingui} from '@lingui/react/macro'
 
@@ -23,9 +20,15 @@ export function Footer({altText, isAltExpanded, onToggleAltExpanded}: Props) {
   const {t: l} = useLingui()
   const t = useTheme()
   const insets = useSafeAreaInsets()
+  const {height: screenHeight} = useSafeAreaFrame()
   const isMomentumScrolling = useRef(false)
 
   if (!altText) return null
+
+  // Cap the overlay height so long alt text - or text enlarged by the OS via
+  // Dynamic Type / font scaling - scrolls within the overlay instead of growing
+  // past the top of the screen. Leaves the upper half clear for the header.
+  const maxHeight = screenHeight / 2
 
   return (
     <View
@@ -52,6 +55,7 @@ export function Footer({altText, isAltExpanded, onToggleAltExpanded}: Props) {
             }),
           ]}>
           <ScrollView
+            style={{maxHeight}}
             scrollEnabled={isAltExpanded}
             onMomentumScrollBegin={() => {
               isMomentumScrolling.current = true
@@ -60,26 +64,41 @@ export function Footer({altText, isAltExpanded, onToggleAltExpanded}: Props) {
               isMomentumScrolling.current = false
             }}
             contentContainerStyle={[a.px_md, a.py_sm]}>
-            <Pressable
+            <View
               accessibilityRole="button"
               accessibilityLabel={l`Expand alt text`}
-              accessibilityHint=""
-              onPress={() => {
-                if (isMomentumScrolling.current) return
-                LayoutAnimation.configureNext({
-                  duration: 450,
-                  update: {type: 'spring', springDamping: 1},
-                })
-                onToggleAltExpanded()
-              }}>
+              accessibilityHint="">
+              {/*
+               * The press handlers must live on the Text itself, not on a
+               * wrapping Pressable. Text selection is driven by the platform's
+               * native text view long-press (RN Text on Android, UITextView on
+               * iOS). A parent touchable consumes that long-press before the
+               * selectable Text can begin a selection - on Android this prevents
+               * selection entirely. Keeping onPress/onLongPress on the Text lets
+               * the same native node own both the tap-to-expand and the
+               * long-press-to-select. The empty onLongPress is intentional: it
+               * reserves the long-press for the OS selection gesture instead of
+               * firing the expand toggle. RN exposes no API to arbitrate tap vs
+               * native selection on a single node, so this is the supported
+               * workaround, and it behaves consistently on both platforms.
+               */}
               <Text
                 emoji
                 selectable
                 style={[a.text_sm, {color: t.palette.white}]}
-                numberOfLines={isAltExpanded ? undefined : 3}>
+                numberOfLines={isAltExpanded ? undefined : 3}
+                onPress={() => {
+                  if (isMomentumScrolling.current) return
+                  LayoutAnimation.configureNext({
+                    duration: 450,
+                    update: {type: 'spring', springDamping: 1},
+                  })
+                  onToggleAltExpanded()
+                }}
+                onLongPress={() => {}}>
                 {altText}
               </Text>
-            </Pressable>
+            </View>
           </ScrollView>
         </BlurView>
       </View>

@@ -1,13 +1,17 @@
-import {POST_IMG_MAX} from '#/lib/constants'
 import {formatToFileExt} from '#/lib/media/image-formats'
 import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
-import {blobToDataUri, getDataUriSize, getDownloadImageUri} from './util'
+import {
+  blobToDataUri,
+  getDataUriSize,
+  getResizedDimensions,
+  getDownloadImageUri
+} from './util'
 import {mimeToExt} from './video/util'
 
 export async function compressIfNeeded(
   img: PickerImage,
-  maxSize: number = POST_IMG_MAX.size,
+  {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
   opts?: {outputMime?: 'image/jpeg' | 'image/webp'; forceEncode?: boolean},
 ): Promise<PickerImage> {
   const outputMime = opts?.outputMime ?? 'image/jpeg'
@@ -19,9 +23,7 @@ export async function compressIfNeeded(
   }
 
   return await doResize(img.path, {
-    width: img.width,
-    height: img.height,
-    mode: 'stretch',
+    maxDimension,
     maxSize,
     outputMime: opts?.outputMime ?? 'image/jpeg',
   })
@@ -29,9 +31,7 @@ export async function compressIfNeeded(
 
 export interface DownloadAndResizeOpts {
   uri: string
-  width: number
-  height: number
-  mode: 'contain' | 'cover' | 'stretch'
+  maxDimension: number
   maxSize: number
   timeout: number
 }
@@ -44,7 +44,10 @@ export async function downloadAndResize(opts: DownloadAndResizeOpts) {
   clearTimeout(to)
 
   const dataUri = await blobToDataUri(resBody)
-  return await doResize(dataUri, opts)
+  return await doResize(dataUri, {
+    maxDimension: opts.maxDimension,
+    maxSize: opts.maxSize,
+  })
 }
 
 export async function shareImageModal(_opts: {uri: string}) {
@@ -101,9 +104,7 @@ export async function getImageDim(path: string): Promise<Dimensions> {
 // =
 
 interface DoResizeOpts {
-  width: number
-  height: number
-  mode: 'contain' | 'cover' | 'stretch'
+  maxDimension: number
   maxSize: number
   outputMime?: 'image/jpeg' | 'image/webp'
 }
@@ -112,6 +113,9 @@ async function doResize(
   dataUri: string,
   opts: DoResizeOpts,
 ): Promise<PickerImage> {
+  const sourceDims = await getImageDim(dataUri)
+  const newDimensions = getResizedDimensions(sourceDims, opts.maxDimension)
+
   const outputMime = opts.outputMime ?? 'image/webp'
   let newDataUri
 
@@ -123,10 +127,10 @@ async function doResize(
       (maxQualityPercentage + minQualityPercentage) / 2,
     )
     const tempDataUri = await createResizedImage(dataUri, {
-      width: opts.width,
-      height: opts.height,
+      width: newDimensions.width,
+      height: newDimensions.height,
       quality: qualityPercentage / 100,
-      mode: opts.mode,
+      mode: 'contain',
       outputMime,
     })
 
@@ -145,8 +149,8 @@ async function doResize(
     path: newDataUri,
     mime: outputMime,
     size: getDataUriSize(newDataUri),
-    width: opts.width,
-    height: opts.height,
+    width: newDimensions.width,
+    height: newDimensions.height,
   }
 }
 

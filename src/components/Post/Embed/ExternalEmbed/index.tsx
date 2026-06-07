@@ -1,4 +1,4 @@
-import {useCallback, useMemo} from 'react'
+import {useMemo} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {Image} from 'expo-image'
 import {type AppBskyEmbedExternal} from '@atproto/api'
@@ -67,17 +67,19 @@ export const ExternalEmbed = ({
   }, [link.uri, externalEmbedPrefs])
   const hasMedia = Boolean(imageUri || embedPlayerParams)
 
-  const onPress = useCallback(() => {
+  const onPress = () => {
     playHaptic('Light')
     onOpen?.()
-  }, [playHaptic, onOpen])
+  }
 
-  const onShareExternal = useCallback(() => {
-    if (link.uri && IS_NATIVE) {
-      playHaptic('Heavy')
-      shareUrl(link.uri)
-    }
-  }, [link.uri, playHaptic])
+  const onShareExternal = IS_NATIVE
+    ? () => {
+        if (link.uri) {
+          playHaptic('Heavy')
+          void shareUrl(link.uri)
+        }
+      }
+    : undefined
 
   if (
     embedPlayerParams?.source === 'tenor' ||
@@ -124,6 +126,7 @@ export const ExternalEmbed = ({
               source={{uri: imageUri}}
               accessibilityIgnoresInvertColors
               loading="lazy"
+              useAppleWebpCodec
             />
           ) : undefined}
 

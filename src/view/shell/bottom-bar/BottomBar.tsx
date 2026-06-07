@@ -146,6 +146,7 @@ export function BottomBar({navigation}: BottomTabBarProps) {
 
   const [demoMode] = useDemoMode()
   const {isActive: live} = useActorStatus(profile)
+  const isLabeler = profile?.associated?.labeler
 
   const enableSquareAvatars = useEnableSquareAvatars()
 
@@ -280,9 +281,9 @@ export function BottomBar({navigation}: BottomTabBarProps) {
                   <View
                     style={[
                       styles.ctrlIcon,
-                      styles.profileIcon,
+                      isLabeler ? styles.profileIconSquare : styles.profileIcon,
                       isAtMyProfile && [
-                        enableSquareAvatars
+                        isLabeler ? styles.onProfileSquare : enableSquareAvatars
                           ? styles.onProfileSquare
                           : styles.onProfile,
                         {

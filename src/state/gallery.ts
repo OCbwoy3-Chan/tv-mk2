@@ -16,7 +16,6 @@ import {transformExif} from '@uwx/exif-be-gone-web'
 import {fromByteArray, toByteArray} from 'base64-js'
 import {nanoid} from 'nanoid/non-secure'
 
-import {POST_IMG_MAX} from '#/lib/constants'
 import {getImageDim} from '#/lib/media/manip'
 import {openCropper} from '#/lib/media/picker'
 import {type PickerImage} from '#/lib/media/picker.shared'
@@ -210,6 +209,7 @@ export function resetImageManipulation(
 
 async function bypassCompression(
   img: ComposerImage,
+  {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
 ): Promise<PickerImage | undefined> {
   // TODO: use expo-file-system instead of working directly in memory
 
@@ -219,10 +219,7 @@ async function bypassCompression(
   }
 
   const source = img.transformed || img.source
-  if (
-    source.width > POST_IMG_MAX.width ||
-    source.height > POST_IMG_MAX.height
-  ) {
+  if (source.width > maxDimension || source.height > maxDimension) {
     return undefined
   }
 
@@ -247,7 +244,7 @@ async function bypassCompression(
       await fetch(path)
       const response = await fetch(path)
       data = new Uint8Array(await response.arrayBuffer())
-      if (data.byteLength > POST_IMG_MAX.size) {
+      if (data.byteLength > maxSize) {
         return undefined
       }
     } catch (e) {
@@ -255,7 +252,7 @@ async function bypassCompression(
       return undefined
     }
   } else {
-    if (getDataUriSize(path) > POST_IMG_MAX.size) {
+    if (getDataUriSize(path) > maxSize) {
       return undefined
     }
     data = new Uint8Array(dataUriToUint8Array(path).buffer)
@@ -283,29 +280,29 @@ async function bypassCompression(
 
 export async function compressImage(
   img: ComposerImage,
+  {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
   options?: {
-    highResolution?: boolean
-    increasedBlobSizeLimit?: boolean
     outputMime?: 'image/jpeg' | 'image/webp'
     /** When true, always re-encode even if the source is already small enough. */
     forceEncode?: boolean
   },
 ): Promise<PickerImage> {
   if (!options?.forceEncode) {
-    const res = await bypassCompression(img)
+    const res = await bypassCompression(img, {maxDimension, maxSize})
     if (res) {
       return res
     }
   }
 
   const source = img.transformed || img.source
-  const highResolution = options?.highResolution ?? false
   const outputMime = options?.outputMime ?? 'image/webp'
   const outputFormat =
     outputMime === 'image/jpeg' ? SaveFormat.JPEG : SaveFormat.WEBP
   let attempts = 0
-  let maxDimension = highResolution ? 4000 : POST_IMG_MAX.width
-  let maxBytes = options?.increasedBlobSizeLimit ? 2000000 : POST_IMG_MAX.size
+  // Seeded from `maxDimension` but shrunk per attempt below, so keep the
+  // passed-in value pristine.
+  let currentDimension = maxDimension
+  const maxBytes = maxSize
 
   let minQualityPercentage = 0
   let maxQualityPercentage = 101 // exclusive
@@ -314,7 +311,11 @@ export async function compressImage(
   while (maxQualityPercentage - minQualityPercentage > 1) {
     if (attempts >= 4) break
 
-    const [w, h] = containImageRes(source.width, source.height, maxDimension)
+    const [w, h] = containImageRes(
+      source.width,
+      source.height,
+      currentDimension,
+    )
     const qualityPercentage = Math.round(
       (maxQualityPercentage + minQualityPercentage) / 2,
     )
@@ -329,8 +330,9 @@ export async function compressImage(
       minQualityPercentage = 0
       maxQualityPercentage = 101
       attempts++
-      // 4000px → 3200px → 2560px → 2048px → ~1638px
-      maxDimension = Math.floor(maxDimension * 0.8)
+      // max.width → 0.8× → 0.64× → 0.512× → ~0.41×
+      // e.g. 4000px → 3200px → 2560px → 2048px → ~1638px
+      currentDimension = Math.floor(currentDimension * 0.8)
       continue
     }
 

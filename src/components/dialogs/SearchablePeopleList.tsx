@@ -675,7 +675,6 @@ function SearchInput({
       />
 
       <TextInput
-        // @ts-ignore bottom sheet input types issue — esb
         ref={inputRef}
         placeholder={l`Search`}
         value={value}

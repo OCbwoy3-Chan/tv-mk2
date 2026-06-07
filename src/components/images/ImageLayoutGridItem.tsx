@@ -14,8 +14,9 @@ import {
 } from '#/state/preferences/image-cdn-host'
 import {useLargeAltBadgeEnabled} from '#/state/preferences/large-alt-badge'
 import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
-import {atoms as a, useTheme} from '#/alf'
+import {atoms as a, tokens, useTheme} from '#/alf'
 import {MediaInsetBorder} from '#/components/MediaInsetBorder'
+import {ImageContextMenu} from '#/components/Post/Embed/ImageContextMenu'
 import {PostEmbedViewContext} from '#/components/Post/Embed/types'
 import {Text} from '#/components/Typography'
 
@@ -33,6 +34,7 @@ interface Props {
   onPressIn?: EventFunction
   imageStyle?: StyleProp<ImageStyle>
   viewContext?: PostEmbedViewContext
+  isWithinQuote?: boolean
   insetBorderStyle?: StyleProp<ViewStyle>
   containerRefs: AnimatedRef<any>[]
   thumbDimsRef: React.RefObject<(Dimensions | null)[]>
@@ -46,6 +48,7 @@ export function GalleryItem({
   onPressIn,
   onLongPress,
   viewContext,
+  isWithinQuote,
   insetBorderStyle,
   containerRefs,
   thumbDimsRef,
@@ -58,52 +61,71 @@ export function GalleryItem({
   const image = images[index]
   const hasAlt = !!image.alt
   const hideBadges =
+    isWithinQuote ??
     viewContext === PostEmbedViewContext.FeedEmbedRecordWithMedia
+
+  const aspect =
+    image.aspectRatio && image.aspectRatio.height > 0
+      ? image.aspectRatio.width / image.aspectRatio.height
+      : undefined
+
+  // The tap handler and the peek-commit handler do the same thing: open the
+  // lightbox with this cell's ref + dims so the lightbox's return animation
+  // can target the original thumbnail.
+  const openLightboxAtIndex = onPress
+    ? () => onPress(index, containerRefs, thumbDimsRef.current.slice())
+    : undefined
+
   return (
     <View style={a.flex_1} ref={containerRefs[index]} collapsable={false}>
-      <Pressable
-        onPress={
-          onPress
-            ? () => onPress(index, containerRefs, thumbDimsRef.current.slice())
-            : undefined
-        }
-        onPressIn={onPressIn ? () => onPressIn(index) : undefined}
-        onLongPress={onLongPress ? () => onLongPress(index) : undefined}
-        android_ripple={{
-          color: utils.alpha(t.atoms.bg.backgroundColor, 0.2),
-          foreground: true,
-        }}
-        style={[
-          a.flex_1,
-          a.overflow_hidden,
-          t.atoms.bg_contrast_25,
-          imageStyle,
-        ]}
-        accessibilityRole="button"
-        accessibilityLabel={image.alt || _(msg`Image`)}
-        accessibilityHint="">
-        <Image
-          source={{
+      <ImageContextMenu
+        fullsizeUri={image.fullsize}
+        thumbUri={image.thumb}
+        aspectRatio={aspect}
+        borderRadius={tokens.borderRadius.md}
+        onPreviewPress={openLightboxAtIndex}
+        style={a.flex_1}>
+        <Pressable
+          onPress={openLightboxAtIndex}
+          onPressIn={onPressIn ? () => onPressIn(index) : undefined}
+          onLongPress={onLongPress ? () => onLongPress(index) : undefined}
+          android_ripple={{
+            color: utils.alpha(t.atoms.bg.backgroundColor, 0.2),
+            foreground: true,
+          }}
+          style={[
+            a.flex_1,
+            a.overflow_hidden,
+            t.atoms.bg_contrast_25,
+            imageStyle,
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={image.alt || _(msg`Image`)}
+          accessibilityHint="">
+          <Image
+            source={{
             uri: applyImageTransforms(image.thumb, {
               imageCdnHost,
               format: thumbnailFormat,
             }),
           }}
-          style={[a.flex_1]}
-          accessible={true}
-          accessibilityLabel={image.alt}
-          accessibilityHint=""
-          accessibilityIgnoresInvertColors
-          onLoad={e => {
-            thumbDimsRef.current[index] = {
-              width: e.source.width,
-              height: e.source.height,
-            }
-          }}
-          loading="lazy"
-        />
-        <MediaInsetBorder style={insetBorderStyle} />
-      </Pressable>
+            style={[a.flex_1]}
+            accessible={true}
+            accessibilityLabel={image.alt}
+            accessibilityHint=""
+            accessibilityIgnoresInvertColors
+            onLoad={e => {
+              thumbDimsRef.current[index] = {
+                width: e.source.width,
+                height: e.source.height,
+              }
+            }}
+            loading="lazy"
+            useAppleWebpCodec
+          />
+          <MediaInsetBorder style={insetBorderStyle} />
+        </Pressable>
+      </ImageContextMenu>
       {hasAlt && !hideBadges ? (
         <View
           accessible={false}
