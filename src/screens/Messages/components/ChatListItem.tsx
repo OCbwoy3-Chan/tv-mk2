@@ -311,19 +311,12 @@ function BaseChatItem({
     isDeletedAccount ||
     (convo.kind === 'group' && convo.details.lockStatus !== 'unlocked')
 
-  const {
-    lastMessage,
-    LastMessageIcon,
-    lastMessageSentAt,
-    latestReportableMessage,
-  } = useMemo(() => {
+  const {lastMessage, LastMessageIcon, lastMessageSentAt} = useMemo(() => {
     let lastMessage = l`No messages yet`
 
     let LastMessageIcon: React.ComponentType<SVGIconProps> | null = null
 
     let lastMessageSentAt: string | null = null
-
-    let latestReportableMessage: ChatBskyConvoDefs.MessageView | undefined
 
     // Deleted message
     if (ChatBskyConvoDefs.isDeletedMessageView(convo.view.lastMessage)) {
@@ -344,7 +337,6 @@ function BaseChatItem({
       if (info) {
         lastMessage = info.message ?? lastMessage
         lastMessageSentAt = info.sentAt
-        latestReportableMessage = info.reportableMessage
       }
     }
 
@@ -389,7 +381,6 @@ function BaseChatItem({
       lastMessage,
       LastMessageIcon,
       lastMessageSentAt,
-      latestReportableMessage,
     }
   }, [l, convo, currentAccount?.did, isDeletedAccount, i18n])
 
@@ -658,7 +649,7 @@ function BaseChatItem({
           {/* TODO: Allow showing menu for groups where the owner has left! */}
           {showMenu && primaryProfile && (
             <ConvoMenu
-              convo={convo.view}
+              convo={convo}
               profile={primaryProfile}
               control={menuControl}
               currentScreen="list"
@@ -676,7 +667,6 @@ function BaseChatItem({
                     !gtMobile || showActions || menuControl.isOpen ? 1 : 0,
                 },
               ]}
-              latestReportableMessage={latestReportableMessage}
             />
           )}
 

@@ -1,22 +1,32 @@
 import {useEffect, useMemo, useState} from 'react'
+import {type AppBskyAgeassuranceDefs} from '@atproto/api'
 
 import {getAge} from '#/lib/strings/time'
 import {useSession} from '#/state/session'
 import {
-  type AgeAssuranceData,
   getConfigFromCache,
   getOtherRequiredDataFromCache,
   getServerStateFromCache,
-  useAgeAssuranceDataContext,
+  useAgeAssuranceServerDataContext,
 } from '#/ageAssurance/data'
 import {logger} from '#/ageAssurance/logger'
 import {
   AgeAssuranceAccess,
+  type AgeAssuranceFlags,
+  type AgeAssuranceMetadata,
   type AgeAssuranceState,
   AgeAssuranceStatus,
 } from '#/ageAssurance/types'
 import {type Geolocation, useGeolocation} from '#/geolocation'
 import {device} from '#/storage'
+
+const PERMISSIVE_FLAGS: AgeAssuranceFlags = {
+  adultContentDisabled: false,
+  chatDisabled: false,
+  isDeclaredUnderAdultAge: false,
+  isOverRegionMinAccessAge: true,
+  isOverAppMinAccessAge: true,
+}
 
 /**
  * Get final evaluated age assurance state.
@@ -24,14 +34,14 @@ import {device} from '#/storage'
  * We intentionally keep this permissive (matching the older behavior) and
  * allow full access for logged-in users.
  */
-export function computeAgeAssuranceState({
+function computeAgeAssuranceState({
   hasSession,
 }: {
   hasSession: boolean
-  config: AgeAssuranceData['config']
   geolocation: Geolocation
-  state: AgeAssuranceData['state']
-  data: AgeAssuranceData['data']
+  config?: AppBskyAgeassuranceDefs.Config
+  state?: AppBskyAgeassuranceDefs.State
+  metadata?: AgeAssuranceMetadata
 }) {
   if (!hasSession)
     return {
@@ -43,45 +53,50 @@ export function computeAgeAssuranceState({
   // when making FOSS software. You're free not to use this software if the
   // notion of letting the user choose their moderation settings freely,
   // without giving up their personal data to anyone, offends you.
-  const computed = {
+  return {
     lastInitiatedAt: undefined,
     status: AgeAssuranceStatus.Unknown,
     access: AgeAssuranceAccess.Full,
   }
-  return computed
 }
 
 /**
  * This is a last-ditch helper for out-of-band reads of the AA state, such as
  * during account creation. Don't use it for anything else.
  */
-export function getAndComputeAgeAssuranceState({did}: {did: string}) {
+export function unsafeGetAndComputeAgeAssurance({did}: {did: string}) {
   const config = getConfigFromCache()
   const state = getServerStateFromCache({did})
-  const data = getOtherRequiredDataFromCache({did})
+  const requiredData = getOtherRequiredDataFromCache({did})
   const geolocation =
     device.get(['mergedGeolocation']) ||
     ({countryCode: undefined, regionCode: undefined} as Geolocation)
 
-  return computeAgeAssuranceState({
+  const metadata: AgeAssuranceMetadata = {
+    accountCreatedAt: state?.metadata?.accountCreatedAt,
+    declaredAge: requiredData?.birthdate
+      ? getAge(new Date(requiredData.birthdate))
+      : undefined,
+    birthdate: requiredData?.birthdate,
+  }
+  const computed = computeAgeAssuranceState({
     hasSession: true,
     config,
     geolocation,
     state: state?.state,
-    data: {
-      accountCreatedAt: state?.metadata?.accountCreatedAt,
-      declaredAge: data?.birthdate
-        ? getAge(new Date(data.birthdate))
-        : undefined,
-      birthdate: data?.birthdate,
-    },
+    metadata,
   })
+
+  return {
+    state: computed,
+    flags: PERMISSIVE_FLAGS,
+  }
 }
 
 export function useAgeAssuranceState(): AgeAssuranceState {
   const {hasSession} = useSession()
   const geolocation = useGeolocation()
-  const {config, state, data} = useAgeAssuranceDataContext()
+  const {config, state, metadata} = useAgeAssuranceServerDataContext()
 
   return useMemo(
     () =>
@@ -90,9 +105,9 @@ export function useAgeAssuranceState(): AgeAssuranceState {
         config,
         geolocation,
         state,
-        data,
+        metadata,
       }),
-    [hasSession, geolocation, config, state, data],
+    [hasSession, geolocation, config, state, metadata],
   )
 }
 

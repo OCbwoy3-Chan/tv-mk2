@@ -1,12 +1,9 @@
-import {createContext, useCallback, useContext, useEffect, useMemo} from 'react'
+import {createContext, useCallback, useContext, useMemo} from 'react'
 
 import {useGetAndRegisterPushToken} from '#/lib/notifications/notifications'
 import {useAgent} from '#/state/session'
 import {Provider as RedirectOverlayProvider} from '#/ageAssurance/components/RedirectOverlay'
-import {
-  AgeAssuranceDataProvider,
-  useAgeAssuranceDataContext,
-} from '#/ageAssurance/data'
+import {AgeAssuranceServerDataProvider} from '#/ageAssurance/data'
 import {logger} from '#/ageAssurance/logger'
 import {
   useAgeAssuranceState,
@@ -14,17 +11,15 @@ import {
 } from '#/ageAssurance/state'
 import {
   AgeAssuranceAccess,
+  type AgeAssuranceFlags,
   type AgeAssuranceState,
   AgeAssuranceStatus,
 } from '#/ageAssurance/types'
-import {
-  maybeRestrictChatSettings,
-  useAgeAssuranceRegionConfigWithFallback,
-} from '#/ageAssurance/util'
+import {maybeRestrictChatSettings} from '#/ageAssurance/util'
 
 export {
   prefetchConfig as prefetchAgeAssuranceConfig,
-  prefetchAgeAssuranceData,
+  prefetchAgeAssuranceServerData,
   refetchServerState as refetchAgeAssuranceServerState,
   usePatchOtherRequiredData as usePatchAgeAssuranceOtherRequiredData,
   usePatchServerState as usePatchAgeAssuranceServerState,
@@ -36,13 +31,7 @@ const AgeAssuranceStateContext = createContext<{
   Access: typeof AgeAssuranceAccess
   Status: typeof AgeAssuranceStatus
   state: AgeAssuranceState
-  flags: {
-    adultContentDisabled: boolean
-    chatDisabled: boolean
-    isDeclaredUnderAdultAge: boolean
-    isOverRegionMinAccessAge: boolean
-    isOverAppMinAccessAge: boolean
-  }
+  flags: AgeAssuranceFlags
 }>({
   Access: AgeAssuranceAccess,
   Status: AgeAssuranceStatus,
@@ -71,19 +60,17 @@ export function useAgeAssurance() {
 
 export function Provider({children}: {children: React.ReactNode}) {
   return (
-    <AgeAssuranceDataProvider>
+    <AgeAssuranceServerDataProvider>
       <InnerProvider>
         <RedirectOverlayProvider>{children}</RedirectOverlayProvider>
       </InnerProvider>
-    </AgeAssuranceDataProvider>
+    </AgeAssuranceServerDataProvider>
   )
 }
 
 function InnerProvider({children}: {children: React.ReactNode}) {
   const agent = useAgent()
   const state = useAgeAssuranceState()
-  const {data} = useAgeAssuranceDataContext()
-  const config = useAgeAssuranceRegionConfigWithFallback()
   const getAndRegisterPushToken = useGetAndRegisterPushToken()
 
   const handleAccessUpdate = useCallback(
@@ -98,10 +85,6 @@ function InnerProvider({children}: {children: React.ReactNode}) {
   )
   useOnAgeAssuranceAccessUpdate(handleAccessUpdate)
 
-  useEffect(() => {
-    logger.debug(`useAgeAssuranceState`, {state})
-  }, [state])
-
   return (
     <AgeAssuranceStateContext.Provider
       value={useMemo(() => {
@@ -110,7 +93,7 @@ function InnerProvider({children}: {children: React.ReactNode}) {
         const isOverRegionMinAccessAge = true
         const isOverAppMinAccessAge = true
         const adultContentDisabled = isDeclaredUnderAdultAge
-        return {
+        const res = {
           Access: AgeAssuranceAccess,
           Status: AgeAssuranceStatus,
           state,
@@ -122,7 +105,9 @@ function InnerProvider({children}: {children: React.ReactNode}) {
             isOverAppMinAccessAge,
           },
         }
-      }, [state, data, config])}>
+        logger.debug(`useAgeAssurance`, res)
+        return res
+      }, [state])}>
       {children}
     </AgeAssuranceStateContext.Provider>
   )
