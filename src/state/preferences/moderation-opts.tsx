@@ -3,7 +3,7 @@ import {AtpAgent, type ModerationOpts} from '@atproto/api'
 
 import {useHiddenPosts, useLabelDefinitions} from '#/state/preferences'
 import {useIgnoredAppLabelers} from '#/state/preferences/ignored-app-labelers'
-import {DEFAULT_LOGGED_OUT_LABEL_PREFERENCES} from '#/state/queries/preferences/moderation'
+import {DEFAULT_LOGGED_OUT_LABEL_PREFERENCES} from '#/state/queries/preferences/const'
 import {useSession} from '#/state/session'
 import {usePreferencesQuery} from '../queries/preferences'
 

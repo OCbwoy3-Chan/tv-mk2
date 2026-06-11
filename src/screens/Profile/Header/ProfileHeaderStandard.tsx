@@ -58,6 +58,7 @@ import {
   DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheck,
 } from '#/components/icons/Check'
 import {Globe_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
+import {ArrowShareRight_Stroke2_Corner2_Rounded as ArrowShareRight} from '#/components/icons/ArrowShareRight'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {
   KnownFollowers,
@@ -69,7 +70,9 @@ import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
-import {IS_IOS} from '#/env'
+import {useAnalytics} from '#/analytics'
+import {IS_IOS, IS_NATIVE} from '#/env'
+import {InviteFriendsDialog} from '#/features/inviteFriends'
 import {useActorStatus} from '#/features/liveNow'
 import {GermButton} from '../components/GermButton'
 import {EditProfileDialog} from './EditProfileDialog'
@@ -333,6 +336,7 @@ export function HeaderStandardButtons({
   minimal?: boolean
 }) {
   const {_} = useLingui()
+  const ax = useAnalytics()
   const {accounts, hasSession, currentAccount} = useSession()
   const playHaptic = useHaptics()
   const requireAuth = useRequireAuth()
@@ -342,6 +346,7 @@ export function HeaderStandardButtons({
   )
   const [, queueUnblock] = useProfileBlockMutationQueue(profile)
   const editProfileControl = useDialogControl()
+  const inviteFriendsControl = useDialogControl()
   const unblockPromptControl = Prompt.usePromptControl()
   const hideScaryFollowButtons = useHideScaryFollowButtons()
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
@@ -490,7 +495,25 @@ export function HeaderStandardButtons({
               <Trans>Edit Profile</Trans>
             </ButtonText>
           </Button>
+          {/* Invite friends is a native-only share sheet (the dialog is a
+              no-op on web), so gate the entry point to avoid a dead button. */}
+          {IS_NATIVE && (
+            <Button
+              testID="profileHeaderShareButton"
+              size="small"
+              color="secondary"
+              shape="round"
+              onPress={() => {
+                playHaptic('Light')
+                ax.metric('invite:dialog:open', {logContext: 'ProfileHeader'})
+                inviteFriendsControl.open()
+              }}
+              label={_(msg`Invite friends`)}>
+              <ButtonIcon icon={ArrowShareRight} />
+            </Button>
+          )}
           <EditProfileDialog profile={profile} control={editProfileControl} />
+          {IS_NATIVE && <InviteFriendsDialog control={inviteFriendsControl} />}
         </>
       ) : profile.viewer?.blocking ? (
         profile.viewer?.blockingByList ? null : (

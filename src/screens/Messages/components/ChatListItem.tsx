@@ -41,11 +41,11 @@ import {getReactionInfo} from '#/components/dms/getReactionInfo'
 import {getSystemMessageInfo} from '#/components/dms/getSystemMessageInfo'
 import {LeaveConvoPrompt} from '#/components/dms/LeaveConvoPrompt'
 import {type ConvoWithDetails, parseConvoView} from '#/components/dms/util'
-import {Bell2Off_Filled_Corner0_Rounded as BellStroke} from '#/components/icons/Bell2'
+import {Bell2Off_Filled_Corner0_Rounded as BellStrokeIcon} from '#/components/icons/Bell2'
 import {type Props as SVGIconProps} from '#/components/icons/common'
-import {Envelope_Open_Stroke2_Corner0_Rounded as EnvelopeOpen} from '#/components/icons/EnveopeOpen'
+import {Envelope_Open_Stroke2_Corner0_Rounded as EnvelopeOpenIcon} from '#/components/icons/EnveopeOpen'
 import {Lock_Stroke2_Corner2_Rounded as LockIcon} from '#/components/icons/Lock'
-import {Trash_Stroke2_Corner0_Rounded} from '#/components/icons/Trash'
+import {Trash_Stroke2_Corner0_Rounded as TrashIcon} from '#/components/icons/Trash'
 import {Link} from '#/components/Link'
 import {useMenuControl} from '#/components/Menu'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
@@ -207,7 +207,6 @@ function GroupChatItem({
         <AvatarBubbles
           profiles={convo.members}
           size={isWithinLeftPanel ? 48 : 52}
-          moderationOpts={moderationOpts}
         />
       }
       title={chatName}
@@ -335,7 +334,9 @@ function BaseChatItem({
         i18n,
       })
       if (info) {
-        lastMessage = info.message ?? lastMessage
+        lastMessage = info.isBlockedMessage
+          ? l`This message is hidden`
+          : (info.message ?? lastMessage)
         lastMessageSentAt = info.sentAt
       }
     }
@@ -416,7 +417,7 @@ function BaseChatItem({
   const markReadAction = {
     threshold: 120,
     color: t.palette.primary_500,
-    icon: EnvelopeOpen,
+    icon: EnvelopeOpenIcon,
     action: () => {
       markAsRead({
         convoId: convo.view.id,
@@ -427,7 +428,7 @@ function BaseChatItem({
   const deleteAction = {
     threshold: 225,
     color: t.palette.negative_500,
-    icon: Trash_Stroke2_Corner0_Rounded,
+    icon: TrashIcon,
     action: () => {
       leaveConvoControl.open()
     },
@@ -502,7 +503,7 @@ function BaseChatItem({
                   a.px_lg,
                   a.py_md,
                   a.gap_md,
-                  isWithinLeftPanel && a.rounded_sm,
+                  isWithinLeftPanel && [a.rounded_sm, a.mt_2xs],
                   {
                     backgroundColor: hasUnread
                       ? t.palette.primary_25
@@ -567,7 +568,7 @@ function BaseChatItem({
                           web({whiteSpace: 'preserve nowrap'}),
                         ]}>
                         {' '}
-                        <BellStroke
+                        <BellStrokeIcon
                           size="xs"
                           style={[t.atoms.text_contrast_medium]}
                         />

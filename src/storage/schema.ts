@@ -66,6 +66,7 @@ export type Device = {
   deerGateCache: string
   activitySubscriptionsNudged?: boolean
   threadgateNudged?: boolean
+  inviteFriendsFollowersPromoDismissed?: boolean
   customAppViewDid: string | undefined
   hiddenAccountsElsewhere?: string[]
   settingsAccountSwitcherSortBy?:

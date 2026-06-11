@@ -9,6 +9,7 @@ import {
   AppBskyFeedPost,
   BlobRef,
   type BskyAgent,
+  ChatBskyGroupDefs,
   type ComAtprotoLabelDefs,
   type ComAtprotoRepoApplyWrites,
   type ComAtprotoRepoStrongRef,
@@ -524,7 +525,10 @@ async function resolveMedia(
         },
       }
     }
-    if (resolvedLink.type === 'chat-invite' && resolvedLink.view) {
+    if (
+      resolvedLink.type === 'chat-invite' &&
+      ChatBskyGroupDefs.isJoinLinkPreviewView(resolvedLink.view)
+    ) {
       return {
         $type: 'app.bsky.embed.external',
         external: {

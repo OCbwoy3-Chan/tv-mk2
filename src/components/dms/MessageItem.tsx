@@ -21,6 +21,7 @@ import {
   type ChatBskyActorDefs,
   ChatBskyConvoDefs,
   ChatBskyEmbedJoinLink,
+  moderateProfile,
   RichText as RichTextAPI,
 } from '@atproto/api'
 import {plural} from '@lingui/core/macro'
@@ -29,7 +30,6 @@ import {useQueryClient} from '@tanstack/react-query'
 
 import {isBlockedOrBlocking} from '#/lib/moderation/blocked-and-muted'
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
-import {makeProfileLink} from '#/lib/routes/links'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useMaybeProfileShadow} from '#/state/cache/profile-shadow'
 import {type Shadow} from '#/state/cache/types'
@@ -39,12 +39,13 @@ import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useProfileBlockMutationQueue} from '#/state/queries/profile'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
 import {useSession} from '#/state/session'
+import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, native, platform, useTheme} from '#/alf'
 import {isOnlyEmoji} from '#/alf/typography'
 import {Button} from '#/components/Button'
 import {ActionsWrapper} from '#/components/dms/ActionsWrapper'
 import {useMessageDialogs} from '#/components/dms/MessageOverlays'
-import {InlineLinkText, Link} from '#/components/Link'
+import {InlineLinkText} from '#/components/Link'
 import * as ProfileCard from '#/components/ProfileCard'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
@@ -58,7 +59,7 @@ import {CLUSTERED_MESSAGE_THRESHOLD_MS, MESSAGE_GAP_THRESHOLD_MS} from './util'
 const AVATAR_SIZE = 28
 const CLUSTERED_MESSAGE_GAP = 2
 const SQUARED_BORDER_RADIUS = 4
-const DISPLAY_NAME_INSET = 22
+const DISPLAY_NAME_INSET = 20
 
 function isWithinClusterBoundary({
   isPending,
@@ -233,22 +234,13 @@ let MessageItem = ({
 
   const avatar =
     profile && moderationOpts ? (
-      <Link
-        style={[a.rounded_full]}
-        label={l`${createSanitizedDisplayName(profile)}’s avatar`}
-        accessibilityHint={l`Opens this profile`}
-        to={makeProfileLink({
-          did: profile.did,
-          handle: profile.handle,
-        })}
-        onPress={() => unstableCacheProfileView(queryClient, profile)}>
-        <ProfileCard.Avatar
-          profile={profile}
-          size={AVATAR_SIZE}
-          moderationOpts={moderationOpts}
-          disabledPreview
-        />
-      </Link>
+      <PreviewableUserAvatar
+        profile={profile}
+        size={AVATAR_SIZE}
+        type={profile.associated?.labeler ? 'labeler' : 'user'}
+        onBeforePress={() => unstableCacheProfileView(queryClient, profile)}
+        moderation={moderateProfile(profile, moderationOpts).ui('avatar')}
+      />
     ) : (
       <ProfileCard.AvatarPlaceholder size={AVATAR_SIZE} />
     )
@@ -647,7 +639,7 @@ function BlockedPlaceholder({
             <Prompt.Action onPress={() => {}} cta={l`Okay`} color="primary" />
             {profile.viewer?.blocking && !profile.viewer.blockingByList && (
               <Prompt.Action
-                onPress={() => queueUnblock()}
+                onPress={() => void queueUnblock()}
                 cta={l`Unblock`}
                 color="secondary"
               />

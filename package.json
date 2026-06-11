@@ -1,6 +1,6 @@
 {
   "name": "witchsky-app",
-  "version": "1.123.0",
+  "version": "1.124.0",
   "private": true,
   "engines": {
     "node": ">=24.15.0"
@@ -65,7 +65,7 @@
     "test-watch": "NODE_ENV=test jest --watchAll",
     "test-ci": "NODE_ENV=test jest --ci --forceExit --reporters=default --reporters=jest-junit",
     "test-coverage": "NODE_ENV=test jest --coverage",
-    "lint": "eslint --cache --quiet src",
+    "lint": "eslint --cache --quiet src modules",
     "lint-native": "swiftlint ./modules && ktlint ./modules",
     "lint-native:fix": "swiftlint --fix ./modules && ktlint --format ./modules",
     "typecheck": "tsgo --project ./tsconfig.check.json",
@@ -100,7 +100,7 @@
   },
   "dependencies": {
     "@assembless/react-native-material-you": "1.0.0-beta.4",
-    "@atproto/api": "^0.20.9",
+    "@atproto/api": "^0.20.12",
     "@atproto/oauth-client-browser": "^0.3.41",
     "@atproto/oauth-client-expo": "^0.0.10",
     "@atproto/syntax": "0.6.1",
@@ -112,7 +112,7 @@
     "@bsky.app/expo-image-crop-tool": "^0.5.1",
     "@bsky.app/expo-scroll-edge-effect": "^0.1.4",
     "@bsky.app/expo-translate-text": "^0.2.9",
-    "@bsky.app/peek-menu": "^0.2.4",
+    "@bsky.app/peek-menu": "^0.3.0",
     "@bsky.app/sift": "^0.3.8",
     "@bsky.app/tapper": "^0.5.7",
     "@bsky.app/video": "0.3.6",
@@ -132,6 +132,7 @@
     "@ipld/dag-cbor": "^9.2.7",
     "@lingui/core": "^5.9.5",
     "@lingui/react": "^5.9.5",
+    "@miblanchard/react-native-slider": "^2.6.0",
     "@noble/hashes": "^2.2.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.15.9",

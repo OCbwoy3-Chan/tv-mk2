@@ -76,6 +76,7 @@ export type CommonNavigatorParams = {
   AboutSettings: undefined
   AppIconSettings: undefined
   FindContactsSettings: undefined
+  InviteScanner: undefined
   Search: {q?: string; tab?: 'user' | 'profile' | 'feed'}
   Hashtag: {tag: string; author?: string}
   Topic: {topic: string}
@@ -126,7 +127,11 @@ export type MyProfileTabNavigatorParams = CommonNavigatorParams & {
 }
 
 export type MessagesTabNavigatorParams = CommonNavigatorParams & {
-  Messages: {pushToConversation?: string; animation?: 'push' | 'pop'}
+  Messages: {
+    pushToConversation?: string
+    pushToNewGroupChat?: boolean
+    animation?: 'push' | 'pop'
+  }
 }
 
 export type FlatNavigatorParams = CommonNavigatorParams & {
@@ -134,7 +139,11 @@ export type FlatNavigatorParams = CommonNavigatorParams & {
   Search: {q?: string; tab?: 'user' | 'profile' | 'feed'}
   Feeds: undefined
   Notifications: undefined
-  Messages: {pushToConversation?: string; animation?: 'push' | 'pop'}
+  Messages: {
+    pushToConversation?: string
+    pushToNewGroupChat?: boolean
+    animation?: 'push' | 'pop'
+  }
 }
 
 export type AllNavigatorParams = CommonNavigatorParams & {
@@ -147,7 +156,11 @@ export type AllNavigatorParams = CommonNavigatorParams & {
   Notifications: undefined
   MyProfileTab: undefined
   MessagesTab: undefined
-  Messages: {pushToConversation?: string; animation?: 'push' | 'pop'}
+  Messages: {
+    pushToConversation?: string
+    pushToNewGroupChat?: boolean
+    animation?: 'push' | 'pop'
+  }
 }
 
 // NOTE

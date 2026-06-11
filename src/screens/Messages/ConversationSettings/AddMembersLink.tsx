@@ -16,6 +16,7 @@ import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/
 import {Loader} from '#/components/Loader'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
+import {useAnalytics} from '#/analytics'
 
 export function AddMembersLink({
   convo,
@@ -26,6 +27,7 @@ export function AddMembersLink({
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
+  const ax = useAnalytics()
   const enableSquareButtons = useEnableSquareButtons()
 
   const addMembersControl = Dialog.useDialogControl()
@@ -35,6 +37,7 @@ export function AddMembersLink({
     convoId,
     {
       onSuccess: data => {
+        ax.metric('groupchat:owner:inviteMember', {convoId})
         addMembersControl.close(() => {
           const members = data.addedMembers ?? []
 

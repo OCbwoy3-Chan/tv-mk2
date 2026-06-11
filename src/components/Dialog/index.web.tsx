@@ -171,6 +171,7 @@ export function Inner({
   accessibilityLabelledBy,
   accessibilityDescribedBy,
   header,
+  footer,
   contentContainerStyle,
 }: DialogInnerProps) {
   const t = useTheme()
@@ -217,6 +218,7 @@ export function Inner({
           <View style={[gtMobile ? a.p_2xl : a.p_xl, contentContainerStyle]}>
             {children}
           </View>
+          {footer}
         </DismissableLayer.DismissableLayer>
       </View>
     </FocusScope.FocusScope>
@@ -267,9 +269,11 @@ export const InnerFlatList = forwardRef<
 export function FlatListFooter({
   children,
   onLayout,
+  border = true,
 }: {
   children: React.ReactNode
   onLayout?: (event: LayoutChangeEvent) => void
+  border?: boolean
 }) {
   const t = useTheme()
 
@@ -282,7 +286,7 @@ export function FlatListFooter({
         a.w_full,
         a.z_10,
         t.atoms.bg,
-        a.border_t,
+        border && a.border_t,
         t.atoms.border_contrast_low,
         a.px_lg,
         a.py_md,
