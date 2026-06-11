@@ -528,8 +528,14 @@ export const Button = forwardRef<View, ButtonProps>(
             paddingHorizontal: 24,
             gap: 6,
           })
+        } else if (size === 'medium') {
+          baseStyles.push(enableSquareButtons ? a.rounded_sm : a.rounded_full, {
+            paddingVertical: 9,
+            paddingHorizontal: 28,
+            gap: 5,
+          })
         } else if (size === 'small') {
-          baseStyles.push(a.rounded_full, {
+          baseStyles.push(enableSquareButtons ? a.rounded_sm : a.rounded_full, {
             paddingVertical: 8,
             paddingHorizontal: 14,
             gap: 5,
