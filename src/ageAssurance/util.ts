@@ -7,10 +7,9 @@ import {
 
 import {getAge} from '#/lib/strings/time'
 import {DEFAULT_LOGGED_OUT_LABEL_PREFERENCES} from '#/state/queries/preferences/const'
-import {FALLBACK_REGION_CONFIG, MIN_ACCESS_AGE} from '#/ageAssurance/const'
+import {FALLBACK_REGION_CONFIG} from '#/ageAssurance/const'
 import {useAgeAssuranceServerDataContext} from '#/ageAssurance/data'
 import {
-  AgeAssuranceAccess,
   type AgeAssuranceFlags,
   type AgeAssuranceMetadata,
   type AgeAssuranceState,
@@ -98,36 +97,22 @@ export const makeAgeRestrictedModerationPrefs = (
 })
 
 export function computeAgeAssuranceFlags({
-  state,
-  regionConfig,
-  metadata,
+  _state,
+  _regionConfig,
+  _metadata,
 }: {
-  state: AgeAssuranceState
-  regionConfig: AppBskyAgeassuranceDefs.ConfigRegion
-  metadata?: AgeAssuranceMetadata
+  _state: AgeAssuranceState
+  _regionConfig: AppBskyAgeassuranceDefs.ConfigRegion
+  _metadata?: AgeAssuranceMetadata
 }): AgeAssuranceFlags {
-  const isAgeRestricted = state.access !== AgeAssuranceAccess.Full
-  const chatDisabled = isAgeRestricted
-  const isDeclaredUnderAdultAge = metadata?.declaredAge
-    ? metadata.declaredAge < 18
-    : true
-  const groupChatDisabled = chatDisabled || isDeclaredUnderAdultAge
-  const isOverRegionMinAccessAge = metadata?.declaredAge
-    ? metadata.declaredAge >= regionConfig.minAccessAge
-    : false
-  const isOverAppMinAccessAge = metadata?.declaredAge
-    ? metadata.declaredAge >= MIN_ACCESS_AGE
-    : false
-  const adultContentDisabled =
-    state.access !== AgeAssuranceAccess.Full || isDeclaredUnderAdultAge
-
+  // Don't baby the user. See commit 09e0dff3
   return {
-    isAgeRestricted,
-    adultContentDisabled,
-    chatDisabled,
-    groupChatDisabled,
-    isDeclaredUnderAdultAge,
-    isOverRegionMinAccessAge,
-    isOverAppMinAccessAge,
+    isAgeRestricted: false,
+    adultContentDisabled: false,
+    chatDisabled: false,
+    groupChatDisabled: false,
+    isDeclaredUnderAdultAge: false,
+    isOverRegionMinAccessAge: true,
+    isOverAppMinAccessAge: true,
   }
 }
