@@ -1,6 +1,6 @@
 import {
   AppBskyActorProfile,
-  type BskyAgent,
+  type AtpAgent,
   ComAtprotoRepoPutRecord,
   type Un$Typed,
 } from '@atproto/api'
@@ -39,7 +39,7 @@ function profileRecordNeedsValidationSkip(
  * uploads for smaller file sizes.
  */
 export async function upsertActorProfile(
-  agent: BskyAgent,
+  agent: AtpAgent,
   updateFn: ProfileUpdateFn,
 ): Promise<void> {
   const collection = 'app.bsky.actor.profile'

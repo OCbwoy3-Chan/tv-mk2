@@ -4,7 +4,7 @@ import {
   type AppBskyFeedDefs,
   AppBskyFeedPost,
   AtUri,
-  type BskyAgent,
+  type AtpAgent,
 } from '@atproto/api'
 import {useQuery} from '@tanstack/react-query'
 
@@ -48,7 +48,7 @@ function isAccountSuspendedError(e: unknown) {
 }
 
 export async function directFetchRecordAndProfile(
-  agent: BskyAgent,
+  agent: AtpAgent,
   uri: string,
 ): Promise<
   | {
@@ -106,7 +106,7 @@ export async function directFetchRecordAndProfile(
 }
 
 export async function directFetchEmbedRecord(
-  agent: BskyAgent,
+  agent: AtpAgent,
   uri: string,
 ): Promise<DirectFetchEmbedRecordResult | undefined> {
   const res = await directFetchRecordAndProfile(agent, uri)
@@ -152,7 +152,7 @@ export function useDirectFetchEmbedRecord({
 }
 
 export async function directFetchPostRecord(
-  agent: BskyAgent,
+  agent: AtpAgent,
   uri: string,
 ): Promise<AppBskyFeedDefs.PostView | undefined> {
   const res = await directFetchRecordAndProfile(agent, uri)

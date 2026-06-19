@@ -28,7 +28,7 @@ describe('session', () => {
       throw new Error('Invalid token specified: missing part #2')
     })
 
-    const agent = new BskyAgent({service: 'https://alice.com'})
+    const agent = new AtpAgent({service: 'https://alice.com'})
     agent.sessionManager.session = {
       active: true,
       did: 'alice-did',

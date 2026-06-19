@@ -365,9 +365,9 @@ class BskyAppAgent extends AtpAgent {
     undefined
 
   clone(): this {
-    // `withProxy()` calls `clone()`. Since this class subclasses `BskyAgent`,
+    // `withProxy()` calls `clone()`. Since this class subclasses `AtpAgent`,
     // we must provide our own clone implementation.
-    return this.copyInto(new BskyAgent(this.sessionManager) as this)
+    return this.copyInto(new AtpAgent(this.sessionManager) as this)
   }
 
   constructor({service}: {service: string}) {
@@ -433,8 +433,8 @@ class BskyAppAgent extends AtpAgent {
     this.persistSessionHandler = undefined
   }
 
-  cloneWithoutProxy(): BskyAgent {
-    const cloned = new BskyAgent({service: this.serviceUrl.toString()})
+  cloneWithoutProxy(): AtpAgent {
+    const cloned = new AtpAgent({service: this.serviceUrl.toString()})
     cloned.sessionManager.session = this.sessionManager.session
     return cloned
   }

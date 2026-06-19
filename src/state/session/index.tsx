@@ -327,7 +327,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
     async storedAccount => {
       if (storedAccount.isOauthSession) {
         const {agent} = await oauthResumeSession(storedAccount)
-        return agent as unknown as import('@atproto/api').BskyAgent
+        return agent as unknown as AtpAgent
       }
       const {agent} = await createAgentAndResume(
         storedAccount,
@@ -343,7 +343,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
           })
         },
       )
-      return agent as import('@atproto/api').BskyAgent
+      return agent
     },
     [store],
   )

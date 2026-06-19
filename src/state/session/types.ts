@@ -57,5 +57,5 @@ export type SessionApiContext = {
   partialRefreshSession: () => Promise<void>
   createEphemeralAgent: (
     account: SessionAccount,
-  ) => Promise<import('@atproto/api').BskyAgent>
+  ) => Promise<import('@atproto/api').AtpAgent>
 }
