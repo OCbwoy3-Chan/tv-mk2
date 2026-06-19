@@ -21,7 +21,6 @@ import {makeProfileLink} from '#/lib/routes/links'
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {convertBskyAppUrlIfNeeded} from '#/lib/strings/url-helpers'
 import {emitSoftReset} from '#/state/events'
-import {useModalControls} from '#/state/modals'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useUnreadMessageCount} from '#/state/queries/messages/list-conversations'
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
@@ -407,7 +406,7 @@ function TouchNavItem({
   const {_} = useLingui()
   const {bottom: bottomInset} = useSafeAreaInsets()
   const navigation = useNavigationDeduped()
-  const {closeModal} = useModalControls()
+  const closeAllActiveElements = useCloseAllActiveElements()
 
   // CSS transition press animation — runs on compositor thread
   // so navigation re-renders don't cause jank
@@ -438,7 +437,7 @@ function TouchNavItem({
   }
 
   const onPress = () => {
-    closeModal()
+    closeAllActiveElements()
 
     const sanitizedHref = convertBskyAppUrlIfNeeded(sanitizeUrl(href))
     const [resolvedRouteName, params] = router.matchPath(sanitizedHref)

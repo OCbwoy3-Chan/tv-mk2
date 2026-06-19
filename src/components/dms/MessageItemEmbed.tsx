@@ -1,5 +1,10 @@
 import {memo} from 'react'
 import {useWindowDimensions, View} from 'react-native'
+import Animated, {
+  interpolateColor,
+  type SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated'
 import {type $Typed, type AppBskyEmbedRecord} from '@atproto/api'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -15,22 +20,55 @@ let MessageItemEmbed = ({
   isGroupChat,
   squaredTopCorner,
   squaredBottomCorner,
+  highlightSV,
 }: {
   embed: $Typed<AppBskyEmbedRecord.View>
   isFromSelf: boolean
   isGroupChat: boolean
   squaredTopCorner: boolean
   squaredBottomCorner: boolean
+  highlightSV: SharedValue<number>
 }): React.ReactNode => {
   const enableSquareButtons = useEnableSquareButtons()
   const t = useTheme()
   const screen = useWindowDimensions()
   const borderRadius = enableSquareButtons ? 4 : 20
 
+  const restingColor = isFromSelf ? t.palette.primary_50 : t.palette.contrast_50
+  const highlightColor = isFromSelf
+    ? t.palette.primary_300
+    : t.palette.primary_100
+  const highlightStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      highlightSV.get(),
+      [0, 1],
+      [restingColor, highlightColor],
+    ),
+  }))
+
+  const radiiStyle = isFromSelf
+    ? {
+        borderBottomRightRadius: squaredBottomCorner
+          ? SQUARED_BORDER_RADIUS
+          : borderRadius,
+        borderTopRightRadius: squaredTopCorner
+          ? SQUARED_BORDER_RADIUS
+          : borderRadius,
+      }
+    : {
+        borderBottomLeftRadius: squaredBottomCorner
+          ? SQUARED_BORDER_RADIUS
+          : borderRadius,
+        borderTopLeftRadius: squaredTopCorner
+          ? SQUARED_BORDER_RADIUS
+          : borderRadius,
+      }
+
   return (
     <MessageContextProvider>
       <View
         style={[
+          isFromSelf ? a.self_end : a.self_start,
           !isFromSelf && isGroupChat && a.ml_sm,
           native({
             flexBasis: 0,
@@ -45,7 +83,8 @@ let MessageItemEmbed = ({
           // CLUSTERED_MESSAGE_GAP (2px) is the only spacing applied
           {marginTop: -a.mt_sm.marginTop},
         ]}>
-        <View>
+        <Animated.View
+          style={[a.rounded_xl, a.overflow_hidden, radiiStyle, highlightStyle]}>
           <Embed
             embed={embed}
             allowNestedQuotes
@@ -54,28 +93,10 @@ let MessageItemEmbed = ({
               enableSquareButtons ? a.rounded_sm : a.rounded_xl,
               a.overflow_hidden,
               a.border_0,
-              isFromSelf
-                ? {
-                    backgroundColor: t.palette.primary_50,
-                    borderBottomRightRadius: squaredBottomCorner
-                      ? SQUARED_BORDER_RADIUS
-                      : borderRadius,
-                    borderTopRightRadius: squaredTopCorner
-                      ? SQUARED_BORDER_RADIUS
-                      : borderRadius,
-                  }
-                : {
-                    backgroundColor: t.palette.contrast_50,
-                    borderBottomLeftRadius: squaredBottomCorner
-                      ? SQUARED_BORDER_RADIUS
-                      : borderRadius,
-                    borderTopLeftRadius: squaredTopCorner
-                      ? SQUARED_BORDER_RADIUS
-                      : borderRadius,
-                  },
+              radiiStyle,
             ]}
           />
-        </View>
+        </Animated.View>
       </View>
     </MessageContextProvider>
   )

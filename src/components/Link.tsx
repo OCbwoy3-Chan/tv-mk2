@@ -26,7 +26,6 @@ import {
   isExternalUrl,
   linkRequiresWarning,
 } from '#/lib/strings/url-helpers'
-import {useModalControls} from '#/state/modals'
 import {useGoLinksEnabled} from '#/state/preferences'
 import {useInAppBrowser} from '#/state/preferences/in-app-browser'
 import {atoms as a, flatten, type TextStyleProp, useTheme, web} from '#/alf'
@@ -141,7 +140,6 @@ export function useLink({
   }
 
   const isExternal = isExternalUrl(href)
-  const {closeModal} = useModalControls()
   const {linkWarningDialogControl} = useGlobalDialogsControlContext()
   const openLink = useOpenLink()
   const groupChatJoinIntent = useGroupChatJoinIntent()
@@ -199,8 +197,6 @@ export function useLink({
           ) {
             void openLink(href)
           } else {
-            closeModal() // close any active modals
-
             const [screen, params] = router.matchPath(href) as [
               screen: keyof AllNavigatorParams,
               params?: RouteParams,
@@ -253,7 +249,6 @@ export function useLink({
       isExternal,
       href,
       openLink,
-      closeModal,
       action,
       navigation,
       overridePresentation,

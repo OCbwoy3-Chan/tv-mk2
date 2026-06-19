@@ -1,8 +1,8 @@
 import {
   type AppBskyFeedDefs,
   AppBskyFeedThreadgate,
+  type AtpAgent,
   AtUri,
-  type BskyAgent,
 } from '@atproto/api'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
@@ -89,7 +89,7 @@ export async function getThreadgateRecord({
   agent,
   postUri,
 }: {
-  agent: BskyAgent
+  agent: AtpAgent
   postUri: string
 }): Promise<AppBskyFeedThreadgate.Record | null> {
   const urip = new AtUri(postUri)
@@ -151,7 +151,7 @@ export async function writeThreadgateRecord({
   postUri,
   threadgate,
 }: {
-  agent: BskyAgent
+  agent: AtpAgent
   postUri: string
   threadgate: AppBskyFeedThreadgate.Record
 }) {
@@ -177,7 +177,7 @@ export async function upsertThreadgate(
     agent,
     postUri,
   }: {
-    agent: BskyAgent
+    agent: AtpAgent
     postUri: string
   },
   callback: (
@@ -206,7 +206,7 @@ export async function updateThreadgateAllow({
   postUri,
   allow,
 }: {
-  agent: BskyAgent
+  agent: AtpAgent
   postUri: string
   allow: ThreadgateAllowUISetting[]
 }) {

@@ -1,7 +1,7 @@
 import {
   type AppBskyFeedDefs,
   type AppBskyFeedGetFeed as GetCustomFeed,
-  type BskyAgent,
+  type AtpAgent,
   jsonStringToLex,
 } from '@atproto/api'
 
@@ -15,7 +15,7 @@ import {type FeedAPI, type FeedAPIResponse} from './types'
 import {createBskyTopicsHeader, isBlueskyOwnedFeed} from './utils'
 
 export class CustomFeedAPI implements FeedAPI {
-  agent: BskyAgent
+  agent: AtpAgent
   params: GetCustomFeed.QueryParams
   userInterests?: string
 
@@ -24,7 +24,7 @@ export class CustomFeedAPI implements FeedAPI {
     feedParams,
     userInterests,
   }: {
-    agent: BskyAgent
+    agent: AtpAgent
     feedParams: GetCustomFeed.QueryParams
     userInterests?: string
   }) {

@@ -4,8 +4,8 @@ import {
   type AppBskyGraphGetStarterPack,
   AppBskyGraphStarterpack,
   type AppBskyRichtextFacet,
+  type AtpAgent,
   AtUri,
-  type BskyAgent,
   RichText,
 } from '@atproto/api'
 import {
@@ -341,7 +341,7 @@ export function useDeleteStarterPackMutation({
 }
 
 async function whenAppViewReady(
-  agent: BskyAgent,
+  agent: AtpAgent,
   uri: string,
   fn: (res?: AppBskyGraphGetStarterPack.Response) => boolean,
 ) {

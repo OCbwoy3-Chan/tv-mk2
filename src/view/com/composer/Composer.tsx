@@ -54,8 +54,8 @@ import {
   AppBskyDraftCreateDraft,
   AppBskyUnspeccedDefs,
   type AppBskyUnspeccedGetPostThreadV2,
+  type AtpAgent,
   AtUri,
-  type BskyAgent,
   ChatBskyGroupDefs,
   RichText,
 } from '@atproto/api'
@@ -93,7 +93,6 @@ import {
   createComposerImage,
   pasteImage,
 } from '#/state/gallery'
-import {useModalControls} from '#/state/modals'
 import {useRequireAltTextEnabled} from '#/state/preferences'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
@@ -312,7 +311,6 @@ export const ComposePost = ({
     useSaveDraftMutation()
   const {mutate: cleanupPublishedDraft} = useCleanupPublishedDraftMutation()
   const {closeAllDialogs} = useDialogStateControlContext()
-  const {closeAllModals} = useModalControls()
   const {data: preferences} = usePreferencesQuery()
   const navigation = useNavigation<NavigationProp>()
 
@@ -879,7 +877,7 @@ export const ComposePost = ({
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        if (closeAllDialogs() || closeAllModals()) {
+        if (closeAllDialogs()) {
           return true
         }
         onPressCancel()
@@ -889,7 +887,7 @@ export const ComposePost = ({
     return () => {
       backHandler.remove()
     }
-  }, [onPressCancel, closeAllDialogs, closeAllModals])
+  }, [onPressCancel, closeAllDialogs])
 
   // eslint-disable-next-line react-hooks/preserve-manual-memoization -- restored memoization
   const missingAltError = useMemo(() => {
@@ -1014,7 +1012,7 @@ export const ComposePost = ({
     setIsPublishing(true)
 
     let currentAgent = agent
-    let ephemeralAgent: BskyAgent | undefined
+    let ephemeralAgent: AtpAgent | undefined
     let postUri: string | undefined
     let postSuccessData: OnPostSuccessData
     try {
@@ -2634,7 +2632,7 @@ function useKeyboardVerticalOffset() {
 }
 
 async function whenAppViewReady(
-  agent: BskyAgent,
+  agent: AtpAgent,
   uri: string,
   fn: (res: AppBskyUnspeccedGetPostThreadV2.Response) => boolean,
 ) {

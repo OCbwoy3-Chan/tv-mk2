@@ -44,30 +44,14 @@
       "android": {
         "autoIncrement": true
       },
-        "channel": "production",
-        "env": {
-          "EXPO_PUBLIC_ENV": "production",
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_ENV": "production",
           "SENTRY_DISABLE_AUTO_UPLOAD": "true"
-        }
-      },
-      "production-apk": {
-        "extends": "base",
-        "distribution": "internal",
-      "ios": {
-        "autoIncrement": false,
-        "buildArtifactPaths": ["ios/build/*"]
-      },
-      "android": {
-        "autoIncrement": false
-      },
-        "channel": "production",
-        "env": {
-          "EXPO_PUBLIC_ENV": "production",
-          "SENTRY_DISABLE_AUTO_UPLOAD": "true"
-        }
-      },
-      "testflight": {
-        "extends": "base",
+      }
+    },
+    "testflight": {
+      "extends": "base",
       "ios": {
         "autoIncrement": true,
         "buildArtifactPaths": ["ios/build/*"]
@@ -75,15 +59,14 @@
       "android": {
         "autoIncrement": true
       },
-        "channel": "testflight",
-        "env": {
-          "EXPO_PUBLIC_ENV": "testflight",
+      "channel": "testflight",
+      "env": {
+        "EXPO_PUBLIC_ENV": "testflight",
           "SENTRY_DISABLE_AUTO_UPLOAD": "true"
-        }
-      },
-      "testflight-android": {
-        "extends": "base",
-        "distribution": "internal",
+      }
+    },
+    "testflight-android": {
+      "extends": "base",
       "ios": {
         "autoIncrement": true,
         "buildArtifactPaths": ["ios/build/*"]
@@ -112,6 +95,14 @@
     "production": {
       "ios": {
         "ascAppId": "6444370199"
+      },
+      "android": {
+        "track": "production"
+      }
+    },
+    "testflight-android": {
+      "android": {
+        "track": "internal"
       }
     }
   }

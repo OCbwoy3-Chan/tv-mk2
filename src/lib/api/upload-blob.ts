@@ -4,7 +4,7 @@ import {
   EncodingType,
   writeAsStringAsync,
 } from 'expo-file-system/legacy'
-import {type BskyAgent, type ComAtprotoRepoUploadBlob} from '@atproto/api'
+import {type AtpAgent, type ComAtprotoRepoUploadBlob} from '@atproto/api'
 import {nanoid} from 'nanoid/non-secure'
 
 import {safeDeleteAsync} from '#/lib/media/manip'
@@ -14,7 +14,7 @@ import {IS_NATIVE} from '#/env'
  * @param encoding Allows overriding the blob's type
  */
 export async function uploadBlob(
-  agent: BskyAgent,
+  agent: AtpAgent,
   input: string | Blob,
   encoding?: string,
 ): Promise<ComAtprotoRepoUploadBlob.Response> {

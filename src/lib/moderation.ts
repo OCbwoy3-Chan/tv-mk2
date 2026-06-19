@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {
   type AppBskyLabelerDefs,
-  BskyAgent,
+  AtpAgent,
   type ComAtprotoLabelDefs,
   type InterpretedLabelValueDefinition,
   LABELS,
@@ -92,13 +92,13 @@ export function isAppLabeler(
     | AppBskyLabelerDefs.LabelerViewDetailed,
 ): boolean {
   if (typeof labeler === 'string') {
-    return BskyAgent.appLabelers.includes(labeler)
+    return AtpAgent.appLabelers.includes(labeler)
   }
-  return BskyAgent.appLabelers.includes(labeler.creator.did)
+  return AtpAgent.appLabelers.includes(labeler.creator.did)
 }
 
 export function getActiveAppLabelers() {
-  return BskyAgent.appLabelers.filter(did => !isIgnoredAppLabeler(did))
+  return AtpAgent.appLabelers.filter(did => !isIgnoredAppLabeler(did))
 }
 
 export function isLabelerSubscribed(
