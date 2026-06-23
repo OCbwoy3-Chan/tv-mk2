@@ -48,6 +48,10 @@ export function useAIPreferencesQuery() {
           repo: currentAccount.did,
           collection: AI_PREFERENCE_NSID,
           rkey: 'self',
+        },{
+          headers: {
+            "atproto-proxy": ""
+          }
         })
         return data.value as AIPreferenceRecord
       } catch (e) {
