@@ -124,6 +124,7 @@ import {ExternalEmbedRemoveBtn} from '#/view/com/composer/ExternalEmbedRemoveBtn
 import {GifAltTextDialog} from '#/view/com/composer/GifAltText'
 import {LabelsBtn} from '#/view/com/composer/labels/LabelsBtn'
 import {AtprotoBtn} from '#/view/com/composer/AtprotoBtn'
+import {useAtprotoRkeySettings} from '#/state/preferences/atproto-rkey-settings'
 import * as persisted from '#/state/persisted'
 import {Gallery} from '#/view/com/composer/photos/Gallery'
 import {OpenCameraBtn} from '#/view/com/composer/photos/OpenCameraBtn'
@@ -2248,23 +2249,28 @@ function ComposerPills({
           />
         ) : null}
 
-        <AtprotoBtn
-          generation={post.atprotoRkey?.generation ?? persisted.defaults.atprotoRkeyGenerationDefault}
-          prefix={post.atprotoRkey?.prefix ?? persisted.defaults.atprotoRkeyPrefixDefault}
-          suffix={post.atprotoRkey?.suffix ?? persisted.defaults.atprotoRkeySuffixDefault}
-          onChangeSettings={(generation, prefix, suffix) => {
-            dispatch({
-              type: 'update_post',
-              postId: post.id,
-              postAction: {
-                type: 'update_rkey',
-                generation,
-                prefix,
-                suffix,
-              },
-            })
-          }}
-        />
+        {(() => {
+          const rkeySettings = useAtprotoRkeySettings()
+          return (
+            <AtprotoBtn
+              generation={post.atprotoRkey?.generation ?? rkeySettings.generation}
+              prefix={post.atprotoRkey?.prefix ?? rkeySettings.prefix}
+              suffix={post.atprotoRkey?.suffix ?? (rkeySettings.suffix ?? '')}
+              onChangeSettings={(generation, prefix, suffix) => {
+                dispatch({
+                  type: 'update_post',
+                  postId: post.id,
+                  postAction: {
+                    type: 'update_rkey',
+                    generation,
+                    prefix,
+                    suffix,
+                  },
+                })
+              }}
+            />
+          )
+        })()}
       </ScrollView>
     </Animated.View>
   )
