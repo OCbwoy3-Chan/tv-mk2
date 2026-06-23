@@ -18,6 +18,7 @@ alt="Get it on Obtainium" height="54" /></a> -->
 
 - Lightner/Darkner labels (can't edit right now)
 - Custom post rkeys (e.g. -meow suffix)
+- Native iOS Builds (Unsigned IPA)
 
 ### Runes
 
@@ -99,7 +100,6 @@ These are all available as options in the Runes sub-page of the app's settings. 
 
 ### TODO: Kris
 
-- [ ] Native Unsigned iOS builds via GitHub Actions
 - [ ] Custom verifications/cancellations & import from repo button
 - [ ] Our own settings section
 - [ ] Profile badge editor replaces pet label settings
