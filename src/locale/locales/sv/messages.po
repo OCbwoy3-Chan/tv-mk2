@@ -1521,10 +1521,6 @@ msgstr ""
 msgid "Already have a code?"
 msgstr "Har du redan en kod?"
 
-#: src/components/WelcomeModal.tsx:196
-msgid "Already have an account?"
-msgstr "Har du redan ett konto?"
-
 #. placeholder {0}: account.handle
 #: src/screens/Login/ChooseAccountForm.tsx:47
 msgid "Already signed in as @{0}"
@@ -1976,6 +1972,10 @@ msgstr "Vanliga frågor om AT-protokollet"
 msgid "Atmosphere"
 msgstr ""
 
+#: src/view/com/composer/AtprotoBtn.tsx:118
+msgid "ATProto settings"
+msgstr ""
+
 #: src/components/Post/Embed/index.tsx:249
 msgid "Author account suspended"
 msgstr ""
@@ -1992,8 +1992,8 @@ msgstr ""
 msgid "Auto-compact switcher, compact posts"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:72
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:78
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:79
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:85
 msgid "Auto-like what you repost"
 msgstr ""
 
@@ -2815,6 +2815,10 @@ msgstr "Välj flöden"
 msgid "Choose for me"
 msgstr "Välj åt mig"
 
+#: src/view/com/composer/AtprotoBtn.tsx:131
+msgid "Choose how record keys are generated"
+msgstr ""
+
 #: src/components/dialogs/LanguageSelectDialog.tsx:202
 msgid "Choose languages"
 msgstr "Välj språk"
@@ -3063,7 +3067,7 @@ msgstr "Stäng banderollen för väntande förfrågningar"
 msgid "Close this dialog"
 msgstr "Stäng den här dialogrutan"
 
-#: src/components/WelcomeModal.tsx:221
+#: src/components/WelcomeModal.tsx:172
 msgid "Close welcome modal"
 msgstr "Stäng välkomstfönster"
 
@@ -3697,8 +3701,8 @@ msgstr "Skapa ett startpaket"
 msgid "Create a starter pack for me"
 msgstr "Skapa ett startpaket åt mig"
 
-#: src/components/WelcomeModal.tsx:159
-#: src/components/WelcomeModal.tsx:167
+#: src/components/WelcomeModal.tsx:147
+#: src/components/WelcomeModal.tsx:155
 #: src/screens/Messages/JoinRequest.tsx:310
 #: src/screens/Signup/index.tsx:141
 #: src/view/com/auth/SplashScreen.tsx:107
@@ -3833,6 +3837,10 @@ msgstr ""
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:335
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:337
 msgid "Custom post phrase"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:104
+msgid "Custom Record Key"
 msgstr ""
 
 #: src/components/dialogs/Embed.tsx:140
@@ -4088,8 +4096,8 @@ msgstr "Avskilj citatinlägg?"
 msgid "Determine how AI may use your data"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:132
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:138
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:152
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:158
 msgid "Developer mode"
 msgstr ""
 
@@ -4188,8 +4196,8 @@ msgstr ""
 msgid "Disable verify email reminder"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:85
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:91
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:92
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:98
 msgid "Disable via repost notifications"
 msgstr ""
 
@@ -4354,8 +4362,8 @@ msgstr "Har du ingen kod eller behöver du en ny? <0>Klicka här.</0>"
 msgid "Don't have an account provider or an existing Bluesky account? To create a new account on a Bluesky-hosted PDS, sign up through <0>bsky.app</0> first, then return to Witchsky and log in with the account you created."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:119
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:125
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:139
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:145
 msgid "Don't include the 'via' field in own posts"
 msgstr ""
 
@@ -4509,6 +4517,10 @@ msgstr "Varaktighet:"
 msgid "Dusk"
 msgstr "Skymning"
 
+#: src/view/com/composer/AtprotoBtn.tsx:236
+msgid "e.g. -cool"
+msgstr ""
+
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:243
 msgid "e.g. alice"
 msgstr "t.ex. alice"
@@ -4524,6 +4536,10 @@ msgstr "t.ex. alice.com"
 #: src/lib/moderation/useGlobalLabelStrings.ts:43
 msgid "E.g. artistic nudes."
 msgstr "T.ex. konstnärliga nakenbilder."
+
+#: src/view/com/composer/AtprotoBtn.tsx:201
+msgid "e.g. gerson"
+msgstr ""
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:374
 msgid "e.g. Great Posters"
@@ -4763,6 +4779,11 @@ msgstr "Tillåt vuxeninnehåll"
 msgid "Enable captions"
 msgstr "Aktivera undertexter"
 
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:126
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:132
+msgid "Enable custom post rkeys"
+msgstr ""
+
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:91
 msgid "Enable email 2FA"
 msgstr "Aktivera 2FA via e-post"
@@ -4830,6 +4851,10 @@ msgstr "Aktiverat"
 #: src/screens/Profile/Sections/Feed.tsx:131
 msgid "End of feed"
 msgstr "Slut på flödet"
+
+#: src/components/WelcomeModal.tsx:166
+msgid "enjoy this forked bsky <3 - kris"
+msgstr ""
 
 #: src/view/com/composer/videos/SubtitleDialog.tsx:183
 msgid "Ensure you have selected a language for each caption file."
@@ -5029,7 +5054,7 @@ msgstr "Utöka inläggstext"
 msgid "Expands or collapses post text"
 msgstr "Utökar eller fäller ihop inläggstext"
 
-#: src/lib/api/index.ts:552
+#: src/lib/api/index.ts:565
 msgid "Expected uri to resolve to a record"
 msgstr "Förväntade att URI:n skulle hänvisa till en datapost"
 
@@ -5076,11 +5101,6 @@ msgstr "Explicit sexuella bilder."
 msgid "Explore"
 msgstr "Utforska"
 
-#: src/components/WelcomeModal.tsx:172
-#: src/components/WelcomeModal.tsx:184
-msgid "Explore the app"
-msgstr "Utforska appen"
-
 #: src/screens/Messages/Settings.tsx:267
 #: src/screens/Messages/Settings.tsx:277
 #: src/screens/Settings/components/ExportCarDialog.tsx:131
@@ -5116,7 +5136,7 @@ msgstr "Extern media kan göra det möjligt för webbplatser att samla in inform
 msgid "External Media Preferences"
 msgstr "Inställningar för extern media"
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:56
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:63
 #: src/screens/Settings/RunesSettings/index.tsx:78
 msgid "Extra"
 msgstr ""
@@ -5485,8 +5505,8 @@ msgid "Favicon Service URL"
 msgstr ""
 
 #: src/Navigation.tsx:502
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:145
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:148
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:165
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:168
 #: src/screens/Settings/RunesSettings/FeatureGatesSettings.tsx:20
 msgid "Feature gates"
 msgstr ""
@@ -5572,8 +5592,8 @@ msgstr "Flöden uppdaterade!"
 msgid "Feeds we think you might like."
 msgstr "Flöden som vi tror du kan gilla."
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:59
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:65
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:66
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:72
 msgid "Fetch records directly from PDS to fix broken quotes"
 msgstr ""
 
@@ -5944,7 +5964,7 @@ msgstr "För dig"
 msgid "for you dot club"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:98
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:105
 msgid "Forcefully disables the notifications other people receive when you like/repost a post someone else has reposted for privacy."
 msgstr ""
 
@@ -7072,6 +7092,10 @@ msgstr "Ogilitiga interaktionsinställningar."
 msgid "Invalid phone number"
 msgstr "Ogiltigt telefonnummer"
 
+#: src/view/com/composer/AtprotoBtn.tsx:216
+msgid "Invalid prefix. Use 1-13 chars from 234567abcdefghijklmnopqrstuvwxyz. First char must be one of 234567abcdefghij."
+msgstr ""
+
 #: src/components/moderation/ReportDialog/index.tsx:101
 msgid "Invalid report subject"
 msgstr "Ogiltigt ämne för anmälan"
@@ -7080,6 +7104,10 @@ msgstr "Ogiltigt ämne för anmälan"
 #: src/screens/Messages/components/OutgoingRequestListItem.tsx:41
 msgid "Invalid rescind request."
 msgstr "Ogiltig begäran om återkallelse."
+
+#: src/view/com/composer/AtprotoBtn.tsx:252
+msgid "Invalid suffix. Use 1-12 chars from 234567abcdefghijklmnopqrstuvwxyz."
+msgstr ""
 
 #: src/components/intents/VerifyEmailIntentDialog.tsx:87
 msgid "Invalid Verification Code"
@@ -9243,6 +9271,10 @@ msgstr "Öppnar en dialogruta där du kan lägga till en innehållsvarning för 
 msgid "Opens a dialog to choose who can interact with this post"
 msgstr "Öppnar en dialogruta där du kan välja vilka som ska få interagera med det här inlägget"
 
+#: src/view/com/composer/AtprotoBtn.tsx:108
+msgid "Opens a dialog to configure ATProto record key generation"
+msgstr ""
+
 #: src/features/inviteFriends/components/ThemePicker.tsx:38
 msgid "Opens a list of color themes for the QR card"
 msgstr "Öppnar en lista över färgteman för QR-kortet"
@@ -9946,7 +9978,7 @@ msgctxt "toast"
 msgid "Post deleted"
 msgstr "Inlägg raderat"
 
-#: src/lib/api/index.ts:205
+#: src/lib/api/index.ts:218
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "Inlägget kunde inte laddas upp. Kontrollera din internetanslutning och försök igen."
 
@@ -10063,6 +10095,16 @@ msgstr ""
 msgid "Preferred language"
 msgstr "Föredraget språk"
 
+#: src/view/com/composer/AtprotoBtn.tsx:162
+#: src/view/com/composer/AtprotoBtn.tsx:168
+#: src/view/com/composer/AtprotoBtn.tsx:194
+msgid "Prefix"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:209
+msgid "Prefix must use TID characters. If shorter than 13 chars, a timestamp-based TID suffix fills the remainder."
+msgstr ""
+
 #: src/screens/Messages/components/MessageListError.tsx:18
 msgid "Press to attempt reconnection"
 msgstr "Tryck för att försöka återansluta"
@@ -10136,7 +10178,7 @@ msgstr "Bearbetar gif-bild…"
 msgid "Processing video..."
 msgstr "Bearbetar videoklipp…"
 
-#: src/lib/api/index.ts:70
+#: src/lib/api/index.ts:74
 msgid "Processing..."
 msgstr "Bearbetar…"
 
@@ -10358,12 +10400,12 @@ msgstr ""
 msgid "Read Witchsky's patches and contribute"
 msgstr ""
 
-#: src/components/WelcomeModal.tsx:150
-msgid "Real creatures."
+#: src/components/WelcomeModal.tsx:136
+msgid "Real games."
 msgstr ""
 
-#: src/components/WelcomeModal.tsx:148
-msgid "Real talk."
+#: src/components/WelcomeModal.tsx:138
+msgid "Real tennalings."
 msgstr ""
 
 #: src/screens/Takendown.tsx:158
@@ -10399,6 +10441,19 @@ msgstr "Rekommenderat"
 #: src/screens/Messages/components/MessageListError.tsx:19
 msgid "Reconnect"
 msgstr "Återanslut"
+
+#: src/view/com/composer/AtprotoBtn.tsx:111
+#: src/view/com/composer/AtprotoBtn.tsx:122
+msgid "Record Key"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:199
+msgid "Record key prefix"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:234
+msgid "Record key suffix"
+msgstr ""
 
 #: src/screens/Settings/AppearanceSettings/shared.tsx:89
 msgid "Red Dwarf"
@@ -11234,6 +11289,8 @@ msgstr ""
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:555
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:622
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:629
+#: src/view/com/composer/AtprotoBtn.tsx:284
+#: src/view/com/composer/AtprotoBtn.tsx:290
 #: src/view/com/composer/GifAltText.tsx:199
 #: src/view/com/composer/GifAltText.tsx:208
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:66
@@ -11297,6 +11354,8 @@ msgstr "Spara QR-kod"
 
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:650
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:656
+#: src/view/com/composer/AtprotoBtn.tsx:266
+#: src/view/com/composer/AtprotoBtn.tsx:272
 msgid "Save these options for next time"
 msgstr "Spara mina val till nästa gång"
 
@@ -12078,8 +12137,8 @@ msgstr ""
 msgid "Show customization options"
 msgstr "Visa anpassningsalternativ"
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:106
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:112
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:113
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:119
 msgid "Show debug context for posts in Discover feed"
 msgstr ""
 
@@ -12210,8 +12269,6 @@ msgstr ""
 
 #: src/components/dialogs/Signin.tsx:98
 #: src/components/dialogs/Signin.tsx:100
-#: src/components/WelcomeModal.tsx:201
-#: src/components/WelcomeModal.tsx:213
 #: src/screens/Hashtag.tsx:231
 #: src/screens/Login/index.tsx:194
 #: src/screens/Login/index.tsx:217
@@ -12376,8 +12433,8 @@ msgstr "Skjuter upp påminnelsen"
 msgid "So many thoughts, you should post one"
 msgstr "Så många tankar… Varför inte publicera en?"
 
-#: src/components/WelcomeModal.tsx:152
-msgid "Social media if it was good."
+#: src/components/WelcomeModal.tsx:140
+msgid "Social media if it was TV."
 msgstr ""
 
 #: src/lib/interests.ts:58
@@ -12722,6 +12779,16 @@ msgstr "Du har gått med i gruppchatten!"
 #: src/components/verification/VerificationCreatePrompt.tsx:37
 msgid "Successfully verified"
 msgstr "Verifiering lyckades"
+
+#: src/view/com/composer/AtprotoBtn.tsx:176
+#: src/view/com/composer/AtprotoBtn.tsx:182
+#: src/view/com/composer/AtprotoBtn.tsx:229
+msgid "Suffix"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:244
+msgid "Suffix replaces the last N chars of the TID, keeping a valid 13-char record key. Use TID characters (234567abcdefghijklmnopqrstuvwxyz), max 12 chars."
+msgstr ""
 
 #: src/components/dms/AddMembersFlow.tsx:243
 #: src/components/dms/InitiateChatFlow.tsx:350
@@ -13243,6 +13310,7 @@ msgid "There's been a rush of new users to Bluesky! We'll activate your account 
 msgstr "Det har varit en rusning av nya användare till Bluesky! Vi kommer att aktivera ditt konto så snart vi kan."
 
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:661
+#: src/view/com/composer/AtprotoBtn.tsx:277
 msgid "These are your default settings"
 msgstr "Det här är dina förvalda inställningar"
 
@@ -13703,10 +13771,19 @@ msgstr "Hot eller uppmaningar till våld"
 msgid "Thumbnail format"
 msgstr ""
 
+#: src/view/com/composer/AtprotoBtn.tsx:148
+#: src/view/com/composer/AtprotoBtn.tsx:154
+msgid "TID"
+msgstr ""
+
 #. placeholder {0}: Number(time) || 0
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/TimeIndicator.tsx:34
 msgid "Time remaining: {0, plural, one {# second} other {# seconds}}"
 msgstr "Återstående tid: {0, plural, one {# sekund} other {# sekunder}}"
+
+#: src/view/com/composer/AtprotoBtn.tsx:105
+msgid "Timestamp-ID (TID) Record Key"
+msgstr ""
 
 #: src/components/SendErrorReportDialog.tsx:68
 msgid "Title"
@@ -13892,6 +13969,10 @@ msgstr "TV"
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:66
 msgid "Two-factor authentication (2FA)"
 msgstr "Tvåfaktorsautentisering (2FA)"
+
+#: src/view/com/composer/AtprotoBtn.tsx:127
+msgid "Type"
+msgstr ""
 
 #: src/screens/Messages/components/MessageInput.tsx:208
 msgid "Type your message here"
@@ -14306,13 +14387,13 @@ msgstr "Ladda upp från Bibliotek"
 msgid "Uploading GIF..."
 msgstr "Laddar upp  gif-bild…"
 
-#: src/lib/api/index.ts:369
-#: src/lib/api/index.ts:407
+#: src/lib/api/index.ts:382
+#: src/lib/api/index.ts:420
 msgid "Uploading images..."
 msgstr "Laddar upp bilder…"
 
-#: src/lib/api/index.ts:488
-#: src/lib/api/index.ts:512
+#: src/lib/api/index.ts:501
+#: src/lib/api/index.ts:525
 msgid "Uploading link thumbnail..."
 msgstr "Laddar upp miniatyrbild av länk…"
 
@@ -14507,6 +14588,10 @@ msgstr "användare som följer <0>@{0}</0>"
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:461
 msgid "Value:"
 msgstr "Värde:"
+
+#: src/view/com/composer/AtprotoBtn.tsx:111
+msgid "Vanity rkey"
+msgstr ""
 
 #: src/components/verification/VerificationCreatePrompt.tsx:40
 msgid "Verification failed, please try again."

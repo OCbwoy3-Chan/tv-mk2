@@ -1521,10 +1521,6 @@ msgstr ""
 msgid "Already have a code?"
 msgstr "មានលេខកូដរួចហើយ?"
 
-#: src/components/WelcomeModal.tsx:196
-msgid "Already have an account?"
-msgstr ""
-
 #. placeholder {0}: account.handle
 #: src/screens/Login/ChooseAccountForm.tsx:47
 msgid "Already signed in as @{0}"
@@ -1976,6 +1972,10 @@ msgstr ""
 msgid "Atmosphere"
 msgstr ""
 
+#: src/view/com/composer/AtprotoBtn.tsx:118
+msgid "ATProto settings"
+msgstr ""
+
 #: src/components/Post/Embed/index.tsx:249
 msgid "Author account suspended"
 msgstr ""
@@ -1992,8 +1992,8 @@ msgstr ""
 msgid "Auto-compact switcher, compact posts"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:72
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:78
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:79
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:85
 msgid "Auto-like what you repost"
 msgstr ""
 
@@ -2815,6 +2815,10 @@ msgstr "ជ្រើសរើសមតិព័ត៌មាន"
 msgid "Choose for me"
 msgstr "ជ្រើសរើសសម្រាប់ខ្ញុំ"
 
+#: src/view/com/composer/AtprotoBtn.tsx:131
+msgid "Choose how record keys are generated"
+msgstr ""
+
 #: src/components/dialogs/LanguageSelectDialog.tsx:202
 msgid "Choose languages"
 msgstr ""
@@ -3063,7 +3067,7 @@ msgstr ""
 msgid "Close this dialog"
 msgstr "បិទប្រអប់នេះ។"
 
-#: src/components/WelcomeModal.tsx:221
+#: src/components/WelcomeModal.tsx:172
 msgid "Close welcome modal"
 msgstr ""
 
@@ -3697,8 +3701,8 @@ msgstr ""
 msgid "Create a starter pack for me"
 msgstr "បង្កើតកញ្ចប់ចាប់ផ្តើមសម្រាប់ខ្ញុំ"
 
-#: src/components/WelcomeModal.tsx:159
-#: src/components/WelcomeModal.tsx:167
+#: src/components/WelcomeModal.tsx:147
+#: src/components/WelcomeModal.tsx:155
 #: src/screens/Messages/JoinRequest.tsx:310
 #: src/screens/Signup/index.tsx:141
 #: src/view/com/auth/SplashScreen.tsx:107
@@ -3833,6 +3837,10 @@ msgstr ""
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:335
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:337
 msgid "Custom post phrase"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:104
+msgid "Custom Record Key"
 msgstr ""
 
 #: src/components/dialogs/Embed.tsx:140
@@ -4088,8 +4096,8 @@ msgstr "ផ្ដាច់សម្រង់ post?"
 msgid "Determine how AI may use your data"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:132
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:138
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:152
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:158
 msgid "Developer mode"
 msgstr ""
 
@@ -4188,8 +4196,8 @@ msgstr ""
 msgid "Disable verify email reminder"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:85
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:91
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:92
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:98
 msgid "Disable via repost notifications"
 msgstr ""
 
@@ -4354,8 +4362,8 @@ msgstr ""
 msgid "Don't have an account provider or an existing Bluesky account? To create a new account on a Bluesky-hosted PDS, sign up through <0>bsky.app</0> first, then return to Witchsky and log in with the account you created."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:119
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:125
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:139
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:145
 msgid "Don't include the 'via' field in own posts"
 msgstr ""
 
@@ -4509,6 +4517,10 @@ msgstr "រយៈពេល"
 msgid "Dusk"
 msgstr ""
 
+#: src/view/com/composer/AtprotoBtn.tsx:236
+msgid "e.g. -cool"
+msgstr ""
+
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:243
 msgid "e.g. alice"
 msgstr ""
@@ -4523,6 +4535,10 @@ msgstr ""
 
 #: src/lib/moderation/useGlobalLabelStrings.ts:43
 msgid "E.g. artistic nudes."
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:201
+msgid "e.g. gerson"
 msgstr ""
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:374
@@ -4763,6 +4779,11 @@ msgstr "បើកមាតិកាសម្រាប់មនុស្សពេ
 msgid "Enable captions"
 msgstr ""
 
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:126
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:132
+msgid "Enable custom post rkeys"
+msgstr ""
+
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:91
 msgid "Enable email 2FA"
 msgstr ""
@@ -4830,6 +4851,10 @@ msgstr "បានបើក"
 #: src/screens/Profile/Sections/Feed.tsx:131
 msgid "End of feed"
 msgstr "ចុងបញ្ចប់នៃមតិព័ត៌មាន"
+
+#: src/components/WelcomeModal.tsx:166
+msgid "enjoy this forked bsky <3 - kris"
+msgstr ""
 
 #: src/view/com/composer/videos/SubtitleDialog.tsx:183
 msgid "Ensure you have selected a language for each caption file."
@@ -5029,7 +5054,7 @@ msgstr ""
 msgid "Expands or collapses post text"
 msgstr ""
 
-#: src/lib/api/index.ts:552
+#: src/lib/api/index.ts:565
 msgid "Expected uri to resolve to a record"
 msgstr "អ្នករំពឹងថានឹងដោះស្រាយកំណត់ត្រាមួយ។"
 
@@ -5076,11 +5101,6 @@ msgstr "រូបភាពផ្លូវភេទច្បាស់លាស់
 msgid "Explore"
 msgstr ""
 
-#: src/components/WelcomeModal.tsx:172
-#: src/components/WelcomeModal.tsx:184
-msgid "Explore the app"
-msgstr ""
-
 #: src/screens/Messages/Settings.tsx:267
 #: src/screens/Messages/Settings.tsx:277
 #: src/screens/Settings/components/ExportCarDialog.tsx:131
@@ -5116,7 +5136,7 @@ msgstr "ប្រព័ន្ធផ្សព្វផ្សាយខាងក្
 msgid "External Media Preferences"
 msgstr "ចំណូលចិត្តប្រព័ន្ធផ្សព្វផ្សាយខាងក្រៅ"
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:56
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:63
 #: src/screens/Settings/RunesSettings/index.tsx:78
 msgid "Extra"
 msgstr ""
@@ -5485,8 +5505,8 @@ msgid "Favicon Service URL"
 msgstr ""
 
 #: src/Navigation.tsx:502
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:145
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:148
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:165
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:168
 #: src/screens/Settings/RunesSettings/FeatureGatesSettings.tsx:20
 msgid "Feature gates"
 msgstr ""
@@ -5572,8 +5592,8 @@ msgstr "បានធ្វើបច្ចុប្បន្នភាពព័ត
 msgid "Feeds we think you might like."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:59
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:65
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:66
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:72
 msgid "Fetch records directly from PDS to fix broken quotes"
 msgstr ""
 
@@ -5944,7 +5964,7 @@ msgstr ""
 msgid "for you dot club"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:98
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:105
 msgid "Forcefully disables the notifications other people receive when you like/repost a post someone else has reposted for privacy."
 msgstr ""
 
@@ -7072,6 +7092,10 @@ msgstr ""
 msgid "Invalid phone number"
 msgstr ""
 
+#: src/view/com/composer/AtprotoBtn.tsx:216
+msgid "Invalid prefix. Use 1-13 chars from 234567abcdefghijklmnopqrstuvwxyz. First char must be one of 234567abcdefghij."
+msgstr ""
+
 #: src/components/moderation/ReportDialog/index.tsx:101
 msgid "Invalid report subject"
 msgstr ""
@@ -7079,6 +7103,10 @@ msgstr ""
 #: src/components/intents/GroupChatJoinDialog.tsx:211
 #: src/screens/Messages/components/OutgoingRequestListItem.tsx:41
 msgid "Invalid rescind request."
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:252
+msgid "Invalid suffix. Use 1-12 chars from 234567abcdefghijklmnopqrstuvwxyz."
 msgstr ""
 
 #: src/components/intents/VerifyEmailIntentDialog.tsx:87
@@ -9243,6 +9271,10 @@ msgstr "បើកប្រអប់មួយដើម្បីបន្ថែម
 msgid "Opens a dialog to choose who can interact with this post"
 msgstr ""
 
+#: src/view/com/composer/AtprotoBtn.tsx:108
+msgid "Opens a dialog to configure ATProto record key generation"
+msgstr ""
+
 #: src/features/inviteFriends/components/ThemePicker.tsx:38
 msgid "Opens a list of color themes for the QR card"
 msgstr ""
@@ -9946,7 +9978,7 @@ msgctxt "toast"
 msgid "Post deleted"
 msgstr "Post ត្រូវាបានលុប"
 
-#: src/lib/api/index.ts:205
+#: src/lib/api/index.ts:218
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "មិនអាចបង្ហោះសារបង្ហោះបានទេ។ សូមពិនិត្យមើលការតភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្តងទៀត"
 
@@ -10063,6 +10095,16 @@ msgstr ""
 msgid "Preferred language"
 msgstr ""
 
+#: src/view/com/composer/AtprotoBtn.tsx:162
+#: src/view/com/composer/AtprotoBtn.tsx:168
+#: src/view/com/composer/AtprotoBtn.tsx:194
+msgid "Prefix"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:209
+msgid "Prefix must use TID characters. If shorter than 13 chars, a timestamp-based TID suffix fills the remainder."
+msgstr ""
+
 #: src/screens/Messages/components/MessageListError.tsx:18
 msgid "Press to attempt reconnection"
 msgstr "ចុចដើម្បីព្យាយាមភ្ជាប់ឡើងវិញ"
@@ -10136,7 +10178,7 @@ msgstr ""
 msgid "Processing video..."
 msgstr "ដំណើរការវីដេអូ..."
 
-#: src/lib/api/index.ts:70
+#: src/lib/api/index.ts:74
 msgid "Processing..."
 msgstr "កំពុងដំណើរការ..."
 
@@ -10358,12 +10400,12 @@ msgstr ""
 msgid "Read Witchsky's patches and contribute"
 msgstr ""
 
-#: src/components/WelcomeModal.tsx:150
-msgid "Real creatures."
+#: src/components/WelcomeModal.tsx:136
+msgid "Real games."
 msgstr ""
 
-#: src/components/WelcomeModal.tsx:148
-msgid "Real talk."
+#: src/components/WelcomeModal.tsx:138
+msgid "Real tennalings."
 msgstr ""
 
 #: src/screens/Takendown.tsx:158
@@ -10399,6 +10441,19 @@ msgstr ""
 #: src/screens/Messages/components/MessageListError.tsx:19
 msgid "Reconnect"
 msgstr "ភ្ជាប់ឡើងវិញ"
+
+#: src/view/com/composer/AtprotoBtn.tsx:111
+#: src/view/com/composer/AtprotoBtn.tsx:122
+msgid "Record Key"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:199
+msgid "Record key prefix"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:234
+msgid "Record key suffix"
+msgstr ""
 
 #: src/screens/Settings/AppearanceSettings/shared.tsx:89
 msgid "Red Dwarf"
@@ -11234,6 +11289,8 @@ msgstr ""
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:555
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:622
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:629
+#: src/view/com/composer/AtprotoBtn.tsx:284
+#: src/view/com/composer/AtprotoBtn.tsx:290
 #: src/view/com/composer/GifAltText.tsx:199
 #: src/view/com/composer/GifAltText.tsx:208
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:66
@@ -11297,6 +11354,8 @@ msgstr "រក្សាទុកកូដ QR"
 
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:650
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:656
+#: src/view/com/composer/AtprotoBtn.tsx:266
+#: src/view/com/composer/AtprotoBtn.tsx:272
 msgid "Save these options for next time"
 msgstr ""
 
@@ -12078,8 +12137,8 @@ msgstr ""
 msgid "Show customization options"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:106
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:112
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:113
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:119
 msgid "Show debug context for posts in Discover feed"
 msgstr ""
 
@@ -12210,8 +12269,6 @@ msgstr ""
 
 #: src/components/dialogs/Signin.tsx:98
 #: src/components/dialogs/Signin.tsx:100
-#: src/components/WelcomeModal.tsx:201
-#: src/components/WelcomeModal.tsx:213
 #: src/screens/Hashtag.tsx:231
 #: src/screens/Login/index.tsx:194
 #: src/screens/Login/index.tsx:217
@@ -12376,8 +12433,8 @@ msgstr ""
 msgid "So many thoughts, you should post one"
 msgstr ""
 
-#: src/components/WelcomeModal.tsx:152
-msgid "Social media if it was good."
+#: src/components/WelcomeModal.tsx:140
+msgid "Social media if it was TV."
 msgstr ""
 
 #: src/lib/interests.ts:58
@@ -12721,6 +12778,16 @@ msgstr ""
 
 #: src/components/verification/VerificationCreatePrompt.tsx:37
 msgid "Successfully verified"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:176
+#: src/view/com/composer/AtprotoBtn.tsx:182
+#: src/view/com/composer/AtprotoBtn.tsx:229
+msgid "Suffix"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:244
+msgid "Suffix replaces the last N chars of the TID, keeping a valid 13-char record key. Use TID characters (234567abcdefghijklmnopqrstuvwxyz), max 12 chars."
 msgstr ""
 
 #: src/components/dms/AddMembersFlow.tsx:243
@@ -13243,6 +13310,7 @@ msgid "There's been a rush of new users to Bluesky! We'll activate your account 
 msgstr "មានការប្រញាប់ប្រញាល់នៃអ្នកប្រើប្រាស់ថ្មីទៅកាន់ Bluesky! យើងនឹងដំណើរការគណនីរបស់អ្នកឱ្យបានឆាប់តាមដែលយើងអាចធ្វើបាន"
 
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:661
+#: src/view/com/composer/AtprotoBtn.tsx:277
 msgid "These are your default settings"
 msgstr ""
 
@@ -13703,9 +13771,18 @@ msgstr ""
 msgid "Thumbnail format"
 msgstr ""
 
+#: src/view/com/composer/AtprotoBtn.tsx:148
+#: src/view/com/composer/AtprotoBtn.tsx:154
+msgid "TID"
+msgstr ""
+
 #. placeholder {0}: Number(time) || 0
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/TimeIndicator.tsx:34
 msgid "Time remaining: {0, plural, one {# second} other {# seconds}}"
+msgstr ""
+
+#: src/view/com/composer/AtprotoBtn.tsx:105
+msgid "Timestamp-ID (TID) Record Key"
 msgstr ""
 
 #: src/components/SendErrorReportDialog.tsx:68
@@ -13892,6 +13969,10 @@ msgstr ""
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:66
 msgid "Two-factor authentication (2FA)"
 msgstr "ការផ្ទៀងផ្ទាត់កត្តាពីរ (2FA)"
+
+#: src/view/com/composer/AtprotoBtn.tsx:127
+msgid "Type"
+msgstr ""
 
 #: src/screens/Messages/components/MessageInput.tsx:208
 msgid "Type your message here"
@@ -14306,13 +14387,13 @@ msgstr "បង្ហោះពីបណ្ណាល័យ"
 msgid "Uploading GIF..."
 msgstr ""
 
-#: src/lib/api/index.ts:369
-#: src/lib/api/index.ts:407
+#: src/lib/api/index.ts:382
+#: src/lib/api/index.ts:420
 msgid "Uploading images..."
 msgstr "កំពុងបង្ហោះរូបភាព..."
 
-#: src/lib/api/index.ts:488
-#: src/lib/api/index.ts:512
+#: src/lib/api/index.ts:501
+#: src/lib/api/index.ts:525
 msgid "Uploading link thumbnail..."
 msgstr "កំពុងបង្ហោះរូបភាពតូចនៃតំណ..."
 
@@ -14507,6 +14588,10 @@ msgstr ""
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:461
 msgid "Value:"
 msgstr "តម្លៃ៖"
+
+#: src/view/com/composer/AtprotoBtn.tsx:111
+msgid "Vanity rkey"
+msgstr ""
 
 #: src/components/verification/VerificationCreatePrompt.tsx:40
 msgid "Verification failed, please try again."
