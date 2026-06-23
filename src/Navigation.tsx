@@ -911,14 +911,17 @@ const FlatNavigator = ({
 
 const LINKING = {
   // TODO figure out what we are going to use
-  // note: `bluesky://` and `witchsky://` is what is used in app.config.js
+  // note: `bluesky://` and `witchsky://` and `deersocial://` is what is used in app.config.js
   prefixes: [
     'bsky://',
     'bluesky://',
     'witchsky://',
+    'tenna://',
+    'deersocial://',
     'https://bsky.app',
     'https://witchsky.app',
-    'https://tenna.party'
+    'https://tenna.party',
+    'https://deer.social',
   ],
 
   getPathFromState(state: State) {

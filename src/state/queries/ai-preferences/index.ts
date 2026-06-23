@@ -87,6 +87,10 @@ export function useUpdateAIPreferencesMutation({
         collection: AI_PREFERENCE_NSID,
         rkey: 'self',
         record: next,
+      },{
+        headers: {
+          "atproto-proxy": ""
+        }
       })
     },
     onMutate: async patch => {
