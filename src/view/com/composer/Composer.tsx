@@ -391,6 +391,7 @@ export const ComposePost = ({
       initMention,
       initInteractionSettings: preferences?.postInteractionSettings,
       initVideoUri,
+      initAtprotoRkey: useAtprotoRkeySettings(),
     }),
   )
 

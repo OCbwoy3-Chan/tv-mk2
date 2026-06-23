@@ -695,6 +695,7 @@ export function createComposerState({
   initQuoteUri,
   initInteractionSettings,
   initVideoUri,
+  initAtprotoRkey,
 }: {
   initText: string | undefined
   initMention: string | undefined
@@ -704,6 +705,7 @@ export function createComposerState({
     | AppBskyActorDefs.PostInteractionSettingsPref
     | undefined
   initVideoUri?: ComposerOpts['videoUri']
+  initAtprotoRkey?: {generation: 'tid' | 'prefix' | 'suffix'; prefix?: string; suffix?: string}
 }): ComposerState {
   let media: ImagesMedia | GalleryMedia | VideoMedia | undefined
   if (initImageUris?.length) {
@@ -823,7 +825,7 @@ export function createComposerState({
             media,
             link,
           },
-          atprotoRkey: {
+          atprotoRkey: initAtprotoRkey ?? {
             generation: persisted.defaults.atprotoRkeyGenerationDefault,
             prefix: persisted.defaults.atprotoRkeyPrefixDefault,
             suffix: persisted.defaults.atprotoRkeySuffixDefault,
@@ -871,6 +873,11 @@ function createPostDraftFromText(
       quote: undefined,
       media: undefined,
       link: undefined,
+    },
+    atprotoRkey: overrides?.atprotoRkey ?? {
+      generation: persisted.defaults.atprotoRkeyGenerationDefault,
+      prefix: persisted.defaults.atprotoRkeyPrefixDefault,
+      suffix: persisted.defaults.atprotoRkeySuffixDefault,
     },
   }
 }
