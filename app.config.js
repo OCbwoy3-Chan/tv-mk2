@@ -87,7 +87,7 @@ module.exports = function (_config) {
             'Used to save images to your library.',
           NSPhotoLibraryUsageDescription:
             'Used for profile pictures, posts, and other kinds of content',
-          CFBundleSpokenName: 'witchsky.app',
+          CFBundleSpokenName: 'TV Time',
           CFBundleLocalizations: [
             'en',
             'an',

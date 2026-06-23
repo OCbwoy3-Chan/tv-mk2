@@ -918,6 +918,7 @@ const LINKING = {
     'witchsky://',
     'https://bsky.app',
     'https://witchsky.app',
+    'https://tenna.party'
   ],
 
   getPathFromState(state: State) {

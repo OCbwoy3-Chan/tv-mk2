@@ -36,6 +36,14 @@ function formatBskyPdsDisplayName(hostname: string): string {
     return `${name} (${region})`
   }
   if (hostname === 'bsky.social') return 'Bluesky Social'
+
+  if (hostname === 'blacksky.app') return 'Blacksky'
+  if (hostname === 'myatproto.social') return 'Blacksky'
+  if (hostname === 'cryptoanarchy.network') return 'Blacksky'
+
+  if (hostname === 'castletown.darkworld.download') return 'Castle Town'
+  if (hostname === 'church.darkworld.download') return 'Castle Town'
+
   return hostname
 }
 
@@ -58,7 +66,7 @@ export function PdsDialog({
 
   const isBsky = isBskyPdsUrl(pdsUrl)
   const isBridged = isBridgedPdsUrl(pdsUrl)
-  const displayName = isBsky ? formatBskyPdsDisplayName(hostname) : hostname
+  const displayName = formatBskyPdsDisplayName(hostname)
 
   return (
     <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
