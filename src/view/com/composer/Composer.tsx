@@ -123,6 +123,8 @@ import {
 import {ExternalEmbedRemoveBtn} from '#/view/com/composer/ExternalEmbedRemoveBtn'
 import {GifAltTextDialog} from '#/view/com/composer/GifAltText'
 import {LabelsBtn} from '#/view/com/composer/labels/LabelsBtn'
+import {AtprotoBtn} from '#/view/com/composer/AtprotoBtn'
+import * as persisted from '#/state/persisted'
 import {Gallery} from '#/view/com/composer/photos/Gallery'
 import {OpenCameraBtn} from '#/view/com/composer/photos/OpenCameraBtn'
 import {SelectGifBtn} from '#/view/com/composer/photos/SelectGifBtn'
@@ -2245,6 +2247,24 @@ function ComposerPills({
             }}
           />
         ) : null}
+
+        <AtprotoBtn
+          generation={post.atprotoRkey?.generation ?? persisted.defaults.atprotoRkeyGenerationDefault}
+          prefix={post.atprotoRkey?.prefix ?? persisted.defaults.atprotoRkeyPrefixDefault}
+          suffix={post.atprotoRkey?.suffix ?? persisted.defaults.atprotoRkeySuffixDefault}
+          onChangeSettings={(generation, prefix, suffix) => {
+            dispatch({
+              type: 'update_post',
+              postId: post.id,
+              postAction: {
+                type: 'update_rkey',
+                generation,
+                prefix,
+                suffix,
+              },
+            })
+          }}
+        />
       </ScrollView>
     </Animated.View>
   )

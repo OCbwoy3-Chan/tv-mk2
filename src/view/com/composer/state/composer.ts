@@ -34,6 +34,7 @@ import {
   videoReducer,
   type VideoState,
 } from './video'
+import * as persisted from '#/state/persisted'
 
 type ImagesMedia = {
   type: 'images'
@@ -77,11 +78,18 @@ export type PostDraft = {
   labels: SelfLabel[]
   embed: EmbedDraft
   shortenedGraphemeLength: number
+  /** Per-post ATProto rkey settings (optional). */
+  atprotoRkey?: {
+    generation: 'tid' | 'prefix' | 'suffix'
+    prefix?: string
+    suffix?: string
+  }
 }
 
 export type PostAction =
   | {type: 'update_richtext'; richtext: RichText}
   | {type: 'update_labels'; labels: SelfLabel[]}
+  | {type: 'update_rkey'; generation: 'tid' | 'prefix' | 'suffix'; prefix?: string; suffix?: string}
   | {type: 'embed_add_images'; images: ComposerImage[]}
   | {type: 'embed_update_image'; image: ComposerImage}
   | {type: 'embed_remove_image'; image: ComposerImage}
@@ -251,6 +259,12 @@ export function composerReducer(
           media: undefined,
           link: undefined,
         },
+        atprotoRkey:
+          state.thread.posts[activePostIndex]?.atprotoRkey ?? {
+            generation: persisted.defaults.atprotoRkeyGenerationDefault,
+            prefix: persisted.defaults.atprotoRkeyPrefixDefault,
+            suffix: persisted.defaults.atprotoRkeySuffixDefault,
+          },
       })
       return {
         ...state,
@@ -286,6 +300,10 @@ export function composerReducer(
                 },
         }),
       )
+
+      if (replacementPosts.length > 0) {
+        replacementPosts[0].atprotoRkey = postToReplace.atprotoRkey
+      }
 
       const nextPosts = [
         ...state.thread.posts.slice(0, postIndex),
@@ -408,6 +426,16 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
       return {
         ...state,
         labels: action.labels,
+      }
+    }
+    case 'update_rkey': {
+      return {
+        ...state,
+        atprotoRkey: {
+          generation: action.generation,
+          prefix: action.prefix ?? '',
+          suffix: action.suffix ?? '',
+        },
       }
     }
     case 'embed_add_images': {
@@ -794,6 +822,11 @@ export function createComposerState({
             quote,
             media,
             link,
+          },
+          atprotoRkey: {
+            generation: persisted.defaults.atprotoRkeyGenerationDefault,
+            prefix: persisted.defaults.atprotoRkeyPrefixDefault,
+            suffix: persisted.defaults.atprotoRkeySuffixDefault,
           },
         },
       ],
