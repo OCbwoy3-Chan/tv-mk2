@@ -10,7 +10,7 @@ export function LightnerIcon({
 
   return (
     <Image
-      source={require('#/../assets/lightner.png')}
+      source={require('#/../assets/badges/lightner.png')}
       accessibilityLabel="Lightner"
       accessibilityHint=""
       accessibilityIgnoresInvertColors
@@ -28,7 +28,7 @@ export function DarknerIcon({
 
   return (
     <Image
-      source={require('#/../assets/darkner.png')}
+      source={require('#/../assets/badges/darkner.png')}
       accessibilityLabel="Darkner"
       accessibilityHint=""
       accessibilityIgnoresInvertColors

@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {Pressable, View} from 'react-native'
+import {View} from 'react-native'
 import {ImageBackground} from 'expo-image'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -30,7 +30,6 @@ export function WelcomeModal({control}: WelcomeModalProps) {
   const {requestSwitchToAccount} = useLoggedOutViewControls()
   const {gtMobile} = useBreakpoints()
   const [isExiting, setIsExiting] = useState(false)
-  const [signInLinkHovered, setSignInLinkHovered] = useState(false)
   const t = useTheme()
 
   const fadeOutAndClose = (callback?: () => void) => {
@@ -52,17 +51,6 @@ export function WelcomeModal({control}: WelcomeModalProps) {
     ax.metric('welcomeModal:signupClicked', {})
     control.close()
     requestSwitchToAccount({requestedAccount: 'new'})
-  }
-
-  const onPressExplore = () => {
-    ax.metric('welcomeModal:exploreClicked', {})
-    fadeOutAndClose()
-  }
-
-  const onPressSignIn = () => {
-    ax.metric('welcomeModal:signinClicked', {})
-    control.close()
-    requestSwitchToAccount({requestedAccount: 'existing'})
   }
 
   FocusGuards.useFocusGuards()
@@ -116,7 +104,7 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       a.user_select_none,
                       {color: 'rgb(42, 40, 40)', letterSpacing: -0.5},
                     ]}>
-                    Witchsky
+                    TV Time
                   </Text>
                 </View>
               </View>
@@ -145,11 +133,11 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       letterSpacing: -0.5,
                     }),
                   ]}>
-                  <Trans>Real talk.</Trans>
+                  <Trans>Real games.</Trans>
                   {'\n'}
-                  <Trans>Real creatures.</Trans>
+                  <Trans>Real tennalings.</Trans>
                   {'\n'}
-                  <Trans>Social media if it was good.</Trans>
+                  <Trans>Social media if it was TV.</Trans>
                 </Text>
               </View>
               <View style={[a.gap_md, a.align_center]}>
@@ -167,24 +155,6 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       <Trans>Create account</Trans>
                     </ButtonText>
                   </Button>
-                  <Button
-                    onPress={onPressExplore}
-                    label={_(msg`Explore the app`)}
-                    size="large"
-                    color="primary"
-                    variant="ghost"
-                    style={[a.bg_transparent, {width: 200}]}
-                    hoverStyle={[a.bg_transparent]}>
-                    {({hovered}) => (
-                      <ButtonText
-                        style={[
-                          hovered && [a.underline],
-                          {color: t.palette.primary_500},
-                        ]}>
-                        <Trans>Explore the app</Trans>
-                      </ButtonText>
-                    )}
-                  </Button>
                 </View>
                 <View style={[a.align_center, {minWidth: 200}]}>
                   <Text
@@ -193,26 +163,7 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       a.text_center,
                       {color: 'rgb(58, 50, 50)', lineHeight: 24},
                     ]}>
-                    <Trans>Already have an account?</Trans>{' '}
-                    <Pressable
-                      onPointerEnter={() => setSignInLinkHovered(true)}
-                      onPointerLeave={() => setSignInLinkHovered(false)}
-                      accessibilityRole="button"
-                      accessibilityLabel={_(msg`Sign in`)}
-                      accessibilityHint="">
-                      <Text
-                        style={[
-                          a.font_medium,
-                          {
-                            color: t.palette.primary_500,
-                            fontSize: undefined,
-                          },
-                          signInLinkHovered && a.underline,
-                        ]}
-                        onPress={onPressSignIn}>
-                        <Trans>Sign in</Trans>
-                      </Text>
-                    </Pressable>
+                    <Trans>enjoy this forked bsky &lt;3 - kris</Trans>
                   </Text>
                 </View>
               </View>
