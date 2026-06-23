@@ -2,10 +2,12 @@
 
 Hey, witches! This is the codebase for the TV Time app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
 
+**EVERYTHING IS WIP, SOME THINGS MAY NOT WORK OR MAY HAVE NOT BEEN IMPLEMENTED YET.**
+
 Get the app itself:
 
-- **Web: ~~[witchsky.app](https://witchsky.app)~~ soon enough**
-- **iOS: Unsigned IPA Builds [Soon™](https://cat-bounce.com/)? (Maybe an AltStore if I were to be super mega rich and own a Mac)**
+- **Web: [tenna.party](https://tennna.party)**
+- **iOS: Unsigned IPA Builds [Soon enough™](https://cat-bounce.com/)? (Maybe an AltStore if I were to be super mega rich and own a Mac)**
 <!-- - **Android: Maybe APK soon? ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)** -->
 
 <!-- <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://tangled.org/jollywhoppers.com/witchsky.app/">
@@ -96,7 +98,7 @@ These are all available as options in the Runes sub-page of the app's settings. 
 
 ### TODO: Kris
 
-- [ ] Buy `tenna.party` for 5€/year on Cloudflare Domains & host it
+- [x] Buy `tenna.party` for 5€/year on Cloudflare Domains & host it
 - [ ] Native Unsigned iOS builds via GitHub Actions
 - [ ] Custom verifications/cancellations & import from repo button
 - [ ] Our own settings section
