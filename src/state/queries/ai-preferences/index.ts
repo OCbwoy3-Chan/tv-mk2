@@ -48,6 +48,10 @@ export function useAIPreferencesQuery() {
           repo: currentAccount.did,
           collection: AI_PREFERENCE_NSID,
           rkey: 'self',
+        },{
+          headers: {
+            "atproto-proxy": ""
+          }
         })
         return data.value as AIPreferenceRecord
       } catch (e) {
@@ -83,6 +87,10 @@ export function useUpdateAIPreferencesMutation({
         collection: AI_PREFERENCE_NSID,
         rkey: 'self',
         record: next,
+      },{
+        headers: {
+          "atproto-proxy": ""
+        }
       })
     },
     onMutate: async patch => {
