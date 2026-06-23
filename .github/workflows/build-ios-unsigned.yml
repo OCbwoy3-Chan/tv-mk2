@@ -1,0 +1,100 @@
+name: Build unsigned IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest # or macos-26-xlarge if Xcode 26 needed
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 5
+
+      - uses: pnpm/action-setup@v6
+
+      - name: 🔧 Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: 🪛 Setup jq
+        uses: dcarbone/install-jq-action@v2
+
+      - name: ⚙️ Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "latest-stable" # use whatever matches the repo's requirements
+
+      - name: ☕️ Setup Cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          version: 1.16.2
+
+      - name: 🔤 Compile translations
+        run: pnpm intl:build
+
+      - name: ✏️ Write environment variables
+        run: |
+          # Minimal .env — omit secrets that aren't needed for a local build
+          echo "EXPO_PUBLIC_RELEASE_VERSION=$(jq -r '.version' package.json)" >> .env
+          echo "EXPO_PUBLIC_BUNDLE_IDENTIFIER=$(git rev-parse HEAD)" >> .env
+          echo "EXPO_PUBLIC_BUNDLE_DATE=$(date -u +"%y%m%d%H")" >> .env
+
+      # This generates the ios/ native project without building or signing
+      - name: 🏗️ Prebuild (generate native iOS project via Expo)
+        run: npx expo prebuild --platform ios --no-install
+
+      - name: 🔧 Copy assets into generated iOS directory
+        run: cp -R assets/. ios/TVTime/
+
+      - name: 📦 Install Pods
+        run: |
+          cd ios
+          pod install
+
+      - name: 🔍 Debug - list ios directory
+        run: ls -la ios/
+
+      - name: 🔨 Archive (no code signing)
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -workspace ios/TVTime.xcworkspace \
+            -scheme TVTime \
+            -archivePath $RUNNER_TEMP/TVTime.xcarchive \
+            -sdk iphoneos \
+            -arch arm64 \
+            -configuration Release \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty
+
+      - name: 📦 Upload RUNNER_TEMP for inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runner-temp-debug
+          path: ${{ runner.temp }}/
+
+      - name: 🔍 Debug - list xcarchive contents
+        run: find $RUNNER_TEMP/TVTime.xcarchive -type d
+
+      - name: 📦 Package unsigned IPA
+        run: |
+          mkdir -p $RUNNER_TEMP/Payload
+          cp -r "$RUNNER_TEMP/TVTime.xcarchive/Products/Applications/TVTime.app" \
+            $RUNNER_TEMP/Payload/
+          cd $RUNNER_TEMP
+          zip -r TV-Time.ipa Payload/
+
+      - name: ⬆️ Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TV-Time.ipa
+          path: ${{ runner.temp }}/TV-Time.ipa
