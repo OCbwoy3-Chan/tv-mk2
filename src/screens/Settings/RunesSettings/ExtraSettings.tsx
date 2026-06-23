@@ -5,6 +5,10 @@ import {
   useSetAutoLikeOnRepost,
 } from '#/state/preferences/auto-like-on-repost.tsx'
 import {
+  useCustomPostRkeysEnabled,
+  useSetCustomPostRkeysEnabled,
+} from '#/state/preferences/custom-post-rkeys'
+import {
   useDirectFetchRecords,
   useSetDirectFetchRecords,
 } from '#/state/preferences/direct-fetch-records'
@@ -47,6 +51,9 @@ export function RunesExtraSettingsScreen() {
 
   const discoverContextEnabled = useDiscoverContextEnabled()
   const setDiscoverContextEnabled = useSetDiscoverContextEnabled()
+
+  const customPostRkeysEnabled = useCustomPostRkeysEnabled()
+  const setCustomPostRkeysEnabled = useSetCustomPostRkeysEnabled()
 
   const omitViaField = useOmitViaField()
   const setOmitViaField = useSetOmitViaField()
@@ -110,6 +117,19 @@ export function RunesExtraSettingsScreen() {
           <SettingsList.ItemIcon icon={BeakerIcon} />
           <SettingsList.ItemText>
             <Trans>Show debug context for posts in Discover feed</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="custom_post_rkeys"
+        label={l`Enable custom post rkeys`}
+        value={customPostRkeysEnabled}
+        onChange={value => setCustomPostRkeysEnabled(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={CodeBracketsIcon} />
+          <SettingsList.ItemText>
+            <Trans>Enable custom post rkeys</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

@@ -96,6 +96,10 @@ export const SYNCED_PREFS_KEYS = [
   'trendingVideoDisabled',
   'autoLikeOnRepost',
   'omitViaField',
+  'customPostRkeysEnabled',
+  'atprotoRkeyGenerationDefault',
+  'atprotoRkeyPrefixDefault',
+  'atprotoRkeySuffixDefault',
   'syncOpenRouterApiKey',
 ] as const satisfies readonly (keyof Schema)[]
 
@@ -127,7 +131,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
 
   const setStateWrapped = useCallback((value: boolean) => {
     setState(value)
-    persisted.write('settingsSyncEnabled', value)
+    void persisted.write('settingsSyncEnabled', value)
   }, [])
 
   useEffect(() => {

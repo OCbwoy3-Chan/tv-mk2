@@ -11,6 +11,7 @@ import {Provider as CompactPostsProvider} from './compact-posts'
 import {Provider as ConfirmFollowUnfollowProvider} from './confirm-follow-unfollow'
 import {Provider as ConstellationProvider} from './constellation-enabled'
 import {Provider as ConstellationInstanceProvider} from './constellation-instance'
+import {Provider as CustomPostRkeysProvider} from './custom-post-rkeys'
 import {Provider as DeerVerificationProvider} from './deer-verification'
 import {Provider as DirectFetchRecordsProvider} from './direct-fetch-records'
 import {Provider as DisableComposerPromptProvider} from './disable-composer-prompt'
@@ -79,6 +80,10 @@ export {
   useConfirmFollowUnfollow,
   useSetConfirmFollowUnfollow,
 } from './confirm-follow-unfollow'
+export {
+  useCustomPostRkeysEnabled,
+  useSetCustomPostRkeysEnabled,
+} from './custom-post-rkeys'
 export {
   useDisableComposerPrompt,
   useSetDisableComposerPrompt,
@@ -151,11 +156,12 @@ export function Provider({children}: PropsWithChildren<{}>) {
               <GoLinksProvider>
                 <IgnoredAppLabelersProvider>
                   <DirectFetchRecordsProvider>
-                    <ConstellationProvider>
-                      <ConstellationInstanceProvider>
-                        <DeerVerificationProvider>
-                          <FaviconServiceProvider>
-                            <PdsLabelProvider>
+                      <ConstellationProvider>
+                        <ConstellationInstanceProvider>
+                          <DeerVerificationProvider>
+                            <CustomPostRkeysProvider>
+                              <FaviconServiceProvider>
+                              <PdsLabelProvider>
                               <NoDiscoverProvider>
                                 <ShowLinkInHandleProvider>
                                   <ShowLinkInHandleOnlyOnWorkingLinksProvider>
@@ -253,9 +259,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                   </ShowLinkInHandleOnlyOnWorkingLinksProvider>
                                 </ShowLinkInHandleProvider>
                               </NoDiscoverProvider>
-                            </PdsLabelProvider>
-                          </FaviconServiceProvider>
-                        </DeerVerificationProvider>
+                                </PdsLabelProvider>
+                              </FaviconServiceProvider>
+                            </CustomPostRkeysProvider>
+                          </DeerVerificationProvider>
                       </ConstellationInstanceProvider>
                     </ConstellationProvider>
                   </DirectFetchRecordsProvider>

@@ -59,6 +59,10 @@ interface PostOpts {
   onStateChange?: (state: string) => void
   langs?: string[]
   omitViaField?: boolean
+  atprotoRkeyGeneration?:
+    | {type: 'tid'}
+    | {type: 'prefix'; prefix: string}
+    | {type: 'suffix'; suffix: string}
 }
 
 export async function post(
@@ -119,7 +123,16 @@ export async function post(
     // undefined, so what we'll do here is increment the time by 1 for every post
     now.setMilliseconds(now.getMilliseconds() + 1)
     tid = TID.next(tid)
-    const rkey = tid.toString()
+    let rkey = tid.toString()
+    if (opts.atprotoRkeyGeneration) {
+      if (opts.atprotoRkeyGeneration.type === 'prefix') {
+        const prefix = opts.atprotoRkeyGeneration.prefix.trim()
+        rkey = `${prefix}${rkey.slice(prefix.length)}`
+      } else if (opts.atprotoRkeyGeneration.type === 'suffix') {
+        const suffix = opts.atprotoRkeyGeneration.suffix.trim()
+        rkey = `${rkey.slice(0, rkey.length - suffix.length)}${suffix}`
+      }
+    }
     const uri = `at://${did}/app.bsky.feed.post/${rkey}`
     uris.push(uri)
 

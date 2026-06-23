@@ -35,7 +35,8 @@ export function useDraftsQuery() {
         drafts: res.data.drafts
           .filter(view => {
             const firstText = view.draft.posts[0]?.text ?? ''
-            if (!/^witchsky:storage/.test(firstText)) return true
+            if (!/^witchsky:storage/.test(firstText)) return false
+            if (!/^tenna:storage/.test(firstText)) return true
             try {
               decode(view.draft.posts.map(p => p.text ?? ''))
               return false // valid manifest — hide it

@@ -80,7 +80,7 @@ function u15Decode(encoded: string): Uint8Array {
 // Public API
 // ---------------------------------------------------------------------------
 
-const MANIFEST_COMMENT = 'Do not change me! These are your Witchsky settings.'
+const MANIFEST_COMMENT = 'Do not change me! These are your tenna.party settings.'
 
 /**
  * Encode an arbitrary value to an array of draft-post text segments.
@@ -109,7 +109,7 @@ export function encode(data: unknown): string[] {
   // Build manifest without manifestHash, then hash it.
   // Each field is on its own line; line 2 is a human-readable comment.
   const partial = [
-    'witchsky:storage:v1',
+    'tenna:storage:v1',
     MANIFEST_COMMENT,
     `updatedAt=${new Date().toISOString()}`,
     `codec=gzip+u15`,
@@ -136,7 +136,7 @@ export function decode(segments: string[]): unknown {
   const manifestText = segments[0]
   const lines = manifestText.split('\n')
 
-  if (lines[0] !== 'witchsky:storage:v1') {
+  if (lines[0] !== 'tenna:storage:v1') {
     throw new Error('storage-manifest: invalid manifest prefix')
   }
 
@@ -224,5 +224,5 @@ export function decode(segments: string[]): unknown {
  * Used to identify the storage draft among all of a user's drafts.
  */
 export function isManifestSegment(text: string): boolean {
-  return text.startsWith('witchsky:storage:v1\n')
+  return text.startsWith('tenna:storage:v1\n')
 }
