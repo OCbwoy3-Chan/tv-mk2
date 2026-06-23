@@ -12,6 +12,7 @@ import {Provider as ConfirmFollowUnfollowProvider} from './confirm-follow-unfoll
 import {Provider as ConstellationProvider} from './constellation-enabled'
 import {Provider as ConstellationInstanceProvider} from './constellation-instance'
 import {Provider as CustomPostRkeysProvider} from './custom-post-rkeys'
+import {Provider as AtprotoRkeySettingsProvider} from './atproto-rkey-settings'
 import {Provider as DeerVerificationProvider} from './deer-verification'
 import {Provider as DirectFetchRecordsProvider} from './direct-fetch-records'
 import {Provider as DisableComposerPromptProvider} from './disable-composer-prompt'
@@ -66,6 +67,7 @@ export {
   useAlsoLikedCollapseByDefault,
   useSetAlsoLikedCollapseByDefault,
 } from './also-liked-collapse-by-default'
+export {useAtprotoRkeySettings, useSetAtprotoRkeySettings} from './atproto-rkey-settings'
 export {
   useAlsoLikedFeedEnabled,
   useSetAlsoLikedFeedEnabled,
@@ -159,6 +161,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                       <ConstellationProvider>
                         <ConstellationInstanceProvider>
                           <DeerVerificationProvider>
+                            <AtprotoRkeySettingsProvider>
                             <CustomPostRkeysProvider>
                               <FaviconServiceProvider>
                               <PdsLabelProvider>
@@ -262,6 +265,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                 </PdsLabelProvider>
                               </FaviconServiceProvider>
                             </CustomPostRkeysProvider>
+                            </AtprotoRkeySettingsProvider>
                           </DeerVerificationProvider>
                       </ConstellationInstanceProvider>
                     </ConstellationProvider>
