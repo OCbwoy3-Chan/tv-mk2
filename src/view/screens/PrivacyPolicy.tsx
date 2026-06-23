@@ -30,8 +30,8 @@ export const PrivacyPolicyScreen = (_props: Props) => {
               The Privacy Policy has been moved to{' '}
               <TextLink
                 style={pal.link}
-                href="https://witchsky.app/about/privacy"
-                text="witchsky.app/about/privacy"
+                href="https://tenna.party/about/privacy"
+                text="tenna.party/about/privacy"
               />
             </Trans>
           </Text>

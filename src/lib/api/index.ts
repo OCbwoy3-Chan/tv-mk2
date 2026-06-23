@@ -88,10 +88,10 @@ export async function post(
   const writes: $Typed<ComAtprotoRepoApplyWrites.Create>[] = []
   const uris: string[] = []
   const via = IS_WEB
-    ? 'Witchsky Web App'
+    ? 'TV Time Web App'
     : IS_IOS
-      ? 'Witchsky for iPhone'
-      : 'Witchsky for Android'
+      ? 'TV Time for iPhone'
+      : 'TV Time for Android'
 
   let now = new Date()
   let tid: TID | undefined

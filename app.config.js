@@ -23,7 +23,7 @@ module.exports = function (_config) {
   const IS_DEV = !IS_TESTFLIGHT && !IS_PRODUCTION
 
   const ASSOCIATED_DOMAINS = [
-    'applinks:witchsky.app',
+    'applinks:tenna.party',
     'applinks:bsky.app',
     // When testing local services, enter an ngrok (et al) domain here. It must use a standard HTTP/HTTPS port.
     ...(IS_DEV || IS_TESTFLIGHT ? [] : []),
@@ -54,9 +54,9 @@ module.exports = function (_config) {
   return {
     expo: {
       version: VERSION,
-      name: 'Witchsky',
-      slug: 'witchsky',
-      scheme: ['bluesky', 'witchsky', 'app.witchsky'],
+      name: 'TV Time',
+      slug: 'tennaparty',
+      scheme: ['bluesky', 'tenna', 'app.tennaparty'],
       // owner: 'blueskysocial',
       // owner: 'neema.brown',
       runtimeVersion: {
@@ -64,11 +64,11 @@ module.exports = function (_config) {
       },
       icon: './assets/app-icons/ios_icon_legacy_light.png',
       userInterfaceStyle: 'automatic',
-      primaryColor: '#ED5345',
+      primaryColor: '#EDBC1A',
       newArchEnabled: false,
       ios: {
         supportsTablet: false,
-        bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
+        bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'app.tennaparty',
         appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'B3LX46C5HS',
         buildNumber: IOS_BUILD_NUMBER,
         config: {
@@ -138,7 +138,7 @@ module.exports = function (_config) {
           'com.apple.security.application-groups': process.env
             .WITCHSKY_BUNDLE_ID
             ? `group.${process.env.WITCHSKY_BUNDLE_ID}`
-            : 'group.app.witchsky',
+            : 'group.app.tennaparty',
           'com.apple.developer.usernotifications.communication': true,
           // 'com.apple.developer.device-information.user-assigned-device-name': true,
         },
@@ -206,10 +206,10 @@ module.exports = function (_config) {
         adaptiveIcon: {
           foregroundImage: './assets/icon-android-foreground.png',
           monochromeImage: './assets/icon-android-monochrome.png',
-          backgroundColor: '#ED5345',
+          backgroundColor: '#EDBC1A',
         },
         googleServicesFile: './google-services.json',
-        package: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
+        package: process.env.WITCHSKY_BUNDLE_ID || 'app.tennaparty',
         versionCode: Number.isFinite(ANDROID_VERSION_CODE)
           ? ANDROID_VERSION_CODE
           : 1,
@@ -218,6 +218,10 @@ module.exports = function (_config) {
             action: 'VIEW',
             autoVerify: true,
             data: [
+              {
+                scheme: 'https',
+                host: 'tenna.party',
+              },
               {
                 scheme: 'https',
                 host: 'witchsky.app',
@@ -325,7 +329,7 @@ module.exports = function (_config) {
           'expo-notifications',
           {
             icon: './assets/icon-android-notification.png',
-            color: '#ED5345',
+            color: '#EDBC1A',
             sounds: PLATFORM === 'ios' ? ['assets/dm.aiff'] : ['assets/dm.mp3'],
           },
         ],

@@ -164,9 +164,14 @@ function Footer() {
         t.atoms.border_contrast_medium,
       ]}>
       <InlineLinkText
-        label={_(msg`Read the patches and contribute`)}
-        to="https://tangled.org/jollywhoppers.com/witchsky.app/">
+        label={_(msg`Read the patches`)}
+        to="https://tangled.org/did:web:vessel.darkworld.download/tv/">
         <Trans>Tangled</Trans>
+      </InlineLinkText>
+      <InlineLinkText
+        label={_(msg`Read Witchsky's patches and contribute`)}
+        to="https://tangled.org/jollywhoppers.com/witchsky.app/">
+        <Trans>Witchsky</Trans>
       </InlineLinkText>
 
       <View style={a.flex_1} />

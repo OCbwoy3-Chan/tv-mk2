@@ -29,7 +29,7 @@ type SetContext = {
 const stateContext = createContext<StateContext>({
   colorMode: 'system',
   darkTheme: 'dark',
-  colorScheme: 'witchsky',
+  colorScheme: 'catppuccin',
   hue: 0,
   material3Accent: '#ee6300',
   material3Style: 'TONAL_SPOT',
