@@ -17,6 +17,7 @@ alt="Get it on Obtainium" height="54" /></a> -->
 ## Improvements on Witchsky
 
 - Lightner/Darkner labels (can't edit right now)
+- Custom post rkeys (e.g. -meow suffix)
 
 ### Runes
 
@@ -98,13 +99,11 @@ These are all available as options in the Runes sub-page of the app's settings. 
 
 ### TODO: Kris
 
-- [x] Buy `tenna.party` for 5€/year on Cloudflare Domains & host it
 - [ ] Native Unsigned iOS builds via GitHub Actions
 - [ ] Custom verifications/cancellations & import from repo button
 - [ ] Our own settings section
 - [ ] Profile badge editor replaces pet label settings
-- [ ] Post rkey changer (e.g. -meow, vanity tid, etc.)
-- [ ] Fix live reload being broken
+- [ ] Fix live reload being broken (meh, rspack sucks)
 
 ## Development Resources
 
