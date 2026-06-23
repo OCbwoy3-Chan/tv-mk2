@@ -1,46 +1,24 @@
-# Witchsky Social App 🧙 (alpha)
+# TV Time Social App 📺🎤 (alpha)
 
-Hey, witches! This is the codebase for the Witchsky app, based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
+Hey, witches! This is the codebase for the TV Time app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
 
 Get the app itself:
 
-- **Web: [witchsky.app](https://witchsky.app)**
-- **iOS: App Store [Soon™](https://cat-bounce.com/)? (Altstore source in the future?)**
-- **Android: Play Store Soon! ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)**
+- **Web: ~~[witchsky.app](https://witchsky.app)~~ soon enough**
+- **iOS: Unsigned IPA Builds [Soon™](https://cat-bounce.com/)? (Maybe an AltStore if I were to be super mega rich and own a Mac)**
+<!-- - **Android: Maybe APK soon? ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)** -->
 
 <!-- <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://tangled.org/jollywhoppers.com/witchsky.app/">
 <img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png?raw=true"
 alt="Get it on Obtainium" height="54" /></a> -->
 
-## Improvements on Bluesky
+## Improvements on Witchsky
 
-- Cooler name (and kawaii logo)
-- Themes, hue slider, and Material You support
-- OAuth login option
-- Sort/filter accounts in account switchers
-- Hold/right click on interaction buttons to use another account
-- You can change "post" to any phrase you want in the UI
-- Choose between sharing witchsky.app or bsky.app links
-- Embed player works with [stream.place](https://stream.place/) links!
-- Open posts in PDSls and original bridged fedi instances 
-- You can delete and redraft (basically edit!) posts
-- Better defaults (alt text required 😉 autoplay off 🫨)
-- Read your chat threads with deleted/deactivated accounts
-- Unique repost icons in notifications
-- Repost carousels in following feed
-- Can download videos
-- Stay on a page when switching accounts
-- 'Mutuals' in place of 'Following' when relevant
-- Pet label (option to toggle, & visibility for everyone else)
-- Account AI preferences screen
-- No unread notifications badge limit (✗30+)
-- No age assurance or blocks based on location
-- No push notifications (hopefully will be added later)
-- Kept as up-to-date as possible (sporadically unstable as a result)
+- Lightner/Darkner labels (can't edit right now)
 
 ### Runes
 
-These are all available as options in the Runes sub-page of the app's settings.
+These are all available as options in the Runes sub-page of the app's settings. These are Witchsky settings!
 
 - Menus
   - Use handles in profile links instead of DIDs
@@ -116,26 +94,15 @@ These are all available as options in the Runes sub-page of the app's settings.
   - Developer mode
   - Feature gates
 
-### TODO: Xan
+### TODO: Kris
 
-- [ ] Setup App Linking for Android (.well-known w/ app package fingerprint)
-- [ ] Change followed accounts [on onboarding](https://github.com/blacksky-algorithms/blacksky.community/commit/e36ee43efb4999f070860d7f70122e45b28c1e2b)
-- [ ] Visual replies indicator like the [Firmament userstyle](https://witchsky.app/profile/did:plc:jwhxcrf5uvl3vyw7nurecgt5/post/3m4rr3vzmak2a)
-- [ ] Permit editing Menu options in Runes > Menus (remember [Outlinks page](https://witchsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3m5zjhhshic2g)?)
-  - [ ] ShareMenuItems.tsx, ShareMenuItems.web.tsx
-- [ ] Add Open bridged OG fedi account page option to ProfileMenu.tsx
-- [ ] Witchsky PDS and .social site (list good songs containing 'bitch' in their titles on related site)
-
-### Upcoming or wishful features
-
-- [ ] Collapse labels past a customizable number (from the same labeler?) into a labeler clip "(+)"
-- [ ] Submit releases to the Google Play Store and iOS App Store
-- [ ] Move from [Cloudflare Pages](https://pages.cloudflare.com/) to [wisp.place](https://wisp.place/) (needs serverless for embeds)
-- [ ] Move Terms and Privacy policy to Jollywhoppers.com
-- [ ] Ignore `!no-unauthenticated` labels
-- [ ] Better OpenGraph support for sharing profiles & posts (including videos & fixing quotes)
-- [ ] Seeing past blocks in threads (the nuclear block in reply chains)
-
+- [ ] Buy `tenna.party` for 5€/year on Cloudflare Domains & host it
+- [ ] Native Unsigned iOS builds via GitHub Actions
+- [ ] Custom verifications/cancellations & import from repo button
+- [ ] Our own settings section
+- [ ] Profile badge editor replaces pet label settings
+- [ ] Post rkey changer (e.g. -meow, vanity tid, etc.)
+- [ ] Fix live reload being broken
 
 ## Development Resources
 
@@ -175,27 +142,27 @@ If we don't merge your PR for whatever reason, you are welcome to fork and/or se
 
 ## Forking guidelines
 
-Just like social-app, you have our blessing 🪄✨ to fork this application! However, it's very important to make it clear to users when you're giving them a fork.
+Just like Witchsky and social-app, you have our blessing 🪄✨ to fork this application! However, it's very important to make it clear to users when you're giving them a fork.
 
 Please be sure to:
 
-- Change all branding in the repository and UI to clearly differentiate from Witchsky.
+- Change all branding in the repository and UI to clearly differentiate from TV Time.
 - Change any support links (feedback, email, terms of service, issue tracker, etc) to your own systems.
 
 ## Self hosting & personal builds
 
-Self hosting is great! It is our intention that Witchsky is easy to self host and build on your own. If you host your own instance of Witchsky, or make your own builds, please make some level of effort to clarify that it is not an "official" build or instance. This can be in the form of a different domain or branding, but can also be as simple as not advertising your hosted instance or builds as "official" releases.
+Self hosting is great! It is our intention that TV Time is easy to self host and build on your own. If you host your own instance of TV Time, or make your own builds, please make some level of effort to clarify that it is not an "official" build or instance. This can be in the form of a different domain or branding, but can also be as simple as not advertising your hosted instance or builds as "official" releases.
 
 ## Security disclosures
 
-If you discover any security issues, please privately disclose them to [xan.lol](https://xan.lol/).
-If the issue pertains to infastructure, code, or systems outside the scope of Witchsky, please refer to the [disclosure guidelines on social-app](https://github.com/bluesky-social/social-app#security-disclosures) if it is hosted by Bluesky PBC. Otherwise, reference the security policy of that system as applicable <3
+If you discover any security issues with TV Time (NOT WITCHSKY), please privately disclose them to [kris.darkworld.download](https://bsky.app/profile/kris.darkworld.download).
+If the issue pertains to infastructure, code, or systems outside the scope of TV Time, please refer to the [disclosure guidelines on social-app](https://github.com/bluesky-social/social-app#security-disclosures) if it is hosted by Bluesky PBC. Otherwise, reference the security policy of that system as applicable <3
 
 ## License (MIT)
 
 See [./LICENSE](./LICENSE) for the full license.
 
-Bluesky Social PBC has committed to a software patent non-aggression pledge. For details see [the original announcement](https://bsky.social/about/blog/10-01-2025-patent-pledge).
+Bluesky Social PBC has committed to a software patent non-aggression pledge. For details see [their original announcement](https://bsky.social/about/blog/10-01-2025-patent-pledge).
 
 ## P.S.
 

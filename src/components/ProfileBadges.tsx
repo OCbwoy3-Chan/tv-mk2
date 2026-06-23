@@ -15,6 +15,19 @@ import {Button} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {PdsBadgeIcon, PdsDialog} from '#/components/PdsDialog'
 import {isPetAccount, PetBadge, PetBadgeButton} from '#/components/PetBadge'
+import {
+  DarknerBadge,
+  DarknerBadgeButton,
+} from '#/components/CrackComponents/Tenna/DarknerBadge'
+import {
+  LightnerBadge,
+  LightnerBadgeButton,
+} from '#/components/CrackComponents/Tenna/LightnerBadge'
+import {
+  SpecialBadge,
+  SpecialBadgeButton,
+  isSpecialAccount,
+} from '#/components/CrackComponents/Tenna/SpecialBadge'
 import {useSimpleVerificationState} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {VerificationCheckButton} from '#/components/verification/VerificationCheckButton'
@@ -84,7 +97,12 @@ export function ProfileBadges({
     !showPdsBadge &&
     !verification.showBadge &&
     !isBotAccount(shadowed) &&
-    !isPetAccount(shadowed)
+    !isPetAccount(shadowed) &&
+    !shadowed.labels?.some(
+      l =>
+        (l.val === 'lightner' || l.val === 'darkner') && l.src === shadowed.did,
+    ) &&
+    !isSpecialAccount(shadowed)
   )
     return null
 
@@ -124,6 +142,9 @@ export function ProfileBadges({
           />
           <BotBadgeButton profile={shadowed} width={botIconWidth} />
           <PetBadgeButton profile={shadowed} width={botIconWidth} />
+          <SpecialBadgeButton profile={shadowed} width={botIconWidth} />
+          <LightnerBadgeButton profile={shadowed} width={botIconWidth} />
+          <DarknerBadgeButton profile={shadowed} width={botIconWidth} />
         </>
       ) : (
         <>
@@ -135,6 +156,9 @@ export function ProfileBadges({
           )}
           <BotBadge profile={shadowed} width={botIconWidth} />
           <PetBadge profile={shadowed} width={botIconWidth} />
+          <SpecialBadge profile={shadowed} width={botIconWidth} />
+          <LightnerBadge profile={shadowed} width={botIconWidth} />
+          <DarknerBadge profile={shadowed} width={botIconWidth} />
         </>
       )}
     </View>

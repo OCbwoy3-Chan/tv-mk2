@@ -1616,7 +1616,7 @@ let ComposerPost = memo(function ComposerPost({
     ? isFirstPost
       ? l`Write your reply`
       : l`Add another post`
-    : l`Anything but skeet`
+    : l`MIKE, the INTERNET please!`
   const discardPromptControl = Prompt.usePromptControl()
 
   const enableSquareButtons = useEnableSquareButtons()
