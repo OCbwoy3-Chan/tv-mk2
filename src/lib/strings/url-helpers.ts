@@ -11,6 +11,7 @@ export const BSKY_APP_HOST = 'https://witchsky.app'
 const BSKY_TRUSTED_HOSTS = [
   'witchsky\\.app',
   'witchsky\\.social',
+  'deer\\.social',
   'bsky\\.app',
   'bsky\\.social',
   'blueskyweb\\.xyz',
