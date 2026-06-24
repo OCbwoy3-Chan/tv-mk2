@@ -7,7 +7,7 @@ Hey, witches! This is the codebase for the TV Time app, a fork of [Witchsky](htt
 Get the app itself:
 
 - **Web: [tenna.party](https://tennna.party)**
-- **iOS: Unsigned IPA Builds [Soon enough™](https://cat-bounce.com/)? (Maybe an AltStore if I were to be super mega rich and own a Mac)**
+- **iOS: [native builds are avaiable here](https://github.com/OCbwoy3-Chan/tv-mk2/actions) (unsigned, for sideloading)**
 <!-- - **Android: Maybe APK soon? ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)** -->
 
 <!-- <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://tangled.org/jollywhoppers.com/witchsky.app/">
@@ -19,90 +19,13 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - Lightner/Darkner labels (can't edit right now)
 - Custom post rkeys (e.g. -meow suffix)
 - Native iOS Builds (Unsigned IPA)
-
-### Runes
-
-These are all available as options in the Runes sub-page of the app's settings. These are Witchsky settings!
-
-- Menus
-  - Use handles in profile links instead of DIDs
-  - Show "Open original post" and "Open post in PDSls" buttons
-  - On non-bsky.social handles, show a link to that URL
-  - Only show URL on handles with working links
-- Badges
-  - Trusted verifiers
-    - Use own selection of trusted verifiers
-    - Trust verifiers from current AppView
-  - PDS badges
-    - Show a PDS badge next to the display name on profiles
-    - Hide PDS badge for Bluesky-hosted accounts
-    - Change favicon service
-- Impressions
-  - Set visibility (Hidden, Lite, Visible, or Exact) of
-    - Post like, repost, quote, save, and reply counts
-    - Profile follower, following, and post counts
-    - "Followed by" avatars on profiles
-    - Extra "Follows you" label
-- Usability
-  - Feeds
-    - Do not fall back to discover feed
-    - Hide "Feeds ✨" tab when only one feed is selected
-    - Disable composer prompt
-    - Disable top-of-feed button
-    - Show plus icon on unfollowed feed avatars
-    - Hide posts that cannot be replied to from feeds
-  - Redirect through go.bsky.app
-  - Disable similar accounts recommendations
-  - Hide follow button on posts and scrolled profile header
-  - Confirm before following or unfollowing
-  - Disable verify email reminder
-- Display
-  - Also liked
-    - Show "Also liked" recommendations under post replies
-    - Collapse "Also liked" by default
-  - Density
-    - Account switcher
-      - Use compact account switcher
-      - Automatically use compact account switcher with more than 6 accounts
-    - Anything else
-      - Compact posts
-  - Show client used to post
-  - Change custom post phrase
-  - Images
-    - Thumbnail format
-    - Full-size format
-    - Download format
-    - Load especially small images as PNGs
-- Infrastructure
-  - Post translation provider
-    - Google Translate
-    - Kagi Translate
-    - Naver Papago
-    - LibreTranslate
-    - Change LibreTranslate instance
-  - Change image CDN
-  - Change PLC directory
-  - Change Constellation instance
-  - Set custom AppView DID
-- Settings sync
-  - Sync settings between devices
-  - Include OpenRouter API key in synced settings
-  - Push settings to cloud
-  - Load settings from cloud
-- Extra
-  - Fetch records directly from PDS to fix broken quotes
-  - Auto-like what you repost
-  - Disable via repost notifications
-  - Show debug context for posts in Discover feed
-  - Don't include the 'via' field in own posts
-  - Developer mode
-  - Feature gates
+- Removed labeler limit (max 200)
 
 ### TODO: Kris
 
-- [ ] Custom verifications/cancellations & import from repo button
 - [ ] Our own settings section
-- [ ] Profile badge editor replaces pet label settings
+- [ ] Profile badge editor in our settings
+- [ ] Custom verifications/cancellations & import from repo button
 - [ ] Fix live reload being broken (meh, rspack sucks)
 
 ## Development Resources
