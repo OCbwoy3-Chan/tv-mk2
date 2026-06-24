@@ -6,7 +6,7 @@ Hey, audience! This is the codebase for the TV Time app, a fork of [Witchsky](ht
 
 Get the app itself:
 
-- **Web: [tenna.party](https://tennna.party)**
+- **Web: [tenna.party](https://tenna.party)**
 - **iOS: [native builds are avaiable here](https://github.com/OCbwoy3-Chan/tv-mk2/actions) (unsigned, for sideloading)**
 
 <!-- - **Android: Maybe APK soon? ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)** -->
