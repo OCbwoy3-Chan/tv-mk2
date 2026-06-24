@@ -133,6 +133,21 @@ export function DesktopRightNav({routeName}: {routeName: string}) {
           {_(msg`Code`)}
         </InlineLinkText>
       </Text>
+      <Text style={[a.leading_snug, t.atoms.text_contrast_low]}>
+        <InlineLinkText
+          label={_(msg`Native Build Downloads`)}
+          to={"https://github.com/OCbwoy3-Chan/tv-mk2/actions"}
+          style={[t.atoms.text_contrast_medium]}>
+          {_(msg`Downloads`)}
+        </InlineLinkText>
+        <Text style={[t.atoms.text_contrast_low]}>{' ∙ '}</Text>
+        <InlineLinkText
+          label={_(msg`Join the tenna.party Discord server`)}
+          to={"https://discord.gg/QxvWh6eFwA"}
+          style={[t.atoms.text_contrast_medium]}>
+          {_(msg`Community`)}
+        </InlineLinkText>
+      </Text>
 
       {kawaii && (
         <Text style={[t.atoms.text_contrast_medium, {marginTop: 12}]}>

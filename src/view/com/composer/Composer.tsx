@@ -2206,9 +2206,9 @@ function ComposerPills({
 
   // Don't render anything if no pills are going to be displayed for non-replies
   // For replies, keep the pills visible so users can set threadgate and custom rkey
-  if (!isReply && !hasMedia && !hasLink) {
-    return null
-  }
+  // if (!isReply && !hasMedia && !hasLink) {
+  //   return null
+  // }
 
   return (
     <Animated.View

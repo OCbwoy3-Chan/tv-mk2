@@ -298,8 +298,8 @@ export type Schema = z.infer<typeof schema>
 
 export const defaults: Schema = {
   colorMode: 'system',
-  darkTheme: 'dim',
-  colorScheme: 'witchsky',
+  darkTheme: 'dark',
+  colorScheme: 'catppuccin',
   hue: 0,
   material3Accent: '#ee6300',
   material3Style: 'TONAL_SPOT',

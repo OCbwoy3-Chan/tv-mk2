@@ -1,6 +1,6 @@
 # TV Time Social App 📺🎤 (alpha)
 
-Hey, witches! This is the codebase for the TV Time app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
+Hey, audience! This is the codebase for the TV Time app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
 
 **EVERYTHING IS WIP, SOME THINGS MAY NOT WORK OR MAY HAVE NOT BEEN IMPLEMENTED YET.**
 
@@ -8,8 +8,8 @@ Get the app itself:
 
 - **Web: [tenna.party](https://tennna.party)**
 - **iOS: [native builds are avaiable here](https://github.com/OCbwoy3-Chan/tv-mk2/actions) (unsigned, for sideloading)**
-<!-- - **Android: Maybe APK soon? ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)** -->
 
+<!-- - **Android: Maybe APK soon? ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)** -->
 <!-- <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://tangled.org/jollywhoppers.com/witchsky.app/">
 <img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png?raw=true"
 alt="Get it on Obtainium" height="54" /></a> -->
@@ -17,15 +17,15 @@ alt="Get it on Obtainium" height="54" /></a> -->
 ## Improvements on Witchsky
 
 - Lightner/Darkner labels (can't edit right now)
-- Custom post rkeys (e.g. -meow suffix)
-- Native iOS Builds (Unsigned IPA)
-- Removed labeler limit (max 200)
+- Custom post IDs in urls (e.g. [-goop suffix](https://tenna.party/profile/did:plc:erljg5y74ltqn5pyc7y33n6w/post/3mowtioimgoop)
+- Native Unsigned iOS Builds via GitHub Actions, srry tangled :( (i need mac ci)
+- Removed labeler limit (max 200 labelers if you're actually insane)
 
 ### TODO: Kris
 
 - [ ] Our own settings section
 - [ ] Profile badge editor in our settings
-- [ ] Custom verifications/cancellations & import from repo button
+- [ ] Custom cancellations (like on cred.blue/canceller) & import from repo button
 - [ ] Fix live reload being broken (meh, rspack sucks)
 
 ## Development Resources
