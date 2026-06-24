@@ -92,10 +92,10 @@ export async function post(
   const writes: $Typed<ComAtprotoRepoApplyWrites.Create>[] = []
   const uris: string[] = []
   const via = IS_WEB
-    ? 'TV Time Web App'
+    ? 'tenna.party'
     : IS_IOS
-      ? 'TV Time for iPhone'
-      : 'TV Time for Android'
+      ? 'tenna.party iOS'
+      : 'tenna.party for Android'
 
   let now = new Date()
   let tid: TID | undefined
@@ -124,15 +124,37 @@ export async function post(
     now.setMilliseconds(now.getMilliseconds() + 1)
     tid = TID.next(tid)
     let rkey = tid.toString()
-    if (opts.atprotoRkeyGeneration) {
+
+    // Prefer per-post ATProto rkey settings (from the composer). Fall back to
+    // the global option passed in `opts.atprotoRkeyGeneration` if the post
+    // doesn't specify one.
+    const perPostRkey = (draft as any).atprotoRkey
+    if (perPostRkey && perPostRkey.generation) {
+      if (perPostRkey.generation === 'prefix') {
+        const prefix = (perPostRkey.prefix ?? '').trim()
+        if (prefix.length) {
+          rkey = `${prefix}${rkey.slice(prefix.length)}`
+        }
+      } else if (perPostRkey.generation === 'suffix') {
+        const suffix = (perPostRkey.suffix ?? '').trim()
+        if (suffix.length) {
+          rkey = `${rkey.slice(0, Math.max(0, rkey.length - suffix.length))}${suffix}`
+        }
+      }
+    } else if (opts.atprotoRkeyGeneration) {
       if (opts.atprotoRkeyGeneration.type === 'prefix') {
         const prefix = opts.atprotoRkeyGeneration.prefix.trim()
-        rkey = `${prefix}${rkey.slice(prefix.length)}`
+        if (prefix.length) {
+          rkey = `${prefix}${rkey.slice(prefix.length)}`
+        }
       } else if (opts.atprotoRkeyGeneration.type === 'suffix') {
         const suffix = opts.atprotoRkeyGeneration.suffix.trim()
-        rkey = `${rkey.slice(0, rkey.length - suffix.length)}${suffix}`
+        if (suffix.length) {
+          rkey = `${rkey.slice(0, Math.max(0, rkey.length - suffix.length))}${suffix}`
+        }
       }
     }
+
     const uri = `at://${did}/app.bsky.feed.post/${rkey}`
     uris.push(uri)
 

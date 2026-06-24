@@ -2204,8 +2204,9 @@ function ComposerPills({
     media?.type === 'video'
   const hasLink = !!post.embed.link
 
-  // Don't render anything if no pills are going to be displayed
-  if (isReply && !hasMedia && !hasLink) {
+  // Don't render anything if no pills are going to be displayed for non-replies
+  // For replies, keep the pills visible so users can set threadgate and custom rkey
+  if (!isReply && !hasMedia && !hasLink) {
     return null
   }
 
@@ -2218,22 +2219,20 @@ function ComposerPills({
         bounces={false}
         keyboardShouldPersistTaps="always"
         showsHorizontalScrollIndicator={false}>
-        {isReply ? null : (
-          <ThreadgateBtn
-            postgate={thread.postgate}
-            onChangePostgate={nextPostgate => {
-              dispatch({type: 'update_postgate', postgate: nextPostgate})
-            }}
-            threadgateAllowUISettings={thread.threadgate}
-            onChangeThreadgateAllowUISettings={nextThreadgate => {
-              dispatch({
-                type: 'update_threadgate',
-                threadgate: nextThreadgate,
-              })
-            }}
-            style={bottomBarAnimatedStyle}
-          />
-        )}
+        <ThreadgateBtn
+          postgate={thread.postgate}
+          onChangePostgate={nextPostgate => {
+            dispatch({type: 'update_postgate', postgate: nextPostgate})
+          }}
+          threadgateAllowUISettings={thread.threadgate}
+          onChangeThreadgateAllowUISettings={nextThreadgate => {
+            dispatch({
+              type: 'update_threadgate',
+              threadgate: nextThreadgate,
+            })
+          }}
+          style={bottomBarAnimatedStyle}
+        />
         {hasMedia || hasLink ? (
           <LabelsBtn
             labels={post.labels}

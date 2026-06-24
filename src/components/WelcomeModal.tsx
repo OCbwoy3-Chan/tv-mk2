@@ -47,10 +47,10 @@ export function WelcomeModal({control}: WelcomeModalProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [control.isOpen])
 
-  const onPressCreateAccount = () => {
+  const onPressSignIn = () => {
     ax.metric('welcomeModal:signupClicked', {})
     control.close()
-    requestSwitchToAccount({requestedAccount: 'new'})
+    requestSwitchToAccount({requestedAccount: 'none'})
   }
 
   FocusGuards.useFocusGuards()
@@ -143,8 +143,8 @@ export function WelcomeModal({control}: WelcomeModalProps) {
               <View style={[a.gap_md, a.align_center]}>
                 <View>
                   <Button
-                    onPress={onPressCreateAccount}
-                    label={_(msg`Create account`)}
+                    onPress={onPressSignIn}
+                    label={_(msg`Sign in`)}
                     size="large"
                     color="primary"
                     style={{
@@ -152,7 +152,7 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       backgroundColor: t.palette.primary_500,
                     }}>
                     <ButtonText>
-                      <Trans>Create account</Trans>
+                      <Trans>Sign in</Trans>
                     </ButtonText>
                   </Button>
                 </View>

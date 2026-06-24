@@ -74,7 +74,7 @@ function SigninDialogInner({}: {control: Dialog.DialogOuterProps['control']}) {
             },
           ]}>
           <Trans>
-            Sign in or create your account to join the conversation!
+            Sign in or create your account to join the audience!
           </Trans>
         </Text>
 

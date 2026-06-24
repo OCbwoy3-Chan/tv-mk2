@@ -69,7 +69,7 @@ export function QrCode({
               a.text_center,
               {color: 'white', fontSize: 18},
             ]}>
-            <Trans>Join the conversation</Trans>
+            <Trans>Join the audience</Trans>
           </Text>
           <View style={[a.rounded_sm, a.overflow_hidden]}>
             <QrCodeInner link={link} />

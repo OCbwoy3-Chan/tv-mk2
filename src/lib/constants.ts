@@ -137,10 +137,10 @@ export const LANG_DROPDOWN_HITSLOP = {top: 10, bottom: 10, left: 4, right: 4}
 export const BACK_HITSLOP = HITSLOP_30
 export const MAX_POST_LINES = 25
 
-export const BSKY_APP_ACCOUNT_DID = 'did:plc:z72i7hdynmk6r22z27h6tvur'
+export const BSKY_APP_ACCOUNT_DID = 'did:web:vessel.darkworld.download'
 
 export const BSKY_FEED_OWNER_DIDS = [
-  BSKY_APP_ACCOUNT_DID,
+  'did:plc:z72i7hdynmk6r22z27h6tvur', // bsky.app
   'did:plc:vpkhqolt662uhesyj6nxm7ys',
   'did:plc:q6gjnaw2blty4crticxkmujt',
 ]

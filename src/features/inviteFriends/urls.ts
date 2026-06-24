@@ -18,7 +18,7 @@ function stripLeadingAt(handle: string): string {
 export function getInviteShareUrl(handle: string): string {
   const bare = stripLeadingAt(handle)
   if (!bare) return ''
-  return `https://bsky.app/profile/${bare}`
+  return `https://tenna.party/profile/${bare}`
 }
 
 /**
