@@ -16,7 +16,7 @@ alt="Get it on Obtainium" height="54" /></a> -->
 
 ## Improvements on Witchsky
 
-- Lightner/Darkner labels (can't edit right now)
+- Lightner/Darkner labels (you can't edit right now, working on it)
 - Custom post IDs in urls (e.g. [-goop suffix](https://tenna.party/profile/did:plc:erljg5y74ltqn5pyc7y33n6w/post/3mowtioimgoop)
 - Native Unsigned iOS Builds via GitHub Actions, srry tangled :( (i need mac ci)
 - Removed labeler limit (max 200 labelers if you're actually insane)
