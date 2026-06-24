@@ -52,6 +52,9 @@ export type CommonNavigatorParams = {
   AIPreferencesSettings: undefined
   AppearanceSettings: undefined
   AppearanceColorThemeSettings: undefined
+  DeltaSettings: undefined
+  DeltaBadgeSettings: undefined
+  DeltaLabelSettings: undefined
   RunesSettings: undefined
   RunesMenusSettings: undefined
   RunesBadgesSettings: undefined

@@ -156,6 +156,9 @@ import {InviteScannerScreen} from '#/features/inviteFriends'
 import {router} from '#/routes'
 import {Referrer} from '../modules/expo-bluesky-swiss-army'
 import {renderMessagesSplitViewLayout} from './screens/Messages/components/splitView/MessagesSplitViewLayout'
+import { DeltaSettingsScreen } from './screens/Settings/DeltaSettings'
+import { DeltaBadgeSettingsScreen } from './screens/Settings/DeltaSettings/BadgeSettings'
+import { DeltaModLabelSettingsScreen } from './screens/Settings/DeltaSettings/ModLabelSettings'
 
 const navigationRef = createNavigationContainerRef<AllNavigatorParams>()
 
@@ -435,6 +438,30 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         getComponent={() => AIPreferencesSettingsScreen}
         options={{
           title: title(msg`AI Preferences`),
+          requireAuth: true,
+        }}
+      />
+      <Stack.Screen
+        name="DeltaSettings"
+        getComponent={() => DeltaSettingsScreen}
+        options={{
+          title: title(msg`Tenna`),
+          requireAuth: true,
+        }}
+      />
+      <Stack.Screen
+        name="DeltaBadgeSettings"
+        getComponent={() => DeltaBadgeSettingsScreen}
+        options={{
+          title: title(msg`Profile badges`),
+          requireAuth: true,
+        }}
+      />
+      <Stack.Screen
+        name="DeltaLabelSettings"
+        getComponent={() => DeltaModLabelSettingsScreen}
+        options={{
+          title: title(msg`Moderation labels`),
           requireAuth: true,
         }}
       />

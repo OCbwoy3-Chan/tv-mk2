@@ -16,15 +16,14 @@ alt="Get it on Obtainium" height="54" /></a> -->
 
 ## Improvements on Witchsky
 
-- Lightner/Darkner labels (you can't edit right now, working on it)
-- Custom post IDs in urls (e.g. [-goop suffix](https://tenna.party/profile/did:plc:erljg5y74ltqn5pyc7y33n6w/post/3mowtioimgoop)
-- Native Unsigned iOS Builds via GitHub Actions, srry tangled :( (i need mac ci)
+- Our own settings page: Settings -> TV
+- Lightner/Darkner labels
+- Custom post IDs in urls (e.g. [-goop suffix](https://tenna.party/profile/did:plc:erljg5y74ltqn5pyc7y33n6w/post/3mowtioimgoop)) - option in composer
+- Unsigned native iOS Builds via GitHub Actions, srry tangled :( (i need mac ci)
 - Removed labeler limit (max 200 labelers if you're actually insane)
 
 ### TODO: Kris
 
-- [ ] Our own settings section
-- [ ] Profile badge editor in our settings
 - [ ] Custom cancellations (like on cred.blue/canceller) & import from repo button
 - [ ] Fix live reload being broken (meh, rspack sucks)
 
