@@ -5,8 +5,8 @@ import {useSession} from '#/state/session'
 import {atoms as a, useTheme, web} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import {navigate} from '#/Navigation'
 import {Text} from '#/components/Typography'
+import {navigate} from '#/Navigation'
 import type * as bsky from '#/types/bsky'
 import {LightnerIcon} from '../Icons'
 
@@ -62,7 +62,7 @@ export function LightnerAccountAlert({
               label={l`Open settings`}
               onPress={() => {
                 control.close(() => {
-                  navigate('TennaBadgesSettings')
+                  void navigate('DeltaBadgeSettings')
                 })
               }}
               color="secondary"
