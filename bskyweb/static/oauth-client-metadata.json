@@ -1,5 +1,5 @@
 {
-  "client_id": "https://tenna.party/oauth-client-metadata-native.json",
+  "client_id": "https://tenna.party/oauth-client-metadata.json",
   "client_name": "tenna.party",
   "client_uri": "https://tenna.party",
   "redirect_uris": ["https://tenna.party/auth/web/callback"],
