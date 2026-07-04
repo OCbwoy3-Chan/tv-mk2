@@ -5,6 +5,7 @@ import {usePalette} from '#/lib/hooks/usePalette'
 import {InfoCircleIcon} from '#/lib/icons'
 import {Text} from '#/view/com/util/text/Text'
 import {atoms as a, useTheme} from '#/alf'
+import {useIsWithinMessage} from '#/components/dms/MessageContext'
 import {Loader} from '#/components/Loader'
 
 function extractTextFromChildren(children: React.ReactNode): string {
@@ -25,6 +26,7 @@ export function PostPlaceholder({
 }) {
   const t = useTheme()
   const pal = usePalette('default')
+  const isWithinMessage = useIsWithinMessage()
 
   const text = extractTextFromChildren(children).trim().toLowerCase()
   const isDeleted = /\bdeleted\b/.test(text)
@@ -33,7 +35,11 @@ export function PostPlaceholder({
 
   return (
     <View
-      style={[styles.errorContainer, a.border, t.atoms.border_contrast_low]}>
+      style={[
+        styles.errorContainer,
+        isWithinMessage && styles.errorContainerInMessage,
+        !isWithinMessage && [a.border, t.atoms.border_contrast_low],
+      ]}>
       {showLoader ? (
         <Loader size={'md'} style={pal.text} />
       ) : (
@@ -56,5 +62,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 14,
     borderWidth: StyleSheet.hairlineWidth,
+  },
+  errorContainerInMessage: {
+    marginTop: 0,
+    borderWidth: 0,
+    borderRadius: 0,
   },
 })

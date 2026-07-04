@@ -165,12 +165,16 @@ function RecordEmbed({
   const {_} = useLingui()
   const directFetchEnabled = useDirectFetchRecords()
   const shouldDirectFetch =
-    (embed.type === 'post_blocked' || embed.type === 'post_detached') &&
+    (embed.type === 'post_blocked' ||
+      embed.type === 'post_detached' ||
+      embed.type === 'post_not_found') &&
     directFetchEnabled
 
   const directRecord = useDirectFetchEmbedRecord({
     uri:
-      embed.type === 'post_blocked' || embed.type === 'post_detached'
+      embed.type === 'post_blocked' ||
+      embed.type === 'post_detached' ||
+      embed.type === 'post_not_found'
         ? embed.view.uri
         : '',
     enabled: shouldDirectFetch,
@@ -218,9 +222,29 @@ function RecordEmbed({
       )
     }
     case 'post_not_found': {
+      const directFetchResult = directRecord.data
+      const record = directFetchResult?.record
+      if (record !== undefined) {
+        return (
+          <DirectFetchEmbed
+            {...rest}
+            embed={record}
+            visibilityLabel={_(msg`Blocked`)}
+          />
+        )
+      }
+
+      const directFetchPending = shouldDirectFetch && directRecord.isPending
+
       return (
-        <PostPlaceholderText>
-          <Trans>Deleted</Trans>
+        <PostPlaceholderText directFetchEnabled={directFetchPending}>
+          {directFetchResult?.unavailableReason === 'account_suspended' ? (
+            <Trans>Author account suspended</Trans>
+          ) : directFetchResult?.unavailableReason === 'repo_not_found' ? (
+            <Trans>Author account unavailable</Trans>
+          ) : (
+            <Trans>Deleted</Trans>
+          )}
         </PostPlaceholderText>
       )
     }

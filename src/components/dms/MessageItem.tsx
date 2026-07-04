@@ -475,6 +475,7 @@ let MessageItem = ({
                 replierDisplayName={displayName}
                 relatedProfiles={relatedProfiles}
                 onPress={onPressReplyTo}
+                enableSquareButtons={!!enableSquareButtons}
               />
             ) : displayName && showDisplayName ? (
               <Text
@@ -756,6 +757,7 @@ function ReplyCaption({
   replierDisplayName,
   relatedProfiles,
   onPress,
+  enableSquareButtons,
 }: {
   replyTo:
     | ChatBskyConvoDefs.MessageView
@@ -766,6 +768,7 @@ function ReplyCaption({
   replierDisplayName: string | null
   relatedProfiles: Map<string, ChatBskyActorDefs.ProfileViewBasic>
   onPress?: () => void
+  enableSquareButtons: boolean
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
@@ -816,7 +819,7 @@ function ReplyCaption({
         a.pb_2xs,
         a.pt_xs,
         isFromSelf
-          ? [a.justify_end, a.pr_md]
+          ? [a.justify_end, !enableSquareButtons && a.pr_md]
           : [a.justify_start, {paddingLeft: displayNameInset}],
       ]}>
       <ArrowCornerDownRightIcon

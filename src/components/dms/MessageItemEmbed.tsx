@@ -81,7 +81,12 @@ let MessageItemEmbed = ({
           }),
         ]}>
         <Animated.View
-          style={[a.rounded_xl, a.overflow_hidden, radiiStyle, highlightStyle]}>
+          style={[
+            enableSquareButtons ? a.rounded_sm : a.rounded_xl,
+            a.overflow_hidden,
+            radiiStyle,
+            highlightStyle,
+          ]}>
           <Embed
             embed={embed}
             allowNestedQuotes

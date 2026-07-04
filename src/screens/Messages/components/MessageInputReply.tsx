@@ -18,7 +18,6 @@ import {Text} from '#/components/Typography'
  * being replied to, with a button to cancel the reply.
  */
 export function MessageInputReply() {
-  const enableSquareButtons = useEnableSquareButtons()
   const {replyTo} = useMessageReplies()
 
   if (!replyTo) {
@@ -33,6 +32,7 @@ function MessageInputReplyInner({
 }: {
   replyTo: ChatBskyConvoDefs.MessageView
 }) {
+  const enableSquareButtons = useEnableSquareButtons()
   const t = useTheme()
   const {t: l} = useLingui()
   const convo = useConvoActive()
