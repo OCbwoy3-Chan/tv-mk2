@@ -8,6 +8,7 @@ import Animated, {
 import {type $Typed, type ChatBskyEmbedJoinLink} from '@atproto/api'
 
 import {useConvoActive} from '#/state/messages/convo'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {isKnownJoinLinkPreview} from '#/state/queries/join-links'
 import {atoms as a, native, useTheme, web} from '#/alf'
 import * as ChatInvite from '#/components/dms/ChatInvite'
@@ -31,9 +32,11 @@ let MessageItemInviteEmbed = ({
   squaredBottomCorner: boolean
   highlightSV: SharedValue<number>
 }): React.ReactNode => {
+  const enableSquareButtons = useEnableSquareButtons()
   const t = useTheme()
   const screen = useWindowDimensions()
   const convo = useConvoActive()
+  const borderRadius = enableSquareButtons ? 4 : BORDER_RADIUS
 
   const restingColor = isFromSelf ? t.palette.primary_50 : t.palette.contrast_50
   const highlightColor = isFromSelf
@@ -77,22 +80,22 @@ let MessageItemInviteEmbed = ({
               ? {
                   borderBottomRightRadius: squaredBottomCorner
                     ? SQUARED_BORDER_RADIUS
-                    : BORDER_RADIUS,
+                    : borderRadius,
                   borderTopRightRadius: squaredTopCorner
                     ? SQUARED_BORDER_RADIUS
-                    : BORDER_RADIUS,
-                  borderBottomLeftRadius: BORDER_RADIUS,
-                  borderTopLeftRadius: BORDER_RADIUS,
+                    : borderRadius,
+                  borderBottomLeftRadius: borderRadius,
+                  borderTopLeftRadius: borderRadius,
                 }
               : {
                   borderBottomLeftRadius: squaredBottomCorner
                     ? SQUARED_BORDER_RADIUS
-                    : BORDER_RADIUS,
+                    : borderRadius,
                   borderTopLeftRadius: squaredTopCorner
                     ? SQUARED_BORDER_RADIUS
-                    : BORDER_RADIUS,
-                  borderBottomRightRadius: BORDER_RADIUS,
-                  borderTopRightRadius: BORDER_RADIUS,
+                    : borderRadius,
+                  borderBottomRightRadius: borderRadius,
+                  borderTopRightRadius: borderRadius,
                 },
             highlightStyle,
           ]}>

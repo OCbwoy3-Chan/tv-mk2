@@ -9,12 +9,14 @@ import {type SessionAccount, useSession} from '#/state/session'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {atoms as a} from '#/alf'
 import * as Dialog from '#/components/Dialog'
+import {Loader} from '#/components/Loader'
 import {AccountList} from '../AccountList'
 import {Text} from '../Typography'
 
 export function SwitchAccountDialog({
   control,
   accounts,
+  isLoading,
   title,
   pendingDid: pendingDidProp,
   selectedDid,
@@ -25,6 +27,7 @@ export function SwitchAccountDialog({
 }: {
   control: Dialog.DialogControlProps
   accounts?: SessionAccount[]
+  isLoading?: boolean
   title?: string
   pendingDid?: string | null
   selectedDid?: string | null
@@ -78,15 +81,21 @@ export function SwitchAccountDialog({
             {title ?? <Trans>Switch account</Trans>}
           </Text>
 
-          <AccountList
-            accounts={accounts}
-            onSelectAccount={onSelectAccount}
-            onSelectOther={onPressAddAccount}
-            otherLabel={otherLabel ?? _(msg`Add account`)}
-            pendingDid={pendingDidProp ?? pendingDid}
-            selectedDid={selectedDid}
-            showAddAccount={showAddAccount}
-          />
+          {isLoading ? (
+            <View style={[a.py_xl, a.align_center]}>
+              <Loader size="xl" />
+            </View>
+          ) : (
+            <AccountList
+              accounts={accounts}
+              onSelectAccount={onSelectAccount}
+              onSelectOther={onPressAddAccount}
+              otherLabel={otherLabel ?? _(msg`Add account`)}
+              pendingDid={pendingDidProp ?? pendingDid}
+              selectedDid={selectedDid}
+              showAddAccount={showAddAccount}
+            />
+          )}
         </View>
 
         <Dialog.Close />

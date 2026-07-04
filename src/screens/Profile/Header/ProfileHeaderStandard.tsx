@@ -14,7 +14,6 @@ import {Trans} from '@lingui/react/macro'
 import {useHaptics} from '#/lib/haptics'
 import {isFollowedByMetricHidden} from '#/lib/metrics-display'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
-import {sanitizeHandle} from '#/lib/strings/handles'
 import {formatJoinDate, niceDate} from '#/lib/strings/time'
 import {
   sanitizeWebsiteForDisplay,
@@ -65,7 +64,6 @@ import {
   shouldShowKnownFollowers,
 } from '#/components/KnownFollowers'
 import {Link} from '#/components/Link'
-import {ProfileBadges} from '#/components/ProfileBadges'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
@@ -75,6 +73,7 @@ import {IS_IOS, IS_NATIVE} from '#/env'
 import {InviteFriendsDialog} from '#/features/inviteFriends'
 import {useActorStatus} from '#/features/liveNow'
 import {GermButton} from '../components/GermButton'
+import {ProfileHeaderDisplayName} from './DisplayName'
 import {EditProfileDialog} from './EditProfileDialog'
 import {ProfileHeaderHandle} from './Handle'
 import {ProfileHeaderMetrics} from './Metrics'
@@ -97,7 +96,6 @@ let ProfileHeaderStandard = ({
   isPlaceholderProfile,
 }: Props): React.ReactNode => {
   const t = useTheme()
-  const {gtMobile} = useBreakpoints()
   const profile =
     useProfileShadow<AppBskyActorDefs.ProfileViewDetailed>(profileUnshadowed)
   const {currentAccount} = useSession()
@@ -195,34 +193,11 @@ let ProfileHeaderStandard = ({
             />
           </View>
           <View
-            style={[a.flex_col, a.gap_xs, a.pb_md, live ? a.pt_sm : a.pt_2xs]}>
-            <View style={[a.flex_row, a.align_center, a.gap_xs, a.flex_1]}>
-              <Text
-                emoji
-                testID="profileHeaderDisplayName"
-                style={[
-                  t.atoms.text,
-                  gtMobile ? a.text_4xl : a.text_3xl,
-                  a.self_start,
-                  a.font_bold,
-                  a.leading_tight,
-                ]}>
-                {sanitizeDisplayName(
-                  profile.displayName || sanitizeHandle(profile.handle),
-                  moderation.ui('displayName'),
-                )}
-                <View
-                  style={[
-                    a.pl_xs,
-                    a.flex_row,
-                    a.gap_2xs,
-                    a.align_center,
-                    {marginTop: platform({ios: 2})},
-                  ]}>
-                  <ProfileBadges profile={profile} size="lg" interactive />
-                </View>
-              </Text>
-            </View>
+            style={[a.flex_col, a.gap_xs, a.pb_sm, live ? a.pt_sm : a.pt_2xs]}>
+            <ProfileHeaderDisplayName
+              profile={profile}
+              moderation={moderation}
+            />
             <ProfileHeaderHandle profile={profile} />
           </View>
           {!isPlaceholderProfile && !isBlockedUser && (
@@ -234,7 +209,7 @@ let ProfileHeaderStandard = ({
                     testID="profileHeaderDescription"
                     style={[a.text_md]}
                     numberOfLines={15}
-                    selectable
+                    selectable={platform({android: false, default: true})}
                     value={descriptionRT}
                     enableTags
                     authorHandle={profile.handle}

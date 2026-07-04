@@ -100,6 +100,7 @@ export const SYNCED_PREFS_KEYS = [
   'atprotoRkeyGenerationDefault',
   'atprotoRkeyPrefixDefault',
   'atprotoRkeySuffixDefault',
+  'tidSuffix',
   'syncOpenRouterApiKey',
 ] as const satisfies readonly (keyof Schema)[]
 

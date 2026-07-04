@@ -8,7 +8,7 @@ msgstr ""
 "Language: zh\n"
 "Project-Id-Version: 49a8cb746fbc2ae5707392ee41ddec4c\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2026-06-17 12:23\n"
+"PO-Revision-Date: 2026-06-29 15:43\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -23,6 +23,7 @@ msgstr ""
 msgid "\"{interestsDisplayName}\" category (active)"
 msgstr "“{interestsDisplayName}”类别（已选中）"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:124
 msgid "\"Followed by\" avatars"
 msgstr ""
@@ -30,10 +31,21 @@ msgstr ""
 #: src/components/dms/getMessageInfo.ts:123
 #: src/components/dms/MessageItem.tsx:871
 #: src/screens/Messages/components/MessageInputReply.tsx:45
+=======
+#. A reply summary in chat
+#: src/components/dms/MessageItem.tsx:862
+msgid "(blocked message hidden)"
+msgstr "（已隐藏屏蔽的信息）"
+
+#. A reply summary in chat
+#: src/components/dms/getMessageInfo.ts:123
+#: src/components/dms/replyPreview.ts:85
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "(chat invite link)"
 msgstr "（对话邀请链接）"
 
 #: src/components/dms/getMessageInfo.ts:105
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:873
 #: src/screens/Messages/components/MessageInputReply.tsx:47
 msgid "(contains embedded content)"
@@ -46,6 +58,49 @@ msgstr "（没有电子邮箱）"
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:205
 msgid "(pds) is replaced with the domain of an account's host."
 msgstr ""
+=======
+msgid "(contains embedded content)"
+msgstr "（包含嵌入内容）"
+
+#. A reply summary in chat
+#: src/components/dms/MessageItem.tsx:870
+msgid "(deleted message)"
+msgstr "（已删除信息）"
+
+#. A reply summary in chat
+#: src/components/dms/replyPreview.ts:68
+msgid "(disabled chat invite link)"
+msgstr "（已禁用对话邀请链接）"
+
+#. A reply summary in chat
+#: src/components/dms/replyPreview.ts:77
+msgid "(invalid chat invite link)"
+msgstr "（无效的对话邀请链接）"
+
+#: src/screens/Settings/AccountSettings.tsx:76
+msgid "(no email)"
+msgstr "（没有电子邮箱）"
+
+#. A reply summary in chat
+#: src/components/dms/replyPreview.ts:107
+msgid "(no text)"
+msgstr "（没有文字）"
+
+#. A reply summary in chat
+#: src/components/dms/replyPreview.ts:99
+msgid "(quoted post)"
+msgstr "（引用帖文）"
+
+#. placeholder {0}: labels.length
+#: src/components/moderation/LabelsOnMe.tsx:63
+msgid "{0, plural, one {# account label} other {# account labels}}"
+msgstr "{0, plural,one {# 个账户标签}other {# 个账户标签}}"
+
+#. placeholder {0}: labels.length
+#: src/components/moderation/LabelsOnMe.tsx:69
+msgid "{0, plural, one {# content label} other {# content labels}}"
+msgstr "{0, plural,one {# 个内容标签}other {# 个内容标签}}"
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 
 #. placeholder {0}: diff.value
 #: src/lib/hooks/useTimeAgo.ts:169
@@ -72,6 +127,7 @@ msgstr "{0, plural, one {找到了 # 位朋友！} other {找到了 # 位朋友�
 msgid "{0, plural, one {# hour} other {# hours}}"
 msgstr "{0, plural, one {# 小时} other {# 小时}}"
 
+<<<<<<< HEAD
 #. placeholder {0}: labels.length
 #: src/components/moderation/LabelsOnMe.tsx:64
 msgid "{0, plural, one {# label has} other {# labels have}} been placed on this account"
@@ -82,6 +138,8 @@ msgstr "该账户有 {0, plural, one {# 个标记} other {# 个标记}}"
 msgid "{0, plural, one {# label has} other {# labels have}} been placed on this content"
 msgstr "该内容有 {0, plural, one {# 个标记} other {# 个标记}}"
 
+=======
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #. placeholder {0}: likeCount ?? 0
 #: src/screens/Post/PostLikedBy.tsx:45
 msgid "{0, plural, one {# like} other {# likes}}"
@@ -109,7 +167,11 @@ msgstr "{0, plural, one {# 条新的加入申请} other {# 条新的加入申请
 
 #. placeholder {0}: reactions.length
 #. placeholder {1}: groupedReactions.map(g => g.value).join(' ')
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:356
+=======
+#: src/components/dms/MessageItem.tsx:351
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "{0, plural, one {# person} other {# people}} reacted – {1}"
 msgstr "{0, plural,one {# 个人} other {# 个人}} 对此做出了 {1} 反应"
 
@@ -135,9 +197,15 @@ msgstr ""
 
 #. placeholder {0}: numUnreadMessages.numUnread ?? 0
 #. placeholder {0}: numUnreadNotifications ?? 0
+<<<<<<< HEAD
 #: src/view/shell/bottom-bar/BottomBar.tsx:249
 #: src/view/shell/bottom-bar/BottomBar.tsx:281
 #: src/view/shell/Drawer.tsx:604
+=======
+#: src/view/shell/bottom-bar/BottomBar.tsx:251
+#: src/view/shell/bottom-bar/BottomBar.tsx:283
+#: src/view/shell/Drawer.tsx:557
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "{0, plural, one {# unread item} other {# unread items}}"
 msgstr "{0, plural, one {# 条未读} other {# 条未读}}"
 
@@ -246,7 +314,11 @@ msgid "{0} and {1} added to chat"
 msgstr "{0} 和 {1} 已受邀加入对话"
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:709
+=======
+#: src/components/dms/MessageItem.tsx:704
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "{0} is blocking you"
 msgstr "{0} 屏蔽了你"
 
@@ -304,9 +376,19 @@ msgstr "已输入 {0} 个字符，最多 50 个字符"
 
 #. placeholder {0}: createSanitizedDisplayName(memberSender)
 #. placeholder {1}: reaction.value
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:351
+=======
+#: src/components/dms/MessageItem.tsx:346
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "{0} reacted {1}"
 msgstr "{0} 作出了 {1} 反应"
+
+#. Accessibility hint for the bottom bar chat icon when the number of unread messages exceeds the cap, with the + symbol already included – for example, 99+ unread items
+#. placeholder {0}: numUnreadMessages.numUnread
+#: src/view/shell/bottom-bar/BottomBar.tsx:246
+msgid "{0} unread items"
+msgstr "{0} 条未读内容"
 
 #. placeholder {0}: action.displayName
 #: src/components/dms/getSystemMessageInfo.ts:57
@@ -327,6 +409,12 @@ msgstr "{0} 已被移除"
 #: src/components/dms/getSystemMessageInfo.ts:71
 msgid "{0} was removed from the group"
 msgstr "{0} 已被移除出群组"
+
+#. List formatting: {0}, {1}, {2}
+#. placeholder {0}: link(lang)
+#: src/screens/Search/components/DetectedLanguagesAdmonition.tsx:118
+msgid "{0}, "
+msgstr ""
 
 #. placeholder {0}: createSanitizedDisplayName(members[0])
 #. placeholder {1}: createSanitizedDisplayName(members[1])
@@ -377,10 +465,22 @@ msgstr "{0}/{1}{2, plural,one {个成员}other {个成员}}"
 
 #. Badge showing the current image position out of the total number of images in a gallery.
 #. placeholder {0}: index + 1
-#: src/components/images/Gallery/index.tsx:526
+#: src/components/images/Gallery/index.tsx:521
 msgctxt "gallery-badge-image-position-numbers"
 msgid "{0}/{imageCount}"
 msgstr "{0}/{imageCount}"
+
+#. Displayed when the number of requests exceeds the cap – for example, 99+ requests
+#. placeholder {0}: UNREAD_REQUEST_CAP - 1
+#: src/screens/Messages/components/InboxRequests.tsx:55
+msgid "{0}+"
+msgstr "{0}+"
+
+#. Displayed when the number of requests exceeds the cap
+#. placeholder {0}: UNREAD_REQUEST_CAP - 1
+#: src/screens/Messages/components/InboxRequests.tsx:30
+msgid "{0}+ requests"
+msgstr "超过 {0} 条申请"
 
 #. How many days have passed, displayed in a narrow form
 #. placeholder {0}: diff.value
@@ -422,7 +522,7 @@ msgstr "{count, plural, one {# 条对话更新} other {# 条对话更新}}"
 msgid "{count, plural, one {# new join request} other {# new join requests}}"
 msgstr "{count, plural,one {# 条新的加入申请}other {# 条新的加入申请}}"
 
-#: src/screens/Messages/components/InboxRequests.tsx:36
+#: src/screens/Messages/components/InboxRequests.tsx:34
 msgid "{count, plural, one {# request} other {# requests}}"
 msgstr "{count, plural, one {# 条邀请} other {# 条邀请}}"
 
@@ -452,7 +552,15 @@ msgstr "{estimatedTimeHrs, plural, one {时} other {时}}"
 msgid "{estimatedTimeMins, plural, one {minute} other {minutes}}"
 msgstr "{estimatedTimeMins, plural, one {分} other {分}}"
 
+<<<<<<< HEAD
 #: src/view/com/notifications/NotificationFeedItem.tsx:372
+=======
+#: src/screens/Search/components/SearchHistory.tsx:155
+msgid "{filterCount, plural, one {+# filter} other {+# filters}}"
+msgstr ""
+
+#: src/view/com/notifications/NotificationFeedItem.tsx:361
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> followed you"
 msgstr "{firstAuthorLink} 及<0>{additionalAuthorsCount, plural, one {其他 {formattedAuthorsCount} 人} other {其他 {formattedAuthorsCount} 人}}</0> 关注了你"
 
@@ -727,17 +835,29 @@ msgstr ""
 msgid "{rank}."
 msgstr "{rank}."
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:816
+=======
+#: src/components/dms/MessageItem.tsx:814
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "{replierDisplayName} replied"
-msgstr ""
+msgstr "{replierDisplayName} 回复了"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:812
-msgid "{replierDisplayName} replied to {originalName}"
-msgstr ""
-
+=======
 #: src/components/dms/MessageItem.tsx:810
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
+msgid "{replierDisplayName} replied to {originalName}"
+msgstr "{replierDisplayName} 回复了 {originalName}"
+
+<<<<<<< HEAD
+#: src/components/dms/MessageItem.tsx:810
+=======
+#: src/components/dms/MessageItem.tsx:808
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "{replierDisplayName} replied to you"
-msgstr ""
+msgstr "{replierDisplayName} 回复了你"
 
 #: src/components/PostControls/RepostButton.tsx:94
 #: src/components/PostControls/RepostButton.web.tsx:60
@@ -842,12 +962,17 @@ msgstr "<0>{0}</0> 的成员"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr "<0>{displayName}</0><1/><2>添加了你</2>"
 
+<<<<<<< HEAD
 #: src/components/PdsDialog.tsx:143
 msgid "<0>Learn more</0> about what a PDS is and how to <1>self-host</1> your own."
 msgstr ""
 
 #: src/screens/Hashtag.tsx:229
 #: src/screens/Search/SearchResults.tsx:389
+=======
+#: src/screens/Hashtag.tsx:226
+#: src/screens/Search/SearchResults.tsx:432
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "<0>Sign in</0><1> or </1><2>create an account</2><3> </3><4>to search for news, sports, politics, and everything else happening on Bluesky.</4>"
 msgstr "<0>登录</0><1>或</1><2>创建账户</2><3></3><4>即可在 Bluesky 上搜索新闻、体育、政治等正在发生的新鲜事。</4>"
 
@@ -864,6 +989,7 @@ msgstr "<0>你</0> 及<1> </1><2>{0} </2>已包含在你的新手包中"
 msgid "⚠Invalid Handle"
 msgstr "⚠无效的账户代码"
 
+<<<<<<< HEAD
 #. Displayed when the number of requests is greater than 10
 #: src/screens/Messages/components/InboxRequests.tsx:57
 msgid "10+"
@@ -875,6 +1001,10 @@ msgid "10+ requests"
 msgstr ""
 
 #: src/components/dialogs/MutedWords.tsx:203
+=======
+#: src/components/dialogs/MutedWords.tsx:202
+#: src/components/dialogs/MutedWords.tsx:551
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/dialogs/MutedWords.tsx:554
 #: src/components/dialogs/MutedWords.tsx:557
 msgid "24 hours"
@@ -996,12 +1126,16 @@ msgstr "接受申请"
 msgid "Accept this language suggestion"
 msgstr "应用此建议语言"
 
+<<<<<<< HEAD
 #: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:182
 #: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:186
 msgid "Accepted conversations"
 msgstr "已接受的对话"
 
 #: src/components/intents/GroupChatJoinDialog.tsx:130
+=======
+#: src/components/intents/GroupChatJoinDialog.tsx:119
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Access requested! The group owner will review your request."
 msgstr "已发送申请！请等待群组所有者同意以加入群组。"
 
@@ -1107,9 +1241,9 @@ msgstr ""
 msgid "Accounts with a scalloped blue check mark <0><1/></0> can verify others. These trusted verifiers are selected by {0}."
 msgstr ""
 
-#: src/lib/hooks/useNotificationHandler.ts:216
-#: src/screens/Settings/NotificationSettings/index.tsx:204
-#: src/screens/Settings/NotificationSettings/index.tsx:309
+#: src/lib/hooks/useNotificationHandler.ts:214
+#: src/screens/Settings/NotificationSettings/index.tsx:214
+#: src/screens/Settings/NotificationSettings/index.tsx:353
 msgid "Activity from others"
 msgstr "其他人的动态"
 
@@ -1166,6 +1300,7 @@ msgstr "添加替代文本"
 msgid "Add alt text (optional)"
 msgstr "添加替代文本（可选）"
 
+<<<<<<< HEAD
 #: src/screens/Settings/Settings.tsx:802
 #: src/screens/Settings/Settings.tsx:805
 #: src/view/shell/desktop/LeftNav.tsx:304
@@ -1178,6 +1313,24 @@ msgid "Add another post"
 msgstr "添加另一则帖文"
 
 #: src/view/com/composer/Composer.tsx:2459
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:449
+msgid "Add an additional search filter"
+msgstr ""
+
+#: src/screens/Settings/Settings.tsx:575
+#: src/screens/Settings/Settings.tsx:578
+#: src/view/shell/desktop/LeftNav.tsx:276
+#: src/view/shell/desktop/LeftNav.tsx:279
+msgid "Add another account"
+msgstr "添加其他账户"
+
+#: src/view/com/composer/Composer.tsx:1605
+msgid "Add another post"
+msgstr "添加另一则帖文"
+
+#: src/view/com/composer/Composer.tsx:2271
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Add another post to thread"
 msgstr "添加另一则帖文至帖文串"
 
@@ -1199,6 +1352,10 @@ msgstr "添加自动化标签至此账户"
 msgid "Add emoji reaction"
 msgstr "添加表情符号反应"
 
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:457
+msgid "Add filter"
+msgstr ""
+
 #: src/components/dms/AddMembersFlow.tsx:492
 msgid "Add group chat members"
 msgstr "添加群组对话成员"
@@ -1208,7 +1365,11 @@ msgid "Add image"
 msgstr "添加图片"
 
 #. Accessibility label for button in composer to add images, a video, or a GIF to a post
+<<<<<<< HEAD
 #: src/view/com/composer/SelectMediaButton.tsx:508
+=======
+#: src/view/com/composer/SelectMediaButton.tsx:511
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Add media to post"
 msgstr "添加媒体内容至帖文"
 
@@ -1388,7 +1549,16 @@ msgstr "成人性虐待内容"
 msgid "Advanced"
 msgstr "详细设置"
 
+<<<<<<< HEAD
 #: src/components/ageAssurance/AgeAssuranceBadge.tsx:44
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:76
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:252
+msgid "Advanced search"
+msgstr ""
+
+#: src/components/ageAssurance/AgeAssuranceBadge.tsx:42
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Age Assurance"
 msgstr "年龄验证"
 
@@ -1423,7 +1593,12 @@ msgstr "alice@example.com"
 #. the default tab in the interests tab bar
 #: src/components/dms/ReactionsDialog.tsx:292
 #: src/screens/Onboarding/StepSuggestedAccounts/index.tsx:201
+<<<<<<< HEAD
 #: src/view/screens/Notifications.tsx:89
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/RepliesDropdown.tsx:26
+#: src/view/screens/Notifications.tsx:86
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "All"
 msgstr "全部"
 
@@ -1442,10 +1617,17 @@ msgstr "已关注所有账户！"
 msgid "All friends followed!"
 msgstr "已成功关注所有朋友！"
 
+<<<<<<< HEAD
 #: src/components/dialogs/LanguageSelectDialog.tsx:258
 #: src/screens/Search/components/SearchLanguageDropdown.tsx:65
 #: src/screens/Search/components/SearchLanguageDropdown.tsx:100
 #: src/screens/Search/components/SearchLanguageDropdown.tsx:102
+=======
+#: src/components/dialogs/LanguageSelectDialog.tsx:255
+#: src/screens/Search/components/SearchLanguageDropdown.tsx:73
+#: src/screens/Search/components/SearchLanguageDropdown.tsx:122
+#: src/screens/Search/components/SearchLanguageDropdown.tsx:124
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "All languages"
 msgstr "全部语言"
 
@@ -1453,7 +1635,20 @@ msgstr "全部语言"
 msgid "All languages will be shown in your feeds."
 msgstr "你的动态源将显示所有语言的内容。"
 
+<<<<<<< HEAD
 #: src/view/screens/Feeds.tsx:704
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:259
+msgid "All of these words"
+msgstr ""
+
+#: src/screens/Search/components/AdvancedSearchDialog/MediaDropdown.tsx:22
+#: src/screens/Search/components/AdvancedSearchDialog/MediaDropdown.tsx:27
+msgid "All posts"
+msgstr ""
+
+#: src/view/screens/Feeds.tsx:700
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "All the feeds you've saved, right in one place."
 msgstr "以下是你已保存的动态源。"
 
@@ -1470,13 +1665,13 @@ msgstr "允许读取你的私人信息"
 msgid "Allow anyone to reply"
 msgstr "允许任何人回复"
 
-#: src/screens/Messages/Settings.tsx:143
-#: src/screens/Messages/Settings.tsx:158
+#: src/screens/Messages/Settings.tsx:156
+#: src/screens/Messages/Settings.tsx:171
 msgid "Allow direct messages from"
 msgstr "允许以下来源直接向你发起对话"
 
-#: src/screens/Messages/Settings.tsx:189
-#: src/screens/Messages/Settings.tsx:211
+#: src/screens/Messages/Settings.tsx:202
+#: src/screens/Messages/Settings.tsx:224
 msgid "Allow group chat invites from"
 msgstr "允许以下来源向你发送群组对话邀请"
 
@@ -1531,6 +1726,7 @@ msgstr "已经有验证码了？"
 msgid "Already signed in as @{0}"
 msgstr "已经以 @{0} 身份登录"
 
+<<<<<<< HEAD
 #: src/Navigation.tsx:509
 #: src/screens/PostThread/components/ThreadAlsoLiked.tsx:91
 #: src/screens/Settings/RunesSettings/AlsoLikedSettings.tsx:28
@@ -1543,6 +1739,12 @@ msgstr ""
 #: src/components/images/Gallery/index.tsx:588
 #: src/components/images/ImageLayoutGridItem.tsx:154
 #: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:94
+=======
+#: src/components/AltBadgeWithDialog.tsx:76
+#: src/components/images/AutoSizedImage.tsx:205
+#: src/components/images/Gallery/index.tsx:585
+#: src/components/images/ImageLayoutGridItem.tsx:135
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/com/composer/GifAltText.tsx:100
 #: src/view/com/composer/photos/Gallery.tsx:214
 msgid "ALT"
@@ -1558,7 +1760,7 @@ msgstr "替代文本"
 msgid "Alt text"
 msgstr "替代文本"
 
-#: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:100
+#: src/components/AltBadgeWithDialog.tsx:83
 msgid "Alt Text"
 msgstr "替代文本"
 
@@ -1598,7 +1800,11 @@ msgstr "发生错误"
 msgid "An error occurred"
 msgstr "发生错误"
 
+<<<<<<< HEAD
 #: src/view/com/composer/state/video.ts:437
+=======
+#: src/view/com/composer/state/video.ts:432
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "An error occurred while compressing the video."
 msgstr "压缩视频时发生错误。"
 
@@ -1644,11 +1850,19 @@ msgstr "保存二维码时发生错误！"
 msgid "An error occurred while trying to follow all"
 msgstr "关注全部账户时发生错误"
 
+<<<<<<< HEAD
 #: src/view/com/composer/state/video.ts:489
 msgid "An error occurred while uploading the video. {message}"
 msgstr "上传视频时发生错误。{message}"
 
 #: src/view/com/composer/state/video.ts:481
+=======
+#: src/view/com/composer/state/video.ts:484
+msgid "An error occurred while uploading the video. {message}"
+msgstr "上传视频时发生错误。{message}"
+
+#: src/view/com/composer/state/video.ts:476
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "An error occurred while uploading the video. Please check your internet connection and try again."
 msgstr "上传视频时发生错误。请检查网络连接并重试。"
 
@@ -1740,7 +1954,7 @@ msgstr "动物福利"
 msgid "Animals"
 msgstr "动物"
 
-#: src/components/Post/Embed/ExternalEmbed/Gif.tsx:97
+#: src/components/Post/Embed/ExternalEmbed/Gif.tsx:85
 msgid "Animated GIF"
 msgstr "GIF 动画"
 
@@ -1752,7 +1966,16 @@ msgstr "公告"
 msgid "Announcing verification on Bluesky"
 msgstr "为你介绍 Bluesky 上的认证机制"
 
+<<<<<<< HEAD
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:458
+=======
+#. Placeholder text for a date picker
+#: src/screens/Search/components/AdvancedSearchDialog/ClearableDateField.tsx:43
+msgid "Any time"
+msgstr ""
+
+#: src/components/dialogs/PostInteractionSettingsDialog.tsx:457
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Anyone"
 msgstr "任何人"
 
@@ -1899,6 +2122,24 @@ msgstr "已归档帖文"
 msgid "Are you really, really sure?"
 msgstr "你真的确定要继续吗？"
 
+#. placeholder {0}: link(languages[0])
+#. placeholder {1}: link(languages[1])
+#: src/screens/Search/components/DetectedLanguagesAdmonition.tsx:105
+msgid "Are you searching for posts in {0} or {1}?"
+msgstr ""
+
+#. placeholder {0}: link(languages[0])
+#: src/screens/Search/components/DetectedLanguagesAdmonition.tsx:100
+msgid "Are you searching for posts in {0}?"
+msgstr ""
+
+#. List formatting: {0}, {1}, or {2}
+#. placeholder {0}: head.map(lang => ( <Trans key={lang.code} comment="List formatting: {0}, {1}, {2}"> {link(lang)},{' '} </Trans> ))
+#. placeholder {1}: link(last)
+#: src/screens/Search/components/DetectedLanguagesAdmonition.tsx:115
+msgid "Are you searching for posts in {0}or {1}?"
+msgstr ""
+
 #. placeholder {0}: appPassword.name
 #: src/screens/Settings/AppPasswords.tsx:210
 msgid "Are you sure you want to delete the app password \"{0}\"?"
@@ -1939,7 +2180,11 @@ msgstr "你确定要将此从你的动态源中删除吗？"
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "你确定要撤销加入 {0} 的申请吗？"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1776
+=======
+#: src/view/com/composer/Composer.tsx:1741
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Are you sure you'd like to discard this post?"
 msgstr "你确定要放弃发布这则帖文吗？"
 
@@ -2062,10 +2307,17 @@ msgstr "可用"
 #: src/screens/Messages/components/ChatDisabled.tsx:166
 #: src/screens/Messages/components/InviteLinkDialog.tsx:276
 #: src/screens/Messages/components/InviteLinkDialog.tsx:304
+<<<<<<< HEAD
 #: src/screens/Messages/Inbox.tsx:240
 #: src/screens/Profile/Header/Shell.tsx:204
 #: src/screens/Settings/components/ChangePasswordDialog.tsx:274
 #: src/screens/Settings/components/ChangePasswordDialog.tsx:283
+=======
+#: src/screens/Messages/Inbox.tsx:233
+#: src/screens/Profile/Header/Shell.tsx:174
+#: src/screens/Settings/components/ChangePasswordDialog.tsx:273
+#: src/screens/Settings/components/ChangePasswordDialog.tsx:282
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/screens/Signup/BackNextButtons.tsx:42
 #: src/screens/StarterPack/Wizard/index.tsx:316
 #: src/view/com/composer/drafts/DraftsListDialog.tsx:87
@@ -2073,7 +2325,7 @@ msgstr "可用"
 msgid "Back"
 msgstr "返回"
 
-#: src/screens/Messages/Inbox.tsx:239
+#: src/screens/Messages/Inbox.tsx:232
 msgid "Back to Chats"
 msgstr "返回对话"
 
@@ -2125,11 +2377,19 @@ msgid "Before you can get notifications for {name}'s posts, you must first verif
 msgstr "在你接收 {name} 的发帖提醒之前，你必须首先验证你的电子邮箱。"
 
 #: src/components/dms/dialogs/NewChatDialog.tsx:155
+<<<<<<< HEAD
 #: src/components/dms/MessageProfileButton.tsx:63
 #: src/screens/Messages/ChatList.tsx:156
 #: src/screens/Messages/ChatList.tsx:174
 #: src/screens/Messages/ChatList.tsx:275
 #: src/screens/Messages/ChatList.tsx:530
+=======
+#: src/components/dms/MessageProfileButton.tsx:60
+#: src/screens/Messages/ChatList.tsx:166
+#: src/screens/Messages/ChatList.tsx:184
+#: src/screens/Messages/ChatList.tsx:285
+#: src/screens/Messages/ChatList.tsx:541
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/screens/Messages/Conversation.tsx:203
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:99
 msgid "Before you can message another user, you must first verify your email."
@@ -2239,8 +2499,12 @@ msgstr "屏蔽该用户或删除整个对话（多选）"
 msgid "Block user and/or leave this conversation"
 msgstr "屏蔽该用户或离开对话（多选）"
 
+<<<<<<< HEAD
 #: src/components/Post/Embed/index.tsx:239
 #: src/components/Post/Embed/index.tsx:255
+=======
+#: src/components/Post/Embed/index.tsx:212
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Blocked"
 msgstr "已被屏蔽"
 
@@ -2261,10 +2525,13 @@ msgstr "已被屏蔽的账户无法在你的帖文下回复、提及你或以其
 msgid "Blocked accounts cannot reply in your threads, mention you, or otherwise interact with you. You will not see their content and they will be prevented from seeing yours."
 msgstr "已被屏蔽的账户无法在你的帖文下回复、提及你或以其他方式与你互动。你将不会看到他们所发布的内容，同样他们也无法查看你发布的内容。"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:864
 msgid "Blocked message hidden"
 msgstr ""
 
+=======
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/screens/Profile/Sections/Labels.tsx:203
 msgid "Blocking does not prevent this labeler from placing labels on your account."
 msgstr "屏蔽该用户不会阻止其继续标记你的账户。"
@@ -2277,11 +2544,34 @@ msgstr "屏蔽是公开可见的。被屏蔽的账户无法在你的帖文下回
 msgid "Blocking will not prevent labels from being applied on your account, but it will stop this account from replying in your threads or interacting with you."
 msgstr "屏蔽不会阻止其继续标记你的账户，但会阻止该账户在你发布的帖文下回复或与你互动。"
 
+<<<<<<< HEAD
 #: src/screens/Settings/AppearanceSettings/shared.tsx:64
 msgid "Bluesky"
 msgstr "Bluesky"
 
 #: src/screens/PostThread/components/ThreadItemAnchor.tsx:737
+=======
+#: src/view/com/auth/SplashScreen.web.tsx:174
+msgid "Blog"
+msgstr "博客"
+
+#. Advanced search: Examples of hashtags
+#: src/screens/Search/components/AdvancedSearchDialog/hooks.tsx:17
+msgid "bloomscrolling booksky"
+msgstr ""
+
+#: src/components/dialogs/ServerInput.tsx:144
+#: src/components/dialogs/ServerInput.tsx:146
+msgid "Bluesky"
+msgstr "Bluesky"
+
+#. Advanced search: Example of an “all of these words” search
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:264
+msgid "bluesky atproto"
+msgstr ""
+
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:657
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Bluesky cannot confirm the authenticity of the claimed date."
 msgstr "Bluesky 无法确认帖文发布时间的真实性。"
 
@@ -2514,7 +2804,11 @@ msgstr "需要相机权限"
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:302
 #: src/components/dialogs/nuxs/InviteFriendsAnnouncement.tsx:175
 #: src/components/dialogs/nuxs/InviteFriendsAnnouncement.tsx:181
+<<<<<<< HEAD
 #: src/components/Menu/index.tsx:369
+=======
+#: src/components/Menu/index.tsx:373
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/moderation/BlockDialog.tsx:202
 #: src/components/PostControls/RepostButton.tsx:216
 #: src/components/Prompt.tsx:155
@@ -2533,9 +2827,16 @@ msgstr "需要相机权限"
 #: src/screens/Messages/ConversationSettings/prompts.tsx:132
 #: src/screens/Messages/ConversationSettings/prompts.tsx:156
 #: src/screens/Messages/ConversationSettings/prompts.tsx:180
+<<<<<<< HEAD
 #: src/screens/Profile/Header/EditProfileDialog.tsx:259
 #: src/screens/Profile/Header/EditProfileDialog.tsx:267
 #: src/screens/Search/Shell.tsx:405
+=======
+#: src/screens/Profile/Header/EditProfileDialog.tsx:215
+#: src/screens/Profile/Header/EditProfileDialog.tsx:223
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:216
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:223
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/screens/Settings/AppIconSettings/index.tsx:42
 #: src/screens/Settings/AppIconSettings/index.tsx:228
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:82
@@ -2547,12 +2848,20 @@ msgstr "需要相机权限"
 #: src/screens/Settings/Settings.tsx:527
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
+<<<<<<< HEAD
 #: src/state/preferences/restart-required-prompt.tsx:37
 #: src/view/com/composer/Composer.tsx:1854
 #: src/view/com/composer/Composer.tsx:1864
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
 #: src/view/shell/desktop/LeftNav.tsx:238
+=======
+#: src/view/com/composer/Composer.tsx:1819
+#: src/view/com/composer/Composer.tsx:1829
+#: src/view/com/composer/photos/EditImageDialog.web.tsx:44
+#: src/view/com/composer/photos/EditImageDialog.web.tsx:53
+#: src/view/shell/desktop/LeftNav.tsx:228
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Cancel"
 msgstr "取消"
 
@@ -2566,9 +2875,9 @@ msgstr "取消重新启用账户并登出"
 
 #: src/screens/Messages/components/MessageInputReply.tsx:85
 msgid "Cancel reply"
-msgstr ""
+msgstr "取消回复"
 
-#: src/screens/Search/Shell.tsx:396
+#: src/screens/Search/Shell.tsx:527
 msgid "Cancel search"
 msgstr "取消搜索"
 
@@ -2588,7 +2897,7 @@ msgstr "字幕（.vtt）"
 msgid "Captions & alt text"
 msgstr "字幕及替代文本"
 
-#: src/components/images/Gallery/index.tsx:275
+#: src/components/images/Gallery/index.tsx:273
 msgid "carousel"
 msgstr "轮播"
 
@@ -2626,7 +2935,7 @@ msgstr "更改应用图标"
 msgid "Change app icon to \"{0}\""
 msgstr "更改应用图标为“{0}”"
 
-#: src/components/AppLanguageDropdown.tsx:40
+#: src/components/AppLanguageDropdown.tsx:41
 msgid "Change app language"
 msgstr "更改应用语言"
 
@@ -2713,11 +3022,11 @@ msgstr "对话邀请链接已失效"
 msgid "Chat locked"
 msgstr "对话已锁定"
 
-#: src/lib/hooks/useNotificationHandler.ts:148
+#: src/lib/hooks/useNotificationHandler.ts:146
 msgid "Chat messages - silent"
 msgstr "对话信息 - 静音"
 
-#: src/lib/hooks/useNotificationHandler.ts:139
+#: src/lib/hooks/useNotificationHandler.ts:137
 msgid "Chat messages - sound"
 msgstr "对话信息 - 提示音"
 
@@ -2731,6 +3040,12 @@ msgstr "已隐藏对话"
 msgid "Chat not found."
 msgstr "无法找到对话。"
 
+#: src/screens/Messages/ChatList.tsx:567
+#: src/screens/Messages/ChatList.tsx:602
+#: src/screens/Messages/ChatList.tsx:640
+msgid "Chat options"
+msgstr "对话选项"
+
 #: src/components/moderation/BlockDialog.tsx:293
 msgid "Chat owners cannot leave a group chat."
 msgstr "对话所有者无法离开对话。"
@@ -2743,11 +3058,12 @@ msgstr "对话收信人未被发信人关注。"
 msgid "Chat request inbox"
 msgstr "对话邀请收件箱"
 
-#: src/screens/Messages/Inbox.tsx:61
-#: src/screens/Messages/Inbox.tsx:104
+#: src/screens/Messages/Inbox.tsx:62
+#: src/screens/Messages/Inbox.tsx:97
 msgid "Chat requests"
 msgstr "对话邀请"
 
+<<<<<<< HEAD
 #: src/components/dms/ConvoMenu.tsx:91
 #: src/Navigation.tsx:666
 #: src/screens/Messages/ChatList.tsx:85
@@ -2755,10 +3071,19 @@ msgstr "对话邀请"
 #: src/screens/Messages/ChatList.tsx:555
 #: src/screens/Messages/ChatList.tsx:586
 #: src/screens/Messages/Settings.tsx:39
+=======
+#: src/components/dms/ConvoMenu.tsx:88
+#: src/Navigation.tsx:506
+#: src/screens/Messages/ChatList.tsx:95
+#: src/screens/Messages/ChatList.tsx:99
+#: src/screens/Messages/ChatList.tsx:652
+#: src/screens/Messages/ChatList.tsx:662
+#: src/screens/Messages/Settings.tsx:48
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Chat settings"
 msgstr "对话设置"
 
-#: src/screens/Messages/Settings.tsx:134
+#: src/screens/Messages/Settings.tsx:147
 msgid "Chat Settings"
 msgstr "对话设置"
 
@@ -2780,9 +3105,15 @@ msgctxt "toast"
 msgid "Chat unmuted"
 msgstr "已取消隐藏对话"
 
+<<<<<<< HEAD
 #: src/screens/Messages/ChatList.tsx:79
 #: src/screens/Messages/ChatList.tsx:542
 #: src/screens/Messages/ChatList.tsx:579
+=======
+#: src/screens/Messages/ChatList.tsx:89
+#: src/screens/Messages/ChatList.tsx:553
+#: src/screens/Messages/ChatList.tsx:593
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Chats"
 msgstr "对话"
 
@@ -2861,17 +3192,35 @@ msgstr "自定义专属于你的时间线！由社群打造的动态源能帮助
 msgid "Choose your password"
 msgstr "设置你的密码"
 
+<<<<<<< HEAD
 #: src/screens/Signup/index.tsx:198
 msgid "Choose your username"
 msgstr "设置你的用户名"
 
 #: src/screens/Settings/Settings.tsx:725
+=======
+#: src/screens/Signup/index.tsx:193
+msgid "Choose your username"
+msgstr "设置你的用户名"
+
+#: src/screens/Search/components/AdvancedSearchDialog/AutocompleteInput/index.native.tsx:73
+#: src/screens/Search/components/AdvancedSearchDialog/AutocompleteInput/index.tsx:110
+#: src/screens/Search/components/AdvancedSearchDialog/ClearableInput.tsx:59
+msgid "Clear"
+msgstr ""
+
+#: src/screens/Settings/Settings.tsx:498
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Clear all storage data"
 msgstr "清除所有数据"
 
 #: src/screens/Settings/Settings.tsx:727
 msgid "Clear all storage data (restart after this)"
 msgstr "清除所有数据（并重新启动应用）"
+
+#: src/screens/Search/components/AdvancedSearchDialog/ClearableDateField.tsx:70
+msgid "Clear date"
+msgstr ""
 
 #. Accessibility label for the X button inside the search input that clears the typed query and returns to the trending feed.
 #: src/features/gifPicker/components/GifPickerHeader.tsx:67
@@ -2946,7 +3295,11 @@ msgstr "点击此处以查看此群组对话的邀请链接"
 msgid "Click to open tag menu for {0}"
 msgstr "点按以开启 {0} 的标签菜单"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:628
+=======
+#: src/components/dms/MessageItem.tsx:623
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Click to retry failed message"
 msgstr "点击以重试发送信息"
 
@@ -2959,7 +3312,12 @@ msgstr "点击以重试发送信息"
 #: src/components/ageAssurance/AgeAssuranceRedirectDialog.tsx:180
 #: src/components/ageAssurance/AgeAssuranceRedirectDialog.tsx:233
 #: src/components/ageAssurance/AgeAssuranceRedirectDialog.tsx:239
+<<<<<<< HEAD
 #: src/components/dialogs/LanguageSelectDialog.tsx:362
+=======
+#: src/components/AltBadgeWithDialog.tsx:88
+#: src/components/dialogs/LanguageSelectDialog.tsx:359
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/dialogs/lists/UserAddRemoveListsDialog.tsx:147
 #: src/components/dialogs/nuxs/ActivitySubscriptions.tsx:163
 #: src/components/dialogs/nuxs/ActivitySubscriptions.tsx:172
@@ -2987,9 +3345,13 @@ msgstr "点击以重试发送信息"
 #: src/components/intents/GroupChatJoinDialog.tsx:292
 #: src/components/NewskieDialog.tsx:169
 #: src/components/NewskieDialog.tsx:175
+<<<<<<< HEAD
 #: src/components/PdsDialog.tsx:178
 #: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:107
 #: src/components/ProgressGuide/FollowDialog.tsx:463
+=======
+#: src/components/ProgressGuide/FollowDialog.tsx:462
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:122
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:128
 #: src/components/verification/VerificationsDialog.tsx:147
@@ -3024,10 +3386,17 @@ msgstr "关闭横幅"
 #. Accessibility label for the button that dismisses the GIF picker error dialog.
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:223
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:229
+<<<<<<< HEAD
 #: src/components/dialogs/LanguageSelectDialog.tsx:224
 #: src/components/dialogs/LanguageSelectDialog.tsx:325
 #: src/components/dialogs/LanguageSelectDialog.tsx:357
 #: src/components/dialogs/NotificationSettingsDialog.tsx:94
+=======
+#: src/components/dialogs/LanguageSelectDialog.tsx:221
+#: src/components/dialogs/LanguageSelectDialog.tsx:322
+#: src/components/dialogs/LanguageSelectDialog.tsx:354
+#: src/components/dialogs/NotificationSettingsDialog.tsx:102
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/moderation/BlockDialog.tsx:199
 #: src/components/PdsDialog.tsx:172
 #: src/components/verification/VerificationsDialog.tsx:139
@@ -3064,11 +3433,19 @@ msgstr "关闭扫描器"
 msgid "Close the incoming requests banner"
 msgstr "关闭加入申请通知横幅"
 
+<<<<<<< HEAD
 #: src/components/intents/GroupChatJoinDialog.tsx:250
 #: src/components/intents/GroupChatJoinDialog.tsx:251
 #: src/components/intents/GroupChatJoinDialog.tsx:287
 #: src/components/intents/GroupChatJoinDialog.tsx:288
 #: src/components/Menu/index.tsx:363
+=======
+#: src/components/intents/GroupChatJoinDialog.tsx:239
+#: src/components/intents/GroupChatJoinDialog.tsx:240
+#: src/components/intents/GroupChatJoinDialog.tsx:276
+#: src/components/intents/GroupChatJoinDialog.tsx:277
+#: src/components/Menu/index.tsx:367
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Close this dialog"
 msgstr "关闭此窗口"
 
@@ -3080,7 +3457,11 @@ msgstr "关闭欢迎界面"
 msgid "Closes password update alert"
 msgstr "关闭密码更新警告"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1862
+=======
+#: src/view/com/composer/Composer.tsx:1827
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Closes post composer and discards post draft"
 msgstr "关闭编辑器并舍弃草稿"
 
@@ -3115,7 +3496,7 @@ msgstr "折叠用户列表"
 msgid "Collapses list of users for a given notification"
 msgstr "折叠指定通知的用户列表"
 
-#: src/features/inviteFriends/components/ThemePicker.tsx:66
+#: src/features/inviteFriends/components/ThemePicker.tsx:68
 msgid "Color"
 msgstr "颜色"
 
@@ -3178,7 +3559,11 @@ msgstr ""
 msgid "Complete onboarding and start using your account"
 msgstr "完成入门引导并开始使用你的账户"
 
+<<<<<<< HEAD
 #: src/screens/Signup/index.tsx:200
+=======
+#: src/screens/Signup/index.tsx:195
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Complete the challenge"
 msgstr "完成验证"
 
@@ -3189,7 +3574,11 @@ msgid "Compose new post"
 msgstr "撰写新帖文"
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1738
+=======
+#: src/view/com/composer/Composer.tsx:1703
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr "撰写最多 {0, plural,other {# 个字符}} 的帖文"
 
@@ -3197,11 +3586,19 @@ msgstr "撰写最多 {0, plural,other {# 个字符}} 的帖文"
 msgid "Compose reply"
 msgstr "撰写回复"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:3013
 msgid "Compressing GIF..."
 msgstr "正在压缩 GIF……"
 
 #: src/view/com/composer/Composer.tsx:3015
+=======
+#: src/view/com/composer/Composer.tsx:2668
+msgid "Compressing GIF..."
+msgstr "正在压缩 GIF……"
+
+#: src/view/com/composer/Composer.tsx:2670
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Compressing video..."
 msgstr "正在压缩视频……"
 
@@ -3284,7 +3681,12 @@ msgid "Contact our support team"
 msgstr "联系我们的支持团队"
 
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:156
+<<<<<<< HEAD
 #: src/screens/Signup/index.tsx:242
+=======
+#: src/screens/Signup/index.tsx:240
+#: src/screens/Signup/index.tsx:243
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Contact support"
 msgstr "联系支持"
 
@@ -3432,12 +3834,23 @@ msgstr ""
 msgid "Copied build version to clipboard"
 msgstr "已复制构建版本号至剪贴板"
 
+#: src/screens/Search/Shell.tsx:458
+msgid "Copied link to clipboard"
+msgstr ""
+
 #: src/components/dms/ChatInvite/Root.tsx:99
+<<<<<<< HEAD
 #: src/components/dms/MessageContextMenu.tsx:83
 #: src/components/PostControls/DiscoverDebug.tsx:39
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:435
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:89
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:104
+=======
+#: src/components/dms/MessageContextMenu.tsx:97
+#: src/components/PostControls/DiscoverDebug.tsx:36
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:273
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:77
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/lib/sharing.ts:24
 #: src/lib/sharing.ts:42
 msgid "Copied to clipboard"
@@ -3529,8 +3942,8 @@ msgstr "复制个人资料链接"
 msgid "Copy link to starter pack"
 msgstr "复制新手包链接"
 
-#: src/components/dms/MessageContextMenu.tsx:183
-#: src/components/dms/MessageContextMenu.tsx:187
+#: src/components/dms/MessageContextMenu.tsx:198
+#: src/components/dms/MessageContextMenu.tsx:202
 msgid "Copy message text"
 msgstr "复制信息文本"
 
@@ -3651,7 +4064,7 @@ msgstr "无法保存如下更改：{0}"
 msgid "Could not share – please try again"
 msgstr "无法分享——请重试"
 
-#: src/state/queries/notifications/settings.ts:49
+#: src/state/queries/notifications/settings.ts:124
 msgid "Could not update notification settings"
 msgstr "无法更新通知设置"
 
@@ -3672,6 +4085,11 @@ msgstr "无法加载 GIF"
 #: src/components/InternationalPhoneCodeSelect.tsx:80
 msgid "Country code"
 msgstr "国家代码"
+
+#. Advanced search: Example of an “none of these words” search
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:298
+msgid "cows pigs"
+msgstr ""
 
 #. Text on button to create a new starter pack
 #. Text on button to create a new starter pack
@@ -3711,13 +4129,22 @@ msgid "Create a starter pack for me"
 msgstr "为我创建新手包"
 
 #: src/screens/Messages/JoinRequest.tsx:310
+<<<<<<< HEAD
 #: src/screens/Signup/index.tsx:141
+=======
+#: src/screens/Signup/index.tsx:136
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/com/auth/SplashScreen.tsx:107
 #: src/view/com/auth/SplashScreen.web.tsx:116
 #: src/view/shell/bottom-bar/BottomBar.tsx:351
 #: src/view/shell/bottom-bar/BottomBar.tsx:355
+<<<<<<< HEAD
 #: src/view/shell/bottom-bar/BottomBarWeb.tsx:260
 #: src/view/shell/bottom-bar/BottomBarWeb.tsx:265
+=======
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:240
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:245
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/shell/NavSignupCard.tsx:48
 #: src/view/shell/NavSignupCard.tsx:53
 msgid "Create account"
@@ -3725,8 +4152,13 @@ msgstr "创建账户"
 
 #: src/components/dialogs/Signin.tsx:87
 #: src/components/dialogs/Signin.tsx:89
+<<<<<<< HEAD
 #: src/screens/Hashtag.tsx:238
 #: src/screens/Search/SearchResults.tsx:395
+=======
+#: src/screens/Hashtag.tsx:235
+#: src/screens/Search/SearchResults.tsx:438
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Create an account"
 msgstr "创建一个账户"
 
@@ -3903,7 +4335,7 @@ msgstr "出生日期"
 msgid "Dawn"
 msgstr "黎明"
 
-#: src/features/inviteFriends/components/ThemePicker.tsx:29
+#: src/features/inviteFriends/components/ThemePicker.tsx:30
 msgid "Day"
 msgstr "白天"
 
@@ -3994,7 +4426,7 @@ msgstr "删除通讯录"
 msgid "Delete conversation"
 msgstr "删除对话"
 
-#: src/components/dms/MessageContextMenu.tsx:197
+#: src/components/dms/MessageContextMenu.tsx:212
 msgid "Delete for me"
 msgstr "仅为我删除"
 
@@ -4007,7 +4439,7 @@ msgstr "删除列表"
 msgid "Delete message"
 msgstr "删除信息"
 
-#: src/components/dms/MessageContextMenu.tsx:194
+#: src/components/dms/MessageContextMenu.tsx:209
 msgid "Delete message for me"
 msgstr "仅为我删除信息"
 
@@ -4015,9 +4447,15 @@ msgstr "仅为我删除信息"
 msgid "Delete my account"
 msgstr "删除我的账户"
 
+<<<<<<< HEAD
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1073
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1075
 #: src/view/com/composer/Composer.tsx:1750
+=======
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:796
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:798
+#: src/view/com/composer/Composer.tsx:1715
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Delete post"
 msgstr "删除帖文"
 
@@ -4038,7 +4476,11 @@ msgstr "要删除此列表吗？"
 msgid "Delete this post?"
 msgstr "要删除这则帖文吗？"
 
+<<<<<<< HEAD
 #: src/components/Post/Embed/index.tsx:227
+=======
+#: src/components/Post/Embed/index.tsx:205
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Deleted"
 msgstr "已删除"
 
@@ -4059,6 +4501,7 @@ msgstr "验证后由 Plivo 删除"
 msgid "Deleted list"
 msgstr "删除列表"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:879
 msgid "Deleted message"
 msgstr ""
@@ -4075,6 +4518,9 @@ msgid "Deny"
 msgstr ""
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:457
+=======
+#: src/components/dialogs/lists/CreateOrEditListDialog.tsx:453
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/SendErrorReportDialog.tsx:78
 #: src/screens/Profile/Header/EditProfileDialog.tsx:405
 #: src/screens/Profile/Header/EditProfileDialog.tsx:412
@@ -4131,11 +4577,19 @@ msgstr "调用设备翻译失败 :("
 msgid "Dialog: adjust who can interact with this post"
 msgstr "对话框：调整哪些人可以参与这则帖文的互动"
 
+<<<<<<< HEAD
 #: src/screens/Settings/Settings.tsx:863
 msgid "DID copied to clipboard"
 msgstr ""
 
 #: src/screens/Settings/AppearanceSettings.tsx:146
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:247
+msgid "Dialog: Set advanced search options"
+msgstr ""
+
+#: src/screens/Settings/AppearanceSettings.tsx:110
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Dim"
 msgstr "昏暗"
 
@@ -4216,11 +4670,19 @@ msgstr ""
 msgid "Disabled"
 msgstr "停用"
 
+<<<<<<< HEAD
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:102
 #: src/screens/Profile/Header/EditProfileDialog.tsx:93
 #: src/view/com/composer/Composer.tsx:1514
 #: src/view/com/composer/Composer.tsx:1558
 #: src/view/com/composer/Composer.tsx:1783
+=======
+#: src/components/dialogs/lists/CreateOrEditListDialog.tsx:101
+#: src/screens/Profile/Header/EditProfileDialog.tsx:79
+#: src/view/com/composer/Composer.tsx:1495
+#: src/view/com/composer/Composer.tsx:1539
+#: src/view/com/composer/Composer.tsx:1748
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/com/composer/drafts/DraftItem.tsx:242
 #: src/view/com/composer/drafts/DraftsButton.tsx:138
 msgid "Discard"
@@ -4231,14 +4693,23 @@ msgstr "舍弃"
 msgid "Discard changes?"
 msgstr "要放弃更改吗？"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1512
+=======
+#: src/view/com/composer/Composer.tsx:1493
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/com/composer/drafts/DraftItem.tsx:239
 #: src/view/com/composer/drafts/DraftsButton.tsx:105
 msgid "Discard draft?"
 msgstr "要舍弃草稿吗？"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1529
 #: src/view/com/composer/Composer.tsx:1775
+=======
+#: src/view/com/composer/Composer.tsx:1510
+#: src/view/com/composer/Composer.tsx:1740
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Discard post?"
 msgstr "要放弃发布吗？"
 
@@ -4276,7 +4747,11 @@ msgstr "跳过"
 msgid "Dismiss banner"
 msgstr "忽略横幅提示"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:2934
+=======
+#: src/view/com/composer/Composer.tsx:2589
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Dismiss error"
 msgstr "忽略错误"
 
@@ -4403,14 +4878,21 @@ msgstr "别担心！你现有的对话及设置都已保存，只需验证你已
 #: src/components/dialogs/BirthDateSettings.tsx:202
 #: src/components/dialogs/EmailDialog/screens/Verify.tsx:195
 #: src/components/dialogs/EmailDialog/screens/Verify.tsx:200
+<<<<<<< HEAD
 #: src/components/dialogs/LanguageSelectDialog.tsx:330
 #: src/components/dialogs/NotificationSettingsDialog.tsx:98
 #: src/components/dialogs/ServerInput.tsx:200
 #: src/components/dialogs/ServerInput.tsx:202
+=======
+#: src/components/dialogs/LanguageSelectDialog.tsx:327
+#: src/components/dialogs/NotificationSettingsDialog.tsx:106
+#: src/components/dialogs/ServerInput.tsx:237
+#: src/components/dialogs/ServerInput.tsx:239
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/dms/AfterReportConversationDialog.tsx:164
 #: src/components/dms/AfterReportDialog.tsx:145
-#: src/components/forms/DateField/index.tsx:104
-#: src/components/forms/DateField/index.tsx:110
+#: src/components/forms/DateField/index.tsx:128
+#: src/components/forms/DateField/index.tsx:145
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:147
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:153
 #: src/lib/media/picker.tsx:37
@@ -4425,7 +4907,11 @@ msgstr "别担心！你现有的对话及设置都已保存，只需验证你已
 msgid "Done"
 msgstr "完成"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:526
+=======
+#: src/components/dms/MessageItem.tsx:521
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Double tap or long press the message to add a reaction"
 msgstr "双击或长按信息以添加反应"
 
@@ -4524,7 +5010,7 @@ msgstr "由于你所在地区的法律规定，Bluesky 的某些功能目前受�
 msgid "Duration:"
 msgstr "持续时间："
 
-#: src/features/inviteFriends/components/ThemePicker.tsx:30
+#: src/features/inviteFriends/components/ThemePicker.tsx:31
 msgid "Dusk"
 msgstr "黄昏"
 
@@ -4665,6 +5151,7 @@ msgstr "编辑用户"
 msgid "Edit post interaction settings"
 msgstr "编辑帖文互动选项"
 
+<<<<<<< HEAD
 #: src/screens/Profile/Header/EditProfileDialog.tsx:310
 #: src/screens/Profile/Header/EditProfileDialog.tsx:316
 #: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:305
@@ -4674,6 +5161,17 @@ msgstr "编辑个人资料"
 
 #: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:308
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:495
+=======
+#: src/screens/Profile/Header/EditProfileDialog.tsx:265
+#: src/screens/Profile/Header/EditProfileDialog.tsx:271
+#: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:299
+#: src/screens/Profile/Header/ProfileHeaderStandard.tsx:350
+msgid "Edit profile"
+msgstr "编辑个人资料"
+
+#: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:302
+#: src/screens/Profile/Header/ProfileHeaderStandard.tsx:352
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Edit Profile"
 msgstr "编辑个人资料"
 
@@ -4763,7 +5261,7 @@ msgstr "嵌入帖文"
 msgid "Embed this post in your website. Simply copy the following snippet and paste it into the HTML code of your website."
 msgstr "将这则帖文嵌入到你的网站。只需复制以下代码片段，并将其插入到你网站的 HTML 代码中的合适位置即可。"
 
-#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerWeb.tsx:57
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerWeb.tsx:61
 msgid "Embedded video player"
 msgstr "嵌入式视频播放器"
 
@@ -4821,8 +5319,8 @@ msgstr "启用媒体播放器"
 msgid "Enable notifications for an account by visiting their profile and pressing the <0>bell icon</0> <1/>."
 msgstr "转到其个人主页，点击 <0>提醒图标</0> 即可接收该账户的动态提醒<1/>。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:114
-#: src/screens/Settings/NotificationSettings/index.tsx:118
+#: src/screens/Settings/NotificationSettings/index.tsx:124
+#: src/screens/Settings/NotificationSettings/index.tsx:128
 msgid "Enable push notifications"
 msgstr "启用推送通知"
 
@@ -4950,7 +5448,15 @@ msgstr ""
 msgid "Enter your password"
 msgstr "输入你的密码"
 
+<<<<<<< HEAD
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:151
+=======
+#: src/screens/Login/index.tsx:141
+msgid "Enter your username and password"
+msgstr "输入你的用户名和密码"
+
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:156
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Enters full screen"
 msgstr "进入全屏模式"
 
@@ -4958,8 +5464,13 @@ msgstr "进入全屏模式"
 msgid "Entertainment"
 msgstr "娱乐"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:3033
 #: src/view/com/util/error/ErrorScreen.tsx:42
+=======
+#: src/view/com/composer/Composer.tsx:2688
+#: src/view/com/util/error/ErrorScreen.tsx:40
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Error"
 msgstr "错误"
 
@@ -4988,7 +5499,11 @@ msgstr "保存文件时发生错误"
 msgid "Error receiving captcha response."
 msgstr "CAPTCHA（人机验证）响应错误。"
 
+<<<<<<< HEAD
 #: src/screens/Search/SearchResults.tsx:166
+=======
+#: src/screens/Search/SearchResults.tsx:188
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Error: {error}"
 msgstr "错误：{error}"
 
@@ -5004,31 +5519,47 @@ msgstr "任何人都可以回复"
 msgid "Everybody can reply to this post."
 msgstr "任何人都可以回复这则帖文。"
 
+#: src/screens/Search/components/AdvancedSearchDialog/FollowingDropdown.tsx:22
+#: src/screens/Search/components/AdvancedSearchDialog/FollowingDropdown.tsx:26
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:168
 #: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:171
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:174
 msgid "Everyone"
 msgstr "所有人"
 
-#: src/screens/Messages/Settings.tsx:80
+#: src/screens/Messages/Settings.tsx:93
 msgctxt "allow group chat invites from"
 msgid "Everyone"
 msgstr "所有人"
 
-#: src/screens/Messages/Settings.tsx:65
+#: src/screens/Messages/Settings.tsx:78
 msgctxt "allow messages from"
 msgid "Everyone"
 msgstr "所有人"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:243
-#: src/screens/Settings/NotificationSettings/index.tsx:341
+#: src/screens/Settings/NotificationSettings/index.tsx:287
+#: src/screens/Settings/NotificationSettings/index.tsx:389
 msgid "Everything else"
 msgstr "其他内容"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:337
 msgid "Exact"
 msgstr ""
 
 #: src/components/dialogs/MutedWords.tsx:321
+=======
+#. Advanced search filter
+#. Advanced search filter
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:46
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:57
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:86
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:92
+msgid "Exclude"
+msgstr ""
+
+#: src/components/dialogs/MutedWords.tsx:320
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Exclude users you follow"
 msgstr "排除你已关注的用户"
 
@@ -5105,6 +5636,7 @@ msgstr "血腥、露骨或其他可能引起不适的媒体内容。"
 msgid "Explicit sexual images."
 msgstr "露骨的色情图片。"
 
+<<<<<<< HEAD
 #: src/Navigation.tsx:911
 #: src/screens/Search/Shell.tsx:362
 #: src/view/shell/desktop/LeftNav.tsx:731
@@ -5115,6 +5647,23 @@ msgstr "探索"
 #: src/screens/Messages/Settings.tsx:267
 #: src/screens/Messages/Settings.tsx:277
 #: src/screens/Settings/components/ExportCarDialog.tsx:131
+=======
+#: src/Navigation.tsx:751
+#: src/screens/Search/Shell.tsx:495
+#: src/view/shell/desktop/LeftNav.tsx:677
+#: src/view/shell/Drawer.tsx:473
+msgid "Explore"
+msgstr "探索"
+
+#: src/components/WelcomeModal.tsx:171
+#: src/components/WelcomeModal.tsx:180
+msgid "Explore the app"
+msgstr "探索应用"
+
+#: src/screens/Messages/Settings.tsx:329
+#: src/screens/Messages/Settings.tsx:338
+#: src/screens/Settings/components/ExportCarDialog.tsx:130
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Export my chat data"
 msgstr "导出我的对话数据"
 
@@ -5173,8 +5722,13 @@ msgstr "无法接受对话邀请"
 msgid "Failed to accept join request"
 msgstr "无法接受加入申请"
 
+<<<<<<< HEAD
 #: src/components/dms/ActionsWrapper.web.tsx:95
 #: src/components/dms/MessageContextMenu.tsx:126
+=======
+#: src/components/dms/ActionsWrapper.web.tsx:92
+#: src/components/dms/MessageContextMenu.tsx:140
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Failed to add emoji reaction"
 msgstr "无法添加表情符号反应"
 
@@ -5185,7 +5739,7 @@ msgstr "无法加入成员"
 
 #: src/components/dialogs/lists/UserAddRemoveListsDialog.tsx:239
 msgid "Failed to add to list"
-msgstr ""
+msgstr "无法添加到列表"
 
 #: src/components/dialogs/StarterPackDialog.tsx:283
 msgid "Failed to add to starter pack"
@@ -5197,6 +5751,7 @@ msgstr "无法更改账户代码，请重试。"
 
 #: src/components/Lightbox/Lightbox.web.tsx:306
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:130
+#: src/screens/Search/Shell.tsx:459
 msgid "Failed to copy link"
 msgstr "无法复制链接"
 
@@ -5279,11 +5834,15 @@ msgstr "无法关注所有朋友，请重试"
 msgid "Failed to hide suggestion, please check your internet connection"
 msgstr "无法隐藏建议，请检查你的网络连接"
 
+<<<<<<< HEAD
 #: src/screens/Messages/JoinRequests.tsx:223
 msgid "Failed to ignore join request"
 msgstr "无法忽略加入申请"
 
 #: src/components/intents/GroupChatJoinDialog.tsx:158
+=======
+#: src/components/intents/GroupChatJoinDialog.tsx:147
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Failed to join the group chat. Please try again."
 msgstr "无法加入群组对话，请重试。"
 
@@ -5298,8 +5857,13 @@ msgctxt "toast"
 msgid "Failed to leave group chat"
 msgstr "无法离开群组对话"
 
+<<<<<<< HEAD
 #: src/screens/Messages/ChatList.tsx:405
 #: src/screens/Messages/Inbox.tsx:209
+=======
+#: src/screens/Messages/ChatList.tsx:418
+#: src/screens/Messages/Inbox.tsx:202
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Failed to load conversations"
 msgstr "无法加载对话"
 
@@ -5316,8 +5880,11 @@ msgstr "无法加载动态源"
 msgid "Failed to load feeds preferences"
 msgstr "无法加载动态源偏好设置"
 
-#: src/components/dialogs/NotificationSettingsDialog.tsx:77
-#: src/screens/Settings/NotificationSettings/index.tsx:127
+#: src/components/dialogs/NotificationSettingsDialog.tsx:85
+#: src/screens/Messages/Settings.tsx:369
+#: src/screens/Settings/NotificationSettings/index.tsx:137
+#: src/screens/Settings/NotificationSettings/index.tsx:256
+#: src/screens/Settings/NotificationSettings/index.tsx:273
 msgid "Failed to load notification settings."
 msgstr "无法加载通知设置。"
 
@@ -5348,12 +5915,22 @@ msgstr "无法加载建议关注"
 msgid "Failed to lock group chat"
 msgstr "无法锁定群组对话"
 
+<<<<<<< HEAD
 #: src/view/shell/bottom-bar/BottomBar.tsx:452
+=======
+#: src/screens/Messages/ChatList.tsx:634
+#: src/view/shell/bottom-bar/BottomBar.tsx:447
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Failed to mark all chats as read"
-msgstr ""
+msgstr "无法将所有对话标记为已读"
 
+<<<<<<< HEAD
 #: src/screens/Messages/Inbox.tsx:311
 #: src/view/shell/bottom-bar/BottomBar.tsx:461
+=======
+#: src/screens/Messages/Inbox.tsx:304
+#: src/view/shell/bottom-bar/BottomBar.tsx:456
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Failed to mark all requests as read"
 msgstr "无法标记所有为已读"
 
@@ -5370,6 +5947,10 @@ msgstr "无法固定帖文"
 msgid "Failed to reconnect Germ DM. Error: {0}"
 msgstr "无法重新连接 Germ DM。错误：{0}"
 
+#: src/screens/Messages/JoinRequests.tsx:223
+msgid "Failed to reject join request"
+msgstr "无法拒绝加入申请"
+
 #: src/screens/Settings/FindContactsSettings.tsx:509
 msgid "Failed to remove data due to a network error, please check your internet connection."
 msgstr "由于发生了网络错误，导致无法删除资料，请检查你的网络连接。"
@@ -5379,15 +5960,20 @@ msgstr "由于发生了网络错误，导致无法删除资料，请检查你的
 msgid "Failed to remove data. {0}"
 msgstr "无法删除资料。{0}"
 
+<<<<<<< HEAD
 #: src/components/dms/ActionsWrapper.web.tsx:80
 #: src/components/dms/MessageContextMenu.tsx:111
+=======
+#: src/components/dms/ActionsWrapper.web.tsx:77
+#: src/components/dms/MessageContextMenu.tsx:125
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/dms/ReactionsDialog.tsx:179
 msgid "Failed to remove emoji reaction"
 msgstr "无法删除表情符号反应"
 
 #: src/components/dialogs/lists/UserAddRemoveListsDialog.tsx:258
 msgid "Failed to remove from list"
-msgstr ""
+msgstr "无法从列表中移除"
 
 #: src/components/dialogs/StarterPackDialog.tsx:296
 msgid "Failed to remove from starter pack"
@@ -5411,7 +5997,11 @@ msgstr "无法撤销你的申请，请重试。"
 msgid "Failed to resolve location. Please try again."
 msgstr "无法获取位置信息，请重试。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:694
+=======
+#: src/view/com/composer/Composer.tsx:721
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Failed to save draft"
 msgstr "无法保存草稿"
 
@@ -5479,7 +6069,7 @@ msgstr "无法更新动态源"
 msgid "Failed to update notification declaration"
 msgstr "无法更新动态提醒范围"
 
-#: src/screens/Messages/Settings.tsx:97
+#: src/screens/Messages/Settings.tsx:110
 msgid "Failed to update settings"
 msgstr "无法更新设置"
 
@@ -5575,12 +6165,18 @@ msgstr "已提交反馈给动态源维护者"
 #: src/Navigation.tsx:687
 #: src/screens/SavedFeeds.tsx:112
 #: src/screens/SavedFeeds.tsx:303
+<<<<<<< HEAD
 #: src/screens/Search/SearchResults.tsx:81
 #: src/screens/Settings/RunesSettings/FeedSettings.tsx:61
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:63
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:66
 #: src/screens/StarterPack/StarterPackScreen.tsx:197
 #: src/view/screens/Feeds.tsx:508
+=======
+#: src/screens/Search/SearchResults.tsx:105
+#: src/screens/StarterPack/StarterPackScreen.tsx:196
+#: src/view/screens/Feeds.tsx:504
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/screens/Profile.tsx:239
 #: src/view/shell/desktop/LeftNav.tsx:766
 #: src/view/shell/Drawer.tsx:636
@@ -5617,23 +6213,44 @@ msgstr "获取更新"
 msgid "File saved successfully!"
 msgstr "已成功保存文件！"
 
+#: src/screens/Search/components/AdvancedSearchDialog/FollowingDropdown.tsx:49
+msgid "Filter by author"
+msgstr ""
+
+#: src/screens/Search/components/AdvancedSearchDialog/FollowingDropdown.tsx:30
+msgid "Filter by author (currently: {currentLabel})"
+msgstr ""
+
+#: src/screens/Search/components/AdvancedSearchDialog/MediaDropdown.tsx:50
+msgid "Filter by media"
+msgstr ""
+
+#: src/screens/Search/components/AdvancedSearchDialog/MediaDropdown.tsx:31
+msgid "Filter by media (currently: {currentLabel})"
+msgstr ""
+
 #: src/lib/moderation/useLabelBehaviorDescription.ts:69
 msgid "Filter from feeds"
 msgstr "从动态源中过滤"
 
-#: src/screens/Search/components/SearchLanguageDropdown.tsx:98
+#: src/screens/Search/components/SearchLanguageDropdown.tsx:120
 msgid "Filter search by language"
 msgstr "按语言过滤搜索"
 
-#: src/screens/Search/components/SearchLanguageDropdown.tsx:71
+#: src/screens/Search/components/SearchLanguageDropdown.tsx:79
 msgid "Filter search by language (currently: {currentLanguageLabel})"
 msgstr "按语言过滤搜索（当前：{currentLanguageLabel}）"
+
+#. placeholder {0}: lang.name
+#: src/screens/Search/components/DetectedLanguagesAdmonition.tsx:93
+msgid "Filter this search by {0}"
+msgstr ""
 
 #: src/screens/Settings/ActivityPrivacySettings.tsx:106
 msgid "Filter who can opt to receive notifications for your activity"
 msgstr "筛选谁可以选择接收你的动态提醒"
 
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:166
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:163
 msgid "Filter who you receive notifications from"
 msgstr "筛选你想接收的通知来源"
 
@@ -5691,9 +6308,15 @@ msgstr "寻找一些人来关注"
 msgid "Find people you know"
 msgstr "寻找一些你认识的人"
 
+<<<<<<< HEAD
 #: src/screens/Search/Shell.tsx:537
 msgid "Find posts, users, and feeds on Witchsky"
 msgstr ""
+=======
+#: src/screens/Search/Shell.tsx:701
+msgid "Find posts, users, and feeds on Bluesky"
+msgstr "在 Bluesky 寻找感兴趣的帖文、用户和动态源"
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 
 #: src/components/dialogs/nuxs/FindContactsAnnouncement.tsx:98
 msgid "Find your friends"
@@ -6013,7 +6636,8 @@ msgstr "四个代表群聊的聊天气泡。第一条信息：“你听说了吗
 msgid "Free your feed"
 msgstr "还你一个干净的时间线"
 
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:162
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:420
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:159
 msgid "From"
 msgstr "发自"
 
@@ -6026,6 +6650,7 @@ msgctxt "from-feed"
 msgid "From <0/>"
 msgstr "来自 <0/>"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:160
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:170
 msgid "Full-size format"
@@ -6033,6 +6658,11 @@ msgstr ""
 
 #: src/view/com/composer/Composer.tsx:2051
 msgid "Generate"
+=======
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/hooks.tsx:30
+msgid "From these people"
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgstr ""
 
 #: src/components/StarterPack/ProfileStarterPacks.tsx:337
@@ -6087,43 +6717,59 @@ msgstr "Germ DM 链接"
 msgid "Germ DM reconnected"
 msgstr "重新连接 Germ DM"
 
+<<<<<<< HEAD
 #: src/screens/Settings/NotificationSettings/index.tsx:343
+=======
+#: src/view/shell/Drawer.tsx:431
+msgid "Get help"
+msgstr "获取帮助"
+
+#: src/screens/Settings/NotificationSettings/index.tsx:391
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Get notifications for starter pack joins, verification, and other activity."
 msgstr "当有人通过你的新手包加入、账户验证或其他状态更新时收到通知。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:269
+#: src/screens/Settings/NotificationSettings/index.tsx:313
 msgid "Get notifications when people follow you."
 msgstr "当有人关注你时收到通知。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:261
+#: src/screens/Settings/NotificationSettings/index.tsx:305
 msgid "Get notifications when people like your posts."
 msgstr "当有人喜欢了你的帖文时收到通知。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:324
+#: src/screens/Settings/NotificationSettings/index.tsx:368
 msgid "Get notifications when people like your reposts."
 msgstr "当有人喜欢了你转发的帖文时收到通知。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:285
+#: src/screens/Settings/NotificationSettings/index.tsx:329
 msgid "Get notifications when people mention you."
 msgstr "当有人提及你时收到通知。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:293
+#: src/screens/Settings/NotificationSettings/index.tsx:337
 msgid "Get notifications when people quote your posts."
 msgstr "当有人引用了你的帖文时收到通知。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:277
+#: src/screens/Settings/NotificationSettings/index.tsx:321
 msgid "Get notifications when people reply to your posts."
 msgstr "当有人回复了你的帖文时收到通知。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:302
+#: src/screens/Settings/NotificationSettings/index.tsx:346
 msgid "Get notifications when people repost your posts."
 msgstr "当有人转发了你的帖文时收到通知。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:333
+#: src/screens/Settings/NotificationSettings/index.tsx:377
 msgid "Get notifications when people repost your reposts."
 msgstr "当有人转发了你转发的帖文时收到通知。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:311
+#: src/screens/Settings/NotificationSettings/components/ChatNotificationDialogs.tsx:33
+msgid "Get notifications when people send you message requests."
+msgstr "当有人向你发送信息请求时收到通知。"
+
+#: src/screens/Settings/NotificationSettings/components/ChatNotificationDialogs.tsx:23
+msgid "Get notifications when people send you messages."
+msgstr "当有人向你发送信息时收到通知。"
+
+#: src/screens/Settings/NotificationSettings/index.tsx:355
 msgid "Get notifications when there's activity on posts you're subscribed to."
 msgstr "当你订阅的帖文有状态更新时收到通知。"
 
@@ -6154,6 +6800,7 @@ msgstr "当有人发帖时收到提醒"
 msgid "Get started"
 msgstr "开始吧"
 
+<<<<<<< HEAD
 #: src/components/MediaPreview.tsx:202
 #: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:69
 msgid "GIF"
@@ -6165,6 +6812,14 @@ msgid "GIF downloaded"
 msgstr ""
 
 #: src/view/com/composer/Composer.tsx:3038
+=======
+#: src/components/MediaPreview.tsx:182
+#: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:93
+msgid "GIF"
+msgstr "GIF"
+
+#: src/view/com/composer/Composer.tsx:2693
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "GIF uploaded"
 msgstr "已上传 GIF"
 
@@ -6372,7 +7027,7 @@ msgstr "已取消隐藏群组对话"
 msgid "Group Chats"
 msgstr "群组对话"
 
-#: src/screens/Messages/Settings.tsx:199
+#: src/screens/Messages/Settings.tsx:212
 msgid "Group chats are only available to users 18 and over."
 msgstr "群组对话仅限 18 岁及以上的用户使用。"
 
@@ -6475,7 +7130,11 @@ msgstr "已经有验证码了？<0>点击这里。</0>"
 msgid "Have we got your location wrong? <0>Tap here to update your location with GPS.</0>"
 msgstr "位置信息判断有误？<0>点击此处来通过 GPS 更新你所在的位置。</0>"
 
+<<<<<<< HEAD
 #: src/screens/Signup/index.tsx:240
+=======
+#: src/screens/Signup/index.tsx:238
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Having trouble?"
 msgstr "遇到问题了吗？"
 
@@ -6696,7 +7355,11 @@ msgstr "抱歉，看起来在加载数据时遇到了问题。请查看下方获
 msgid "Hmmmm, we couldn't load that moderation service."
 msgstr "抱歉，我们无法加载该内容审核提供服务方。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/state/video.ts:451
+=======
+#: src/view/com/composer/state/video.ts:446
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Hold up! We’re gradually giving access to video, and you’re still waiting in line. Check back soon!"
 msgstr "请稍等！我们正在逐步开放上传视频的权限。你目前仍在等待队伍中，请稍后再回来查看！"
 
@@ -6834,12 +7497,16 @@ msgstr "如果你是开发者，你可以自行托管服务器。"
 msgid "If you're trying to change your handle or email, do so before you deactivate."
 msgstr "如果你想更改你的账户代码或电子邮箱，请记得在停用之前进行更改。"
 
+<<<<<<< HEAD
 #: src/components/images/ImageLayoutGridItem.tsx:103
+=======
+#: src/components/images/ImageLayoutGridItem.tsx:91
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Image"
 msgstr "图片"
 
 #. placeholder {0}: index + 1
-#: src/components/images/Gallery/index.tsx:459
+#: src/components/images/Gallery/index.tsx:454
 msgid "Image {0}"
 msgstr "图片 {0}"
 
@@ -6850,7 +7517,7 @@ msgid "Image {0} of {1}"
 msgstr "第 {0} 张图片，共 {1} 张"
 
 #. placeholder {0}: index + 1
-#: src/components/images/Gallery/index.tsx:444
+#: src/components/images/Gallery/index.tsx:439
 msgid "Image {0} of {imageCount}"
 msgstr "第 {0} 张图片，共 {imageCount} 张"
 
@@ -6874,7 +7541,7 @@ msgid "Image CDN URL"
 msgstr ""
 
 #. placeholder {0}: images.length
-#: src/components/images/Gallery/index.tsx:276
+#: src/components/images/Gallery/index.tsx:274
 msgid "Image gallery, {0} images"
 msgstr "图片集，{0} 张图片"
 
@@ -6953,49 +7620,91 @@ msgstr ""
 msgid "In order to provide an age-appropriate experience, we need to know your birthdate. This is a one-time thing, and your data will be kept private."
 msgstr "为了提供符合你年龄段的使用体验，我们需要知道你的出生日期。你只需提供一次，且相关信息将会严格保密。"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:387
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:30
 msgid "In-app"
 msgstr "应用内"
 
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:151
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:148
 msgid "In-app notifications"
 msgstr "应用内通知"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:370
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:21
 msgid "In-app, everyone"
 msgstr "应用内、所有人"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:378
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:25
 msgid "In-app, people you follow"
 msgstr "应用内、你关注的人"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:385
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:29
 msgid "In-app, push"
 msgstr "应用内、系统推送"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:368
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:20
 msgid "In-app, push, everyone"
 msgstr "应用内、系统推送、所有人"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:376
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:24
 msgid "In-app, push, people you follow"
 msgstr "应用内、系统推送、你关注的人"
 
+<<<<<<< HEAD
 #: src/screens/Messages/ChatList.tsx:422
+=======
+#: src/screens/Messages/ChatList.tsx:435
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Inbox empty"
 msgstr "收件箱为空"
 
 #. Title message shown in chat requests inbox when it's empty
-#: src/screens/Messages/Inbox.tsx:226
+#: src/screens/Messages/Inbox.tsx:219
 msgid "Inbox zero!"
 msgstr "收件箱清空啦！"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:106
 msgid "Include OpenRouter API Key in synced settings"
 msgstr ""
 
 #: src/screens/Login/LoginForm.tsx:416
 #: src/screens/Login/LoginForm.web.tsx:410
+=======
+#. Advanced search filter
+#. Advanced search filter
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:47
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:58
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:75
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:81
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:406
+msgid "Include"
+msgstr ""
+
+#. placeholder {0}: filter.mode === 'exclude' ? l({message: 'Exclude', comment: 'Advanced search filter'}) : l({message: 'Include', comment: 'Advanced search filter'})
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:44
+msgid "Include or exclude matching posts (currently: {0})"
+msgstr ""
+
+#: src/screens/Search/components/AdvancedSearchDialog/RepliesDropdown.tsx:31
+msgid "Include posts and/or replies (currently: {currentLabel})"
+msgstr ""
+
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:319
+msgid "Include posts made since this date"
+msgstr ""
+
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:343
+msgid "Include posts made until this date"
+msgstr ""
+
+#: src/screens/Search/components/AdvancedSearchDialog/RepliesDropdown.tsx:50
+msgid "Include these results"
+msgstr ""
+
+#: src/screens/Login/LoginForm.tsx:162
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Incorrect username or password"
 msgstr "用户名或密码不正确"
 
@@ -7140,15 +7849,19 @@ msgstr "邀请码"
 msgid "Invite code not accepted. Check that you input it correctly and try again."
 msgstr "邀请码无效，请检查你输入的邀请码并重试。"
 
+<<<<<<< HEAD
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:141
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:515
 #: src/view/shell/Drawer.tsx:143
+=======
+#: src/screens/Profile/Header/ProfileHeaderStandard.tsx:372
+#: src/view/shell/Drawer.tsx:121
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Invite friends"
 msgstr "邀请朋友"
 
 #: src/components/contacts/components/InviteInfo.tsx:42
 #: src/components/contacts/components/InviteInfo.tsx:44
-#: src/features/inviteFriends/InviteFriendsDialogInner.tsx:156
 msgid "Invite Friends"
 msgstr "邀请朋友"
 
@@ -7214,8 +7927,8 @@ msgid "Invites, but personal"
 msgstr "以个性化的方式邀请朋友加入"
 
 #: src/ageAssurance/components/NoAccessScreen.tsx:394
-msgid "Is your location not accurate? <0>Tap here to update your location with GPS.</0> "
-msgstr "当前的位置信息不准确吗？<0>点击此处来通过 GPS 更新你所在的位置。</0> "
+msgid "Is your location not accurate? <0>Tap here to update your location with GPS.</0>"
+msgstr "当前的位置信息不准确吗？<0>点击此处来通过 GPS 更新你所在的位置。</0>"
 
 #: src/components/contacts/components/InviteInfo.tsx:47
 msgid "It looks like some of your contacts have not tried to find you here yet. You can personally invite them by customizing a draft message we will provide."
@@ -7235,7 +7948,11 @@ msgid "It's just you right now! Add more people to your starter pack by searchin
 msgstr "现在只有你一个！通过上面的列表将更多人添加到你的新手包里面。"
 
 #. placeholder {0}: videoState.jobId
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:2953
+=======
+#: src/view/com/composer/Composer.tsx:2608
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Job ID: {0}"
 msgstr "作业 ID：{0}"
 
@@ -7278,6 +7995,7 @@ msgstr ""
 msgid "Journalism"
 msgstr "新闻学"
 
+<<<<<<< HEAD
 #: src/view/shell/desktop/RightNav.tsx:154
 #: src/view/shell/Drawer.tsx:816
 msgid "Kawaii logo by <0>ovvie</0>"
@@ -7286,6 +8004,11 @@ msgstr ""
 #: src/view/com/composer/Composer.tsx:1562
 #: src/view/com/composer/Composer.tsx:1572
 #: src/view/com/composer/drafts/DraftsButton.tsx:142
+=======
+#: src/view/com/composer/Composer.tsx:1543
+#: src/view/com/composer/Composer.tsx:1553
+#: src/view/com/composer/drafts/DraftsButton.tsx:135
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Keep editing"
 msgstr "保留编辑内容"
 
@@ -7293,6 +8016,7 @@ msgstr "保留编辑内容"
 msgid "Keep me posted"
 msgstr "保持联系"
 
+<<<<<<< HEAD
 #: src/components/moderation/BlockDialog.tsx:365
 #: src/components/moderation/BlockDialog.tsx:372
 msgid "Kick member"
@@ -7302,6 +8026,8 @@ msgstr "移除成员"
 msgid "Kitty"
 msgstr ""
 
+=======
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:200
 msgid "KWS website"
 msgstr "KWS 官网"
@@ -7336,7 +8062,15 @@ msgstr "你账户上的标记"
 msgid "Labels on your content"
 msgstr "你内容上的标记"
 
+<<<<<<< HEAD
 #: src/Navigation.tsx:262
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:371
+msgid "Language"
+msgstr ""
+
+#: src/Navigation.tsx:218
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Language Settings"
 msgstr "语言设置"
 
@@ -7360,9 +8094,15 @@ msgstr "最后一次请求于 {timeAgo} 前"
 msgid "Last initiated just now"
 msgstr "最后一次请求于不久前"
 
+<<<<<<< HEAD
 #: src/screens/Hashtag.tsx:102
 #: src/screens/Search/SearchResults.tsx:65
 #: src/screens/Topic.tsx:68
+=======
+#: src/screens/Hashtag.tsx:99
+#: src/screens/Search/SearchResults.tsx:86
+#: src/screens/Topic.tsx:65
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Latest"
 msgstr "最新"
 
@@ -7380,7 +8120,21 @@ msgstr "了解详情（英文）"
 msgid "Learn More"
 msgstr "了解详情"
 
+<<<<<<< HEAD
 #: src/components/ageAssurance/AgeAssuranceDismissibleFeedBanner.tsx:69
+=======
+#: src/screens/Search/SearchResults.tsx:261
+msgctxt "english-only-resource"
+msgid "Learn more about <0>how to use advanced search</0>."
+msgstr ""
+
+#: src/screens/Search/SearchResults.tsx:275
+msgctxt "english-only-resource"
+msgid "Learn more about <0>how to use search filters</0>."
+msgstr ""
+
+#: src/components/ageAssurance/AgeAssuranceDismissibleFeedBanner.tsx:66
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Learn more about age assurance"
 msgstr "深入了解年龄验证"
 
@@ -7607,17 +8361,23 @@ msgstr "{0, plural, one {# 位用户} other {# 位用户}}喜欢"
 msgid "Liked by {likeCount, plural, one {# user} other {# users}}"
 msgstr "{likeCount, plural, one {# 位用户} other {# 位用户}}喜欢"
 
+<<<<<<< HEAD
 #: src/lib/hooks/useNotificationHandler.ts:160
 #: src/screens/Settings/NotificationSettings/index.tsx:138
 #: src/screens/Settings/NotificationSettings/index.tsx:259
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:73
+=======
+#: src/lib/hooks/useNotificationHandler.ts:158
+#: src/screens/Settings/NotificationSettings/index.tsx:148
+#: src/screens/Settings/NotificationSettings/index.tsx:303
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/screens/Profile.tsx:238
 msgid "Likes"
 msgstr "喜欢"
 
-#: src/lib/hooks/useNotificationHandler.ts:202
-#: src/screens/Settings/NotificationSettings/index.tsx:217
-#: src/screens/Settings/NotificationSettings/index.tsx:322
+#: src/lib/hooks/useNotificationHandler.ts:200
+#: src/screens/Settings/NotificationSettings/index.tsx:227
+#: src/screens/Settings/NotificationSettings/index.tsx:366
 msgid "Likes of your reposts"
 msgstr "喜欢你转发的帖文"
 
@@ -7817,6 +8577,7 @@ msgstr "加载更多通知"
 msgid "Load new posts"
 msgstr "加载更多帖文"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:142
 msgid "Load settings from cloud"
 msgstr ""
@@ -7824,6 +8585,9 @@ msgstr ""
 #: src/screens/Messages/components/MessageComposer.tsx:251
 #: src/screens/Messages/components/MessageInput.tsx:268
 #: src/screens/Messages/components/MessageInput.web.tsx:231
+=======
+#: src/screens/Messages/components/MessageComposer.tsx:254
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgctxt "placeholder"
 msgid "Loading chat…"
 msgstr "正在加载对话……"
@@ -7946,37 +8710,58 @@ msgstr "管理认证设置"
 msgid "Manage your muted words and tags"
 msgstr "管理你的隐藏字词和标签"
 
-#: src/screens/Messages/Inbox.tsx:319
-#: src/screens/Messages/Inbox.tsx:325
+#: src/screens/Messages/Inbox.tsx:312
+#: src/screens/Messages/Inbox.tsx:318
 msgid "Mark all as read"
 msgstr "标记所有为已读"
 
+<<<<<<< HEAD
 #: src/view/shell/bottom-bar/BottomBar.tsx:470
 #: src/view/shell/bottom-bar/BottomBar.tsx:474
+=======
+#: src/screens/Messages/ChatList.tsx:644
+#: src/screens/Messages/ChatList.tsx:648
+#: src/view/shell/bottom-bar/BottomBar.tsx:465
+#: src/view/shell/bottom-bar/BottomBar.tsx:469
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Mark all chats as read"
-msgstr ""
+msgstr "将所有对话标记为已读"
 
+<<<<<<< HEAD
 #: src/view/shell/bottom-bar/BottomBar.tsx:478
 #: src/view/shell/bottom-bar/BottomBar.tsx:482
+=======
+#: src/view/shell/bottom-bar/BottomBar.tsx:473
+#: src/view/shell/bottom-bar/BottomBar.tsx:477
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Mark all requests as read"
-msgstr ""
+msgstr "将所有申请标记为已读"
 
 #: src/components/dms/ConvoMenu.tsx:251
 #: src/components/dms/ConvoMenu.tsx:255
 msgid "Mark as read"
 msgstr "标记为已读"
 
-#: src/screens/Messages/Inbox.tsx:306
+#: src/screens/Messages/Inbox.tsx:299
 msgid "Marked all as read"
 msgstr "已标记所有为已读"
 
+<<<<<<< HEAD
 #: src/view/shell/bottom-bar/BottomBar.tsx:449
+=======
+#: src/screens/Messages/ChatList.tsx:631
+#: src/view/shell/bottom-bar/BottomBar.tsx:444
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Marked all chats as read"
-msgstr ""
+msgstr "已将所有对话标记为已读"
 
+<<<<<<< HEAD
 #: src/view/shell/bottom-bar/BottomBar.tsx:458
+=======
+#: src/view/shell/bottom-bar/BottomBar.tsx:453
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Marked all requests as read"
-msgstr ""
+msgstr "已将所有申请标记为已读"
 
 #: src/screens/Settings/AppearanceSettings/shared.tsx:109
 msgid "Material You"
@@ -7992,6 +8777,7 @@ msgstr ""
 msgid "Maybe later"
 msgstr "之后再说"
 
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:389
 #: src/view/screens/Profile.tsx:236
 msgid "Media"
 msgstr "媒体"
@@ -8027,6 +8813,7 @@ msgstr "成员仍然可以查看此群组对话记录，但无法发送新信息
 msgid "mentioned users"
 msgstr "被提及的用户"
 
+<<<<<<< HEAD
 #: src/lib/hooks/useNotificationHandler.ts:181
 #: src/screens/Settings/NotificationSettings/index.tsx:171
 #: src/screens/Settings/NotificationSettings/index.tsx:284
@@ -8054,6 +8841,31 @@ msgstr "信息"
 #: src/screens/Messages/components/MessageInput.web.tsx:232
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:203
 msgctxt "action"
+=======
+#: src/lib/hooks/useNotificationHandler.ts:179
+#: src/screens/Settings/NotificationSettings/index.tsx:181
+#: src/screens/Settings/NotificationSettings/index.tsx:328
+#: src/view/screens/Notifications.tsx:99
+msgid "Mentions"
+msgstr "提及"
+
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/hooks.tsx:37
+msgid "Mentions of these people"
+msgstr ""
+
+#: src/components/Menu/index.tsx:119
+msgid "Menu"
+msgstr "菜单"
+
+#: src/screens/Messages/ConversationSettings/MemberMenu.tsx:203
+msgctxt "action"
+msgid "Message"
+msgstr "信息"
+
+#: src/screens/Messages/components/MessageComposer.tsx:255
+msgctxt "description"
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Message"
 msgstr "信息"
 
@@ -8075,13 +8887,17 @@ msgctxt "toast"
 msgid "Message deleted"
 msgstr "已删除信息"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:622
+=======
+#: src/components/dms/MessageItem.tsx:617
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Message failed to send."
 msgstr "信息发送失败。"
 
 #. placeholder {0}: sender?.handle ?? 'unknown'
 #. placeholder {1}: message.text
-#: src/components/dms/MessageContextMenu.tsx:152
+#: src/components/dms/MessageContextMenu.tsx:166
 msgid "Message from @{0}: {1}"
 msgstr "来自 @{0} 的信息：{1}"
 
@@ -8090,6 +8906,7 @@ msgstr "来自 @{0} 的信息：{1}"
 msgid "Message from server: {0}"
 msgstr "来自服务器的信息：{0}"
 
+<<<<<<< HEAD
 #: src/screens/Messages/components/MessageComposer.tsx:248
 #: src/screens/Messages/components/MessageInput.tsx:207
 msgid "Message input field"
@@ -8101,10 +8918,17 @@ msgid "Message is too long"
 msgstr "信息过长"
 
 #: src/screens/Messages/components/MessageComposer.tsx:109
+=======
+#: src/screens/Messages/components/MessageComposer.tsx:251
+msgid "Message input field"
+msgstr "信息输入框"
+
+#: src/screens/Messages/components/MessageComposer.tsx:116
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Message is too long ({graphemeCount}/{MAX_DM_GRAPHEME_LENGTH})"
 msgstr "信息过长（{graphemeCount}/{MAX_DM_GRAPHEME_LENGTH}）"
 
-#: src/components/dms/MessageContextMenu.tsx:151
+#: src/components/dms/MessageContextMenu.tsx:165
 msgid "Message options"
 msgstr "信息选项"
 
@@ -8112,11 +8936,19 @@ msgstr "信息选项"
 msgid "Messages"
 msgstr "信息"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:721
 msgid "Messages from this person are hidden while they are blocking you."
 msgstr "当此用户屏蔽你时，其发送的信息将会隐藏。"
 
 #: src/components/dms/MessageItem.tsx:716
+=======
+#: src/components/dms/MessageItem.tsx:716
+msgid "Messages from this person are hidden while they are blocking you."
+msgstr "当此用户屏蔽你时，其发送的信息将会隐藏。"
+
+#: src/components/dms/MessageItem.tsx:711
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Messages from this person are hidden while you are blocking them."
 msgstr "当你屏蔽此用户时，其发送的信息将会隐藏。"
 
@@ -8250,7 +9082,11 @@ msgstr ""
 msgid "Mute"
 msgstr "隐藏"
 
+<<<<<<< HEAD
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:172
+=======
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:177
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VolumeControl.tsx:97
 msgctxt "video"
 msgid "Mute"
@@ -8442,9 +9278,14 @@ msgstr "需要举报侵害版权、法律要求及合规性问题吗？"
 msgid "Nevermind, create a handle for me"
 msgstr "不用了，请帮我创建一个账户代码"
 
+<<<<<<< HEAD
 #: src/components/dialogs/nuxs/GroupChatsAnnouncement.tsx:171
 #: src/screens/Search/modules/ExploreTrendingTopics.tsx:188
 #: src/view/com/profile/ProfileMenu.tsx:550
+=======
+#: src/screens/Search/modules/ExploreTrendingTopics.tsx:184
+#: src/view/com/profile/ProfileMenu.tsx:398
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "New"
 msgstr "最新"
 
@@ -8454,7 +9295,16 @@ msgctxt "action"
 msgid "New"
 msgstr "新建"
 
+<<<<<<< HEAD
 #: src/view/com/notifications/NotificationFeedItem.tsx:583
+=======
+#: src/components/dialogs/nuxs/GroupChatsAnnouncement.tsx:171
+msgctxt "nux-description"
+msgid "New"
+msgstr "新建"
+
+#: src/view/com/notifications/NotificationFeedItem.tsx:569
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "New {postsCount, plural, one {post} other {posts}} from {firstAuthorLink}"
 msgstr "来自 {firstAuthorLink} 的新{postsCount, plural, one {帖文} other {帖文}}"
 
@@ -8464,11 +9314,19 @@ msgstr "来自 {firstAuthorName} 的新{postsCount, plural, one {帖文} other {
 
 #: src/components/dms/dialogs/NewChatDialog.tsx:169
 #: src/components/dms/dialogs/NewChatDialog.tsx:184
+<<<<<<< HEAD
 #: src/screens/Messages/ChatList.tsx:219
 #: src/screens/Messages/ChatList.tsx:220
 #: src/screens/Messages/ChatList.tsx:440
 #: src/screens/Messages/ChatList.tsx:441
 #: src/screens/Messages/ChatList.tsx:564
+=======
+#: src/screens/Messages/ChatList.tsx:229
+#: src/screens/Messages/ChatList.tsx:230
+#: src/screens/Messages/ChatList.tsx:453
+#: src/screens/Messages/ChatList.tsx:454
+#: src/screens/Messages/ChatList.tsx:578
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "New chat"
 msgstr "新对话"
 
@@ -8501,9 +9359,9 @@ msgstr "新的电子邮箱地址"
 msgid "New Feature"
 msgstr "新功能"
 
-#: src/lib/hooks/useNotificationHandler.ts:195
-#: src/screens/Settings/NotificationSettings/index.tsx:149
-#: src/screens/Settings/NotificationSettings/index.tsx:268
+#: src/lib/hooks/useNotificationHandler.ts:193
+#: src/screens/Settings/NotificationSettings/index.tsx:159
+#: src/screens/Settings/NotificationSettings/index.tsx:312
 msgid "New followers"
 msgstr "新关注者"
 
@@ -8534,6 +9392,18 @@ msgstr "新的账户代码"
 #: src/view/screens/ModerationModlists.tsx:64
 msgid "New list"
 msgstr "新列表"
+
+#: src/screens/Messages/Settings.tsx:289
+#: src/screens/Settings/NotificationSettings/components/ChatNotificationDialogs.tsx:31
+#: src/screens/Settings/NotificationSettings/index.tsx:270
+msgid "New message requests"
+msgstr "新信息申请"
+
+#: src/screens/Messages/Settings.tsx:268
+#: src/screens/Settings/NotificationSettings/components/ChatNotificationDialogs.tsx:21
+#: src/screens/Settings/NotificationSettings/index.tsx:253
+msgid "New messages"
+msgstr "新信息"
 
 #: src/screens/Login/SetNewPasswordForm.tsx:143
 #: src/screens/Settings/components/ChangePasswordDialog.tsx:205
@@ -8608,7 +9478,7 @@ msgstr "下一步"
 msgid "Next image"
 msgstr "下一张图片"
 
-#: src/features/inviteFriends/components/ThemePicker.tsx:31
+#: src/features/inviteFriends/components/ThemePicker.tsx:33
 msgid "Night"
 msgstr "夜晚"
 
@@ -8716,12 +9586,12 @@ msgstr "没有名字"
 msgid "No notifications yet!"
 msgstr "目前还没有通知！"
 
-#: src/screens/Messages/Settings.tsx:91
+#: src/screens/Messages/Settings.tsx:104
 msgctxt "allow group chat invites from"
 msgid "No one"
 msgstr "没有人"
 
-#: src/screens/Messages/Settings.tsx:73
+#: src/screens/Messages/Settings.tsx:86
 msgctxt "allow messages from"
 msgid "No one"
 msgstr "没有人"
@@ -8763,6 +9633,10 @@ msgstr "目前还没有引用"
 msgid "No recent GIFs yet. Pick one to see it here."
 msgstr "暂无最近使用的 GIF，尝试使用一些 GIF 吧。"
 
+#: src/screens/Search/components/AdvancedSearchDialog/RepliesDropdown.tsx:23
+msgid "No replies"
+msgstr ""
+
 #: src/view/screens/Profile.tsx:456
 msgid "No replies yet"
 msgstr "目前还没有回复"
@@ -8797,9 +9671,21 @@ msgstr "找不到结果"
 msgid "No results found for \"{query}\""
 msgstr "找不到符合“{query}”的结果"
 
+<<<<<<< HEAD
 #: src/screens/Search/SearchResults.tsx:252
+=======
+#: src/screens/Search/SearchResults.tsx:220
+msgid "No results found for “<0>{query}</0>” with advanced search filters applied."
+msgstr ""
+
+#: src/screens/Search/SearchResults.tsx:232
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "No results found for “<0>{query}</0>”."
 msgstr "找不到符合 “<0>{query}</0>” 的结果。"
+
+#: src/screens/Search/SearchResults.tsx:226
+msgid "No results found for your query with advanced search filters applied."
+msgstr ""
 
 #: src/screens/Search/Explore.tsx:832
 msgid "No results."
@@ -8809,11 +9695,14 @@ msgstr "没有结果。"
 msgid "No Starter Packs yet"
 msgstr "目前还没有新手包"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:875
 #: src/screens/Messages/components/MessageInputReply.tsx:49
 msgid "No text"
 msgstr ""
 
+=======
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/dialogs/EmbedConsent.tsx:100
 #: src/components/dialogs/EmbedConsent.tsx:107
 msgid "No thanks"
@@ -8860,6 +9749,11 @@ msgstr "非自愿的亲密视频"
 msgid "Non-sexual Nudity"
 msgstr "非色情裸露"
 
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:293
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:296
+msgid "None of these words"
+msgstr ""
+
 #: src/features/inviteFriends/InviteScannerScreen.web.tsx:31
 msgid "Not available on this platform"
 msgstr "此功能无法在这个平台上使用"
@@ -8899,18 +9793,26 @@ msgstr "注：这则帖文仅对已登录用户可见。"
 msgid "Nothing saved yet"
 msgstr "目前没有收藏内容"
 
+<<<<<<< HEAD
 #: src/components/dialogs/NotificationSettingsDialog.tsx:64
 #: src/Navigation.tsx:603
 #: src/Navigation.tsx:682
 #: src/view/screens/Notifications.tsx:137
+=======
+#: src/components/dialogs/NotificationSettingsDialog.tsx:72
+#: src/Navigation.tsx:443
+#: src/Navigation.tsx:522
+#: src/view/screens/Notifications.tsx:134
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Notification settings"
 msgstr "通知设置"
 
-#: src/screens/Messages/Settings.tsx:244
-#: src/screens/Messages/Settings.tsx:257
+#: src/screens/Messages/Settings.tsx:305
+#: src/screens/Messages/Settings.tsx:318
 msgid "Notification sounds"
 msgstr "通知提示音"
 
+<<<<<<< HEAD
 #: src/Navigation.tsx:677
 #: src/Navigation.tsx:916
 #: src/screens/Notifications/ActivityList.tsx:31
@@ -8921,6 +9823,19 @@ msgstr "通知提示音"
 #: src/view/shell/bottom-bar/BottomBar.tsx:277
 #: src/view/shell/desktop/LeftNav.tsx:741
 #: src/view/shell/Drawer.tsx:599
+=======
+#: src/Navigation.tsx:517
+#: src/Navigation.tsx:756
+#: src/screens/Messages/Settings.tsx:255
+#: src/screens/Notifications/ActivityList.tsx:31
+#: src/screens/Settings/NotificationSettings/index.tsx:114
+#: src/screens/Settings/Settings.tsx:197
+#: src/screens/Settings/Settings.tsx:200
+#: src/view/screens/Notifications.tsx:128
+#: src/view/shell/bottom-bar/BottomBar.tsx:279
+#: src/view/shell/desktop/LeftNav.tsx:687
+#: src/view/shell/Drawer.tsx:552
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Notifications"
 msgstr "通知"
 
@@ -8943,9 +9858,14 @@ msgid "OAuth"
 msgstr ""
 
 #: src/lib/moderation/useLabelBehaviorDescription.ts:14
+<<<<<<< HEAD
 #: src/screens/Settings/AccountSettings.tsx:166
 #: src/screens/Settings/AccountSettings.tsx:179
 #: src/screens/Settings/NotificationSettings/index.tsx:394
+=======
+#: src/screens/Settings/AccountSettings.tsx:164
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:34
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Off"
 msgstr "显示"
 
@@ -8974,9 +9894,13 @@ msgstr "好的"
 #: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:47
 #: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:52
 #: src/components/dms/InitiateChatFlow.tsx:733
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:728
 #: src/components/PetAccountAlert.tsx:52
 #: src/components/PetAccountAlert.tsx:57
+=======
+#: src/components/dms/MessageItem.tsx:723
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/screens/Login/PasswordUpdatedForm.tsx:37
 #: src/screens/PostThread/components/ThreadItemAnchor.tsx:743
 msgid "Okay"
@@ -9015,6 +9939,7 @@ msgstr "选择的收信人中有人不允许群组对话。"
 msgid "One of the selected recipients has blocked you and cannot be messaged."
 msgstr "选择的收信人中有人屏蔽了你，无法发送信息。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:911
 msgid "One or more GIFs is missing alt text."
 msgstr "至少有一张 GIF 缺失了替代文本。"
@@ -9036,6 +9961,29 @@ msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LE
 msgstr "一则或多则帖文内容过长，无法保存为草稿{MAX_DRAFT_GRAPHEME_LENGTH, plural,one {最大字数限制为 # 个字符。}other {最大字数限制为 # 个字符。}}"
 
 #: src/view/com/composer/Composer.tsx:918
+=======
+#: src/view/com/composer/Composer.tsx:937
+msgid "One or more GIFs is missing alt text."
+msgstr "至少有一张 GIF 缺失了替代文本。"
+
+#: src/view/com/composer/Composer.tsx:934
+msgid "One or more images is missing alt text."
+msgstr "至少有一张图片缺失了替代文本。"
+
+#: src/view/com/composer/SelectMediaButton.tsx:423
+msgid "One or more of your selected files are not supported."
+msgstr "你所选中的部分文件格式不被支持。"
+
+#: src/view/com/composer/SelectMediaButton.tsx:446
+msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
+msgstr "你选中的部分文件太大，最大的文件大小为 {VIDEO_MAX_SIZE_MB} MB。"
+
+#: src/view/com/composer/Composer.tsx:732
+msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
+msgstr "一则或多则帖文内容过长，无法保存为草稿{MAX_DRAFT_GRAPHEME_LENGTH, plural,one {最大字数限制为 # 个字符。}other {最大字数限制为 # 个字符。}}"
+
+#: src/view/com/composer/Composer.tsx:944
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "One or more videos is missing alt text."
 msgstr "至少有一段视频缺失了替代文本。"
 
@@ -9048,7 +9996,11 @@ msgstr "仅限{0}可以回复。"
 #. placeholder {0}: result.accepted.length
 #. placeholder {1}: next.length
 #. placeholder {2}: next.length
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:252
+=======
+#: src/view/com/composer/Composer.tsx:235
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Only {0} of {1} {2, plural, one {image} other {images}} added; limit is {MAX_GALLERY_IMAGES}"
 msgstr "你共上传了 {1} 张图片，我们仅会保留前 {0} {2, plural,one {张} other {张}}；上限为 {MAX_GALLERY_IMAGES}"
 
@@ -9057,8 +10009,8 @@ msgid "Only admins can accept join requests."
 msgstr "只有管理员可以接受加入申请。"
 
 #: src/screens/Messages/JoinRequests.tsx:233
-msgid "Only admins can ignore join requests."
-msgstr "只有管理员可以忽略加入申请。"
+msgid "Only admins can reject join requests."
+msgstr "只有管理员可以拒绝加入申请。"
 
 #: src/components/intents/GroupChatJoinDialog.tsx:166
 msgid "Only followers can join this group chat."
@@ -9084,9 +10036,22 @@ msgstr "只有 {0} 关注的人可以加入。"
 msgid "Only people the chat owner follows can join"
 msgstr "只有群组所有者关注的人可以加入"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/MenusSettings.tsx:94
 #: src/screens/Settings/RunesSettings/MenusSettings.tsx:100
 msgid "Only show URL on handles with working links"
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/MediaDropdown.tsx:23
+msgid "Only posts with media"
+msgstr ""
+
+#: src/screens/Search/components/AdvancedSearchDialog/MediaDropdown.tsx:24
+msgid "Only posts with videos"
+msgstr ""
+
+#: src/screens/Search/components/AdvancedSearchDialog/RepliesDropdown.tsx:24
+msgid "Only replies"
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgstr ""
 
 #: src/view/com/composer/videos/SubtitleFilePicker.tsx:41
@@ -9110,11 +10075,19 @@ msgstr "哎呀，此资料不存在，请尝试扫描另一个。"
 msgid "Oops!"
 msgstr "糟糕！"
 
+<<<<<<< HEAD
 #: src/screens/Signup/index.tsx:245
 msgid "Open a Tangled Issue"
 msgstr ""
 
 #: src/screens/Onboarding/StepProfile/index.tsx:314
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:64
+msgid "Open advanced search options"
+msgstr ""
+
+#: src/screens/Onboarding/StepProfile/index.tsx:311
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Open avatar creator"
 msgstr "开启头像创建工具"
 
@@ -9144,9 +10117,14 @@ msgstr "开启草稿"
 msgid "Open drawer menu"
 msgstr "开启抽屉菜单"
 
+<<<<<<< HEAD
 #: src/screens/Messages/components/MessageComposer.tsx:210
 #: src/screens/Messages/components/MessageInput.web.tsx:177
 #: src/view/com/composer/Composer.tsx:2436
+=======
+#: src/screens/Messages/components/MessageComposer.tsx:213
+#: src/view/com/composer/Composer.tsx:2248
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Open emoji picker"
 msgstr "开启表情符号选择器"
 
@@ -9296,11 +10274,15 @@ msgstr "开启对话框以向你的帖文内容添加警告"
 msgid "Opens a dialog to choose who can interact with this post"
 msgstr "开启对话框来选择哪些人可以与这则帖文产生互动"
 
+<<<<<<< HEAD
 #: src/view/com/composer/AtprotoBtn.tsx:108
 msgid "Opens a dialog to configure ATProto record key generation"
 msgstr ""
 
 #: src/features/inviteFriends/components/ThemePicker.tsx:38
+=======
+#: src/features/inviteFriends/components/ThemePicker.tsx:40
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Opens a list of color themes for the QR card"
 msgstr "开启二维码卡片的颜色主题列表"
 
@@ -9333,7 +10315,11 @@ msgid "Opens device camera"
 msgstr "开启设备相机"
 
 #. Accessibility hint for button in composer to add images, a video, or a GIF to a post.
+<<<<<<< HEAD
 #: src/view/com/composer/SelectMediaButton.tsx:514
+=======
+#: src/view/com/composer/SelectMediaButton.tsx:517
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Opens device gallery to select up to {MAX_GALLERY_IMAGES, plural, other {# images}}, or a single video or GIF."
 msgstr "开启设备相册以选择最多 {MAX_GALLERY_IMAGES, plural, other {# 张图片}}、一段视频或一张 GIF。"
 
@@ -9353,7 +10339,7 @@ msgstr ""
 msgid "Opens flow to sign in to your existing Bluesky account"
 msgstr "开启登录到你现有的 Bluesky 账户流程"
 
-#: src/components/images/Gallery/index.tsx:460
+#: src/components/images/Gallery/index.tsx:455
 msgid "Opens full image"
 msgstr "开启完整图片"
 
@@ -9548,12 +10534,17 @@ msgstr "已更新密码"
 msgid "Password updated!"
 msgstr "已更新密码！"
 
+<<<<<<< HEAD
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:156
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:430
+=======
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:161
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:395
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Pause"
 msgstr "暂停"
 
-#: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:36
+#: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:32
 msgid "Pause GIF"
 msgstr "暂停 GIF"
 
@@ -9570,8 +10561,13 @@ msgid "PDS Information"
 msgstr ""
 
 #: src/screens/ProfileList/index.tsx:167
+<<<<<<< HEAD
 #: src/screens/Search/SearchResults.tsx:75
 #: src/screens/StarterPack/StarterPackScreen.tsx:196
+=======
+#: src/screens/Search/SearchResults.tsx:99
+#: src/screens/StarterPack/StarterPackScreen.tsx:195
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "People"
 msgstr "用户"
 
@@ -9597,17 +10593,17 @@ msgstr "被 @{0} 关注的用户"
 msgid "People following @{0}"
 msgstr "关注 @{0} 的用户"
 
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:194
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:198
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:178
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:182
 msgid "People I follow"
 msgstr "我关注的人"
 
-#: src/screens/Messages/Settings.tsx:84
+#: src/screens/Messages/Settings.tsx:97
 msgctxt "allow group chat invites from"
 msgid "People I follow"
 msgstr "我关注的人"
 
-#: src/screens/Messages/Settings.tsx:69
+#: src/screens/Messages/Settings.tsx:82
 msgctxt "allow messages from"
 msgid "People I follow"
 msgstr "我关注的人"
@@ -9620,7 +10616,12 @@ msgstr "我关注的人可以直接加入"
 msgid "People I follow can request to join"
 msgstr "我关注的人可以申请加入"
 
+<<<<<<< HEAD
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:511
+=======
+#: src/components/dialogs/PostInteractionSettingsDialog.tsx:510
+#: src/screens/Search/components/AdvancedSearchDialog/FollowingDropdown.tsx:23
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "People you follow"
 msgstr "你关注的人"
 
@@ -9672,7 +10673,7 @@ msgstr "已验证电话号码"
 msgid "Photography"
 msgstr "摄影"
 
-#: src/features/inviteFriends/components/ThemePicker.tsx:37
+#: src/features/inviteFriends/components/ThemePicker.tsx:39
 msgid "Pick a color theme"
 msgstr "选择一个颜色主题"
 
@@ -9720,8 +10721,13 @@ msgstr "已固定的动态源列表"
 msgid "Pinned to your feeds"
 msgstr "已固定到你的动态源中"
 
+<<<<<<< HEAD
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:156
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:431
+=======
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:161
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:396
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Play"
 msgstr "播放"
 
@@ -9730,7 +10736,7 @@ msgstr "播放"
 msgid "Play {0}"
 msgstr "播放 {0}"
 
-#: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:36
+#: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:32
 msgid "Play GIF"
 msgstr "播放 GIF"
 
@@ -9743,11 +10749,15 @@ msgstr "播放视频"
 msgid "Play Video"
 msgstr "播放视频"
 
-#: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:37
+#: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:33
 msgid "Plays or pauses the GIF"
 msgstr "播放或暂停 GIF"
 
+<<<<<<< HEAD
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:157
+=======
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:162
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Plays or pauses the video"
 msgstr "播放或暂停视频"
 
@@ -9797,7 +10807,11 @@ msgstr "请点击我们发送给你电子邮件中的链接来验证你的新电
 msgid "Please complete the verification captcha."
 msgstr "请完成 CAPTCHA（人机验证）。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/state/video.ts:475
+=======
+#: src/view/com/composer/state/video.ts:470
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Please confirm your email address to upload videos."
 msgstr "请先验证你的电子邮箱地址以上传视频。"
 
@@ -9952,7 +10966,11 @@ msgstr "政治"
 msgid "Porn"
 msgstr "色情"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1928
+=======
+#: src/view/com/composer/Composer.tsx:1893
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgctxt "action"
 msgid "Post"
 msgstr "发布"
@@ -9972,12 +10990,20 @@ msgstr "发布一张图片"
 msgid "Post a video"
 msgstr "发布一段视频"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1926
+=======
+#: src/view/com/composer/Composer.tsx:1891
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgctxt "action"
 msgid "Post All"
 msgstr "全部发布"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1571
+=======
+#: src/view/com/composer/Composer.tsx:1552
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Post anyway"
 msgstr "仍然发布"
 
@@ -10088,11 +11114,19 @@ msgstr "已取消固定帖文"
 msgid "Posts"
 msgstr "帖文"
 
+<<<<<<< HEAD
 #: src/screens/PostThread/index.tsx:754
 msgid "Posts also liked"
 msgstr ""
 
 #: src/components/dialogs/MutedWords.tsx:124
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/RepliesDropdown.tsx:22
+msgid "Posts and replies"
+msgstr ""
+
+#: src/components/dialogs/MutedWords.tsx:123
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Posts can be muted based on their text, their tags, or both. We recommend avoiding common words that appear in many posts, since it can result in no posts being shown."
 msgstr "可以根据文本、标签或结合两者来隐藏帖文。我们建议你尽量避免添加常用字词，因为这可能会导致你的主页不显示任何帖文。"
 
@@ -10195,11 +11229,19 @@ msgstr "隐私政策"
 msgid "Privacy violation of a minor"
 msgstr "侵犯未成年隐私"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:3027
 msgid "Processing GIF..."
 msgstr "正在处理 GIF……"
 
 #: src/view/com/composer/Composer.tsx:3029
+=======
+#: src/view/com/composer/Composer.tsx:2682
+msgid "Processing GIF..."
+msgstr "正在处理 GIF……"
+
+#: src/view/com/composer/Composer.tsx:2684
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Processing video..."
 msgstr "正在处理视频……"
 
@@ -10212,9 +11254,15 @@ msgid "profile"
 msgstr "个人资料"
 
 #: src/view/shell/bottom-bar/BottomBar.tsx:322
+<<<<<<< HEAD
 #: src/view/shell/desktop/LeftNav.tsx:799
 #: src/view/shell/Drawer.tsx:113
 #: src/view/shell/Drawer.tsx:702
+=======
+#: src/view/shell/desktop/LeftNav.tsx:745
+#: src/view/shell/Drawer.tsx:91
+#: src/view/shell/Drawer.tsx:655
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Profile"
 msgstr "个人资料"
 
@@ -10260,43 +11308,67 @@ msgid "Public, sharable lists of users to mute or block in bulk."
 msgstr "公开且可对外分享的列表，可用来批量隐藏或屏蔽账户。"
 
 #. Accessibility label for button to publish a single post
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1912
+=======
+#: src/view/com/composer/Composer.tsx:1877
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Publish post"
 msgstr "发布帖文"
 
 #. Accessibility label for button to publish multiple posts in a thread
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1907
+=======
+#: src/view/com/composer/Composer.tsx:1872
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Publish posts"
 msgstr "发布帖文"
 
 #. Accessibility label for button to publish multiple replies in a thread
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1896
+=======
+#: src/view/com/composer/Composer.tsx:1861
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Publish replies"
 msgstr "发布回复"
 
 #. Accessibility label for button to publish a single reply
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1901
 msgid "Publish reply"
 msgstr "发布回复"
 
 #: src/screens/Settings/NotificationSettings/index.tsx:389
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:138
+=======
+#: src/view/com/composer/Composer.tsx:1866
+msgid "Publish reply"
+msgstr "发布回复"
+
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:31
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Push"
 msgstr "推送"
 
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:134
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:131
 msgid "Push notifications"
 msgstr "推送通知"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:131
 msgid "Push settings to cloud"
 msgstr ""
 
 #: src/screens/Settings/NotificationSettings/index.tsx:372
+=======
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:22
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Push, everyone"
 msgstr "系统推送、所有人"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:380
+#: src/screens/Settings/NotificationSettings/components/SettingPreview.tsx:26
 msgid "Push, people you follow"
 msgstr "系统推送、你关注的人"
 
@@ -10336,11 +11408,18 @@ msgstr "已成功分离引用帖文"
 msgid "Quote posts disabled"
 msgstr "已停用帖文引用"
 
+<<<<<<< HEAD
 #: src/lib/hooks/useNotificationHandler.ts:188
 #: src/screens/Post/PostQuotes.tsx:42
 #: src/screens/Settings/NotificationSettings/index.tsx:182
 #: src/screens/Settings/NotificationSettings/index.tsx:291
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:85
+=======
+#: src/lib/hooks/useNotificationHandler.ts:186
+#: src/screens/Post/PostQuotes.tsx:31
+#: src/screens/Settings/NotificationSettings/index.tsx:192
+#: src/screens/Settings/NotificationSettings/index.tsx:335
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Quotes"
 msgstr "引用"
 
@@ -10387,10 +11466,19 @@ msgstr "重新启用你的账户"
 msgid "Read {0, plural, one {# more reply} other {# more replies}}"
 msgstr "继续阅读 {0, plural, one {# 则回复} other {# 则回复}}"
 
+<<<<<<< HEAD
 #: src/screens/Search/SearchResults.tsx:263
+=======
+#: src/screens/Search/SearchResults.tsx:264
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgctxt "english-only-resource"
-msgid "read about how to use search filters"
-msgstr "阅读如何使用搜索过滤器"
+msgid "Read about how to use advanced search filters"
+msgstr ""
+
+#: src/screens/Search/SearchResults.tsx:278
+msgctxt "english-only-resource"
+msgid "Read about how to use search filters"
+msgstr ""
 
 #: src/components/dialogs/nuxs/InitialVerificationAnnouncement.tsx:165
 #: src/components/dialogs/nuxs/InitialVerificationAnnouncement.tsx:176
@@ -10444,11 +11532,11 @@ msgstr ""
 msgid "Reason for appeal"
 msgstr "申诉原因"
 
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:140
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:137
 msgid "Receive in-app notifications"
 msgstr "接收应用内通知"
 
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:123
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:120
 msgid "Receive push notifications"
 msgstr "接收推送通知"
 
@@ -10528,8 +11616,13 @@ msgstr "拒绝对话邀请"
 msgid "Reject join request"
 msgstr "拒绝加入申请"
 
+<<<<<<< HEAD
 #: src/screens/Messages/ChatList.tsx:409
 #: src/screens/Messages/Inbox.tsx:213
+=======
+#: src/screens/Messages/ChatList.tsx:422
+#: src/screens/Messages/Inbox.tsx:206
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Reload conversations"
 msgstr "重新加载对话"
 
@@ -10569,9 +11662,15 @@ msgstr "从群组对话中移除 {displayName}"
 msgid "Remove {displayName}?"
 msgstr "移除 {displayName}？"
 
+<<<<<<< HEAD
 #: src/screens/Search/components/SearchHistory.tsx:108
 msgid "Remove {historyItem}"
 msgstr "删除 {historyItem}"
+=======
+#: src/screens/Search/components/SearchHistory.tsx:161
+msgid "Remove {q}"
+msgstr ""
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 
 #: src/screens/Settings/Settings.tsx:945
 #: src/screens/Settings/Settings.tsx:948
@@ -10621,6 +11720,11 @@ msgstr "删除此动态源"
 msgid "Remove feed?"
 msgstr "要删除动态源吗？"
 
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:143
+msgid "Remove filter"
+msgstr ""
+
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:238
 msgid "Remove from chat"
 msgstr "从对话中移除"
@@ -10660,11 +11764,24 @@ msgstr "删除图片"
 msgid "Remove live status"
 msgstr "移除直播状态"
 
+<<<<<<< HEAD
 #: src/components/dialogs/MutedWords.tsx:616
 msgid "Remove mute word from your list"
 msgstr "从你的隐藏字词列表中删除"
 
 #: src/screens/Search/components/SearchHistory.tsx:175
+=======
+#: src/components/moderation/BlockDialog.tsx:365
+#: src/components/moderation/BlockDialog.tsx:372
+msgid "Remove member"
+msgstr "移除成员"
+
+#: src/components/dialogs/MutedWords.tsx:613
+msgid "Remove mute word from your list"
+msgstr "从你的隐藏字词列表中删除"
+
+#: src/screens/Search/components/SearchHistory.tsx:221
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Remove profile"
 msgstr "删除个人资料"
 
@@ -10711,6 +11828,7 @@ msgstr "撤回认证"
 msgid "Remove your verification for this account?"
 msgstr "要撤回你对这个账户的认证吗？"
 
+<<<<<<< HEAD
 #: src/components/Post/Embed/index.tsx:267
 #: src/components/Post/Embed/index.tsx:337
 msgid "Removed by author"
@@ -10718,6 +11836,13 @@ msgstr "已被发布者删除"
 
 #: src/components/Post/Embed/index.tsx:268
 #: src/components/Post/Embed/index.tsx:335
+=======
+#: src/components/Post/Embed/index.tsx:240
+msgid "Removed by author"
+msgstr "已被发布者删除"
+
+#: src/components/Post/Embed/index.tsx:238
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Removed by you"
 msgstr "你已删除"
 
@@ -10814,20 +11939,34 @@ msgctxt "description"
 msgid "Replied to you"
 msgstr "对你进行回复"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:887
+=======
+#: src/components/dms/MessageItem.tsx:878
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Replied-to message from {senderName}, tap to scroll to it"
-msgstr ""
+msgstr "来自 {senderName} 的回复信息，点击以滚动到该信息对应的位置"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:888
+=======
+#: src/components/dms/MessageItem.tsx:879
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Replied-to message, tap to scroll to it"
-msgstr ""
+msgstr "回复信息，点击以滚动到该信息对应的位置"
 
 #: src/components/activity-notifications/SubscribeProfileDialog.tsx:274
 #: src/components/activity-notifications/SubscribeProfileDialog.tsx:286
+<<<<<<< HEAD
 #: src/lib/hooks/useNotificationHandler.ts:174
 #: src/screens/Settings/NotificationSettings/index.tsx:160
 #: src/screens/Settings/NotificationSettings/index.tsx:275
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:97
+=======
+#: src/lib/hooks/useNotificationHandler.ts:172
+#: src/screens/Settings/NotificationSettings/index.tsx:170
+#: src/screens/Settings/NotificationSettings/index.tsx:319
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/screens/Profile.tsx:235
 msgid "Replies"
 msgstr "回复"
@@ -10840,12 +11979,16 @@ msgstr "已停用回复"
 msgid "Replies to this post are disabled."
 msgstr "这则帖文的回复已被停用。"
 
-#: src/components/dms/MessageContextMenu.tsx:167
-#: src/components/dms/MessageContextMenu.tsx:170
+#: src/components/dms/MessageContextMenu.tsx:182
+#: src/components/dms/MessageContextMenu.tsx:185
 msgid "Reply"
 msgstr "回复"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1924
+=======
+#: src/view/com/composer/Composer.tsx:1889
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgctxt "action"
 msgid "Reply"
 msgstr "回复"
@@ -10889,8 +12032,13 @@ msgstr "已更新回复可见性"
 msgid "Reply was successfully hidden"
 msgstr "已成功隐藏回复"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageContextMenu.tsx:205
 #: src/features/liveNow/components/LiveStatusDialog.tsx:296
+=======
+#: src/components/dms/MessageContextMenu.tsx:220
+#: src/features/liveNow/components/LiveStatusDialog.tsx:267
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/screens/Messages/ConversationSettings/index.tsx:583
 msgid "Report"
 msgstr "举报"
@@ -10922,7 +12070,7 @@ msgstr "举报动态源"
 msgid "Report list"
 msgstr "举报列表"
 
-#: src/components/dms/MessageContextMenu.tsx:202
+#: src/components/dms/MessageContextMenu.tsx:217
 msgid "Report message"
 msgstr "举报信息"
 
@@ -11029,10 +12177,16 @@ msgstr ""
 msgid "Reposted by you"
 msgstr "你已转发"
 
+<<<<<<< HEAD
 #: src/lib/hooks/useNotificationHandler.ts:167
 #: src/screens/Settings/NotificationSettings/index.tsx:193
 #: src/screens/Settings/NotificationSettings/index.tsx:300
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:79
+=======
+#: src/lib/hooks/useNotificationHandler.ts:165
+#: src/screens/Settings/NotificationSettings/index.tsx:203
+#: src/screens/Settings/NotificationSettings/index.tsx:344
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Reposts"
 msgstr "转发"
 
@@ -11040,9 +12194,9 @@ msgstr "转发"
 msgid "Reposts of this post"
 msgstr "转发这则帖文"
 
-#: src/lib/hooks/useNotificationHandler.ts:209
-#: src/screens/Settings/NotificationSettings/index.tsx:230
-#: src/screens/Settings/NotificationSettings/index.tsx:331
+#: src/lib/hooks/useNotificationHandler.ts:207
+#: src/screens/Settings/NotificationSettings/index.tsx:240
+#: src/screens/Settings/NotificationSettings/index.tsx:375
 msgid "Reposts of your reposts"
 msgstr "转发你转发的帖文"
 
@@ -11060,8 +12214,8 @@ msgid "Request code"
 msgstr "获取验证码"
 
 #: src/screens/Messages/JoinRequests.tsx:215
-msgid "Request ignored."
-msgstr "已忽略申请。"
+msgid "Request rejected."
+msgstr "已拒绝申请。"
 
 #: src/components/dms/ChatInvite/Root.tsx:117
 #: src/components/intents/GroupChatJoinDialog.tsx:306
@@ -11073,7 +12227,7 @@ msgid "Requested"
 msgstr "已发送申请"
 
 #. Incoming message requests
-#: src/screens/Messages/components/InboxRequests.tsx:27
+#: src/screens/Messages/components/InboxRequests.tsx:25
 msgid "Requests"
 msgstr "邀请"
 
@@ -11213,13 +12367,19 @@ msgstr "重试上次出错的操作"
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoFallback.tsx:56
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoFallback.tsx:59
 #: src/components/StarterPack/ProfileStarterPacks.tsx:377
+<<<<<<< HEAD
 #: src/screens/Login/LoginForm.tsx:587
 #: src/screens/Login/LoginForm.tsx:593
 #: src/screens/Login/LoginForm.web.tsx:583
 #: src/screens/Login/LoginForm.web.tsx:589
 #: src/screens/Messages/ChatList.tsx:414
+=======
+#: src/screens/Login/LoginForm.tsx:329
+#: src/screens/Login/LoginForm.tsx:335
+#: src/screens/Messages/ChatList.tsx:427
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/screens/Messages/components/MessageListError.tsx:24
-#: src/screens/Messages/Inbox.tsx:218
+#: src/screens/Messages/Inbox.tsx:211
 #: src/screens/Messages/JoinRequests.tsx:361
 #: src/screens/Onboarding/StepSuggestedAccounts/index.tsx:268
 #: src/screens/Onboarding/StepSuggestedAccounts/index.tsx:271
@@ -11345,6 +12505,7 @@ msgstr "保存出生日期"
 #: src/screens/SavedFeeds.tsx:124
 #: src/screens/SavedFeeds.tsx:311
 #: src/screens/SavedFeeds.tsx:315
+<<<<<<< HEAD
 #: src/screens/Settings/Settings.tsx:380
 #: src/screens/Settings/Settings.tsx:387
 #: src/view/com/composer/Composer.tsx:1552
@@ -11364,6 +12525,25 @@ msgstr "保存草稿"
 
 #: src/view/com/composer/Composer.tsx:1526
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
+=======
+#: src/view/com/composer/Composer.tsx:1533
+#: src/view/com/composer/drafts/DraftsButton.tsx:125
+msgid "Save changes"
+msgstr "保存更改"
+
+#: src/view/com/composer/Composer.tsx:1505
+#: src/view/com/composer/drafts/DraftsButton.tsx:93
+msgid "Save changes?"
+msgstr "保存更改？"
+
+#: src/view/com/composer/Composer.tsx:1533
+#: src/view/com/composer/drafts/DraftsButton.tsx:125
+msgid "Save draft"
+msgstr "保存草稿"
+
+#: src/view/com/composer/Composer.tsx:1507
+#: src/view/com/composer/drafts/DraftsButton.tsx:95
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Save draft?"
 msgstr "保存草稿？"
 
@@ -11432,8 +12612,13 @@ msgstr ""
 msgid "Say hello!"
 msgstr "问声好！"
 
+<<<<<<< HEAD
 #: src/screens/Messages/ChatList.tsx:210
 #: src/screens/Messages/ChatList.tsx:431
+=======
+#: src/screens/Messages/ChatList.tsx:220
+#: src/screens/Messages/ChatList.tsx:444
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Say hi to someone"
 msgstr "向某人问声好"
 
@@ -11471,20 +12656,36 @@ msgstr "向左旋转"
 msgid "Scroll right"
 msgstr "向右旋转"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:780
+=======
+#: src/components/dms/MessageItem.tsx:775
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Scroll to the message this is replying to"
-msgstr ""
+msgstr "滚动到此回复对应的位置"
 
 #: src/screens/ProfileList/AboutSection.tsx:132
 msgid "Scroll to top"
 msgstr "滚动到顶部"
 
+<<<<<<< HEAD
 #: src/components/dialogs/SearchablePeopleList.tsx:675
 #: src/components/forms/SearchInput.tsx:54
 #: src/components/forms/SearchInput.tsx:56
 #: src/screens/Search/Shell.tsx:362
 #: src/screens/Search/Shell.tsx:525
 #: src/view/shell/bottom-bar/BottomBar.tsx:220
+=======
+#: src/components/dialogs/SearchablePeopleList.tsx:667
+#: src/components/forms/SearchInput.tsx:51
+#: src/components/forms/SearchInput.tsx:53
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:232
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:238
+#: src/screens/Search/Shell.tsx:495
+#: src/screens/Search/Shell.tsx:547
+#: src/screens/Search/Shell.tsx:689
+#: src/view/shell/bottom-bar/BottomBar.tsx:216
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Search"
 msgstr "搜索"
 
@@ -11538,17 +12739,18 @@ msgstr "搜索更多动态源"
 msgid "Search for people"
 msgstr "搜索用户"
 
-#: src/screens/Search/Shell.tsx:388
-msgid "Search for posts, users, or feeds"
-msgstr "搜索帖文、用户或动态源"
-
 #. Accessibility label for the GIF search input inside the GIF picker dialog.
 #: src/features/gifPicker/components/GifPickerHeader.tsx:40
 msgid "Search GIFs"
 msgstr "搜索 GIF"
 
+<<<<<<< HEAD
 #: src/screens/Hashtag.tsx:227
 #: src/screens/Search/SearchResults.tsx:387
+=======
+#: src/screens/Hashtag.tsx:224
+#: src/screens/Search/SearchResults.tsx:430
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Search is currently unavailable when logged out"
 msgstr "未登录状态无法使用搜索功能"
 
@@ -11577,7 +12779,15 @@ msgstr "搜索帖文"
 msgid "Search profiles"
 msgstr "搜索个人资料"
 
+<<<<<<< HEAD
 #: src/screens/Profile/ProfileSearch.tsx:41
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:262
+msgid "Search query"
+msgstr ""
+
+#: src/screens/Profile/ProfileSearch.tsx:38
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Search..."
 msgstr "搜索……"
 
@@ -11667,7 +12877,7 @@ msgstr "选择一个原因"
 msgid "Select account"
 msgstr "选择账户"
 
-#: src/components/AppLanguageDropdown.tsx:61
+#: src/components/AppLanguageDropdown.tsx:63
 msgid "Select an app language"
 msgstr "选择应用语言"
 
@@ -11709,7 +12919,16 @@ msgstr ""
 msgid "Select duration"
 msgstr "选择持续时长"
 
+<<<<<<< HEAD
 #: src/screens/Login/index.tsx:218
+=======
+#. placeholder {0}: labels[filter.field].title
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:102
+msgid "Select filter type (currently: {0})"
+msgstr ""
+
+#: src/screens/Login/index.tsx:162
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Select from an existing account"
 msgstr "从现有账户中选择"
 
@@ -11744,7 +12963,7 @@ msgstr "选择群组对话成员"
 msgid "Select how long to mute this word for."
 msgstr "选择要将这个字词隐藏多长时间。"
 
-#: src/components/AppLanguageDropdown.tsx:69
+#: src/components/AppLanguageDropdown.tsx:71
 #: src/components/LanguageSelect.tsx:37
 #: src/components/LanguageSelect.tsx:38
 msgid "Select language"
@@ -11816,11 +13035,15 @@ msgstr "在下面选择你感兴趣的选项"
 msgid "Select your preferred language for translations in your feed."
 msgstr "选择动态源内容的翻译目标语言。"
 
-#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:118
+#: src/screens/Settings/NotificationSettings/components/PreferenceControls.tsx:115
 msgid "Select your preferred notification channels"
 msgstr "自定义你的通知推送选项"
 
+<<<<<<< HEAD
 #: src/view/com/composer/SelectMediaButton.tsx:421
+=======
+#: src/view/com/composer/SelectMediaButton.tsx:426
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Selecting multiple media types is not supported."
 msgstr "不支持选择多种媒体类型。"
 
@@ -11851,8 +13074,12 @@ msgstr "提交错误报告"
 msgid "Send feedback"
 msgstr "提交反馈"
 
+<<<<<<< HEAD
 #: src/screens/Messages/components/MessageComposer.tsx:323
 #: src/screens/Messages/components/MessageInput.web.tsx:254
+=======
+#: src/screens/Messages/components/MessageComposer.tsx:324
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Send message"
 msgstr "发送信息"
 
@@ -11886,7 +13113,7 @@ msgid "Send via direct message"
 msgstr "通过私人信息发送"
 
 #. placeholder {0}: i18n.date(new Date(message.sentAt), { timeStyle: 'short', })
-#: src/components/dms/MessageContextMenu.tsx:161
+#: src/components/dms/MessageContextMenu.tsx:175
 msgid "Sent at {0}"
 msgstr "发送于 {0}"
 
@@ -11947,11 +13174,15 @@ msgstr "设置用于重置密码的电子邮箱"
 msgid "Settings"
 msgstr "设置"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:115
 msgid "Settings are encoded and stored in a hidden draft post on your account. This lets you sync your Witchsky preferences across devices without any external service. Your session credentials are never included."
 msgstr ""
 
 #: src/screens/Settings/NotificationSettings/index.tsx:199
+=======
+#: src/screens/Settings/NotificationSettings/index.tsx:209
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Settings for activity from others"
 msgstr "来自其他人的动态提醒设置"
 
@@ -11959,39 +13190,49 @@ msgstr "来自其他人的动态提醒设置"
 msgid "Settings for allowing others to be notified of your posts"
 msgstr "允许他人接收你发布帖文提醒的设置"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:133
+#: src/screens/Settings/NotificationSettings/index.tsx:143
 msgid "Settings for like notifications"
 msgstr "喜欢通知设置"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:166
+#: src/screens/Settings/NotificationSettings/index.tsx:176
 msgid "Settings for mention notifications"
 msgstr "提及通知设置"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:144
+#: src/screens/Settings/NotificationSettings/index.tsx:154
 msgid "Settings for new follower notifications"
 msgstr "新关注者通知设置"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:238
+#: src/screens/Settings/NotificationSettings/index.tsx:282
 msgid "Settings for notifications for everything else"
 msgstr "其他通知设置"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:212
+#: src/screens/Settings/NotificationSettings/index.tsx:222
 msgid "Settings for notifications for likes of your reposts"
 msgstr "转发的喜欢通知设置"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:225
+#: src/screens/Messages/Settings.tsx:280
+#: src/screens/Settings/NotificationSettings/index.tsx:265
+msgid "Settings for notifications for new message requests"
+msgstr "新信息申请的通知设置"
+
+#: src/screens/Messages/Settings.tsx:259
+#: src/screens/Settings/NotificationSettings/index.tsx:248
+msgid "Settings for notifications for new messages"
+msgstr "新信息的通知设置"
+
+#: src/screens/Settings/NotificationSettings/index.tsx:235
 msgid "Settings for notifications for reposts of your reposts"
 msgstr "转发的转发通知设置"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:177
+#: src/screens/Settings/NotificationSettings/index.tsx:187
 msgid "Settings for quote notifications"
 msgstr "引用通知设置"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:155
+#: src/screens/Settings/NotificationSettings/index.tsx:165
 msgid "Settings for reply notifications"
 msgstr "回复通知设置"
 
-#: src/screens/Settings/NotificationSettings/index.tsx:188
+#: src/screens/Settings/NotificationSettings/index.tsx:198
 msgid "Settings for repost notifications"
 msgstr "转发通知设置"
 
@@ -12067,6 +13308,11 @@ msgstr "分享我的资料"
 msgid "Share post at:// URI"
 msgstr "分享帖文 at:// 链接"
 
+#: src/features/inviteFriends/InviteFriendsDialogInner.tsx:141
+#: src/features/inviteFriends/InviteFriendsDialogInner.tsx:156
+msgid "Share Profile"
+msgstr "分享资料"
+
 #: src/components/StarterPack/ShareDialog.tsx:129
 #: src/components/StarterPack/ShareDialog.tsx:139
 msgid "Share QR code"
@@ -12076,7 +13322,15 @@ msgstr "分享二维码"
 msgid "Share this feed"
 msgstr "分享此动态源"
 
+<<<<<<< HEAD
 #: src/screens/StarterPack/StarterPackScreen.tsx:441
+=======
+#: src/screens/Search/Shell.tsx:576
+msgid "Share this search"
+msgstr ""
+
+#: src/screens/StarterPack/StarterPackScreen.tsx:440
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Share this starter pack"
 msgstr "分享此新手包"
 
@@ -12116,6 +13370,7 @@ msgstr "共享偏好测试器"
 msgid "Show"
 msgstr "显示"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/AlsoLikedSettings.tsx:31
 #: src/screens/Settings/RunesSettings/AlsoLikedSettings.tsx:37
 msgid "Show \"Also liked\" recommendations under post replies"
@@ -12132,6 +13387,9 @@ msgid "Show a PDS badge next to the display name on profiles"
 msgstr ""
 
 #: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:86
+=======
+#: src/components/AltBadgeWithDialog.tsx:48
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Show alt text"
 msgstr "显示替代文本"
 
@@ -12313,15 +13571,24 @@ msgstr ""
 #: src/screens/Login/LoginForm.web.tsx:611
 #: src/screens/Messages/JoinRequest.tsx:290
 #: src/screens/Messages/JoinRequest.tsx:296
+<<<<<<< HEAD
 #: src/screens/Search/SearchResults.tsx:390
+=======
+#: src/screens/Search/SearchResults.tsx:433
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/com/auth/SplashScreen.tsx:118
 #: src/view/com/auth/SplashScreen.tsx:124
 #: src/view/com/auth/SplashScreen.web.tsx:122
 #: src/view/com/auth/SplashScreen.web.tsx:130
 #: src/view/shell/bottom-bar/BottomBar.tsx:360
 #: src/view/shell/bottom-bar/BottomBar.tsx:364
+<<<<<<< HEAD
 #: src/view/shell/bottom-bar/BottomBarWeb.tsx:270
 #: src/view/shell/bottom-bar/BottomBarWeb.tsx:275
+=======
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:250
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:255
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/shell/NavSignupCard.tsx:58
 #: src/view/shell/NavSignupCard.tsx:63
 msgid "Sign in"
@@ -12407,6 +13674,7 @@ msgstr "需要登录"
 msgid "Signed in as @{0}"
 msgstr "以 @{0} 的身份登录"
 
+<<<<<<< HEAD
 #: src/Navigation.tsx:211
 msgid "Signing in..."
 msgstr ""
@@ -12417,6 +13685,11 @@ msgstr ""
 
 #: src/view/com/auth/SplashScreen.web.tsx:98
 msgid "Skeet yo shit! 🗣️"
+=======
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:313
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:316
+msgid "Since"
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgstr ""
 
 #: src/components/contacts/screens/PhoneInput.tsx:163
@@ -12436,7 +13709,11 @@ msgstr "跳过"
 msgid "Skip contact sharing and continue to the app"
 msgstr "跳过分享通讯录并继续使用应用程序"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1569
+=======
+#: src/view/com/composer/Composer.tsx:1550
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Skip empty posts?"
 msgstr "跳过空白帖文？"
 
@@ -12450,7 +13727,7 @@ msgstr "跳过介绍并开始使用你的账户"
 msgid "Skip to next step"
 msgstr "跳至下一步"
 
-#: src/components/images/Gallery/index.tsx:443
+#: src/components/images/Gallery/index.tsx:438
 msgid "slide"
 msgstr "幻灯片"
 
@@ -12507,7 +13784,11 @@ msgid "Someone left the group"
 msgstr "有人离开了群组"
 
 #. placeholder {0}: reaction.value
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:353
+=======
+#: src/components/dms/MessageItem.tsx:348
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Someone reacted {0}"
 msgstr "有人作出了 {0} 反应"
 
@@ -12707,7 +13988,11 @@ msgstr "状态页"
 #. placeholder {1}: state.serviceDescription && !state.serviceDescription.phoneVerificationRequired ? '2' : '3'
 #. placeholder {1}: state.totalSteps
 #: src/screens/Onboarding/Layout.tsx:226
+<<<<<<< HEAD
 #: src/screens/Signup/index.tsx:186
+=======
+#: src/screens/Signup/index.tsx:181
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Step {0} of {1}"
 msgstr "第 {0} 步（共 {1} 步）"
 
@@ -12783,11 +14068,19 @@ msgstr "订阅 @{0} 以使用这些标记："
 msgid "Subscribe to account activity"
 msgstr "订阅账户动态"
 
+<<<<<<< HEAD
 #: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:356
 msgid "Subscribe to Labeler"
 msgstr "订阅标记者"
 
 #: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:322
+=======
+#: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:350
+msgid "Subscribe to Labeler"
+msgstr "订阅标记者"
+
+#: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:316
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Subscribe to this labeler"
 msgstr "订阅此标记者"
 
@@ -12843,7 +14136,25 @@ msgstr "为你推荐"
 msgid "Suggestive"
 msgstr "性暗示"
 
+<<<<<<< HEAD
 #: src/Navigation.tsx:375
+=======
+#: src/features/inviteFriends/components/ThemePicker.tsx:29
+msgid "Sunlight"
+msgstr "阳光"
+
+#: src/screens/Settings/AppIconSettings/useAppIconSets.ts:72
+msgctxt "Name of app icon variant"
+msgid "Sunrise"
+msgstr "日出"
+
+#: src/screens/Settings/AppIconSettings/useAppIconSets.ts:86
+msgctxt "Name of app icon variant"
+msgid "Sunset"
+msgstr "日落"
+
+#: src/Navigation.tsx:331
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/view/screens/Support.tsx:25
 #: src/view/screens/Support.tsx:28
 msgid "Support"
@@ -12927,7 +14238,11 @@ msgstr ""
 msgid "Tap below to allow Bluesky to access your GPS location. We will then use that data to more accurately determine the content and features available in your region."
 msgstr "点击下方的“允许”按钮以允许 Bluesky 读取你的位置信息，我们将使用该数据来更准确地确认你所在地区可用的内容及功能。"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:667
+=======
+#: src/components/dms/MessageItem.tsx:662
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Tap for details"
 msgstr "点击以获取详细信息"
 
@@ -12984,7 +14299,11 @@ msgstr "点击以移除你的 {0} 反应"
 msgid "Tap to request access to join this group chat"
 msgstr "点击以申请加入此群组对话"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:632
+=======
+#: src/components/dms/MessageItem.tsx:627
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Tap to retry"
 msgstr "点击以重试"
 
@@ -12997,7 +14316,11 @@ msgstr "点击以显示 {0} 反应"
 msgid "Tap to show all reactions"
 msgstr "点击以显示所有反应"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:379
+=======
+#: src/components/dms/MessageItem.tsx:374
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Tap to view reactions"
 msgstr "点击以显示反应"
 
@@ -13192,8 +14515,13 @@ msgstr "你正在回复的帖文已被发布者标记为使用 {suggestedLanguag
 msgid "The Privacy Policy has been moved to <0/>"
 msgstr "隐私政策已移动到 <0/>"
 
+<<<<<<< HEAD
 #: src/view/com/composer/state/video.ts:433
 #: src/view/com/composer/state/video.ts:472
+=======
+#: src/view/com/composer/state/video.ts:428
+#: src/view/com/composer/state/video.ts:467
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "The selected video is larger than {VIDEO_MAX_SIZE_MB} MB. Please try again with a smaller file."
 msgstr "你所选择的视频大小大于 {VIDEO_MAX_SIZE_MB} MB，请选择其他较小的视频文件。"
 
@@ -13356,16 +14684,33 @@ msgstr "Bluesky 目前迎来了大量新用户！我们将尽快启用你的账�
 msgid "These are your default settings"
 msgstr "这些是你的默认设置"
 
+<<<<<<< HEAD
 #: src/screens/Settings/AIPreferencesSettings.tsx:99
 msgid "These preferences apply across your entire account. More granular controls will be made available in the future - for example, allowing you to set rules for specific AI services or specific types of content - and will appear on this page when ready."
+=======
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/hooks.tsx:51
+msgid "These domains"
+msgstr ""
+
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/hooks.tsx:44
+msgid "These hashtags"
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgstr ""
 
 #: src/screens/Settings/FollowingFeedPreferences.tsx:66
 msgid "These settings only apply to the Following feed."
 msgstr "这些偏好设置只适用于“Following”动态源。"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/FeatureGatesSettings.tsx:23
 msgid "These switches force local overrides for GrowthBook feature gates on this device."
+=======
+#. Advanced search filter
+#: src/screens/Search/components/AdvancedSearchDialog/hooks.tsx:58
+msgid "These URLs"
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgstr ""
 
 #: src/components/moderation/BlockDialog.tsx:356
@@ -13499,6 +14844,11 @@ msgstr "这份草稿将被永久删除。"
 msgid "This email is already associated with your account."
 msgstr "此电子邮箱已与你的账户关联。"
 
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:277
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:280
+msgid "This exact phrase"
+msgstr ""
+
 #: src/screens/Settings/ActivityPrivacySettings.tsx:56
 msgid "This feature allows users to receive notifications for your new posts and replies. Who do you want to enable this for?"
 msgstr "此功能可让其他用户在你发布新帖或回复时收到提醒，你希望允许哪些人接收提醒？"
@@ -13615,6 +14965,7 @@ msgstr "此列表为空。"
 msgid "This message is hidden"
 msgstr "这条信息已隐藏"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:665
 #: src/components/dms/MessageItem.tsx:694
 msgid "This message is hidden because this user is blocking you."
@@ -13622,6 +14973,15 @@ msgstr "此信息已被隐藏，因为此用户屏蔽了你。"
 
 #: src/components/dms/MessageItem.tsx:664
 #: src/components/dms/MessageItem.tsx:690
+=======
+#: src/components/dms/MessageItem.tsx:660
+#: src/components/dms/MessageItem.tsx:689
+msgid "This message is hidden because this user is blocking you."
+msgstr "此信息已被隐藏，因为此用户屏蔽了你。"
+
+#: src/components/dms/MessageItem.tsx:659
+#: src/components/dms/MessageItem.tsx:685
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "This message is hidden because you are blocking this user."
 msgstr "此信息已被隐藏，因为你屏蔽了此用户。"
 
@@ -13663,7 +15023,11 @@ msgstr "这则帖文已被发布者删除"
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr "这则帖文将从动态源和讨论串中隐藏。注意：此操作无法撤消。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1122
+=======
+#: src/view/com/composer/Composer.tsx:1125
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "This post's author has disabled quote posts."
 msgstr "这则帖文的发布者已停用引用帖文。"
 
@@ -13866,11 +15230,15 @@ msgstr ""
 msgid "Toggle to enable or disable adult content"
 msgstr "切换以启用或停用成人内容"
 
+<<<<<<< HEAD
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:185
 msgid "Toggle to enable or disable the extra Follows you label"
 msgstr ""
 
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:174
+=======
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:179
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Toggles the sound"
 msgstr "切换音量状态"
 
@@ -13886,9 +15254,15 @@ msgstr "发送代码次数过多，请稍等几分钟后重试。"
 msgid "Too many contacts - you've exceeded the number of contacts you can import to find your friends"
 msgstr "太多联系人了——你导入的联系人数量已超过寻找朋友上限"
 
+<<<<<<< HEAD
 #: src/screens/Hashtag.tsx:91
 #: src/screens/Search/SearchResults.tsx:55
 #: src/screens/Topic.tsx:62
+=======
+#: src/screens/Hashtag.tsx:88
+#: src/screens/Search/SearchResults.tsx:73
+#: src/screens/Topic.tsx:59
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Top"
 msgstr "热门"
 
@@ -13903,12 +15277,17 @@ msgstr "热门回复优先"
 msgid "Topic"
 msgstr "话题"
 
+<<<<<<< HEAD
 #: src/screens/Settings/AIPreferencesSettings.tsx:210
 msgid "Training"
 msgstr ""
 
 #: src/components/dms/MessageContextMenu.tsx:176
 #: src/components/dms/MessageContextMenu.tsx:179
+=======
+#: src/components/dms/MessageContextMenu.tsx:191
+#: src/components/dms/MessageContextMenu.tsx:194
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/Post/Translated/index.tsx:150
 #: src/components/Post/Translated/index.tsx:157
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:834
@@ -13963,6 +15342,7 @@ msgstr "引战"
 msgid "Trust emerges from relationships, communities, and shared context, so we’re also enabling <0>trusted verifiers</0>: organizations that can directly issue verification."
 msgstr "信任源于人际关系、社群和共享环境，因此我们也引入了<0>可信的认证人</0>：可以直接为其他账户授予认证的组织。"
 
+<<<<<<< HEAD
 #: src/view/com/profile/ProfileMenu.tsx:501
 #: src/view/com/profile/ProfileMenu.tsx:504
 msgid "Trust verifier"
@@ -13983,6 +15363,15 @@ msgstr ""
 msgctxt "english-only-resource"
 msgid "Try a different search term, or <0>read about how to use search filters</0>."
 msgstr "尝试搜点其他关键字，或<0>阅读如何使用搜索过滤器</0>。"
+=======
+#: src/screens/Search/SearchResults.tsx:247
+msgid "Try a different search term or remove some filters."
+msgstr ""
+
+#: src/screens/Search/SearchResults.tsx:249
+msgid "Try a different search term."
+msgstr ""
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 
 #: src/features/inviteFriends/InviteScannerScreen.tsx:221
 #: src/features/inviteFriends/InviteScannerScreen.tsx:226
@@ -14014,6 +15403,7 @@ msgstr "试试看"
 msgid "TV"
 msgstr "电视节目"
 
+<<<<<<< HEAD
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:66
 msgid "Two-factor authentication (2FA)"
 msgstr "两步验证（2FA）"
@@ -14027,6 +15417,17 @@ msgid "Type your message here"
 msgstr "请在这里输入消息"
 
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:455
+=======
+#: src/features/inviteFriends/components/ThemePicker.tsx:32
+msgid "Twilight"
+msgstr "暮光"
+
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:65
+msgid "Two-factor authentication (2FA)"
+msgstr "两步验证（2FA）"
+
+#: src/screens/Settings/components/ChangeHandleDialog.tsx:445
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Type:"
 msgstr "类型："
 
@@ -14051,7 +15452,11 @@ msgstr "无法连接到你的服务，请检查网络连接并重试。"
 #: src/screens/Login/LoginForm.web.tsx:222
 #: src/screens/Login/LoginForm.web.tsx:415
 #: src/screens/Login/SetNewPasswordForm.tsx:83
+<<<<<<< HEAD
 #: src/screens/Signup/index.tsx:93
+=======
+#: src/screens/Signup/index.tsx:88
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Unable to contact your service. Please check your Internet connection."
 msgstr "无法连接到服务，请检查网络连接。"
 
@@ -14091,9 +15496,15 @@ msgstr "目前无法使用"
 msgid "Unavailable feed information"
 msgstr "动态源信息不可用"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:732
 #: src/components/dms/MessagesListBlockedFooter.tsx:99
 #: src/components/dms/MessagesListBlockedFooter.tsx:106
+=======
+#: src/components/dms/MessageItem.tsx:727
+#: src/components/dms/MessagesListBlockedFooter.tsx:97
+#: src/components/dms/MessagesListBlockedFooter.tsx:104
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/moderation/BlockDialog.tsx:186
 #: src/components/moderation/BlockDialog.tsx:190
 #: src/components/moderation/BlockDialog.tsx:211
@@ -14236,7 +15647,11 @@ msgstr "解锁此群组聊天"
 msgid "Unmute"
 msgstr "取消隐藏"
 
+<<<<<<< HEAD
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:171
+=======
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:176
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VolumeControl.tsx:96
 msgctxt "video"
 msgid "Unmute"
@@ -14322,7 +15737,11 @@ msgstr "已取消固定列表"
 msgid "Unsnooze email reminder"
 msgstr "取消暂停邮件提醒"
 
+<<<<<<< HEAD
 #: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:354
+=======
+#: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:348
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Unsubscribe"
 msgstr "取消订阅"
 
@@ -14331,7 +15750,11 @@ msgstr "取消订阅"
 msgid "Unsubscribe from list"
 msgstr "从列表取消订阅"
 
+<<<<<<< HEAD
 #: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:321
+=======
+#: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:315
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Unsubscribe from this labeler"
 msgstr "取消订阅此标记者"
 
@@ -14343,9 +15766,18 @@ msgstr "已从列表中取消订阅"
 msgid "Unsupported clipboard content"
 msgstr "不支持的剪贴板内容"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1661
+=======
+#: src/view/com/composer/Composer.tsx:1642
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Unsupported video type: {mimeType}"
 msgstr "不支持的视频类型：{mimeType}"
+
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:337
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:340
+msgid "Until"
+msgstr ""
 
 #: src/components/dialogs/nuxs/GroupChatsAnnouncement.tsx:198
 msgid "Up to 50 people"
@@ -14359,7 +15791,7 @@ msgstr "更新"
 #. placeholder {0}: createSanitizedDisplayName(profile, true)
 #: src/components/dialogs/lists/UserAddRemoveListsDialog.tsx:138
 msgid "Update {0} in Lists"
-msgstr ""
+msgstr "更新列表中的 {0}"
 
 #: src/components/dialogs/EmailDialog/screens/Update.tsx:296
 #: src/components/dialogs/EmailDialog/screens/Update.tsx:308
@@ -14370,7 +15802,7 @@ msgstr "更新电子邮箱"
 
 #: src/components/dialogs/lists/UserAddRemoveListsDialog.tsx:142
 msgid "Update in Lists"
-msgstr ""
+msgstr "更新列表"
 
 #: src/screens/Messages/components/InviteLinkDialog.tsx:239
 #: src/screens/Messages/components/InviteLinkDialog.tsx:275
@@ -14431,7 +15863,11 @@ msgstr "从文件上传"
 msgid "Upload from Library"
 msgstr "从照片图库上传"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:3020
+=======
+#: src/view/com/composer/Composer.tsx:2675
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Uploading GIF..."
 msgstr "正在上传 GIF……"
 
@@ -14445,7 +15881,11 @@ msgstr "正在上传图片……"
 msgid "Uploading link thumbnail..."
 msgstr "正在上传链接缩略图……"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:3022
+=======
+#: src/view/com/composer/Composer.tsx:2677
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Uploading video..."
 msgstr "正在上传视频……"
 
@@ -14748,6 +16188,7 @@ msgid "Version {0}"
 msgstr "版本号 {0}"
 
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:88
+<<<<<<< HEAD
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:150
 msgid "Video"
 msgstr "视频"
@@ -14758,6 +16199,13 @@ msgid "Video downloaded"
 msgstr ""
 
 #: src/view/com/composer/state/video.ts:395
+=======
+#: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:155
+msgid "Video"
+msgstr "视频"
+
+#: src/view/com/composer/state/video.ts:389
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Video failed to process"
 msgstr "视频处理失败"
 
@@ -14796,7 +16244,11 @@ msgstr "无法找到视频。"
 msgid "Video settings"
 msgstr "视频设置"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:3040
+=======
+#: src/view/com/composer/Composer.tsx:2695
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Video uploaded"
 msgstr "已上传视频"
 
@@ -14809,11 +16261,21 @@ msgstr "视频：{0}"
 msgid "Videos"
 msgstr "视频"
 
+<<<<<<< HEAD
 #: src/view/com/composer/SelectMediaButton.tsx:435
 msgid "Videos must be less than 3 minutes long."
 msgstr "视频长度不得超过 3 分钟。"
 
 #: src/view/com/composer/Composer.tsx:1234
+=======
+#: src/view/com/composer/Composer.tsx:441
+#: src/view/com/composer/Composer.tsx:573
+#: src/view/com/composer/SelectMediaButton.tsx:440
+msgid "Videos must be less than 3 minutes long."
+msgstr "视频长度不得超过 3 分钟。"
+
+#: src/view/com/composer/Composer.tsx:1232
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr "查看"
@@ -14907,11 +16369,15 @@ msgstr "查看更多"
 msgid "View more trending videos"
 msgstr "浏览更多热门视频"
 
+<<<<<<< HEAD
 #: src/components/ProfileBadges.tsx:229
 msgid "View PDS information"
 msgstr ""
 
 #: src/view/com/composer/Composer.tsx:1229
+=======
+#: src/view/com/composer/Composer.tsx:1227
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "View post"
 msgstr "查看帖文"
 
@@ -14989,8 +16455,13 @@ msgstr "查看你隐藏的账户"
 msgid "View your verifications"
 msgstr "查看你的认证"
 
+<<<<<<< HEAD
 #: src/components/images/AutoSizedImage.tsx:231
 #: src/components/images/AutoSizedImage.tsx:263
+=======
+#: src/components/images/AutoSizedImage.tsx:222
+#: src/components/images/AutoSizedImage.tsx:254
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Views full image"
 msgstr "查看完整图片"
 
@@ -15129,7 +16600,11 @@ msgstr "我们建议至少选择两个感兴趣的主题。"
 msgid "We sent an email to <0>{0}</0> containing a link. Please click on it to complete the email verification process."
 msgstr "我们将向 <0>{0}</0> 发送一封含有链接的电子邮件，请点击邮件内容来完成电子邮箱的验证流程。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/state/video.ts:455
+=======
+#: src/view/com/composer/state/video.ts:450
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "We were unable to determine if you are allowed to upload videos. Please try again."
 msgstr "我们无法确定你是否有权上传视频，请重试。"
 
@@ -15198,6 +16673,13 @@ msgstr "我们遇到了网络问题，请再试一次"
 msgid "We’re introducing a new layer of verification on Bluesky — an easy-to-see checkmark."
 msgstr "为你介绍 Bluesky 的全新认证机制 —— 认证徽章。"
 
+<<<<<<< HEAD
+=======
+#: src/screens/Signup/index.tsx:137
+msgid "We’re so excited to have you join us!"
+msgstr "我们非常高兴你选择加入我们！"
+
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/ageAssurance/components/NoAccessScreen.tsx:416
 #: src/components/ageAssurance/AgeAssuranceAccountCard.tsx:241
 msgid "We're sorry, but based on your device's location, you are currently located in a region that requires age assurance."
@@ -15211,8 +16693,13 @@ msgstr "很抱歉，我们无法解析此列表。如果问题持续发生，请
 msgid "We're sorry, but we weren't able to load your muted words at this time. Please try again."
 msgstr "很抱歉，我们无法加载你的隐藏字词列表。请重试。"
 
+<<<<<<< HEAD
 #: src/screens/Search/SearchResults.tsx:413
 #: src/screens/Search/SearchResults.tsx:560
+=======
+#: src/screens/Search/SearchResults.tsx:456
+#: src/screens/Search/SearchResults.tsx:593
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "We’re sorry, but your search could not be completed. Please try again in a few minutes."
 msgstr "很抱歉，无法完成你的搜索。请几分钟后重试。"
 
@@ -15220,7 +16707,11 @@ msgstr "很抱歉，无法完成你的搜索。请几分钟后重试。"
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr "很抱歉，你目前无法访问此页面。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1120
+=======
+#: src/view/com/composer/Composer.tsx:1123
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr "很抱歉！你回复的帖文已被删除。"
 
@@ -15282,7 +16773,22 @@ msgstr "你感兴趣的是什么？"
 msgid "What do you want to call your starter pack?"
 msgstr "你希望如何命名你的新手包？"
 
+<<<<<<< HEAD
 #: src/components/dialogs/nuxs/InitialVerificationAnnouncement.tsx:153
+=======
+#. Advanced search: Example of an “exact phrase” search
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:282
+msgid "what’s up"
+msgstr ""
+
+#: src/view/com/auth/SplashScreen.web.tsx:98
+#: src/view/com/composer/Composer.tsx:1606
+#: src/view/com/feeds/ComposerPrompt.tsx:193
+msgid "What's up?"
+msgstr "发生了什么新鲜事？"
+
+#: src/components/dialogs/nuxs/InitialVerificationAnnouncement.tsx:150
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "When you tap on a check, you’ll see which organizations have granted verification."
 msgstr "当你点按验证徽章时，你会看到哪些组织已为其授予认证。"
 
@@ -15304,8 +16810,13 @@ msgid "Who can verify?"
 msgstr "哪些人可以获得认证？"
 
 #: src/screens/Home/NoFeedsPinned.tsx:80
+<<<<<<< HEAD
 #: src/screens/Messages/ChatList.tsx:394
 #: src/screens/Messages/Inbox.tsx:198
+=======
+#: src/screens/Messages/ChatList.tsx:407
+#: src/screens/Messages/Inbox.tsx:191
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Whoops!"
 msgstr "糟糕！"
 
@@ -15368,7 +16879,11 @@ msgstr "需要屏蔽该用户、离开对话，或两者一并执行吗？"
 msgid "Would you like to save this as a draft before viewing your drafts?"
 msgstr "在查看其他草稿之前，需要先保存现有内容吗？"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1540
+=======
+#: src/view/com/composer/Composer.tsx:1521
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Would you like to save this as a draft to edit later?"
 msgstr "需要把现有内容保存为草稿，以便日后编辑吗？"
 
@@ -15377,12 +16892,21 @@ msgstr "需要把现有内容保存为草稿，以便日后编辑吗？"
 msgid "Write a post"
 msgstr "撰写一篇帖文"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1737
 msgid "Write post"
 msgstr "撰写帖文"
 
 #: src/screens/PostThread/components/ThreadComposePrompt.tsx:93
 #: src/view/com/composer/Composer.tsx:1621
+=======
+#: src/view/com/composer/Composer.tsx:1702
+msgid "Write post"
+msgstr "撰写帖文"
+
+#: src/screens/PostThread/components/ThreadComposePrompt.tsx:91
+#: src/view/com/composer/Composer.tsx:1604
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Write your reply"
 msgstr "撰写你的回复"
 
@@ -15458,7 +16982,11 @@ msgid "You are accessing Bluesky from a region that legally requires us to verif
 msgstr "你所在的地区依法要求我们在允许您使用 Bluesky 应用之前验证你的年龄。"
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:705
+=======
+#: src/components/dms/MessageItem.tsx:700
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You are blocking {0}"
 msgstr "你屏蔽了 {0}"
 
@@ -15496,7 +17024,11 @@ msgstr "你已开始直播"
 msgid "You are no longer live"
 msgstr "你已停止直播"
 
+<<<<<<< HEAD
 #: src/view/com/composer/state/video.ts:448
+=======
+#: src/view/com/composer/state/video.ts:443
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You are not allowed to upload videos."
 msgstr "你目前无法上传视频。"
 
@@ -15545,12 +17077,12 @@ msgstr "你可以将你的对话数据导出为一个“JSONL”文件。此文�
 msgid "You can always opt out and delete your data"
 msgstr "你可以随时选择退出并删除数据"
 
-#: src/lib/hooks/useNotificationHandler.ts:135
+#: src/lib/hooks/useNotificationHandler.ts:134
 msgid "You can choose whether chat notifications have sound in the chat settings within the app"
 msgstr "你可以自定义应用内的对话通知是否播放提示音"
 
-#: src/screens/Messages/Settings.tsx:152
-#: src/screens/Messages/Settings.tsx:203
+#: src/screens/Messages/Settings.tsx:165
+#: src/screens/Messages/Settings.tsx:216
 msgid "You can continue ongoing conversations regardless of which setting you choose."
 msgstr "无论使用哪种设置，都不会影响已发起的对话。"
 
@@ -15568,11 +17100,19 @@ msgid "You can now sign in with your new password."
 msgstr "你现在可以使用新密码登录。"
 
 #. Toast shown when the user tries to add more images but the post gallery is already at the cap
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:239
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "帖文最多只能添加 {MAX_GALLERY_IMAGES, plural,other {# 张图片}}"
 
 #: src/view/com/composer/Composer.tsx:1545
+=======
+#: src/view/com/composer/Composer.tsx:222
+msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
+msgstr "帖文最多只能添加 {MAX_GALLERY_IMAGES, plural,other {# 张图片}}"
+
+#: src/view/com/composer/Composer.tsx:1526
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You can only save drafts up to 1000 characters."
 msgstr "你目前只能保存最多 1000 个字符的草稿。"
 
@@ -15580,11 +17120,19 @@ msgstr "你目前只能保存最多 1000 个字符的草稿。"
 msgid "You can only save drafts up to 1000 characters. Would you like to discard this post before viewing your drafts?"
 msgstr "你目前只能保存最多 1000 个字符的草稿，你想在查看其他草稿之前放弃这则帖文内容吗？"
 
+<<<<<<< HEAD
 #: src/view/com/composer/SelectMediaButton.tsx:438
 msgid "You can only select one GIF at a time."
 msgstr "你一次只能选择一个 GIF。"
 
 #: src/view/com/composer/SelectMediaButton.tsx:432
+=======
+#: src/view/com/composer/SelectMediaButton.tsx:443
+msgid "You can only select one GIF at a time."
+msgstr "你一次只能选择一个 GIF。"
+
+#: src/view/com/composer/SelectMediaButton.tsx:437
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You can only select one video at a time."
 msgstr "你一次只能选择一个视频。"
 
@@ -15597,7 +17145,11 @@ msgid "You can read chat history but can’t send new messages."
 msgstr "你仍然可以查看对话记录，但无法发送新信息。"
 
 #. Error message for maximum number of images that can be selected to add to a post.
+<<<<<<< HEAD
 #: src/view/com/composer/SelectMediaButton.tsx:424
+=======
+#: src/view/com/composer/SelectMediaButton.tsx:429
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You can select up to {MAX_GALLERY_IMAGES, plural, other {# images}} in total."
 msgstr "你最多可以选择 {MAX_GALLERY_IMAGES, plural,other {# 张图片}}。"
 
@@ -15607,8 +17159,13 @@ msgstr "你最多可以选择 {MAX_GALLERY_IMAGES, plural,other {# 张图片}}�
 msgid "You can update this later from your settings."
 msgstr "你可以随时在设置里重新更改。"
 
+<<<<<<< HEAD
 #: src/components/dms/ActionsWrapper.web.tsx:84
 #: src/components/dms/MessageContextMenu.tsx:115
+=======
+#: src/components/dms/ActionsWrapper.web.tsx:81
+#: src/components/dms/MessageContextMenu.tsx:129
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You cannot add more than {EMOJI_REACTION_LIMIT, plural, one {# emoji reaction} other {# emoji reactions}}"
 msgstr "你不能添加超过 {EMOJI_REACTION_LIMIT, plural,one {# 个表情符号反应}other {# 个表情符号反应}}"
 
@@ -15729,7 +17286,11 @@ msgstr "你已成功验证电子邮箱地址，现在你可以关闭此对话框
 msgid "You have temporarily reached the limit for video uploads. Please try again later."
 msgstr "你已暂时达到视频上传的限制。请稍后再试。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1535
+=======
+#: src/view/com/composer/Composer.tsx:1516
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You have unsaved changes to this draft, would you like to save them?"
 msgstr "你有未保存的更改，需要保存吗？"
 
@@ -15804,7 +17365,11 @@ msgstr "你必须至少关注 7 个人以创建新手包。"
 msgid "You must grant access to your photo library to save a QR code"
 msgstr "你必须授权访问照片图库以保存二维码"
 
+<<<<<<< HEAD
 #: src/view/com/composer/SelectMediaButton.tsx:467
+=======
+#: src/view/com/composer/SelectMediaButton.tsx:472
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You need to allow access to your media library."
 msgstr "你必须授予权限以访问媒体内容。"
 
@@ -15826,7 +17391,11 @@ msgid "You probably want to restart the app now."
 msgstr "你可能需要重启应用程序。"
 
 #. placeholder {0}: reaction.value
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:346
+=======
+#: src/components/dms/MessageItem.tsx:341
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You reacted {0}"
 msgstr "你作出了 {0} 反应"
 
@@ -15840,17 +17409,29 @@ msgstr "你对 {target} 作出了 {0} 反应"
 msgid "You recently changed your birthdate"
 msgstr "你最近修改了你的出生日期"
 
+<<<<<<< HEAD
 #: src/components/dms/MessageItem.tsx:807
-msgid "You replied"
-msgstr ""
-
+=======
 #: src/components/dms/MessageItem.tsx:805
-msgid "You replied to {originalName}"
-msgstr ""
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
+msgid "You replied"
+msgstr "你回复了"
 
+<<<<<<< HEAD
+#: src/components/dms/MessageItem.tsx:805
+=======
 #: src/components/dms/MessageItem.tsx:803
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
+msgid "You replied to {originalName}"
+msgstr "你回复了 {originalName}"
+
+<<<<<<< HEAD
+#: src/components/dms/MessageItem.tsx:803
+=======
+#: src/components/dms/MessageItem.tsx:801
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You replied to yourself"
-msgstr ""
+msgstr "你回复了自己"
 
 #. Displayed when the user has requested to join a group chat.
 #: src/screens/Messages/components/OutgoingRequestListItem.tsx:105
@@ -15888,11 +17469,19 @@ msgstr "除非受到邀请，否则你将无法重新加入。"
 msgid "You: {message}"
 msgstr "你：{message}"
 
+<<<<<<< HEAD
 #: src/screens/Signup/index.tsx:158
 msgid "You'll follow the suggested users and feeds once you finish creating your account!"
 msgstr "当你完成创建账户后，你将自动关注建议的用户和动态源！"
 
 #: src/screens/Signup/index.tsx:163
+=======
+#: src/screens/Signup/index.tsx:153
+msgid "You'll follow the suggested users and feeds once you finish creating your account!"
+msgstr "当你完成创建账户后，你将自动关注建议的用户和动态源！"
+
+#: src/screens/Signup/index.tsx:158
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You'll follow the suggested users once you finish creating your account!"
 msgstr "当你完成创建账户后，你将自动关注建议的用户！"
 
@@ -15956,7 +17545,11 @@ msgstr "你已到达内容的结尾。"
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr "你已经浏览完动态源的所有帖文啦！寻找一些更多的账户关注吧。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:692
+=======
+#: src/view/com/composer/Composer.tsx:719
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You've reached the maximum number of drafts"
 msgstr "你已达到最大草稿保存数量"
 
@@ -15964,15 +17557,27 @@ msgstr "你已达到最大草稿保存数量"
 msgid "You've reached the maximum number of requests allowed. Please try again later."
 msgstr "你已达到请求上限，请稍后再试。"
 
+#: src/screens/Search/components/AdvancedSearchDialog/index.tsx:440
+msgid "You’ve reached the maximum of {MAX_FILTERS, plural, one {# filter} other {# filters}}. Add more values to an existing filter instead of creating new ones."
+msgstr ""
+
 #: src/components/FocusScope/index.tsx:88
 msgid "You've reached the start of the active content."
 msgstr "你已到达内容的开头。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/state/video.ts:459
 msgid "You've reached your daily limit for video uploads (too many bytes)"
 msgstr "你已达到每日上传视频上限（文件太大）"
 
 #: src/view/com/composer/state/video.ts:463
+=======
+#: src/view/com/composer/state/video.ts:454
+msgid "You've reached your daily limit for video uploads (too many bytes)"
+msgstr "你已达到每日上传视频上限（文件太大）"
+
+#: src/view/com/composer/state/video.ts:458
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "You've reached your daily limit for video uploads (too many videos)"
 msgstr "你已达到每日上传视频上限（数量太多）"
 
@@ -15980,6 +17585,13 @@ msgstr "你已达到每日上传视频上限（数量太多）"
 msgid "You've run out of videos to watch. Maybe it's a good time to take a break?"
 msgstr "你已经看完了所有视频，或许是时候休息一下？"
 
+<<<<<<< HEAD
+=======
+#: src/screens/Signup/index.tsx:191
+msgid "Your account"
+msgstr "你的账户"
+
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 #: src/screens/Settings/components/DeleteAccountDialog.tsx:128
 msgid "Your account has been deleted, see ya! ✌️"
 msgstr "你的账户已删除，有缘再会! ✌️"
@@ -15988,7 +17600,11 @@ msgstr "你的账户已删除，有缘再会! ✌️"
 msgid "Your account has been suspended"
 msgstr "你的账户已被冻结"
 
+<<<<<<< HEAD
 #: src/view/com/composer/state/video.ts:467
+=======
+#: src/view/com/composer/state/video.ts:462
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Your account is not yet old enough to upload videos. Please try again later."
 msgstr "你的账户注册时间过短，暂时无法上传视频。请稍后再试。"
 
@@ -16120,11 +17736,19 @@ msgstr "已成功更改你的密码！请你今后使用你的新密码登录 Bl
 msgid "Your password must be at least 8 characters long."
 msgstr "你输入的密码至少应包含 8 个字符。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1225
 msgid "Your post was sent"
 msgstr "已发布你的帖文"
 
 #: src/view/com/composer/Composer.tsx:1222
+=======
+#: src/view/com/composer/Composer.tsx:1223
+msgid "Your post was sent"
+msgstr "已发布你的帖文"
+
+#: src/view/com/composer/Composer.tsx:1220
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Your posts were sent"
 msgstr "已发布你的帖文"
 
@@ -16145,7 +17769,11 @@ msgstr "你的头像周围环绕着许多其他人的头像"
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr "其他 Bluesky 用户将无法看到你的个人资料、帖文、列表与其他相关个人信息。你可以随时登录以重新启用你的账户。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1224
+=======
+#: src/view/com/composer/Composer.tsx:1222
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Your reply was sent"
 msgstr "已发布你的回复"
 
@@ -16158,7 +17786,11 @@ msgstr "你的举报信息将提交给 <0>{0}</0>。"
 msgid "Your selected interests help us serve you content you care about."
 msgstr "你选择的兴趣主题将帮助我们提供更多你想看到的内容。"
 
+<<<<<<< HEAD
 #: src/view/com/composer/Composer.tsx:1570
+=======
+#: src/view/com/composer/Composer.tsx:1551
+>>>>>>> bdca7622ce507333dff94ca4598116ee77a6f1db
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "你的帖文串中包含空白帖文，继续发布将会跳过这些内容，其余帖文会重新组合成完整的帖文串发布。"
 

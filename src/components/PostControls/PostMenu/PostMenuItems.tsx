@@ -49,6 +49,7 @@ import {
 } from '#/state/preferences'
 import {usePinnedPostMutation} from '#/state/queries/pinned-post'
 import {
+  useGetPost,
   usePostDeleteMutation,
   useThreadMuteMutationQueue,
 } from '#/state/queries/post'
@@ -66,6 +67,7 @@ import {
   useToggleReplyVisibilityMutation,
 } from '#/state/queries/threadgate'
 import {useRequireAuth, useSession} from '#/state/session'
+import {type ComposerOptsPostRef} from '#/state/shell/composer'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
 import {useDialogControl} from '#/components/Dialog'
 import {useGlobalDialogsControlContext} from '#/components/dialogs/Context'
@@ -109,6 +111,7 @@ import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
 import {IS_INTERNAL} from '#/env'
+import * as bsky from '#/types/bsky'
 
 let PostMenuItems = ({
   post,
@@ -238,11 +241,12 @@ let PostMenuItems = ({
   }
 
   const {openComposer} = useOpenComposer()
+  const getPost = useGetPost()
   const onRedraftPost = () => {
     redraftPromptControl.open()
   }
 
-  const onConfirmRedraft = () => {
+  const onConfirmRedraft = async () => {
     let imageUris: {
       uri: string
       width: number
@@ -318,13 +322,29 @@ let PostMenuItems = ({
       }
     }
 
-    let replyTo: any
+    let replyTo: ComposerOptsPostRef | undefined
     if (record.reply) {
-      const parent = record.reply.parent || record.reply.root
-      if (parent) {
-        replyTo = {
-          uri: parent.uri,
-          cid: parent.cid,
+      const parentRef = record.reply.parent || record.reply.root
+      if (parentRef?.uri) {
+        try {
+          const parentPost = await getPost({uri: parentRef.uri})
+          if (
+            bsky.dangerousIsType<AppBskyFeedPost.Record>(
+              parentPost.record,
+              AppBskyFeedPost.isRecord,
+            )
+          ) {
+            replyTo = {
+              uri: parentPost.uri,
+              cid: parentPost.cid,
+              text: parentPost.record.text || '',
+              author: parentPost.author,
+              embed: parentPost.embed,
+              langs: parentPost.record.langs,
+            }
+          }
+        } catch (e) {
+          logger.warn('Failed to fetch parent post for redraft', {message: e})
         }
       }
     }

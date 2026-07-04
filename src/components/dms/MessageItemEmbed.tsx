@@ -79,12 +79,14 @@ let MessageItemEmbed = ({
             minWidth: 280,
             maxWidth: 360,
           }),
-          // Cancel out the embed's internal a.mt_sm so the container's
-          // CLUSTERED_MESSAGE_GAP (2px) is the only spacing applied
-          {marginTop: -a.mt_sm.marginTop},
         ]}>
         <Animated.View
-          style={[a.rounded_xl, a.overflow_hidden, radiiStyle, highlightStyle]}>
+          style={[
+            enableSquareButtons ? a.rounded_sm : a.rounded_xl,
+            a.overflow_hidden,
+            radiiStyle,
+            highlightStyle,
+          ]}>
           <Embed
             embed={embed}
             allowNestedQuotes

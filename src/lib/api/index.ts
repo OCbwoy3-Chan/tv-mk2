@@ -59,6 +59,7 @@ interface PostOpts {
   onStateChange?: (state: string) => void
   langs?: string[]
   omitViaField?: boolean
+  tidSuffix?: string //ignore
   atprotoRkeyGeneration?:
     | {type: 'tid'}
     | {type: 'prefix'; prefix: string}

@@ -70,7 +70,6 @@ export function ConstrainedImage({
 export function AutoSizedImage({
   image,
   crop = 'constrained',
-  hideBadge,
   onPress,
   onLongPress,
   onPressIn,
@@ -79,7 +78,6 @@ export function AutoSizedImage({
 }: {
   image: AppBskyEmbedImages.ViewImage
   crop?: 'none' | 'square' | 'constrained'
-  hideBadge?: boolean
   onPress?: (
     containerRef: AnimatedRef<any>,
     fetchedDims: Dimensions | null,
@@ -156,7 +154,7 @@ export function AutoSizedImage({
       />
       <MediaInsetBorder />
 
-      {(hasAlt || isCropped) && !hideBadge ? (
+      {hasAlt || isCropped ? (
         <View
           accessible={false}
           style={[
@@ -175,8 +173,10 @@ export function AutoSizedImage({
           ]}>
           {isCropped && (
             <View
+              accessible={false}
               style={[
-                a.rounded_xs,
+                a.rounded_sm,
+                a.p_xs,
                 t.atoms.bg_contrast_25,
                 {
                   padding: 3,
@@ -196,17 +196,18 @@ export function AutoSizedImage({
           )}
           {hasAlt && (
             <View
+              accessible={false}
               style={[
                 a.justify_center,
-                a.rounded_xs,
+                a.rounded_sm,
+                a.p_xs,
                 t.atoms.bg_contrast_25,
                 {
-                  padding: 3,
                   opacity: 0.8,
                 },
                 largeAlt && [
                   {
-                    padding: 5,
+                    padding: 6,
                   },
                 ],
               ]}>

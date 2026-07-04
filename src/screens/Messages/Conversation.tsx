@@ -40,6 +40,7 @@ import {
   useEmailDialogControl,
 } from '#/components/dialogs/EmailDialog'
 import {MessagesListBlockedFooter} from '#/components/dms/MessagesListBlockedFooter'
+import {MessagesListDeletedAccountFooter} from '#/components/dms/MessagesListDeletedAccountFooter'
 import {MessagesListHeader} from '#/components/dms/MessagesListHeader'
 import {type ConvoWithDetails, parseConvoView} from '#/components/dms/util'
 import {Error} from '#/components/Error'
@@ -230,9 +231,13 @@ function InnerReady({
 
   const header = <MessagesListHeader convo={convo} />
 
+  const isDeletedAccount = primaryMember?.handle === 'missing.invalid'
+
   let footer: React.ReactNode = null
   if (isDisabled) {
     footer = <ChatDisabled />
+  } else if (convo && isDeletedAccount && convo.kind === 'direct') {
+    footer = <MessagesListDeletedAccountFooter convoId={convo.view.id} />
   } else if (
     convo &&
     primaryMember &&

@@ -70,8 +70,8 @@ module.exports = function (_config) {
       newArchEnabled: false,
       ios: {
         supportsTablet: false,
-        bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'app.tennaparty',
-        appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'B3LX46C5HS',
+        bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
+        appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'TODO: Kris when new Mac + Paid Apple Dev Acc',
         buildNumber: IOS_BUILD_NUMBER,
         config: {
           usesNonExemptEncryption: false,
@@ -95,6 +95,7 @@ module.exports = function (_config) {
             'an',
             'ast',
             'ca',
+            'cs',
             'cy',
             'da',
             'de',
@@ -143,6 +144,7 @@ module.exports = function (_config) {
             : 'group.app.tennaparty',
           'com.apple.developer.usernotifications.communication': true,
           // 'com.apple.developer.device-information.user-assigned-device-name': true,
+          'com.apple.developer.declared-age-range': true,
         },
         privacyManifests: {
           NSPrivacyCollectedDataTypes: [

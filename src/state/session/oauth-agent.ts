@@ -25,11 +25,14 @@ export async function oauthCreateAgent(session: OAuthSession) {
 
 const OAUTH_RESTORE_TIMEOUT_MS = 10_000
 
-export async function oauthResumeSession(account: SessionAccount) {
+export async function oauthResumeSession(
+  account: SessionAccount,
+  refresh: boolean | 'auto' = 'auto',
+) {
   let session: OAuthSession
   try {
     session = await Promise.race([
-      restoreOAuthSession(account.did),
+      restoreOAuthSession(account.did, refresh),
       new Promise<never>((_, reject) =>
         setTimeout(
           () => reject(new Error('OAuth session restore timed out')),

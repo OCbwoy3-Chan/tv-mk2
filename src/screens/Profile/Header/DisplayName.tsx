@@ -28,21 +28,13 @@ export function ProfileHeaderDisplayName({
           gtMobile ? a.text_4xl : a.text_3xl,
           a.self_start,
           a.font_bold,
+          a.leading_tight,
         ]}>
         {sanitizeDisplayName(
           profile.displayName || sanitizeHandle(profile.handle),
           moderation.ui('displayName'),
         )}
-        <View
-          style={[
-            a.pl_xs,
-            a.flex_row,
-            a.gap_2xs,
-            a.align_center,
-            {
-              marginTop: platform({ios: 2}),
-            },
-          ]}>
+        <View style={[a.pl_xs, {marginTop: platform({ios: 2})}]}>
           <ProfileBadges profile={profile} size="lg" interactive />
         </View>
       </Text>

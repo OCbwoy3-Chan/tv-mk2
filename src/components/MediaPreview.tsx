@@ -102,6 +102,7 @@ export function Embed({
           <GifItem
             thumbnail={e.view.thumbnail ? e.view.thumbnail : undefined}
             alt={e.view.alt}
+            skipTransforms
           />
         ) : (
           <VideoItem
@@ -139,24 +140,28 @@ export function ImageItem({
   alt,
   children,
   maxWidth = 100,
+  skipTransforms = false,
 }: {
   thumbnail?: string
   alt?: string
   children?: React.ReactNode
   maxWidth?: number
+  skipTransforms?: boolean
 }) {
   const t = useTheme()
   const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
-  const transformedThumbnail = thumbnail
-    ? applyImageTransforms(thumbnail, {
-        imageCdnHost,
-        format: thumbnailFormat,
-      })
+  const displayThumbnail = thumbnail
+    ? skipTransforms
+      ? thumbnail
+      : applyImageTransforms(thumbnail, {
+          imageCdnHost,
+          format: thumbnailFormat,
+        })
     : undefined
 
-  if (!transformedThumbnail) {
+  if (!displayThumbnail) {
     return (
       <View
         style={[
@@ -176,8 +181,8 @@ export function ImageItem({
   return (
     <View style={[a.flex_grow, a.relative, a.aspect_square, {maxWidth}]}>
       <Image
-        key={transformedThumbnail}
-        source={{uri: transformedThumbnail}}
+        key={displayThumbnail}
+        source={{uri: displayThumbnail}}
         alt={alt}
         style={[a.flex_1, a.rounded_xs, t.atoms.bg_contrast_25]}
         contentFit="cover"
@@ -191,9 +196,17 @@ export function ImageItem({
   )
 }
 
-export function GifItem({thumbnail, alt}: {thumbnail?: string; alt?: string}) {
+export function GifItem({
+  thumbnail,
+  alt,
+  skipTransforms = false,
+}: {
+  thumbnail?: string
+  alt?: string
+  skipTransforms?: boolean
+}) {
   return (
-    <ImageItem thumbnail={thumbnail} alt={alt}>
+    <ImageItem thumbnail={thumbnail} alt={alt} skipTransforms={skipTransforms}>
       <View style={[a.absolute, a.inset_0, a.justify_center, a.align_center]}>
         <PlayButtonIcon size={24} />
       </View>
@@ -214,7 +227,7 @@ export function VideoItem({
   alt?: string
 }) {
   return (
-    <ImageItem thumbnail={thumbnail} alt={alt}>
+    <ImageItem thumbnail={thumbnail} alt={alt} skipTransforms>
       <View style={[a.absolute, a.inset_0, a.justify_center, a.align_center]}>
         <PlayButtonIcon size={24} />
       </View>

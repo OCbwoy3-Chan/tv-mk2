@@ -64,7 +64,7 @@ export const ChooseAccountForm = ({
         })
         Toast.show(_(msg`Signed in as @${account.handle}`))
       } catch (e: any) {
-        logger.error('choose account: initSession failed', {
+        logger.warn('choose account: initSession failed', {
           message: e instanceof Error ? e.message : 'Unknown error',
         })
         Toast.show(_(msg`Sign in failed. Please try again.`))

@@ -29,6 +29,10 @@ export function DesktopSearch() {
     if (query.length) setActive(true)
   }
 
+  const onBlur = () => {
+    setActive(false)
+  }
+
   const onChangeText = (text: string) => {
     setQuery(text)
     if (!active) {
@@ -68,6 +72,7 @@ export function DesktopSearch() {
         hotkey
         value={query}
         onFocus={onFocus}
+        onBlur={onBlur}
         onChangeText={onChangeText}
         onClearText={onClearText}
         onSubmitEditing={onSubmit}

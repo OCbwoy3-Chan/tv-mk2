@@ -38,28 +38,32 @@ export {useMenuContext}
 export function useMenuControl(): Dialog.DialogControlProps {
   const id = useId()
   const [isOpen, setIsOpen] = useState(false)
+  const open = useCallback(() => setIsOpen(true), [])
+  const close = useCallback(() => setIsOpen(false), [])
 
   return useMemo(
     () => ({
       id,
       ref: {current: null},
       isOpen,
-      open() {
-        setIsOpen(true)
-      },
-      close() {
-        setIsOpen(false)
-      },
+      open,
+      close,
     }),
-    [id, isOpen, setIsOpen],
+    [id, isOpen, open, close],
   )
 }
 
 export function Root({
   children,
   control,
+  modal = true,
+  disableBackdrop = false,
+  dismissGuardRef,
 }: React.PropsWithChildren<{
   control?: Dialog.DialogControlProps
+  modal?: boolean
+  disableBackdrop?: boolean
+  dismissGuardRef?: React.MutableRefObject<boolean>
 }>) {
   const {_} = useLingui()
   const defaultControl = useMenuControl()
@@ -71,18 +75,24 @@ export function Root({
   )
   const onOpenChange = useCallback(
     (open: boolean) => {
-      if (context.control.isOpen && !open) {
-        context.control.close()
-      } else if (!context.control.isOpen && open) {
+      if (!open && dismissGuardRef?.current) {
+        return
+      }
+      if (open === context.control.isOpen) {
+        return
+      }
+      if (open) {
         context.control.open()
+      } else {
+        context.control.close()
       }
     },
-    [context.control],
+    [context.control, dismissGuardRef],
   )
 
   return (
     <Context.Provider value={context}>
-      {context.control.isOpen && (
+      {modal && !disableBackdrop && context.control.isOpen && (
         <Portal>
           <Pressable
             style={[a.fixed, a.inset_0, a.z_50]}
@@ -95,6 +105,7 @@ export function Root({
         </Portal>
       )}
       <DropdownMenu.Root
+        modal={modal}
         open={context.control.isOpen}
         onOpenChange={onOpenChange}>
         {children}

@@ -63,12 +63,18 @@ export function PostControlButton({
   )
 
   const handlePress = useMemo(() => {
-    if (!onPress) return
-    return (evt: GestureResponderEvent) => {
-      playHaptic('Light')
-      onPress(evt)
+    if (onPress) {
+      return (evt: GestureResponderEvent) => {
+        playHaptic('Light')
+        onPress(evt)
+      }
     }
-  }, [onPress, playHaptic])
+    // RN Web needs onPress defined for touch tracking when only long-pressing.
+    if (onLongPress) {
+      return () => {}
+    }
+    return undefined
+  }, [onPress, onLongPress, playHaptic])
 
   const handleLongPress = useMemo(() => {
     if (!onLongPress) return

@@ -40,6 +40,7 @@ import {
 } from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {type DialogControlProps} from '#/components/Dialog'
+import {Loader} from '#/components/Loader'
 import {ArrowBoxLeft_Stroke2_Corner0_Rounded as LeaveIcon} from '#/components/icons/ArrowBoxLeft'
 import {
   Bell_Filled_Corner0_Rounded as BellFilledIcon,
@@ -244,6 +245,7 @@ function ProfileCard({minimal}: {minimal: boolean}) {
 
 export function SwitchMenuItems({
   accounts,
+  isLoading,
   signOutPromptControl,
   showExtraButtons,
   showAddAccount,
@@ -256,6 +258,7 @@ export function SwitchMenuItems({
         profile?: AppBskyActorDefs.ProfileViewDetailed
       }[]
     | undefined
+  isLoading?: boolean
   signOutPromptControl: DialogControlProps
   showExtraButtons?: boolean
   showAddAccount?: boolean
@@ -281,7 +284,16 @@ export function SwitchMenuItems({
 
   return (
     <Menu.Outer>
-      {sortedAccounts.length > 0 && (
+      {isLoading ? (
+        <Menu.Group>
+          <Menu.LabelText>
+            {title ?? <Trans>Switch account</Trans>}
+          </Menu.LabelText>
+          <View style={[a.py_md, a.align_center]}>
+            <Loader size="lg" />
+          </View>
+        </Menu.Group>
+      ) : sortedAccounts.length > 0 ? (
         <>
           <Menu.Group>
             <Menu.LabelText>
@@ -298,7 +310,7 @@ export function SwitchMenuItems({
           </Menu.Group>
           {hasFooterItems ? <Menu.Divider /> : null}
         </>
-      )}
+      ) : null}
       {showExtraButtons ? <SwitcherMenuProfileLink /> : undefined}
       {showAddAccount ? (
         <Menu.Item label={l`Add another account`} onPress={onAddAnotherAccount}>

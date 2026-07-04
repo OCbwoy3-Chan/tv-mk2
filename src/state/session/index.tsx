@@ -326,8 +326,13 @@ export function Provider({children}: PropsWithChildren<{}>) {
   >(
     async storedAccount => {
       if (storedAccount.isOauthSession) {
-        const {agent} = await oauthResumeSession(storedAccount)
-        return agent as unknown as AtpAgent
+        try {
+          const {agent} = await oauthResumeSession(storedAccount, false)
+          return agent as unknown as AtpAgent
+        } catch {
+          const {agent} = await oauthResumeSession(storedAccount, 'auto')
+          return agent as unknown as AtpAgent
+        }
       }
       const {agent} = await createAgentAndResume(
         storedAccount,

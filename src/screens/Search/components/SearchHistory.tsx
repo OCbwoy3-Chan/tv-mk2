@@ -1,6 +1,6 @@
 import {Pressable, ScrollView, View} from 'react-native'
 import {moderateProfile, type ModerationOpts} from '@atproto/api'
-import {Trans, useLingui} from '@lingui/react/macro'
+import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {createHitslop, HITSLOP_10} from '#/lib/constants'
 import {makeProfileLink} from '#/lib/routes/links'
@@ -10,7 +10,11 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {BlockDrawerGesture} from '#/view/shell/BlockDrawerGesture'
-import {atoms as a} from '#/alf'
+import {
+  countActiveFilters,
+  parseHistoryEntry,
+} from '#/screens/Search/searchParams'
+import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
 import * as Layout from '#/components/Layout'
@@ -36,10 +40,7 @@ export function SearchHistory({
   onRemoveProfileClick: (profile: bsky.profile.AnyProfileView) => void
 }) {
   const ax = useAnalytics()
-  const {t: l} = useLingui()
   const moderationOpts = useModerationOpts()
-
-  const enableSquareButtons = useEnableSquareButtons()
 
   return (
     <Layout.Content
@@ -90,35 +91,84 @@ export function SearchHistory({
 
         {searchHistory.length > 0 && (
           <View style={[a.px_lg, a.pt_sm]}>
-            {searchHistory.slice(0, 5).map((historyItem, index) => (
-              <View key={index} style={[a.flex_row, a.align_center]}>
-                <Pressable
-                  accessibilityRole="button"
+            {searchHistory.slice(0, 5).map((historyItem, index) => {
+              const {q, filters} = parseHistoryEntry(historyItem)
+              const filterCount = countActiveFilters(filters)
+
+              return (
+                <SearchHistoryItem
+                  key={index}
+                  q={q}
+                  filterCount={filterCount}
                   onPress={() => {
                     ax.metric('search:query', {
                       source: 'history',
+                      filterCount,
                     })
                     onItemClick(historyItem)
                   }}
-                  hitSlop={HITSLOP_10}
-                  style={[a.flex_1, a.py_sm]}>
-                  <Text style={[a.text_md]}>{historyItem}</Text>
-                </Pressable>
-                <Button
-                  label={l`Remove ${historyItem}`}
-                  onPress={() => onRemoveItemClick(historyItem)}
-                  size="small"
-                  variant="ghost"
-                  color="secondary"
-                  shape={enableSquareButtons ? 'square' : 'round'}>
-                  <ButtonIcon icon={XIcon} />
-                </Button>
-              </View>
-            ))}
+                  onRemove={() => onRemoveItemClick(historyItem)}
+                />
+              )
+            })}
           </View>
         )}
       </View>
     </Layout.Content>
+  )
+}
+
+function SearchHistoryItem({
+  q,
+  filterCount,
+  onPress,
+  onRemove,
+}: {
+  q: string
+  filterCount: number
+  onPress: () => void
+  onRemove: () => void
+}) {
+  const t = useTheme()
+  const {t: l} = useLingui()
+  const enableSquareButtons = useEnableSquareButtons()
+
+  return (
+    <View style={[a.flex_row, a.gap_sm, a.align_center]}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={onPress}
+        hitSlop={HITSLOP_10}
+        style={[a.flex_1, a.py_sm, a.flex_row, a.align_center, a.gap_sm]}>
+        <Text style={[a.text_md, a.flex_shrink]} numberOfLines={1}>
+          {q}
+        </Text>
+        {filterCount > 0 ? (
+          <View
+            style={[
+              a.flex_shrink_0,
+              enableSquareButtons ? a.rounded_sm : a.rounded_full,
+              a.px_sm,
+              a.py_2xs,
+              t.atoms.bg_contrast_25,
+            ]}>
+            <Text
+              style={[a.text_xs, a.font_medium, t.atoms.text_contrast_medium]}>
+              <Plural value={filterCount} one="+# filter" other="+# filters" />
+            </Text>
+          </View>
+        ) : null}
+      </Pressable>
+      <Button
+        label={l`Remove ${q}`}
+        onPress={onRemove}
+        size="small"
+        variant="ghost"
+        color="secondary"
+        shape={enableSquareButtons ? 'square' : 'round'}>
+        <ButtonIcon icon={XIcon} />
+      </Button>
+    </View>
   )
 }
 

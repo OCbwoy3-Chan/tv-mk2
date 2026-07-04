@@ -1,6 +1,6 @@
 {
   "client_id": "https://tenna.party/oauth-client-metadata.json",
-  "client_name": "tenna.party",
+  "client_name": "Tenna Party",
   "client_uri": "https://tenna.party",
   "redirect_uris": ["https://tenna.party/auth/web/callback"],
   "scope": "atproto transition:generic transition:email transition:chat.bsky",
