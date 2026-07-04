@@ -18,9 +18,9 @@ alt="Get it on Obtainium" height="54" /></a> -->
 
 - Our own settings page: Settings -> TV
 - Lightner/Darkner labels
-- Custom post IDs in urls (e.g. [-goop suffix](https://tenna.party/profile/did:plc:erljg5y74ltqn5pyc7y33n6w/post/3mowtioimgoop)) - option in composer
+- Enhanced Custom TID option in composer ([xan made one for witchsky too but its not that customizable](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow)]
 - Unsigned native iOS Builds via GitHub Actions, srry tangled :( (i need mac ci)
-- Removed labeler limit (max 200 labelers if you're actually insane)
+- Removed labeler limit (max 200 labelers if you're deadass actually insane)
 
 ### TODO: Kris
 

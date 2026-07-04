@@ -27,7 +27,7 @@ import {
   useOmitViaField,
   useSetOmitViaField,
 } from '#/state/preferences/omit-via-field'
-import {useTidSuffix, useSetTidSuffix} from '#/state/preferences/tid-suffix'
+import {useSetTidSuffix, useTidSuffix} from '#/state/preferences/tid-suffix'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -38,11 +38,11 @@ import {BellRinging_Stroke2_Corner0_Rounded as BellRingingIcon} from '#/componen
 import {CodeBrackets_Stroke2_Corner2_Rounded as CodeBracketsIcon} from '#/components/icons/CodeBrackets'
 import {Explosion_Stroke2_Corner0_Rounded as ExplosionIcon} from '#/components/icons/Explosion'
 import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/Eye'
-import {LikeRepost_Stroke2_Corner2_Rounded as LikeRepostIcon} from '#/components/icons/Heart2'
 import {Hashtag_Stroke2_Corner0_Rounded as HashtagIcon} from '#/components/icons/Hashtag'
+import {LikeRepost_Stroke2_Corner2_Rounded as LikeRepostIcon} from '#/components/icons/Heart2'
+import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
-import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
@@ -165,15 +165,14 @@ export function RunesExtraSettingsScreen() {
         </SettingsList.ItemText>
         <SettingsList.BadgeButton
           label={tidSuffix ? l`Change` : l`Set`}
-          onPress={() => setTidSuffixControl.open()}
+          onPress={() => {}} // setTidSuffixControl.open()}
         />
       </SettingsList.Item>
       <SettingsList.Item>
         <Admonition type="info" style={[a.flex_1]}>
           <Trans>
-            Replace the last characters of the first post in a thread's record
-            key with a custom suffix (up to 6 characters). Current:&nbsp;
-            <Text style={[a.font_bold]}>{tidSuffix || l`none`}</Text>
+            Replace characters in TID of any newly made posts. Please change
+            your TID in the composer instead.
           </Trans>
         </Admonition>
       </SettingsList.Item>
