@@ -71,7 +71,7 @@ module.exports = function (_config) {
       ios: {
         supportsTablet: false,
         bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
-        appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'TODO: Kris when new Mac + Paid Apple Dev Acc',
+        appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'B3LX46C5HS',
         buildNumber: IOS_BUILD_NUMBER,
         config: {
           usesNonExemptEncryption: false,
