@@ -245,6 +245,9 @@ export const Button = forwardRef<View, ButtonProps>(
       [clearLongPressTimer, onLongPressOuter],
     )
     const onPointerUp = useCallback(() => {
+      if (longPressTriggeredRef.current) {
+        return
+      }
       clearLongPressTimer()
     }, [clearLongPressTimer])
     const onPointerLeave = useCallback(() => {

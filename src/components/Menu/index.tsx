@@ -43,8 +43,14 @@ export {useMenuContext}
 export function Root({
   children,
   control,
+  modal: _modal = true,
+  disableBackdrop: _disableBackdrop = false,
+  dismissGuardRef: _dismissGuardRef,
 }: React.PropsWithChildren<{
   control?: Dialog.DialogControlProps
+  modal?: boolean
+  disableBackdrop?: boolean
+  dismissGuardRef?: React.MutableRefObject<boolean>
 }>) {
   const defaultControl = Dialog.useDialogControl()
   const context = useMemo<ContextType>(
