@@ -41,17 +41,12 @@ import {
 } from '#/state/shell/progress-guide'
 import * as userActionHistory from '#/state/userActionHistory'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
-import {
-  EphemeralAccountSwitcherMenu,
-  EphemeralAccountSwitcherScope,
-  useEphemeralAccountSwitcher,
-} from '#/components/EphemeralAccountSwitcher'
+import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {Reply as Bubble} from '#/components/icons/Reply'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
-import {IS_NATIVE, IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
 import {useAutoLikeOnRepost} from '../../state/preferences/auto-like-on-repost.tsx'
 import {useRunWithEphemeralAgent} from '../hooks/useRunWithEphemeralAgent'
 import {BookmarkButton} from './BookmarkButton'
@@ -104,7 +99,7 @@ function PostControlsInner({
   const {t: l} = useLingui()
   const {openComposer} = useOpenComposer()
   const {feedDescriptor} = useFeedFeedbackContext()
-  const {accounts} = useSession()
+  const {accounts, currentAccount} = useSession()
   const {createEphemeralAgent} = useSessionApi()
   const queryClient = useQueryClient()
   const getPost = useGetPost()
@@ -296,8 +291,14 @@ function PostControlsInner({
     big,
     gtPhone,
   })
-  const {getLongPressProps, hasAlternateAccounts, switcherAccounts} =
-    useEphemeralAccountSwitcher()
+  const hasAlternateAccounts = accounts.length > 1
+  const switcherAccounts = useMemo(
+    () =>
+      accounts
+        .filter(account => account.did !== currentAccount?.did)
+        .map(account => ({account})),
+    [accounts, currentAccount?.did],
+  )
 
   const resolveReplyableAccounts = useCallback(async () => {
     const replyableAccounts = await fetchReplyableSwitcherAccounts({
@@ -319,16 +320,6 @@ function PostControlsInner({
     queryClient,
     switcherAccounts,
   ])
-
-  const replyLongPress = hasAlternateAccounts
-    ? getLongPressProps({
-        title: l`Reply as`,
-        resolveAccounts: isReplyGatedPost ? resolveReplyableAccounts : undefined,
-        onSelectAccount: account => {
-          onReplyAsAccount(account.did)
-        },
-      }).onLongPress
-    : undefined
 
   const onSelectLikeAccount = async (account: (typeof accounts)[number]) => {
     try {
@@ -421,37 +412,6 @@ function PostControlsInner({
     }
   }
 
-  const repostLongPress =
-    IS_NATIVE && hasAlternateAccounts
-      ? getLongPressProps({
-          title: l`Repost as`,
-          onSelectAccount: account => {
-            void onSelectRepostAccount(account)
-          },
-        }).onLongPress
-      : undefined
-  const likeLongPress =
-    IS_NATIVE && hasAlternateAccounts
-      ? getLongPressProps({
-          title: l`Like as`,
-          onSelectAccount: account => {
-            void onSelectLikeAccount(account)
-          },
-        }).onLongPress
-      : undefined
-  const bookmarkLongPress =
-    IS_NATIVE && hasAlternateAccounts
-      ? getLongPressProps({
-          title: l`Save as`,
-          onSelectAccount: account => {
-            void onSelectBookmarkAccount(account)
-          },
-        }).onLongPress
-      : undefined
-  const useWebReplySwitcherMenu = IS_WEB && hasAlternateAccounts
-  const useWebSwitcherMenu =
-    !IS_NATIVE && !IS_WEB_TOUCH_DEVICE && hasAlternateAccounts
-
   const renderReplyButton = (onLongPress?: () => void) => (
     <PostControlButton
       testID="replyBtn"
@@ -469,7 +429,7 @@ function PostControlsInner({
               })
           : undefined
       }
-      onLongPress={onLongPress ?? replyLongPress}
+      onLongPress={onLongPress}
       label={l({
         message: `Reply (${plural(post.replyCount || 0, {
           one: '# reply',
@@ -509,7 +469,7 @@ function PostControlsInner({
       }
       onRepost={() => void onRepost()}
       onQuote={onQuote}
-      onLongPress={onLongPress ?? repostLongPress}
+      onLongPress={onLongPress}
       big={big}
       embeddingDisabled={Boolean(post.viewer?.embeddingDisabled)}
     />
@@ -522,7 +482,7 @@ function PostControlsInner({
       active={Boolean(post.viewer?.like)}
       activeColor={t.palette.pink}
       onPress={() => requireAuth(() => onPressToggleLike())}
-      onLongPress={onLongPress ?? likeLongPress}
+      onLongPress={onLongPress}
       label={
         post.viewer?.like
           ? l({
@@ -596,9 +556,11 @@ function PostControlsInner({
               {marginLeft: big ? -2 : -6},
               replyDisabled ? {opacity: 0.6} : undefined,
             ]}>
-            {useWebReplySwitcherMenu ? (
-              <EphemeralAccountSwitcherMenu
+            {hasAlternateAccounts && currentAccount ? (
+              <EphemeralAccountSwitcher
+                selectedDid={currentAccount.did}
                 title={l`Reply as`}
+                triggerBehavior="longPress"
                 resolveAccounts={
                   isReplyGatedPost ? resolveReplyableAccounts : undefined
                 }
@@ -610,13 +572,15 @@ function PostControlsInner({
                 }
               />
             ) : (
-              renderReplyButton(replyLongPress)
+              renderReplyButton()
             )}
           </View>
           <View style={[a.flex_1, a.align_start]}>
-            {useWebSwitcherMenu ? (
-              <EphemeralAccountSwitcherMenu
+            {hasAlternateAccounts && currentAccount ? (
+              <EphemeralAccountSwitcher
+                selectedDid={currentAccount.did}
                 title={l`Repost as`}
+                triggerBehavior="longPress"
                 onSelectAccount={account => {
                   void onSelectRepostAccount(account)
                 }}
@@ -629,9 +593,11 @@ function PostControlsInner({
             )}
           </View>
           <View style={[a.flex_1, a.align_start]}>
-            {useWebSwitcherMenu ? (
-              <EphemeralAccountSwitcherMenu
+            {hasAlternateAccounts && currentAccount ? (
+              <EphemeralAccountSwitcher
+                selectedDid={currentAccount.did}
                 title={l`Like as`}
+                triggerBehavior="longPress"
                 onSelectAccount={account => {
                   void onSelectLikeAccount(account)
                 }}
@@ -648,9 +614,11 @@ function PostControlsInner({
         </View>
         <View
           style={[a.flex_row, a.justify_end, secondaryControlSpacingStyles]}>
-          {useWebSwitcherMenu ? (
-            <EphemeralAccountSwitcherMenu
+          {hasAlternateAccounts && currentAccount ? (
+            <EphemeralAccountSwitcher
+              selectedDid={currentAccount.did}
               title={l`Save as`}
+              triggerBehavior="longPress"
               onSelectAccount={account => {
                 void onSelectBookmarkAccount(account)
               }}
@@ -671,7 +639,6 @@ function PostControlsInner({
               post={post}
               big={big}
               logContext={logContext}
-              onLongPress={bookmarkLongPress}
               hitSlop={{
                 right: secondaryControlSpacingStyles.gap / 2,
               }}
@@ -718,13 +685,7 @@ function PostControlsInner({
 const PostControls = memo(function PostControls(
   props: Parameters<typeof PostControlsInner>[0],
 ) {
-  const {currentAccount} = useSession()
-
-  return (
-    <EphemeralAccountSwitcherScope selectedDid={currentAccount?.did ?? ''}>
-      <PostControlsInner {...props} />
-    </EphemeralAccountSwitcherScope>
-  )
+  return <PostControlsInner {...props} />
 })
 export {PostControls}
 

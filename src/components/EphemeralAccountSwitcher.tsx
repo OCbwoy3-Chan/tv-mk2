@@ -137,9 +137,9 @@ export function EphemeralAccountSwitcherScope({
   const openSwitcher = useCallback(
     (request: SwitcherRequest) => {
       setActiveRequest(request)
-      setResolvedAccounts(null)
 
       if (request.resolveAccounts) {
+        setResolvedAccounts(null)
         setIsResolvingAccounts(true)
         openMenuControl()
         void request.resolveAccounts().then(accounts => {
@@ -190,8 +190,12 @@ export function EphemeralAccountSwitcherScope({
     [l, openSwitcher, switcherAccounts],
   )
 
-  const menuAccounts =
-    resolvedAccounts ?? activeRequest?.accounts ?? switcherAccounts
+  const menuAccounts = useMemo(() => {
+    if (resolvedAccounts !== null) {
+      return resolvedAccounts
+    }
+    return activeRequest?.accounts ?? switcherAccounts
+  }, [activeRequest?.accounts, resolvedAccounts, switcherAccounts])
 
   const contextValue = useMemo<EphemeralAccountSwitcherContextValue>(
     () => ({
@@ -278,14 +282,17 @@ export function EphemeralAccountSwitcherMenu({
   >(null)
   const [isResolvingAccounts, setIsResolvingAccounts] = useState(false)
 
-  const displayedAccounts = resolveAccounts
-    ? (resolvedAccounts ?? [])
-    : menuAccounts
+  const displayedAccounts =
+    resolveAccounts && resolvedAccounts !== null
+      ? resolvedAccounts
+      : menuAccounts
 
   useEffect(() => {
-    if (!menuControl.isOpen) {
-      setResolvedAccounts(null)
-      setIsResolvingAccounts(false)
+    if (!IS_WEB || !menuControl.isOpen) {
+      if (!menuControl.isOpen) {
+        setResolvedAccounts(null)
+        setIsResolvingAccounts(false)
+      }
       return
     }
 
@@ -411,7 +418,10 @@ export function EphemeralAccountSwitcher({
   >(null)
   const [isResolvingAccounts, setIsResolvingAccounts] = useState(false)
 
-  const dialogAccounts = resolvedAccounts ?? menuAccounts
+  const dialogAccounts =
+    resolveAccounts && resolvedAccounts !== null
+      ? resolvedAccounts
+      : menuAccounts
 
   const openDialog = useCallback(() => {
     if (resolveAccounts) {
@@ -433,7 +443,38 @@ export function EphemeralAccountSwitcher({
     control.open()
   }, [control, resolveAccounts])
 
-  if (!hasAlternateAccounts || (!resolveAccounts && menuAccounts.length === 0)) {
+  const hasMenuAccounts = resolveAccounts
+    ? hasAlternateAccounts
+    : menuAccounts.length > 0
+  const displayedAccounts =
+    resolveAccounts && resolvedAccounts !== null
+      ? resolvedAccounts
+      : menuAccounts
+
+  const openMenuWithResolve = useCallback(() => {
+    if (!resolveAccounts) {
+      menuControl.open()
+      return
+    }
+
+    setResolvedAccounts(null)
+    setIsResolvingAccounts(true)
+    menuControl.open()
+    void resolveAccounts()
+      .then(accounts => {
+        setResolvedAccounts(accounts)
+        setIsResolvingAccounts(false)
+        if (accounts.length === 0) {
+          menuControl.close()
+        }
+      })
+      .catch(() => {
+        setIsResolvingAccounts(false)
+        menuControl.close()
+      })
+  }, [menuControl, resolveAccounts])
+
+  if (!hasAlternateAccounts || !hasMenuAccounts) {
     return renderTrigger({
       currentProfile,
       triggerProps: {
@@ -448,13 +489,14 @@ export function EphemeralAccountSwitcher({
       <EphemeralAccountSwitcherScope selectedDid={selectedDid}>
         {IS_NATIVE ? (
           <EphemeralAccountSwitcherNativeTrigger
-            request={{title, onSelectAccount}}
+            request={{title, onSelectAccount, resolveAccounts}}
             renderTrigger={renderTrigger}
           />
         ) : (
           <EphemeralAccountSwitcherMenu
             title={title}
             onSelectAccount={onSelectAccount}
+            resolveAccounts={resolveAccounts}
             renderTrigger={renderTrigger}
           />
         )}
@@ -498,17 +540,23 @@ export function EphemeralAccountSwitcher({
   }
 
   return (
-    <Menu.Root>
+    <Menu.Root control={resolveAccounts ? menuControl : undefined}>
       <Menu.Trigger label={l`Switch accounts`}>
         {({props}) =>
           renderTrigger({
             currentProfile,
-            triggerProps: props as SwitcherTriggerProps,
+            triggerProps: {
+              ...(props as SwitcherTriggerProps),
+              onPress: resolveAccounts
+                ? openMenuWithResolve
+                : (props as SwitcherTriggerProps).onPress,
+            },
           })
         }
       </Menu.Trigger>
       <SwitchMenuItems
-        accounts={menuAccounts}
+        accounts={displayedAccounts}
+        isLoading={resolveAccounts ? isResolvingAccounts : undefined}
         signOutPromptControl={signOutPromptControl}
         showExtraButtons={false}
         showAddAccount={false}

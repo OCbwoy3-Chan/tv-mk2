@@ -109,6 +109,10 @@ import {
 } from '#/state/preferences/openrouter'
 import {usePreferencesQuery} from '#/state/queries/preferences'
 import {resolveLinkQueryOptions} from '#/state/queries/resolve-link'
+import {
+  threadgateViewToAllowUISetting,
+  useThreadgateViewQuery,
+} from '#/state/queries/threadgate'
 import {useAgent, useSession, useSessionApi} from '#/state/session'
 import {useComposerControls} from '#/state/shell/composer'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
@@ -141,6 +145,10 @@ import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as EmojiPicker from '#/components/EmojiPicker'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
+import {
+  fetchReplyableSwitcherAccounts,
+  type ReplyableAccountListItem,
+} from '#/components/PostControls/alternateAccountsReplyEligibility'
 import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfoIcon} from '#/components/icons/CircleInfo'
 import {EmojiArc_Stroke2_Corner0_Rounded as EmojiSmileIcon} from '#/components/icons/Emoji'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
@@ -342,6 +350,55 @@ export const ComposePost = ({
   const [replyToLanguages, setReplyToLanguages] = useState<string[]>(
     replyTo?.langs || [],
   )
+
+  const {data: replyThreadgateView, isFetched: isReplyThreadgateFetched} =
+    useThreadgateViewQuery({
+      postUri: replyTo?.uri,
+    })
+  const isReplyGatedPost = useMemo(() => {
+    if (!replyTo) {
+      return false
+    }
+    if (!isReplyThreadgateFetched) {
+      return true
+    }
+    const settings = threadgateViewToAllowUISetting(
+      replyThreadgateView ?? undefined,
+    )
+    return !(settings.length === 1 && settings[0].type === 'everybody')
+  }, [replyTo, replyThreadgateView, isReplyThreadgateFetched])
+
+  const resolveReplyableAccounts = useCallback(async () => {
+    if (!replyTo) {
+      return []
+    }
+    const switcherAccounts = accounts
+      .filter(account => account.did !== activeAccountDid)
+      .map(account => ({account}))
+    const replyableAccounts = await fetchReplyableSwitcherAccounts({
+      queryClient,
+      postUri: replyTo.uri,
+      switcherAccounts,
+      createEphemeralAgent: sessionApi.createEphemeralAgent,
+    })
+    if (replyableAccounts.length === 0) {
+      Toast.show(l`No other accounts can reply to this post`, {
+        type: 'warning',
+      })
+    }
+    return replyableAccounts
+  }, [
+    accounts,
+    activeAccountDid,
+    l,
+    queryClient,
+    replyTo,
+    sessionApi.createEphemeralAgent,
+  ])
+
+  const replyAccountSwitcherResolve = isReplyGatedPost
+    ? resolveReplyableAccounts
+    : undefined
 
   /**
    * The currently selected languages of the post. Prefer local temporary
@@ -1492,6 +1549,7 @@ export const ComposePost = ({
                   onPublish={onComposerPostPublish}
                   activeAccountDid={activeAccountDid}
                   setActiveAccountDid={setActiveAccountDid}
+                  resolveAccounts={replyAccountSwitcherResolve}
                 />
                 {IS_WEBFooterSticky && post.id === activePost.id && (
                   <View style={styles.stickyFooterWeb}>{footer}</View>
@@ -1590,6 +1648,7 @@ let ComposerPost = memo(function ComposerPost({
   onPublish,
   activeAccountDid,
   setActiveAccountDid,
+  resolveAccounts,
 }: {
   post: PostDraft
   dispatch: (action: ComposerAction) => void
@@ -1607,6 +1666,7 @@ let ComposerPost = memo(function ComposerPost({
   onPublish: (richtext: RichText) => void
   activeAccountDid: string
   setActiveAccountDid: (did: string) => void
+  resolveAccounts?: () => Promise<ReplyableAccountListItem[]>
 }) {
   const {t: l} = useLingui()
   const richtext = post.richtext
@@ -1687,6 +1747,7 @@ let ComposerPost = memo(function ComposerPost({
         <EphemeralAccountSwitcher
           selectedDid={activeAccountDid}
           title={l`Post from account`}
+          resolveAccounts={resolveAccounts}
           onSelectAccount={account => setActiveAccountDid(account.did)}
           renderTrigger={({currentProfile, triggerProps}) => (
             <Button
