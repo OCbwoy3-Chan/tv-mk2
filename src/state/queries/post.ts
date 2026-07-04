@@ -7,6 +7,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import {maybeCelebrateSixSevenLike} from '#/features/sixSeven'
 import {useToggleMutationQueue} from '#/lib/hooks/useToggleMutationQueue'
 import {updatePostShadow} from '#/state/cache/post-shadow'
 import {type Shadow} from '#/state/cache/types'
@@ -170,12 +171,23 @@ export function usePostLikeMutationQueue(
   })
 
   const queueLike = useCallback(() => {
+    maybeCelebrateSixSevenLike({
+      wasLiked: Boolean(post.viewer?.like),
+      likeCount: post.likeCount,
+    })
+
     // optimistically update
     updatePostShadow(queryClient, postUri, {
       likeUri: 'pending',
     })
     return queueToggle(true)
-  }, [queryClient, postUri, queueToggle])
+  }, [
+    post.likeCount,
+    post.viewer?.like,
+    queryClient,
+    postUri,
+    queueToggle,
+  ])
 
   const queueUnlike = useCallback(() => {
     // optimistically update
