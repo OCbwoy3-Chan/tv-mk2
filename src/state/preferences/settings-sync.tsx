@@ -96,6 +96,7 @@ export const SYNCED_PREFS_KEYS = [
   'trendingVideoDisabled',
   'autoLikeOnRepost',
   'omitViaField',
+  'tidSuffix',
   'syncOpenRouterApiKey',
 ] as const satisfies readonly (keyof Schema)[]
 

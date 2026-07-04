@@ -103,6 +103,7 @@ import {
   useLanguagePrefsApi,
 } from '#/state/preferences/languages'
 import {useOmitViaField} from '#/state/preferences/omit-via-field'
+import {useTidSuffix} from '#/state/preferences/tid-suffix'
 import {
   useOpenRouterApiKey,
   useOpenRouterConfigured,
@@ -310,6 +311,7 @@ export const ComposePost = ({
   const {t: l, i18n} = useLingui()
   const requireAltTextEnabled = useRequireAltTextEnabled()
   const omitViaField = useOmitViaField()
+  const tidSuffix = useTidSuffix()
   const langPrefs = useLanguagePrefs()
   const setLangPrefs = useLanguagePrefsApi()
   const textInputRef = useRef<TextInputRef>(null)
@@ -1173,6 +1175,7 @@ export const ComposePost = ({
           onStateChange: setPublishingStage,
           langs: currentLanguages,
             omitViaField,
+            tidSuffix,
         })
       ).uris[0]
 

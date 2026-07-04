@@ -42,6 +42,7 @@ import {Provider as LoadSmallPNGsProvider} from './load-small-pngs'
 import {MetricsDisplayPreferencesProvider} from './metrics-display-preference'
 import {Provider as NoDiscoverProvider} from './no-discover-fallback'
 import {Provider as OmitViaFieldProvider} from './omit-via-field'
+import {Provider as TidSuffixProvider} from './tid-suffix'
 import {Provider as OpenRouterProvider} from './openrouter'
 import {Provider as PdsLabelProvider} from './pds-label'
 import {Provider as PlcDirectoryProvider} from './plc-directory'
@@ -111,6 +112,7 @@ export {useImageCdnHost, useSetImageCdnHost} from './image-cdn-host'
 export {useLabelDefinitions} from './label-defs'
 export {useLanguagePrefs, useLanguagePrefsApi} from './languages'
 export {useOmitViaField, useSetOmitViaField} from './omit-via-field'
+export {useTidSuffix, useSetTidSuffix} from './tid-suffix'
 export {
   useOpenRouterApiKey,
   useOpenRouterConfigured,
@@ -203,9 +205,11 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                       <DisableTopOfFeedButtonProvider>
                                                                                                                         <DiscoverContextEnabledProvider>
                                                                                                                           <OmitViaFieldProvider>
-                                                                                                                            {
-                                                                                                                              children
-                                                                                                                            }
+                                                                                                                            <TidSuffixProvider>
+                                                                                                                              {
+                                                                                                                                children
+                                                                                                                              }
+                                                                                                                            </TidSuffixProvider>
                                                                                                                           </OmitViaFieldProvider>
                                                                                                                         </DiscoverContextEnabledProvider>
                                                                                                                       </DisableTopOfFeedButtonProvider>

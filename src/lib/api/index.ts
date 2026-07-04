@@ -59,6 +59,21 @@ interface PostOpts {
   onStateChange?: (state: string) => void
   langs?: string[]
   omitViaField?: boolean
+  tidSuffix?: string
+}
+
+const MAX_TID_SUFFIX_LEN = 6
+
+function nextPostTid(prev: TID | undefined, tidSuffix?: string): TID {
+  if (prev) {
+    return TID.next(prev)
+  }
+  if (!tidSuffix) {
+    return TID.next(prev)
+  }
+  const suffix = tidSuffix.slice(0, MAX_TID_SUFFIX_LEN)
+  const next = TID.next(prev)
+  return TID.fromStr(next.toString().slice(0, -suffix.length) + suffix)
 }
 
 export async function post(
@@ -118,7 +133,7 @@ export async function post(
     // The sorting behavior for multiple posts sharing the same createdAt time is
     // undefined, so what we'll do here is increment the time by 1 for every post
     now.setMilliseconds(now.getMilliseconds() + 1)
-    tid = TID.next(tid)
+    tid = nextPostTid(tid, opts.tidSuffix)
     const rkey = tid.toString()
     const uri = `at://${did}/app.bsky.feed.post/${rkey}`
     uris.push(uri)

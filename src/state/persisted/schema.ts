@@ -281,6 +281,7 @@ const schema = z.object({
 
   autoLikeOnRepost: z.boolean().optional(),
   omitViaField: z.boolean().optional(),
+  tidSuffix: z.string().optional(),
 
   // settings sync
   settingsSyncEnabled: z.boolean().optional(),
@@ -417,6 +418,7 @@ export const defaults: Schema = {
 
   autoLikeOnRepost: false,
   omitViaField: false,
+  tidSuffix: undefined,
 
   settingsSyncEnabled: false,
   settingsSyncDraftId: undefined,
