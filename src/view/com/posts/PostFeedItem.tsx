@@ -53,6 +53,7 @@ import {DiscoverDebug} from '#/components/PostControls/DiscoverDebug'
 import {RichText} from '#/components/RichText'
 import {SubtleHover} from '#/components/SubtleHover'
 import {useAnalytics} from '#/analytics'
+import {IS_NATIVE, IS_WEB} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import * as bsky from '#/types/bsky'
 import {AviFollowButton} from './AviFollowButton'
@@ -277,14 +278,17 @@ let FeedItemInner = ({
       borderColor: pal.colors.border,
       paddingTop: compactPosts ? 2 : undefined,
       paddingBottom:
-        isThreadLastChild || (!isThreadChild && !isThreadParent)
-          ? compactPosts
-            ? 2
-            : 8
-          : undefined,
+        isCarouselItem && IS_WEB
+          ? 4
+          : isThreadLastChild || (!isThreadChild && !isThreadParent)
+            ? compactPosts
+              ? 2
+              : 8
+            : undefined,
       borderTopWidth:
         hideTopBorder || isThreadChild ? 0 : StyleSheet.hairlineWidth,
     },
+    isCarouselItem && a.w_full,
   ]
 
   /**
@@ -333,147 +337,159 @@ let FeedItemInner = ({
       : []
   }, [post, currentAccount?.did, threadgateHiddenReplies])
 
-  return (
-    <GalleryBleed>
-      <Link
-        testID={`feedItem-by-${post.author.handle}`}
-        style={outerStyles}
-        href={href}
-        noFeedback
-        accessible={false}
-        onBeforePress={onBeforePress}
-        dataSet={{feedContext}}
-        onPointerEnter={() => {
-          setHover(true)
-        }}
-        onPointerLeave={() => {
-          setHover(false)
+  const feedItem = (
+    <Link
+      testID={`feedItem-by-${post.author.handle}`}
+      style={outerStyles}
+      href={href}
+      noFeedback
+      accessible={false}
+      onBeforePress={onBeforePress}
+      dataSet={{feedContext}}
+      onPointerEnter={() => {
+        setHover(true)
+      }}
+      onPointerLeave={() => {
+        setHover(false)
+      }}>
+      <SubtleHover hover={hover} />
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: compactPosts ? 8 : 10,
+          paddingLeft: compactPosts ? 6 : 8,
         }}>
-        <SubtleHover hover={hover} />
+        <View style={{width: isCarouselItem ? 0 : 42}}>
+          {isThreadChild && (
+            <View
+              style={[
+                styles.replyLine,
+                {
+                  backgroundColor: select(t.name, {
+                    light: t.palette.contrast_100,
+                    dim: t.palette.contrast_200,
+                    dark: t.palette.contrast_200,
+                  }),
+                  marginBottom: 4,
+                },
+              ]}
+            />
+          )}
+        </View>
+
+        <View style={[compactPosts ? a.pt_2xs : a.pt_sm, a.flex_shrink]}>
+          {reason && (
+            <PostFeedReason
+              reason={reason}
+              moderation={moderation}
+              onOpenReposter={onOpenReposter}
+            />
+          )}
+        </View>
+      </View>
+
+      <View style={[styles.layout, isCarouselItem && a.w_full]}>
+        <View style={[styles.layoutAvi, compactPosts && styles.layoutAviCompact]}>
+          <AviFollowButton author={post.author} moderation={moderation}>
+            <PreviewableUserAvatar
+              size={compactPosts ? 34 : 42}
+              profile={post.author}
+              moderation={moderation.ui('avatar')}
+              type={post.author.associated?.labeler ? 'labeler' : 'user'}
+              onBeforePress={onOpenAuthor}
+              live={live}
+            />
+          </AviFollowButton>
+          {isThreadParent && (
+            <View
+              style={[
+                styles.replyLine,
+                {
+                  backgroundColor: select(t.name, {
+                    light: t.palette.contrast_100,
+                    dim: t.palette.contrast_200,
+                    dark: t.palette.contrast_200,
+                  }),
+                  marginTop: live ? 8 : 4,
+                },
+              ]}
+            />
+          )}
+        </View>
         <View
-          style={{
-            flexDirection: 'row',
-            gap: compactPosts ? 8 : 10,
-            paddingLeft: compactPosts ? 6 : 8,
-          }}>
-          <View style={{width: isCarouselItem ? 0 : 42}}>
-            {isThreadChild && (
-              <View
-                style={[
-                  styles.replyLine,
-                  {
-                    backgroundColor: select(t.name, {
-                      light: t.palette.contrast_100,
-                      dim: t.palette.contrast_200,
-                      dark: t.palette.contrast_200,
-                    }),
-                    marginBottom: 4,
-                  },
-                ]}
+          style={[
+            styles.layoutContent,
+            isCarouselItem && IS_NATIVE && styles.layoutContentCarousel,
+            maybeApplyGalleryOffsetStyles('meta', {
+              post,
+              modui: moderation.ui('contentList'),
+              additionalCauses: additionalPostAlerts,
+            }),
+          ]}>
+          <PostMeta
+            author={post.author}
+            moderation={moderation}
+            timestamp={post.indexedAt}
+            postHref={href}
+            onOpenAuthor={onOpenAuthor}
+            narrowLayout={isCarouselItem}
+            constrainWidth={isCarouselItem && IS_NATIVE}
+            style={
+              isCarouselItem && IS_NATIVE ? styles.postMetaCarousel : undefined
+            }
+          />
+          {showReplyTo &&
+            (parentAuthor || isParentBlocked || isParentNotFound) && (
+              <PostRepliedTo
+                parentAuthor={parentAuthor}
+                isParentBlocked={isParentBlocked}
+                isParentNotFound={isParentNotFound}
               />
             )}
-          </View>
-
-          <View style={[compactPosts ? a.pt_2xs : a.pt_sm, a.flex_shrink]}>
-            {reason && (
-              <PostFeedReason
-                reason={reason}
-                moderation={moderation}
-                onOpenReposter={onOpenReposter}
-              />
-            )}
-          </View>
+          <LabelsOnMyPost post={post} />
+          <PostContent
+            compactPosts={!!compactPosts}
+            isCarouselItem={isCarouselItem}
+            moderation={moderation}
+            richText={richText}
+            postEmbed={post.embed}
+            postAuthor={post.author}
+            onOpenEmbed={onOpenEmbed}
+            post={post}
+            additionalPostAlerts={additionalPostAlerts}
+            feedDescriptor={feedDescriptor}
+          />
+          <PostControls
+            variant={compactPosts ? 'compact' : undefined}
+            post={post}
+            record={record}
+            richText={richText}
+            onPressReply={onPressReply}
+            logContext="FeedItem"
+            feedContext={feedContext}
+            reqId={reqId}
+            threadgateRecord={threadgateRecord}
+            onShowLess={onShowLess}
+            viaRepost={viaRepost}
+          />
         </View>
 
-        <View style={styles.layout}>
-          <View style={[styles.layoutAvi, compactPosts && styles.layoutAviCompact]}>
-            <AviFollowButton author={post.author} moderation={moderation}>
-              <PreviewableUserAvatar
-                size={compactPosts ? 34 : 42}
-                profile={post.author}
-                moderation={moderation.ui('avatar')}
-                type={post.author.associated?.labeler ? 'labeler' : 'user'}
-                onBeforePress={onOpenAuthor}
-                live={live}
-              />
-            </AviFollowButton>
-            {isThreadParent && (
-              <View
-                style={[
-                  styles.replyLine,
-                  {
-                    backgroundColor: select(t.name, {
-                      light: t.palette.contrast_100,
-                      dim: t.palette.contrast_200,
-                      dark: t.palette.contrast_200,
-                    }),
-                    marginTop: live ? 8 : 4,
-                  },
-                ]}
-              />
-            )}
-          </View>
-          <View
-            style={[
-              styles.layoutContent,
-              maybeApplyGalleryOffsetStyles('meta', {
-                post,
-                modui: moderation.ui('contentList'),
-                additionalCauses: additionalPostAlerts,
-              }),
-            ]}>
-            <PostMeta
-              author={post.author}
-              moderation={moderation}
-              timestamp={post.indexedAt}
-              postHref={href}
-              onOpenAuthor={onOpenAuthor}
-            />
-            {showReplyTo &&
-              (parentAuthor || isParentBlocked || isParentNotFound) && (
-                <PostRepliedTo
-                  parentAuthor={parentAuthor}
-                  isParentBlocked={isParentBlocked}
-                  isParentNotFound={isParentNotFound}
-                />
-              )}
-            <LabelsOnMyPost post={post} />
-            <PostContent
-              compactPosts={!!compactPosts}
-              moderation={moderation}
-              richText={richText}
-              postEmbed={post.embed}
-              postAuthor={post.author}
-              onOpenEmbed={onOpenEmbed}
-              post={post}
-              additionalPostAlerts={additionalPostAlerts}
-              feedDescriptor={feedDescriptor}
-            />
-            <PostControls
-              variant={compactPosts ? 'compact' : undefined}
-              post={post}
-              record={record}
-              richText={richText}
-              onPressReply={onPressReply}
-              logContext="FeedItem"
-              feedContext={feedContext}
-              reqId={reqId}
-              threadgateRecord={threadgateRecord}
-              onShowLess={onShowLess}
-              viaRepost={viaRepost}
-            />
-          </View>
-
-          <DiscoverDebug feedContext={feedContext} />
-        </View>
-      </Link>
-    </GalleryBleed>
+        <DiscoverDebug feedContext={feedContext} />
+      </View>
+    </Link>
   )
+
+  if (isCarouselItem) {
+    return feedItem
+  }
+
+  return <GalleryBleed>{feedItem}</GalleryBleed>
 }
 FeedItemInner = memo(FeedItemInner)
 
 let PostContent = ({
   compactPosts,
+  isCarouselItem,
   post,
   moderation,
   richText,
@@ -484,6 +500,7 @@ let PostContent = ({
   feedDescriptor,
 }: {
   compactPosts: boolean
+  isCarouselItem?: boolean
   moderation: ModerationDecision
   richText: RichTextAPI
   postEmbed: AppBskyFeedDefs.PostView['embed']
@@ -530,7 +547,7 @@ let PostContent = ({
             testID="postText"
             value={richText}
             numberOfLines={limitLines ? MAX_POST_LINES : undefined}
-            style={[a.flex_1, a.text_md]}
+            style={[isCarouselItem ? a.text_md : [a.flex_1, a.text_md]]}
             authorHandle={postAuthor.handle}
             shouldProxyLinks={true}
           />
@@ -591,6 +608,15 @@ const styles = StyleSheet.create({
   },
   layoutContent: {
     flex: 1,
+  },
+  layoutContentCarousel: {
+    flex: 1,
+    minWidth: 0,
+    width: 0,
+  },
+  postMetaCarousel: {
+    flex: 0,
+    flexGrow: 0,
   },
   alert: {
     marginTop: 6,

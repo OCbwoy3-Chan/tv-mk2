@@ -30,6 +30,8 @@ interface PostMetaOpts {
   postHref: string
   timestamp: string
   linkDisabled?: boolean
+  narrowLayout?: boolean
+  constrainWidth?: boolean
   showAvatar?: boolean
   showPronouns?: boolean
   avatarSize?: number
@@ -86,9 +88,21 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
           />
         </View>
       )}
-      <View style={[a.flex_row, a.align_end, a.flex_shrink]}>
+      <View
+        style={[
+          a.flex_row,
+          a.align_end,
+          a.flex_shrink,
+          opts.constrainWidth && {flex: 1, minWidth: 0},
+        ]}>
         <ProfileHoverCard did={author.did}>
-          <View style={[a.flex_row, a.align_end, a.flex_shrink]}>
+          <View
+            style={[
+              a.flex_row,
+              a.align_end,
+              a.flex_shrink,
+              opts.constrainWidth && {flex: 1, minWidth: 0},
+            ]}>
             <MaybeLinkText
               emoji
               numberOfLines={1}
@@ -134,9 +148,9 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 a.text_md,
                 t.atoms.text_contrast_medium,
                 {lineHeight: 1.17},
-                {flexBasis: '30%'},
-                a.flex_grow,
-                a.flex_shrink_0,
+                opts.narrowLayout
+                  ? a.flex_shrink
+                  : [{flexBasis: '30%'}, a.flex_grow, a.flex_shrink_0],
                 web({maxWidth: 'max-content'}),
               ]}>
               {NON_BREAKING_SPACE + sanitizeHandle(handle, '@')}
@@ -176,7 +190,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 a.pl_xs,
                 a.text_md,
                 a.leading_tight,
-                IS_ANDROID && a.flex_grow,
+                IS_ANDROID && !opts.narrowLayout && a.flex_grow,
                 a.text_right,
                 t.atoms.text_contrast_medium,
                 web({
