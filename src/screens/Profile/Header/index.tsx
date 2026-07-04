@@ -19,6 +19,7 @@ import {useIsFocused} from '@react-navigation/native'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useSetLightStatusBar} from '#/state/shell/light-status-bar'
 import {usePagerHeaderContext} from '#/view/com/pager/PagerHeaderContext'
@@ -39,6 +40,7 @@ import {
 let ProfileHeaderLoading = (_props: {}): React.ReactNode => {
   const t = useTheme()
   const enableSquareAvatars = useEnableSquareAvatars()
+  const enableSquareButtons = useEnableSquareButtons()
   return (
     <View style={t.atoms.bg}>
       <LoadingPlaceholder width="100%" height={150} style={{borderRadius: 0}} />
@@ -57,7 +59,11 @@ let ProfileHeaderLoading = (_props: {}): React.ReactNode => {
       </View>
       <View style={styles.content}>
         <View style={[styles.buttonsLine]}>
-          <LoadingPlaceholder width={140} height={34} style={styles.br50} />
+          <LoadingPlaceholder
+            width={140}
+            height={34}
+            style={enableSquareButtons ? styles.br8 : styles.br50}
+          />
         </View>
       </View>
     </View>
