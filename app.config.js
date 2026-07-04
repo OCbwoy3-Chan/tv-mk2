@@ -70,7 +70,7 @@ module.exports = function (_config) {
       ios: {
         supportsTablet: false,
         bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
-        appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'B3LX46C5HS',
+        appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'TODO: Xan',
         buildNumber: IOS_BUILD_NUMBER,
         config: {
           usesNonExemptEncryption: false,
@@ -94,6 +94,7 @@ module.exports = function (_config) {
             'an',
             'ast',
             'ca',
+            'cs',
             'cy',
             'da',
             'de',
@@ -142,6 +143,7 @@ module.exports = function (_config) {
             : 'group.app.witchsky',
           'com.apple.developer.usernotifications.communication': true,
           // 'com.apple.developer.device-information.user-assigned-device-name': true,
+          'com.apple.developer.declared-age-range': true,
         },
         privacyManifests: {
           NSPrivacyCollectedDataTypes: [

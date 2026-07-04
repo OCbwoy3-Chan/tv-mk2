@@ -21,11 +21,16 @@ import {type Geolocation, useGeolocation} from '#/geolocation'
 import {device} from '#/storage'
 
 const PERMISSIVE_FLAGS: AgeAssuranceFlags = {
+  isAgeRestricted: false,
   adultContentDisabled: false,
   chatDisabled: false,
+  groupChatDisabled: false,
+  hasDeclaredAge: false,
   isDeclaredUnderAdultAge: false,
   isOverRegionMinAccessAge: true,
   isOverAppMinAccessAge: true,
+  allowsDeviceVerification: false,
+  hasSharedDeviceSignals: false,
 }
 
 /**

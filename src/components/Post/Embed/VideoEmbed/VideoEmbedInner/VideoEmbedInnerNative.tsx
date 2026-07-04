@@ -9,6 +9,7 @@ import {HITSLOP_30} from '#/lib/constants'
 import {useAutoplayDisabled} from '#/state/preferences'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme} from '#/alf'
+import {AltBadgeWithDialog} from '#/components/AltBadgeWithDialog'
 import {useIsWithinMessage} from '#/components/dms/MessageContext'
 import {Mute_Stroke2_Corner0_Rounded as MuteIcon} from '#/components/icons/Mute'
 import {Pause_Filled_Corner0_Rounded as PauseIcon} from '#/components/icons/Pause'
@@ -99,19 +100,24 @@ export function VideoEmbedInnerNative({
           altText={embed.alt}
         />
       ) : (
-        <VideoPresentationControls
-          enterFullscreen={() => {
-            videoRef.current?.enterFullscreen(true)
-          }}
-          toggleMuted={() => {
-            videoRef.current?.toggleMuted()
-          }}
-          togglePlayback={() => {
-            videoRef.current?.togglePlayback()
-          }}
-          isPlaying={isPlaying}
-          timeRemaining={timeRemaining}
-        />
+        <>
+          <VideoPresentationControls
+            enterFullscreen={() => {
+              videoRef.current?.enterFullscreen(true)
+            }}
+            toggleMuted={() => {
+              videoRef.current?.toggleMuted()
+            }}
+            togglePlayback={() => {
+              videoRef.current?.togglePlayback()
+            }}
+            isPlaying={isPlaying}
+            timeRemaining={timeRemaining}
+          />
+          {embed.alt && (
+            <AltBadgeWithDialog text={embed.alt} position="top-right" />
+          )}
+        </>
       )}
       <MediaInsetBorder />
       <KeepAwake enabled={isPlaying} />

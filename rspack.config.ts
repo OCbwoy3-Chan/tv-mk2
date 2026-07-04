@@ -110,7 +110,7 @@ module.exports = {
   devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
 
   entry: {
-    main: path.resolve(__dirname, 'index.web.js'),
+    main: path.resolve(__dirname, 'index.web.ts'),
   },
 
   output: {
