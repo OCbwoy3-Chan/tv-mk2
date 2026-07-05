@@ -40,9 +40,22 @@ function formatBskyPdsDisplayName(hostname: string): string {
   if (hostname === 'blacksky.app') return 'Blacksky'
   if (hostname === 'myatproto.social') return 'Blacksky'
   if (hostname === 'cryptoanarchy.network') return 'Blacksky'
-
+  if (hostname === 'eurosky.social') return 'Eurosky'
+  if (hostname === 'northsky.social') return 'Northsky'
+  
+  if (hostname === 'at.app.wafrn.net') return 'Wafrn'
+  
+  if (hostname === 'tngl.sh') return 'Tangled'
+  if (hostname === 'pds.sprk.so') return 'Spark'
+  if (hostname === 'pds.pckt.cafe') return 'pckt'
+  if (hostname === 'pds.pckt.cafe') return 'pckt'
+  
   if (hostname === 'castletown.darkworld.download') return 'Castle Town'
-  if (hostname === 'church.darkworld.download') return 'Castle Town'
+  if (hostname === 'church.darkworld.download') return 'Hometown Church'
+
+  if (hostname === 'protogen.at') return 'protogen.chat'
+  if (hostname === 'pds.witchcraft.systems') return 'Witchcraft Systems'
+  if (hostname === 'pds.synth.download') return 'synth.download'
 
   return hostname
 }

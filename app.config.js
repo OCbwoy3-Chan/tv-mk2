@@ -56,9 +56,9 @@ module.exports = function (_config) {
   return {
     expo: {
       version: VERSION,
-      name: 'TV Time',
+      name: 'tenna party',
       slug: 'tennaparty',
-      scheme: ['bluesky', 'tenna', 'app.tennaparty'],
+      scheme: ['bluesky', 'tenna', 'app.tennaparty', 'party.tenna'],
       // owner: 'blueskysocial',
       // owner: 'neema.brown',
       runtimeVersion: {
@@ -70,7 +70,7 @@ module.exports = function (_config) {
       newArchEnabled: false,
       ios: {
         supportsTablet: false,
-        bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
+        bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'party.tenna',
         appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'B3LX46C5HS',
         buildNumber: IOS_BUILD_NUMBER,
         config: {
@@ -535,25 +535,25 @@ module.exports = function (_config) {
                 // appExtensions: [
                 //   {
                 //     targetName: 'Share-with-Bluesky',
-                //     bundleIdentifier: env.WITCHSKY_BUNDLE_ID ? `${env.WITCHSKY_BUNDLE_ID}.Share-with-Bluesky` : 'app.witchsky.Share-with-Bluesky',
+                //     bundleIdentifier: env.WITCHSKY_BUNDLE_ID ? `${env.WITCHSKY_BUNDLE_ID}.Share-with-Bluesky` : 'party.tenna.Share-with-Bluesky',
                 //     entitlements: {
                 //       'com.apple.security.application-groups': [
-                //         process.env.WITCHSKY_BUNDLE_ID ? `group.${process.env.WITCHSKY_BUNDLE_ID}` : 'group.app.witchsky',
+                //         process.env.WITCHSKY_BUNDLE_ID ? `group.${process.env.WITCHSKY_BUNDLE_ID}` : 'party.tenna.witchsky',
                 //       ],
                 //     },
                 //   },
                 //   {
                 //     targetName: 'BlueskyNSE',
-                //     bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID ? `${process.env.WITCHSKY_BUNDLE_ID}.BlueskyNSE` : 'app.witchsky.BlueskyNSE',
+                //     bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID ? `${process.env.WITCHSKY_BUNDLE_ID}.BlueskyNSE` : 'party.tenna.BlueskyNSE',
                 //     entitlements: {
                 //       'com.apple.security.application-groups': [
-                //         process.env.WITCHSKY_BUNDLE_ID ? `group.${process.env.WITCHSKY_BUNDLE_ID}` : 'group.app.witchsky',
+                //         process.env.WITCHSKY_BUNDLE_ID ? `group.${process.env.WITCHSKY_BUNDLE_ID}` : 'party.tenna.witchsky',
                 //       ],
                 //     },
                 //   },
                 //   {
                 //     targetName: 'BlueskyClip',
-                //     bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID ? `${process.env.WITCHSKY_BUNDLE_ID}.AppClip` : 'app.witchsky.AppClip',
+                //     bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID ? `${process.env.WITCHSKY_BUNDLE_ID}.AppClip` : 'party.tenna.AppClip',
                 //   },
                 // ],
               },
