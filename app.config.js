@@ -56,7 +56,7 @@ module.exports = function (_config) {
   return {
     expo: {
       version: VERSION,
-      name: 'tenna party',
+      name: 'tenna.party',
       slug: 'tennaparty',
       scheme: ['bluesky', 'tenna', 'app.tennaparty', 'party.tenna'],
       // owner: 'blueskysocial',
@@ -89,7 +89,7 @@ module.exports = function (_config) {
             'Used to save images to your library.',
           NSPhotoLibraryUsageDescription:
             'Used for profile pictures, posts, and other kinds of content',
-          CFBundleSpokenName: 'TV Time',
+          CFBundleSpokenName: 'tenna.party',
           CFBundleLocalizations: [
             'en',
             'an',

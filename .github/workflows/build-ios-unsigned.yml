@@ -50,7 +50,7 @@ jobs:
         run: npx expo prebuild --platform ios --no-install
 
       - name: 🔧 Copy assets into generated iOS directory
-        run: cp -R assets/. ios/TVTime/
+        run: cp -R assets/. ios/tennaparty/
 
       - name: 📦 Install Pods
         run: |
@@ -64,9 +64,9 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild archive \
-            -workspace ios/TVTime.xcworkspace \
-            -scheme TVTime \
-            -archivePath $RUNNER_TEMP/TVTime.xcarchive \
+            -workspace ios/tennaparty.xcworkspace \
+            -scheme tennaparty \
+            -archivePath $RUNNER_TEMP/tennaparty.xcarchive \
             -sdk iphoneos \
             -arch arm64 \
             -configuration Release \
@@ -83,12 +83,12 @@ jobs:
           path: ${{ runner.temp }}/
 
       - name: 🔍 Debug - list xcarchive contents
-        run: find $RUNNER_TEMP/TVTime.xcarchive -type d
+        run: find $RUNNER_TEMP/tennaparty.xcarchive -type d
 
       - name: 📦 Package unsigned IPA
         run: |
           mkdir -p $RUNNER_TEMP/Payload
-          cp -r "$RUNNER_TEMP/TVTime.xcarchive/Products/Applications/TVTime.app" \
+          cp -r "$RUNNER_TEMP/tennaparty.xcarchive/Products/Applications/tennaparty.app" \
             $RUNNER_TEMP/Payload/
           cd $RUNNER_TEMP
           zip -r TV-Time.ipa Payload/
@@ -96,5 +96,5 @@ jobs:
       - name: ⬆️ Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TV-Time.ipa
+          name: tennaparty-ios.ipa
           path: ${{ runner.temp }}/TV-Time.ipa
