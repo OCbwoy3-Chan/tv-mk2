@@ -165,7 +165,7 @@ function Footer() {
       ]}>
       <InlineLinkText
         label={_(msg`Read the patches`)}
-        to="https://tangled.org/did:web:vessel.darkworld.download/tv/">
+        to="https://tangled.org/did:web:vessel.darkworld.download/tenna-party/">
         <Trans>Tangled</Trans>
       </InlineLinkText>
       <InlineLinkText
