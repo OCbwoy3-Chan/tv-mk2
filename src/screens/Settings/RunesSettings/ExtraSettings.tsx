@@ -132,7 +132,7 @@ export function RunesExtraSettingsScreen() {
           <Toggle.Platform />
         </SettingsList.Item>
       </Toggle.Item>
-      <Toggle.Item
+      {/* <Toggle.Item
         name="custom_post_rkeys"
         label={l`Enable custom post rkeys`}
         value={customPostRkeysEnabled}
@@ -144,7 +144,7 @@ export function RunesExtraSettingsScreen() {
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>
-      </Toggle.Item>
+      </Toggle.Item> */}
       <Toggle.Item
         name="omit_via_field"
         label={l`Don't include the 'via' field in own posts`}
@@ -158,7 +158,7 @@ export function RunesExtraSettingsScreen() {
           <Toggle.Platform />
         </SettingsList.Item>
       </Toggle.Item>
-      <SettingsList.Item>
+      {/* <SettingsList.Item>
         <SettingsList.ItemIcon icon={HashtagIcon} />
         <SettingsList.ItemText>
           <Trans>Custom TID suffix for posts</Trans>
@@ -175,7 +175,7 @@ export function RunesExtraSettingsScreen() {
             your TID in the composer instead.
           </Trans>
         </Admonition>
-      </SettingsList.Item>
+      </SettingsList.Item> */}
       <Toggle.Item
         name="dev_mode"
         label={l`Developer mode`}

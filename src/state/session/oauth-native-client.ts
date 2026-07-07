@@ -12,7 +12,7 @@ const OAUTH_SCOPE =
   'atproto transition:generic transition:email transition:chat.bsky'
 
 // Reverse-domain of witchsky.app → app.witchsky
-const NATIVE_REDIRECT_URI = 'party.tenna:/auth/callback'
+const NATIVE_REDIRECT_URI = 'tenna://auth/callback'
 
 const BSKY_OAUTH_CLIENT = new ExpoOAuthClient({
   identityResolver: createIdentityResolver(),

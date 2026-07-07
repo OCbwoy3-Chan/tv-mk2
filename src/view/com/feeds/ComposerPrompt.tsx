@@ -189,7 +189,7 @@ export function ComposerPrompt() {
             a.text_md,
             {includeFontPadding: false},
           ]}>
-          <Trans>MIKE, the INTERNET please!</Trans>
+          <Trans>MIKE, THE POST please!</Trans>
         </Text>
         <View style={[a.flex_row, a.gap_md]}>
           {IS_NATIVE && (

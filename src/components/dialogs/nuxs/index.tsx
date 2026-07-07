@@ -28,7 +28,9 @@ import {
 } from '#/components/dialogs/nuxs/InviteFriendsAnnouncement'
 import {isSnoozed, snooze, unsnooze} from '#/components/dialogs/nuxs/snoozing'
 import {type EnabledCheckProps} from '#/components/dialogs/nuxs/utils'
+import { TennaPartyNativeAppNux } from '#/components/tenna/NativeAppNux'
 import {useAnalytics} from '#/analytics'
+import { IS_WEB } from '#/env'
 import {useGeolocation} from '#/geolocation'
 
 type Context = {
@@ -48,6 +50,10 @@ const queuedNuxs: {
     id: Nux.InviteFriendsAnnouncement,
     enabled: isInviteFriendsAnnouncementEnabled,
   },
+  {
+    id: Nux.TennaPartyNativeAppAnnouncement_iOS,
+    enabled: ()=>IS_WEB
+  }
 ]
 
 const Context = createContext<Context>({
@@ -195,6 +201,8 @@ function Inner({
     <Context.Provider value={ctx}>
       {/*For example, activeNux === Nux.NeueTypography && <NeueTypography />*/}
       {activeNux === Nux.GroupChatsAnnouncement && <GroupChatsAnnouncement />}
+      {activeNux === Nux.TennaPartyNativeAppAnnouncement_iOS && <TennaPartyNativeAppNux />}
+      
       {/*
         Mounted unconditionally: it gates the announcement on `activeNux`
         internally, so it can keep the invite-friends dialog mounted across

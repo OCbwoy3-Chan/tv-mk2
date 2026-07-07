@@ -40,7 +40,9 @@ export function LabelsOnMe({
     l =>
       !l.val.startsWith('!') &&
       !(l.val === 'bot' && l.src === currentAccount.did) &&
-      !(l.val === 'pet' && l.src === currentAccount.did),
+      !(l.val === 'pet' && l.src === currentAccount.did) &&
+      !(l.val === 'lightner' && l.src === currentAccount.did) &&
+      !(l.val === 'darkner' && l.src === currentAccount.did),
   )
   if (!labels.length) {
     return null
