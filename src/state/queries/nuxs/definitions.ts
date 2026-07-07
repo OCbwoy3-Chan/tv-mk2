@@ -19,7 +19,7 @@ export enum Nux {
   InviteFriendsAnnouncement = 'InviteFriendsAnnouncement',
 
   // Tenna
-  TennaPartyNativeAppAnnouncement_iOS = 'TennaPartyNativeAppAnnouncement_iOS',
+  TennaPartyNativeAppAnnouncement_iOS = 'TennaPartyNativeAppAnnouncement_iOS_v2',
 
   /*
    * Blocking announcements. New IDs are required for each new announcement.

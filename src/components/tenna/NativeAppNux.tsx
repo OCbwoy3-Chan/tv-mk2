@@ -14,7 +14,6 @@ import { useNuxDialogContext } from '#/components/dialogs/nuxs'
 import { Sparkle_Stroke2_Corner0_Rounded as SparkleIcon } from '#/components/icons/Sparkle'
 import { Text } from '#/components/Typography'
 import { IS_WEB } from '#/env'
-import { Link } from '../Link'
 
 export function TennaPartyNativeAppNux() {
   const t = useTheme()
