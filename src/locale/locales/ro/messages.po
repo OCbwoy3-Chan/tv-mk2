@@ -81,12 +81,12 @@ msgid "(quoted post)"
 msgstr "(postare citată)"
 
 #. placeholder {0}: labels.length
-#: src/components/moderation/LabelsOnMe.tsx:64
+#: src/components/moderation/LabelsOnMe.tsx:66
 msgid "{0, plural, one {# account label} other {# account labels}}"
 msgstr "{0, plural, one {o etichetă de cont} few {# etichete de cont} other {# de etichete de cont}}"
 
 #. placeholder {0}: labels.length
-#: src/components/moderation/LabelsOnMe.tsx:70
+#: src/components/moderation/LabelsOnMe.tsx:72
 msgid "{0, plural, one {# content label} other {# content labels}}"
 msgstr "{0, plural, one {o etichetă de conținut} few {# etichete de conținut} other {# de etichete de conținut}}"
 
@@ -901,7 +901,7 @@ msgstr "<0>{0}</0> membri"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr "<0>{displayName}</0><1/><2> v-a adăugat</2>"
 
-#: src/components/PdsDialog.tsx:143
+#: src/components/PdsDialog.tsx:156
 msgid "<0>Learn more</0> about what a PDS is and how to <1>self-host</1> your own."
 msgstr ""
 
@@ -2422,7 +2422,7 @@ msgstr "Bluesky este mai distractiv cu prietenii. Doriți să vă invitați câ�
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr "Bluesky are nevoie de acces la cameră pentru a scana codurile QR ale altor profiluri."
 
-#: src/components/PdsDialog.tsx:98
+#: src/components/PdsDialog.tsx:111
 msgid "Bluesky Social"
 msgstr ""
 
@@ -2717,7 +2717,6 @@ msgstr ""
 #: src/screens/Settings/components/Email2FAToggle.tsx:31
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:162
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:123
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:167
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:127
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:141
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:162
@@ -3111,7 +3110,7 @@ msgstr "Faceți clic pentru a reîncerca mesajul eșuat"
 #: src/components/intents/GroupChatJoinDialog.tsx:292
 #: src/components/NewskieDialog.tsx:169
 #: src/components/NewskieDialog.tsx:175
-#: src/components/PdsDialog.tsx:178
+#: src/components/PdsDialog.tsx:191
 #: src/components/ProgressGuide/FollowDialog.tsx:463
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:122
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:128
@@ -3152,7 +3151,7 @@ msgstr "Închidere banner"
 #: src/components/dialogs/LanguageSelectDialog.tsx:357
 #: src/components/dialogs/NotificationSettingsDialog.tsx:102
 #: src/components/moderation/BlockDialog.tsx:199
-#: src/components/PdsDialog.tsx:172
+#: src/components/PdsDialog.tsx:185
 #: src/components/verification/VerificationsDialog.tsx:139
 #: src/components/verification/VerifierDialog.tsx:145
 #: src/features/gifPicker/components/GifPickerErrorBoundary.tsx:36
@@ -3983,10 +3982,6 @@ msgstr ""
 msgid "Custom TID suffix"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:164
-msgid "Custom TID suffix for posts"
-msgstr ""
-
 #: src/components/dialogs/Embed.tsx:140
 msgid "Customization options"
 msgstr "Opțiuni de personalizare"
@@ -4570,6 +4565,8 @@ msgstr "Atingeți de două ori pentru a închide dialogul"
 msgid "Double tap to like"
 msgstr "Atingeți de două ori pentru a aprecia"
 
+#: src/components/tenna/NativeAppNux.tsx:159
+#: src/components/tenna/NativeAppNux.tsx:167
 #: src/features/inviteFriends/components/ActionButtons.tsx:36
 msgid "Download"
 msgstr "Descărcare"
@@ -4926,11 +4923,6 @@ msgstr "Activare conținut pentru adulți"
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:450
 msgid "Enable captions"
 msgstr "Activare subtitrări"
-
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:137
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:143
-msgid "Enable custom post rkeys"
-msgstr ""
 
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:91
 msgid "Enable email 2FA"
@@ -5676,7 +5668,7 @@ msgstr ""
 msgid "Feature gates"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:93
+#: src/components/PdsDialog.tsx:106
 msgid "Fediverse"
 msgstr ""
 
@@ -6670,6 +6662,11 @@ msgstr "Aveți dificultăți?"
 msgid "Held by Bluesky for 7 days to prevent abuse, then deleted"
 msgstr "Păstrat de Bluesky timp de 7 zile pentru a preveni abuzurile, apoi șters"
 
+#: src/components/tenna/NativeAppNux.tsx:173
+#: src/components/tenna/NativeAppNux.tsx:181
+msgid "Hell yeah!"
+msgstr ""
+
 #: src/screens/Onboarding/StepProfile/index.tsx:265
 msgid "Help people know you're not a bot by uploading a picture or creating an avatar."
 msgstr "Ajutați oamenii să știe că nu sunteți un robot încărcând o imagine sau creând un avatar."
@@ -7291,6 +7288,7 @@ msgid "Introducing group chats"
 msgstr "Vă prezentăm conversațiile de grup"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:38
+#: src/components/tenna/NativeAppNux.tsx:39
 msgid "Introducing saved posts AKA bookmarks"
 msgstr "Vă prezentăm salvarea postărilor adică marcaje"
 
@@ -7442,6 +7440,10 @@ msgstr "Acum doar <0>{0} </0> e aici! Adăugați mai multe persoane la pachetul 
 #: src/screens/StarterPack/Wizard/index.tsx:480
 msgid "It's just you right now! Add more people to your starter pack by searching above."
 msgstr "Sunteți doar dvs. acum! Adăugați mai multe persoane la pachetul dvs. de pornire căutând mai sus."
+
+#: src/components/tenna/NativeAppNux.tsx:151
+msgid "Jarona! Unsigned iOS builds for tenna.party are now on GitHub Actions!"
+msgstr ""
 
 #. placeholder {0}: videoState.jobId
 #: src/view/com/composer/Composer.tsx:3104
@@ -8333,7 +8335,7 @@ msgstr "Mesajele de la această persoană sunt ascunse cât timp o blocați."
 
 #: src/view/com/composer/Composer.tsx:1763
 #: src/view/com/feeds/ComposerPrompt.tsx:192
-msgid "MIKE, the INTERNET please!"
+msgid "MIKE, THE POST please!"
 msgstr ""
 
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:177
@@ -9824,7 +9826,7 @@ msgstr "Pauză videoclip"
 msgid "PDS badges"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:75
+#: src/components/PdsDialog.tsx:88
 msgid "PDS Information"
 msgstr ""
 
@@ -11068,10 +11070,6 @@ msgstr "Reînnoire durată"
 msgid "Renew mute word"
 msgstr "Reînnoire cuvânt amuțit"
 
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:173
-msgid "Replace characters in TID of any newly made posts. Please change your TID in the composer instead."
-msgstr ""
-
 #: src/view/com/posts/FeedShutdownMsg.tsx:134
 #: src/view/com/posts/FeedShutdownMsg.tsx:138
 msgid "Replace with Discover"
@@ -12204,7 +12202,6 @@ msgid "Services may follow the preferences you set here, which will be publicly 
 msgstr ""
 
 #: src/screens/Settings/AccessibilitySettings.tsx:113
-#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:167
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:210
 msgid "Set"
 msgstr ""
@@ -13762,7 +13759,7 @@ msgstr "Acest cont a solicitat ca utilizatorii să se conecteze pentru a vizuali
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr "Acest cont este blocat de una sau mai multe dintre listele dvs. de moderare. Pentru a debloca, vizitați direct listele și eliminați acest utilizator."
 
-#: src/components/PdsDialog.tsx:121
+#: src/components/PdsDialog.tsx:134
 msgid "This account is bridged from the Fediverse via <0>Bridgy Fed</0>. "
 msgstr ""
 
@@ -13788,7 +13785,7 @@ msgstr "Această contestație va fi trimisă la serviciul de moderare al compani
 msgid "This author has chosen to make their posts visible only to people who are signed in."
 msgstr "Acest autor a ales să facă postările vizibile doar persoanelor care sunt conectate."
 
-#: src/components/PdsDialog.tsx:105
+#: src/components/PdsDialog.tsx:118
 msgid "This badge represents the Personal Data Server this account is stored on: <0>{displayName}</0>. A PDS is where posts, follows, and other data live on the AT Protocol network."
 msgstr ""
 
@@ -14387,6 +14384,10 @@ msgstr "Încercați"
 #: src/screens/Settings/Settings.tsx:473
 msgid "TV"
 msgstr "TV"
+
+#: src/components/tenna/NativeAppNux.tsx:75
+msgid "TV-Tastic update!"
+msgstr ""
 
 #: src/features/inviteFriends/components/ThemePicker.tsx:32
 msgid "Twilight"
@@ -15272,7 +15273,7 @@ msgstr "Vizualizați cererile primite"
 msgid "View incoming requests to join this group chat"
 msgstr "Vizualizați cererile de alăturare primite acestei conversații de grup"
 
-#: src/components/moderation/LabelsOnMe.tsx:57
+#: src/components/moderation/LabelsOnMe.tsx:59
 msgid "View information about these labels"
 msgstr "Vizualizați informații despre aceste etichete"
 
@@ -15577,6 +15578,10 @@ msgstr "Avem probleme cu rețeaua, încercați din nou"
 #: src/components/dialogs/nuxs/InitialVerificationAnnouncement.tsx:100
 msgid "We’re introducing a new layer of verification on Bluesky — an easy-to-see checkmark."
 msgstr "Introducem un nou nivel de verificare pe Bluesky - o bifă ușor de văzut."
+
+#: src/components/tenna/NativeAppNux.tsx:140
+msgid "We're native"
+msgstr ""
 
 #: src/ageAssurance/useVerificationFlow.ts:117
 msgid "We're sorry, but based on the data shared by your device, you are not old enough to access Bluesky."
