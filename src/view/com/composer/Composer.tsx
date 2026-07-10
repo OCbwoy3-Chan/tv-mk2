@@ -2345,6 +2345,8 @@ function ComposerPills({
     media?.type === 'video'
   const hasLink = !!post.embed.link
 
+  const rkeySettings = useAtprotoRkeySettings()
+
   // Don't render anything if no pills are going to be displayed for non-replies
   // For replies, keep the pills visible so users can set threadgate and custom rkey
   // if (!isReply && !hasMedia && !hasLink) {
@@ -2390,28 +2392,23 @@ function ComposerPills({
           />
         ) : null}
 
-        {(() => {
-          const rkeySettings = useAtprotoRkeySettings()
-          return (
-            <AtprotoBtn
-              generation={post.atprotoRkey?.generation ?? rkeySettings.generation}
-              prefix={post.atprotoRkey?.prefix ?? rkeySettings.prefix}
-              suffix={post.atprotoRkey?.suffix ?? (rkeySettings.suffix ?? '')}
-              onChangeSettings={(generation, prefix, suffix) => {
-                dispatch({
-                  type: 'update_post',
-                  postId: post.id,
-                  postAction: {
-                    type: 'update_rkey',
-                    generation,
-                    prefix,
-                    suffix,
-                  },
-                })
-              }}
-            />
-          )
-        })()}
+        <AtprotoBtn
+          generation={post.atprotoRkey?.generation ?? rkeySettings.generation ?? "tid"}
+          prefix={post.atprotoRkey?.prefix ?? rkeySettings.prefix}
+          suffix={post.atprotoRkey?.suffix ?? (rkeySettings.suffix ?? '')}
+          onChangeSettings={(generation, prefix, suffix) => {
+            dispatch({
+              type: 'update_post',
+              postId: post.id,
+              postAction: {
+                type: 'update_rkey',
+                generation,
+                prefix,
+                suffix,
+              },
+            })
+          }}
+        />
       </ScrollView>
     </Animated.View>
   )
