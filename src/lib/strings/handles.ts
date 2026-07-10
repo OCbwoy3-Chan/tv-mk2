@@ -46,6 +46,10 @@ export function sanitizeHandle(
   forceLeftToRight = true,
 ): string {
   const lowercasedWithPrefix = `${prefix}${handle.toLocaleLowerCase()}`
+  if (lowercasedWithPrefix.endsWith(".ap.brid.gy")) {
+    const un = lowercasedWithPrefix.split(".");
+    return un[0]+"@"+un.slice(1,-3).join(".")
+  }
   return isInvalidHandle(handle)
     ? '⚠Invalid Handle'
     : forceLeftToRight
