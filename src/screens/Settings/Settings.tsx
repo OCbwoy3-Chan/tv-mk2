@@ -467,10 +467,10 @@ export function SettingsScreen({}: Props) {
               <Trans>Languages</Trans>
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
-          <SettingsList.LinkItem to="/settings/tv" label={l`Tenna`}>
+          <SettingsList.LinkItem to="/settings/deltas" label={l`Deltas`}>
             <SettingsList.ItemIcon icon={Logo} />
             <SettingsList.ItemText>
-              <Trans>TV</Trans>
+              <Trans>Deltas</Trans>
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
           <SettingsList.LinkItem to="/settings/runes" label={l`Runes`}>

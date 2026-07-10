@@ -26,14 +26,14 @@ export function TennaQuickLinks() {
       items: [
         {
           text: l`Profile badges`,
-          path: '/settings/tv/badges',
+          path: '/settings/deltas/badges',
           icon: DarknerIcon,
         },
-        {
-          text: l`Moderation labels`,
-          path: '/settings/tv/labels',
-          icon: ShieldCheck_Stroke2_Corner0_Rounded,
-        },
+        // {
+        //   text: l`Moderation labels`,
+        //   path: '/settings/deltas/labels',
+        //   icon: ShieldCheck_Stroke2_Corner0_Rounded,
+        // },
       ],
     },
   ]

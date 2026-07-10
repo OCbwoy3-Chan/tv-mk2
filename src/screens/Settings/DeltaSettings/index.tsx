@@ -14,7 +14,7 @@ export function DeltaSettingsScreen() {
         <Layout.Header.BackButton />
         <Layout.Header.Content>
           <Layout.Header.TitleText>
-            <Trans>TV</Trans>
+            <Trans>Deltas</Trans>
           </Layout.Header.TitleText>
         </Layout.Header.Content>
         <Layout.Header.Slot />

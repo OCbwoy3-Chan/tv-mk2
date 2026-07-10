@@ -16,10 +16,10 @@ alt="Get it on Obtainium" height="54" /></a> -->
 
 ## Improvements on Witchsky
 
-- Our own settings page: Settings -> TV
+- Our own settings page: Settings -> Deltas
 - Lightner/Darkner labels
-- Enhanced Custom TID option in composer ([xan made one for witchsky too but its not that customizable](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow)]
-- Unsigned native iOS Builds via GitHub Actions, srry tangled :( (i need mac ci)
+- Enhanced Custom TID option in composer independent from ([witchsky's implementation](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow)]
+- Unsigned native iOS Builds via GitHub Actions, srry tangled :( (it needs macos ci)
 - Removed labeler limit (max 200 labelers if you're deadass actually insane)
 
 ### TODO: Kris
