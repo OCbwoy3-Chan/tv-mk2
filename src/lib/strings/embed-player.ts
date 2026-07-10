@@ -10,7 +10,7 @@ const IFRAME_HOST = IS_WEB
   ? // @ts-ignore only for web
     window.location.host === 'localhost:8100'
     ? 'http://localhost:8100'
-    : 'https://witchsky.app'
+    : 'https://tenna.party'
   : __DEV__ && !process.env.JEST_WORKER_ID
     ? 'http://localhost:8100'
     : 'https://bsky.app'

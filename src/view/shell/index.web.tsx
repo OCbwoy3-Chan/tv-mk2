@@ -36,11 +36,6 @@ import {FlatNavigator, RoutesContainer} from '#/Navigation'
 import {Composer} from './Composer'
 import {DrawerContent} from './Drawer'
 
-function createFaviconDataUrl(color: string) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEW_BOX}"><path fill="${color}" d="${LOGO_PATH}"/></svg>`
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`
-}
-
 function upsertHeadLink({
   rel,
   href,
@@ -108,18 +103,16 @@ function ShellInner() {
   }, [t.palette.primary_500])
 
   useLayoutEffect(() => {
-    const faviconHref = createFaviconDataUrl(t.palette.primary_500)
-
     upsertHeadLink({
       rel: 'icon',
-      href: faviconHref,
-      type: 'image/svg+xml',
+      href: "https://tenna.party/favicon.ico",
+      type: 'image/vnd.microsoft.icon', // more like microslop
       sizes: 'any',
     })
     upsertHeadLink({
       rel: 'shortcut icon',
-      href: faviconHref,
-      type: 'image/svg+xml',
+      href: "https://tenna.party/favicon.ico",
+      type: 'image/vnd.microsoft.icon', // more like microslop
     })
   }, [t.palette.primary_500])
 
