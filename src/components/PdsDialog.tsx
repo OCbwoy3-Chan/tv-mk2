@@ -1,21 +1,21 @@
-import {useState} from 'react'
-import {Image, View} from 'react-native'
-import Svg, {G, Path, Rect} from 'react-native-svg'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import { useState } from 'react'
+import { Image, View } from 'react-native'
+import Svg, { G, Path, Rect } from 'react-native-svg'
+import { msg } from '@lingui/core/macro'
+import { useLingui } from '@lingui/react'
+import { Trans } from '@lingui/react/macro'
 
 import {
   getPdsFallbackFaviconUrls,
   isBridgedPdsUrl,
   isBskyPdsUrl,
 } from '#/state/queries/pds-label.util'
-import {atoms as a, useBreakpoints, useTheme} from '#/alf'
-import {Button, ButtonText} from '#/components/Button'
+import { atoms as a, useBreakpoints, useTheme } from '#/alf'
+import { Button, ButtonText } from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import {Database_Filled_Corner0_Rounded as DatabaseIcon} from '#/components/icons/Database'
-import {InlineLinkText} from '#/components/Link'
-import {Text} from '#/components/Typography'
+import { Database_Filled_Corner0_Rounded as DatabaseIcon } from '#/components/icons/Database'
+import { InlineLinkText } from '#/components/Link'
+import { Text } from '#/components/Typography'
 
 const failedFaviconUrls = new Set<string>()
 
@@ -42,16 +42,17 @@ function formatBskyPdsDisplayName(hostname: string): string {
   if (hostname === 'cryptoanarchy.network') return 'Blacksky'
   if (hostname === 'eurosky.social') return 'Eurosky'
   if (hostname === 'northsky.social') return 'Northsky'
-  
+
   if (hostname === 'at.app.wafrn.net') return 'Wafrn'
-  
+
   if (hostname === 'tngl.sh') return 'Tangled'
   if (hostname === 'pds.sprk.so') return 'Spark'
   if (hostname === 'pds.pckt.cafe') return 'pckt'
   if (hostname === 'pds.pckt.cafe') return 'pckt'
-  
+
   if (hostname === 'castletown.darkworld.download') return 'Castle Town'
-  if (hostname === 'church.darkworld.download') return 'Hometown Church'
+  if (hostname === 'church.darkworld.download') return 'Mr. Tenna\'s PDS'
+  if (hostname === 'ant.tenna.party') return 'Mr. Tenna\'s PDS'
 
   if (hostname === 'protogen.at') return 'protogen.chat'
   if (hostname === 'pds.witchcraft.systems') return 'Witchcraft Systems'
@@ -69,25 +70,25 @@ export function PdsDialog({
   pdsUrl: string
   faviconUrl: string | undefined
 }) {
-  const {_} = useLingui()
-  const {gtMobile} = useBreakpoints()
+  const { _ } = useLingui()
+  const { gtMobile } = useBreakpoints()
 
   let hostname = pdsUrl
   try {
     hostname = new URL(pdsUrl).hostname
-  } catch {}
+  } catch { }
 
   const isBsky = isBskyPdsUrl(pdsUrl)
   const isBridged = isBridgedPdsUrl(pdsUrl)
   const displayName = formatBskyPdsDisplayName(hostname)
 
   return (
-    <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
+    <Dialog.Outer control={control} nativeOptions={{ preventExpansion: true }}>
       <Dialog.Handle />
       <Dialog.ScrollableInner
         label={_(msg`PDS Information`)}
         style={[
-          gtMobile ? {width: 'auto', maxWidth: 400, minWidth: 200} : a.w_full,
+          gtMobile ? { width: 'auto', maxWidth: 400, minWidth: 200 } : a.w_full,
         ]}>
         <View style={[a.gap_md, a.pb_lg]}>
           <View style={[a.flex_row, a.align_center, a.gap_md]}>
@@ -128,6 +129,21 @@ export function PdsDialog({
               Protocol network.
             </Trans>
           </Text>
+
+          {(pdsUrl.endsWith(".darkworld.download") || pdsUrl.endsWith(".tenna.party")) &&
+            <Text style={[a.text_md, a.leading_snug]}>
+              <Trans>
+                This is a community PDS for anyone, including tenna.party users, Lightners and Darkners alike!
+                An invite code is aviable upon request at {' '}
+                <InlineLinkText
+                  to={"https://darkworld.download"}
+                  label={"Link to darkworld.downlod"}
+                  style={[a.text_md, a.font_semi_bold]}>
+                  darkworld.download
+                </InlineLinkText>.
+              </Trans>
+            </Text>
+          }
 
           {isBridged && (
             <Text style={[a.text_md, a.leading_snug]}>
@@ -199,7 +215,7 @@ export function PdsDialog({
   )
 }
 
-function BskyBadgeSVG({size}: {size: number}) {
+function BskyBadgeSVG({ size }: { size: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Rect width={24} height={24} rx={6} fill="#0085ff" />
@@ -215,7 +231,7 @@ function BskyBadgeSVG({size}: {size: number}) {
   )
 }
 
-function FediverseBadgeSVG({size}: {size: number}) {
+function FediverseBadgeSVG({ size }: { size: number }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Rect width={24} height={24} rx={6} fill="#6364FF" />
@@ -297,7 +313,7 @@ function FaviconBadgeIcon({
       ) : null}
       <Image
         key={currentUrl}
-        source={{uri: currentUrl}}
+        source={{ uri: currentUrl }}
         style={{
           width: size,
           height: size,
