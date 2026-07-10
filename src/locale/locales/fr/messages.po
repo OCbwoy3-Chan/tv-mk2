@@ -901,7 +901,7 @@ msgstr "<0>{0}</0> membres"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr "<0>{displayName}</0><1/><2> vous a ajouté·e</2>"
 
-#: src/components/PdsDialog.tsx:156
+#: src/components/PdsDialog.tsx:172
 msgid "<0>Learn more</0> about what a PDS is and how to <1>self-host</1> your own."
 msgstr ""
 
@@ -1229,7 +1229,7 @@ msgstr "Ajouter un autre compte"
 msgid "Add another post"
 msgstr "Ajouter un autre post"
 
-#: src/view/com/composer/Composer.tsx:2603
+#: src/view/com/composer/Composer.tsx:2600
 msgid "Add another post to thread"
 msgstr "Ajouter un autre post au fil de discussion"
 
@@ -2422,7 +2422,7 @@ msgstr "Bluesky, c’est plus sympa avec des amis. Envie de ramener les vôtres�
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr "Bluesky a besoin d’accéder à l’appareil photo pour scanner les QR codes d’autres profils."
 
-#: src/components/PdsDialog.tsx:111
+#: src/components/PdsDialog.tsx:112
 msgid "Bluesky Social"
 msgstr ""
 
@@ -2791,7 +2791,7 @@ msgstr "Modifications enregistrées"
 msgid "Changes to the starter pack will not be reflected in the list after creation. The list will be an independent copy."
 msgstr "Les changements ultérieurs dans ce kit de démarrage ne seront pas répercutés sur la liste après sa création. La liste sera une copie indépendante."
 
-#: src/view/com/composer/Composer.tsx:2635
+#: src/view/com/composer/Composer.tsx:2632
 msgid "Character count"
 msgstr ""
 
@@ -3110,7 +3110,7 @@ msgstr "Cliquer pour réessayer l’envoi échoué du message"
 #: src/components/intents/GroupChatJoinDialog.tsx:292
 #: src/components/NewskieDialog.tsx:169
 #: src/components/NewskieDialog.tsx:175
-#: src/components/PdsDialog.tsx:191
+#: src/components/PdsDialog.tsx:207
 #: src/components/ProgressGuide/FollowDialog.tsx:463
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:122
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:128
@@ -3151,14 +3151,14 @@ msgstr "Fermer la bannière"
 #: src/components/dialogs/LanguageSelectDialog.tsx:357
 #: src/components/dialogs/NotificationSettingsDialog.tsx:102
 #: src/components/moderation/BlockDialog.tsx:199
-#: src/components/PdsDialog.tsx:185
+#: src/components/PdsDialog.tsx:201
 #: src/components/verification/VerificationsDialog.tsx:139
 #: src/components/verification/VerifierDialog.tsx:145
 #: src/features/gifPicker/components/GifPickerErrorBoundary.tsx:36
 msgid "Close dialog"
 msgstr "Fermer le dialogue"
 
-#: src/view/shell/index.web.tsx:220
+#: src/view/shell/index.web.tsx:213
 msgid "Close drawer menu"
 msgstr "Ferme le menu latéral"
 
@@ -3319,11 +3319,11 @@ msgstr "Permet d’écrire des posts de {0, plural, other {# caractères}} maxim
 msgid "Compose reply"
 msgstr "Rédiger une réponse"
 
-#: src/view/com/composer/Composer.tsx:3164
+#: src/view/com/composer/Composer.tsx:3161
 msgid "Compressing GIF..."
 msgstr "Compression du GIF en cours…"
 
-#: src/view/com/composer/Composer.tsx:3166
+#: src/view/com/composer/Composer.tsx:3163
 msgid "Compressing video..."
 msgstr "Compression de la vidéo en cours…"
 
@@ -3537,12 +3537,12 @@ msgstr "Conversation quittée"
 msgid "Conversation not found."
 msgstr "Discussion introuvable."
 
-#: src/view/com/composer/Composer.tsx:2621
-#: src/view/com/composer/Composer.tsx:2634
+#: src/view/com/composer/Composer.tsx:2618
+#: src/view/com/composer/Composer.tsx:2631
 msgid "Convert long post into thread"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2625
+#: src/view/com/composer/Composer.tsx:2622
 msgid "Convert to thread"
 msgstr ""
 
@@ -4187,6 +4187,12 @@ msgstr "Supprimé par Plivo dès qu’il est vérifié"
 msgid "Deleted list"
 msgstr "Liste supprimée"
 
+#: src/screens/Settings/DeltaSettings/index.tsx:17
+#: src/screens/Settings/Settings.tsx:470
+#: src/screens/Settings/Settings.tsx:473
+msgid "Deltas"
+msgstr ""
+
 #: src/Navigation.tsx:514
 #: src/screens/Settings/RunesSettings/DensitySettings.tsx:32
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:96
@@ -4404,7 +4410,7 @@ msgstr "Ignorer"
 msgid "Dismiss banner"
 msgstr "Ignorer la bannière"
 
-#: src/view/com/composer/Composer.tsx:3085
+#: src/view/com/composer/Composer.tsx:3082
 msgid "Dismiss error"
 msgstr "Ignorer l’erreur"
 
@@ -4565,8 +4571,8 @@ msgstr "Tapez deux fois pour fermer cette boîte de dialogue"
 msgid "Double tap to like"
 msgstr "Tapez deux fois pour aimer"
 
-#: src/components/tenna/NativeAppNux.tsx:159
-#: src/components/tenna/NativeAppNux.tsx:167
+#: src/components/tenna/NativeAppNux.tsx:158
+#: src/components/tenna/NativeAppNux.tsx:166
 #: src/features/inviteFriends/components/ActionButtons.tsx:36
 msgid "Download"
 msgstr "Télécharger"
@@ -5087,7 +5093,7 @@ msgstr "Passe en mode plein écran"
 msgid "Entertainment"
 msgstr "Divertissement"
 
-#: src/view/com/composer/Composer.tsx:3184
+#: src/view/com/composer/Composer.tsx:3181
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "Erreur"
@@ -5668,7 +5674,7 @@ msgstr ""
 msgid "Feature gates"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:106
+#: src/components/PdsDialog.tsx:107
 msgid "Fediverse"
 msgstr ""
 
@@ -6349,7 +6355,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3189
+#: src/view/com/composer/Composer.tsx:3186
 msgid "GIF uploaded"
 msgstr "GIF envoyé"
 
@@ -6662,8 +6668,8 @@ msgstr "Un souci ?"
 msgid "Held by Bluesky for 7 days to prevent abuse, then deleted"
 msgstr "Conservé par Bluesky pendant 7 jours pour éviter les abus, puis supprimé"
 
-#: src/components/tenna/NativeAppNux.tsx:173
-#: src/components/tenna/NativeAppNux.tsx:181
+#: src/components/tenna/NativeAppNux.tsx:172
+#: src/components/tenna/NativeAppNux.tsx:180
 msgid "Hell yeah!"
 msgstr ""
 
@@ -7288,7 +7294,7 @@ msgid "Introducing group chats"
 msgstr "Et voici les discussions de groupe"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:38
-#: src/components/tenna/NativeAppNux.tsx:39
+#: src/components/tenna/NativeAppNux.tsx:38
 msgid "Introducing saved posts AKA bookmarks"
 msgstr "Et voici les posts conservés (les signets)"
 
@@ -7441,12 +7447,12 @@ msgstr "Il n’y a que <0>{0}</0> pour l’instant ! Ajoutez d’autres personn
 msgid "It's just you right now! Add more people to your starter pack by searching above."
 msgstr "Il n’y a que vous pour l’instant ! Ajoutez d’autres personnes à votre kit de démarrage en effectuant une recherche ci-dessus."
 
-#: src/components/tenna/NativeAppNux.tsx:151
+#: src/components/tenna/NativeAppNux.tsx:150
 msgid "Jarona! Unsigned iOS builds for tenna.party are now on GitHub Actions!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3104
+#: src/view/com/composer/Composer.tsx:3101
 msgid "Job ID: {0}"
 msgstr "ID de job : {0}"
 
@@ -8365,7 +8371,6 @@ msgid "Moderation details"
 msgstr "Détails de la modération"
 
 #: src/Navigation.tsx:464
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:33
 #: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:19
 msgid "Moderation labels"
 msgstr ""
@@ -9407,7 +9412,7 @@ msgid "Open drawer menu"
 msgstr "Ouvre le menu latéral"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2580
+#: src/view/com/composer/Composer.tsx:2577
 msgid "Open emoji picker"
 msgstr "Ouvrir le sélecteur d’emoji"
 
@@ -9826,7 +9831,7 @@ msgstr "Mettre en pause la vidéo"
 msgid "PDS badges"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:88
+#: src/components/PdsDialog.tsx:89
 msgid "PDS Information"
 msgstr ""
 
@@ -10461,11 +10466,11 @@ msgstr "Politique de confidentialité"
 msgid "Privacy violation of a minor"
 msgstr "Violation de la vie privée d’un mineur"
 
-#: src/view/com/composer/Composer.tsx:3178
+#: src/view/com/composer/Composer.tsx:3175
 msgid "Processing GIF..."
 msgstr "Traitement du GIF en cours…"
 
-#: src/view/com/composer/Composer.tsx:3180
+#: src/view/com/composer/Composer.tsx:3177
 msgid "Processing video..."
 msgstr "Traitement de la vidéo en cours…"
 
@@ -12599,7 +12604,7 @@ msgstr ""
 msgid "Shown in thread views, expanded by default"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2637
+#: src/view/com/composer/Composer.tsx:2634
 msgid "Shows character count for your post"
 msgstr ""
 
@@ -12946,7 +12951,7 @@ msgstr "Spam"
 msgid "Spam or other inauthentic behavior or deception"
 msgstr "Spam, comportements inauthentiques ou déceptifs"
 
-#: src/view/com/composer/Composer.tsx:2622
+#: src/view/com/composer/Composer.tsx:2619
 msgid "Splits your post into a thread and appends numbering"
 msgstr ""
 
@@ -13374,7 +13379,6 @@ msgid "Temporarily deactivate your account"
 msgstr "Désactiver temporairement votre compte"
 
 #: src/Navigation.tsx:448
-#: src/screens/Settings/Settings.tsx:470
 msgid "Tenna"
 msgstr ""
 
@@ -13759,7 +13763,7 @@ msgstr "Ce compte a demandé aux personnes de se connecter pour voir son profil.
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr "Ce compte est bloqué par un ou plusieurs de vos listes de modération. Pour le débloquer, visitez vos listes directement et retirez-en ce compte."
 
-#: src/components/PdsDialog.tsx:134
+#: src/components/PdsDialog.tsx:150
 msgid "This account is bridged from the Fediverse via <0>Bridgy Fed</0>. "
 msgstr ""
 
@@ -13785,7 +13789,7 @@ msgstr "Cet appel sera envoyé au service de modération de Bluesky."
 msgid "This author has chosen to make their posts visible only to people who are signed in."
 msgstr "Ce compte a choisi de ne rendre visible ses posts qu’aux personnes connectées."
 
-#: src/components/PdsDialog.tsx:118
+#: src/components/PdsDialog.tsx:119
 msgid "This badge represents the Personal Data Server this account is stored on: <0>{displayName}</0>. A PDS is where posts, follows, and other data live on the AT Protocol network."
 msgstr ""
 
@@ -13928,6 +13932,10 @@ msgstr "Ce lien d’invitation a été désactivé."
 #: src/components/intents/GroupChatJoinDialog.tsx:247
 msgid "This invite link is invalid"
 msgstr "Ce lien d’invitation est incorrect"
+
+#: src/components/PdsDialog.tsx:135
+msgid "This is a community PDS for anyone, including tenna.party users, Lightners and Darkners alike! An invite code is aviable upon request at  <0>darkworld.download</0>."
+msgstr ""
 
 #: src/features/liveNow/components/EditLiveDialog.tsx:171
 #: src/features/liveNow/components/GoLiveDialog.tsx:161
@@ -14380,12 +14388,10 @@ msgid "Try it"
 msgstr "Essayer"
 
 #: src/lib/interests.ts:74
-#: src/screens/Settings/DeltaSettings/index.tsx:17
-#: src/screens/Settings/Settings.tsx:473
 msgid "TV"
 msgstr "TV"
 
-#: src/components/tenna/NativeAppNux.tsx:75
+#: src/components/tenna/NativeAppNux.tsx:74
 msgid "TV-Tastic update!"
 msgstr ""
 
@@ -14809,7 +14815,7 @@ msgstr "Envoyer à partir de fichiers"
 msgid "Upload from Library"
 msgstr "Envoyer à partir de la photothèque"
 
-#: src/view/com/composer/Composer.tsx:3171
+#: src/view/com/composer/Composer.tsx:3168
 msgid "Uploading GIF..."
 msgstr "Envoi du GIF en cours…"
 
@@ -14823,7 +14829,7 @@ msgstr "Envoi des images en cours…"
 msgid "Uploading link thumbnail..."
 msgstr "Envoi de la miniature du lien en cours…"
 
-#: src/view/com/composer/Composer.tsx:3173
+#: src/view/com/composer/Composer.tsx:3170
 msgid "Uploading video..."
 msgstr "Envoi de la vidéo en cours…"
 
@@ -15175,7 +15181,7 @@ msgstr "Vidéo non trouvée."
 msgid "Video settings"
 msgstr "Paramètres vidéo"
 
-#: src/view/com/composer/Composer.tsx:3191
+#: src/view/com/composer/Composer.tsx:3188
 msgid "Video uploaded"
 msgstr "Vidéo envoyée"
 
@@ -15579,7 +15585,7 @@ msgstr "Nous avons des soucis de réseau, réessayez"
 msgid "We’re introducing a new layer of verification on Bluesky — an easy-to-see checkmark."
 msgstr "Nous introduisons un nouveau niveau de vérification sur Bluesky — une coche facile à voir."
 
-#: src/components/tenna/NativeAppNux.tsx:140
+#: src/components/tenna/NativeAppNux.tsx:139
 msgid "We're native"
 msgstr ""
 

@@ -901,7 +901,7 @@ msgstr "<0>{0}</0> 的成员"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr "<0>{displayName}</0><1/><2>添加了你</2>"
 
-#: src/components/PdsDialog.tsx:156
+#: src/components/PdsDialog.tsx:172
 msgid "<0>Learn more</0> about what a PDS is and how to <1>self-host</1> your own."
 msgstr ""
 
@@ -1229,7 +1229,7 @@ msgstr "添加其他账户"
 msgid "Add another post"
 msgstr "添加另一则帖文"
 
-#: src/view/com/composer/Composer.tsx:2603
+#: src/view/com/composer/Composer.tsx:2600
 msgid "Add another post to thread"
 msgstr "添加另一则帖文至帖文串"
 
@@ -2422,7 +2422,7 @@ msgstr "与朋友一起使用 Bluesky 更有趣。你想要邀请一些朋友加
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr "需要授予 Bluesky 相机权限，以便扫描其他资料里的二维码。"
 
-#: src/components/PdsDialog.tsx:111
+#: src/components/PdsDialog.tsx:112
 msgid "Bluesky Social"
 msgstr ""
 
@@ -2791,7 +2791,7 @@ msgstr "已保存更改"
 msgid "Changes to the starter pack will not be reflected in the list after creation. The list will be an independent copy."
 msgstr "列表在创建后将是一个独立副本，任何对新手包的更改将不会影响已创建的列表。"
 
-#: src/view/com/composer/Composer.tsx:2635
+#: src/view/com/composer/Composer.tsx:2632
 msgid "Character count"
 msgstr ""
 
@@ -3110,7 +3110,7 @@ msgstr "点击以重试发送信息"
 #: src/components/intents/GroupChatJoinDialog.tsx:292
 #: src/components/NewskieDialog.tsx:169
 #: src/components/NewskieDialog.tsx:175
-#: src/components/PdsDialog.tsx:191
+#: src/components/PdsDialog.tsx:207
 #: src/components/ProgressGuide/FollowDialog.tsx:463
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:122
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:128
@@ -3151,14 +3151,14 @@ msgstr "关闭横幅"
 #: src/components/dialogs/LanguageSelectDialog.tsx:357
 #: src/components/dialogs/NotificationSettingsDialog.tsx:102
 #: src/components/moderation/BlockDialog.tsx:199
-#: src/components/PdsDialog.tsx:185
+#: src/components/PdsDialog.tsx:201
 #: src/components/verification/VerificationsDialog.tsx:139
 #: src/components/verification/VerifierDialog.tsx:145
 #: src/features/gifPicker/components/GifPickerErrorBoundary.tsx:36
 msgid "Close dialog"
 msgstr "关闭对话框"
 
-#: src/view/shell/index.web.tsx:220
+#: src/view/shell/index.web.tsx:213
 msgid "Close drawer menu"
 msgstr "关闭抽屉菜单"
 
@@ -3319,11 +3319,11 @@ msgstr "撰写最多 {0, plural,other {# 个字符}} 的帖文"
 msgid "Compose reply"
 msgstr "撰写回复"
 
-#: src/view/com/composer/Composer.tsx:3164
+#: src/view/com/composer/Composer.tsx:3161
 msgid "Compressing GIF..."
 msgstr "正在压缩 GIF……"
 
-#: src/view/com/composer/Composer.tsx:3166
+#: src/view/com/composer/Composer.tsx:3163
 msgid "Compressing video..."
 msgstr "正在压缩视频……"
 
@@ -3537,12 +3537,12 @@ msgstr "离开对话"
 msgid "Conversation not found."
 msgstr "找不到对话。"
 
-#: src/view/com/composer/Composer.tsx:2621
-#: src/view/com/composer/Composer.tsx:2634
+#: src/view/com/composer/Composer.tsx:2618
+#: src/view/com/composer/Composer.tsx:2631
 msgid "Convert long post into thread"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2625
+#: src/view/com/composer/Composer.tsx:2622
 msgid "Convert to thread"
 msgstr ""
 
@@ -4187,6 +4187,12 @@ msgstr "验证后由 Plivo 删除"
 msgid "Deleted list"
 msgstr "删除列表"
 
+#: src/screens/Settings/DeltaSettings/index.tsx:17
+#: src/screens/Settings/Settings.tsx:470
+#: src/screens/Settings/Settings.tsx:473
+msgid "Deltas"
+msgstr ""
+
 #: src/Navigation.tsx:514
 #: src/screens/Settings/RunesSettings/DensitySettings.tsx:32
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:96
@@ -4404,7 +4410,7 @@ msgstr "跳过"
 msgid "Dismiss banner"
 msgstr "忽略横幅提示"
 
-#: src/view/com/composer/Composer.tsx:3085
+#: src/view/com/composer/Composer.tsx:3082
 msgid "Dismiss error"
 msgstr "忽略错误"
 
@@ -4565,8 +4571,8 @@ msgstr "双击以关闭对话框"
 msgid "Double tap to like"
 msgstr "双击以点赞"
 
-#: src/components/tenna/NativeAppNux.tsx:159
-#: src/components/tenna/NativeAppNux.tsx:167
+#: src/components/tenna/NativeAppNux.tsx:158
+#: src/components/tenna/NativeAppNux.tsx:166
 #: src/features/inviteFriends/components/ActionButtons.tsx:36
 msgid "Download"
 msgstr "下载"
@@ -5087,7 +5093,7 @@ msgstr "进入全屏模式"
 msgid "Entertainment"
 msgstr "娱乐"
 
-#: src/view/com/composer/Composer.tsx:3184
+#: src/view/com/composer/Composer.tsx:3181
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "错误"
@@ -5668,7 +5674,7 @@ msgstr ""
 msgid "Feature gates"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:106
+#: src/components/PdsDialog.tsx:107
 msgid "Fediverse"
 msgstr ""
 
@@ -6349,7 +6355,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3189
+#: src/view/com/composer/Composer.tsx:3186
 msgid "GIF uploaded"
 msgstr "已上传 GIF"
 
@@ -6662,8 +6668,8 @@ msgstr "遇到问题了吗？"
 msgid "Held by Bluesky for 7 days to prevent abuse, then deleted"
 msgstr "由 Bluesky 保留 7 天以防止滥用，并在之后删除"
 
-#: src/components/tenna/NativeAppNux.tsx:173
-#: src/components/tenna/NativeAppNux.tsx:181
+#: src/components/tenna/NativeAppNux.tsx:172
+#: src/components/tenna/NativeAppNux.tsx:180
 msgid "Hell yeah!"
 msgstr ""
 
@@ -7288,7 +7294,7 @@ msgid "Introducing group chats"
 msgstr "隆重介绍群组对话"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:38
-#: src/components/tenna/NativeAppNux.tsx:39
+#: src/components/tenna/NativeAppNux.tsx:38
 msgid "Introducing saved posts AKA bookmarks"
 msgstr "隆重介绍帖文收藏（又名书签）"
 
@@ -7441,12 +7447,12 @@ msgstr "现在新手包里只有<0>{0}</0>！通过上面的搜索功能将更�
 msgid "It's just you right now! Add more people to your starter pack by searching above."
 msgstr "现在只有你一个！通过上面的列表将更多人添加到你的新手包里面。"
 
-#: src/components/tenna/NativeAppNux.tsx:151
+#: src/components/tenna/NativeAppNux.tsx:150
 msgid "Jarona! Unsigned iOS builds for tenna.party are now on GitHub Actions!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3104
+#: src/view/com/composer/Composer.tsx:3101
 msgid "Job ID: {0}"
 msgstr "作业 ID：{0}"
 
@@ -8365,7 +8371,6 @@ msgid "Moderation details"
 msgstr "内容审核详情"
 
 #: src/Navigation.tsx:464
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:33
 #: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:19
 msgid "Moderation labels"
 msgstr ""
@@ -9407,7 +9412,7 @@ msgid "Open drawer menu"
 msgstr "开启抽屉菜单"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2580
+#: src/view/com/composer/Composer.tsx:2577
 msgid "Open emoji picker"
 msgstr "开启表情符号选择器"
 
@@ -9826,7 +9831,7 @@ msgstr "暂停视频"
 msgid "PDS badges"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:88
+#: src/components/PdsDialog.tsx:89
 msgid "PDS Information"
 msgstr ""
 
@@ -10461,11 +10466,11 @@ msgstr "隐私政策"
 msgid "Privacy violation of a minor"
 msgstr "侵犯未成年隐私"
 
-#: src/view/com/composer/Composer.tsx:3178
+#: src/view/com/composer/Composer.tsx:3175
 msgid "Processing GIF..."
 msgstr "正在处理 GIF……"
 
-#: src/view/com/composer/Composer.tsx:3180
+#: src/view/com/composer/Composer.tsx:3177
 msgid "Processing video..."
 msgstr "正在处理视频……"
 
@@ -12599,7 +12604,7 @@ msgstr ""
 msgid "Shown in thread views, expanded by default"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2637
+#: src/view/com/composer/Composer.tsx:2634
 msgid "Shows character count for your post"
 msgstr ""
 
@@ -12946,7 +12951,7 @@ msgstr "垃圾内容"
 msgid "Spam or other inauthentic behavior or deception"
 msgstr "垃圾信息或其他虚假欺骗行为"
 
-#: src/view/com/composer/Composer.tsx:2622
+#: src/view/com/composer/Composer.tsx:2619
 msgid "Splits your post into a thread and appends numbering"
 msgstr ""
 
@@ -13374,7 +13379,6 @@ msgid "Temporarily deactivate your account"
 msgstr "暂时停用你的账户"
 
 #: src/Navigation.tsx:448
-#: src/screens/Settings/Settings.tsx:470
 msgid "Tenna"
 msgstr ""
 
@@ -13759,7 +13763,7 @@ msgstr "该账户要求登录后才能查看其个人资料。"
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr "该账户已被一个或多个内容审核列表所屏蔽。如要取消对该账户的屏蔽，请查看内容审核列表并从中删除该账户。"
 
-#: src/components/PdsDialog.tsx:134
+#: src/components/PdsDialog.tsx:150
 msgid "This account is bridged from the Fediverse via <0>Bridgy Fed</0>. "
 msgstr ""
 
@@ -13785,7 +13789,7 @@ msgstr "这条申诉将提交给 Bluesky 内容审核服务。"
 msgid "This author has chosen to make their posts visible only to people who are signed in."
 msgstr "该作者仅限已登录用户可以查看其帖文。"
 
-#: src/components/PdsDialog.tsx:118
+#: src/components/PdsDialog.tsx:119
 msgid "This badge represents the Personal Data Server this account is stored on: <0>{displayName}</0>. A PDS is where posts, follows, and other data live on the AT Protocol network."
 msgstr ""
 
@@ -13928,6 +13932,10 @@ msgstr "此邀请链接已被禁用。"
 #: src/components/intents/GroupChatJoinDialog.tsx:247
 msgid "This invite link is invalid"
 msgstr "此邀请链接无效"
+
+#: src/components/PdsDialog.tsx:135
+msgid "This is a community PDS for anyone, including tenna.party users, Lightners and Darkners alike! An invite code is aviable upon request at  <0>darkworld.download</0>."
+msgstr ""
 
 #: src/features/liveNow/components/EditLiveDialog.tsx:171
 #: src/features/liveNow/components/GoLiveDialog.tsx:161
@@ -14380,12 +14388,10 @@ msgid "Try it"
 msgstr "试试看"
 
 #: src/lib/interests.ts:74
-#: src/screens/Settings/DeltaSettings/index.tsx:17
-#: src/screens/Settings/Settings.tsx:473
 msgid "TV"
 msgstr "电视节目"
 
-#: src/components/tenna/NativeAppNux.tsx:75
+#: src/components/tenna/NativeAppNux.tsx:74
 msgid "TV-Tastic update!"
 msgstr ""
 
@@ -14809,7 +14815,7 @@ msgstr "从文件上传"
 msgid "Upload from Library"
 msgstr "从照片图库上传"
 
-#: src/view/com/composer/Composer.tsx:3171
+#: src/view/com/composer/Composer.tsx:3168
 msgid "Uploading GIF..."
 msgstr "正在上传 GIF……"
 
@@ -14823,7 +14829,7 @@ msgstr "正在上传图片……"
 msgid "Uploading link thumbnail..."
 msgstr "正在上传链接缩略图……"
 
-#: src/view/com/composer/Composer.tsx:3173
+#: src/view/com/composer/Composer.tsx:3170
 msgid "Uploading video..."
 msgstr "正在上传视频……"
 
@@ -15175,7 +15181,7 @@ msgstr "无法找到视频。"
 msgid "Video settings"
 msgstr "视频设置"
 
-#: src/view/com/composer/Composer.tsx:3191
+#: src/view/com/composer/Composer.tsx:3188
 msgid "Video uploaded"
 msgstr "已上传视频"
 
@@ -15579,7 +15585,7 @@ msgstr "我们遇到了网络问题，请再试一次"
 msgid "We’re introducing a new layer of verification on Bluesky — an easy-to-see checkmark."
 msgstr "为你介绍 Bluesky 的全新认证机制 —— 认证徽章。"
 
-#: src/components/tenna/NativeAppNux.tsx:140
+#: src/components/tenna/NativeAppNux.tsx:139
 msgid "We're native"
 msgstr ""
 

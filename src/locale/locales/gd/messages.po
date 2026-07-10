@@ -901,7 +901,7 @@ msgstr "Na buill aig <0>{0}</0>"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:156
+#: src/components/PdsDialog.tsx:172
 msgid "<0>Learn more</0> about what a PDS is and how to <1>self-host</1> your own."
 msgstr ""
 
@@ -1229,7 +1229,7 @@ msgstr "Cuir cunntas eile ris"
 msgid "Add another post"
 msgstr "Cuir post eile ris"
 
-#: src/view/com/composer/Composer.tsx:2603
+#: src/view/com/composer/Composer.tsx:2600
 msgid "Add another post to thread"
 msgstr "Cuir post eile ris an t-snàithlean"
 
@@ -2422,7 +2422,7 @@ msgstr "’S fheàirrde Bluesky do charaidean fhèin. A bheil thu airson cuiread
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:111
+#: src/components/PdsDialog.tsx:112
 msgid "Bluesky Social"
 msgstr ""
 
@@ -2791,7 +2791,7 @@ msgstr "Chaidh na h-atharraichean a shàbhaladh"
 msgid "Changes to the starter pack will not be reflected in the list after creation. The list will be an independent copy."
 msgstr "Cha bhi buaidh air an liosta ma dh’atharraicheas tu a’ phacaid-thòiseachaidh an dèidh dhut a chruthachadh. Bidh an liosta na lethbhreac neo-eisimeileach."
 
-#: src/view/com/composer/Composer.tsx:2635
+#: src/view/com/composer/Composer.tsx:2632
 msgid "Character count"
 msgstr ""
 
@@ -3110,7 +3110,7 @@ msgstr "Dèan briogadh airson feuchainn ris an teachdaireachd a dh’fhàillig a
 #: src/components/intents/GroupChatJoinDialog.tsx:292
 #: src/components/NewskieDialog.tsx:169
 #: src/components/NewskieDialog.tsx:175
-#: src/components/PdsDialog.tsx:191
+#: src/components/PdsDialog.tsx:207
 #: src/components/ProgressGuide/FollowDialog.tsx:463
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:122
 #: src/components/StarterPack/Wizard/WizardEditListDialog.tsx:128
@@ -3151,14 +3151,14 @@ msgstr ""
 #: src/components/dialogs/LanguageSelectDialog.tsx:357
 #: src/components/dialogs/NotificationSettingsDialog.tsx:102
 #: src/components/moderation/BlockDialog.tsx:199
-#: src/components/PdsDialog.tsx:185
+#: src/components/PdsDialog.tsx:201
 #: src/components/verification/VerificationsDialog.tsx:139
 #: src/components/verification/VerifierDialog.tsx:145
 #: src/features/gifPicker/components/GifPickerErrorBoundary.tsx:36
 msgid "Close dialog"
 msgstr "Dùin an còmhradh"
 
-#: src/view/shell/index.web.tsx:220
+#: src/view/shell/index.web.tsx:213
 msgid "Close drawer menu"
 msgstr "Dùin an clàr-taice air an taobh"
 
@@ -3319,11 +3319,11 @@ msgstr "Sgrìobh puist a bhios suas ri {0, plural, one {# charactar} two {# char
 msgid "Compose reply"
 msgstr "Sgrìobh freagairt"
 
-#: src/view/com/composer/Composer.tsx:3164
+#: src/view/com/composer/Composer.tsx:3161
 msgid "Compressing GIF..."
 msgstr "A’ co-dhlùthachadh an GIF…"
 
-#: src/view/com/composer/Composer.tsx:3166
+#: src/view/com/composer/Composer.tsx:3163
 msgid "Compressing video..."
 msgstr "A’ dùmhlachadh a’ video…"
 
@@ -3537,12 +3537,12 @@ msgstr ""
 msgid "Conversation not found."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2621
-#: src/view/com/composer/Composer.tsx:2634
+#: src/view/com/composer/Composer.tsx:2618
+#: src/view/com/composer/Composer.tsx:2631
 msgid "Convert long post into thread"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2625
+#: src/view/com/composer/Composer.tsx:2622
 msgid "Convert to thread"
 msgstr ""
 
@@ -4187,6 +4187,12 @@ msgstr "Air a sguabadh às le Plivo an dèidh an dearbhaidh"
 msgid "Deleted list"
 msgstr "Chaidh an liosta a sguabadh às"
 
+#: src/screens/Settings/DeltaSettings/index.tsx:17
+#: src/screens/Settings/Settings.tsx:470
+#: src/screens/Settings/Settings.tsx:473
+msgid "Deltas"
+msgstr ""
+
 #: src/Navigation.tsx:514
 #: src/screens/Settings/RunesSettings/DensitySettings.tsx:32
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:96
@@ -4404,7 +4410,7 @@ msgstr "Leig seachad"
 msgid "Dismiss banner"
 msgstr "Leig seachad a’ bhratach"
 
-#: src/view/com/composer/Composer.tsx:3085
+#: src/view/com/composer/Composer.tsx:3082
 msgid "Dismiss error"
 msgstr "Leig seachad a’ mhearachd"
 
@@ -4565,8 +4571,8 @@ msgstr "Thoir gnogag dhùbailte air gus an còmhradh a dhùnadh"
 msgid "Double tap to like"
 msgstr "Thoir gnogag dhùbailte a dh’innse gur toil leat e"
 
-#: src/components/tenna/NativeAppNux.tsx:159
-#: src/components/tenna/NativeAppNux.tsx:167
+#: src/components/tenna/NativeAppNux.tsx:158
+#: src/components/tenna/NativeAppNux.tsx:166
 #: src/features/inviteFriends/components/ActionButtons.tsx:36
 msgid "Download"
 msgstr ""
@@ -5087,7 +5093,7 @@ msgstr "Fosglaidh seo an làn-sgrìn"
 msgid "Entertainment"
 msgstr "Dibhearsan"
 
-#: src/view/com/composer/Composer.tsx:3184
+#: src/view/com/composer/Composer.tsx:3181
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "Mearachd"
@@ -5668,7 +5674,7 @@ msgstr ""
 msgid "Feature gates"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:106
+#: src/components/PdsDialog.tsx:107
 msgid "Fediverse"
 msgstr ""
 
@@ -6349,7 +6355,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3189
+#: src/view/com/composer/Composer.tsx:3186
 msgid "GIF uploaded"
 msgstr "Chaidh an GIF a luchdadh suas"
 
@@ -6662,8 +6668,8 @@ msgstr "A bheil duilgheadasan agad?"
 msgid "Held by Bluesky for 7 days to prevent abuse, then deleted"
 msgstr "Cumaidh Bluesky seo fad 7 làithean airson casg a chur air mì-ghnàthachadh is thèid a sguabadh às an uair sin"
 
-#: src/components/tenna/NativeAppNux.tsx:173
-#: src/components/tenna/NativeAppNux.tsx:181
+#: src/components/tenna/NativeAppNux.tsx:172
+#: src/components/tenna/NativeAppNux.tsx:180
 msgid "Hell yeah!"
 msgstr ""
 
@@ -7288,7 +7294,7 @@ msgid "Introducing group chats"
 msgstr ""
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:38
-#: src/components/tenna/NativeAppNux.tsx:39
+#: src/components/tenna/NativeAppNux.tsx:38
 msgid "Introducing saved posts AKA bookmarks"
 msgstr "’S urrainn dhuit puist a shàbhaladh mar chomharran-lìn a-nis"
 
@@ -7441,12 +7447,12 @@ msgstr "Chan eil ann ach <0>{0}</0> aig an ìre-sa! Cuir barrachd dhaoine ris a�
 msgid "It's just you right now! Add more people to your starter pack by searching above."
 msgstr "Chan eil ann ach thu fhèin an-dràsta fhèin! Cuir barrachd dhaoine ris a’ phacaid tòiseachaidh agad le bhith a’ dèanamh lorg gu h-àrd."
 
-#: src/components/tenna/NativeAppNux.tsx:151
+#: src/components/tenna/NativeAppNux.tsx:150
 msgid "Jarona! Unsigned iOS builds for tenna.party are now on GitHub Actions!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3104
+#: src/view/com/composer/Composer.tsx:3101
 msgid "Job ID: {0}"
 msgstr "ID na h-obrach: {0}"
 
@@ -8365,7 +8371,6 @@ msgid "Moderation details"
 msgstr "Mion-fhiosrachadh mun mhodarataireachd"
 
 #: src/Navigation.tsx:464
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:33
 #: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:19
 msgid "Moderation labels"
 msgstr ""
@@ -9407,7 +9412,7 @@ msgid "Open drawer menu"
 msgstr "Fosgail an clàr-taice air an taobh"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2580
+#: src/view/com/composer/Composer.tsx:2577
 msgid "Open emoji picker"
 msgstr "Fosgail ròghnaichear nan emoji"
 
@@ -9826,7 +9831,7 @@ msgstr "Cuir a’ video na stad"
 msgid "PDS badges"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:88
+#: src/components/PdsDialog.tsx:89
 msgid "PDS Information"
 msgstr ""
 
@@ -10461,11 +10466,11 @@ msgstr "Am poileasaidh prìobhaideachd"
 msgid "Privacy violation of a minor"
 msgstr "Briseadh a-steach air prìobhaideachd mion-aoisich"
 
-#: src/view/com/composer/Composer.tsx:3178
+#: src/view/com/composer/Composer.tsx:3175
 msgid "Processing GIF..."
 msgstr "A’ pròiseasadh an GIF…"
 
-#: src/view/com/composer/Composer.tsx:3180
+#: src/view/com/composer/Composer.tsx:3177
 msgid "Processing video..."
 msgstr "A’ pròiseasadh a’ video…"
 
@@ -12599,7 +12604,7 @@ msgstr ""
 msgid "Shown in thread views, expanded by default"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2637
+#: src/view/com/composer/Composer.tsx:2634
 msgid "Shows character count for your post"
 msgstr ""
 
@@ -12946,7 +12951,7 @@ msgstr "Spama"
 msgid "Spam or other inauthentic behavior or deception"
 msgstr "Spama, giùlan-brèige eile no foill"
 
-#: src/view/com/composer/Composer.tsx:2622
+#: src/view/com/composer/Composer.tsx:2619
 msgid "Splits your post into a thread and appends numbering"
 msgstr ""
 
@@ -13374,7 +13379,6 @@ msgid "Temporarily deactivate your account"
 msgstr ""
 
 #: src/Navigation.tsx:448
-#: src/screens/Settings/Settings.tsx:470
 msgid "Tenna"
 msgstr ""
 
@@ -13759,7 +13763,7 @@ msgstr "Tha an cunntas seo a’ sparradh air daoine clàradh a-steach mus fhaice
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr "Chaidh an cunntas seo a bhacadh le co-dhiù aon liosta modarataireachd agad. Airson a dhì-bhacadh, tadhail air na liostaichean iad fhèin is thoir air falbh an cleachdaiche."
 
-#: src/components/PdsDialog.tsx:134
+#: src/components/PdsDialog.tsx:150
 msgid "This account is bridged from the Fediverse via <0>Bridgy Fed</0>. "
 msgstr ""
 
@@ -13785,7 +13789,7 @@ msgstr "Thèid an t-ath-thagradh seo a chur gu seirbheis modarataireachd Bhluesk
 msgid "This author has chosen to make their posts visible only to people who are signed in."
 msgstr "Cho-dhùin an t-ùghdar seo nach fhaic ach daoine a tha clàraichte a-staigh na puist aca."
 
-#: src/components/PdsDialog.tsx:118
+#: src/components/PdsDialog.tsx:119
 msgid "This badge represents the Personal Data Server this account is stored on: <0>{displayName}</0>. A PDS is where posts, follows, and other data live on the AT Protocol network."
 msgstr ""
 
@@ -13927,6 +13931,10 @@ msgstr ""
 
 #: src/components/intents/GroupChatJoinDialog.tsx:247
 msgid "This invite link is invalid"
+msgstr ""
+
+#: src/components/PdsDialog.tsx:135
+msgid "This is a community PDS for anyone, including tenna.party users, Lightners and Darkners alike! An invite code is aviable upon request at  <0>darkworld.download</0>."
 msgstr ""
 
 #: src/features/liveNow/components/EditLiveDialog.tsx:171
@@ -14380,12 +14388,10 @@ msgid "Try it"
 msgstr ""
 
 #: src/lib/interests.ts:74
-#: src/screens/Settings/DeltaSettings/index.tsx:17
-#: src/screens/Settings/Settings.tsx:473
 msgid "TV"
 msgstr "Tbh"
 
-#: src/components/tenna/NativeAppNux.tsx:75
+#: src/components/tenna/NativeAppNux.tsx:74
 msgid "TV-Tastic update!"
 msgstr ""
 
@@ -14809,7 +14815,7 @@ msgstr "Luchdaich suas o na faidhlichean"
 msgid "Upload from Library"
 msgstr "Luchdaich suas on leabhar-lann"
 
-#: src/view/com/composer/Composer.tsx:3171
+#: src/view/com/composer/Composer.tsx:3168
 msgid "Uploading GIF..."
 msgstr "A’ luchdadh suas an GIF…"
 
@@ -14823,7 +14829,7 @@ msgstr "A’ luchdadh suas nan dealbhan…"
 msgid "Uploading link thumbnail..."
 msgstr "A’ luchdadh suas dealbhag a’ cheangail…"
 
-#: src/view/com/composer/Composer.tsx:3173
+#: src/view/com/composer/Composer.tsx:3170
 msgid "Uploading video..."
 msgstr "A’ luchdadh suas a’ video…"
 
@@ -15175,7 +15181,7 @@ msgstr "Cha deach a’ video a lorg."
 msgid "Video settings"
 msgstr "Roghainnean a’ video"
 
-#: src/view/com/composer/Composer.tsx:3191
+#: src/view/com/composer/Composer.tsx:3188
 msgid "Video uploaded"
 msgstr "Chaidh a’ video a luchdadh suas"
 
@@ -15579,7 +15585,7 @@ msgstr ""
 msgid "We’re introducing a new layer of verification on Bluesky — an easy-to-see checkmark."
 msgstr "Tha sinn a’ toirt a-steach ìre eile de dhearbhadh air Bluesky – cromag fhollaiseach."
 
-#: src/components/tenna/NativeAppNux.tsx:140
+#: src/components/tenna/NativeAppNux.tsx:139
 msgid "We're native"
 msgstr ""
 
