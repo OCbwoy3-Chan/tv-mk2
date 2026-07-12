@@ -1,9 +1,8 @@
 import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {type AppBskyFeedDefs, type ComAtprotoLabelDefs} from '@atproto/api'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Plural} from '@lingui/react/macro'
+import {Plural, useLingui} from '@lingui/react/macro'
 
+import {filterUserFacingLabels} from '#/lib/moderation'
 import {useSession} from '#/state/session'
 import {atoms as a} from '#/alf'
 import {
@@ -19,28 +18,25 @@ import {
 } from '#/components/moderation/LabelsOnMeDialog'
 
 export function LabelsOnMe({
-  type,
+  type = 'account',
   labels,
   size,
   style,
 }: {
-  type: 'account' | 'content'
+  type?: 'account' | 'content'
   labels: ComAtprotoLabelDefs.Label[] | undefined
   size?: ButtonSize
   style?: StyleProp<ViewStyle>
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const {currentAccount} = useSession()
   const control = useLabelsOnMeDialogControl()
 
   if (!labels || !currentAccount) {
     return null
   }
-  labels = labels.filter(
-    l =>
-      !l.val.startsWith('!') &&
-      !(l.val === 'bot' && l.src === currentAccount.did) &&
-      !(l.val === 'pet' && l.src === currentAccount.did),
+  labels = filterUserFacingLabels(labels, currentAccount.did).filter(
+    label => !(label.val === 'pet' && label.src === currentAccount.did),
   )
   if (!labels.length) {
     return null
@@ -54,7 +50,7 @@ export function LabelsOnMe({
         variant="solid"
         color="secondary"
         size={size || 'small'}
-        label={_(msg`View information about these labels`)}
+        label={l`View information about these labels`}
         onPress={() => {
           control.open()
         }}>
@@ -91,6 +87,11 @@ export function LabelsOnMyPost({
     return null
   }
   return (
-    <LabelsOnMe type="content" labels={post.labels} size="tiny" style={style} />
+    <LabelsOnMe
+      type="content"
+      labels={post.labels}
+      size="tiny"
+      style={style}
+    />
   )
 }

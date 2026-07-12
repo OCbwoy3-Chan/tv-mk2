@@ -1,8 +1,6 @@
 import {useCallback, useImperativeHandle, useRef, useState} from 'react'
 import {View} from 'react-native'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 
 import {BSKY_SERVICE} from '#/lib/constants'
 import * as persisted from '#/state/persisted'
@@ -67,7 +65,7 @@ function DialogInner({
   initialCustomAddress: string
 }) {
   const control = Dialog.useDialogContext()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const t = useTheme()
   const {accounts} = useSession()
   const {gtMobile} = useBreakpoints()
@@ -113,9 +111,8 @@ function DialogInner({
       style={web({maxWidth: 500})}>
       <View style={[a.relative, a.gap_md, a.w_full]}>
         <Text nativeID="dialog-title" style={[a.text_2xl, a.font_bold]}>
-          <Trans>Choose your account provider</Trans>
+          <Trans>Choose your hosting provider</Trans>
         </Text>
-
         {isFirstTimeUser && (
           <Admonition type="tip">
             <Trans>
@@ -180,7 +177,7 @@ function DialogInner({
               </Trans>
             )}{' '}
             <InlineLinkText
-              label={_(msg`Learn more about self hosting your PDS.`)}
+              label={l`Learn more about self hosting your PDS.`}
               to="https://atproto.com/guides/self-hosting">
               <Trans>Learn more.</Trans>
             </InlineLinkText>
@@ -197,7 +194,7 @@ function DialogInner({
               web: 'small',
             })}
             onPress={() => control.close()}
-            label={_(msg`Done`)}>
+            label={l`Done`}>
             <ButtonText>
               <Trans>Done</Trans>
             </ButtonText>

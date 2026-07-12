@@ -149,7 +149,7 @@ function KnownFollowersInner({
 
   const SIZE = minimal ? AVI_SIZE_SMALL : AVI_SIZE
   const dim = SIZE + AVI_BORDER * 2
-  const radius = avatarBorderRadius(SIZE, enableSquareAvatars)
+  const radius = avatarBorderRadius(SIZE, enableSquareAvatars ?? true)
   const overflowCount = serverCount - slice.length
   const showOverflowCount = shouldShowFollowedByOverflowCount(
     followedByDisplay,

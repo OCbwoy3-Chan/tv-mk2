@@ -54,7 +54,9 @@ function getTabbableElements(container: HTMLElement) {
         ) {
           return NodeFilter.FILTER_SKIP
         }
-        if (node.disabled || node.hidden) return NodeFilter.FILTER_SKIP
+        if (node.hasAttribute('disabled') || node.hidden) {
+          return NodeFilter.FILTER_SKIP
+        }
         return node.tabIndex >= 0
           ? NodeFilter.FILTER_ACCEPT
           : NodeFilter.FILTER_SKIP
@@ -100,6 +102,10 @@ const Context = createContext<{
   onBlur: () => {},
 })
 Context.displayName = 'TextFieldContext'
+
+export function useTextFieldContext() {
+  return useContext(Context)
+}
 
 export type RootProps = PropsWithChildren<{isInvalid?: boolean} & TextStyleProp>
 
@@ -299,7 +305,7 @@ export function createInput(Component: typeof TextInput) {
 
     const inputRefs = mergeRefs([refs, attachTabHandler])
 
-    const flattened = StyleSheet.flatten([
+    const flattened = StyleSheet.flatten<TextStyle>([
       a.relative,
       a.z_20,
       a.flex_1,

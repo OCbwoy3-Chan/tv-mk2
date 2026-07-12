@@ -3,7 +3,7 @@ import {StyleSheet, useWindowDimensions, View} from 'react-native'
 
 import {registerSixSevenControls} from '#/features/sixSeven/celebrate'
 import {ConfettiBurst} from '#/features/sixSeven/ConfettiBurst'
-import {IS_WEB} from '#/env'
+import {native, web} from '#/alf'
 
 export function SixSevenOutlet() {
   const {width, height} = useWindowDimensions()
@@ -27,11 +27,9 @@ export function SixSevenOutlet() {
       pointerEvents="box-none"
       style={[
         styles.viewport,
-        {
-          width,
-          height,
-          position: IS_WEB ? 'fixed' : 'absolute',
-        },
+        {width, height},
+        web({position: 'fixed'}),
+        native({position: 'absolute'}),
       ]}>
       {bursts.map(id => (
         <ConfettiBurst

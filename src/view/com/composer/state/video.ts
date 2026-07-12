@@ -207,6 +207,9 @@ export function videoReducer(
     return state
   }
   if (action.type === 'to_error') {
+    if (!('telemetry' in state)) {
+      return state
+    }
     return {
       status: 'error',
       progress: 100,

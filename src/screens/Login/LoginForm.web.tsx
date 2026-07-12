@@ -25,7 +25,7 @@ import {saveOAuthReturnUrl} from '#/state/session/oauth-web-return-url'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {atoms as a, native, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
-import {FormError} from '#/components/forms/FormError'
+import * as Admonition from '#/components/Admonition'
 import {HostingProvider} from '#/components/forms/HostingProvider'
 import * as TextField from '#/components/forms/TextField'
 import {At_Stroke2_Corner0_Rounded as At} from '#/components/icons/At'
@@ -246,7 +246,7 @@ function OAuthLoginFields({
           onSubmit={onPressNext}
         />
       </View>
-      <FormError error={error} />
+      {error && <Admonition.Admonition type="error">{error}</Admonition.Admonition>}
       <View style={[a.flex_row, a.align_center, a.pt_md]}>
         <Button
           label={_(msg`Back`)}
@@ -566,7 +566,7 @@ function LegacyLoginFields({
           </Text>
         </View>
       )}
-      <FormError error={error} />
+      {error && <Admonition.Admonition type="error">{error}</Admonition.Admonition>}
       <View style={[a.pt_md, a.justify_between, a.flex_row]}>
         <Button
           label={_(msg`Back`)}
