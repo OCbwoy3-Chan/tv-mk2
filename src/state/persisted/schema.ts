@@ -180,6 +180,7 @@ const schema = z.object({
   alsoLikedFeedEnabled: z.boolean().optional(),
   alsoLikedCollapseByDefault: z.boolean().optional(),
   constellationInstance: z.string().optional(),
+  constellationInstanceCustom: z.string().optional(),
   showLinkInHandle: z.boolean().optional(),
   showLinkInHandleOnlyOnWorkingLinks: z.boolean().optional(),
   hideFeedsPromoTab: z.boolean().optional(),
@@ -243,7 +244,9 @@ const schema = z.object({
   downloadFormat: z.string().optional(),
   loadAsPngs: z.boolean().optional(),
   imageCdnHost: z.string().optional(),
+  imageCdnHostCustom: z.string().optional(),
   plcDirectory: z.string().optional(),
+  plcDirectoryCustom: z.string().optional(),
   hideUnreplyablePosts: z.boolean().optional(),
   pdsLabel: z
     .object({
@@ -394,7 +397,6 @@ export const defaults: Schema = {
   fullsizeFormat: 'webp',
   downloadFormat: 'jpeg',
   loadAsPngs: true,
-  imageCdnHost: 'https://cdn.bsky.app',
   plcDirectory: 'https://plc.directory',
   hideUnreplyablePosts: false,
   pdsLabel: {

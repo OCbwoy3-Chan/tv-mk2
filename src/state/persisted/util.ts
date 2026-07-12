@@ -94,6 +94,58 @@ function migrateMetricsDisplayPrefs(data: Schema): Schema {
 export function normalizeData(data: Schema) {
   const next = hydrateWithDefaults(migrateMetricsDisplayPrefs(data))
 
+  if (next.imageCdnHost) {
+    try {
+      if (new URL(next.imageCdnHost).origin === 'https://cdn.bsky.app') {
+        next.imageCdnHost = undefined
+      }
+    } catch {}
+  }
+
+  const imageCdnPresets = [
+    'https://porxie-bsky.dollware.net',
+    'https://cdn.blueat.network',
+  ]
+  const plcDirectoryPresets = [
+    'https://plc.directory',
+    'https://plc.eurosky.network',
+    'https://plc.wafflehouse.dev',
+  ]
+  const constellationPresets = [
+    'https://constellation.microcosm.blue',
+    'https://constellation.wafflehouse.dev',
+  ]
+
+  if (!next.imageCdnHostCustom && next.imageCdnHost) {
+    try {
+      const origin = new URL(next.imageCdnHost).origin
+      if (
+        origin !== 'https://cdn.bsky.app' &&
+        !imageCdnPresets.includes(origin)
+      ) {
+        next.imageCdnHostCustom = origin
+      }
+    } catch {}
+  }
+
+  if (!next.plcDirectoryCustom && next.plcDirectory) {
+    try {
+      const origin = new URL(next.plcDirectory).origin
+      if (!plcDirectoryPresets.includes(origin)) {
+        next.plcDirectoryCustom = origin
+      }
+    } catch {}
+  }
+
+  if (!next.constellationInstanceCustom && next.constellationInstance) {
+    try {
+      const origin = new URL(next.constellationInstance).origin
+      if (!constellationPresets.includes(origin)) {
+        next.constellationInstanceCustom = origin
+      }
+    } catch {}
+  }
+
   /**
    * Normalize language prefs to ensure that these values only contain 2-letter
    * country codes without region.
