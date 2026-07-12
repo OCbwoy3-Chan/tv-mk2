@@ -1,18 +1,12 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {KeyboardAvoidingView} from 'react-native-keyboard-controller'
 import Animated, {FadeIn, LayoutAnimationConfig} from 'react-native-reanimated'
-import {type Did} from '@atproto/api'
 import {useLingui} from '@lingui/react/macro'
-import debounce from 'lodash.debounce'
 
 import {DEFAULT_SERVICE} from '#/lib/constants'
 import {logger} from '#/logger'
 import {useServiceQuery} from '#/state/queries/service'
 import {type SessionAccount, useSession} from '#/state/session'
-import {
-  getPdsServiceUrlFromIdentityInfo,
-  resolveIdentityUsingAppView,
-} from '#/state/session/identity-resolver'
 import {consumeOAuthCallbackError} from '#/state/session/oauth-web-return-url'
 import {useLoggedOutView} from '#/state/shell/logged-out'
 import {LoggedOutLayout} from '#/view/com/util/layouts/LoggedOutLayout'
@@ -60,10 +54,9 @@ export const Login = ({
     acc => acc.did === requestedAccountSwitchTo,
   )
 
-  const [isResolvingService, setIsResolvingService] = useState(false)
-  const [error, setError] = useState<string>('')
-  const [serviceUrl, setServiceUrl] = useState<string | undefined>(
-    requestedAccount?.service,
+  const [error, setError] = useState('')
+  const [serviceUrl, setServiceUrl] = useState(
+    requestedAccount?.service || DEFAULT_SERVICE,
   )
   const [initialHandle, setInitialHandle] = useState(
     requestedAccount?.handle || '',
@@ -84,7 +77,7 @@ export const Login = ({
     data: serviceDescription,
     error: serviceError,
     refetch: refetchService,
-  } = useServiceQuery(serviceUrl ?? '')
+  } = useServiceQuery(serviceUrl)
 
   const onSelectAccount = (account?: SessionAccount) => {
     if (account?.service) {
@@ -111,6 +104,8 @@ export const Login = ({
         error: String(serviceError),
       })
       ax.metric('signin:hostingProviderFailedResolution', {})
+    } else {
+      setError('')
     }
   }, [serviceError, serviceUrl, l, ax])
 
@@ -121,46 +116,6 @@ export const Login = ({
       setCurrentForm(Forms.Login)
     }
   }, [])
-
-  const resolveIdentity = useCallback(async (identifier: string) => {
-    setIsResolvingService(true)
-
-    try {
-      const identity = await resolveIdentityUsingAppView(identifier)
-      const did = identity.did as Did
-      const pdsUrl = getPdsServiceUrlFromIdentityInfo(identity)
-
-      if (!pdsUrl) {
-        throw new Error(`No PDS service found in DID document for ${did}`)
-      }
-
-      if (pdsUrl.endsWith('.bsky.network')) {
-        setServiceUrl('https://bsky.social')
-      } else {
-        setServiceUrl(pdsUrl)
-      }
-    } catch (err) {
-      logger.error(
-        `Service auto-resolution failed: ${err instanceof Error ? err.message : String(err)}`,
-      )
-    } finally {
-      setIsResolvingService(false)
-    }
-  }, [])
-
-  const debouncedResolveService = useMemo(
-    () => debounce(resolveIdentity, 400),
-    [resolveIdentity],
-  )
-  const onPressRetryConnect = useCallback(() => {
-    void refetchService()
-  }, [refetchService])
-  const onDebouncedResolveService = useCallback(
-    (identifier: string) => {
-      void debouncedResolveService(identifier)
-    },
-    [debouncedResolveService],
-  )
 
   const onPressForgotPassword = () => {
     gotoForm(Forms.ForgotPassword)
@@ -210,9 +165,7 @@ export const Login = ({
           setServiceUrl={setServiceUrl}
           onPressBack={goBack}
           onPressForgotPassword={onPressForgotPassword}
-          onPressRetryConnect={onPressRetryConnect}
-          debouncedResolveService={onDebouncedResolveService}
-          isResolvingService={isResolvingService}
+          onPressRetryConnect={() => void refetchService()}
           onPressCreateAccount={onPressCreateAccount}
         />
       )
@@ -235,7 +188,7 @@ export const Login = ({
       content = (
         <ForgotPasswordForm
           error={error}
-          serviceUrl={serviceUrl ?? DEFAULT_SERVICE}
+          serviceUrl={serviceUrl}
           serviceDescription={serviceDescription}
           setError={setError}
           setServiceUrl={setServiceUrl}
@@ -251,7 +204,7 @@ export const Login = ({
       content = (
         <SetNewPasswordForm
           error={error}
-          serviceUrl={serviceUrl ?? DEFAULT_SERVICE}
+          serviceUrl={serviceUrl}
           setError={setError}
           onPressBack={goBack}
           onPasswordSet={() => gotoForm(Forms.PasswordUpdated)}

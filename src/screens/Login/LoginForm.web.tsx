@@ -1,39 +1,44 @@
-import {useCallback, useRef, useState} from 'react'
-import {
-  ActivityIndicator,
-  Keyboard,
-  Pressable,
-  type TextInput,
-  View,
-} from 'react-native'
+import {useRef, useState} from 'react'
+import {Keyboard, Pressable, type TextInput, View} from 'react-native'
 import {
   ComAtprotoServerCreateSession,
   type ComAtprotoServerDescribeServer,
 } from '@atproto/api'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 
+import {DEFAULT_SERVICE, HITSLOP_10, HITSLOP_20} from '#/lib/constants'
 import {cleanError, isNetworkError} from '#/lib/strings/errors'
 import {createFullHandle} from '#/lib/strings/handles'
-import {isValidDomain} from '#/lib/strings/url-helpers'
+import {isBlueskyHostedUrl, toNiceHostingUrl} from '#/lib/strings/url-helpers'
 import {logger} from '#/logger'
 import {useSetHasCheckedForStarterPack} from '#/state/preferences/used-starter-packs'
-import {useSessionApi} from '#/state/session'
+import {
+  type HostingProviderState,
+  useHostingProvider,
+} from '#/state/queries/pds-detection'
+import {useSession, useSessionApi} from '#/state/session'
 import {getWebOAuthClient} from '#/state/session/oauth-web-client'
 import {saveOAuthReturnUrl} from '#/state/session/oauth-web-return-url'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
-import {atoms as a, native, useTheme} from '#/alf'
-import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import {atoms as a, native, tokens, useBreakpoints, useTheme} from '#/alf'
 import * as Admonition from '#/components/Admonition'
-import {HostingProvider} from '#/components/forms/HostingProvider'
+import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import {useDialogControl} from '#/components/Dialog'
 import * as TextField from '#/components/forms/TextField'
-import {At_Stroke2_Corner0_Rounded as At} from '#/components/icons/At'
-import {Lock_Stroke2_Corner0_Rounded as Lock} from '#/components/icons/Lock'
-import {Ticket_Stroke2_Corner0_Rounded as Ticket} from '#/components/icons/Ticket'
+import {At_Stroke2_Corner0_Rounded as AtIcon} from '#/components/icons/At'
+import {TinyChevronBottom_Stroke2_Corner0_Rounded as TinyChevronIcon} from '#/components/icons/Chevron'
+import {Envelope_Stroke2_Corner0_Rounded as EmailIcon} from '#/components/icons/Envelope'
+import {Eye_Stroke2_Corner0_Rounded as EyeIcon} from '#/components/icons/Eye'
+import {EyeSlash_Stroke2_Corner0_Rounded as EyeSlashIcon} from '#/components/icons/EyeSlash'
+import {Lock_Stroke2_Corner0_Rounded as LockIcon} from '#/components/icons/Lock'
+import {Ticket_Stroke2_Corner0_Rounded as TicketIcon} from '#/components/icons/Ticket'
+import {createStaticClick, InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
+import {AppServerButton} from './components/AppServerDialog'
+import {ConfirmHostingProviderDialog} from './components/ConfirmHostingProviderDialog'
 import {HandleAutocompleteInput} from './components/HandleAutocompleteInput'
+import {HostingProviderDialog} from './components/HostingProviderDialog'
 import {FormContainer} from './FormContainer'
 
 type ServiceDescription = ComAtprotoServerDescribeServer.OutputSchema
@@ -43,7 +48,7 @@ type LoginMode = 'oauth' | 'legacy'
 /**
  * Web-specific LoginForm with two tabs:
  * - OAuth (default): handle-only flow, redirects to PDS authorization server
- * - Legacy sign-in: username + password, for operations that may not support OAuth
+ * - Legacy sign-in: username + password with upstream hosting autodetection
  */
 export const LoginForm = ({
   error,
@@ -57,11 +62,9 @@ export const LoginForm = ({
   onPressForgotPassword,
   onAttemptSuccess,
   onAttemptFailed,
-  debouncedResolveService,
-  isResolvingService,
 }: {
   error: string
-  serviceUrl?: string | undefined
+  serviceUrl: string
   serviceDescription: ServiceDescription | undefined
   initialHandle: string
   setError: (v: string) => void
@@ -71,8 +74,6 @@ export const LoginForm = ({
   onPressForgotPassword: () => void
   onAttemptSuccess: () => void
   onAttemptFailed: () => void
-  debouncedResolveService: (identifier: string) => void
-  isResolvingService: boolean
 }) => {
   const t = useTheme()
   const [mode, setMode] = useState<LoginMode>('oauth')
@@ -163,8 +164,6 @@ export const LoginForm = ({
           onPressForgotPassword={onPressForgotPassword}
           onAttemptSuccess={onAttemptSuccess}
           onAttemptFailed={onAttemptFailed}
-          debouncedResolveService={debouncedResolveService}
-          isResolvingService={isResolvingService}
           isProcessing={isProcessing}
           setIsProcessing={setIsProcessing}
         />
@@ -188,7 +187,7 @@ function OAuthLoginFields({
   setIsProcessing: (v: boolean) => void
   onPressBack: () => void
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const identifierValueRef = useRef<string>(initialHandle || '')
 
   const onPressNext = async () => {
@@ -199,7 +198,7 @@ function OAuthLoginFields({
     const identifier = identifierValueRef.current.trim()
 
     if (!identifier) {
-      setError(_(msg`Please enter your username or handle`))
+      setError(l`Please enter your username or handle`)
       return
     }
 
@@ -210,17 +209,15 @@ function OAuthLoginFields({
       const client = getWebOAuthClient()
       await client.signIn(identifier)
       // Browser will redirect to authorization server
-    } catch (e: any) {
-      const errMsg = e.toString()
+    } catch (e: unknown) {
+      const errMsg = String(e)
       setIsProcessing(false)
       if (isNetworkError(e)) {
         logger.warn('Failed to start OAuth sign-in due to network error', {
           error: errMsg,
         })
         setError(
-          _(
-            msg`Unable to contact your service. Please check your Internet connection.`,
-          ),
+          l`Unable to contact your service. Please check your Internet connection.`,
         )
       } else {
         logger.warn('Failed to start OAuth sign-in', {error: errMsg})
@@ -231,25 +228,27 @@ function OAuthLoginFields({
 
   return (
     <>
+      <AppServerButton />
       <View style={[a.relative, a.z_20, native({overflow: 'visible'})]}>
         <TextField.LabelText>
           <Trans>Account</Trans>
         </TextField.LabelText>
         <HandleAutocompleteInput
           initialValue={initialHandle || ''}
-          label={_(msg`Handle, DID, or PDS address`)}
+          label={l`Handle, DID, or PDS address`}
+          placeholder={null}
           autoFocus
           editable={!isProcessing}
           onValueChange={v => {
             identifierValueRef.current = v
           }}
-          onSubmit={onPressNext}
+          onSubmit={() => void onPressNext()}
         />
       </View>
       {error && <Admonition.Admonition type="error">{error}</Admonition.Admonition>}
       <View style={[a.flex_row, a.align_center, a.pt_md]}>
         <Button
-          label={_(msg`Back`)}
+          label={l`Back`}
           variant="solid"
           color="secondary"
           size="large"
@@ -261,11 +260,11 @@ function OAuthLoginFields({
         <View style={a.flex_1} />
         <Button
           testID="loginNextButton"
-          label={_(msg`Login`)}
-          accessibilityHint={_(msg`Redirects to your authorization server`)}
+          label={l`Login`}
+          accessibilityHint={l`Redirects to your authorization server`}
           color="primary"
           size="large"
-          onPress={onPressNext}>
+          onPress={() => void onPressNext()}>
           <ButtonText>
             <Trans>Login</Trans>
           </ButtonText>
@@ -288,13 +287,11 @@ function LegacyLoginFields({
   onPressForgotPassword,
   onAttemptSuccess,
   onAttemptFailed,
-  debouncedResolveService,
-  isResolvingService,
   isProcessing,
   setIsProcessing,
 }: {
   error: string
-  serviceUrl?: string | undefined
+  serviceUrl: string
   serviceDescription: ServiceDescription | undefined
   initialHandle: string
   setError: (v: string) => void
@@ -304,78 +301,53 @@ function LegacyLoginFields({
   onPressForgotPassword: () => void
   onAttemptSuccess: () => void
   onAttemptFailed: () => void
-  debouncedResolveService: (identifier: string) => void
-  isResolvingService: boolean
   isProcessing: boolean
   setIsProcessing: (v: boolean) => void
 }) {
   const t = useTheme()
-  const {_} = useLingui()
-  const {login} = useSessionApi()
-  const {setShowLoggedOut} = useLoggedOutViewControls()
-  const setHasCheckedForStarterPack = useSetHasCheckedForStarterPack()
-
   const [errorField, setErrorField] = useState<
     'none' | 'identifier' | 'password' | '2fa'
   >('none')
   const [isAuthFactorTokenNeeded, setIsAuthFactorTokenNeeded] = useState(false)
-  const identifierValueRef = useRef<string>(initialHandle || '')
-  const passwordValueRef = useRef<string>('')
+  const [showResolveError, setShowResolveError] = useState(false)
+  const identifierValueRef = useRef(initialHandle || '')
+  const passwordValueRef = useRef('')
+  const [identifier, setIdentifier] = useState(initialHandle || '')
+  const [identifierFocused, setIdentifierFocused] = useState(false)
   const [authFactorToken, setAuthFactorToken] = useState('')
   const identifierRef = useRef<TextInput>(null)
   const passwordRef = useRef<TextInput>(null)
+  const [hasPassword, setHasPassword] = useState(false)
+  const [revealPassword, setRevealPassword] = useState(false)
+  const {t: l} = useLingui()
+  const {login} = useSessionApi()
+  const {accounts} = useSession()
+  const {setShowLoggedOut} = useLoggedOutViewControls()
+  const setHasCheckedForStarterPack = useSetHasCheckedForStarterPack()
+  const serverInputControl = useDialogControl()
+  const confirmHostingProviderControl = useDialogControl()
+  const [pendingLogin, setPendingLogin] = useState<{
+    service: string
+    fullIdent: string
+    passwordLength: number
+  } | null>(null)
+  const hostingProvider = useHostingProvider({
+    identifier,
+    defaultService: serviceUrl,
+  })
+  const {gtMobile} = useBreakpoints()
 
-  const onPressSelectService = useCallback(() => {
-    Keyboard.dismiss()
-  }, [])
+  const showUnresolvedError =
+    hostingProvider.state.status === 'unresolved' && !identifierFocused
 
-  const onPressNext = async () => {
-    if (isProcessing || isResolvingService || serviceUrl === undefined) return
-    Keyboard.dismiss()
-    setError('')
-    setErrorField('none')
-
-    const identifier = identifierValueRef.current.toLowerCase().trim()
+  const attemptLogin = async (service: string, fullIdent: string) => {
     const password = passwordValueRef.current
-
-    if (!identifier) {
-      setError(_(msg`Please enter your username`))
-      setErrorField('identifier')
-      return
-    }
-
-    if (!password) {
-      setError(_(msg`Please enter your password`))
-      return
-    }
-
     setIsProcessing(true)
 
     try {
-      let fullIdent = identifier
-      if (
-        !identifier.includes('@') &&
-        !identifier.includes('.') &&
-        serviceDescription &&
-        serviceDescription.availableUserDomains.length > 0
-      ) {
-        let matched = false
-        for (const domain of serviceDescription.availableUserDomains) {
-          if (fullIdent.endsWith(domain)) {
-            matched = true
-          }
-        }
-        if (!matched) {
-          fullIdent = createFullHandle(
-            identifier,
-            serviceDescription.availableUserDomains[0],
-          )
-        }
-      }
-
       await login(
         {
-          service: serviceUrl,
+          service,
           identifier: fullIdent,
           password,
           authFactorToken: authFactorToken.trim(),
@@ -385,11 +357,12 @@ function LegacyLoginFields({
       onAttemptSuccess()
       setShowLoggedOut(false)
       setHasCheckedForStarterPack(true)
-    } catch (e: any) {
-      const errMsg = e.toString()
+    } catch (err) {
+      const errMsg = String(err)
       setIsProcessing(false)
       if (
-        e instanceof ComAtprotoServerCreateSession.AuthFactorTokenRequiredError
+        err instanceof
+        ComAtprotoServerCreateSession.AuthFactorTokenRequiredError
       ) {
         setIsAuthFactorTokenNeeded(true)
       } else {
@@ -398,7 +371,7 @@ function LegacyLoginFields({
           logger.debug('Failed to login due to invalid 2fa token', {
             error: errMsg,
           })
-          setError(_(msg`Invalid 2FA confirmation code.`))
+          setError(l`Invalid 2FA confirmation code.`)
           setErrorField('2fa')
         } else if (
           errMsg.includes('Authentication Required') ||
@@ -407,13 +380,11 @@ function LegacyLoginFields({
           logger.debug('Failed to login due to invalid credentials', {
             error: errMsg,
           })
-          setError(_(msg`Incorrect username or password`))
-        } else if (isNetworkError(e)) {
+          setError(l`Incorrect username or password`)
+        } else if (isNetworkError(err)) {
           logger.warn('Failed to login due to network error', {error: errMsg})
           setError(
-            _(
-              msg`Unable to contact your service. Please check your Internet connection.`,
-            ),
+            l`Unable to contact your service. Please check your Internet connection.`,
           )
         } else {
           logger.warn('Failed to login', {error: errMsg})
@@ -423,110 +394,220 @@ function LegacyLoginFields({
     }
   }
 
+  const onPressNext = async () => {
+    if (isProcessing) return
+    Keyboard.dismiss()
+    setError('')
+    setErrorField('none')
+    setShowResolveError(false)
+
+    const identifier = identifierValueRef.current.toLowerCase().trim()
+    const password = passwordValueRef.current
+
+    if (!identifier) {
+      setError(l`Please enter your username`)
+      setErrorField('identifier')
+      return
+    }
+
+    if (!password) {
+      setError(l`Please enter your password`)
+      setErrorField('password')
+      return
+    }
+
+    setIsProcessing(true)
+
+    let fullIdent = identifier
+    if (
+      !identifier.includes('@') &&
+      !identifier.includes('.') &&
+      !identifier.startsWith('did:') &&
+      serviceDescription &&
+      serviceDescription.availableUserDomains.length > 0
+    ) {
+      let matched = false
+      for (const domain of serviceDescription.availableUserDomains) {
+        if (fullIdent.endsWith(domain)) {
+          matched = true
+        }
+      }
+      if (!matched) {
+        fullIdent = createFullHandle(
+          identifier,
+          serviceDescription.availableUserDomains[0],
+        )
+      }
+    }
+
+    let service: string
+    let did: string | null
+    try {
+      ;({service, did} = await hostingProvider.resolveService(identifier))
+    } catch (err) {
+      logger.debug('Failed to resolve hosting provider', {error: String(err)})
+      setIsProcessing(false)
+      setShowResolveError(true)
+      return
+    }
+
+    const isKnownAccount =
+      did != null && accounts.some(account => account.did === did)
+    const needsConfirmation =
+      !isBlueskyHostedUrl(service) &&
+      hostingProvider.state.status !== 'overridden' &&
+      !isKnownAccount
+
+    if (needsConfirmation) {
+      setIsProcessing(false)
+      setPendingLogin({service, fullIdent, passwordLength: password.length})
+      confirmHostingProviderControl.open()
+      return
+    }
+
+    await attemptLogin(service, fullIdent)
+  }
+
   return (
     <>
+      <HostingProviderDialog
+        control={serverInputControl}
+        currentOverride={
+          hostingProvider.state.status === 'overridden'
+            ? hostingProvider.state.pdsUrl
+            : null
+        }
+        isEmail={hostingProvider.state.status === 'email'}
+        onSelectManual={url => {
+          hostingProvider.override(url)
+          setServiceUrl(url)
+        }}
+        onSelectAutomatic={() => {
+          hostingProvider.clearOverride()
+          setServiceUrl(DEFAULT_SERVICE)
+        }}
+      />
+      <ConfirmHostingProviderDialog
+        control={confirmHostingProviderControl}
+        host={toNiceHostingUrl(pendingLogin?.service ?? '')}
+        identifier={pendingLogin?.fullIdent ?? ''}
+        passwordLength={pendingLogin?.passwordLength ?? 0}
+        onConfirm={() => {
+          if (pendingLogin) {
+            void attemptLogin(pendingLogin.service, pendingLogin.fullIdent)
+          }
+        }}
+      />
+      <AppServerButton />
       <View>
         <TextField.LabelText>
-          <Trans>Hosting provider</Trans>
-          {isResolvingService && (
-            <ActivityIndicator
-              size={10}
-              color={t.palette.contrast_500}
-              style={a.ml_sm}
-            />
-          )}
+          <Trans>Username or email</Trans>
         </TextField.LabelText>
-        <HostingProvider
-          serviceUrl={serviceUrl}
-          onSelectServiceUrl={setServiceUrl}
-          onOpenDialog={onPressSelectService}
-        />
+        <TextField.Root
+          isInvalid={errorField === 'identifier' || showUnresolvedError}>
+          <TextField.Icon
+            icon={hostingProvider.state.status === 'email' ? EmailIcon : AtIcon}
+          />
+          <TextField.Input
+            testID="loginUsernameInput"
+            inputRef={identifierRef}
+            label={l`Username or email address`}
+            placeholder={null}
+            autoCapitalize="none"
+            autoFocus={!initialHandle}
+            autoCorrect={false}
+            autoComplete="username"
+            returnKeyType="next"
+            textContentType="username"
+            defaultValue={initialHandle || ''}
+            onChangeText={v => {
+              identifierValueRef.current = v
+              setIdentifier(v)
+              if (errorField) setErrorField('none')
+              if (showResolveError) setShowResolveError(false)
+            }}
+            onFocus={() => setIdentifierFocused(true)}
+            onBlur={() => setIdentifierFocused(false)}
+            onSubmitEditing={() => {
+              passwordRef.current?.focus()
+            }}
+            blurOnSubmit={false}
+            editable={!isProcessing}
+            accessibilityHint={l`Enter the username or email address you used when you created your account`}
+          />
+        </TextField.Root>
+        {showUnresolvedError && (
+          <Text
+            style={[
+              a.text_sm,
+              a.leading_snug,
+              a.mt_sm,
+              {color: t.palette.negative_500},
+            ]}>
+            <Trans>
+              We couldn't find an account with that username. Please check that
+              you've typed it correctly, or{' '}
+              <InlineLinkText
+                label={l`set your hosting provider manually`}
+                style={[a.text_sm, a.leading_snug]}
+                {...createStaticClick(() => serverInputControl.open())}>
+                set your hosting provider manually
+              </InlineLinkText>
+              .
+            </Trans>
+          </Text>
+        )}
       </View>
+
       <View>
         <TextField.LabelText>
-          <Trans>Account</Trans>
+          <Trans>Password</Trans>
         </TextField.LabelText>
-        <View style={[a.gap_sm]}>
-          <TextField.Root isInvalid={errorField === 'identifier'}>
-            <TextField.Icon icon={At} />
-            <TextField.Input
-              testID="loginUsernameInput"
-              inputRef={identifierRef}
-              label={
-                serviceUrl === undefined
-                  ? _(msg`Username (full handle)`)
-                  : _(msg`Username or email address`)
-              }
-              autoCapitalize="none"
-              autoFocus
-              autoCorrect={false}
-              autoComplete="username"
-              returnKeyType="next"
-              textContentType="username"
-              defaultValue={initialHandle || ''}
-              onChangeText={v => {
-                identifierValueRef.current = v
-                const id = v.trim()
-                if (!id) return
-                if (
-                  id.startsWith('did:') ||
-                  (!id.includes('@') && isValidDomain(id))
-                ) {
-                  debouncedResolveService(id)
-                }
-                if (errorField) setErrorField('none')
-              }}
-              onSubmitEditing={() => {
-                passwordRef.current?.focus()
-              }}
-              blurOnSubmit={false}
-              editable={!isProcessing}
-              accessibilityHint={_(
-                msg`Enter the username or email address you used when you created your account`,
-              )}
-            />
-          </TextField.Root>
+        <TextField.Root isInvalid={errorField === 'password'}>
+          <TextField.Icon icon={LockIcon} />
+          <TextField.Input
+            testID="loginPasswordInput"
+            inputRef={passwordRef}
+            label={l`Password`}
+            placeholder={null}
+            autoCapitalize="none"
+            autoFocus={!!initialHandle}
+            autoCorrect={false}
+            autoComplete="current-password"
+            returnKeyType="done"
+            enablesReturnKeyAutomatically={true}
+            secureTextEntry={!revealPassword}
+            onChangeText={v => {
+              passwordValueRef.current = v
+              if (errorField) setErrorField('none')
+              setHasPassword(!!v)
+            }}
+            onSubmitEditing={() => void onPressNext()}
+            blurOnSubmit={false}
+            editable={!isProcessing}
+            accessibilityHint={l`Enter your password`}
+            hitSlop={{...HITSLOP_20, right: 0}}
+          />
+          <RevealPasswordButton
+            active={revealPassword}
+            hasPassword={hasPassword}
+            onPress={() => setRevealPassword(r => !r)}
+          />
+        </TextField.Root>
 
-          <TextField.Root isInvalid={errorField === 'password'}>
-            <TextField.Icon icon={Lock} />
-            <TextField.Input
-              testID="loginPasswordInput"
-              inputRef={passwordRef}
-              label={_(msg`Password`)}
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="current-password"
-              returnKeyType="done"
-              enablesReturnKeyAutomatically={true}
-              secureTextEntry={true}
-              clearButtonMode="while-editing"
-              onChangeText={v => {
-                passwordValueRef.current = v
-                if (errorField) setErrorField('none')
-              }}
-              onSubmitEditing={onPressNext}
-              blurOnSubmit={false}
-              editable={!isProcessing}
-              accessibilityHint={_(msg`Enter your password`)}
-            />
-            <Button
-              testID="forgotPasswordButton"
-              onPress={onPressForgotPassword}
-              label={_(msg`Forgot password?`)}
-              accessibilityHint={_(msg`Opens password reset form`)}
-              variant="solid"
-              color="secondary"
-              style={[
-                a.rounded_sm,
-                {marginLeft: 'auto', left: 6, padding: 6},
-                a.z_10,
-              ]}>
-              <ButtonText>
-                <Trans>Forgot?</Trans>
-              </ButtonText>
-            </Button>
-          </TextField.Root>
-        </View>
+        {!isAuthFactorTokenNeeded && (
+          <Button
+            label={l`Forgot password?`}
+            accessibilityHint={l`Reset your password by sending a code to your email`}
+            style={[a.mt_md, a.self_start]}
+            hoverStyle={{opacity: 0.5}}
+            hitSlop={HITSLOP_10}
+            onPress={onPressForgotPassword}>
+            <ButtonText style={[t.atoms.text_contrast_medium]}>
+              <Trans>Forgot password?</Trans>
+            </ButtonText>
+          </Button>
+        )}
       </View>
       {isAuthFactorTokenNeeded && (
         <View>
@@ -534,10 +615,10 @@ function LegacyLoginFields({
             <Trans>2FA Confirmation</Trans>
           </TextField.LabelText>
           <TextField.Root isInvalid={errorField === '2fa'}>
-            <TextField.Icon icon={Ticket} />
+            <TextField.Icon icon={TicketIcon} />
             <TextField.Input
               testID="loginAuthFactorTokenInput"
-              label={_(msg`Confirmation code`)}
+              label={l`Confirmation code`}
               autoCapitalize="none"
               autoFocus
               autoCorrect={false}
@@ -549,11 +630,9 @@ function LegacyLoginFields({
                 setAuthFactorToken(text)
                 if (errorField) setErrorField('none')
               }}
-              onSubmitEditing={onPressNext}
+              onSubmitEditing={() => void onPressNext()}
               editable={!isProcessing}
-              accessibilityHint={_(
-                msg`Input the code which has been emailed to you`,
-              )}
+              accessibilityHint={l`Input the code which has been emailed to you`}
               style={{
                 textTransform: authFactorToken === '' ? 'none' : 'uppercase',
               }}
@@ -566,22 +645,64 @@ function LegacyLoginFields({
           </Text>
         </View>
       )}
-      {error && <Admonition.Admonition type="error">{error}</Admonition.Admonition>}
-      <View style={[a.pt_md, a.justify_between, a.flex_row]}>
-        <Button
-          label={_(msg`Back`)}
-          color="secondary"
-          size="large"
-          onPress={onPressBack}>
-          <ButtonText>
-            <Trans>Back</Trans>
-          </ButtonText>
-        </Button>
+
+      {!showUnresolvedError &&
+        (showResolveError ? (
+          <Admonition.Outer type="error">
+            <Admonition.Row>
+              <Admonition.Icon />
+              <Admonition.Content>
+                <Admonition.Text>
+                  <Trans>
+                    We couldn’t verify your hosting provider. Check your
+                    internet connection, or{' '}
+                    <InlineLinkText
+                      label={l`Set your hosting provider manually`}
+                      style={[a.text_sm, a.leading_snug]}
+                      {...createStaticClick(() => serverInputControl.open())}>
+                      set your hosting provider manually
+                    </InlineLinkText>
+                    .
+                  </Trans>
+                </Admonition.Text>
+              </Admonition.Content>
+            </Admonition.Row>
+          </Admonition.Outer>
+        ) : (
+          error && (
+            <Admonition.Admonition type="error">{error}</Admonition.Admonition>
+          )
+        ))}
+
+      <View
+        style={[
+          a.pt_md,
+          gtMobile && [a.justify_between, a.flex_row, a.gap_sm],
+        ]}>
+        {gtMobile && (
+          <>
+            <Button
+              label={l`Back`}
+              color="secondary"
+              size="large"
+              onPress={onPressBack}>
+              <ButtonText>
+                <Trans>Back</Trans>
+              </ButtonText>
+            </Button>
+            <View style={[a.flex_shrink, a.justify_center, a.ml_auto]}>
+              <HostingProviderIndicator
+                state={hostingProvider.state}
+                onPress={() => serverInputControl.open()}
+              />
+            </View>
+          </>
+        )}
         {!serviceDescription && error ? (
           <Button
             testID="loginRetryButton"
-            label={_(msg`Retry`)}
-            accessibilityHint={_(msg`Retries signing in`)}
+            label={l`Retry`}
+            accessibilityHint={l`Retries signing in`}
             color="primary_subtle"
             size="large"
             onPress={onPressRetryConnect}>
@@ -589,24 +710,25 @@ function LegacyLoginFields({
               <Trans>Retry</Trans>
             </ButtonText>
           </Button>
-        ) : !serviceDescription && serviceUrl !== undefined ? (
+        ) : !serviceDescription ? (
           <Button
-            label={_(msg`Connecting to service...`)}
+            label={l`Connecting to service…`}
             size="large"
             color="secondary"
             disabled>
             <ButtonIcon icon={Loader} />
-            <ButtonText>Connecting...</ButtonText>
+            <ButtonText>
+              <Trans>Connecting…</Trans>
+            </ButtonText>
           </Button>
         ) : (
           <Button
             testID="loginNextButton"
-            label={_(msg`Sign in`)}
-            accessibilityHint={_(msg`Navigates to the next screen`)}
+            label={l`Sign in`}
+            accessibilityHint={l`Navigates to the next screen`}
             color="primary"
             size="large"
-            onPress={onPressNext}
-            disabled={isResolvingService || serviceUrl === undefined}>
+            onPress={() => void onPressNext()}>
             <ButtonText>
               <Trans>Sign in</Trans>
             </ButtonText>
@@ -614,6 +736,89 @@ function LegacyLoginFields({
           </Button>
         )}
       </View>
+
+      {!gtMobile && (
+        <HostingProviderIndicator
+          state={hostingProvider.state}
+          onPress={() => serverInputControl.open()}
+        />
+      )}
     </>
+  )
+}
+
+function RevealPasswordButton({
+  active,
+  hasPassword,
+  onPress,
+}: {
+  active: boolean
+  hasPassword: boolean
+  onPress: () => void
+}) {
+  const t = useTheme()
+  const {t: l} = useLingui()
+  const context = TextField.useTextFieldContext()
+
+  const Icon = !active ? EyeSlashIcon : EyeIcon
+
+  if (!hasPassword && !context.focused) return null
+
+  return (
+    <View style={[a.z_10, a.pl_sm, {marginRight: tokens.space.xs * -1}]}>
+      <Button
+        testID="showPasswordButton"
+        onPress={onPress}
+        label={active ? l`Hide password` : l`Reveal password`}
+        color="secondary"
+        size="small"
+        shape="round"
+        style={[a.bg_transparent]}
+        hitSlop={tokens.space.sm}>
+        <Icon
+          size="md"
+          style={[
+            context.focused ? t.atoms.text : t.atoms.text_contrast_medium,
+          ]}
+        />
+      </Button>
+    </View>
+  )
+}
+
+function HostingProviderIndicator({
+  state,
+  onPress,
+}: {
+  state: HostingProviderState
+  onPress: () => void
+}) {
+  const t = useTheme()
+  const {t: l} = useLingui()
+  const {gtMobile} = useBreakpoints()
+
+  return (
+    <Button
+      testID="selectServiceButton"
+      label={l`Change hosting provider`}
+      accessibilityHint={l`Opens a dialog to change the hosting provider you sign in to`}
+      style={[!gtMobile && [a.mt_auto, a.mb_sm, a.self_center]]}
+      size="small"
+      color="secondary"
+      variant="ghost"
+      onPress={onPress}>
+      <ButtonText
+        style={[t.atoms.text_contrast_medium, a.font_normal]}
+        numberOfLines={1}>
+        {state.status === 'detected' || state.status === 'overridden' ? (
+          <Trans>Hosting provider: {toNiceHostingUrl(state.pdsUrl)}</Trans>
+        ) : state.status === 'email' ? (
+          <Trans>Hosting provider: Bluesky</Trans>
+        ) : (
+          <Trans>Hosting provider</Trans>
+        )}
+      </ButtonText>
+      <TinyChevronIcon width={8} style={[t.atoms.text_contrast_medium]} />
+    </Button>
   )
 }

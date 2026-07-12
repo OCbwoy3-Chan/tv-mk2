@@ -3,6 +3,7 @@ import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import * as persisted from '#/state/persisted'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
@@ -107,6 +108,7 @@ function DialogInner({
   const control = Dialog.useDialogContext()
   const {t: l} = useLingui()
   const t = useTheme()
+  const enableSquareButtons = useEnableSquareButtons()
   const [customAddress, setCustomAddress] = useState(initialCustomAddress)
   const [pdsAddressHistory, setPdsAddressHistory] = useState<string[]>(
     persisted.get('pdsAddressHistory') || [],
@@ -147,7 +149,9 @@ function DialogInner({
     <Dialog.ScrollableInner
       accessibilityDescribedBy="dialog-description"
       accessibilityLabelledBy="dialog-title"
-      style={web([{maxWidth: 400, borderRadius: 36}])}>
+      style={web([
+        {maxWidth: 400, borderRadius: enableSquareButtons ? 18 : 36},
+      ])}>
       <View style={[a.relative, a.gap_md, a.w_full]}>
         <Text
           nativeID="dialog-title"

@@ -24,6 +24,7 @@ export function HandleAutocompleteInput({
   autoFocus,
   testID = 'loginUsernameInput',
   label,
+  placeholder,
   accessibilityHint,
 }: {
   initialValue?: string
@@ -33,6 +34,7 @@ export function HandleAutocompleteInput({
   autoFocus?: boolean
   testID?: string
   label: string
+  placeholder?: string | null
   accessibilityHint?: string
 }) {
   const {t: l} = useLingui()
@@ -115,6 +117,7 @@ export function HandleAutocompleteInput({
         <TextField.Input
           testID={testID}
           label={label}
+          placeholder={placeholder}
           inputRef={IS_NATIVE ? inputRef : siftInputRef}
           {...(IS_NATIVE ? {} : siftA11yProps)}
           autoCapitalize="none"

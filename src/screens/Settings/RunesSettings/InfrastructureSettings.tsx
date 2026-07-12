@@ -1,19 +1,13 @@
 import {useState} from 'react'
 import {View} from 'react-native'
-import {isDid} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {APPVIEW_DID_PROXY} from '#/lib/constants'
 import {usePalette} from '#/lib/hooks/usePalette'
 import * as persisted from '#/state/persisted'
 import {
   useConstellationInstance,
   useSetConstellationInstance,
 } from '#/state/preferences/constellation-instance'
-import {
-  useCustomAppViewDid,
-  useSetCustomAppViewDid,
-} from '#/state/preferences/custom-appview-did'
 import {
   useImageCdnHost,
   useSetImageCdnHost,
@@ -22,15 +16,12 @@ import {
   usePlcDirectory,
   useSetPlcDirectory,
 } from '#/state/preferences/plc-directory'
-import {RestartRequiredPrompt} from '#/state/preferences/restart-required-prompt'
 import {
   useLibreTranslateInstance,
   useSetLibreTranslateInstance,
   useSetTranslationServicePreference,
   useTranslationServicePreference,
 } from '#/state/preferences/translation-service-preference'
-import {findService, useDidDocument} from '#/state/queries/resolve-identity'
-import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -59,10 +50,6 @@ export function RunesInfrastructureSettingsScreen() {
 
   const constellationInstance = useConstellationInstance()
   const setConstellationInstanceControl = Dialog.useDialogControl()
-
-  const [customAppViewDid] = useCustomAppViewDid()
-  const setCustomAppViewDidControl = Dialog.useDialogControl()
-  const restartPromptControl = Dialog.useDialogControl()
 
   return (
     <RunesScreenLayout titleText={l`Infrastructure`}>
@@ -199,32 +186,12 @@ export function RunesInfrastructureSettingsScreen() {
         </Admonition>
       </SettingsList.Item>
 
-      <SettingsList.Divider />
-
-      <SettingsList.Item>
-        <SettingsList.ItemIcon icon={StarIcon} />
-        <SettingsList.ItemText>
-          <Trans>{`Custom AppView DID`}</Trans>
-        </SettingsList.ItemText>
-        <SettingsList.BadgeButton
-          label={customAppViewDid ? l`Change` : l`Set`}
-          onPress={() => setCustomAppViewDidControl.open()}
-        />
-      </SettingsList.Item>
-
       <ConstellationInstanceDialog control={setConstellationInstanceControl} />
-      <CustomAppViewDidDialog
-        control={setCustomAppViewDidControl}
-        onRestartRequired={() => {
-          restartPromptControl.open()
-        }}
-      />
       <LibreTranslateInstanceDialog
         control={setLibreTranslateInstanceControl}
       />
       <ImageCdnHostDialog control={setImageCdnHostControl} />
       <PlcDirectoryDialog control={setPlcDirectoryControl} />
-      <RestartRequiredPrompt control={restartPromptControl} />
     </RunesScreenLayout>
   )
 }
@@ -282,138 +249,6 @@ function ConstellationInstanceDialog({
               disabled={!isValidHostnameUrl(url)}>
               <ButtonText>
                 <Trans>Save</Trans>
-              </ButtonText>
-            </Button>
-          </View>
-        </View>
-
-        <Dialog.Close />
-      </Dialog.ScrollableInner>
-    </Dialog.Outer>
-  )
-}
-
-function CustomAppViewDidDialog({
-  control,
-  onRestartRequired,
-}: {
-  control: Dialog.DialogControlProps
-  onRestartRequired: () => void
-}) {
-  const pal = usePalette('default')
-  const {t: l} = useLingui()
-
-  const [customAppViewDid] = useCustomAppViewDid()
-  const [did, setDid] = useState(customAppViewDid ?? '')
-  const setCustomAppViewDid = useSetCustomAppViewDid()
-
-  const doc = useDidDocument({did})
-  const bskyAppViewService =
-    doc.data && findService(doc.data, '#bsky_appview', 'BskyAppView')
-
-  const submit = () => {
-    if (did.length === 0) {
-      control.close(() => {
-        setCustomAppViewDid(undefined)
-        onRestartRequired()
-      })
-      return
-    }
-    if (!bskyAppViewService?.serviceEndpoint) return
-    control.close(() => {
-      setCustomAppViewDid(did)
-      onRestartRequired()
-    })
-  }
-
-  return (
-    <Dialog.Outer
-      control={control}
-      nativeOptions={{preventExpansion: true}}
-      onClose={() => setDid(customAppViewDid ?? '')}>
-      <Dialog.Handle />
-      <Dialog.ScrollableInner label={l`Custom AppView Proxy DID`}>
-        <View style={[a.gap_sm, a.pb_lg]}>
-          <Text style={[a.text_2xl, a.font_bold]}>
-            <Trans>Custom AppView Proxy DID</Trans>
-          </Text>
-        </View>
-
-        <View style={a.gap_lg}>
-          <Dialog.Input
-            label="Text input field"
-            autoFocus
-            style={[styles.textInput, pal.border, pal.text]}
-            onChangeText={setDid}
-            placeholder={
-              APPVIEW_DID_PROXY?.substring(0, APPVIEW_DID_PROXY.indexOf('#')) ||
-              'did:web:api.bsky.app'
-            }
-            placeholderTextColor={pal.colors.textLight}
-            onSubmitEditing={submit}
-            accessibilityHint={l`Input the DID of the AppView to proxy requests through`}
-            isInvalid={
-              !!did && !bskyAppViewService?.serviceEndpoint && !doc.isLoading
-            }
-            defaultValue={customAppViewDid ?? ''}
-          />
-
-          {did && !isDid(did) && (
-            <View>
-              <ErrorMessage message={l`must enter a DID`} />
-            </View>
-          )}
-
-          {did && (did.includes('#') || did.includes('?')) && (
-            <View>
-              <ErrorMessage message={l`don't include the service id`} />
-            </View>
-          )}
-
-          {doc.isError && (
-            <View>
-              <ErrorMessage
-                message={doc.error.message || l`document resolution failure`}
-              />
-            </View>
-          )}
-
-          {doc.data &&
-            !bskyAppViewService &&
-            (doc.data as {message?: string}).message && (
-              <View>
-                <ErrorMessage
-                  message={(doc.data as {message: string}).message}
-                />
-              </View>
-            )}
-
-          {doc.data && !bskyAppViewService && (
-            <View>
-              <ErrorMessage
-                message={l`document doesn't contain #bsky_appview service`}
-              />
-            </View>
-          )}
-
-          {bskyAppViewService && (
-            <Text style={[a.text_sm, a.leading_snug]}>
-              {JSON.stringify(bskyAppViewService, null, 2)}
-            </Text>
-          )}
-
-          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
-            <Button
-              label={l`Save`}
-              size="large"
-              onPress={() => void submit()}
-              variant="solid"
-              color={did.length > 0 ? 'primary' : 'secondary'}
-              disabled={
-                did.length !== 0 && !bskyAppViewService?.serviceEndpoint
-              }>
-              <ButtonText>
-                {did.length > 0 ? <Trans>Save</Trans> : <Trans>Reset</Trans>}
               </ButtonText>
             </Button>
           </View>
