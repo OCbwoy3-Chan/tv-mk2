@@ -38,6 +38,7 @@ import {
   usePolicyUpdateContext,
 } from '#/components/PolicyUpdateOverlay'
 import {Outlet as PortalOutlet} from '#/components/Portal'
+import {SixSevenOutlet} from '#/features/sixSeven'
 import {RedirectOverlay} from '#/ageAssurance/components/RedirectOverlay'
 import {PassiveAnalytics} from '#/analytics/PassiveAnalytics'
 import {IS_ANDROID, IS_IOS, IS_LIQUID_GLASS} from '#/env'
@@ -120,6 +121,7 @@ function ShellInner() {
         <>
           <PortalOutlet />
           <BottomSheetOutlet />
+          <SixSevenOutlet />
         </>
       )}
 

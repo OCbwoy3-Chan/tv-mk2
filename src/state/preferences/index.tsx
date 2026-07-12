@@ -55,6 +55,7 @@ import {Provider as ShowGermDmButtonProvider} from './show-germ-dm-button'
 import {Provider as ShowLinkInHandleProvider} from './show-link-in-handle'
 import {Provider as ShowLinkInHandleOnlyOnWorkingLinksProvider} from './show-link-in-handle-only-on-working-links'
 import {Provider as ShowViaClientProvider} from './show-via-client'
+import {Provider as SixSevenCelebrationProvider} from './six-seven-celebration'
 import {Provider as SubtitlesProvider} from './subtitles'
 import {Provider as ThumbnailFormatProvider} from './thumbnail-format'
 import {Provider as TranslationServicePreferenceProvider} from './translation-service-preference'
@@ -197,7 +198,8 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                       <AutoCompactAccountSwitcherProvider>
                                                                                                         <CompactAccountSwitcherProvider>
                                                                                                           <ShowViaClientProvider>
-                                                                                                            <PostNameReplacementProvider>
+                                                                                                            <SixSevenCelebrationProvider>
+                                                                                                              <PostNameReplacementProvider>
                                                                                                               <DisableVerifyEmailReminderProvider>
                                                                                                                 <TranslationServicePreferenceProvider>
                                                                                                                   <OpenRouterProvider>
@@ -217,7 +219,8 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                   </OpenRouterProvider>
                                                                                                                 </TranslationServicePreferenceProvider>
                                                                                                               </DisableVerifyEmailReminderProvider>
-                                                                                                            </PostNameReplacementProvider>
+                                                                                                              </PostNameReplacementProvider>
+                                                                                                            </SixSevenCelebrationProvider>
                                                                                                           </ShowViaClientProvider>
                                                                                                         </CompactAccountSwitcherProvider>
                                                                                                       </AutoCompactAccountSwitcherProvider>

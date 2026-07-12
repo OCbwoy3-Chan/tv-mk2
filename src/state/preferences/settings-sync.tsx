@@ -74,6 +74,7 @@ export const SYNCED_PREFS_KEYS = [
   'autoCompactAccountSwitcher',
   'disableVerifyEmailReminder',
   'showViaClient',
+  'sixSevenCelebration',
   'deerVerification',
   'thumbnailFormat',
   'fullsizeFormat',
