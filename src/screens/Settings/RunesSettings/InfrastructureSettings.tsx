@@ -1,11 +1,10 @@
-import {useCallback, useLayoutEffect, useState} from 'react'
+import {useLayoutEffect, useState} from 'react'
 import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {
   testConstellationUrl,
   testImageCdnUrl,
-  testLibreTranslateUrl,
   testPlcDirectoryUrl,
 } from '#/lib/infrastructure/url-test'
 import {usePalette} from '#/lib/hooks/usePalette'
@@ -28,21 +27,19 @@ import {
   useSetPlcDirectory,
   useSetPlcDirectoryCustom,
 } from '#/state/preferences/plc-directory'
-import {
-  useLibreTranslateInstanceSetting,
-  useSetLibreTranslateInstance,
-  useSetTranslationServicePreference,
-  useTranslationServicePreference,
-} from '#/state/preferences/translation-service-preference'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
+import {
+  isValidHostnameUrl,
+  isValidPlcDirectoryUrl,
+  normalizeOrigin,
+  useInfrastructureUrlSave,
+} from '#/screens/Settings/components/infrastructureUrlSave'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {Loader} from '#/components/Loader'
 import * as Select from '#/components/Select'
-import * as Toggle from '#/components/forms/Toggle'
-import {Earth_Stroke2_Corner2_Rounded as EarthIcon} from '#/components/icons/Globe'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
@@ -53,8 +50,6 @@ const IMAGE_CDN_PRESETS = [
 ] as const
 
 const APP_SERVER_CDN_ORIGIN = 'https://cdn.bsky.app'
-
-const LIBRETRANSLATE_DEFAULT_ORIGIN = 'https://libretranslate.com'
 
 const PLC_DIRECTORY_PRESETS = [
   'https://plc.directory',
@@ -69,10 +64,6 @@ const CONSTELLATION_PRESETS = [
 
 export function RunesInfrastructureSettingsScreen() {
   const {t: l} = useLingui()
-
-  const translationServicePreference = useTranslationServicePreference()
-  const setTranslationServicePreference = useSetTranslationServicePreference()
-  const setLibreTranslateInstanceControl = Dialog.useDialogControl()
 
   const imageCdnHostSetting = useImageCdnHostSetting()
   const setImageCdnHost = useSetImageCdnHost()
@@ -133,72 +124,6 @@ export function RunesInfrastructureSettingsScreen() {
 
   return (
     <RunesScreenLayout titleText={l`Infrastructure`}>
-      <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-        <SettingsList.ItemIcon icon={EarthIcon} />
-        <SettingsList.ItemText>
-          <Trans>Post Translation Provider</Trans>
-        </SettingsList.ItemText>
-        <Toggle.Item
-          name="service_google"
-          label={l`Use Google Translate`}
-          value={translationServicePreference === 'google'}
-          onChange={() => setTranslationServicePreference('google')}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Use Google Translate</Trans>
-          </Toggle.LabelText>
-          <Toggle.Radio />
-        </Toggle.Item>
-        <Toggle.Item
-          name="service_kagi"
-          label={l`Use Kagi Translate`}
-          value={translationServicePreference === 'kagi'}
-          onChange={() => setTranslationServicePreference('kagi')}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Use Kagi Translate</Trans>
-          </Toggle.LabelText>
-          <Toggle.Radio />
-        </Toggle.Item>
-        <Toggle.Item
-          name="service_papago"
-          label={l`Use Naver Papago`}
-          value={translationServicePreference === 'papago'}
-          onChange={() => setTranslationServicePreference('papago')}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Use Naver Papago</Trans>
-          </Toggle.LabelText>
-          <Toggle.Radio />
-        </Toggle.Item>
-        <Toggle.Item
-          name="service_libreTranslate"
-          label={l`Use LibreTranslate`}
-          value={translationServicePreference === 'libreTranslate'}
-          onChange={() => setTranslationServicePreference('libreTranslate')}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Use LibreTranslate</Trans>
-          </Toggle.LabelText>
-          <Toggle.Radio />
-        </Toggle.Item>
-      </SettingsList.Group>
-
-      {translationServicePreference === 'libreTranslate' && (
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={EarthIcon} />
-          <SettingsList.ItemText>
-            <Trans>{`LibreTranslate Instance`}</Trans>
-          </SettingsList.ItemText>
-          <SettingsList.BadgeButton
-            label={l`Change`}
-            onPress={() => setLibreTranslateInstanceControl.open()}
-          />
-        </SettingsList.Item>
-      )}
-
-      <SettingsList.Divider />
-
       <SettingsList.Group iconInset={false}>
         <SettingsList.ItemText>
           <Trans>{`Image CDN`}</Trans>
@@ -323,9 +248,6 @@ export function RunesInfrastructureSettingsScreen() {
         control={setConstellationInstanceControl}
         openGeneration={constellationDialogSession}
       />
-      <LibreTranslateInstanceDialog
-        control={setLibreTranslateInstanceControl}
-      />
       <ImageCdnHostDialog
         control={setImageCdnHostControl}
         openGeneration={imageCdnDialogSession}
@@ -404,86 +326,6 @@ function ConstellationInstanceDialog({
             placeholderTextColor={pal.colors.textLight}
             onSubmitEditing={() => void submit()}
             accessibilityHint={l`Input the url of the constellations instance to use`}
-            defaultValue={savedCustomUrl}
-          />
-
-          {testError && <Admonition type="error">{testError}</Admonition>}
-
-          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
-            <Button
-              label={isClear ? l`Clear` : l`Save`}
-              size="large"
-              onPress={() => void submit()}
-              variant="solid"
-              color={isClear ? 'secondary' : 'primary'}
-              disabled={!canSubmit}>
-              {isTesting && <ButtonIcon icon={Loader} />}
-              <ButtonText>
-                {isClear ? <Trans>Clear</Trans> : <Trans>Save</Trans>}
-              </ButtonText>
-            </Button>
-          </View>
-        </View>
-
-        <Dialog.Close />
-      </Dialog.ScrollableInner>
-    </Dialog.Outer>
-  )
-}
-
-function LibreTranslateInstanceDialog({
-  control,
-}: {
-  control: Dialog.DialogControlProps
-}) {
-  const pal = usePalette('default')
-  const {t: l} = useLingui()
-
-  const libreTranslateInstanceSetting = useLibreTranslateInstanceSetting()
-  const savedCustomUrl = getLibreTranslateDialogUrl(libreTranslateInstanceSetting)
-  const [url, setUrl] = useState(savedCustomUrl)
-  const setLibreTranslateInstance = useSetLibreTranslateInstance()
-  const {submit, isTesting, testError, canSubmit, isClear, clearTestError} =
-    useInfrastructureUrlSave({
-      url,
-      isUrlValid: isValidHostnameUrl,
-      testUrl: testLibreTranslateUrl,
-      onSave: setLibreTranslateInstance,
-      onClear: () => {
-        setLibreTranslateInstance(undefined)
-      },
-      control,
-    })
-
-  return (
-    <Dialog.Outer
-      control={control}
-      nativeOptions={{preventExpansion: true}}
-      onClose={() => {
-        setUrl(savedCustomUrl)
-        clearTestError()
-      }}>
-      <Dialog.Handle />
-      <Dialog.ScrollableInner label={l`LibreTranslate instance URL`}>
-        <View style={[a.gap_sm, a.pb_lg]}>
-          <Text style={[a.text_2xl, a.font_bold]}>
-            <Trans>LibreTranslate instance URL</Trans>
-          </Text>
-        </View>
-
-        <View style={a.gap_lg}>
-          <Dialog.Input
-            label="Text input field"
-            autoFocus
-            style={[styles.textInput, pal.border, pal.text]}
-            onChangeText={text => {
-              setUrl(text)
-              clearTestError()
-            }}
-            placeholder={LIBRETRANSLATE_DEFAULT_ORIGIN}
-            placeholderTextColor={pal.colors.textLight}
-            onSubmitEditing={() => void submit()}
-            accessibilityHint={l`Input the url of the LibreTranslate instance to use`}
             defaultValue={savedCustomUrl}
           />
 
@@ -697,105 +539,6 @@ function PlcDirectoryDialog({
   )
 }
 
-function useInfrastructureUrlSave({
-  url,
-  isUrlValid,
-  testUrl,
-  onSave,
-  onClear,
-  control,
-}: {
-  url: string
-  isUrlValid: (url: string) => boolean
-  testUrl: (url: string) => Promise<boolean>
-  onSave: (normalizedUrl: string) => void
-  onClear: () => void
-  control: Dialog.DialogControlProps
-}) {
-  const {t: l} = useLingui()
-  const [isTesting, setIsTesting] = useState(false)
-  const [testError, setTestError] = useState<string | null>(null)
-
-  const trimmedUrl = url.trim()
-  const isClear = trimmedUrl === ''
-  const canSubmit =
-    isClear || (isUrlValid(trimmedUrl) && !isTesting)
-
-  const clearTestError = useCallback(() => setTestError(null), [])
-
-  const submit = async () => {
-    if (isClear) {
-      control.close(() => {
-        onClear()
-      })
-      return
-    }
-
-    if (!isUrlValid(trimmedUrl)) {
-      return
-    }
-
-    setIsTesting(true)
-    setTestError(null)
-    try {
-      const normalizedUrl = normalizeInfrastructureUrl(trimmedUrl)
-      const works = await testUrl(normalizedUrl)
-      if (!works) {
-        setTestError(
-          l`Couldn't reach this server. Check the URL and try again.`,
-        )
-        return
-      }
-      control.close(() => {
-        onSave(normalizedUrl)
-      })
-    } catch {
-      setTestError(
-        l`Couldn't reach this server. Check the URL and try again.`,
-      )
-    } finally {
-      setIsTesting(false)
-    }
-  }
-
-  return {
-    submit,
-    isTesting,
-    testError,
-    canSubmit,
-    isClear,
-    clearTestError,
-  }
-}
-
-function getLibreTranslateDialogUrl(raw: string | undefined) {
-  if (!raw) {
-    return ''
-  }
-
-  if (normalizeOrigin(raw) === LIBRETRANSLATE_DEFAULT_ORIGIN) {
-    return ''
-  }
-
-  return normalizeInfrastructureUrl(raw)
-}
-
-function normalizeOrigin(url: string | undefined) {
-  try {
-    return new URL(url ?? '').origin
-  } catch {
-    return null
-  }
-}
-
-function normalizeInfrastructureUrl(url: string) {
-  try {
-    return new URL(url).origin
-  } catch {
-    return url
-  }
-}
-
 function getImageCdnSelectValue(raw: string | undefined) {
   if (!raw || normalizeOrigin(raw) === APP_SERVER_CDN_ORIGIN) {
     return 'default'
@@ -840,23 +583,6 @@ function getConstellationSelectValue(raw: string | undefined) {
   }
 
   return 'custom'
-}
-
-function isValidHostnameUrl(url: string) {
-  try {
-    return new URL(url).hostname.includes('.')
-  } catch {
-    return false
-  }
-}
-
-function isValidPlcDirectoryUrl(url: string) {
-  try {
-    const nextUrl = new URL(url)
-    return nextUrl.protocol === 'https:' || nextUrl.protocol === 'http:'
-  } catch {
-    return false
-  }
 }
 
 const styles = {

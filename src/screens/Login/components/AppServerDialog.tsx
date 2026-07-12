@@ -4,6 +4,7 @@ import {isDid} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {cleanError, isNetworkError} from '#/lib/strings/errors'
+import {useNavigationDeduped} from '#/lib/hooks/useNavigationDeduped'
 import {logger} from '#/logger'
 import {
   APPVIEW_PRESETS,
@@ -27,6 +28,7 @@ import {atoms as a, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
+import {createStaticClick, InlineLinkText} from '#/components/Link'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as TextField from '#/components/forms/TextField'
 import {TinyChevronBottom_Stroke2_Corner0_Rounded as TinyChevronIcon} from '#/components/icons/Chevron'
@@ -251,6 +253,7 @@ export function AppServerDialog({
 }) {
   const formRef = useRef<DialogInnerRef>(null)
   const confirmedRef = useRef(false)
+  const navigation = useNavigationDeduped()
   const [did] = useCustomAppViewDid()
   const [url] = useCustomAppViewUrl()
   const setAppViewSelection = useSetAppViewSelection()
@@ -314,6 +317,11 @@ export function AppServerDialog({
           confirmedRef.current = true
           control.close()
         }}
+        onOpenInfrastructureSettings={() => {
+          control.close(() => {
+            navigation.navigate('RunesInfrastructureSettings')
+          })
+        }}
       />
     </Dialog.Outer>
   )
@@ -327,6 +335,7 @@ function AppServerDialogInner({
   setCustomUrl,
   applyMode,
   onConfirm,
+  onOpenInfrastructureSettings,
 }: {
   formRef: React.Ref<DialogInnerRef>
   preset: AppViewPresetId
@@ -335,6 +344,7 @@ function AppServerDialogInner({
   setCustomUrl: (url: string) => void
   applyMode: AppServerApplyMode
   onConfirm: () => void
+  onOpenInfrastructureSettings: () => void
 }) {
   const {t: l} = useLingui()
   const t = useTheme()
@@ -480,8 +490,8 @@ function AppServerDialogInner({
           nativeID="dialog-description"
           style={[t.atoms.text_contrast_medium, a.text_sm, a.leading_snug]}>
           <Trans>
-            The app server (AppView) provides posts, feeds, profiles, search, 
-            notifications, and mutes. Your account still lives with your 
+            The app server (AppView) provides posts, feeds, profiles, search,
+            notifications, and mutes. Your account still lives with your
             hosting provider.
           </Trans>
         </Text>
@@ -495,6 +505,15 @@ function AppServerDialogInner({
           disabled={preset === 'custom' && !customIsValid}>
           <ButtonText>{confirmLabel}</ButtonText>
         </Button>
+
+        <Text style={[t.atoms.text_contrast_medium, a.text_sm, a.leading_snug]}>
+          <Trans>See also:</Trans>{' '}
+          <InlineLinkText
+            label={l`Infrastructure settings`}
+            {...createStaticClick(() => onOpenInfrastructureSettings())}>
+            <Trans>Infrastructure settings</Trans>
+          </InlineLinkText>
+        </Text>
       </View>
       <Dialog.Close />
     </Dialog.ScrollableInner>
