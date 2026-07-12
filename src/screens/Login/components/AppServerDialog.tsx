@@ -387,7 +387,7 @@ function AppServerDialogInner({
 
   const confirmLabel =
     applyMode === 'reauth'
-      ? l`Sign in again`
+      ? l`Reauthenticate`
       : applyMode === 'restart'
         ? l`Restart`
         : l`Done`

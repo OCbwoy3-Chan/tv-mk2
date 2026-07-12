@@ -35,9 +35,7 @@ export function LabelsOnMe({
   if (!labels || !currentAccount) {
     return null
   }
-  labels = filterUserFacingLabels(labels, currentAccount.did).filter(
-    label => !(label.val === 'pet' && label.src === currentAccount.did),
-  )
+  labels = filterUserFacingLabels(labels, currentAccount.did)
   if (!labels.length) {
     return null
   }

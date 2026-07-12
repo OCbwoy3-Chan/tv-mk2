@@ -22,7 +22,12 @@ import debounce from 'lodash.debounce'
 import {type Dimensions} from '#/lib/media/types'
 import {mergeRefs} from '#/lib/merge-refs'
 import {useA11y} from '#/state/a11y'
+import {
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {useLargeAltBadgeEnabled} from '#/state/preferences/large-alt-badge'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {BlockDrawerGesture} from '#/view/shell/BlockDrawerGesture'
 import {atoms as a, tokens, useBreakpoints, useTheme, web} from '#/alf'
 import {ArrowsDiagonalOut_Stroke2_Corner0_Rounded as Fullscreen} from '#/components/icons/ArrowsDiagonal'
@@ -418,6 +423,8 @@ function GalleryImage({
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
+  const thumbnailFormat = useThumbnailFormat()
+  const imageCdnHost = useImageCdnHost()
   const [focused, setFocused] = useState(false)
   const containerRef = useAnimatedRef()
   const [aspectRatio, setAspectRatio] = useState(() =>
@@ -476,7 +483,12 @@ function GalleryImage({
             ]),
           ]}>
           <Image
-            source={{uri: image.thumb}}
+            source={{
+              uri: applyImageTransforms(image.thumb, {
+                imageCdnHost,
+                format: thumbnailFormat,
+              }),
+            }}
             contentFit="cover"
             accessible={true}
             accessibilityLabel={image.alt}

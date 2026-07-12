@@ -61,7 +61,7 @@ export function labelIsHideableOffense(
 
 /**
  * Filters out labels that are not user-facing: system labels (val prefixed
- * with `!`) and the user's own "bot" self-label.
+ * with `!`) and the user's own "bot" or "pet" self-label.
  */
 export function filterUserFacingLabels(
   labels: ComAtprotoLabelDefs.Label[],
@@ -70,7 +70,10 @@ export function filterUserFacingLabels(
   return labels.filter(
     label =>
       !label.val.startsWith('!') &&
-      !(label.val === 'bot' && label.src === currentAccountDid),
+      !(
+        (label.val === 'bot' || label.val === 'pet') &&
+        label.src === currentAccountDid
+      ),
   )
 }
 
