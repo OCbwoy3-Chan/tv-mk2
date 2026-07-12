@@ -1,5 +1,5 @@
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {View} from 'react-native'
+import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {
   type AppBskyFeedDefs,
   type AppBskyFeedThreadgate,
@@ -25,11 +25,13 @@ import {type OnPostSuccessData} from '#/state/shell/composer'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
 import {PostMeta} from '#/view/com/util/PostMeta'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
+import {ThreadPositionChip} from '#/screens/PostThread/components/ThreadPositionChip'
 import {
   LINEAR_AVI_WIDTH,
   OUTER_SPACE,
   REPLY_LINE_WIDTH,
 } from '#/screens/PostThread/const'
+import {type ThreadPostPosition} from '#/screens/PostThread/reader'
 import {atoms as a, useTheme} from '#/alf'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
@@ -58,6 +60,15 @@ export type ThreadItemPostProps = {
     moderation?: boolean
     topBorder?: boolean
   }
+  /**
+   * Adjusts the hover overlay, e.g. to start at the reader bracket edge.
+   */
+  hoverStyle?: StyleProp<ViewStyle>
+  /**
+   * Set in linear view when this post is part of a self-thread: renders a
+   * "(x/n)" position chip at the end of the post text.
+   */
+  threadPosition?: ThreadPostPosition
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: AppBskyFeedThreadgate.Record
 }
@@ -65,6 +76,8 @@ export type ThreadItemPostProps = {
 export function ThreadItemPost({
   item,
   overrides,
+  hoverStyle,
+  threadPosition,
   onPostSuccess,
   threadgateRecord,
 }: ThreadItemPostProps) {
@@ -80,6 +93,8 @@ export function ThreadItemPost({
       postShadow={postShadow}
       threadgateRecord={threadgateRecord}
       overrides={overrides}
+      hoverStyle={hoverStyle}
+      threadPosition={threadPosition}
       onPostSuccess={onPostSuccess}
     />
   )
@@ -199,6 +214,8 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   item,
   postShadow,
   overrides,
+  hoverStyle,
+  threadPosition,
   onPostSuccess,
   threadgateRecord,
 }: ThreadItemPostProps & {
@@ -270,7 +287,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   const {isActive: live} = useActorStatus(post.author)
 
   return (
-    <SubtleHoverWrapper>
+    <SubtleHoverWrapper hoverStyle={hoverStyle}>
       <ThreadItemPostOuterWrapper item={item} overrides={overrides}>
         <PostHider
           testID={`postThreadItem-by-${post.author.handle}`}
@@ -348,6 +365,11 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                     numberOfLines={limitLines ? MAX_POST_LINES : undefined}
                     authorHandle={post.author.handle}
                     shouldProxyLinks={true}
+                    trailing={
+                      threadPosition ? (
+                        <ThreadPositionChip threadPosition={threadPosition} />
+                      ) : undefined
+                    }
                   />
                   {limitLines && (
                     <ShowMoreTextButton
@@ -355,6 +377,12 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                       onPress={onPressShowMore}
                     />
                   )}
+                </View>
+              ) : threadPosition ? (
+                // Text-less posts (e.g. image-only) still show their position
+                // so the numbering reads without gaps.
+                <View style={[a.mb_2xs]}>
+                  <ThreadPositionChip threadPosition={threadPosition} />
                 </View>
               ) : undefined}
               <TranslatedPost hideTranslateLink post={post} />
@@ -394,7 +422,13 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   )
 })
 
-function SubtleHoverWrapper({children}: {children: ReactNode}) {
+function SubtleHoverWrapper({
+  hoverStyle,
+  children,
+}: {
+  hoverStyle?: StyleProp<ViewStyle>
+  children: ReactNode
+}) {
   const {
     state: hover,
     onIn: onHoverIn,
@@ -405,7 +439,7 @@ function SubtleHoverWrapper({children}: {children: ReactNode}) {
       onPointerEnter={onHoverIn}
       onPointerLeave={onHoverOut}
       style={a.pointer}>
-      <SubtleHover hover={hover} />
+      <SubtleHover hover={hover} style={hoverStyle} />
       {children}
     </View>
   )

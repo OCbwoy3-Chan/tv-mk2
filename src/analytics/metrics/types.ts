@@ -1109,6 +1109,8 @@ export type Events = {
     [key: string]: unknown
   }
   'thread:click:headerMenuOpen': {}
+  'thread:click:readerToggle': {enabled: boolean; via: 'header' | 'menu'}
+  'thread:click:readerSeamToggle': {expanded: boolean}
   'thread:click:editOwnThreadgate': {}
   'thread:click:viewSomeoneElsesThreadgate': {}
   'activitySubscription:enable': {

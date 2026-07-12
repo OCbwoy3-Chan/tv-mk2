@@ -45,12 +45,21 @@ import {type OnPostSuccessData} from '#/state/shell/composer'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
 import {type PostSource} from '#/state/unstable-post-source'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
+import {ReaderSeam} from '#/screens/PostThread/components/ReaderSeam'
+import {ReaderBracket} from '#/screens/PostThread/components/ReaderSeamControls'
 import {ThreadItemAnchorFollowButton} from '#/screens/PostThread/components/ThreadItemAnchorFollowButton'
+import {ThreadPositionChip} from '#/screens/PostThread/components/ThreadPositionChip'
 import {
   LINEAR_AVI_WIDTH,
   OUTER_SPACE,
+  READER_LINE_INDENT,
+  READER_SEAM_HEIGHT,
   REPLY_LINE_WIDTH,
 } from '#/screens/PostThread/const'
+import {
+  type ReaderSeam as ReaderSeamData,
+  type ThreadPostPosition,
+} from '#/screens/PostThread/reader'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
@@ -76,13 +85,30 @@ import {useAnalytics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
 import * as bsky from '#/types/bsky'
 
+export type ThreadItemAnchorReaderSeam = ReaderSeamData & {
+  onToggle: () => void
+  sort: string
+}
+
 export function ThreadItemAnchor({
   item,
+  readerSeam,
+  threadPosition,
   onPostSuccess,
   threadgateRecord,
   postSource,
 }: {
   item: Extract<ThreadItem, {type: 'threadPost'}>
+  /**
+   * Set in reader view: renders a bracket in the gutter and moves the anchor's
+   * controls and replies into a seam below the post body.
+   */
+  readerSeam?: ThreadItemAnchorReaderSeam
+  /**
+   * Set in linear view when the anchor is part of a self-thread: renders a
+   * "(x/n)" position chip at the end of the post text.
+   */
+  threadPosition?: ThreadPostPosition
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: AppBskyFeedThreadgate.Record
   postSource?: PostSource
@@ -101,6 +127,8 @@ export function ThreadItemAnchor({
       key={postShadow.uri}
       item={item}
       isRoot={isRoot}
+      readerSeam={readerSeam}
+      threadPosition={threadPosition}
       postShadow={postShadow}
       onPostSuccess={onPostSuccess}
       threadgateRecord={threadgateRecord}
@@ -194,6 +222,8 @@ function ThreadItemAnchorParentReplyLine({
 const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   item,
   isRoot,
+  readerSeam,
+  threadPosition,
   postShadow,
   onPostSuccess,
   threadgateRecord,
@@ -201,11 +231,14 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 }: {
   item: Extract<ThreadItem, {type: 'threadPost'}>
   isRoot: boolean
+  readerSeam?: ThreadItemAnchorReaderSeam
+  threadPosition?: ThreadPostPosition
   postShadow: Shadow<AppBskyFeedDefs.PostView>
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: AppBskyFeedThreadgate.Record
   postSource?: PostSource
 }) {
+  const inReader = !!readerSeam
   const t = useTheme()
   const ax = useAnalytics()
   const {t: l} = useLingui()
@@ -446,7 +479,16 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
               />
             </View>
           </View>
-          <View style={[isCompactPosts ? a.pb_2xs : a.pb_sm]}>
+          <View>
+            {inReader && (
+              <ReaderBracket
+                left={-(sidePadding - READER_LINE_INDENT)}
+                bottom={
+                  readerSeam?.expanded ? OUTER_SPACE : READER_SEAM_HEIGHT / 2
+                }
+              />
+            )}
+            <View style={[!inReader && (isCompactPosts ? a.pb_2xs : a.pb_sm)]}>
             <LabelsOnMyPost
               post={post}
               style={[isCompactPosts ? a.pb_2xs : a.pb_sm]}
@@ -471,7 +513,16 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   style={[a.flex_1, isCompactPosts ? a.text_md : a.text_lg]}
                   authorHandle={post.author.handle}
                   shouldProxyLinks={true}
+                  trailing={
+                    threadPosition ? (
+                      <ThreadPositionChip threadPosition={threadPosition} />
+                    ) : undefined
+                  }
                 />
+              ) : threadPosition ? (
+                // Text-less anchors (e.g. image-only) still show their
+                // position so the numbering reads without gaps.
+                <ThreadPositionChip threadPosition={threadPosition} />
               ) : undefined}
               <TranslatedPost
                 post={post}
@@ -493,7 +544,9 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                 </View>
               )}
             </ContentHider>
-            <ExpandedPostDetails
+            {!inReader && (
+              <>
+                <ExpandedPostDetails
               post={item.value.post}
               isThreadAuthor={isThreadAuthor}
               compactPosts={isCompactPosts}
@@ -610,7 +663,23 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                 />
               </FeedFeedbackProvider>
             </View>
+              </>
+            )}
             <DebugFieldDisplay subject={post} />
+            </View>
+            {readerSeam && (
+              <ReaderSeam
+                post={item}
+                expanded={readerSeam.expanded}
+                hiddenReplyCount={readerSeam.hiddenReplyCount}
+                continuationUri={readerSeam.continuationUri}
+                href={readerSeam.href}
+                sort={readerSeam.sort}
+                onToggle={readerSeam.onToggle}
+                onPostSuccess={onPostSuccess}
+                threadgateRecord={threadgateRecord}
+              />
+            )}
           </View>
         </View>
       </GalleryBleed>
