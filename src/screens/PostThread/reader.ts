@@ -23,6 +23,12 @@ export type ReaderSeam = {
    */
   continuationUri: string
   href: string
+  /**
+   * True when this is the last post in the OP chain and no "Read more
+   * replies" follows - the visual end of the thread on this screen.
+   * Seams here get a trailing spacer so the bracket can close above it.
+   */
+  isThreadEnd: boolean
 }
 
 export type ReaderSegmentItem = {
@@ -33,6 +39,12 @@ export type ReaderSegmentItem = {
   item: ThreadPostItem
   /** The seam rendered after this post, within its bracket. */
   seam: ReaderSeam
+  /**
+   * A "read more" that belonged immediately after this segment's post in the
+   * linear thread. Rendered under the seam (and hidden while the seam is
+   * expanded) so its connector can meet the bracket hairline.
+   */
+  trailingReadMore?: Extract<ThreadItem, {type: 'readMore'}>
 }
 
 export type ReaderItem = ThreadItem | ReaderSegmentItem
@@ -113,10 +125,10 @@ export function buildReaderThread(
 
   /*
    * A "read more" immediately following the chain belongs to the chain's
-   * branch (sibling branches always start with a depth-1 post), so it moves
-   * with the chain and renders after the last segment.
+   * branch (sibling branches always start with a depth-1 post), so it is
+   * attached to the last segment and rendered under its seam.
    */
-  let chainReadMore: ThreadItem | undefined
+  let chainReadMore: Extract<ThreadItem, {type: 'readMore'}> | undefined
   const afterChain = items[chainEnd + 1]
   if (afterChain?.type === 'readMore') {
     chainReadMore = afterChain
@@ -128,23 +140,28 @@ export function buildReaderThread(
   let expandedSeam: ReaderSeam | undefined
 
   /*
-   * The anchor's seam uses the full replyCount: every direct reply other than
-   * the chain start is dropped from the read and reachable only here.
+   * The anchor's seam has a continuation (the first OP-chain segment) already
+   * on screen, so its count must exclude that reply - same idea as mid-chain
+   * seams using moreReplies. createSeam subtracts the continuation when
+   * fullCount is set.
    */
   const anchorSeam = createSeam(anchor, {
     expandedSeamUri,
     continuationUri: chain[0].uri,
     fullCount: true,
+    isThreadEnd: false,
   })
   if (anchorSeam.expanded) expandedSeam = anchorSeam
 
   for (let i = 0; i < chain.length; i++) {
     const post = chain[i]
     const continuation = chain[i + 1]
+    const isLast = !continuation
     const seam = createSeam(post, {
       expandedSeamUri,
       continuationUri: continuation?.uri ?? '',
-      fullCount: !continuation,
+      fullCount: isLast,
+      isThreadEnd: isLast && !chainReadMore,
     })
     if (seam.expanded) expandedSeam = seam
     result.push({
@@ -154,11 +171,14 @@ export function buildReaderThread(
       depth: post.depth,
       item: post,
       seam,
+      /*
+       * Attach to the last segment so the connector can meet the seam
+       * hairline inside the same bracket. Omitted while that seam is
+       * expanded - those unreplied descendants are behind the opened replies.
+       */
+      trailingReadMore:
+        isLast && chainReadMore && !seam.expanded ? chainReadMore : undefined,
     })
-  }
-
-  if (chainReadMore) {
-    result.push(chainReadMore)
   }
 
   return {items: result, anchorSeam, expandedSeam}
@@ -306,28 +326,32 @@ function createSeam(
     expandedSeamUri,
     continuationUri,
     fullCount,
+    isThreadEnd,
   }: {
     expandedSeamUri: string | null
     continuationUri: string
     fullCount: boolean
+    isThreadEnd: boolean
   },
 ): ReaderSeam {
   const urip = new AtUri(post.uri)
   /*
-   * Mid-chain seams have a continuation, so use moreReplies (replies not
-   * already in the response). The anchor and the last post use the full
-   * replyCount, since none of their replies render below them.
-   *
-   * moreReplies is exact only because reader view fetches with branchingFactor
-   * 1 (READER_VIEW_BELOW); a higher factor would undercount here.
+   * Mid-chain seams have a continuation on screen, so use moreReplies (exact
+   * with branchingFactor 1). The last post uses replyCount - every reply is
+   * behind the seam. The anchor also uses replyCount but with a continuation,
+   * so we subtract 1 for the chain start already rendered as a segment.
    */
+  const replyCount = post.value.post.replyCount ?? 0
   const hiddenReplyCount = fullCount
-    ? (post.value.post.replyCount ?? 0)
+    ? continuationUri
+      ? Math.max(0, replyCount - 1)
+      : replyCount
     : post.value.moreReplies || 0
   return {
     expanded: expandedSeamUri === post.uri,
     hiddenReplyCount,
     continuationUri,
     href: makeProfileLink(post.value.post.author, 'post', urip.rkey),
+    isThreadEnd,
   }
 }

@@ -15,13 +15,14 @@ import {
 import {type OnPostSuccessData} from '#/state/shell/composer'
 import {ReaderSeam} from '#/screens/PostThread/components/ReaderSeam'
 import {ReaderBracket} from '#/screens/PostThread/components/ReaderSeamControls'
+import {ThreadItemReadMore} from '#/screens/PostThread/components/ThreadItemReadMore'
 import {
   OUTER_SPACE,
   READER_LINE_INDENT,
   READER_SEAM_HEIGHT,
 } from '#/screens/PostThread/const'
 import {type ReaderSegmentItem} from '#/screens/PostThread/reader'
-import {atoms as a, useTheme} from '#/alf'
+import {atoms as a, tokens, useTheme} from '#/alf'
 import {Trash_Stroke2_Corner0_Rounded as TrashIcon} from '#/components/icons/Trash'
 import {GalleryBleed} from '#/components/images/Gallery'
 import {LabelsOnMyPost} from '#/components/moderation/LabelsOnMe'
@@ -108,6 +109,7 @@ const ThreadItemReaderSegmentInner = memo(
     const seam = item.seam
     const record = item.item.value.post.record
     const moderation = item.item.moderation
+    const trailingReadMore = item.trailingReadMore
     const richText = useMemo(
       () =>
         new RichTextAPI({
@@ -150,7 +152,7 @@ const ThreadItemReaderSegmentInner = memo(
                 postTextStyle={[a.text_lg]}
               />
               {post.embed && (
-                <View style={[a.pb_md]}>
+                <View style={[a.pb_2xs]}>
                   <Embed
                     embed={post.embed}
                     moderation={moderation}
@@ -170,17 +172,35 @@ const ThreadItemReaderSegmentInner = memo(
             continuationUri={seam.continuationUri}
             href={seam.href}
             sort={sort}
+            isThreadEnd={seam.isThreadEnd}
             onToggle={() => onToggleSeam(item.uri)}
             onPostSuccess={onPostSuccess}
             threadgateRecord={threadgateRecord}
           />
         </View>
-        {/* Bracket rendered last so it paints over the outline border. When
-            collapsed, raise the bottom cap to the seam row's center so it meets
-            the hairline; when expanded it spans down past the replies. */}
+        {trailingReadMore && (
+          <>
+            <ThreadItemReadMore item={trailingReadMore} view="reader" />
+            {/* End spacer; bracket closes flush at its bottom */}
+            <View style={[a.pb_lg]} />
+          </>
+        )}
+        {/* Bracket rendered last so it paints over the outline border.
+            - Collapsed mid-chain: bottom cap at hairline
+            - Collapsed thread end: hairline, accounting for the modest spacer
+            - Expanded: close above the trailing spacer
+            - Trailing read-more: close flush at the spacer bottom */}
         <ReaderBracket
           left={READER_LINE_INDENT}
-          bottom={seam.expanded ? OUTER_SPACE : READER_SEAM_HEIGHT / 2}
+          bottom={
+            trailingReadMore
+              ? 0
+              : seam.isThreadEnd && !seam.expanded
+                ? tokens.space.sm + READER_SEAM_HEIGHT / 2
+                : seam.expanded
+                  ? OUTER_SPACE
+                  : READER_SEAM_HEIGHT / 2
+          }
         />
       </View>
     )

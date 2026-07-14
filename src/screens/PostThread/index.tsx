@@ -20,6 +20,7 @@ import {usePostViewAuthorShadowFilter} from '#/state/cache/profile-shadow'
 import {useFeedFeedback} from '#/state/feed-feedback'
 import {useAlsoLikedCollapseByDefault} from '#/state/preferences/also-liked-collapse-by-default'
 import {useAlsoLikedFeedEnabled} from '#/state/preferences/also-liked-feed-enabled'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {
   ALSO_LIKED_PAGE_SIZE,
@@ -1041,6 +1042,7 @@ function ReaderHideRepliesButton({onPress}: {onPress: () => void}) {
   const t = useTheme()
   const {t: l} = useLingui()
   const {footerHeight} = useShellLayout()
+  const enableSquareButtons = useEnableSquareButtons()
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -1062,9 +1064,9 @@ function ReaderHideRepliesButton({onPress}: {onPress: () => void}) {
               a.gap_xs,
               a.px_lg,
               a.py_sm,
-              a.rounded_full,
+              enableSquareButtons ? a.rounded_sm : a.rounded_full,
               a.border,
-              a.shadow_md,
+              t.atoms.shadow_sm,
               t.atoms.border_contrast_low,
               hovered || pressed ? t.atoms.bg_contrast_25 : t.atoms.bg,
             ]}>

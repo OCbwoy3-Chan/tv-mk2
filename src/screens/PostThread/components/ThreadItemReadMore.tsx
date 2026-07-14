@@ -10,6 +10,9 @@ import {
 } from '#/state/queries/usePostThread'
 import {
   LINEAR_AVI_WIDTH,
+  READER_BRACKET_WIDTH,
+  READER_LINE_INDENT,
+  READER_SEAM_HEIGHT,
   REPLY_LINE_WIDTH,
   TREE_AVI_WIDTH,
   TREE_INDENT,
@@ -19,16 +22,20 @@ import {CirclePlus_Stroke2_Corner0_Rounded as CirclePlus} from '#/components/ico
 import {Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
 
+/** Horizontal arm from the reader bracket to the read-more control. */
+const READER_ELBOW_WIDTH = 14
+
 export const ThreadItemReadMore = memo(function ThreadItemReadMore({
   item,
   view,
 }: {
   item: Extract<ThreadItem, {type: 'readMore'}>
-  view: PostThreadParams['view']
+  view: PostThreadParams['view'] | 'reader'
 }) {
   const t = useTheme()
   const {_} = useLingui()
   const isTreeView = view === 'tree'
+  const isReader = view === 'reader'
   const indent = Math.max(0, item.depth - 1)
 
   const spacers = isTreeView
@@ -49,6 +56,66 @@ export const ThreadItemReadMore = memo(function ThreadItemReadMore({
         )
       })
     : null
+
+  if (isReader) {
+    /*
+     * Fixed height matching the seam row so the bracket bottom cap can sit at
+     * the arm's vertical center (same math as the interaction hairline) and
+     * not run past the read-more control.
+     */
+    return (
+      <View
+        style={[
+          a.flex_row,
+          a.align_center,
+          {height: READER_SEAM_HEIGHT},
+        ]}>
+        <View
+          style={{
+            marginLeft: READER_LINE_INDENT,
+            width: READER_ELBOW_WIDTH,
+            height: READER_BRACKET_WIDTH,
+            backgroundColor: t.atoms.border_contrast_low.borderColor,
+          }}
+        />
+        <Link
+          label={_(msg`Read more replies`)}
+          to={item.href}
+          style={[a.gap_xs]}>
+          {({hovered, pressed}) => {
+            const interacted = hovered || pressed
+            return (
+              <>
+                <CirclePlus
+                  fill={
+                    interacted
+                      ? t.atoms.text_contrast_high.color
+                      : t.atoms.text_contrast_low.color
+                  }
+                  width={18}
+                />
+                <Text
+                  style={[
+                    a.text_sm,
+                    t.atoms.text_contrast_medium,
+                    interacted && a.underline,
+                  ]}>
+                  <Trans>
+                    Read{' '}
+                    <Plural
+                      one="# more reply"
+                      other="# more replies"
+                      value={item.moreReplies}
+                    />
+                  </Trans>
+                </Text>
+              </>
+            )
+          }}
+        </Link>
+      </View>
+    )
+  }
 
   return (
     <View style={[a.flex_row]}>

@@ -93,16 +93,19 @@ describe('buildReaderThread', () => {
     expect(segments[0].seam.expanded).toBe(false)
     expect(segments[0].seam.hiddenReplyCount).toBe(3)
     expect(segments[0].seam.continuationUri).toBe(two.uri)
+    expect(segments[0].seam.isThreadEnd).toBe(false)
     // the last seam counts all replies, since none render below it
     expect(segments[1].item).toBe(two)
     expect(segments[1].seam.hiddenReplyCount).toBe(2)
     expect(segments[1].seam.continuationUri).toBe('')
+    expect(segments[1].seam.isThreadEnd).toBe(true)
 
-    // the anchor seam counts all of its replies and continues into the chain
+    // the anchor seam excludes the continuation already shown as a segment
     expect(anchorSeam).toBeDefined()
     expect(anchorSeam?.expanded).toBe(false)
-    expect(anchorSeam?.hiddenReplyCount).toBe(4)
+    expect(anchorSeam?.hiddenReplyCount).toBe(3)
     expect(anchorSeam?.continuationUri).toBe(one.uri)
+    expect(anchorSeam?.isThreadEnd).toBe(false)
 
     expect(expandedSeam).toBeUndefined()
   })
@@ -176,7 +179,7 @@ describe('buildReaderThread', () => {
     expect(expandedSeam).toBe(segments[1].seam)
   })
 
-  it('keeps a trailing read more with the chain', () => {
+  it('attaches a trailing read more to the last segment', () => {
     const anchor = post({rkey: 'a', depth: 0})
     const one = post({rkey: 'b', depth: 1, opThread: true})
     const readMore: ThreadItem = {
@@ -193,11 +196,30 @@ describe('buildReaderThread', () => {
       NO_SEAMS,
     )
 
-    expect(items.map(i => i.type)).toEqual([
-      'threadPost',
-      'readerSegment',
-      'readMore',
-    ])
+    expect(items.map(i => i.type)).toEqual(['threadPost', 'readerSegment'])
+    const segments = segmentsOf(items)
+    expect(segments[0].seam.isThreadEnd).toBe(false)
+    expect(segments[0].trailingReadMore).toBe(readMore)
+  })
+
+  it('hides trailing read more while the last seam is expanded', () => {
+    const anchor = post({rkey: 'a', depth: 0})
+    const one = post({rkey: 'b', depth: 1, opThread: true})
+    const readMore: ThreadItem = {
+      type: 'readMore',
+      key: `readMore:${one.uri}`,
+      depth: 2,
+      href: '/x',
+      moreReplies: 5,
+      skippedIndentIndices: new Set(),
+    }
+    const {items} = buildReaderThread([anchor, one, readMore], {
+      expandedSeamUri: one.uri,
+    })
+
+    const segments = segmentsOf(items)
+    expect(segments[0].seam.expanded).toBe(true)
+    expect(segments[0].trailingReadMore).toBeUndefined()
   })
 
   it('drops sibling replies even when the chain is not the first sibling', () => {

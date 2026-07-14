@@ -56,7 +56,8 @@ import * as bsky from '#/types/bsky'
  * plus any expanded details and replies. `left` positions it relative to the
  * consumer's container, since the anchor renders inside padded content while
  * segments render full bleed. `bottom` lets the consumer raise the bottom cap
- * to line up with the seam's interaction row.
+ * to line up with the seam's interaction row when collapsed, or sit above the
+ * trailing spacer / on the replies' end rule when expanded.
  */
 export function ReaderBracket({
   left,

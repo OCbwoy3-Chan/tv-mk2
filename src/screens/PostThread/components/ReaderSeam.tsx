@@ -53,6 +53,7 @@ export function ReaderSeam({
   continuationUri,
   href,
   sort,
+  isThreadEnd = false,
   onToggle,
   onPostSuccess,
   threadgateRecord,
@@ -63,6 +64,11 @@ export function ReaderSeam({
   continuationUri: string
   href: string
   sort: string
+  /**
+   * Last post in the OP chain with no "Read more replies" below. Collapsed
+   * seams get a modest trailing spacer (smaller than the expanded-reply gap).
+   */
+  isThreadEnd?: boolean
   onToggle: () => void
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: AppBskyFeedThreadgate.Record
@@ -82,6 +88,7 @@ export function ReaderSeam({
       continuationUri={continuationUri}
       href={href}
       sort={sort}
+      isThreadEnd={isThreadEnd}
       onToggle={onToggle}
       onPostSuccess={onPostSuccess}
       threadgateRecord={threadgateRecord}
@@ -97,6 +104,7 @@ function ReaderSeamInner({
   continuationUri,
   href,
   sort,
+  isThreadEnd,
   onToggle,
   onPostSuccess,
   threadgateRecord,
@@ -108,6 +116,7 @@ function ReaderSeamInner({
   continuationUri: string
   href: string
   sort: string
+  isThreadEnd: boolean
   onToggle: () => void
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: AppBskyFeedThreadgate.Record
@@ -323,7 +332,15 @@ function ReaderSeamInner({
           />
         </Animated.View>
       )}
-      {expanded && <View style={[a.pb_lg]} />}
+      {/*
+       * Expanded: same gap as between consecutive reader segments.
+       * Collapsed thread end: smaller spacer before Also liked / page end.
+       */}
+      {expanded ? (
+        <View style={[a.pb_lg]} />
+      ) : (
+        isThreadEnd && <View style={[a.pb_sm]} />
+      )}
     </>
   )
 }

@@ -60,7 +60,7 @@ import {
   type ReaderSeam as ReaderSeamData,
   type ThreadPostPosition,
 } from '#/screens/PostThread/reader'
-import {atoms as a, useTheme} from '#/alf'
+import {atoms as a, tokens, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
 import {CalendarClock_Stroke2_Corner0_Rounded as CalendarClockIcon} from '#/components/icons/CalendarClock'
@@ -484,7 +484,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
               <ReaderBracket
                 left={-(sidePadding - READER_LINE_INDENT)}
                 bottom={
-                  readerSeam?.expanded ? OUTER_SPACE : READER_SEAM_HEIGHT / 2
+                  readerSeam?.isThreadEnd && !readerSeam?.expanded
+                    ? tokens.space.sm + READER_SEAM_HEIGHT / 2
+                    : readerSeam?.expanded
+                      ? OUTER_SPACE
+                      : READER_SEAM_HEIGHT / 2
                 }
               />
             )}
@@ -531,7 +535,13 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
               {post.embed && (
                 <View
                   style={[
-                    richText?.text ? (isCompactPosts ? a.py_2xs : a.py_xs) : [],
+                    inReader
+                      ? a.pb_2xs
+                      : richText?.text
+                        ? isCompactPosts
+                          ? a.py_2xs
+                          : a.py_xs
+                        : [],
                   ]}>
                   <Embed
                     embed={post.embed}
@@ -675,6 +685,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                 continuationUri={readerSeam.continuationUri}
                 href={readerSeam.href}
                 sort={readerSeam.sort}
+                isThreadEnd={readerSeam.isThreadEnd}
                 onToggle={readerSeam.onToggle}
                 onPostSuccess={onPostSuccess}
                 threadgateRecord={threadgateRecord}
