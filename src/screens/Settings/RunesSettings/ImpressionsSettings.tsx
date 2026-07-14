@@ -1,11 +1,8 @@
-import {type ComponentProps, type ReactNode} from 'react'
+import {type ComponentProps} from 'react'
 import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {
-  type CountsMetricsDisplay,
-  type FollowedByMetricsDisplay,
-} from '#/lib/metrics-display'
+import {type CountsMetricsDisplay} from '#/lib/metrics-display'
 import {
   useFollowedByMetricsDisplay,
   useFollowersMetricsDisplay,
@@ -27,17 +24,23 @@ import {
   useSetSavesMetricsDisplay,
 } from '#/state/preferences/metrics-display-preference'
 import {
+  useSetShowFollowedByOnOwnProfile,
+  useShowFollowedByOnOwnProfile,
+} from '#/state/preferences/show-followed-by-on-own-profile'
+import {
   useSetShowFollowsYouBadge,
   useShowFollowsYouBadge,
 } from '#/state/preferences/show-follows-you-badge'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import {atoms as a, useBreakpoints, useTheme} from '#/alf'
+import {atoms as a, useBreakpoints} from '#/alf'
 import * as Toggle from '#/components/forms/Toggle'
 import * as ToggleButton from '#/components/forms/ToggleButton'
 import {Person_Stroke2_Corner0_Rounded as PersonIcon} from '#/components/icons/Person'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {Text} from '#/components/Typography'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
+
+type MetricsDisplayMode = CountsMetricsDisplay
 
 export function RunesImpressionsSettingsScreen() {
   const {t: l} = useLingui()
@@ -62,75 +65,94 @@ export function RunesImpressionsSettingsScreen() {
   const setFollowedByMetricsDisplay = useSetFollowedByMetricsDisplay()
   const showFollowsYouBadge = useShowFollowsYouBadge()
   const setShowFollowsYouBadge = useSetShowFollowsYouBadge()
+  const showFollowedByOnOwnProfile = useShowFollowedByOnOwnProfile()
+  const setShowFollowedByOnOwnProfile = useSetShowFollowedByOnOwnProfile()
 
-  const countsLabels = useCountsDisplayLabels()
-  const followedByLabels = useFollowedByDisplayLabels()
+  const labels = useMetricDisplayLabels()
 
   return (
     <RunesScreenLayout titleText={l`Impressions`}>
       <ImpressionsSectionHeader icon={ReplyIcon} label={l`Posts`} />
-      <CountsMetricRow
+      <MetricRow
         name={l`Likes`}
         value={likesMetricsDisplay}
-        labels={countsLabels}
+        labels={labels}
         onChange={setLikesMetricsDisplay}
       />
-      <CountsMetricRow
+      <MetricRow
         name={l`Reposts`}
         value={repostsMetricsDisplay}
-        labels={countsLabels}
+        labels={labels}
         onChange={setRepostsMetricsDisplay}
       />
-      <CountsMetricRow
+      <MetricRow
         name={l`Quotes`}
         value={quotesMetricsDisplay}
-        labels={countsLabels}
+        labels={labels}
         onChange={setQuotesMetricsDisplay}
       />
-      <CountsMetricRow
+      <MetricRow
         name={l`Saves`}
         value={savesMetricsDisplay}
-        labels={countsLabels}
+        labels={labels}
         onChange={setSavesMetricsDisplay}
       />
-      <CountsMetricRow
+      <MetricRow
         name={l`Replies`}
         value={replyMetricsDisplay}
-        labels={countsLabels}
+        labels={labels}
         onChange={setReplyMetricsDisplay}
       />
 
       <SettingsList.Divider style={[a.mt_0]} />
       <ImpressionsSectionHeader icon={PersonIcon} label={l`Profiles`} />
-      <CountsMetricRow
+      <MetricRow
         name={l`Followers`}
         value={followersMetricsDisplay}
-        labels={countsLabels}
+        labels={labels}
         onChange={setFollowersMetricsDisplay}
       />
-      <CountsMetricRow
+      <MetricRow
         name={l`Following`}
         value={followingMetricsDisplay}
-        labels={countsLabels}
+        labels={labels}
         onChange={setFollowingMetricsDisplay}
       />
-      <CountsMetricRow
+      <MetricRow
         name={l`Posts`}
         value={postsMetricsDisplay}
-        labels={countsLabels}
+        labels={labels}
         onChange={setPostsMetricsDisplay}
       />
-      <FollowedByMetricRow
+      <MetricRow
         name={l`"Followed by" avatars`}
         value={followedByMetricsDisplay}
-        labels={followedByLabels}
+        labels={labels}
         onChange={setFollowedByMetricsDisplay}
       />
       <SettingsList.Divider style={[a.mt_0, a.mb_0]} />
-      <FollowsYouLabelToggle
-        enabled={showFollowsYouBadge}
+      <Toggle.Item
+        name="show_followed_by_on_own_profile"
+        label={l`Show “Followed by” on own profile`}
+        value={showFollowedByOnOwnProfile}
+        onChange={setShowFollowedByOnOwnProfile}
+        style={[a.w_full, a.px_lg, a.py_md]}>
+        <Toggle.Checkbox />
+        <Toggle.LabelText style={[a.flex_1]}>
+          <Trans>Show “Followed by” on own profile</Trans>
+        </Toggle.LabelText>
+      </Toggle.Item>
+      <Toggle.Item
+        name="show_follows_you_badge"
+        label={l`Enable extra "Follows you" label`}
+        value={showFollowsYouBadge}
         onChange={setShowFollowsYouBadge}
-      />
+        style={[a.w_full, a.px_lg, a.py_md]}>
+        <Toggle.Checkbox />
+        <Toggle.LabelText style={[a.flex_1]}>
+          <Trans>Enable extra "Follows you" label</Trans>
+        </Toggle.LabelText>
+      </Toggle.Item>
     </RunesScreenLayout>
   )
 }
@@ -150,71 +172,22 @@ function ImpressionsSectionHeader({
   )
 }
 
-function FollowsYouLabelToggle({
-  enabled,
-  onChange,
-}: {
-  enabled: boolean
-  onChange: (value: boolean) => void
-}) {
-  const {t: l} = useLingui()
-  const t = useTheme()
-
-  return (
-    <View style={[a.w_full, a.px_lg, a.py_md]}>
-      <View
-        style={[
-          a.w_full,
-          a.rounded_md,
-          a.overflow_hidden,
-          t.atoms.bg_contrast_25,
-        ]}>
-        <View
-          style={[
-            a.w_full,
-            a.py_lg,
-            a.px_lg,
-            a.flex_row,
-            a.align_center,
-            a.justify_between,
-          ]}>
-          <Text style={[a.font_semi_bold, t.atoms.text_contrast_high]}>
-            <Trans>Enable extra "Follows you" label</Trans>
-          </Text>
-          <Toggle.Item
-            label={l`Toggle to enable or disable the extra Follows you label`}
-            name="show_follows_you_badge"
-            value={enabled}
-            onChange={onChange}>
-            <View style={[a.flex_row, a.align_center, a.gap_sm]}>
-              <Text style={[t.atoms.text_contrast_medium]}>
-                {enabled ? <Trans>Enabled</Trans> : <Trans>Disabled</Trans>}
-              </Text>
-              <Toggle.Switch />
-            </View>
-          </Toggle.Item>
-        </View>
-      </View>
-    </View>
-  )
-}
-
-function CountsMetricRow({
+function MetricRow({
   name,
   value,
   labels,
   onChange,
 }: {
   name: string
-  value: CountsMetricsDisplay
-  labels: Record<CountsMetricsDisplay, string>
-  onChange: (value: CountsMetricsDisplay) => void
+  value: MetricsDisplayMode
+  labels: Record<MetricsDisplayMode, string>
+  onChange: (value: MetricsDisplayMode) => void
 }) {
   const {t: l} = useLingui()
   const {gtPhone} = useBreakpoints()
 
   const handleChange = (values: string[]) => {
-    const next = values[0] as CountsMetricsDisplay | undefined
+    const next = values[0] as MetricsDisplayMode | undefined
     if (
       next === 'hidden' ||
       next === 'lite' ||
@@ -226,7 +199,16 @@ function CountsMetricRow({
   }
 
   return (
-    <MetricRowLayout>
+    <View
+      style={[
+        a.w_full,
+        a.flex_row,
+        a.gap_sm,
+        a.px_lg,
+        a.py_lg,
+        a.justify_between,
+        a.flex_wrap,
+      ]}>
       <View style={[a.gap_xs, a.flex_1]}>
         <Text style={[a.font_semi_bold, gtPhone ? a.text_sm : a.text_md]}>
           {name}
@@ -251,102 +233,16 @@ function CountsMetricRow({
           </ToggleButton.Button>
         </ToggleButton.Group>
       </View>
-    </MetricRowLayout>
-  )
-}
-
-function FollowedByMetricRow({
-  name,
-  value,
-  labels,
-  onChange,
-}: {
-  name: string
-  value: FollowedByMetricsDisplay
-  labels: Record<FollowedByMetricsDisplay, string>
-  onChange: (value: FollowedByMetricsDisplay) => void
-}) {
-  const {t: l} = useLingui()
-  const {gtPhone} = useBreakpoints()
-
-  const handleChange = (values: string[]) => {
-    const next = values[0] as FollowedByMetricsDisplay | undefined
-    if (
-      next === 'hidden' ||
-      next === 'lite' ||
-      next === 'visible' ||
-      next === 'names'
-    ) {
-      onChange(next)
-    }
-  }
-
-  return (
-    <MetricRowLayout>
-      <View style={[a.gap_xs, a.flex_1]}>
-        <Text style={[a.font_semi_bold, gtPhone ? a.text_sm : a.text_md]}>
-          {name}
-        </Text>
-      </View>
-      <View style={[{minHeight: 35}, a.w_full]}>
-        <ToggleButton.Group
-          label={l`Configure impression display for: ${name}`}
-          values={[value]}
-          onChange={handleChange}>
-          <ToggleButton.Button name="hidden" label={labels.hidden}>
-            <ToggleButton.ButtonText>{labels.hidden}</ToggleButton.ButtonText>
-          </ToggleButton.Button>
-          <ToggleButton.Button name="lite" label={labels.lite}>
-            <ToggleButton.ButtonText>{labels.lite}</ToggleButton.ButtonText>
-          </ToggleButton.Button>
-          <ToggleButton.Button name="visible" label={labels.visible}>
-            <ToggleButton.ButtonText>{labels.visible}</ToggleButton.ButtonText>
-          </ToggleButton.Button>
-          <ToggleButton.Button name="names" label={labels.names}>
-            <ToggleButton.ButtonText>{labels.names}</ToggleButton.ButtonText>
-          </ToggleButton.Button>
-        </ToggleButton.Group>
-      </View>
-    </MetricRowLayout>
-  )
-}
-
-function MetricRowLayout({children}: {children: ReactNode}) {
-  return (
-    <View
-      style={[
-        a.w_full,
-        a.flex_row,
-        a.gap_sm,
-        a.px_lg,
-        a.py_lg,
-        a.justify_between,
-        a.flex_wrap,
-      ]}>
-      {children}
     </View>
   )
 }
 
-function useCountsDisplayLabels(): Record<CountsMetricsDisplay, string> {
+function useMetricDisplayLabels(): Record<MetricsDisplayMode, string> {
   const {t: l} = useLingui()
   return {
     hidden: l`Hidden`,
     lite: l`Lite`,
     visible: l`Visible`,
     exact: l`Exact`,
-  }
-}
-
-function useFollowedByDisplayLabels(): Record<
-  FollowedByMetricsDisplay,
-  string
-> {
-  const {t: l} = useLingui()
-  return {
-    hidden: l`Hidden`,
-    lite: l`Lite`,
-    visible: l`Visible`,
-    names: l`Names`,
   }
 }

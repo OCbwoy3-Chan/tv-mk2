@@ -88,4 +88,16 @@ describe('persisted schema helpers', () => {
     expect(parsed!.likesMetricsDisplay).toBe('lite')
     expect(parsed!.followedByMetricsDisplay).toBe('lite')
   })
+
+  it('migrates legacy followed-by names display mode to visible', () => {
+    const parsed = tryParse(
+      JSON.stringify({
+        ...partialState,
+        followedByMetricsDisplay: 'names',
+      }),
+    )
+
+    expect(parsed).toBeDefined()
+    expect(parsed!.followedByMetricsDisplay).toBe('visible')
+  })
 })

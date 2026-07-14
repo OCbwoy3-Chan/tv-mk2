@@ -50,6 +50,7 @@ import {Provider as PostNameReplacementProvider} from './post-name-replacement.t
 import {Provider as RepostCarouselProvider} from './repost-carousel-enabled'
 import {Provider as SettingsSyncProvider} from './settings-sync'
 import {Provider as ShowAvatarFollowButtonProvider} from './show-avatar-follow-button'
+import {Provider as ShowFollowedByOnOwnProfileProvider} from './show-followed-by-on-own-profile'
 import {Provider as ShowFollowsYouBadgeProvider} from './show-follows-you-badge'
 import {Provider as ShowGermDmButtonProvider} from './show-germ-dm-button'
 import {Provider as ShowLinkInHandleProvider} from './show-link-in-handle'
@@ -186,6 +187,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                               <DisableViaRepostNotificationProvider>
                                                                                 <MetricsDisplayPreferencesProvider>
                                                                                   <ShowFollowsYouBadgeProvider>
+                                                                                    <ShowFollowedByOnOwnProfileProvider>
                                                                                     <ShowAvatarFollowButtonProvider>
                                                                                       <ShowGermDmButtonProvider>
                                                                                         <HideSimilarAccountsRecommProvider>
@@ -233,6 +235,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                         </HideSimilarAccountsRecommProvider>
                                                                                       </ShowGermDmButtonProvider>
                                                                                     </ShowAvatarFollowButtonProvider>
+                                                                                    </ShowFollowedByOnOwnProfileProvider>
                                                                                   </ShowFollowsYouBadgeProvider>
                                                                                 </MetricsDisplayPreferencesProvider>
                                                                               </DisableViaRepostNotificationProvider>

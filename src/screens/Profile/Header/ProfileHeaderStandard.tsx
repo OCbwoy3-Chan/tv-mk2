@@ -25,6 +25,7 @@ import {useShowGermDmButton} from '#/state/preferences'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
 import {useFollowedByMetricsDisplay} from '#/state/preferences/metrics-display-preference'
+import {useShowFollowedByOnOwnProfile} from '#/state/preferences/show-followed-by-on-own-profile'
 import {
   useProfileBlockMutationQueue,
   useProfileFollowMutationQueue,
@@ -156,6 +157,7 @@ let ProfileHeaderStandard = ({
 
   // disable metrics
   const followedByMetricsDisplay = useFollowedByMetricsDisplay()
+  const showFollowedByOnOwnProfile = useShowFollowedByOnOwnProfile()
 
   return (
     <>
@@ -221,7 +223,7 @@ let ProfileHeaderStandard = ({
                 <GermButton germ={profile.associated.germ} profile={profile} />
               )}
 
-              {!isMe &&
+              {(!isMe || showFollowedByOnOwnProfile) &&
                 !isFollowedByMetricHidden(followedByMetricsDisplay) &&
                 !isBlockedUser &&
                 shouldShowKnownFollowers(profile.viewer?.knownFollowers) && (

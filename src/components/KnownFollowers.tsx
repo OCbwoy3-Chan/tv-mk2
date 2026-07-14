@@ -9,7 +9,7 @@ import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {
   type FollowedByMetricsDisplay,
-  shouldShowFollowedByOverflowCount,
+  shouldShowFollowedByExactText,
   shouldShowFollowedByOverflowPlus,
   shouldShowFollowedByText,
 } from '#/lib/metrics-display'
@@ -52,7 +52,7 @@ export function KnownFollowers({
   onLinkPress,
   minimal,
   showIfEmpty,
-  followedByDisplay = 'names',
+  followedByDisplay = 'visible',
 }: {
   profile: bsky.profile.AnyProfileView
   moderationOpts: ModerationOpts
@@ -123,6 +123,7 @@ function KnownFollowersInner({
 
   const textStyle = [a.text_sm, a.leading_snug, t.atoms.text_contrast_medium]
   const showText = shouldShowFollowedByText(followedByDisplay)
+  const showExactText = shouldShowFollowedByExactText(followedByDisplay)
 
   const slice = cachedKnownFollowers.followers.slice(0, 3).map(f => {
     const moderation = moderateProfile(f, moderationOpts)
@@ -150,18 +151,11 @@ function KnownFollowersInner({
   const SIZE = minimal ? AVI_SIZE_SMALL : AVI_SIZE
   const dim = SIZE + AVI_BORDER * 2
   const radius = avatarBorderRadius(SIZE, enableSquareAvatars ?? true)
-  const overflowCount = serverCount - slice.length
-  const showOverflowCount = shouldShowFollowedByOverflowCount(
-    followedByDisplay,
-    serverCount,
-    slice.length,
-  )
   const showOverflowPlus = shouldShowFollowedByOverflowPlus(
     followedByDisplay,
     serverCount,
     slice.length,
   )
-  const showEndCap = showOverflowCount || showOverflowPlus
 
   return (
     <Link
@@ -198,7 +192,7 @@ function KnownFollowersInner({
                     width: dim,
                     height: dim,
                     borderRadius: radius,
-                    zIndex: slice.length - i + (showEndCap ? 1 : 0),
+                    zIndex: slice.length - i + (showOverflowPlus ? 1 : 0),
                     marginLeft: i > 0 ? -8 : 0,
                     overflow: 'hidden',
                   },
@@ -212,7 +206,7 @@ function KnownFollowersInner({
                 />
               </View>
             ))}
-            {showEndCap ? (
+            {showOverflowPlus ? (
               <View
                 style={[
                   a.align_center,
@@ -228,25 +222,11 @@ function KnownFollowersInner({
                     backgroundColor: t.atoms.text_contrast_low.color,
                   },
                 ]}>
-                {showOverflowCount && overflowCount > 0 ? (
-                  <Text
-                    style={[
-                      minimal ? a.text_xs : a.text_sm,
-                      a.font_semi_bold,
-                      a.leading_snug,
-                      {color: 'white'},
-                    ]}>
-                    <Trans comment="Additional known followers not shown as avatars, e.g. +3">
-                      +{overflowCount}
-                    </Trans>
-                  </Text>
-                ) : (
-                  <Plus
-                    fill="white"
-                    width={minimal ? 12 : 16}
-                    height={minimal ? 12 : 16}
-                  />
-                )}
+                <Plus
+                  fill="white"
+                  width={minimal ? 12 : 16}
+                  height={minimal ? 12 : 16}
+                />
               </View>
             ) : null}
           </View>
@@ -265,66 +245,148 @@ function KnownFollowersInner({
                 },
               ]}
               numberOfLines={2}>
-              {slice.length >= 2 ? (
-                // 2-n followers, including blocks
-                // only 2
-                serverCount > 2 ? (
-                  <Trans>
-                    Followed by{' '}
-                    <Text emoji key={slice[0].profile.did} style={textStyle}>
-                      {slice[0].profile.displayName}
-                    </Text>
-                    ,{' '}
-                    <Text emoji key={slice[1].profile.did} style={textStyle}>
-                      {slice[1].profile.displayName}
-                    </Text>
-                    , and{' '}
-                    <Plural
-                      value={serverCount - 2}
-                      one="# other"
-                      other="# others"
-                    />
-                  </Trans>
-                ) : (
-                  <Trans>
-                    Followed by{' '}
-                    <Text emoji key={slice[0].profile.did} style={textStyle}>
-                      {slice[0].profile.displayName}
-                    </Text>{' '}
-                    and{' '}
-                    <Text emoji key={slice[1].profile.did} style={textStyle}>
-                      {slice[1].profile.displayName}
-                    </Text>
-                  </Trans>
-                )
-              ) : serverCount > 1 ? (
-                // 1-n followers, including blocks
-                <Trans>
-                  Followed by{' '}
-                  <Text emoji key={slice[0].profile.did} style={textStyle}>
-                    {slice[0].profile.displayName}
-                  </Text>{' '}
-                  and{' '}
-                  <Plural
-                    value={serverCount - 1}
-                    one="# other"
-                    other="# others"
-                  />
-                </Trans>
+              {showExactText ? (
+                <FollowedByExactText
+                  serverCount={serverCount}
+                  slice={slice}
+                  textStyle={textStyle}
+                />
               ) : (
-                // only 1
-                <Trans>
-                  Followed by{' '}
-                  <Text emoji key={slice[0].profile.did} style={textStyle}>
-                    {slice[0].profile.displayName}
-                  </Text>
-                </Trans>
+                <FollowedByNamesText
+                  serverCount={serverCount}
+                  slice={slice}
+                  textStyle={textStyle}
+                />
               )}
             </Text>
           ) : null}
         </>
       )}
     </Link>
+  )
+}
+
+function FollowedByNamesText({
+  serverCount,
+  slice,
+  textStyle,
+}: {
+  serverCount: number
+  slice: Array<{profile: {did: string; displayName: string}}>
+  textStyle: object[]
+}) {
+  if (slice.length >= 2) {
+    // 2-n followers, including blocks
+    // only 2
+    if (serverCount > 2) {
+      return (
+        <Trans>
+          Followed by{' '}
+          <Text emoji key={slice[0].profile.did} style={textStyle}>
+            {slice[0].profile.displayName}
+          </Text>
+          ,{' '}
+          <Text emoji key={slice[1].profile.did} style={textStyle}>
+            {slice[1].profile.displayName}
+          </Text>
+          , and{' '}
+          <Plural value={serverCount - 2} one="# other" other="# others" />
+        </Trans>
+      )
+    }
+    return (
+      <Trans>
+        Followed by{' '}
+        <Text emoji key={slice[0].profile.did} style={textStyle}>
+          {slice[0].profile.displayName}
+        </Text>{' '}
+        and{' '}
+        <Text emoji key={slice[1].profile.did} style={textStyle}>
+          {slice[1].profile.displayName}
+        </Text>
+      </Trans>
+    )
+  }
+
+  if (serverCount > 1) {
+    // 1-n followers, including blocks
+    return (
+      <Trans>
+        Followed by{' '}
+        <Text emoji key={slice[0].profile.did} style={textStyle}>
+          {slice[0].profile.displayName}
+        </Text>{' '}
+        and <Plural value={serverCount - 1} one="# other" other="# others" />
+      </Trans>
+    )
+  }
+
+  // only 1
+  return (
+    <Trans>
+      Followed by{' '}
+      <Text emoji key={slice[0].profile.did} style={textStyle}>
+        {slice[0].profile.displayName}
+      </Text>
+    </Trans>
+  )
+}
+
+function FollowedByExactText({
+  serverCount,
+  slice,
+  textStyle,
+}: {
+  serverCount: number
+  slice: Array<{profile: {did: string; displayName: string}}>
+  textStyle: object[]
+}) {
+  if (slice.length >= 3) {
+    return (
+      <Trans>
+        Followed by{' '}
+        <Plural value={serverCount} one="# person" other="# people" />,
+        including{' '}
+        <Text emoji key={slice[0].profile.did} style={textStyle}>
+          {slice[0].profile.displayName}
+        </Text>
+        ,{' '}
+        <Text emoji key={slice[1].profile.did} style={textStyle}>
+          {slice[1].profile.displayName}
+        </Text>
+        , and{' '}
+        <Text emoji key={slice[2].profile.did} style={textStyle}>
+          {slice[2].profile.displayName}
+        </Text>
+      </Trans>
+    )
+  }
+
+  if (slice.length === 2) {
+    return (
+      <Trans>
+        Followed by{' '}
+        <Plural value={serverCount} one="# person" other="# people" />,
+        including{' '}
+        <Text emoji key={slice[0].profile.did} style={textStyle}>
+          {slice[0].profile.displayName}
+        </Text>{' '}
+        and{' '}
+        <Text emoji key={slice[1].profile.did} style={textStyle}>
+          {slice[1].profile.displayName}
+        </Text>
+      </Trans>
+    )
+  }
+
+  return (
+    <Trans>
+      Followed by{' '}
+      <Plural value={serverCount} one="# person" other="# people" />, including{' '}
+      <Text emoji key={slice[0].profile.did} style={textStyle}>
+        {slice[0].profile.displayName}
+      </Text>
+    </Trans>
   )
 }
 

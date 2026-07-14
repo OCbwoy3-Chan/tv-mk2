@@ -35,6 +35,7 @@ import {
   useFollowersMetricsDisplay,
   useFollowingMetricsDisplay,
 } from '#/state/preferences/metrics-display-preference'
+import {useShowFollowedByOnOwnProfile} from '#/state/preferences/show-followed-by-on-own-profile'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {usePrefetchProfileQuery, useProfileQuery} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
@@ -515,6 +516,7 @@ function Inner({
   const followersMetricsDisplay = useFollowersMetricsDisplay()
   const followingMetricsDisplay = useFollowingMetricsDisplay()
   const followedByMetricsDisplay = useFollowedByMetricsDisplay()
+  const showFollowedByOnOwnProfile = useShowFollowedByOnOwnProfile()
   const followersCount = profile.followersCount || 0
   const followingCount = profile.followsCount || 0
   const pluralizedFollowers = plural(profile.followersCount || 0, {
@@ -752,7 +754,7 @@ function Inner({
             </View>
           ) : undefined}
 
-          {!isMe &&
+          {(!isMe || showFollowedByOnOwnProfile) &&
             !isFollowedByMetricHidden(followedByMetricsDisplay) &&
             shouldShowKnownFollowers(profile.viewer?.knownFollowers) && (
               <View style={[a.flex_row, a.align_center, a.gap_sm, a.pt_md]}>
