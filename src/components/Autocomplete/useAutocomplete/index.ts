@@ -3,10 +3,15 @@ import {moderateProfile, type ModerationOpts} from '@atproto/api'
 import {keepPreviousData, useQuery} from '@tanstack/react-query'
 
 import {isJustAMute, moduiContainsHideableOffense} from '#/lib/moderation'
+import {
+  useCustomAppViewDid,
+  useCustomAppViewUrl,
+} from '#/state/preferences/custom-appview-did'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {STALE} from '#/state/queries'
 import {DEFAULT_LOGGED_OUT_PREFERENCES} from '#/state/queries/preferences'
-import {useAgent} from '#/state/session'
+import {createPublicAgent} from '#/state/session/agent'
+import {useAgent, useSession} from '#/state/session'
 import {
   type AutocompleteApi,
   type AutocompleteItem,
@@ -31,9 +36,24 @@ export function useAutocomplete({
   limit?: number
   showSearchFallback?: boolean
 }): AutocompleteApi {
-  const agent = useAgent()
+  const {hasSession} = useSession()
+  const sessionAgent = useAgent()
+  const [appViewDid] = useCustomAppViewDid()
+  const [appViewUrl] = useCustomAppViewUrl()
   const moderationOpts = useModerationOpts()
   const emojiSearch = useEmojiSearch()
+
+  /*
+   * While logged out, the session agent is created once at startup and does not
+   * pick up App server changes from the login dialog. Rebuild a guest agent
+   * from persisted AppView settings whenever that selection changes.
+   */
+  const typeaheadAgent = useMemo(() => {
+    if (hasSession) {
+      return sessionAgent
+    }
+    return createPublicAgent()
+  }, [hasSession, sessionAgent, appViewDid, appViewUrl])
 
   const query = useQuery({
     staleTime: STALE.MINUTES.ONE,
@@ -42,6 +62,8 @@ export function useAutocomplete({
       {
         type,
         query: q,
+        appViewDid,
+        appViewUrl,
       },
     ],
     async queryFn() {
@@ -52,7 +74,7 @@ export function useAutocomplete({
         // Going from "foo" to "foo." should not clear matches.
         q = q.toLowerCase().trim().replace(/\.$/, '')
 
-        const res = await agent.searchActorsTypeahead({
+        const res = await typeaheadAgent.searchActorsTypeahead({
           q,
           limit: limit || 8,
         })

@@ -85,8 +85,9 @@ export const LoginForm = ({
 
   return (
     <FormContainer testID="loginForm" titleText={<Trans>Sign in</Trans>}>
+      <AppServerButton />
       <View
-        style={[a.flex_row, a.mb_md, a.rounded_sm, a.overflow_hidden]}
+        style={[a.flex_row, a.mb_sm, a.rounded_sm, a.overflow_hidden]}
         accessibilityRole="tablist">
         <Pressable
           accessibilityRole="tab"
@@ -191,7 +192,7 @@ function OAuthLoginFields({
   const {t: l} = useLingui()
   const {login} = useSessionApi()
   const requestNotificationsPermission = useRequestNotificationsPermission()
-  const {setShowLoggedOut} = useLoggedOutViewControls()
+  const {setShowLoggedOut, clearRequestedAccount} = useLoggedOutViewControls()
   const setHasCheckedForStarterPack = useSetHasCheckedForStarterPack()
   const identifierValueRef = useRef<string>(initialHandle || '')
 
@@ -223,6 +224,7 @@ function OAuthLoginFields({
       )
       onAttemptSuccess()
       setShowLoggedOut(false)
+      clearRequestedAccount()
       setHasCheckedForStarterPack(true)
       void requestNotificationsPermission('Login')
     } catch (e: unknown) {
@@ -249,7 +251,6 @@ function OAuthLoginFields({
 
   return (
     <>
-      <AppServerButton />
       <View style={[a.relative, a.z_20, native({overflow: 'visible'})]}>
         <TextField.LabelText>
           <Trans>Account</Trans>
@@ -277,10 +278,10 @@ function OAuthLoginFields({
           color="primary"
           size="large"
           onPress={() => void onPressNext()}>
+          {isProcessing && <ButtonIcon icon={Loader} />}
           <ButtonText>
             <Trans>Login</Trans>
           </ButtonText>
-          {isProcessing && <ButtonIcon icon={Loader} />}
         </Button>
       </View>
     </>
@@ -338,7 +339,7 @@ function LegacyLoginFields({
   const {login} = useSessionApi()
   const {accounts} = useSession()
   const requestNotificationsPermission = useRequestNotificationsPermission()
-  const {setShowLoggedOut} = useLoggedOutViewControls()
+  const {setShowLoggedOut, clearRequestedAccount} = useLoggedOutViewControls()
   const setHasCheckedForStarterPack = useSetHasCheckedForStarterPack()
   const serverInputControl = useDialogControl()
   const confirmHostingProviderControl = useDialogControl()
@@ -372,6 +373,7 @@ function LegacyLoginFields({
       )
       onAttemptSuccess()
       setShowLoggedOut(false)
+      clearRequestedAccount()
       setHasCheckedForStarterPack(true)
       void requestNotificationsPermission('Login')
     } catch (err) {
@@ -515,44 +517,37 @@ function LegacyLoginFields({
           }
         }}
       />
-      <AppServerButton />
       <View>
         <TextField.LabelText>
           <Trans>Username or email</Trans>
         </TextField.LabelText>
-        <TextField.Root
-          isInvalid={errorField === 'identifier' || showUnresolvedError}>
-          <TextField.Icon
-            icon={hostingProvider.state.status === 'email' ? EmailIcon : AtIcon}
-          />
-          <TextField.Input
-            testID="loginUsernameInput"
-            inputRef={identifierRef}
-            label={l`Username or email address`}
-            placeholder={null}
-            autoCapitalize="none"
-            autoFocus={!IS_IOS && !initialHandle}
-            autoCorrect={false}
-            autoComplete="username"
-            returnKeyType="next"
-            textContentType="username"
-            defaultValue={initialHandle || ''}
-            onChangeText={v => {
-              identifierValueRef.current = v
-              setIdentifier(v)
-              if (errorField) setErrorField('none')
-              if (showResolveError) setShowResolveError(false)
-            }}
-            onFocus={() => setIdentifierFocused(true)}
-            onBlur={() => setIdentifierFocused(false)}
-            onSubmitEditing={() => {
-              passwordRef.current?.focus()
-            }}
-            blurOnSubmit={false}
-            editable={!isProcessing}
-            accessibilityHint={l`Enter the username or email address you used when you created your account`}
-          />
-        </TextField.Root>
+        <HandleAutocompleteInput
+          initialValue={initialHandle || ''}
+          label={l`Username or email address`}
+          placeholder={null}
+          icon={
+            hostingProvider.state.status === 'email' ? EmailIcon : AtIcon
+          }
+          isInvalid={errorField === 'identifier' || showUnresolvedError}
+          autoFocus={!IS_IOS && !initialHandle}
+          editable={!isProcessing}
+          returnKeyType="next"
+          submitOnSelect={false}
+          showAutocomplete={hostingProvider.state.status !== 'email'}
+          inputRef={identifierRef}
+          onValueChange={v => {
+            identifierValueRef.current = v
+            setIdentifier(v)
+            if (errorField) setErrorField('none')
+            if (showResolveError) setShowResolveError(false)
+          }}
+          onFocus={() => setIdentifierFocused(true)}
+          onBlur={() => setIdentifierFocused(false)}
+          onSubmitEditing={() => {
+            passwordRef.current?.focus()
+          }}
+          accessibilityHint={l`Enter the username or email address you used when you created your account`}
+        />
         {showUnresolvedError && (
           <Text
             style={[
@@ -760,10 +755,10 @@ function LegacyLoginFields({
             color="primary"
             size="large"
             onPress={() => void onPressNext()}>
+            {isProcessing && <ButtonIcon icon={Loader} />}
             <ButtonText>
               <Trans>Sign in</Trans>
             </ButtonText>
-            {isProcessing && <ButtonIcon icon={Loader} />}
           </Button>
         )}
       </View>

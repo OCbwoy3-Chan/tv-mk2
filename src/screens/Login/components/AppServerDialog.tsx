@@ -254,6 +254,7 @@ export function AppServerDialog({
   const formRef = useRef<DialogInnerRef>(null)
   const confirmedRef = useRef(false)
   const navigation = useNavigationDeduped()
+  const {setShowLoggedOut} = useLoggedOutViewControls()
   const [did] = useCustomAppViewDid()
   const [url] = useCustomAppViewUrl()
   const setAppViewSelection = useSetAppViewSelection()
@@ -319,6 +320,7 @@ export function AppServerDialog({
         }}
         onOpenInfrastructureSettings={() => {
           control.close(() => {
+            setShowLoggedOut(false)
             navigation.navigate('RunesInfrastructureSettings')
           })
         }}
