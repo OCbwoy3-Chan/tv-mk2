@@ -57,8 +57,16 @@ export function ProfileBadges({
   const verification = useSimpleVerificationState({profile})
   const pdsLabelEnabled = usePdsLabelEnabled()
   const hideBskyPds = usePdsLabelHideBskyPds()
+
+  const isBskyHandle =
+    !!shadowed.handle &&
+    shadowed.handle.endsWith('.bsky.social')
+
+  const shouldResolvePds =
+    pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
+
   const {data: pdsData, isLoading: isPdsLoading} = usePdsLabelQuery(
-    pdsLabelEnabled ? shadowed.did : undefined,
+    shouldResolvePds ? shadowed.did : undefined,
   )
   const {data: pdsFaviconUrl} = usePdsFaviconQuery(
     pdsData && !pdsData.isBsky && !pdsData.isBridged
@@ -70,13 +78,8 @@ export function ProfileBadges({
     fonts: {scaleMultiplier: alfScaleMultiplier},
   } = useAlf()
 
-  const isBskyHandle =
-    !!shadowed.handle &&
-    (shadowed.handle.endsWith('.bsky.social') ||
-      shadowed.handle === 'bsky.social')
-
   const showPdsBadge =
-    pdsLabelEnabled &&
+    shouldResolvePds &&
     (isPdsLoading || (!!pdsData && !(hideBskyPds && pdsData.isBsky)))
 
   // if nothing to show, don't render the container at all

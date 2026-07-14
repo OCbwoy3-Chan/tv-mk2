@@ -769,7 +769,18 @@ export function createComposerState({
   }
 }
 
+const MARKDOWN_LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/
+
+/**
+ * Grapheme length for the char counter. TextInput already ran
+ * detectFacetsWithoutResolution (and merged markdown facets) on `rt`, so we
+ * only re-parse when markdown link syntax is present — that path rewrites
+ * `[text](url)` to display text before measuring.
+ */
 function getShortenedLength(rt: RichText) {
+  if (!MARKDOWN_LINK_RE.test(rt.text)) {
+    return shortenLinks(rt).graphemeLength
+  }
   const {text} = parseMarkdownLinks(rt.text)
   const newRt = new RichText({text})
   newRt.detectFacetsWithoutResolution()

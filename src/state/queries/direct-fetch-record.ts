@@ -9,6 +9,7 @@ import {
 import {useQuery} from '@tanstack/react-query'
 
 import {retry} from '#/lib/async/retry'
+import {useDeferredEnable} from '#/lib/hooks/useDeferredEnable'
 import {STALE} from '#/state/queries'
 import {useAgent} from '#/state/session'
 import * as bsky from '#/types/bsky'
@@ -141,13 +142,14 @@ export function useDirectFetchEmbedRecord({
   enabled?: boolean
 }) {
   const agent = useAgent()
+  const deferredEnabled = useDeferredEnable(Boolean(enabled) && !!uri)
   return useQuery<DirectFetchEmbedRecordResult | undefined>({
     staleTime: STALE.HOURS.ONE,
     queryKey: RQKEY(uri || ''),
     async queryFn() {
       return directFetchEmbedRecord(agent, uri)
     },
-    enabled: enabled && !!uri,
+    enabled: deferredEnabled,
   })
 }
 
