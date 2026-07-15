@@ -22,6 +22,10 @@ import {
   useHideSimilarAccountsRecomm,
   useSetHideSimilarAccountsRecomm,
 } from '#/state/preferences/hide-similar-accounts-recommendations'
+import {
+  useSetShowStandardLabelerProfile,
+  useShowStandardLabelerProfile,
+} from '#/state/preferences/show-standard-labeler-profile'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -33,6 +37,7 @@ import {Message_Stroke2_Corner0_Rounded as MessageIcon} from '#/components/icons
 import {Newspaper_Stroke2_Corner2_Rounded as NewspaperIcon} from '#/components/icons/Newspaper'
 import {PersonGroup_Stroke2_Corner2_Rounded as PersonGroupIcon} from '#/components/icons/Person'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
+import {Shield_Stroke2_Corner0_Rounded as ShieldIcon} from '#/components/icons/Shield'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesUsabilitySettingsScreen() {
@@ -49,6 +54,9 @@ export function RunesUsabilitySettingsScreen() {
 
   const showGermDmButton = useShowGermDmButton()
   const setShowGermDmButton = useSetShowGermDmButton()
+
+  const showStandardLabelerProfile = useShowStandardLabelerProfile()
+  const setShowStandardLabelerProfile = useSetShowStandardLabelerProfile()
 
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const setConfirmFollowUnfollow = useSetConfirmFollowUnfollow()
@@ -116,6 +124,19 @@ export function RunesUsabilitySettingsScreen() {
           <SettingsList.ItemIcon icon={MessageIcon} />
           <SettingsList.ItemText>
             <Trans>Show Germ DM button on profiles</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="show_standard_labeler_profile"
+        label={l`Show standard profile UI on labeler accounts`}
+        value={showStandardLabelerProfile}
+        onChange={value => setShowStandardLabelerProfile(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={ShieldIcon} />
+          <SettingsList.ItemText>
+            <Trans>Show standard profile UI on labeler accounts</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

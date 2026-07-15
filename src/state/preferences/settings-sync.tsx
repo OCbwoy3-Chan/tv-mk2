@@ -67,6 +67,7 @@ export const SYNCED_PREFS_KEYS = [
   'hideSimilarAccountsRecomm',
   'hideScaryFollowButtons',
   'showGermDmButton',
+  'showStandardLabelerProfile',
   'confirmFollowUnfollow',
   'discoverContextEnabled',
   'compactPosts',

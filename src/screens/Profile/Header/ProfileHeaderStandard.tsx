@@ -2,6 +2,7 @@ import {memo, useMemo, useState} from 'react'
 import {View} from 'react-native'
 import {
   type AppBskyActorDefs,
+  type AppBskyLabelerDefs,
   moderateProfile,
   type ModerationDecision,
   type ModerationOpts,
@@ -78,11 +79,16 @@ import {ProfileHeaderDisplayName} from './DisplayName'
 import {EditProfileDialog} from './EditProfileDialog'
 import {ProfileHeaderHandle} from './Handle'
 import {ProfileHeaderMetrics} from './Metrics'
+import {
+  LabelerLikeSection,
+  LabelerSubscribeButton,
+} from './ProfileHeaderLabeler'
 import {ProfileHeaderShell} from './Shell'
 import {ProfileHeaderSuggestedFollows} from './SuggestedFollows'
 
 interface Props {
   profile: AppBskyActorDefs.ProfileViewDetailed
+  labeler?: AppBskyLabelerDefs.LabelerViewDetailed
   descriptionRT: RichTextAPI | null
   moderationOpts: ModerationOpts
   hideBackButton?: boolean
@@ -91,6 +97,7 @@ interface Props {
 
 let ProfileHeaderStandard = ({
   profile: profileUnshadowed,
+  labeler,
   descriptionRT,
   moderationOpts,
   hideBackButton = false,
@@ -167,65 +174,117 @@ let ProfileHeaderStandard = ({
         hideBackButton={hideBackButton}
         isPlaceholderProfile={isPlaceholderProfile}>
         <View
-          style={[
-            a.px_lg,
-            a.pt_md,
-            a.pb_sm,
-            native(a.overflow_hidden),
-            web({overflowX: 'clip', zIndex: 10}),
-          ]}
+          style={[a.px_lg, a.pt_md, a.pb_sm, web({zIndex: 10})]}
           pointerEvents={IS_IOS ? 'auto' : 'box-none'}>
           <View
-            style={[
-              {paddingLeft: 90},
-              a.flex_row,
-              a.align_center,
-              a.justify_end,
-              a.gap_xs,
-              a.pb_sm,
-              a.flex_wrap,
-            ]}
+            style={[native(a.overflow_hidden), web({overflowX: 'clip'})]}
             pointerEvents={IS_IOS ? 'auto' : 'box-none'}>
-            <HeaderStandardButtons
-              profile={profile}
-              moderation={moderation}
-              moderationOpts={moderationOpts}
-              onFollow={() => setShowSuggestedFollows(true)}
-              onUnfollow={() => setShowSuggestedFollows(false)}
-            />
+            <View
+              style={[
+                {paddingLeft: 90},
+                a.flex_row,
+                a.align_center,
+                a.justify_end,
+                a.gap_xs,
+                a.pb_sm,
+                a.flex_wrap,
+              ]}
+              pointerEvents={IS_IOS ? 'auto' : 'box-none'}>
+              <HeaderStandardButtons
+                profile={profile}
+                moderation={moderation}
+                moderationOpts={moderationOpts}
+                onFollow={() => setShowSuggestedFollows(true)}
+                onUnfollow={() => setShowSuggestedFollows(false)}
+              />
+            </View>
+            <View
+              style={[
+                a.flex_col,
+                a.gap_xs,
+                a.pb_sm,
+                live ? a.pt_sm : a.pt_2xs,
+              ]}>
+              <ProfileHeaderDisplayName
+                profile={profile}
+                moderation={moderation}
+              />
+              <ProfileHeaderHandle profile={profile} />
+            </View>
+            {!isPlaceholderProfile && !isBlockedUser && (
+              <View style={a.gap_md}>
+                <ProfileHeaderMetrics profile={profile} />
+                {descriptionRT && !moderation.ui('profileView').blur ? (
+                  <View pointerEvents="auto">
+                    <RichText
+                      testID="profileHeaderDescription"
+                      style={[a.text_md]}
+                      numberOfLines={15}
+                      selectable={platform({android: false, default: true})}
+                      value={descriptionRT}
+                      enableTags
+                      authorHandle={profile.handle}
+                    />
+                  </View>
+                ) : undefined}
+
+                {showGermDmButton && profile.associated?.germ && (
+                  <GermButton germ={profile.associated.germ} profile={profile} />
+                )}
+              </View>
+            )}
           </View>
+
           <View
-            style={[a.flex_col, a.gap_xs, a.pb_sm, live ? a.pt_sm : a.pt_2xs]}>
-            <ProfileHeaderDisplayName
-              profile={profile}
-              moderation={moderation}
-            />
-            <ProfileHeaderHandle profile={profile} />
+            style={[
+              a.flex_row,
+              a.flex_wrap,
+              {gap: 10},
+              a.pt_md,
+              // Keep above Followed by / tabs so the join-date tooltip paints correctly
+              web({position: 'relative', zIndex: 2}),
+            ]}>
+            {websiteFormatted && (
+              <Link
+                to={sanitizeWebsiteForLink(website ?? '')}
+                label={_(msg({message: `Visit ${websiteFormatted}`}))}
+                style={[a.flex_row, a.align_center, a.gap_xs]}>
+                {({hovered}) => (
+                  <>
+                    <Globe
+                      width={tokens.space.lg}
+                      style={{color: t.palette.primary_500}}
+                    />
+                    <Text
+                      style={[
+                        {color: t.palette.primary_500},
+                        hovered && a.underline,
+                      ]}>
+                      {websiteFormatted}
+                    </Text>
+                  </>
+                )}
+              </Link>
+            )}
+            <View style={[a.flex_row, a.align_center, a.gap_xs]}>
+              <CalendarDays
+                width={tokens.space.lg}
+                style={{color: t.atoms.text_contrast_medium.color}}
+              />
+              {/* Position above so the sticky profile tab bar does not cover it */}
+              <Text
+                style={[t.atoms.text_contrast_medium]}
+                title={dateJoinedExact}
+                dataSet={web({tooltipPos: 'top'})}>
+                <Trans>Joined {dateJoined}</Trans>
+              </Text>
+            </View>
           </View>
+
           {!isPlaceholderProfile && !isBlockedUser && (
-            <View style={a.gap_md}>
-              <ProfileHeaderMetrics profile={profile} />
-              {descriptionRT && !moderation.ui('profileView').blur ? (
-                <View pointerEvents="auto">
-                  <RichText
-                    testID="profileHeaderDescription"
-                    style={[a.text_md]}
-                    numberOfLines={15}
-                    selectable={platform({android: false, default: true})}
-                    value={descriptionRT}
-                    enableTags
-                    authorHandle={profile.handle}
-                  />
-                </View>
-              ) : undefined}
-
-              {showGermDmButton && profile.associated?.germ && (
-                <GermButton germ={profile.associated.germ} profile={profile} />
-              )}
-
+            <View style={[a.gap_md, a.pt_md]}>
               {(!isMe || showFollowedByOnOwnProfile) &&
                 !isFollowedByMetricHidden(followedByMetricsDisplay) &&
-                !isBlockedUser &&
                 shouldShowKnownFollowers(profile.viewer?.knownFollowers) && (
                   <View style={[a.flex_row, a.align_center, a.gap_sm]}>
                     <KnownFollowers
@@ -235,36 +294,12 @@ let ProfileHeaderStandard = ({
                     />
                   </View>
                 )}
+
+              {labeler && (
+                <LabelerLikeSection labeler={labeler} profile={profile} />
+              )}
             </View>
           )}
-
-          <View style={[a.flex_row, a.flex_wrap, {gap: 10}, a.pt_md]}>
-            {websiteFormatted && (
-              <Link
-                to={sanitizeWebsiteForLink(website ?? '')}
-                label={_(msg({message: `Visit ${websiteFormatted}`}))}
-                style={[a.flex_row, a.align_center, a.gap_xs]}>
-                <Globe
-                  width={tokens.space.lg}
-                  style={{color: t.palette.primary_500}}
-                />
-                <Text style={[{color: t.palette.primary_500}]}>
-                  {websiteFormatted}
-                </Text>
-              </Link>
-            )}
-            <View style={[a.flex_row, a.align_center, a.gap_xs]}>
-              <CalendarDays
-                width={tokens.space.lg}
-                style={{color: t.atoms.text_contrast_medium.color}}
-              />
-              <Text
-                style={[t.atoms.text_contrast_medium]}
-                title={dateJoinedExact}>
-                <Trans>Joined {dateJoined}</Trans>
-              </Text>
-            </View>
-          </View>
 
           <DebugFieldDisplay subject={profile} />
         </View>
@@ -496,37 +531,45 @@ export function HeaderStandardButtons({
           <EditProfileDialog profile={profile} control={editProfileControl} />
           {IS_NATIVE && <InviteFriendsDialog control={inviteFriendsControl} />}
         </>
-      ) : profile.viewer?.blocking ? (
-        profile.viewer?.blockingByList ? null : (
-          <Button
-            testID="unblockBtn"
-            size="small"
-            color="secondary"
-            label={_(msg`Unblock`)}
-            disabled={!hasSession}
-            onPress={() => unblockPromptControl.open()}>
-            <ButtonText>
-              <Trans context="action">Unblock</Trans>
-            </ButtonText>
-          </Button>
-        )
-      ) : !profile.viewer?.blockedBy ? (
+      ) : (
         <>
-          {hasSession && (!minimal || profile.viewer?.following) && (
-            <>
-              {subscriptionsAllowed && (
-                <SubscribeProfileButton
-                  profile={profile}
-                  moderationOpts={moderationOpts}
-                  disableHint={minimal}
-                />
-              )}
+          {profile.viewer?.blocking && !profile.viewer?.blockingByList ? (
+            <Button
+              testID="unblockBtn"
+              size="small"
+              color="secondary"
+              label={_(msg`Unblock`)}
+              disabled={!hasSession}
+              onPress={() => unblockPromptControl.open()}>
+              <ButtonText>
+                <Trans context="action">Unblock</Trans>
+              </ButtonText>
+            </Button>
+          ) : null}
 
-              <MessageProfileButton profile={profile} />
-            </>
+          {hasSession &&
+            !profile.viewer?.blocking &&
+            !profile.viewer?.blockedBy &&
+            (!minimal || profile.viewer?.following) && (
+              <>
+                {subscriptionsAllowed && (
+                  <SubscribeProfileButton
+                    profile={profile}
+                    moderationOpts={moderationOpts}
+                    disableHint={minimal}
+                  />
+                )}
+
+                <MessageProfileButton profile={profile} />
+              </>
+            )}
+
+          {!!profile.associated?.labeler && !minimal && (
+            <LabelerSubscribeButton profile={profile} />
           )}
 
-          {(!minimal || !profile.viewer?.following) &&
+          {!profile.associated?.labeler &&
+            (!minimal || !profile.viewer?.following) &&
             !(minimal && hideScaryFollowButtons) &&
             (currentAccount && hasAlternateAccounts ? (
               <EphemeralAccountSwitcher
@@ -622,7 +665,7 @@ export function HeaderStandardButtons({
               </Button>
             ))}
         </>
-      ) : null}
+      )}
       <ProfileMenu profile={profile} />
 
       <Prompt.Basic

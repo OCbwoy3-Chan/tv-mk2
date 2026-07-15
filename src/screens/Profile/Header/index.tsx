@@ -21,6 +21,7 @@ import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useShowStandardLabelerProfile} from '#/state/preferences/show-standard-labeler-profile'
 import {useSetLightStatusBar} from '#/state/shell/light-status-bar'
 import {usePagerHeaderContext} from '#/view/com/pager/PagerHeaderContext'
 import {LoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
@@ -83,15 +84,20 @@ interface Props {
 }
 
 let ProfileHeader = ({setMinimumHeight, ...props}: Props): React.ReactNode => {
+  const showStandardLabelerProfile = useShowStandardLabelerProfile()
+  const isLabeler = !!props.profile.associated?.labeler
+  const useLabelerHeader = isLabeler && !showStandardLabelerProfile
   let content
-  if (props.profile.associated?.labeler) {
+  if (useLabelerHeader) {
     if (!props.labeler) {
       content = <ProfileHeaderLoading />
     } else {
       content = <ProfileHeaderLabeler {...props} labeler={props.labeler} />
     }
+  } else if (isLabeler && !props.labeler) {
+    content = <ProfileHeaderLoading />
   } else {
-    content = <ProfileHeaderStandard {...props} />
+    content = <ProfileHeaderStandard {...props} labeler={props.labeler} />
   }
 
   return (
@@ -134,6 +140,9 @@ const MinimalHeader = memo(function MinimalHeader({
   const [visible, setVisible] = useState(false)
   const [minimalHeaderHeight, setMinimalHeaderHeight] = useState(insets.top)
   const isScreenFocused = useIsFocused()
+  const showStandardLabelerProfile = useShowStandardLabelerProfile()
+  const useLabelerButtons =
+    !!profile.associated?.labeler && !showStandardLabelerProfile
   if (!ctx) throw new Error('MinimalHeader cannot be used on web')
   const {scrollY, headerHeight} = ctx
 
@@ -209,7 +218,7 @@ const MinimalHeader = memo(function MinimalHeader({
             {sanitizeHandle(profile.handle, '@')}
           </Header.SubtitleText>
         </Header.Content>
-        {!profile.associated?.labeler
+        {!useLabelerButtons
           ? moderationOpts &&
             moderation && (
               <View style={[a.flex_row, a.justify_end, a.gap_xs]}>

@@ -165,6 +165,18 @@ input:focus {
   transform: translateY(100%) translateY(2px) translateX(-50%);
   z-index: 10;
 }
+[data-tooltip][data-tooltip-pos='top']::after {
+  bottom: auto;
+  top: 0;
+  transform: translateY(-100%) translateY(-8px) translateX(-50%);
+}
+[data-tooltip][data-tooltip-pos='top']::before {
+  bottom: auto;
+  top: 0;
+  border-bottom: none;
+  border-top: 6px solid var(--backgroundLight);
+  transform: translateY(-100%) translateY(-2px) translateX(-50%);
+}
 [data-tooltip]:hover::after,
 [data-tooltip]:hover::before {
   display: block;

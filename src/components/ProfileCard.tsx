@@ -609,12 +609,6 @@ export function FollowButtonInner({
       })
 
   if (!profile.viewer) return null
-  if (
-    profile.viewer.blockedBy ||
-    profile.viewer.blocking ||
-    profile.viewer.blockingByList
-  )
-    return null
   const viewer = profile.viewer
 
   const renderFollowButton = (onLongPress?: () => void) =>

@@ -55,6 +55,7 @@ import {Provider as ShowFollowsYouBadgeProvider} from './show-follows-you-badge'
 import {Provider as ShowGermDmButtonProvider} from './show-germ-dm-button'
 import {Provider as ShowLinkInHandleProvider} from './show-link-in-handle'
 import {Provider as ShowLinkInHandleOnlyOnWorkingLinksProvider} from './show-link-in-handle-only-on-working-links'
+import {Provider as ShowStandardLabelerProfileProvider} from './show-standard-labeler-profile'
 import {Provider as ShowViaClientProvider} from './show-via-client'
 import {Provider as SixSevenCelebrationProvider} from './six-seven-celebration'
 import {Provider as SubtitlesProvider} from './subtitles'
@@ -139,6 +140,10 @@ export {
   useSetShowGermDmButton,
   useShowGermDmButton,
 } from './show-germ-dm-button'
+export {
+  useSetShowStandardLabelerProfile,
+  useShowStandardLabelerProfile,
+} from './show-standard-labeler-profile'
 export {useSetSubtitlesEnabled, useSubtitlesEnabled} from './subtitles'
 export {
   useSetTranslationServicePreference,
@@ -190,6 +195,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                     <ShowFollowedByOnOwnProfileProvider>
                                                                                     <ShowAvatarFollowButtonProvider>
                                                                                       <ShowGermDmButtonProvider>
+                                                                                        <ShowStandardLabelerProfileProvider>
                                                                                         <HideSimilarAccountsRecommProvider>
                                                                                           <HideScaryFollowButtonsProvider>
                                                                                             <ConfirmFollowUnfollowProvider>
@@ -233,6 +239,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                             </ConfirmFollowUnfollowProvider>
                                                                                           </HideScaryFollowButtonsProvider>
                                                                                         </HideSimilarAccountsRecommProvider>
+                                                                                        </ShowStandardLabelerProfileProvider>
                                                                                       </ShowGermDmButtonProvider>
                                                                                     </ShowAvatarFollowButtonProvider>
                                                                                     </ShowFollowedByOnOwnProfileProvider>
