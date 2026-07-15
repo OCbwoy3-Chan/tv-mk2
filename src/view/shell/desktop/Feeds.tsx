@@ -24,7 +24,7 @@ export function DesktopFeeds() {
   const t = useTheme()
   const {_} = useLingui()
   const ax = useAnalytics()
-  const {data: pinnedFeedInfos, error, isLoading} = usePinnedFeedsInfos()
+  const {data: pinnedFeedInfos, isLoading} = usePinnedFeedsInfos()
   const selectedFeed = useSelectedFeed()
   const setSelectedFeed = useSetSelectedFeed()
   const navigation = useNavigation<NavigationProp>()
@@ -57,7 +57,11 @@ export function DesktopFeeds() {
     )
   }
 
-  if (error || !pinnedFeedInfos) {
+  /*
+   * Keep showing cached feeds on refetch errors (same as Home tabs). Checking
+   * `error` here used to hide the whole sidebar, including "More feeds".
+   */
+  if (!pinnedFeedInfos) {
     return null
   }
 

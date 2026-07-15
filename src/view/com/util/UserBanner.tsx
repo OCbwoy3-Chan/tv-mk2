@@ -26,7 +26,6 @@ import {
   applyImageTransforms,
   useImageCdnHost,
 } from '#/state/preferences/image-cdn-host'
-import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {EditImageDialog} from '#/view/com/composer/photos/EditImageDialog'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {atoms as a, tokens, useTheme} from '#/alf'
@@ -60,7 +59,6 @@ export function UserBanner({
   const [rawImage, setRawImage] = useState<ComposerImage | undefined>()
   const editImageDialogControl = useDialogControl()
   const fullsizeFormat = useFullsizeFormat()
-  const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
   const onOpenCamera = useCallback(async () => {
@@ -145,12 +143,7 @@ export function UserBanner({
                   <Image
                     testID="userBannerImage"
                     style={styles.bannerImage}
-                    source={{
-                      uri: applyImageTransforms(banner, {
-                        imageCdnHost,
-                        format: thumbnailFormat,
-                      }),
-                    }}
+                    source={{uri: banner}}
                     accessible={true}
                     accessibilityIgnoresInvertColors
                     useAppleWebpCodec
