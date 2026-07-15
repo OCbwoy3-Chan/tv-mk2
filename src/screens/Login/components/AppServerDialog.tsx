@@ -1,8 +1,10 @@
 import {useCallback, useImperativeHandle, useRef, useState} from 'react'
 import {Keyboard, View} from 'react-native'
 import {isDid} from '@atproto/api'
+import {reloadAppAsync} from 'expo'
 import {Trans, useLingui} from '@lingui/react/macro'
 
+import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
 import {cleanError, isNetworkError} from '#/lib/strings/errors'
 import {useNavigationDeduped} from '#/lib/hooks/useNavigationDeduped'
 import {logger} from '#/logger'
@@ -18,13 +20,13 @@ import {
   useSetAppViewSelection,
 } from '#/state/preferences/custom-appview-did'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {RestartRequiredPrompt} from '#/state/preferences/restart-required-prompt'
 import {findService, useDidDocument} from '#/state/queries/resolve-identity'
+import {useServiceQuery} from '#/state/queries/service'
 import {useSession, useSessionApi} from '#/state/session'
 import {getNativeOAuthClient} from '#/state/session/oauth-native-client'
 import {saveOAuthReturnUrl} from '#/state/session/oauth-web-return-url'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
-import {atoms as a, useTheme, web} from '#/alf'
+import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -33,9 +35,7 @@ import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as TextField from '#/components/forms/TextField'
 import {TinyChevronBottom_Stroke2_Corner0_Rounded as TinyChevronIcon} from '#/components/icons/Chevron'
 import {Globe_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
-import {PencilLine_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {Loader} from '#/components/Loader'
-import * as Prompt from '#/components/Prompt'
 import {Text} from '#/components/Typography'
 import {IS_NATIVE, IS_WEB} from '#/env'
 
@@ -54,12 +54,22 @@ type DialogInnerRef = {
 export type AppServerApplyMode = 'login' | 'reauth' | 'restart'
 
 /**
- * Top-of-form App server control (same layout as the old Hosting provider
- * button). Shows the active AppView title and opens the preset/custom dialog.
+ * Quiet App server control for the login form. Matches the Hosting provider
+ * ghost button style.
  */
-export function AppServerButton({onOpenDialog}: {onOpenDialog?: () => void}) {
+export function AppServerButton({
+  onOpenDialog,
+  inline = false,
+}: {
+  onOpenDialog?: () => void
+  /**
+   * Sit inline in a button row (skip the mobile self-centered layout).
+   */
+  inline?: boolean
+}) {
   const t = useTheme()
   const {t: l} = useLingui()
+  const {gtMobile} = useBreakpoints()
   const [did] = useCustomAppViewDid()
   const [url] = useCustomAppViewUrl()
   const control = Dialog.useDialogControl()
@@ -67,68 +77,26 @@ export function AppServerButton({onOpenDialog}: {onOpenDialog?: () => void}) {
 
   return (
     <>
-      <View>
-        <TextField.LabelText>
-          <Trans>App server</Trans>
-        </TextField.LabelText>
-        <Button
-          testID="selectAppServerButton"
-          label={title}
-          accessibilityHint={l`Opens a dialog to change the AppView used for feeds and profiles`}
-          variant="solid"
-          color="secondary"
-          style={[
-            a.w_full,
-            a.flex_row,
-            a.align_center,
-            a.rounded_sm,
-            a.py_sm,
-            a.pl_md,
-            a.pr_sm,
-            a.gap_xs,
-          ]}
-          onPress={() => {
-            Keyboard.dismiss()
-            onOpenDialog?.()
-            control.open()
-          }}>
-          {({hovered, pressed}) => {
-            const interacted = hovered || pressed
-            return (
-              <>
-                <View style={a.pr_xs}>
-                  <Globe
-                    size="md"
-                    fill={
-                      interacted
-                        ? t.palette.contrast_800
-                        : t.palette.contrast_500
-                    }
-                  />
-                </View>
-                <Text style={[a.text_md]}>{title}</Text>
-                <View
-                  style={[
-                    a.rounded_sm,
-                    interacted
-                      ? t.atoms.bg_contrast_300
-                      : t.atoms.bg_contrast_100,
-                    {marginLeft: 'auto', padding: 6},
-                  ]}>
-                  <PencilIcon
-                    size="sm"
-                    style={{
-                      color: interacted
-                        ? t.palette.contrast_800
-                        : t.palette.contrast_500,
-                    }}
-                  />
-                </View>
-              </>
-            )
-          }}
-        </Button>
-      </View>
+      <Button
+        testID="selectAppServerButton"
+        label={l`App server: ${title}`}
+        accessibilityHint={l`Opens a dialog to change the AppView used for feeds and profiles`}
+        style={[!inline && !gtMobile && [a.mt_auto, a.mb_sm, a.self_center]]}
+        size="small"
+        color="secondary"
+        variant="ghost"
+        onPress={() => {
+          Keyboard.dismiss()
+          onOpenDialog?.()
+          control.open()
+        }}>
+        <ButtonText
+          style={[t.atoms.text_contrast_medium, a.font_normal]}
+          numberOfLines={1}>
+          {title}
+        </ButtonText>
+        <TinyChevronIcon width={8} style={[t.atoms.text_contrast_medium]} />
+      </Button>
       <AppServerDialog control={control} applyMode="login" />
     </>
   )
@@ -144,10 +112,10 @@ export function AppServerHeaderControl() {
   const {currentAccount} = useSession()
   const {login, logoutCurrentAccount} = useSessionApi()
   const {requestSwitchToAccount} = useLoggedOutViewControls()
+  const prepareSettingsSyncForRestart = usePrepareSettingsSyncForRestart()
   const [did] = useCustomAppViewDid()
   const [url] = useCustomAppViewUrl()
   const control = Dialog.useDialogControl()
-  const restartPromptControl = Prompt.usePromptControl()
   const title = getActiveAppViewTitle(did, url)
   const isOauth = !!currentAccount?.isOauthSession
   const applyMode: AppServerApplyMode = isOauth ? 'reauth' : 'restart'
@@ -156,7 +124,12 @@ export function AppServerHeaderControl() {
     if (!currentAccount) return
 
     if (applyMode === 'restart') {
-      restartPromptControl.open()
+      await prepareSettingsSyncForRestart()
+      if (IS_WEB) {
+        window.location.reload()
+      } else {
+        await reloadAppAsync()
+      }
       return
     }
 
@@ -201,8 +174,8 @@ export function AppServerHeaderControl() {
     currentAccount,
     login,
     logoutCurrentAccount,
+    prepareSettingsSyncForRestart,
     requestSwitchToAccount,
-    restartPromptControl,
   ])
 
   return (
@@ -234,7 +207,6 @@ export function AppServerHeaderControl() {
         applyMode={applyMode}
         onApply={() => void onApply()}
       />
-      <RestartRequiredPrompt control={restartPromptControl} />
     </>
   )
 }
@@ -358,6 +330,25 @@ function AppServerDialogInner({
   const doc = useDidDocument({did: derivedDid ?? ''})
   const bskyAppViewService =
     doc.data && findService(doc.data, '#bsky_appview', 'BskyAppView')
+  const atprotoPdsService =
+    doc.data &&
+    findService(doc.data, '#atproto_pds', 'AtprotoPersonalDataServer')
+
+  /*
+   * When the DID doc has no AppView, probe describeServer so we can tell PDS
+   * hosts (e.g. bsky.social) apart from typos / unrelated sites.
+   */
+  const hasPdsInDidDoc =
+    !!atprotoPdsService?.serviceEndpoint &&
+    !bskyAppViewService?.serviceEndpoint
+  const shouldProbePds =
+    preset === 'custom' &&
+    !!normalizedCustomUrl &&
+    !doc.isLoading &&
+    !bskyAppViewService?.serviceEndpoint &&
+    !hasPdsInDidDoc
+  const pdsProbe = useServiceQuery(shouldProbePds ? normalizedCustomUrl : '')
+  const looksLikePds = hasPdsInDidDoc || (shouldProbePds && pdsProbe.isSuccess)
 
   const customIsValid =
     preset !== 'custom' ||
@@ -455,7 +446,7 @@ function AppServerDialogInner({
               <TextField.Icon icon={Globe} />
               <Dialog.Input
                 testID="customAppViewUrlInput"
-                value={customUrl}
+                defaultValue={customUrl}
                 onChangeText={setCustomUrl}
                 label="https://api.example.com"
                 accessibilityLabelledBy="appview-url-label"
@@ -464,7 +455,9 @@ function AppServerDialogInner({
                 autoCorrect={false}
               />
             </TextField.Root>
-            {!!normalizedCustomUrl && !!derivedDid && doc.isLoading && (
+            {!!normalizedCustomUrl &&
+              !!derivedDid &&
+              (doc.isLoading || (shouldProbePds && pdsProbe.isLoading)) && (
               <View style={[a.flex_row, a.align_center, a.gap_sm, a.mt_sm]}>
                 <Loader size="sm" />
                 <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
@@ -475,13 +468,22 @@ function AppServerDialogInner({
             {!!normalizedCustomUrl &&
               !!derivedDid &&
               !doc.isLoading &&
+              !(shouldProbePds && pdsProbe.isLoading) &&
               !bskyAppViewService?.serviceEndpoint && (
                 <View style={[a.mt_sm]}>
                   <Admonition type="error">
-                    <Trans>
-                      Couldn’t find a #bsky_appview service at this URL. Check
-                      the address and try again.
-                    </Trans>
+                    {looksLikePds ? (
+                      <Trans>
+                        This looks like a hosting provider (PDS) address, not an
+                        AppView. Your PDS is detected from your handle, or set 
+                        separately under Hosting provider; don’t enter it here!
+                      </Trans>
+                    ) : (
+                      <Trans>
+                        Couldn’t find a #bsky_appview service at this URL. Check
+                        the address and try again.
+                      </Trans>
+                    )}
                   </Admonition>
                 </View>
               )}

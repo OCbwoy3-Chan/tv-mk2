@@ -1,19 +1,34 @@
+import {type ComAtprotoServerDescribeServer} from '@atproto/api'
 import {useQuery} from '@tanstack/react-query'
 
-import {Agent} from '../session/agent'
+import {STALE} from '#/state/queries'
 
-const RQKEY_ROOT = 'service'
+const RQKEY_ROOT = 'service-describe'
 export const RQKEY = (serviceUrl: string) => [RQKEY_ROOT, serviceUrl]
 
-export function useServiceQuery(serviceUrl: string) {
+export function useServiceQuery(
+  serviceUrl: string,
+  opts?: {enabled?: boolean},
+) {
   return useQuery({
     queryKey: RQKEY(serviceUrl),
-    queryFn: async () => {
-      const agent = new Agent(null, {service: serviceUrl})
-      const res = await agent.com.atproto.server.describeServer()
-      return res.data
+    staleTime: STALE.HOURS.ONE,
+    queryFn: async ({signal}) => {
+      const base = serviceUrl.replace(/\/+$/, '')
+      const res = await fetch(
+        `${base}/xrpc/com.atproto.server.describeServer`,
+        {
+          signal,
+          credentials: 'omit',
+          headers: {accept: 'application/json'},
+        },
+      )
+      if (!res.ok) {
+        throw new Error(`describeServer failed with HTTP ${res.status}`)
+      }
+      return (await res.json()) as ComAtprotoServerDescribeServer.OutputSchema
     },
-    enabled: isValidUrl(serviceUrl),
+    enabled: isValidUrl(serviceUrl) && (opts?.enabled ?? true),
   })
 }
 

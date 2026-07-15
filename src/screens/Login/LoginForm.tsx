@@ -85,7 +85,6 @@ export const LoginForm = ({
 
   return (
     <FormContainer testID="loginForm" titleText={<Trans>Sign in</Trans>}>
-      <AppServerButton />
       <View
         style={[a.flex_row, a.mb_sm, a.rounded_sm, a.overflow_hidden]}
         accessibilityRole="tablist">
@@ -284,6 +283,7 @@ function OAuthLoginFields({
           </ButtonText>
         </Button>
       </View>
+      <AppServerButton />
     </>
   )
 }
@@ -716,6 +716,10 @@ function LegacyLoginFields({
               </ButtonText>
             </Button>
 
+            <View style={[a.flex_shrink, a.justify_center]}>
+              <AppServerButton inline />
+            </View>
+
             <View style={[a.flex_shrink, a.justify_center, a.ml_auto]}>
               <HostingProviderIndicator
                 state={hostingProvider.state}
@@ -778,10 +782,13 @@ function LegacyLoginFields({
       )}
 
       {!gtMobile && (
-        <HostingProviderIndicator
-          state={hostingProvider.state}
-          onPress={() => serverInputControl.open()}
-        />
+        <>
+          <AppServerButton />
+          <HostingProviderIndicator
+            state={hostingProvider.state}
+            onPress={() => serverInputControl.open()}
+          />
+        </>
       )}
     </>
   )

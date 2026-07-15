@@ -87,7 +87,6 @@ export const LoginForm = ({
 
   return (
     <FormContainer testID="loginForm" titleText={<Trans>Sign in</Trans>}>
-      <AppServerButton />
       <View
         style={[a.flex_row, a.mb_sm, a.rounded_sm, a.overflow_hidden]}
         accessibilityRole="tablist">
@@ -246,7 +245,7 @@ function OAuthLoginFields({
         />
       </View>
       {error && <Admonition.Admonition type="error">{error}</Admonition.Admonition>}
-      <View style={[a.flex_row, a.align_center, a.pt_md]}>
+      <View style={[a.flex_row, a.align_center, a.gap_sm, a.pt_md]}>
         <Button
           label={l`Back`}
           variant="solid"
@@ -257,6 +256,7 @@ function OAuthLoginFields({
             <Trans>Back</Trans>
           </ButtonText>
         </Button>
+        <AppServerButton inline />
         <View style={a.flex_1} />
         <Button
           testID="loginNextButton"
@@ -684,6 +684,9 @@ function LegacyLoginFields({
                 <Trans>Back</Trans>
               </ButtonText>
             </Button>
+            <View style={[a.flex_shrink, a.justify_center]}>
+              <AppServerButton inline />
+            </View>
             <View style={[a.flex_shrink, a.justify_center, a.ml_auto]}>
               <HostingProviderIndicator
                 state={hostingProvider.state}
@@ -732,10 +735,13 @@ function LegacyLoginFields({
       </View>
 
       {!gtMobile && (
-        <HostingProviderIndicator
-          state={hostingProvider.state}
-          onPress={() => serverInputControl.open()}
-        />
+        <>
+          <AppServerButton />
+          <HostingProviderIndicator
+            state={hostingProvider.state}
+            onPress={() => serverInputControl.open()}
+          />
+        </>
       )}
     </>
   )
