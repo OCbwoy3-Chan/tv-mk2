@@ -17,8 +17,9 @@ import {
   type Shadow,
   usePostShadow,
 } from '#/state/cache/post-shadow'
-import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useCompactPosts} from '#/state/preferences/compact-posts'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
+import {useShowThreadPostIndicators} from '#/state/preferences/show-thread-post-indicators'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
@@ -40,8 +41,8 @@ import {
   GalleryBleed,
   maybeApplyGalleryOffsetStyles,
 } from '#/components/images/Gallery'
-import {PostAlerts} from '#/components/moderation/PostAlerts'
 import {LabelsOnMyPost} from '#/components/moderation/LabelsOnMe'
+import {PostAlerts} from '#/components/moderation/PostAlerts'
 import {PostHider} from '#/components/moderation/PostHider'
 import {type AppModerationCause} from '#/components/Pills'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
@@ -225,6 +226,10 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   const {openComposer} = useOpenComposer()
   const {currentAccount} = useSession()
   const compactPosts = useCompactPosts()
+  const showThreadPostIndicators = useShowThreadPostIndicators()
+  const resolvedThreadPosition = showThreadPostIndicators
+    ? threadPosition
+    : undefined
   const avatarSize = compactPosts ? 34 : LINEAR_AVI_WIDTH
 
   const post = item.value.post
@@ -366,8 +371,10 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                     authorHandle={post.author.handle}
                     shouldProxyLinks={true}
                     trailing={
-                      threadPosition ? (
-                        <ThreadPositionChip threadPosition={threadPosition} />
+                      resolvedThreadPosition ? (
+                        <ThreadPositionChip
+                          threadPosition={resolvedThreadPosition}
+                        />
                       ) : undefined
                     }
                   />
@@ -378,11 +385,11 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                     />
                   )}
                 </View>
-              ) : threadPosition ? (
+              ) : resolvedThreadPosition ? (
                 // Text-less posts (e.g. image-only) still show their position
                 // so the numbering reads without gaps.
                 <View style={[a.mb_2xs]}>
-                  <ThreadPositionChip threadPosition={threadPosition} />
+                  <ThreadPositionChip threadPosition={resolvedThreadPosition} />
                 </View>
               ) : undefined}
               <TranslatedPost hideTranslateLink post={post} />

@@ -38,6 +38,7 @@ import {
   useRepostsMetricsDisplay,
   useSavesMetricsDisplay,
 } from '#/state/preferences/metrics-display-preference'
+import {useShowThreadPostIndicators} from '#/state/preferences/show-thread-post-indicators'
 import {useShowViaClient} from '#/state/preferences/show-via-client'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
@@ -247,6 +248,10 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const feedFeedback = useFeedFeedback(postSource?.feedSourceInfo, hasSession)
   const compactPosts = useCompactPosts()
   const isCompactPosts = !!compactPosts
+  const showThreadPostIndicators = useShowThreadPostIndicators()
+  const resolvedThreadPosition = showThreadPostIndicators
+    ? threadPosition
+    : undefined
   const avatarSize = isCompactPosts ? 34 : 42
   const sidePadding = isCompactPosts ? OUTER_SPACE - 2 : OUTER_SPACE
 
@@ -493,189 +498,191 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
               />
             )}
             <View style={[!inReader && (isCompactPosts ? a.pb_2xs : a.pb_sm)]}>
-            <LabelsOnMyPost
-              post={post}
-              style={[isCompactPosts ? a.pb_2xs : a.pb_sm]}
-            />
-            <ContentHider
-              modui={moderation.ui('contentView')}
-              ignoreMute
-              childContainerStyle={[isCompactPosts ? a.pt_2xs : a.pt_sm]}>
-              <PostAlerts
+              <LabelsOnMyPost
                 post={post}
-                modui={moderation.ui('contentView')}
-                view="expanded"
-                includeMute
                 style={[isCompactPosts ? a.pb_2xs : a.pb_sm]}
-                additionalCauses={additionalPostAlerts}
               />
-              {richText?.text ? (
-                <RichText
-                  enableTags
-                  selectable
-                  value={richText}
-                  style={[a.flex_1, isCompactPosts ? a.text_md : a.text_lg]}
-                  authorHandle={post.author.handle}
-                  shouldProxyLinks={true}
-                  trailing={
-                    threadPosition ? (
-                      <ThreadPositionChip threadPosition={threadPosition} />
-                    ) : undefined
-                  }
+              <ContentHider
+                modui={moderation.ui('contentView')}
+                ignoreMute
+                childContainerStyle={[isCompactPosts ? a.pt_2xs : a.pt_sm]}>
+                <PostAlerts
+                  post={post}
+                  modui={moderation.ui('contentView')}
+                  view="expanded"
+                  includeMute
+                  style={[isCompactPosts ? a.pb_2xs : a.pb_sm]}
+                  additionalCauses={additionalPostAlerts}
                 />
-              ) : threadPosition ? (
-                // Text-less anchors (e.g. image-only) still show their
-                // position so the numbering reads without gaps.
-                <ThreadPositionChip threadPosition={threadPosition} />
-              ) : undefined}
-              <TranslatedPost
-                post={post}
-                postTextStyle={[isCompactPosts ? a.text_md : a.text_lg]}
-              />
-              {post.embed && (
-                <View
-                  style={[
-                    inReader
-                      ? a.pb_2xs
-                      : richText?.text
-                        ? isCompactPosts
-                          ? a.py_2xs
-                          : a.py_xs
-                        : [],
-                  ]}>
-                  <Embed
-                    embed={post.embed}
-                    moderation={moderation}
-                    viewContext={PostEmbedViewContext.ThreadHighlighted}
-                    onOpen={onOpenEmbed}
-                    post={post}
-                    feedDescriptor={feedFeedback.feedDescriptor}
+                {richText?.text ? (
+                  <RichText
+                    enableTags
+                    selectable
+                    value={richText}
+                    style={[a.flex_1, isCompactPosts ? a.text_md : a.text_lg]}
+                    authorHandle={post.author.handle}
+                    shouldProxyLinks={true}
+                    trailing={
+                      resolvedThreadPosition ? (
+                        <ThreadPositionChip
+                          threadPosition={resolvedThreadPosition}
+                        />
+                      ) : undefined
+                    }
                   />
-                </View>
+                ) : resolvedThreadPosition ? (
+                  // Text-less anchors (e.g. image-only) still show their
+                  // position so the numbering reads without gaps.
+                  <ThreadPositionChip threadPosition={resolvedThreadPosition} />
+                ) : undefined}
+                <TranslatedPost
+                  post={post}
+                  postTextStyle={[isCompactPosts ? a.text_md : a.text_lg]}
+                />
+                {post.embed && (
+                  <View
+                    style={[
+                      inReader
+                        ? a.pb_2xs
+                        : richText?.text
+                          ? isCompactPosts
+                            ? a.py_2xs
+                            : a.py_xs
+                          : [],
+                    ]}>
+                    <Embed
+                      embed={post.embed}
+                      moderation={moderation}
+                      viewContext={PostEmbedViewContext.ThreadHighlighted}
+                      onOpen={onOpenEmbed}
+                      post={post}
+                      feedDescriptor={feedFeedback.feedDescriptor}
+                    />
+                  </View>
+                )}
+              </ContentHider>
+              {!inReader && (
+                <>
+                  <ExpandedPostDetails
+                    post={item.value.post}
+                    isThreadAuthor={isThreadAuthor}
+                    compactPosts={isCompactPosts}
+                  />
+                  {shouldShowThreadExpandedMetric(
+                    repostsMetricsDisplay,
+                    post.repostCount,
+                  ) ||
+                  shouldShowThreadExpandedMetric(
+                    likesMetricsDisplay,
+                    post.likeCount,
+                  ) ||
+                  shouldShowThreadExpandedMetric(
+                    quotesMetricsDisplay,
+                    post.quoteCount,
+                  ) ||
+                  shouldShowThreadExpandedMetric(
+                    savesMetricsDisplay,
+                    post.bookmarkCount,
+                  ) ? (
+                    // Show this section unless we're *sure* it has no engagement.
+                    <View
+                      style={[
+                        a.flex_row,
+                        a.flex_wrap,
+                        a.align_center,
+                        {
+                          rowGap: a.gap_sm.gap,
+                          columnGap: a.gap_lg.gap,
+                        },
+                        a.border_t,
+                        a.border_b,
+                        isCompactPosts ? a.mt_sm : a.mt_md,
+                        isCompactPosts ? a.py_sm : a.py_md,
+                        t.atoms.border_contrast_low,
+                      ]}>
+                      {shouldShowThreadExpandedMetric(
+                        repostsMetricsDisplay,
+                        post.repostCount,
+                      ) ? (
+                        <Link to={repostsHref} label={l`Reposts of this post`}>
+                          <ThreadExpandedMetricText
+                            testID="repostCount-expanded"
+                            display={repostsMetricsDisplay}
+                            count={post.repostCount!}
+                            one="repost"
+                            other="reposts"
+                          />
+                        </Link>
+                      ) : null}
+                      {shouldShowThreadExpandedMetric(
+                        quotesMetricsDisplay,
+                        post.quoteCount,
+                      ) && !post.viewer?.embeddingDisabled ? (
+                        <Link to={quotesHref} label={l`Quotes of this post`}>
+                          <ThreadExpandedMetricText
+                            testID="quoteCount-expanded"
+                            display={quotesMetricsDisplay}
+                            count={post.quoteCount!}
+                            one="quote"
+                            other="quotes"
+                          />
+                        </Link>
+                      ) : null}
+                      {shouldShowThreadExpandedMetric(
+                        likesMetricsDisplay,
+                        post.likeCount,
+                      ) ? (
+                        <Link to={likesHref} label={l`Likes on this post`}>
+                          <ThreadExpandedMetricText
+                            testID="likeCount-expanded"
+                            display={likesMetricsDisplay}
+                            count={post.likeCount!}
+                            one="like"
+                            other="likes"
+                          />
+                        </Link>
+                      ) : null}
+                      {shouldShowThreadExpandedMetric(
+                        savesMetricsDisplay,
+                        post.bookmarkCount,
+                      ) ? (
+                        <ThreadExpandedMetricText
+                          testID="bookmarkCount-expanded"
+                          display={savesMetricsDisplay}
+                          count={post.bookmarkCount!}
+                          one="save"
+                          other="saves"
+                        />
+                      ) : null}
+                    </View>
+                  ) : null}
+                  <View
+                    style={[
+                      isCompactPosts ? a.pt_2xs : a.pt_sm,
+                      a.pb_2xs,
+                      !isCompactPosts && {
+                        marginLeft: -5,
+                      },
+                    ]}>
+                    <FeedFeedbackProvider value={feedFeedback}>
+                      <PostControls
+                        big={!isCompactPosts}
+                        variant={isCompactPosts ? 'compact' : undefined}
+                        post={postShadow}
+                        record={record}
+                        richText={richText}
+                        onPressReply={onPressReply}
+                        logContext="PostThreadItem"
+                        threadgateRecord={threadgateRecord}
+                        feedContext={postSource?.post?.feedContext}
+                        reqId={postSource?.post?.reqId}
+                        viaRepost={viaRepost}
+                      />
+                    </FeedFeedbackProvider>
+                  </View>
+                </>
               )}
-            </ContentHider>
-            {!inReader && (
-              <>
-                <ExpandedPostDetails
-              post={item.value.post}
-              isThreadAuthor={isThreadAuthor}
-              compactPosts={isCompactPosts}
-            />
-            {shouldShowThreadExpandedMetric(
-              repostsMetricsDisplay,
-              post.repostCount,
-            ) ||
-            shouldShowThreadExpandedMetric(
-              likesMetricsDisplay,
-              post.likeCount,
-            ) ||
-            shouldShowThreadExpandedMetric(
-              quotesMetricsDisplay,
-              post.quoteCount,
-            ) ||
-            shouldShowThreadExpandedMetric(
-              savesMetricsDisplay,
-              post.bookmarkCount,
-            ) ? (
-              // Show this section unless we're *sure* it has no engagement.
-              <View
-                style={[
-                  a.flex_row,
-                  a.flex_wrap,
-                  a.align_center,
-                  {
-                    rowGap: a.gap_sm.gap,
-                    columnGap: a.gap_lg.gap,
-                  },
-                  a.border_t,
-                  a.border_b,
-                  isCompactPosts ? a.mt_sm : a.mt_md,
-                  isCompactPosts ? a.py_sm : a.py_md,
-                  t.atoms.border_contrast_low,
-                ]}>
-                {shouldShowThreadExpandedMetric(
-                  repostsMetricsDisplay,
-                  post.repostCount,
-                ) ? (
-                  <Link to={repostsHref} label={l`Reposts of this post`}>
-                    <ThreadExpandedMetricText
-                      testID="repostCount-expanded"
-                      display={repostsMetricsDisplay}
-                      count={post.repostCount!}
-                      one="repost"
-                      other="reposts"
-                    />
-                  </Link>
-                ) : null}
-                {shouldShowThreadExpandedMetric(
-                  quotesMetricsDisplay,
-                  post.quoteCount,
-                ) && !post.viewer?.embeddingDisabled ? (
-                  <Link to={quotesHref} label={l`Quotes of this post`}>
-                    <ThreadExpandedMetricText
-                      testID="quoteCount-expanded"
-                      display={quotesMetricsDisplay}
-                      count={post.quoteCount!}
-                      one="quote"
-                      other="quotes"
-                    />
-                  </Link>
-                ) : null}
-                {shouldShowThreadExpandedMetric(
-                  likesMetricsDisplay,
-                  post.likeCount,
-                ) ? (
-                  <Link to={likesHref} label={l`Likes on this post`}>
-                    <ThreadExpandedMetricText
-                      testID="likeCount-expanded"
-                      display={likesMetricsDisplay}
-                      count={post.likeCount!}
-                      one="like"
-                      other="likes"
-                    />
-                  </Link>
-                ) : null}
-                {shouldShowThreadExpandedMetric(
-                  savesMetricsDisplay,
-                  post.bookmarkCount,
-                ) ? (
-                  <ThreadExpandedMetricText
-                    testID="bookmarkCount-expanded"
-                    display={savesMetricsDisplay}
-                    count={post.bookmarkCount!}
-                    one="save"
-                    other="saves"
-                  />
-                ) : null}
-              </View>
-            ) : null}
-            <View
-              style={[
-                isCompactPosts ? a.pt_2xs : a.pt_sm,
-                a.pb_2xs,
-                !isCompactPosts && {
-                  marginLeft: -5,
-                },
-              ]}>
-              <FeedFeedbackProvider value={feedFeedback}>
-                <PostControls
-                  big={!isCompactPosts}
-                  variant={isCompactPosts ? 'compact' : undefined}
-                  post={postShadow}
-                  record={record}
-                  richText={richText}
-                  onPressReply={onPressReply}
-                  logContext="PostThreadItem"
-                  threadgateRecord={threadgateRecord}
-                  feedContext={postSource?.post?.feedContext}
-                  reqId={postSource?.post?.reqId}
-                  viaRepost={viaRepost}
-                />
-              </FeedFeedbackProvider>
-            </View>
-              </>
-            )}
-            <DebugFieldDisplay subject={post} />
+              <DebugFieldDisplay subject={post} />
             </View>
             {readerSeam && (
               <ReaderSeam

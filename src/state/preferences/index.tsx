@@ -42,7 +42,6 @@ import {Provider as LoadSmallPNGsProvider} from './load-small-pngs'
 import {MetricsDisplayPreferencesProvider} from './metrics-display-preference'
 import {Provider as NoDiscoverProvider} from './no-discover-fallback'
 import {Provider as OmitViaFieldProvider} from './omit-via-field'
-import {Provider as TidSuffixProvider} from './tid-suffix'
 import {Provider as OpenRouterProvider} from './openrouter'
 import {Provider as PdsLabelProvider} from './pds-label'
 import {Provider as PlcDirectoryProvider} from './plc-directory'
@@ -56,10 +55,12 @@ import {Provider as ShowGermDmButtonProvider} from './show-germ-dm-button'
 import {Provider as ShowLinkInHandleProvider} from './show-link-in-handle'
 import {Provider as ShowLinkInHandleOnlyOnWorkingLinksProvider} from './show-link-in-handle-only-on-working-links'
 import {Provider as ShowStandardLabelerProfileProvider} from './show-standard-labeler-profile'
+import {Provider as ShowThreadPostIndicatorsProvider} from './show-thread-post-indicators'
 import {Provider as ShowViaClientProvider} from './show-via-client'
 import {Provider as SixSevenCelebrationProvider} from './six-seven-celebration'
 import {Provider as SubtitlesProvider} from './subtitles'
 import {Provider as ThumbnailFormatProvider} from './thumbnail-format'
+import {Provider as TidSuffixProvider} from './tid-suffix'
 import {Provider as TranslationServicePreferenceProvider} from './translation-service-preference'
 import {Provider as TrendingSettingsProvider} from './trending'
 import {Provider as UseHandleInLinksProvider} from './use-handle-in-links'
@@ -115,7 +116,6 @@ export {useImageCdnHost, useSetImageCdnHost} from './image-cdn-host'
 export {useLabelDefinitions} from './label-defs'
 export {useLanguagePrefs, useLanguagePrefsApi} from './languages'
 export {useOmitViaField, useSetOmitViaField} from './omit-via-field'
-export {useTidSuffix, useSetTidSuffix} from './tid-suffix'
 export {
   useOpenRouterApiKey,
   useOpenRouterConfigured,
@@ -144,7 +144,12 @@ export {
   useSetShowStandardLabelerProfile,
   useShowStandardLabelerProfile,
 } from './show-standard-labeler-profile'
+export {
+  useSetShowThreadPostIndicators,
+  useShowThreadPostIndicators,
+} from './show-thread-post-indicators'
 export {useSetSubtitlesEnabled, useSubtitlesEnabled} from './subtitles'
+export {useSetTidSuffix, useTidSuffix} from './tid-suffix'
 export {
   useSetTranslationServicePreference,
   useTranslationServicePreference,
@@ -193,55 +198,57 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                 <MetricsDisplayPreferencesProvider>
                                                                                   <ShowFollowsYouBadgeProvider>
                                                                                     <ShowFollowedByOnOwnProfileProvider>
-                                                                                    <ShowAvatarFollowButtonProvider>
-                                                                                      <ShowGermDmButtonProvider>
-                                                                                        <ShowStandardLabelerProfileProvider>
-                                                                                        <HideSimilarAccountsRecommProvider>
-                                                                                          <HideScaryFollowButtonsProvider>
-                                                                                            <ConfirmFollowUnfollowProvider>
-                                                                                              <HideUnreplyablePostsProvider>
-                                                                                                <CompactPostsProvider>
-                                                                                                  <EnableSquareAvatarsProvider>
-                                                                                                    <EnableSquareButtonsProvider>
-                                                                                                      <AutoCompactAccountSwitcherProvider>
-                                                                                                        <CompactAccountSwitcherProvider>
-                                                                                                          <ShowViaClientProvider>
-                                                                                                            <SixSevenCelebrationProvider>
-                                                                                                              <PostNameReplacementProvider>
-                                                                                                              <DisableVerifyEmailReminderProvider>
-                                                                                                                <TranslationServicePreferenceProvider>
-                                                                                                                  <OpenRouterProvider>
-                                                                                                                    <DisableComposerPromptProvider>
-                                                                                                                      <DisableTopOfFeedButtonProvider>
-                                                                                                                        <DiscoverContextEnabledProvider>
-                                                                                                                          <OmitViaFieldProvider>
-                                                                                                                            <TidSuffixProvider>
-                                                                                                                              {
-                                                                                                                                children
-                                                                                                                              }
-                                                                                                                            </TidSuffixProvider>
-                                                                                                                          </OmitViaFieldProvider>
-                                                                                                                        </DiscoverContextEnabledProvider>
-                                                                                                                      </DisableTopOfFeedButtonProvider>
-                                                                                                                    </DisableComposerPromptProvider>
-                                                                                                                  </OpenRouterProvider>
-                                                                                                                </TranslationServicePreferenceProvider>
-                                                                                                              </DisableVerifyEmailReminderProvider>
-                                                                                                              </PostNameReplacementProvider>
-                                                                                                            </SixSevenCelebrationProvider>
-                                                                                                          </ShowViaClientProvider>
-                                                                                                        </CompactAccountSwitcherProvider>
-                                                                                                      </AutoCompactAccountSwitcherProvider>
-                                                                                                    </EnableSquareButtonsProvider>
-                                                                                                  </EnableSquareAvatarsProvider>
-                                                                                                </CompactPostsProvider>
-                                                                                              </HideUnreplyablePostsProvider>
-                                                                                            </ConfirmFollowUnfollowProvider>
-                                                                                          </HideScaryFollowButtonsProvider>
-                                                                                        </HideSimilarAccountsRecommProvider>
-                                                                                        </ShowStandardLabelerProfileProvider>
-                                                                                      </ShowGermDmButtonProvider>
-                                                                                    </ShowAvatarFollowButtonProvider>
+                                                                                      <ShowThreadPostIndicatorsProvider>
+                                                                                        <ShowAvatarFollowButtonProvider>
+                                                                                          <ShowGermDmButtonProvider>
+                                                                                            <ShowStandardLabelerProfileProvider>
+                                                                                              <HideSimilarAccountsRecommProvider>
+                                                                                                <HideScaryFollowButtonsProvider>
+                                                                                                  <ConfirmFollowUnfollowProvider>
+                                                                                                    <HideUnreplyablePostsProvider>
+                                                                                                      <CompactPostsProvider>
+                                                                                                        <EnableSquareAvatarsProvider>
+                                                                                                          <EnableSquareButtonsProvider>
+                                                                                                            <AutoCompactAccountSwitcherProvider>
+                                                                                                              <CompactAccountSwitcherProvider>
+                                                                                                                <ShowViaClientProvider>
+                                                                                                                  <SixSevenCelebrationProvider>
+                                                                                                                    <PostNameReplacementProvider>
+                                                                                                                      <DisableVerifyEmailReminderProvider>
+                                                                                                                        <TranslationServicePreferenceProvider>
+                                                                                                                          <OpenRouterProvider>
+                                                                                                                            <DisableComposerPromptProvider>
+                                                                                                                              <DisableTopOfFeedButtonProvider>
+                                                                                                                                <DiscoverContextEnabledProvider>
+                                                                                                                                  <OmitViaFieldProvider>
+                                                                                                                                    <TidSuffixProvider>
+                                                                                                                                      {
+                                                                                                                                        children
+                                                                                                                                      }
+                                                                                                                                    </TidSuffixProvider>
+                                                                                                                                  </OmitViaFieldProvider>
+                                                                                                                                </DiscoverContextEnabledProvider>
+                                                                                                                              </DisableTopOfFeedButtonProvider>
+                                                                                                                            </DisableComposerPromptProvider>
+                                                                                                                          </OpenRouterProvider>
+                                                                                                                        </TranslationServicePreferenceProvider>
+                                                                                                                      </DisableVerifyEmailReminderProvider>
+                                                                                                                    </PostNameReplacementProvider>
+                                                                                                                  </SixSevenCelebrationProvider>
+                                                                                                                </ShowViaClientProvider>
+                                                                                                              </CompactAccountSwitcherProvider>
+                                                                                                            </AutoCompactAccountSwitcherProvider>
+                                                                                                          </EnableSquareButtonsProvider>
+                                                                                                        </EnableSquareAvatarsProvider>
+                                                                                                      </CompactPostsProvider>
+                                                                                                    </HideUnreplyablePostsProvider>
+                                                                                                  </ConfirmFollowUnfollowProvider>
+                                                                                                </HideScaryFollowButtonsProvider>
+                                                                                              </HideSimilarAccountsRecommProvider>
+                                                                                            </ShowStandardLabelerProfileProvider>
+                                                                                          </ShowGermDmButtonProvider>
+                                                                                        </ShowAvatarFollowButtonProvider>
+                                                                                      </ShowThreadPostIndicatorsProvider>
                                                                                     </ShowFollowedByOnOwnProfileProvider>
                                                                                   </ShowFollowsYouBadgeProvider>
                                                                                 </MetricsDisplayPreferencesProvider>

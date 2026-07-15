@@ -8,9 +8,9 @@ import {Span} from '#/components/Typography'
  * `trailing` prop so it flows with the last line of text. Not translated: it
  * is purely numeric.
  *
- * Uses Span (raw RN Text) rather than our Text component so we do not apply
- * an absolute lineHeight from leading_snug + text_sm, which on native collapses
- * spacing for the whole parent paragraph.
+ * Uses Span (raw RN Text) with text_sm for a smaller indicator, but no
+ * lineHeight - our Text component would apply absolute leading_snug and
+ * collapse spacing for the whole parent paragraph on native.
  */
 export function ThreadPositionChip({
   threadPosition,

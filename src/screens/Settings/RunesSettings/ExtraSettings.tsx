@@ -192,7 +192,7 @@ function TidSuffixDialog({control}: {control: Dialog.DialogControlProps}) {
   const tidSuffix = useTidSuffix()
   const [suffix, setSuffix] = useState(tidSuffix ?? '')
   const setTidSuffix = useSetTidSuffix()
-  const isReset = suffix.trim().length === 0
+  const isClear = suffix.trim().length === 0
 
   const submit = () => {
     const trimmedSuffix = suffix.trim().slice(0, MAX_TID_SUFFIX_LEN)
@@ -230,13 +230,13 @@ function TidSuffixDialog({control}: {control: Dialog.DialogControlProps}) {
 
           <View style={IS_WEB && [a.flex_row, a.justify_end]}>
             <Button
-              label={isReset ? l`Reset` : l`Save`}
+              label={isClear ? l`Clear` : l`Save`}
               size="large"
               onPress={() => void submit()}
               variant="solid"
-              color={isReset ? 'secondary' : 'primary'}>
+              color={isClear ? 'secondary' : 'primary'}>
               <ButtonText>
-                {isReset ? <Trans>Reset</Trans> : <Trans>Save</Trans>}
+                {isClear ? <Trans>Clear</Trans> : <Trans>Save</Trans>}
               </ButtonText>
             </Button>
           </View>

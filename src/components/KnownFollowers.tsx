@@ -345,7 +345,7 @@ function FollowedByExactText({
     return (
       <Trans>
         Followed by{' '}
-        <Plural value={serverCount} one="# person" other="# people" />,
+        <Plural value={serverCount} one="# person" other="# others" />,
         including{' '}
         <Text emoji key={slice[0].profile.did} style={textStyle}>
           {slice[0].profile.displayName}
@@ -366,7 +366,7 @@ function FollowedByExactText({
     return (
       <Trans>
         Followed by{' '}
-        <Plural value={serverCount} one="# person" other="# people" />,
+        <Plural value={serverCount} one="# person" other="# others" />,
         including{' '}
         <Text emoji key={slice[0].profile.did} style={textStyle}>
           {slice[0].profile.displayName}
@@ -382,7 +382,7 @@ function FollowedByExactText({
   return (
     <Trans>
       Followed by{' '}
-      <Plural value={serverCount} one="# person" other="# people" />, including{' '}
+      <Plural value={serverCount} one="# person" other="# others" />, including{' '}
       <Text emoji key={slice[0].profile.did} style={textStyle}>
         {slice[0].profile.displayName}
       </Text>

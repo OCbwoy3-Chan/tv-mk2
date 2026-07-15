@@ -535,7 +535,6 @@ export function BaseRadio({
   'hovered' | 'focused' | 'selected' | 'disabled' | 'isInvalid'
 >) {
   const t = useTheme()
-  const enableSquareButtons = useEnableSquareButtons()
   const {baseStyles, baseHoverStyles, indicatorStyles} =
     createSharedToggleStyles({
       theme: t,
@@ -551,7 +550,7 @@ export function BaseRadio({
       style={[
         a.justify_center,
         a.align_center,
-        enableSquareButtons ? a.rounded_sm : a.rounded_full,
+        a.rounded_full,
         t.atoms.border_contrast_high,
         a.transition_color,
         {
@@ -567,7 +566,7 @@ export function BaseRadio({
         <View
           style={[
             a.absolute,
-            enableSquareButtons ? a.rounded_sm : a.rounded_full,
+            a.rounded_full,
             {height: 12, width: 12},
             {backgroundColor: t.palette.white},
             indicatorStyles,

@@ -38,7 +38,6 @@ import {
   native,
   platform,
   tokens,
-  useBreakpoints,
   useTheme,
   web,
 } from '#/alf'
@@ -53,13 +52,13 @@ import {
   useEphemeralFollowAction,
   useEphemeralFollowIntent,
 } from '#/components/hooks/useEphemeralFollowAction'
+import {ArrowShareRight_Stroke2_Corner2_Rounded as ArrowShareRight} from '#/components/icons/ArrowShareRight'
 import {CalendarDays_Stroke2_Corner0_Rounded as CalendarDays} from '#/components/icons/CalendarDays'
 import {
   Check_Stroke2_Corner0_Rounded as Check,
   DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheck,
 } from '#/components/icons/Check'
 import {Globe_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
-import {ArrowShareRight_Stroke2_Corner2_Rounded as ArrowShareRight} from '#/components/icons/ArrowShareRight'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {
   KnownFollowers,
@@ -165,6 +164,10 @@ let ProfileHeaderStandard = ({
   // disable metrics
   const followedByMetricsDisplay = useFollowedByMetricsDisplay()
   const showFollowedByOnOwnProfile = useShowFollowedByOnOwnProfile()
+  const showKnownFollowers =
+    (!isMe || showFollowedByOnOwnProfile) &&
+    !isFollowedByMetricHidden(followedByMetricsDisplay) &&
+    shouldShowKnownFollowers(profile.viewer?.knownFollowers)
 
   return (
     <>
@@ -281,11 +284,11 @@ let ProfileHeaderStandard = ({
             </View>
           </View>
 
-          {!isPlaceholderProfile && !isBlockedUser && (
-            <View style={[a.gap_md, a.pt_md]}>
-              {(!isMe || showFollowedByOnOwnProfile) &&
-                !isFollowedByMetricHidden(followedByMetricsDisplay) &&
-                shouldShowKnownFollowers(profile.viewer?.knownFollowers) && (
+          {!isPlaceholderProfile &&
+            !isBlockedUser &&
+            (showKnownFollowers || !!labeler) && (
+              <View style={[a.gap_md, a.pt_md]}>
+                {showKnownFollowers && (
                   <View style={[a.flex_row, a.align_center, a.gap_sm]}>
                     <KnownFollowers
                       profile={profile}
@@ -295,11 +298,11 @@ let ProfileHeaderStandard = ({
                   </View>
                 )}
 
-              {labeler && (
-                <LabelerLikeSection labeler={labeler} profile={profile} />
-              )}
-            </View>
-          )}
+                {labeler && (
+                  <LabelerLikeSection labeler={labeler} profile={profile} />
+                )}
+              </View>
+            )}
 
           <DebugFieldDisplay subject={profile} />
         </View>

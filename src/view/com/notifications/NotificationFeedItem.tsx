@@ -1,4 +1,13 @@
-import {Children, cloneElement, memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {
   Animated,
   type GestureResponderEvent,
@@ -252,8 +261,8 @@ let NotificationFeedItem = ({
   }
 
   const firstAuthorLink = (
-    <ProfileHoverCard did={firstAuthor.profile.did} inline>
-      <View style={[a.flex_row, a.align_center, a.flex_shrink]}>
+    <View style={[a.flex_row, a.align_center, a.flex_shrink]}>
+      <ProfileHoverCard did={firstAuthor.profile.did} inline>
         <InlineLinkText
           key={firstAuthor.href}
           style={[t.atoms.text, a.font_semi_bold, a.text_md, a.leading_tight]}
@@ -263,26 +272,34 @@ let NotificationFeedItem = ({
           label={_(msg`Go to ${firstAuthorName}'s profile`)}>
           {forceLTR(firstAuthorName)}
         </InlineLinkText>
-        <ProfileBadges
-          profile={firstAuthor.profile}
-          size="md"
-          pdsInteractive={false}
-          style={[
-            a.pl_2xs,
-            a.self_center,
-            {
-              marginTop: platform({web: 1, ios: 0, android: -1}),
-            },
-          ]}
-        />
-      </View>
-    </ProfileHoverCard>
+      </ProfileHoverCard>
+      <ProfileBadges
+        profile={firstAuthor.profile}
+        size="md"
+        pdsInteractive={false}
+        style={[
+          a.pl_2xs,
+          a.self_center,
+          a.pointer_events_none,
+          {
+            marginTop: platform({web: 1, ios: 0, android: -1}),
+          },
+        ]}
+      />
+    </View>
   )
   const additionalAuthorsCount = authors.length - 1
   const hasMultipleAuthors = additionalAuthorsCount > 0
   const formattedAuthorsCount = hasMultipleAuthors
     ? formatCount(i18n, additionalAuthorsCount)
     : ''
+  /*
+   * Bundled follows/verifications link to the first author's profile. Prefer
+   * expanding the author list when tapping the sentence, so the user can see
+   * everyone involved instead of bouncing to one highlighted profile.
+   */
+  const contentPressExpandsAuthors =
+    hasMultipleAuthors && itemHref === firstAuthor.href
 
   let a11yLabel = ''
   let notificationContent: React.ReactElement<any>
@@ -610,6 +627,7 @@ let NotificationFeedItem = ({
       ]}
       to={itemHref}
       accessible={!isAuthorsExpanded}
+      onPress={onBeforePress}
       accessibilityActions={
         hasMultipleAuthors
           ? [
@@ -642,17 +660,17 @@ let NotificationFeedItem = ({
       {({hovered}) => (
         <>
           <SubtleHover hover={hovered && !isHoveringAuthorsList} />
-          <View style={[styles.layoutIcon, a.pr_sm]}>
-            {/* TODO: Prevent conditional rendering and move toward composable
-          notifications for clearer accessibility labeling */}
-            {icon}
-          </View>
-          <View style={[a.flex_1]}>
-            <ExpandListPressable
-              hasMultipleAuthors={hasMultipleAuthors}
-              onToggleAuthorsExpanded={onToggleAuthorsExpanded}
-              onHoverIn={() => setIsHoveringAuthorsList(true)}
-              onHoverOut={() => setIsHoveringAuthorsList(false)}>
+          <ExpandAuthorsPressable
+            enabled={contentPressExpandsAuthors}
+            onToggleAuthorsExpanded={onToggleAuthorsExpanded}
+            onHoverIn={() => setIsHoveringAuthorsList(true)}
+            onHoverOut={() => setIsHoveringAuthorsList(false)}>
+            <View style={[styles.layoutIcon, a.pr_sm]}>
+              {/* TODO: Prevent conditional rendering and move toward composable
+            notifications for clearer accessibility labeling */}
+              {icon}
+            </View>
+            <View style={[a.flex_1]}>
               <CondensedAuthorsList
                 visible={!isAuthorsExpanded}
                 authors={authors}
@@ -673,50 +691,50 @@ let NotificationFeedItem = ({
                   niceTimestamp={niceTimestamp}
                 />
               </View>
-            </ExpandListPressable>
-            {(item.type === 'follow' && !hasMultipleAuthors && !isFollowBack) ||
-            (item.type === 'contact-match' &&
-              !item.notification.author.viewer?.following) ? (
-              <FollowBackButton profile={item.notification.author} />
-            ) : null}
-            {item.type === 'post-like' ||
-            item.type === 'repost' ||
-            item.type === 'like-via-repost' ||
-            item.type === 'repost-via-repost' ||
-            item.type === 'subscribed-post' ? (
-              <View style={[a.pt_2xs]}>
-                <AdditionalPostText post={item.subject} />
-              </View>
-            ) : null}
-            {item.type === 'feedgen-like' && item.subjectUri ? (
-              <FeedSourceCard
-                feedUri={item.subjectUri}
-                link={false}
-                style={[
-                  t.atoms.bg,
-                  t.atoms.border_contrast_low,
-                  a.border,
-                  a.p_md,
-                  styles.feedcard,
-                ]}
-                showLikes
-              />
-            ) : null}
-            {item.type === 'starterpack-joined' ? (
-              <View>
-                <View
-                  style={[
-                    a.border,
-                    a.p_sm,
-                    a.rounded_sm,
-                    a.mt_sm,
-                    t.atoms.border_contrast_low,
-                  ]}>
-                  <StarterPackCard starterPack={item.subject} />
+              {(item.type === 'follow' && !hasMultipleAuthors && !isFollowBack) ||
+              (item.type === 'contact-match' &&
+                !item.notification.author.viewer?.following) ? (
+                <FollowBackButton profile={item.notification.author} />
+              ) : null}
+              {item.type === 'post-like' ||
+              item.type === 'repost' ||
+              item.type === 'like-via-repost' ||
+              item.type === 'repost-via-repost' ||
+              item.type === 'subscribed-post' ? (
+                <View style={[a.pt_2xs]}>
+                  <AdditionalPostText post={item.subject} />
                 </View>
-              </View>
-            ) : null}
-          </View>
+              ) : null}
+              {item.type === 'feedgen-like' && item.subjectUri ? (
+                <FeedSourceCard
+                  feedUri={item.subjectUri}
+                  link={false}
+                  style={[
+                    t.atoms.bg,
+                    t.atoms.border_contrast_low,
+                    a.border,
+                    a.p_md,
+                    styles.feedcard,
+                  ]}
+                  showLikes
+                />
+              ) : null}
+              {item.type === 'starterpack-joined' ? (
+                <View>
+                  <View
+                    style={[
+                      a.border,
+                      a.p_sm,
+                      a.rounded_sm,
+                      a.mt_sm,
+                      t.atoms.border_contrast_low,
+                    ]}>
+                    <StarterPackCard starterPack={item.subject} />
+                  </View>
+                </View>
+              ) : null}
+            </View>
+          </ExpandAuthorsPressable>
         </>
       )}
     </Link>
@@ -736,9 +754,7 @@ function NotificationContent({
 }) {
   function Wrapper({children}: {children: React.ReactNode}) {
     return (
-      <NotificationSentence
-        timestamp={timestamp}
-        niceTimestamp={niceTimestamp}>
+      <NotificationSentence timestamp={timestamp} niceTimestamp={niceTimestamp}>
         {children}
       </NotificationSentence>
     )
@@ -762,11 +778,12 @@ function NotificationTimestamp({
             a.text_md,
             a.leading_snug,
             t.atoms.text_contrast_medium,
+            a.pointer_events_none,
             native({includeFontPadding: false}),
           ]}
           title={niceTimestamp}>
-          {' '}&middot;{' '}
-          {timeElapsed}
+          {' '}
+          &middot; {timeElapsed}
         </Text>
       )}
     </TimeElapsed>
@@ -784,7 +801,9 @@ function NotificationSentence({
 }) {
   const t = useTheme()
   return (
-    <View style={[a.flex_row, a.flex_wrap, a.align_baseline, a.flex_shrink]}>
+    <View
+      style={[a.flex_row, a.flex_wrap, a.align_baseline, a.flex_shrink]}
+      pointerEvents="box-none">
       {renderInlineTransChildren(children, t)}
       <NotificationTimestamp
         timestamp={timestamp}
@@ -806,7 +825,12 @@ function renderInlineTransChildren(
       return (
         <Text
           key={`notification-str-${i}`}
-          style={[a.text_md, a.leading_snug, t.atoms.text]}>
+          style={[
+            a.text_md,
+            a.leading_snug,
+            t.atoms.text,
+            a.pointer_events_none,
+          ]}>
           {child}
         </Text>
       )
@@ -814,37 +838,64 @@ function renderInlineTransChildren(
     if (Array.isArray(child)) {
       return renderInlineTransChildren(child, t)
     }
+    /*
+     * Plain Text nodes (e.g. "3 others") should not steal the outer Link's
+     * click on web. Keep Interactive links / hover targets as-is.
+     */
+    if (isValidElement<{style?: object}>(child) && child.type === Text) {
+      return cloneElement(child, {
+        style: [child.props.style, a.pointer_events_none],
+      })
+    }
     return child
   })
 }
 
-function ExpandListPressable({
-  hasMultipleAuthors,
+function ExpandAuthorsPressable({
+  enabled,
   children,
   onToggleAuthorsExpanded,
   onHoverIn,
   onHoverOut,
 }: {
-  hasMultipleAuthors: boolean
+  enabled: boolean
   children: React.ReactNode
   onToggleAuthorsExpanded: (e: GestureResponderEvent) => void
   onHoverIn?: () => void
   onHoverOut?: () => void
 }) {
-  if (hasMultipleAuthors) {
+  const layoutStyle = [a.flex_1, a.flex_row, a.align_start]
+
+  /*
+   * When enabled (bundled follows/verifications), presses expand/collapse the
+   * author list and stopPropagation so the outer Link does not navigate to the
+   * first profile. Nested InlineLinkText / ProfileCard links still win for
+   * taps on names, matching the previous ExpandListPressable behavior.
+   *
+   * When disabled (e.g. likes), presses fall through to the outer Link so
+   * sentence taps open the subject post.
+   */
+  if (enabled) {
     return (
       <Pressable
         onPress={onToggleAuthorsExpanded}
         onHoverIn={onHoverIn}
         onHoverOut={onHoverOut}
-        style={[styles.expandedAuthorsTrigger]}
+        style={[layoutStyle, styles.expandedAuthorsTrigger]}
         accessible={false}>
         {children}
       </Pressable>
     )
-  } else {
-    return <>{children}</>
   }
+
+  return (
+    <View
+      onPointerEnter={onHoverIn}
+      onPointerLeave={onHoverOut}
+      style={layoutStyle}>
+      {children}
+    </View>
+  )
 }
 
 function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
@@ -857,8 +908,9 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
   )
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const promptControl = Prompt.usePromptControl()
-  const [confirmationAction, setConfirmationAction] =
-    useState<'follow' | 'unfollow'>('follow')
+  const [confirmationAction, setConfirmationAction] = useState<
+    'follow' | 'unfollow'
+  >('follow')
 
   // Don't show button if not logged in or for own profile
   if (!hasSession || profile.did === currentAccount?.did) {
@@ -986,7 +1038,9 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
       {confirmFollowUnfollow && (
         <FollowConfirmationDialog
           control={promptControl}
-          displayName={sanitizeDisplayName(profile.displayName || profile.handle)}
+          displayName={sanitizeDisplayName(
+            profile.displayName || profile.handle,
+          )}
           handle={profile.handle}
           actionType={confirmationAction}
           onConfirm={onConfirm}
@@ -1204,7 +1258,10 @@ function ExpandedAuthorProfileCard({
   return (
     <ProfileCard.Link
       profile={author.profile}
-      style={isLast ? undefined : a.pb_md}>
+      style={isLast ? undefined : a.pb_md}
+      onPress={e => {
+        e.stopPropagation()
+      }}>
       <ProfileCard.Outer>
         <ProfileCard.Header>
           <ProfileCard.Avatar
@@ -1229,7 +1286,6 @@ function ExpandedAuthorProfileCard({
     </ProfileCard.Link>
   )
 }
-
 
 function AdditionalPostText({post}: {post?: AppBskyFeedDefs.PostView}) {
   const t = useTheme()
