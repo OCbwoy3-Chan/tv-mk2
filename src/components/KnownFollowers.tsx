@@ -14,8 +14,9 @@ import {
   shouldShowFollowedByText,
 } from '#/lib/metrics-display'
 import {makeProfileLink} from '#/lib/routes/links'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme} from '#/alf'
 import {PlusSmall_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
@@ -120,6 +121,7 @@ function KnownFollowersInner({
   const t = useTheme()
   const {t: l} = useLingui()
   const enableSquareAvatars = useEnableSquareAvatars()
+  const hideDisplayNames = useHideDisplayNames()
 
   const textStyle = [a.text_sm, a.leading_snug, t.atoms.text_contrast_medium]
   const showText = shouldShowFollowedByText(followedByDisplay)
@@ -130,10 +132,10 @@ function KnownFollowersInner({
     return {
       profile: {
         ...f,
-        displayName: sanitizeDisplayName(
-          f.displayName || f.handle,
-          moderation.ui('displayName'),
-        ),
+        displayName: getAuthorPrimaryName(f, {
+          hideDisplayNames,
+          moderation: moderation.ui('displayName'),
+        }),
       },
       moderation,
     }

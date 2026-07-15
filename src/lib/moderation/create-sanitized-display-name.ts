@@ -8,10 +8,15 @@ export function createSanitizedDisplayName(
   profile: bsky.profile.AnyProfileView,
   noAt = false,
   moderation?: ModerationUI,
+  hideDisplayNames = false,
 ) {
-  if (profile.displayName != null && profile.displayName !== '') {
+  if (
+    !hideDisplayNames &&
+    profile.displayName != null &&
+    profile.displayName !== ''
+  ) {
     return sanitizeDisplayName(profile.displayName, moderation)
   } else {
-    return sanitizeHandle(profile.handle, noAt ? '' : '@')
+    return sanitizeHandle(profile.handle, noAt || hideDisplayNames ? '' : '@')
   }
 }

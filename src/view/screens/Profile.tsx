@@ -27,6 +27,7 @@ import {isInvalidHandle} from '#/lib/strings/handles'
 import {colors} from '#/lib/styles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {listenSoftReset} from '#/state/events'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useShowStandardLabelerProfile} from '#/state/preferences/show-standard-labeler-profile'
 import {useLabelerInfoQuery} from '#/state/queries/labeler'
@@ -190,6 +191,7 @@ function ProfileScreenLoaded({
   const [currentPage, setCurrentPage] = useState(0)
   const {_} = useLingui()
   const showStandardLabelerProfile = useShowStandardLabelerProfile()
+  const hideDisplayNames = useHideDisplayNames()
 
   const [scrollViewTag, setScrollViewTag] = useState<number | null>(null)
 
@@ -203,7 +205,7 @@ function ProfileScreenLoaded({
   const starterPacksSectionRef = useRef<SectionRef>(null)
   const labelsSectionRef = useRef<SectionRef>(null)
 
-  useSetTitle(combinedDisplayName(profile))
+  useSetTitle(combinedDisplayName({...profile, hideDisplayNames}))
 
   const description = profile.description ?? ''
   const hasDescription = description !== ''

@@ -18,12 +18,13 @@ import {
   type CommonNavigatorParams,
   type NavigationProp,
 } from '#/lib/routes/types'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import * as persisted from '#/state/persisted'
 import {clearStorage} from '#/state/persisted'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useDeleteActorDeclaration} from '#/state/queries/messages/actor-declaration'
 import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
@@ -540,15 +541,16 @@ function ProfilePreview({
   const {gtMobile} = useBreakpoints()
   const shadow = useProfileShadow(profile)
   const moderationOpts = useModerationOpts()
+  const hideDisplayNames = useHideDisplayNames()
   const {isActive: live} = useActorStatus(profile)
 
   if (!moderationOpts) return null
 
   const moderation = moderateProfile(profile, moderationOpts)
-  const displayName = sanitizeDisplayName(
-    profile.displayName || sanitizeHandle(profile.handle),
-    moderation.ui('displayName'),
-  )
+  const displayName = getAuthorPrimaryName(profile, {
+    hideDisplayNames,
+    moderation: moderation.ui('displayName'),
+  })
 
   return (
     <>
@@ -591,9 +593,11 @@ function ProfilePreview({
           ]}
         />
       </View>
-      <Text style={[a.text_md, a.leading_snug, t.atoms.text_contrast_medium]}>
-        {sanitizeHandle(profile.handle, '@')}
-      </Text>
+      {!hideDisplayNames && (
+        <Text style={[a.text_md, a.leading_snug, t.atoms.text_contrast_medium]}>
+          {sanitizeHandle(profile.handle, '@')}
+        </Text>
+      )}
     </>
   )
 }

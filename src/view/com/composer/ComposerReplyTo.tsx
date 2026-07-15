@@ -12,9 +12,9 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
-import {sanitizeHandle} from '#/lib/strings/handles'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizePronouns} from '#/lib/strings/pronouns'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {type ComposerOptsPostRef} from '#/state/shell/composer'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme, utils, web} from '#/alf'
@@ -26,6 +26,7 @@ import {parseEmbed} from '#/types/bsky/post'
 export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
   const t = useTheme()
   const {_} = useLingui()
+  const hideDisplayNames = useHideDisplayNames()
   const {embed} = replyTo
 
   const [showFull, setShowFull] = useState(false)
@@ -117,10 +118,7 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
             style={[a.font_semi_bold, a.text_md, a.leading_snug, a.flex_shrink]}
             numberOfLines={1}
             emoji>
-            {sanitizeDisplayName(
-              replyTo.author.displayName ||
-                sanitizeHandle(replyTo.author.handle),
-            )}
+            {getAuthorPrimaryName(replyTo.author, {hideDisplayNames})}
           </Text>
           <ProfileBadges profile={replyTo.author} size="sm" style={[a.pl_xs]} />
           {replyTo.author?.pronouns && (

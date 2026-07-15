@@ -39,12 +39,13 @@ import {useAnimatedValue} from '#/lib/hooks/useAnimatedValue'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
 import {forceLTR} from '#/lib/strings/bidi'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {niceDate} from '#/lib/strings/time'
 import {s} from '#/lib/styles'
 import {logger} from '#/logger'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {type FeedNotification} from '#/state/queries/notifications/feed'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
@@ -200,9 +201,10 @@ let NotificationFeedItem = ({
 
   const niceTimestamp = niceDate(i18n, item.notification.indexedAt)
   const firstAuthor = authors[0]
-  const firstAuthorName = sanitizeDisplayName(
-    firstAuthor.profile.displayName || firstAuthor.profile.handle,
-  )
+  const hideDisplayNames = useHideDisplayNames()
+  const firstAuthorName = getAuthorPrimaryName(firstAuthor.profile, {
+    hideDisplayNames,
+  })
 
   // Calculate if this is a follow-back notification
   const isFollowBack = useMemo(() => {
@@ -642,9 +644,7 @@ let NotificationFeedItem = ({
               {
                 name: 'viewProfile',
                 label: _(
-                  msg`View ${
-                    authors[0].profile.displayName || authors[0].profile.handle
-                  }'s profile`,
+                  msg`View ${firstAuthorName}'s profile`,
                 ),
               },
             ]
@@ -902,6 +902,8 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
   const {_} = useLingui()
   const {currentAccount, hasSession} = useSession()
   const profileShadow = useProfileShadow(profile)
+  const hideDisplayNames = useHideDisplayNames()
+  const authorName = getAuthorPrimaryName(profile, {hideDisplayNames})
   const [queueFollow, queueUnfollow] = useProfileFollowMutationQueue(
     profileShadow,
     'ProfileCard',
@@ -922,9 +924,7 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
       await queueFollow()
       Toast.show(
         _(
-          msg`Following ${sanitizeDisplayName(
-            profile.displayName || profile.handle,
-          )}`,
+          msg`Following ${authorName}`,
         ),
       )
     } catch (err: any) {
@@ -941,9 +941,7 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
       await queueUnfollow()
       Toast.show(
         _(
-          msg`No longer following ${sanitizeDisplayName(
-            profile.displayName || profile.handle,
-          )}`,
+          msg`No longer following ${authorName}`,
         ),
       )
     } catch (err: any) {
@@ -1038,9 +1036,7 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
       {confirmFollowUnfollow && (
         <FollowConfirmationDialog
           control={promptControl}
-          displayName={sanitizeDisplayName(
-            profile.displayName || profile.handle,
-          )}
+          displayName={authorName}
           handle={profile.handle}
           actionType={confirmationAction}
           onConfirm={onConfirm}

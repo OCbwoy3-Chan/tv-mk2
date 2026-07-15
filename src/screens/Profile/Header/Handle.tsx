@@ -7,6 +7,7 @@ import {Trans} from '@lingui/react/macro'
 import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
 import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {type Shadow} from '#/state/cache/types'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
 import {useShowLinkInHandle} from '#/state/preferences/show-link-in-handle.tsx'
 import {useShowLinkInHandleOnlyOnWorkingLinks} from '#/state/preferences/show-link-in-handle-only-on-working-links'
@@ -30,6 +31,7 @@ export function ProfileHeaderHandle({
 }) {
   const t = useTheme()
   const {_} = useLingui()
+  const hideDisplayNames = useHideDisplayNames()
   const invalidHandle = isInvalidHandle(profile.handle)
   const pronouns = profile.pronouns
   const blockHide = profile.viewer?.blocking || profile.viewer?.blockedBy
@@ -88,25 +90,26 @@ export function ProfileHeaderHandle({
         </View>
       ) : undefined}
       <View style={[a.flex_row, a.flex_wrap, {gap: 6}]}>
-        {invalidHandle ? (
-          <Text emoji numberOfLines={1} style={handleTextStyle}>
-            {_(msg`⚠Invalid Handle`)}
-          </Text>
-        ) : shouldShowProfileLink ? (
-          <InlineLinkText
-            to={`https://${profile.handle}`}
-            label={profile.handle}
-            numberOfLines={1}
-            disableMismatchWarning
-            style={[a.text_md, a.leading_tight, web({direction: 'ltr'})]}
-            onPress={onLinkPress}>
-            {sanitized}
-          </InlineLinkText>
-        ) : (
-          <Text emoji numberOfLines={1} style={handleTextStyle}>
-            {sanitized}
-          </Text>
-        )}
+        {!hideDisplayNames &&
+          (invalidHandle ? (
+            <Text emoji numberOfLines={1} style={handleTextStyle}>
+              {_(msg`⚠Invalid Handle`)}
+            </Text>
+          ) : shouldShowProfileLink ? (
+            <InlineLinkText
+              to={`https://${profile.handle}`}
+              label={profile.handle}
+              numberOfLines={1}
+              disableMismatchWarning
+              style={[a.text_md, a.leading_tight, web({direction: 'ltr'})]}
+              onPress={onLinkPress}>
+              {sanitized}
+            </InlineLinkText>
+          ) : (
+            <Text emoji numberOfLines={1} style={handleTextStyle}>
+              {sanitized}
+            </Text>
+          ))}
         {pronouns && (
           <Text style={[t.atoms.text_contrast_low, a.text_md, a.leading_tight]}>
             {sanitizePronouns(pronouns, IS_NATIVE)}

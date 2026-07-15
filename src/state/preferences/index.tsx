@@ -30,6 +30,7 @@ import {Provider as GoLinksProvider} from './go-links-enabled'
 import {Provider as HiddenPostsProvider} from './hidden-posts'
 import {Provider as HideFeedsPromoTabProvider} from './hide-feeds-promo-tab'
 import {Provider as HideScaryFollowButtonsProvider} from './hide-scary-follow-buttons.tsx'
+import {Provider as HideDisplayNamesProvider} from './hide-display-names'
 import {Provider as HideSimilarAccountsRecommProvider} from './hide-similar-accounts-recommendations'
 import {Provider as HideUnreplyablePostsProvider} from './hide-unreplyable-posts'
 import {Provider as IgnoredAppLabelersProvider} from './ignored-app-labelers'
@@ -112,6 +113,10 @@ export {
   useHideScaryFollowButtons,
   useSetHideScaryFollowButtons,
 } from './hide-scary-follow-buttons'
+export {
+  useHideDisplayNames,
+  useSetHideDisplayNames,
+} from './hide-display-names'
 export {useImageCdnHost, useSetImageCdnHost} from './image-cdn-host'
 export {useLabelDefinitions} from './label-defs'
 export {useLanguagePrefs, useLanguagePrefsApi} from './languages'
@@ -212,29 +217,31 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                             <AutoCompactAccountSwitcherProvider>
                                                                                                               <CompactAccountSwitcherProvider>
                                                                                                                 <ShowViaClientProvider>
-                                                                                                                  <SixSevenCelebrationProvider>
-                                                                                                                    <PostNameReplacementProvider>
-                                                                                                                      <DisableVerifyEmailReminderProvider>
-                                                                                                                        <TranslationServicePreferenceProvider>
-                                                                                                                          <OpenRouterProvider>
-                                                                                                                            <DisableComposerPromptProvider>
-                                                                                                                              <DisableTopOfFeedButtonProvider>
-                                                                                                                                <DiscoverContextEnabledProvider>
-                                                                                                                                  <OmitViaFieldProvider>
-                                                                                                                                    <TidSuffixProvider>
-                                                                                                                                      {
-                                                                                                                                        children
-                                                                                                                                      }
-                                                                                                                                    </TidSuffixProvider>
-                                                                                                                                  </OmitViaFieldProvider>
-                                                                                                                                </DiscoverContextEnabledProvider>
-                                                                                                                              </DisableTopOfFeedButtonProvider>
-                                                                                                                            </DisableComposerPromptProvider>
-                                                                                                                          </OpenRouterProvider>
-                                                                                                                        </TranslationServicePreferenceProvider>
-                                                                                                                      </DisableVerifyEmailReminderProvider>
-                                                                                                                    </PostNameReplacementProvider>
-                                                                                                                  </SixSevenCelebrationProvider>
+                                                                                                                  <HideDisplayNamesProvider>
+                                                                                                                    <SixSevenCelebrationProvider>
+                                                                                                                      <PostNameReplacementProvider>
+                                                                                                                        <DisableVerifyEmailReminderProvider>
+                                                                                                                          <TranslationServicePreferenceProvider>
+                                                                                                                            <OpenRouterProvider>
+                                                                                                                              <DisableComposerPromptProvider>
+                                                                                                                                <DisableTopOfFeedButtonProvider>
+                                                                                                                                  <DiscoverContextEnabledProvider>
+                                                                                                                                    <OmitViaFieldProvider>
+                                                                                                                                      <TidSuffixProvider>
+                                                                                                                                        {
+                                                                                                                                          children
+                                                                                                                                        }
+                                                                                                                                      </TidSuffixProvider>
+                                                                                                                                    </OmitViaFieldProvider>
+                                                                                                                                  </DiscoverContextEnabledProvider>
+                                                                                                                                </DisableTopOfFeedButtonProvider>
+                                                                                                                              </DisableComposerPromptProvider>
+                                                                                                                            </OpenRouterProvider>
+                                                                                                                          </TranslationServicePreferenceProvider>
+                                                                                                                        </DisableVerifyEmailReminderProvider>
+                                                                                                                      </PostNameReplacementProvider>
+                                                                                                                    </SixSevenCelebrationProvider>
+                                                                                                                  </HideDisplayNamesProvider>
                                                                                                                 </ShowViaClientProvider>
                                                                                                               </CompactAccountSwitcherProvider>
                                                                                                             </AutoCompactAccountSwitcherProvider>

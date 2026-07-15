@@ -231,6 +231,7 @@ const schema = z.object({
   autoCompactAccountSwitcher: z.boolean().optional(),
   disableVerifyEmailReminder: z.boolean().optional(),
   showViaClient: z.boolean().optional(),
+  hideDisplayNames: z.boolean().optional(),
   sixSevenCelebration: z.boolean().optional(),
   deerVerification: z
     .object({
@@ -391,6 +392,7 @@ export const defaults: Schema = {
   autoCompactAccountSwitcher: true,
   disableVerifyEmailReminder: false,
   showViaClient: true,
+  hideDisplayNames: false,
   sixSevenCelebration: true,
   deerVerification: {
     enabled: false,

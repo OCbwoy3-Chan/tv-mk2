@@ -18,7 +18,7 @@ import {
   shouldShowThreadExpandedMetric,
 } from '#/lib/metrics-display'
 import {makeProfileLink} from '#/lib/routes/links'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {niceDate} from '#/lib/strings/time'
 import {
@@ -31,6 +31,7 @@ import {FeedFeedbackProvider, useFeedFeedback} from '#/state/feed-feedback'
 import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
 import {
   useLikesMetricsDisplay,
@@ -271,10 +272,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 
   const threadRootUri = record.reply?.root?.uri || post.uri
   const authorHref = makeProfileLink(post.author)
-  const displayName = sanitizeDisplayName(
-    post.author.displayName || sanitizeHandle(post.author.handle),
-    moderation.ui('displayName'),
-  )
+  const hideDisplayNames = useHideDisplayNames()
+  const displayName = getAuthorPrimaryName(post.author, {
+    hideDisplayNames,
+    moderation: moderation.ui('displayName'),
+  })
   const isAllLowercaseDisplayName =
     displayName === displayName.toLowerCase() && /[a-z]/.test(displayName)
   const isThreadAuthor = getThreadAuthor(post, record) === currentAccount?.did
@@ -411,7 +413,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
           <View
             style={[
               a.flex_row,
-              a.align_start,
+              hideDisplayNames ? a.align_center : a.align_start,
               isCompactPosts ? a.gap_sm : a.gap_md,
               isCompactPosts ? a.pb_sm : a.pb_md,
             ]}>
@@ -429,13 +431,19 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
               to={authorHref}
               style={[
                 a.flex_1,
-                isCompactPosts && {
-                  marginTop: isAllLowercaseDisplayName ? -4 : -3,
-                },
+                isCompactPosts &&
+                  !hideDisplayNames && {
+                    marginTop: isAllLowercaseDisplayName ? -4 : -3,
+                  },
               ]}
               label={displayName}
               onPress={onOpenAuthor}>
-              <View style={[a.flex_1, a.align_start]}>
+              <View
+                style={[
+                  a.flex_1,
+                  a.align_start,
+                  hideDisplayNames && a.justify_center,
+                ]}>
                 <ProfileHoverCard did={post.author.did} style={[a.w_full]}>
                   <View style={[a.flex_row, a.align_center]}>
                     <Text
@@ -465,15 +473,17 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       />
                     </View>
                   </View>
-                  <Text
-                    style={[
-                      isCompactPosts ? a.text_sm : a.text_md,
-                      a.leading_snug,
-                      t.atoms.text_contrast_medium,
-                    ]}
-                    numberOfLines={1}>
-                    {sanitizeHandle(post.author.handle, '@')}
-                  </Text>
+                  {!hideDisplayNames && (
+                    <Text
+                      style={[
+                        isCompactPosts ? a.text_sm : a.text_md,
+                        a.leading_snug,
+                        t.atoms.text_contrast_medium,
+                      ]}
+                      numberOfLines={1}>
+                      {sanitizeHandle(post.author.handle, '@')}
+                    </Text>
+                  )}
                 </ProfileHoverCard>
               </View>
             </Link>

@@ -25,11 +25,11 @@ import {
 import {getModerationCauseKey} from '#/lib/moderation'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
-import {sanitizeHandle} from '#/lib/strings/handles'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {
   useFollowedByMetricsDisplay,
   useFollowersMetricsDisplay,
@@ -509,6 +509,11 @@ function Inner({
     logContext: 'ProfileHoverCard',
   })
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const hideDisplayNames = useHideDisplayNames()
+  const authorPrimaryName = getAuthorPrimaryName(profile, {
+    hideDisplayNames,
+    moderation: moderation.ui('displayName'),
+  })
   const isBlockedUser =
     profile.viewer?.blocking ||
     profile.viewer?.blockedBy ||
@@ -544,10 +549,7 @@ function Inner({
       onRequestFollowConfirmation({
         actionType: 'follow',
         onConfirm: follow,
-        displayName: sanitizeDisplayName(
-          profile.displayName || sanitizeHandle(profile.handle),
-          moderation.ui('displayName'),
-        ),
+        displayName: authorPrimaryName,
         handle: profile.handle,
       })
     } else {
@@ -557,9 +559,8 @@ function Inner({
     confirmFollowUnfollow,
     follow,
     onRequestFollowConfirmation,
-    profile.displayName,
+    authorPrimaryName,
     profile.handle,
-    moderation,
   ])
 
   const handleUnfollow = useCallback(() => {
@@ -567,10 +568,7 @@ function Inner({
       onRequestFollowConfirmation({
         actionType: 'unfollow',
         onConfirm: unfollow,
-        displayName: sanitizeDisplayName(
-          profile.displayName || sanitizeHandle(profile.handle),
-          moderation.ui('displayName'),
-        ),
+        displayName: authorPrimaryName,
         handle: profile.handle,
       })
     } else {
@@ -580,9 +578,8 @@ function Inner({
     confirmFollowUnfollow,
     unfollow,
     onRequestFollowConfirmation,
-    profile.displayName,
+    authorPrimaryName,
     profile.handle,
-    moderation,
   ])
 
   return (
@@ -663,10 +660,7 @@ function Inner({
                 a.font_semi_bold,
                 a.self_start,
               ]}>
-              {sanitizeDisplayName(
-                profile.displayName || sanitizeHandle(profile.handle),
-                moderation.ui('displayName'),
-              )}
+              {authorPrimaryName}
             </Text>
             <ProfileBadges
               profile={profile}

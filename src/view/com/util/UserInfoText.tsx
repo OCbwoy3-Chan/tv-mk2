@@ -2,8 +2,9 @@ import {type StyleProp, type TextStyle} from 'react-native'
 import {type AppBskyActorGetProfile} from '@atproto/api'
 
 import {makeProfileLink} from '#/lib/routes/links'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName, sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {STALE} from '#/state/queries'
 import {useProfileQuery} from '#/state/queries/profile'
 import {atoms as a} from '#/alf'
@@ -27,6 +28,7 @@ export function UserInfoText({
 }) {
   attr = attr || 'handle'
   failed = failed || 'user'
+  const hideDisplayNames = useHideDisplayNames()
 
   const {data: profile, isError} = useProfileQuery({
     did,
@@ -40,11 +42,15 @@ export function UserInfoText({
       </Text>
     )
   } else if (profile) {
-    const text = `${prefix || ''}${sanitizeDisplayName(
-      typeof profile[attr] === 'string' && profile[attr]
-        ? (profile[attr] as string)
-        : sanitizeHandle(profile.handle),
-    )}`
+    const value =
+      hideDisplayNames || attr === 'handle'
+        ? getAuthorPrimaryName(profile, {hideDisplayNames: true})
+        : sanitizeDisplayName(
+            typeof profile[attr] === 'string' && profile[attr]
+              ? (profile[attr] as string)
+              : sanitizeHandle(profile.handle),
+          )
+    const text = `${prefix || ''}${value}`
     return (
       <InlineLinkText
         label={text}
