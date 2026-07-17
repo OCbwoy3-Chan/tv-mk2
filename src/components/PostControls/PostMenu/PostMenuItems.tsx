@@ -359,6 +359,7 @@ let PostMenuItems = ({
 
     openComposer({
       text: richTextToStringPreservingLinks(richText),
+      tags: record.tags,
       imageUris,
       videoUri,
       onPost: () => {

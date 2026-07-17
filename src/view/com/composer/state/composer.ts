@@ -9,6 +9,7 @@ import {
 import {nanoid} from 'nanoid/non-secure'
 
 import {type VideoTelemetry} from '#/lib/media/video/telemetry'
+import {MAX_TAGS} from '#/lib/constants'
 import {type SelfLabel} from '#/lib/moderation'
 import {insertMentionAt} from '#/lib/strings/mention-manip'
 import {parseMarkdownLinks, shortenLinks} from '#/lib/strings/rich-text-manip'
@@ -76,6 +77,10 @@ export type PostDraft = {
   id: string
   richtext: RichText
   labels: SelfLabel[]
+  /**
+   * Outline tags written to `app.bsky.feed.post` `tags` (not in-text hashtags).
+   */
+  tags: string[]
   embed: EmbedDraft
   shortenedGraphemeLength: number
 }
@@ -83,6 +88,7 @@ export type PostDraft = {
 export type PostAction =
   | {type: 'update_richtext'; richtext: RichText}
   | {type: 'update_labels'; labels: SelfLabel[]}
+  | {type: 'update_tags'; tags: string[]}
   | {type: 'embed_add_images'; images: ComposerImage[]}
   | {type: 'embed_update_image'; image: ComposerImage}
   | {type: 'embed_remove_image'; image: ComposerImage}
@@ -243,6 +249,7 @@ export function composerReducer(
         richtext: new RichText({text: ''}),
         shortenedGraphemeLength: 0,
         labels: [],
+        tags: [],
         embed: {
           quote: undefined,
           media: undefined,
@@ -362,6 +369,12 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
       return {
         ...state,
         labels: action.labels,
+      }
+    }
+    case 'update_tags': {
+      return {
+        ...state,
+        tags: action.tags,
       }
     }
     case 'embed_add_images': {
@@ -625,6 +638,7 @@ export function createComposerState({
   initQuoteUri,
   initInteractionSettings,
   initVideoUri,
+  initTags,
 }: {
   initText: string | undefined
   initMention: string | undefined
@@ -634,6 +648,7 @@ export function createComposerState({
     | AppBskyActorDefs.PostInteractionSettingsPref
     | undefined
   initVideoUri?: ComposerOpts['videoUri']
+  initTags?: string[]
 }): ComposerState {
   let media: ImagesMedia | GalleryMedia | VideoMedia | undefined
   if (initImageUris?.length) {
@@ -748,6 +763,7 @@ export function createComposerState({
           richtext: initRichText,
           shortenedGraphemeLength: getShortenedLength(initRichText),
           labels: [],
+          tags: initTags?.length ? initTags.slice(0, MAX_TAGS) : [],
           embed: {
             quote,
             media,

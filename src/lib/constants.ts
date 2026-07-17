@@ -59,6 +59,14 @@ export const MAX_DESCRIPTION = 256
 
 export const MAX_GRAPHEME_LENGTH = 300
 
+/**
+ * Outline tags on `app.bsky.feed.post` (`tags` array).
+ * @see https://github.com/bluesky-social/atproto/blob/main/lexicons/app/bsky/feed/post.json
+ */
+export const MAX_TAGS = 8
+export const MAX_GRAPHEME_LENGTH_PER_TAG = 64
+export const MAX_BYTES_PER_TAG = 640
+
 export const MAX_DRAFT_GRAPHEME_LENGTH = 1000
 
 export const MAX_DM_GRAPHEME_LENGTH = 1000

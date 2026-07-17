@@ -56,6 +56,10 @@ export interface ComposerOpts {
   quote?: AppBskyFeedDefs.PostView
   mention?: string // handle of user to mention
   text?: string
+  /**
+   * Outline tags from `app.bsky.feed.post` `tags` (e.g. when redrafting).
+   */
+  tags?: string[]
   imageUris?: {
     uri: string
     width: number

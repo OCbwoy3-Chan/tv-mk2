@@ -37,6 +37,8 @@ export type DraftPostDisplay = {
   id: string
   /** Full text content */
   text: string
+  /** Outline tags from `app.bsky.feed.post` `tags` */
+  tags?: string[]
   /** Image references for display */
   images?: LocalMediaDisplay[]
   /** Video reference */

@@ -137,6 +137,7 @@ import {SuggestedLanguage} from '#/view/com/composer/select-language/SuggestedLa
 // TODO: Prevent naming components that coincide with RN primitives
 // due to linting false positives
 import {TextInput} from '#/view/com/composer/text-input/TextInput'
+import {TagsBtn} from '#/view/com/composer/tags/TagsBtn'
 import {ThreadgateBtn} from '#/view/com/composer/threadgate/ThreadgateBtn'
 import {SubtitleDialogBtn} from '#/view/com/composer/videos/SubtitleDialog'
 import {VideoEmbedRedraft} from '#/view/com/composer/videos/VideoEmbedRedraft'
@@ -283,6 +284,7 @@ export const ComposePost = ({
   quote: initQuote,
   mention: initMention,
   text: initText,
+  tags: initTags,
   imageUris: initImageUris,
   videoUri: initVideoUri,
   openGallery,
@@ -456,6 +458,7 @@ export const ComposePost = ({
       initMention,
       initInteractionSettings: preferences?.postInteractionSettings,
       initVideoUri,
+      initTags,
     }),
   )
 
@@ -2413,11 +2416,6 @@ function ComposerPills({
     media?.type === 'video'
   const hasLink = !!post.embed.link
 
-  // Don't render anything if no pills are going to be displayed
-  if (isReply && !hasMedia && !hasLink) {
-    return null
-  }
-
   return (
     <Animated.View
       style={[a.flex_row, a.p_sm, t.atoms.bg, bottomBarAnimatedStyle]}>
@@ -2443,6 +2441,19 @@ function ComposerPills({
             style={bottomBarAnimatedStyle}
           />
         )}
+        <TagsBtn
+          tags={post.tags}
+          onChange={nextTags => {
+            dispatch({
+              type: 'update_post',
+              postId: post.id,
+              postAction: {
+                type: 'update_tags',
+                tags: nextTags,
+              },
+            })
+          }}
+        />
         {hasMedia || hasLink ? (
           <LabelsBtn
             labels={post.labels}

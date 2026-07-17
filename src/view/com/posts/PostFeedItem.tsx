@@ -51,6 +51,7 @@ import {ShowMoreTextButton} from '#/components/Post/ShowMoreTextButton'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls} from '#/components/PostControls'
 import {DiscoverDebug} from '#/components/PostControls/DiscoverDebug'
+import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import {SubtleHover} from '#/components/SubtleHover'
 import {useAnalytics} from '#/analytics'
@@ -564,6 +565,7 @@ let PostContent = ({
           )}
         </View>
       ) : undefined}
+      <PostTags post={post} style={[a.pb_2xs]} />
       {record && <TranslatedPost hideTranslateLink post={post} />}
       {postEmbed ? (
         <View

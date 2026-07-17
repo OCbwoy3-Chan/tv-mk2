@@ -29,6 +29,7 @@ import {LabelsOnMyPost} from '#/components/moderation/LabelsOnMe'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
 import {TranslatedPost} from '#/components/Post/Translated'
+import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 
@@ -146,6 +147,7 @@ const ThreadItemReaderSegmentInner = memo(
                   />
                 </View>
               ) : undefined}
+              <PostTags post={post} style={[a.pb_2xs]} />
               <TranslatedPost
                 hideTranslateLink
                 post={post}

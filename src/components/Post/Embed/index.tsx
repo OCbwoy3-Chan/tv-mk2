@@ -30,6 +30,7 @@ import {PostAlerts} from '#/components/moderation/PostAlerts'
 import * as ReportDialogMetadataContext from '#/components/moderation/ReportDialog/ReportDialogMetadataContext'
 import {StandardSiteEmbed} from '#/components/Post/Embed/StandardSiteEmbed'
 import {isStandardSiteEmbed} from '#/components/Post/Embed/StandardSiteEmbed/utils'
+import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import {Embed as StarterPackCard} from '#/components/StarterPack/StarterPackCard'
 import {SubtleHover} from '#/components/SubtleHover'
@@ -473,6 +474,7 @@ export function QuoteEmbed({
           disableLinks
         />
       ) : null}
+      <PostTags post={quote} style={[a.pb_2xs]} />
       {quote.embed && (
         <Embed
           embed={quote.embed}

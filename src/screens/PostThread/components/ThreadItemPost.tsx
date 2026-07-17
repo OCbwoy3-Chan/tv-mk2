@@ -52,6 +52,7 @@ import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
 import {ShowMoreTextButton} from '#/components/Post/ShowMoreTextButton'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls, PostControlsSkeleton} from '#/components/PostControls'
+import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import * as Skele from '#/components/Skeleton'
 import {SubtleHover} from '#/components/SubtleHover'
@@ -388,6 +389,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
               ) : (
                 <ThreadItemPostNumber inline={false} value={postNumbering} />
               )}
+              <PostTags post={post} style={[a.pb_2xs]} />
               <TranslatedPost hideTranslateLink post={post} />
               {post.embed && (
                 <View
