@@ -92,7 +92,7 @@ import {device, useStorage} from '#/storage'
 import {useActivitySubscriptionsNudged} from '#/storage/hooks/activity-subscriptions-nudged'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
-import { Logo } from '#/view/icons/Logo'
+import { ArrowTriangleBottom_Stroke2_Corner1_Rounded as UpsideDownDelta } from '#/components/icons/ArrowTriangle'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Settings'>
 type AccountListItem = {
@@ -474,7 +474,7 @@ export function SettingsScreen({}: Props) {
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
           <SettingsList.LinkItem to="/settings/deltas" label={l`Deltas`}>
-            <SettingsList.ItemIcon icon={Logo} />
+            <SettingsList.ItemIcon icon={(props)=><View style={{transform:"rotate(180deg)"}}><UpsideDownDelta {...props}/></View>} />
             <SettingsList.ItemText>
               <Trans>Deltas</Trans>
             </SettingsList.ItemText>

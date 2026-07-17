@@ -132,7 +132,7 @@ export function RunesExtraSettingsScreen() {
           <Toggle.Platform />
         </SettingsList.Item>
       </Toggle.Item>
-      {/* <Toggle.Item
+      <Toggle.Item
         name="custom_post_rkeys"
         label={l`Enable custom post rkeys`}
         value={customPostRkeysEnabled}
@@ -144,7 +144,7 @@ export function RunesExtraSettingsScreen() {
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>
-      </Toggle.Item> */}
+      </Toggle.Item>
       <Toggle.Item
         name="omit_via_field"
         label={l`Don't include the 'via' field in own posts`}

@@ -350,7 +350,7 @@ export const defaults: Schema = {
   disableHaptics: false,
   disableAutoplay: PlatformInfo.getIsReducedMotionEnabled(),
   kawaii: false,
-  customPostRkeysEnabled: false,
+  customPostRkeysEnabled: true,
   atprotoRkeyGenerationDefault: 'suffix',
   atprotoRkeyPrefixDefault: '',
   atprotoRkeySuffixDefault: 'meow',

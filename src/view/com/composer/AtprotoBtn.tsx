@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {View} from 'react-native'
+import {Keyboard, View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -54,6 +54,7 @@ export function AtprotoBtn({
   }
 
   const onPress = () => {
+    Keyboard.dismiss()
     setDraftGeneration(generation)
     setDraftPrefix(prefix)
     setDraftSuffix(suffix)
@@ -108,7 +109,10 @@ export function AtprotoBtn({
           msg`Opens a dialog to configure ATProto record key generation`,
         )}>
         <ButtonText maxFontSizeMultiplier={2} numberOfLines={1}>
-          {isUsingCustomRkey ? _(msg`Vanity rkey`) : _(msg`Record Key`)}
+          {isUsingCustomRkey ? (
+            draftGeneration === "prefix" ? _(msg`TID Prefix`)
+            : _(msg`TID Suffix`)
+          ) : _(msg`Record Key`)}
         </ButtonText>
       </Button>
 

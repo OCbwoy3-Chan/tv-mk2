@@ -2191,7 +2191,7 @@ msgstr ""
 msgid "Atmosphere"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:118
+#: src/view/com/composer/AtprotoBtn.tsx:119
 msgid "ATProto settings"
 msgstr ""
 
@@ -3103,7 +3103,7 @@ msgstr "ជ្រើសរើសមតិព័ត៌មាន"
 msgid "Choose for me"
 msgstr "ជ្រើសរើសសម្រាប់ខ្ញុំ"
 
-#: src/view/com/composer/AtprotoBtn.tsx:131
+#: src/view/com/composer/AtprotoBtn.tsx:132
 msgid "Choose how record keys are generated"
 msgstr ""
 
@@ -4210,7 +4210,7 @@ msgstr ""
 msgid "Custom post phrase"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:104
+#: src/view/com/composer/AtprotoBtn.tsx:105
 msgid "Custom Record Key"
 msgstr ""
 
@@ -4923,7 +4923,7 @@ msgstr "រយៈពេល"
 msgid "Dusk"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:236
+#: src/view/com/composer/AtprotoBtn.tsx:237
 msgid "e.g. -cool"
 msgstr ""
 
@@ -4947,7 +4947,7 @@ msgstr ""
 msgid "E.g. artistic nudes."
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:201
+#: src/view/com/composer/AtprotoBtn.tsx:202
 msgid "e.g. gerson"
 msgstr ""
 
@@ -5192,6 +5192,11 @@ msgstr "បើកមាតិកាសម្រាប់មនុស្សពេ
 
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:453
 msgid "Enable captions"
+msgstr ""
+
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:137
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:143
+msgid "Enable custom post rkeys"
 msgstr ""
 
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:91
@@ -7676,7 +7681,7 @@ msgstr ""
 msgid "Invalid phone number"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:216
+#: src/view/com/composer/AtprotoBtn.tsx:217
 msgid "Invalid prefix. Use 1-13 chars from 234567abcdefghijklmnopqrstuvwxyz. First char must be one of 234567abcdefghij."
 msgstr ""
 
@@ -7689,7 +7694,7 @@ msgstr ""
 msgid "Invalid rescind request."
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:252
+#: src/view/com/composer/AtprotoBtn.tsx:253
 msgid "Invalid suffix. Use 1-12 chars from 234567abcdefghijklmnopqrstuvwxyz."
 msgstr ""
 
@@ -9998,7 +10003,7 @@ msgstr ""
 msgid "Opens a dialog to choose who can interact with this post"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:108
+#: src/view/com/composer/AtprotoBtn.tsx:109
 msgid "Opens a dialog to configure ATProto record key generation"
 msgstr ""
 
@@ -10865,13 +10870,13 @@ msgstr ""
 msgid "Preferred language"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:162
-#: src/view/com/composer/AtprotoBtn.tsx:168
-#: src/view/com/composer/AtprotoBtn.tsx:194
+#: src/view/com/composer/AtprotoBtn.tsx:163
+#: src/view/com/composer/AtprotoBtn.tsx:169
+#: src/view/com/composer/AtprotoBtn.tsx:195
 msgid "Prefix"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:209
+#: src/view/com/composer/AtprotoBtn.tsx:210
 msgid "Prefix must use TID characters. If shorter than 13 chars, a timestamp-based TID suffix fills the remainder."
 msgstr ""
 
@@ -11239,16 +11244,16 @@ msgstr ""
 msgid "Reconnect"
 msgstr "ភ្ជាប់ឡើងវិញ"
 
-#: src/view/com/composer/AtprotoBtn.tsx:111
-#: src/view/com/composer/AtprotoBtn.tsx:122
+#: src/view/com/composer/AtprotoBtn.tsx:112
+#: src/view/com/composer/AtprotoBtn.tsx:123
 msgid "Record Key"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:199
+#: src/view/com/composer/AtprotoBtn.tsx:200
 msgid "Record key prefix"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:234
+#: src/view/com/composer/AtprotoBtn.tsx:235
 msgid "Record key suffix"
 msgstr ""
 
@@ -12127,8 +12132,8 @@ msgstr ""
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:437
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:522
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:530
-#: src/view/com/composer/AtprotoBtn.tsx:284
-#: src/view/com/composer/AtprotoBtn.tsx:290
+#: src/view/com/composer/AtprotoBtn.tsx:285
+#: src/view/com/composer/AtprotoBtn.tsx:291
 #: src/view/com/composer/GifAltText.tsx:199
 #: src/view/com/composer/GifAltText.tsx:208
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:66
@@ -12192,8 +12197,8 @@ msgstr "រក្សាទុកកូដ QR"
 
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:650
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:656
-#: src/view/com/composer/AtprotoBtn.tsx:266
-#: src/view/com/composer/AtprotoBtn.tsx:272
+#: src/view/com/composer/AtprotoBtn.tsx:267
+#: src/view/com/composer/AtprotoBtn.tsx:273
 msgid "Save these options for next time"
 msgstr ""
 
@@ -13753,13 +13758,13 @@ msgstr ""
 msgid "Successfully verified"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:176
-#: src/view/com/composer/AtprotoBtn.tsx:182
-#: src/view/com/composer/AtprotoBtn.tsx:229
+#: src/view/com/composer/AtprotoBtn.tsx:177
+#: src/view/com/composer/AtprotoBtn.tsx:183
+#: src/view/com/composer/AtprotoBtn.tsx:230
 msgid "Suffix"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:244
+#: src/view/com/composer/AtprotoBtn.tsx:245
 msgid "Suffix replaces the last N chars of the TID, keeping a valid 13-char record key. Use TID characters (234567abcdefghijklmnopqrstuvwxyz), max 12 chars."
 msgstr ""
 
@@ -14312,7 +14317,7 @@ msgid "There's been a rush of new users to Bluesky! We'll activate your account 
 msgstr "មានការប្រញាប់ប្រញាល់នៃអ្នកប្រើប្រាស់ថ្មីទៅកាន់ Bluesky! យើងនឹងដំណើរការគណនីរបស់អ្នកឱ្យបានឆាប់តាមដែលយើងអាចធ្វើបាន"
 
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:661
-#: src/view/com/composer/AtprotoBtn.tsx:277
+#: src/view/com/composer/AtprotoBtn.tsx:278
 msgid "These are your default settings"
 msgstr ""
 
@@ -14836,8 +14841,8 @@ msgstr ""
 msgid "Thumbnail format"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:148
-#: src/view/com/composer/AtprotoBtn.tsx:154
+#: src/view/com/composer/AtprotoBtn.tsx:149
+#: src/view/com/composer/AtprotoBtn.tsx:155
 msgid "TID"
 msgstr ""
 
@@ -14850,7 +14855,7 @@ msgstr ""
 msgid "Time remaining: {0, plural, one {# second} other {# seconds}}"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:105
+#: src/view/com/composer/AtprotoBtn.tsx:106
 msgid "Timestamp-ID (TID) Record Key"
 msgstr ""
 
@@ -15054,7 +15059,7 @@ msgstr ""
 msgid "Two-factor authentication (2FA)"
 msgstr "ការផ្ទៀងផ្ទាត់កត្តាពីរ (2FA)"
 
-#: src/view/com/composer/AtprotoBtn.tsx:127
+#: src/view/com/composer/AtprotoBtn.tsx:128
 msgid "Type"
 msgstr ""
 
@@ -15689,7 +15694,7 @@ msgstr ""
 msgid "Value:"
 msgstr "តម្លៃ៖"
 
-#: src/view/com/composer/AtprotoBtn.tsx:111
+#: src/view/com/composer/AtprotoBtn.tsx:112
 msgid "Vanity rkey"
 msgstr ""
 

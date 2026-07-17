@@ -2191,7 +2191,7 @@ msgstr "PMF d'AT Protocol"
 msgid "Atmosphere"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:118
+#: src/view/com/composer/AtprotoBtn.tsx:119
 msgid "ATProto settings"
 msgstr ""
 
@@ -3103,7 +3103,7 @@ msgstr "Tria els canals"
 msgid "Choose for me"
 msgstr "Tria per mi"
 
-#: src/view/com/composer/AtprotoBtn.tsx:131
+#: src/view/com/composer/AtprotoBtn.tsx:132
 msgid "Choose how record keys are generated"
 msgstr ""
 
@@ -4210,7 +4210,7 @@ msgstr "Personalitzat"
 msgid "Custom post phrase"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:104
+#: src/view/com/composer/AtprotoBtn.tsx:105
 msgid "Custom Record Key"
 msgstr ""
 
@@ -4923,7 +4923,7 @@ msgstr "Durada:"
 msgid "Dusk"
 msgstr "Capvespre"
 
-#: src/view/com/composer/AtprotoBtn.tsx:236
+#: src/view/com/composer/AtprotoBtn.tsx:237
 msgid "e.g. -cool"
 msgstr ""
 
@@ -4947,7 +4947,7 @@ msgstr "p. ex. jordi.com"
 msgid "E.g. artistic nudes."
 msgstr "p. ex. nuesa artística."
 
-#: src/view/com/composer/AtprotoBtn.tsx:201
+#: src/view/com/composer/AtprotoBtn.tsx:202
 msgid "e.g. gerson"
 msgstr ""
 
@@ -5193,6 +5193,11 @@ msgstr "Habilita el contingut per a adults"
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:453
 msgid "Enable captions"
 msgstr "Activa els subtítols"
+
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:137
+#: src/screens/Settings/RunesSettings/ExtraSettings.tsx:143
+msgid "Enable custom post rkeys"
+msgstr ""
 
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:91
 msgid "Enable email 2FA"
@@ -7676,7 +7681,7 @@ msgstr "Configuració de les interaccions invàlida."
 msgid "Invalid phone number"
 msgstr "Número de telèfon no vàlid"
 
-#: src/view/com/composer/AtprotoBtn.tsx:216
+#: src/view/com/composer/AtprotoBtn.tsx:217
 msgid "Invalid prefix. Use 1-13 chars from 234567abcdefghijklmnopqrstuvwxyz. First char must be one of 234567abcdefghij."
 msgstr ""
 
@@ -7689,7 +7694,7 @@ msgstr "El tema de l'informe no és vàlid"
 msgid "Invalid rescind request."
 msgstr "Sol·licitud de retirada no vàlida."
 
-#: src/view/com/composer/AtprotoBtn.tsx:252
+#: src/view/com/composer/AtprotoBtn.tsx:253
 msgid "Invalid suffix. Use 1-12 chars from 234567abcdefghijklmnopqrstuvwxyz."
 msgstr ""
 
@@ -9998,7 +10003,7 @@ msgstr ""
 msgid "Opens a dialog to choose who can interact with this post"
 msgstr "Obre un quadre de diàleg per triar qui pot interactuar amb aquesta publicació"
 
-#: src/view/com/composer/AtprotoBtn.tsx:108
+#: src/view/com/composer/AtprotoBtn.tsx:109
 msgid "Opens a dialog to configure ATProto record key generation"
 msgstr ""
 
@@ -10865,13 +10870,13 @@ msgstr ""
 msgid "Preferred language"
 msgstr "Idioma preferit"
 
-#: src/view/com/composer/AtprotoBtn.tsx:162
-#: src/view/com/composer/AtprotoBtn.tsx:168
-#: src/view/com/composer/AtprotoBtn.tsx:194
+#: src/view/com/composer/AtprotoBtn.tsx:163
+#: src/view/com/composer/AtprotoBtn.tsx:169
+#: src/view/com/composer/AtprotoBtn.tsx:195
 msgid "Prefix"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:209
+#: src/view/com/composer/AtprotoBtn.tsx:210
 msgid "Prefix must use TID characters. If shorter than 13 chars, a timestamp-based TID suffix fills the remainder."
 msgstr ""
 
@@ -11239,16 +11244,16 @@ msgstr "Recomanats"
 msgid "Reconnect"
 msgstr "Torna a connectar"
 
-#: src/view/com/composer/AtprotoBtn.tsx:111
-#: src/view/com/composer/AtprotoBtn.tsx:122
+#: src/view/com/composer/AtprotoBtn.tsx:112
+#: src/view/com/composer/AtprotoBtn.tsx:123
 msgid "Record Key"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:199
+#: src/view/com/composer/AtprotoBtn.tsx:200
 msgid "Record key prefix"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:234
+#: src/view/com/composer/AtprotoBtn.tsx:235
 msgid "Record key suffix"
 msgstr ""
 
@@ -12127,8 +12132,8 @@ msgstr "GIFs tristos"
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:437
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:522
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:530
-#: src/view/com/composer/AtprotoBtn.tsx:284
-#: src/view/com/composer/AtprotoBtn.tsx:290
+#: src/view/com/composer/AtprotoBtn.tsx:285
+#: src/view/com/composer/AtprotoBtn.tsx:291
 #: src/view/com/composer/GifAltText.tsx:199
 #: src/view/com/composer/GifAltText.tsx:208
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:66
@@ -12192,8 +12197,8 @@ msgstr "Desa el codi QR"
 
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:650
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:656
-#: src/view/com/composer/AtprotoBtn.tsx:266
-#: src/view/com/composer/AtprotoBtn.tsx:272
+#: src/view/com/composer/AtprotoBtn.tsx:267
+#: src/view/com/composer/AtprotoBtn.tsx:273
 msgid "Save these options for next time"
 msgstr "Desa aquestes opcions per a la propera vegada"
 
@@ -13753,13 +13758,13 @@ msgstr "Us heu unit al xat grupal correctament!"
 msgid "Successfully verified"
 msgstr "Verificat correctament"
 
-#: src/view/com/composer/AtprotoBtn.tsx:176
-#: src/view/com/composer/AtprotoBtn.tsx:182
-#: src/view/com/composer/AtprotoBtn.tsx:229
+#: src/view/com/composer/AtprotoBtn.tsx:177
+#: src/view/com/composer/AtprotoBtn.tsx:183
+#: src/view/com/composer/AtprotoBtn.tsx:230
 msgid "Suffix"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:244
+#: src/view/com/composer/AtprotoBtn.tsx:245
 msgid "Suffix replaces the last N chars of the TID, keeping a valid 13-char record key. Use TID characters (234567abcdefghijklmnopqrstuvwxyz), max 12 chars."
 msgstr ""
 
@@ -14312,7 +14317,7 @@ msgid "There's been a rush of new users to Bluesky! We'll activate your account 
 msgstr "Hi ha hagut una gran quantitat d'usuaris nous a Bluesky! Activarem el teu compte tan aviat com puguem."
 
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:661
-#: src/view/com/composer/AtprotoBtn.tsx:277
+#: src/view/com/composer/AtprotoBtn.tsx:278
 msgid "These are your default settings"
 msgstr "Aquesta és la teva configuració predeterminada"
 
@@ -14836,8 +14841,8 @@ msgstr "Amenaces o incitació"
 msgid "Thumbnail format"
 msgstr ""
 
-#: src/view/com/composer/AtprotoBtn.tsx:148
-#: src/view/com/composer/AtprotoBtn.tsx:154
+#: src/view/com/composer/AtprotoBtn.tsx:149
+#: src/view/com/composer/AtprotoBtn.tsx:155
 msgid "TID"
 msgstr ""
 
@@ -14850,7 +14855,7 @@ msgstr ""
 msgid "Time remaining: {0, plural, one {# second} other {# seconds}}"
 msgstr "Temps restant: {0, plural, one {# segon} other {# segons}}"
 
-#: src/view/com/composer/AtprotoBtn.tsx:105
+#: src/view/com/composer/AtprotoBtn.tsx:106
 msgid "Timestamp-ID (TID) Record Key"
 msgstr ""
 
@@ -15054,7 +15059,7 @@ msgstr "Crepuscle"
 msgid "Two-factor authentication (2FA)"
 msgstr "Autenticació de dos factors (2FA)"
 
-#: src/view/com/composer/AtprotoBtn.tsx:127
+#: src/view/com/composer/AtprotoBtn.tsx:128
 msgid "Type"
 msgstr ""
 
@@ -15689,7 +15694,7 @@ msgstr "usuaris seguint  <0>@{0}</0>"
 msgid "Value:"
 msgstr "Valor:"
 
-#: src/view/com/composer/AtprotoBtn.tsx:111
+#: src/view/com/composer/AtprotoBtn.tsx:112
 msgid "Vanity rkey"
 msgstr ""
 
