@@ -256,7 +256,7 @@ function ReaderSeamControlsInner({
               </Text>
             </Link>
           ) : null}
-          {post.quoteCount && !post.viewer?.embeddingDisabled ? (
+          {post.quoteCount ? (
             <Link to={quotesHref} label={l`Quotes of this post`}>
               <Text
                 testID="quoteCount-expanded"

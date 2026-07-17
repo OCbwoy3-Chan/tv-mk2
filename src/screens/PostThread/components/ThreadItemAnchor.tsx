@@ -630,7 +630,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       {shouldShowThreadExpandedMetric(
                         quotesMetricsDisplay,
                         post.quoteCount,
-                      ) && !post.viewer?.embeddingDisabled ? (
+                      ) ? (
                         <Link to={quotesHref} label={l`Quotes of this post`}>
                           <ThreadExpandedMetricText
                             testID="quoteCount-expanded"
