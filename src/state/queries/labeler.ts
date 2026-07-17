@@ -88,7 +88,8 @@ export function useRemoveLabelersMutation() {
 
   return useMutation({
     async mutationFn({dids}: {dids: string[]}) {
-      await Promise.all(dids.map(did => agent.removeLabeler(did)))
+      const directAgent = pdsAgent(agent)
+      await Promise.all(dids.map(did => directAgent.removeLabeler(did)))
     },
     async onSuccess() {
       await queryClient.invalidateQueries({
@@ -123,6 +124,7 @@ export function useLabelerSubscriptionMutation() {
       const labelerDids = (
         preferences.data?.moderationPrefs?.labelers ?? []
       ).map(l => l.did)
+      const directAgent = pdsAgent(agent)
       const invalidLabelers: string[] = []
       if (labelerDids.length) {
         const profiles = await agent.getProfiles({actors: labelerDids})
@@ -142,7 +144,9 @@ export function useLabelerSubscriptionMutation() {
         }
       }
       if (invalidLabelers.length) {
-        await Promise.all(invalidLabelers.map(did => agent.removeLabeler(did)))
+        await Promise.all(
+          invalidLabelers.map(did => directAgent.removeLabeler(did)),
+        )
       }
 
       if (subscribe) {
@@ -153,16 +157,14 @@ export function useLabelerSubscriptionMutation() {
           if (labelerCount >= MAX_LABELERS) {
             throw new Error('MAX_LABELERS')
           }
-          await pdsAgent(agent).addLabeler(did)
+          await directAgent.addLabeler(did)
         }
       } else {
         if (isAppLabeler(did)) {
           addIgnoredAppLabeler(did)
-          await pdsAgent(agent)
-            .removeLabeler(did)
-            .catch(() => {})
+          await directAgent.removeLabeler(did).catch(() => {})
         } else {
-          await pdsAgent(agent).removeLabeler(did)
+          await directAgent.removeLabeler(did)
         }
       }
     },

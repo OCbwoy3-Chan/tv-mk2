@@ -439,8 +439,8 @@ class BskyAppAgent extends AtpAgent {
   }
 
   cloneWithoutProxy(): AtpAgent {
-    const cloned = new AtpAgent({service: this.serviceUrl.toString()})
-    cloned.sessionManager.session = this.sessionManager.session
+    const cloned = this.clone()
+    cloned.configureProxy(null)
     return cloned
   }
 }
