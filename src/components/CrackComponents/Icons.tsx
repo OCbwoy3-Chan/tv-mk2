@@ -36,3 +36,21 @@ export function DarknerIcon({
     />
   )
 }
+
+export function TennaIcon({
+  fill,
+  ...rest
+}: {fill?: PathProps['fill']} & SvgProps) {
+  // @ts-ignore it's fiiiiine
+  const size = parseInt(rest.width || 24)
+
+  return (
+    <Image
+      source={require('#/../assets/logo.png')}
+      accessibilityLabel="Tenna"
+      accessibilityHint=""
+      accessibilityIgnoresInvertColors
+      style={{width: size, height: size}}
+    />
+  )
+}

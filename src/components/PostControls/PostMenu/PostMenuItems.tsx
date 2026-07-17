@@ -110,7 +110,7 @@ import {
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
-import {IS_INTERNAL} from '#/env'
+import {IS_INTERNAL, IS_NATIVE} from '#/env'
 import * as bsky from '#/types/bsky'
 
 let PostMenuItems = ({
@@ -635,17 +635,14 @@ let PostMenuItems = ({
 
     Toast.show(l({message: 'Downloading video...', context: 'toast'}))
 
-    let success
-    success = await saveVideoToDevice({uri: uri})
+    const success = await saveVideoToDevice({uri})
 
-    if (success)
-      Toast.show(l({message: 'Video downloaded', context: 'toast'}), {
-        type: 'success',
-      })
-    else
-      Toast.show(l({message: 'Failed to download video', context: 'toast'}), {
-        type: 'error',
-      })
+    Toast.show(
+      success
+        ? l({message: 'Video downloaded', context: 'toast'})
+        : l({message: 'Failed to download video', context: 'toast'}),
+      {type: success ? 'success' : 'error'},
+    )
   }
 
   const onPressDownloadGif = async () => {
@@ -796,20 +793,21 @@ let PostMenuItems = ({
           </>
         )}
 
-        {videoEmbed && (
-          <>
-            <Menu.Group>
-              <Menu.Item
-                testID="postDropdownDownloadVideoBtn"
-                label={l`Download Video`}
-                onPress={onPressDownloadVideo}>
-                <Menu.ItemText>{l`Download Video`}</Menu.ItemText>
-                <Menu.ItemIcon icon={Download} position="right" />
-              </Menu.Item>
-            </Menu.Group>
-            <Menu.Divider />
-          </>
-        )}
+        {videoEmbed &&
+          (IS_NATIVE || videoEmbed.presentation === 'gif') && (
+            <>
+              <Menu.Group>
+                <Menu.Item
+                  testID="postDropdownDownloadVideoBtn"
+                  label={l`Download Video`}
+                  onPress={() => void onPressDownloadVideo()}>
+                  <Menu.ItemText>{l`Download Video`}</Menu.ItemText>
+                  <Menu.ItemIcon icon={Download} position="right" />
+                </Menu.Item>
+              </Menu.Group>
+              <Menu.Divider />
+            </>
+          )}
 
         {isEmbedGif() && (
           <>

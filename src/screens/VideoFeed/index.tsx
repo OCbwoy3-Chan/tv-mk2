@@ -51,7 +51,7 @@ import {
   type CommonNavigatorParams,
   type NavigationProp,
 } from '#/lib/routes/types'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {cleanError} from '#/lib/strings/errors'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {logger} from '#/logger'
@@ -69,6 +69,7 @@ import {
 } from '#/state/feed-feedback'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useFeedInfo} from '#/state/queries/feed'
 import {usePostLikeMutationQueue} from '#/state/queries/post'
 import {
@@ -750,6 +751,10 @@ function Overlay({
     [accounts, currentAccount?.did],
   )
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const hideDisplayNames = useHideDisplayNames()
+  const authorPrimaryName = getAuthorPrimaryName(post.author, {
+    hideDisplayNames,
+  })
   const promptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] =
     useState<'follow' | 'unfollow'>('follow')
@@ -868,9 +873,7 @@ function Overlay({
             <Animated.View style={[a.px_md, animatedStyle]}>
               <View style={[a.w_full, a.flex_row, a.align_center, a.gap_md]}>
                 <Link
-                  label={l`View ${sanitizeDisplayName(
-                    post.author.displayName || post.author.handle,
-                  )}'s profile`}
+                  label={l`View ${authorPrimaryName}'s profile`}
                   to={{
                     screen: 'Profile',
                     params: {name: post.author.did},
@@ -886,15 +889,15 @@ function Overlay({
                       style={[a.text_md, a.font_bold]}
                       emoji
                       numberOfLines={1}>
-                      {sanitizeDisplayName(
-                        post.author.displayName || post.author.handle,
-                      )}
+                      {authorPrimaryName}
                     </Text>
-                    <Text
-                      style={[a.text_sm, t.atoms.text_contrast_high]}
-                      numberOfLines={1}>
-                      {handle}
-                    </Text>
+                    {!hideDisplayNames && (
+                      <Text
+                        style={[a.text_sm, t.atoms.text_contrast_high]}
+                        numberOfLines={1}>
+                        {handle}
+                      </Text>
+                    )}
                   </View>
                 </Link>
                 {/* show button based on non-reactive version, so it doesn't hide on press */}
@@ -1043,9 +1046,7 @@ function Overlay({
     {confirmFollowUnfollow && (
       <FollowConfirmationDialog
         control={promptControl}
-        displayName={sanitizeDisplayName(
-          post.author.displayName || post.author.handle,
-        )}
+        displayName={authorPrimaryName}
         handle={post.author.handle}
         actionType={confirmationAction}
         onConfirm={onConfirm}

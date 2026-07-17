@@ -1,21 +1,21 @@
-import { useState } from 'react'
-import { Image, View } from 'react-native'
-import Svg, { G, Path, Rect } from 'react-native-svg'
-import { msg } from '@lingui/core/macro'
-import { useLingui } from '@lingui/react'
-import { Trans } from '@lingui/react/macro'
+import {type ReactNode, useState} from 'react'
+import {Image, View} from 'react-native'
+import Svg, {G, Path, Rect} from 'react-native-svg'
+import {Trans, useLingui} from '@lingui/react/macro'
 
 import {
   getPdsFallbackFaviconUrls,
   isBridgedPdsUrl,
   isBskyPdsUrl,
 } from '#/state/queries/pds-label.util'
-import { atoms as a, useBreakpoints, useTheme } from '#/alf'
-import { Button, ButtonText } from '#/components/Button'
+import {useServiceQuery} from '#/state/queries/service'
+import {atoms as a, useBreakpoints, useTheme} from '#/alf'
+import {ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import { Database_Filled_Corner0_Rounded as DatabaseIcon } from '#/components/icons/Database'
-import { InlineLinkText } from '#/components/Link'
-import { Text } from '#/components/Typography'
+import {Database_Filled_Corner0_Rounded as DatabaseIcon} from '#/components/icons/Database'
+import {InlineLinkText, Link} from '#/components/Link'
+import {Loader} from '#/components/Loader'
+import {Text} from '#/components/Typography'
 
 const failedFaviconUrls = new Set<string>()
 
@@ -65,13 +65,16 @@ export function PdsDialog({
   control,
   pdsUrl,
   faviconUrl,
+  loadDescription = false,
 }: {
   control: Dialog.DialogControlProps
   pdsUrl: string
   faviconUrl: string | undefined
+  loadDescription?: boolean
 }) {
-  const { _ } = useLingui()
-  const { gtMobile } = useBreakpoints()
+  const {t: l} = useLingui()
+  const t = useTheme()
+  const {gtMobile} = useBreakpoints()
 
   let hostname = pdsUrl
   try {
@@ -80,17 +83,29 @@ export function PdsDialog({
 
   const isBsky = isBskyPdsUrl(pdsUrl)
   const isBridged = isBridgedPdsUrl(pdsUrl)
-  const displayName = formatBskyPdsDisplayName(hostname)
+  const displayName = isBsky ? formatBskyPdsDisplayName(hostname) : hostname
+  const descriptionUrl = isBsky ? 'https://bsky.social' : pdsUrl
+  const shouldLoadDescription = loadDescription && !isBridged
+  const description = useServiceQuery(descriptionUrl, {
+    enabled: shouldLoadDescription,
+  })
+
+  const contactEmail = description.data?.contact?.email?.trim()
+  const handleDomains = description.data?.availableUserDomains ?? []
+  const inviteCodeRequired = description.data?.inviteCodeRequired
+  const formattedDomains = handleDomains.map(domain => domain.replace(/^\./, ''))
 
   return (
-    <Dialog.Outer control={control} nativeOptions={{ preventExpansion: true }}>
+    <Dialog.Outer
+      control={control}
+      nativeOptions={{preventExpansion: true}}>
       <Dialog.Handle />
       <Dialog.ScrollableInner
-        label={_(msg`PDS Information`)}
+        label={l`PDS Information`}
         style={[
           gtMobile ? { width: 'auto', maxWidth: 400, minWidth: 200 } : a.w_full,
         ]}>
-        <View style={[a.gap_md, a.pb_lg]}>
+        <View style={[a.gap_lg, a.pb_lg]}>
           <View style={[a.flex_row, a.align_center, a.gap_md]}>
             <PdsBadgeIcon
               faviconUrl={faviconUrl}
@@ -100,13 +115,11 @@ export function PdsDialog({
               size={36}
             />
             <View style={[a.flex_1]}>
-              {
-                <Text
-                  style={[a.text_2xl, a.font_semi_bold, a.leading_tight]}
-                  numberOfLines={1}>
-                  {isBridged ? <Trans>Fediverse</Trans> : displayName}
-                </Text>
-              }
+              <Text
+                style={[a.text_2xl, a.font_semi_bold, a.leading_tight]}
+                numberOfLines={1}>
+                {isBridged ? <Trans>Fediverse</Trans> : displayName}
+              </Text>
               {isBsky && (
                 <Text style={[a.text_sm, a.leading_tight]}>
                   <Trans>Bluesky Social</Trans>
@@ -115,56 +128,123 @@ export function PdsDialog({
             </View>
           </View>
 
-          <Text style={[a.text_md, a.leading_snug]}>
-            <Trans>
-              This badge represents the Personal Data Server this account is
-              stored on:{' '}
-              <InlineLinkText
-                to={pdsUrl}
-                label={displayName}
-                style={[a.text_md, a.font_semi_bold]}>
-                {displayName}
-              </InlineLinkText>
-              . A PDS is where posts, follows, and other data live on the AT
-              Protocol network.
-            </Trans>
-          </Text>
+          {!isBridged && (
+            <Text style={[a.text_md, a.leading_snug]}>
+              <Trans>
+                This account’s data is stored on a Personal Data Server at{' '}
+                <InlineLinkText
+                  to={pdsUrl}
+                  label={hostname}
+                  style={[a.text_md, a.font_semi_bold]}>
+                  {hostname}
+                </InlineLinkText>
+                .
+              </Trans>
+            </Text>
+          )}
 
           {isBridged && (
             <Text style={[a.text_md, a.leading_snug]}>
               <Trans>
-                This account is bridged from the Fediverse via{' '}
+                This account is bridged from the{' '}
+                <InlineLinkText
+                  to="https://wikipedia.org/wiki/Fediverse"
+                  label={l`Learn more about the Fediverse`}
+                  style={[a.text_md, a.font_semi_bold]}>
+                  Fediverse
+                </InlineLinkText>{' '}
+                via{' '}
                 <InlineLinkText
                   to="https://witchsky.app/profile/ap.brid.gy"
                   label="Bridgy Fed"
                   style={[a.text_md, a.font_semi_bold]}>
                   Bridgy Fed
                 </InlineLinkText>
-                .{' '}
-                {/* Their original account is avaiable at:{' '}
-                <InlineLinkText
-                  to={BridgedUrl}
-                  label="Federated account address"
-                  style={[a.text_md, a.font_semi_bold]}>
-                  {BridgedUrl}
-                </InlineLinkText> */}
+                .
               </Trans>
             </Text>
           )}
 
+          {shouldLoadDescription && description.isLoading && (
+            <View style={[a.flex_row, a.align_center, a.gap_sm]}>
+              <Loader size="md" />
+              <Text style={[a.text_md, t.atoms.text_contrast_medium]}>
+                <Trans>Loading server details…</Trans>
+              </Text>
+            </View>
+          )}
+
+          {shouldLoadDescription &&
+            description.isSuccess &&
+            description.data && (
+              <View style={[a.gap_md]}>
+
+              {contactEmail ? (
+                <DetailItem
+                  label={l`Contact`}
+                  valueText={
+                    <InlineLinkText
+                      to={`mailto:${contactEmail}`}
+                      label={contactEmail}
+                      style={[a.text_md, a.font_semi_bold]}>
+                      {contactEmail}
+                    </InlineLinkText>
+                  }
+                />
+              ) : null}
+
+              <DetailItem
+                label={l`Signup`}
+                valueText={
+                  inviteCodeRequired ? (
+                    <Trans>Invite code required</Trans>
+                  ) : (
+                    <Trans>Open</Trans>
+                  )
+                }
+              />
+
+              {formattedDomains.length > 0 && (
+                <View style={[a.gap_xs]}>
+                  <DetailLabelText>{l`Handles`}</DetailLabelText>
+                  <View style={[a.gap_xs]}>
+                    {formattedDomains.map(domain => (
+                      <View
+                        key={domain}
+                        style={[a.flex_row, a.gap_sm, a.align_start]}>
+                        <Text style={[a.text_md, a.leading_snug]}>•</Text>
+                        <Text style={[a.text_md, a.leading_snug, a.flex_1]}>
+                          {domain}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+            </View>
+          )}
+
+          {shouldLoadDescription && description.isError && (
+            <Text style={[a.text_md, t.atoms.text_contrast_medium]}>
+              <Trans>Couldn’t load extra details from this server.</Trans>
+            </Text>
+          )}
+
           {!isBridged && (
-            <Text style={[a.text_md, a.leading_snug]}>
+            <Text
+              style={[a.text_md, a.leading_snug, t.atoms.text_contrast_medium]}>
               <Trans>
                 <InlineLinkText
-                  to="https://atproto.com/guides/glossary#pds-personal-data-server"
-                  label="PDS Glossary definition"
+                  to="https://wikipedia.org/wiki/AT_Protocol#Personal_Data_Servers"
+                  label={l`Learn more about PDSes`}
                   style={[a.text_md, a.font_semi_bold]}>
                   Learn more
                 </InlineLinkText>{' '}
-                about what a PDS is and how to{' '}
+                about PDSes or how to{' '}
                 <InlineLinkText
                   to="https://atproto.com/guides/self-hosting#pds"
-                  label="Self-hosting PDS documentation"
+                  label={l`Self-hosting PDS documentation`}
                   style={[a.text_md, a.font_semi_bold]}>
                   self-host
                 </InlineLinkText>{' '}
@@ -172,26 +252,7 @@ export function PdsDialog({
               </Trans>
             </Text>
           )}
-        </View>
 
-        <View
-          style={[
-            a.w_full,
-            a.gap_sm,
-            gtMobile
-              ? [a.flex_row, a.flex_row_reverse, a.justify_start]
-              : [a.flex_col],
-          ]}>
-          <Button
-            label={_(msg`Close dialog`)}
-            size="small"
-            variant="solid"
-            color="primary"
-            onPress={() => control.close()}>
-            <ButtonText>
-              <Trans>Close</Trans>
-            </ButtonText>
-          </Button>
         </View>
 
         <Dialog.Close />
@@ -200,7 +261,37 @@ export function PdsDialog({
   )
 }
 
-function BskyBadgeSVG({ size }: { size: number }) {
+function DetailItem({
+  label,
+  valueText,
+}: {
+  label: string
+  valueText: ReactNode
+}) {
+  return (
+    <View style={[a.gap_xs]}>
+      <DetailLabelText>{label}</DetailLabelText>
+      <Text style={[a.text_md, a.leading_snug]}>{valueText}</Text>
+    </View>
+  )
+}
+
+function DetailLabelText({children}: {children: ReactNode}) {
+  const t = useTheme()
+  return (
+    <Text
+      style={[
+        a.text_sm,
+        a.font_semi_bold,
+        a.leading_snug,
+        t.atoms.text_contrast_medium,
+      ]}>
+      {children}
+    </Text>
+  )
+}
+
+function BskyBadgeSVG({size}: {size: number}) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Rect width={24} height={24} rx={6} fill="#0085ff" />

@@ -138,7 +138,11 @@ export function usePreferencesSetContentLabelMutation() {
     {label: string; visibility: LabelPreference; labelerDid: string | undefined}
   >({
     mutationFn: async ({label, visibility, labelerDid}) => {
-      await agent.setContentLabelPref(label, visibility, labelerDid)
+      await pdsAgent(agent).setContentLabelPref(
+        label,
+        visibility,
+        labelerDid,
+      )
       ax.metric('moderation:changeLabelPreference', {preference: visibility})
       // triggers a refetch
       await queryClient.invalidateQueries({
@@ -162,7 +166,11 @@ export function useSetContentLabelMutation() {
       visibility: LabelPreference
       labelerDid?: string
     }) => {
-      await agent.setContentLabelPref(label, visibility, labelerDid)
+      await pdsAgent(agent).setContentLabelPref(
+        label,
+        visibility,
+        labelerDid,
+      )
       // triggers a refetch
       await queryClient.invalidateQueries({
         queryKey: preferencesQueryKey,
@@ -177,7 +185,7 @@ export function usePreferencesSetAdultContentMutation() {
 
   return useMutation<void, unknown, {enabled: boolean}>({
     mutationFn: async ({enabled}) => {
-      await agent.setAdultContentEnabled(enabled)
+      await pdsAgent(agent).setAdultContentEnabled(enabled)
       // triggers a refetch
       await queryClient.invalidateQueries({
         queryKey: preferencesQueryKey,

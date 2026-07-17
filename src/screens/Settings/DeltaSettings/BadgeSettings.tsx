@@ -50,6 +50,10 @@ export function DeltaBadgeSettingsScreen() {
             </View>
             <Separator />
             <View style={[a.p_md]}>
+              <CustomLabelToggle isChild label="Tenna" value="tenna" />
+            </View>
+            <Separator />
+            <View style={[a.p_md]}>
               <CustomLabelToggle isChild label="Pet" value="pet" />
             </View>
           </View>

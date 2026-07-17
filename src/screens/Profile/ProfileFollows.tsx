@@ -7,7 +7,8 @@ import {
   type CommonNavigatorParams,
   type NativeStackScreenProps,
 } from '#/lib/routes/types'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
 import {ProfileFollows as ProfileFollowsComponent} from '#/view/com/profile/ProfileFollows'
@@ -17,6 +18,7 @@ type Props = NativeStackScreenProps<CommonNavigatorParams, 'ProfileFollows'>
 export const ProfileFollowsScreen = ({route}: Props) => {
   const {name} = route.params
   const {_} = useLingui()
+  const hideDisplayNames = useHideDisplayNames()
 
   const {data: resolvedDid} = useResolveDidQuery(name)
   const {data: profile} = useProfileQuery({
@@ -35,7 +37,7 @@ export const ProfileFollowsScreen = ({route}: Props) => {
           {profile && (
             <>
               <Layout.Header.TitleText>
-                {sanitizeDisplayName(profile.displayName || profile.handle)}
+                {getAuthorPrimaryName(profile, {hideDisplayNames})}
               </Layout.Header.TitleText>
               <Layout.Header.SubtitleText>
                 <Plural

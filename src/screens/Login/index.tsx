@@ -1,19 +1,12 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {KeyboardAvoidingView} from 'react-native'
+import {useEffect, useRef, useState} from 'react'
+import {KeyboardAvoidingView} from 'react-native-keyboard-controller'
 import Animated, {FadeIn, LayoutAnimationConfig} from 'react-native-reanimated'
-import {type Did} from '@atproto/api'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import debounce from 'lodash.debounce'
+import {useLingui} from '@lingui/react/macro'
 
 import {DEFAULT_SERVICE} from '#/lib/constants'
 import {logger} from '#/logger'
 import {useServiceQuery} from '#/state/queries/service'
 import {type SessionAccount, useSession} from '#/state/session'
-import {
-  getPdsServiceUrlFromIdentityInfo,
-  resolveIdentityUsingAppView,
-} from '#/state/session/identity-resolver'
 import {consumeOAuthCallbackError} from '#/state/session/oauth-web-return-url'
 import {useLoggedOutView} from '#/state/shell/logged-out'
 import {LoggedOutLayout} from '#/view/com/util/layouts/LoggedOutLayout'
@@ -44,10 +37,16 @@ const OrderedForms = [
   Forms.PasswordUpdated,
 ] as const
 
-export const Login = ({onPressBack}: {onPressBack: () => void}) => {
-  const {_} = useLingui()
+export const Login = ({
+  onPressBack,
+  onPressCreateAccount,
+}: {
+  onPressBack: () => void
+  onPressCreateAccount: () => void
+}) => {
+  const {t: l} = useLingui()
   const failedAttemptCountRef = useRef(0)
-  const startTimeRef = useRef(Date.now())
+  const [startTime] = useState(() => Date.now())
 
   const {accounts} = useSession()
   const {requestedAccountSwitchTo} = useLoggedOutView()
@@ -55,10 +54,9 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
     acc => acc.did === requestedAccountSwitchTo,
   )
 
-  const [isResolvingService, setIsResolvingService] = useState(false)
-  const [error, setError] = useState<string>('')
-  const [serviceUrl, setServiceUrl] = useState<string | undefined>(
-    requestedAccount?.service,
+  const [error, setError] = useState('')
+  const [serviceUrl, setServiceUrl] = useState(
+    requestedAccount?.service || DEFAULT_SERVICE,
   )
   const [initialHandle, setInitialHandle] = useState(
     requestedAccount?.handle || '',
@@ -79,7 +77,7 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
     data: serviceDescription,
     error: serviceError,
     refetch: refetchService,
-  } = useServiceQuery(serviceUrl ?? '')
+  } = useServiceQuery(serviceUrl)
 
   const onSelectAccount = (account?: SessionAccount) => {
     if (account?.service) {
@@ -100,16 +98,16 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
   useEffect(() => {
     if (serviceError) {
       setError(
-        _(
-          msg`Unable to contact your service. Please check your Internet connection.`,
-        ),
+        l`Unable to contact your service. Please check your Internet connection.`,
       )
       logger.warn(`Failed to fetch service description for ${serviceUrl}`, {
         error: String(serviceError),
       })
       ax.metric('signin:hostingProviderFailedResolution', {})
+    } else {
+      setError('')
     }
-  }, [serviceError, serviceUrl, _, ax])
+  }, [serviceError, serviceUrl, l, ax])
 
   useEffect(() => {
     const oauthCallbackError = consumeOAuthCallbackError()
@@ -118,46 +116,6 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
       setCurrentForm(Forms.Login)
     }
   }, [])
-
-  const resolveIdentity = useCallback(async (identifier: string) => {
-    setIsResolvingService(true)
-
-    try {
-      const identity = await resolveIdentityUsingAppView(identifier)
-      const did = identity.did as Did
-      const pdsUrl = getPdsServiceUrlFromIdentityInfo(identity)
-
-      if (!pdsUrl) {
-        throw new Error(`No PDS service found in DID document for ${did}`)
-      }
-
-      if (pdsUrl.endsWith('.bsky.network')) {
-        setServiceUrl('https://bsky.social')
-      } else {
-        setServiceUrl(pdsUrl)
-      }
-    } catch (err) {
-      logger.error(
-        `Service auto-resolution failed: ${err instanceof Error ? err.message : String(err)}`,
-      )
-    } finally {
-      setIsResolvingService(false)
-    }
-  }, [])
-
-  const debouncedResolveService = useMemo(
-    () => debounce(resolveIdentity, 400),
-    [resolveIdentity],
-  )
-  const onPressRetryConnect = useCallback(() => {
-    void refetchService()
-  }, [refetchService])
-  const onDebouncedResolveService = useCallback(
-    (identifier: string) => {
-      void debouncedResolveService(identifier)
-    },
-    [debouncedResolveService],
-  )
 
   const onPressForgotPassword = () => {
     gotoForm(Forms.ForgotPassword)
@@ -175,7 +133,7 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
   const onAttemptSuccess = () => {
     ax.metric('signin:success', {
       isUsingCustomProvider: serviceUrl !== DEFAULT_SERVICE,
-      timeTakenSeconds: Math.round((Date.now() - startTimeRef.current) / 1000),
+      timeTakenSeconds: Math.round((Date.now() - startTime) / 1000),
       failedAttemptsCount: failedAttemptCountRef.current,
     })
   }
@@ -191,8 +149,8 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
 
   switch (currentForm) {
     case Forms.Login:
-      title = _(msg`Sign in`)
-      description = _(msg`Enter your handle to sign in`)
+      title = l`Sign in`
+      description = l`Enter your handle to sign in`
       goBack = () =>
         accounts.length ? gotoForm(Forms.ChooseAccount) : handlePressBack()
       content = (
@@ -207,15 +165,14 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
           setServiceUrl={setServiceUrl}
           onPressBack={goBack}
           onPressForgotPassword={onPressForgotPassword}
-          onPressRetryConnect={onPressRetryConnect}
-          debouncedResolveService={onDebouncedResolveService}
-          isResolvingService={isResolvingService}
+          onPressRetryConnect={() => void refetchService()}
+          onPressCreateAccount={onPressCreateAccount}
         />
       )
       break
     case Forms.ChooseAccount:
-      title = _(msg`Sign in`)
-      description = _(msg`Select from an existing account`)
+      title = l`Sign in`
+      description = l`Select from an existing account`
       goBack = handlePressBack
       content = (
         <ChooseAccountForm
@@ -225,13 +182,13 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
       )
       break
     case Forms.ForgotPassword:
-      title = _(msg`Forgot Password`)
-      description = _(msg`Let's get your password reset!`)
+      title = l`Forgot Password`
+      description = l`Let's get your password reset!`
       goBack = () => gotoForm(Forms.Login)
       content = (
         <ForgotPasswordForm
           error={error}
-          serviceUrl={serviceUrl ?? DEFAULT_SERVICE}
+          serviceUrl={serviceUrl}
           serviceDescription={serviceDescription}
           setError={setError}
           setServiceUrl={setServiceUrl}
@@ -241,13 +198,13 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
       )
       break
     case Forms.SetNewPassword:
-      title = _(msg`Forgot Password`)
-      description = _(msg`Let's get your password reset!`)
+      title = l`Forgot Password`
+      description = l`Let's get your password reset!`
       goBack = () => gotoForm(Forms.ForgotPassword)
       content = (
         <SetNewPasswordForm
           error={error}
-          serviceUrl={serviceUrl ?? DEFAULT_SERVICE}
+          serviceUrl={serviceUrl}
           setError={setError}
           onPressBack={goBack}
           onPasswordSet={() => gotoForm(Forms.PasswordUpdated)}
@@ -255,8 +212,8 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
       )
       break
     case Forms.PasswordUpdated:
-      title = _(msg`Password updated`)
-      description = _(msg`You can now sign in with your new password.`)
+      title = l`Password updated`
+      description = l`You can now sign in with your new password.`
       content = (
         <PasswordUpdatedForm onPressNext={() => gotoForm(Forms.Login)} />
       )
@@ -271,7 +228,8 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
         <KeyboardAvoidingView
           testID="signIn"
           behavior="padding"
-          style={a.flex_1}>
+          style={a.flex_1}
+          automaticOffset>
           <AuthLayout.Header.Outer>
             <AuthLayout.Header.BackButton />
             <AuthLayout.Header.Content />
@@ -285,7 +243,8 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
             <LayoutAnimationConfig skipEntering>
               <ScreenTransition
                 key={currentForm}
-                direction={screenTransitionDirection}>
+                direction={screenTransitionDirection}
+                style={a.flex_1}>
                 {content}
               </ScreenTransition>
             </LayoutAnimationConfig>

@@ -399,8 +399,6 @@ let EditableUserAvatar = ({
   const editImageDialogControl = useDialogControl()
 
   const sheetWrapper = useSheetWrapper()
-  const thumbnailFormat = useThumbnailFormat()
-  const imageCdnHost = useImageCdnHost()
 
   const enableSquareAvatars = useEnableSquareAvatars()
 
@@ -521,12 +519,7 @@ let EditableUserAvatar = ({
                 <ExpoImage
                   testID="userAvatarImage"
                   style={aviStyle}
-                  source={{
-                    uri: applyImageTransforms(avatar, {
-                      imageCdnHost,
-                      format: thumbnailFormat,
-                    }),
-                  }}
+                  source={{uri: avatar}}
                   accessibilityRole="image"
                 />
               ) : (

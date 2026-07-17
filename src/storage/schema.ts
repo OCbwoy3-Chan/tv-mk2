@@ -73,6 +73,11 @@ export type Device = {
    */
   inviteFriendsThemeKey?: InviteThemeKey
   customAppViewDid: string | undefined
+  /**
+   * Optional AppView service URL paired with `customAppViewDid`. Used for
+   * guest browsing and for displaying the active App server on sign-in.
+   */
+  customAppViewUrl: string | undefined
   hiddenAccountsElsewhere?: string[]
   settingsAccountSwitcherSortBy?:
     | 'alphabetical'

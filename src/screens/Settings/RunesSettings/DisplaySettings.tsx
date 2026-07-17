@@ -31,9 +31,21 @@ import {
   useSetPostReplacement,
 } from '#/state/preferences/post-name-replacement'
 import {
+  useHideDisplayNames,
+  useSetHideDisplayNames,
+} from '#/state/preferences/hide-display-names'
+import {
+  useSetShowThreadPostIndicators,
+  useShowThreadPostIndicators,
+} from '#/state/preferences/show-thread-post-indicators'
+import {
   useSetShowViaClient,
   useShowViaClient,
 } from '#/state/preferences/show-via-client'
+import {
+  useSetSixSevenCelebration,
+  useSixSevenCelebration,
+} from '#/state/preferences/six-seven-celebration'
 import {
   useSetThumbnailFormat,
   useThumbnailFormat,
@@ -43,6 +55,9 @@ import {atoms as a} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import * as Toggle from '#/components/forms/Toggle'
+import {At_Stroke2_Corner0_Rounded as AtIcon} from '#/components/icons/At'
+import {Celebrate_Stroke2_Corner0_Rounded as CelebrateIcon} from '#/components/icons/Celebrate'
+import {Hashtag_Stroke2_Corner0_Rounded as HashtagIcon} from '#/components/icons/Hashtag'
 import {Heart2_Stroke2_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
 import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
@@ -62,6 +77,15 @@ export function RunesDisplaySettingsScreen() {
 
   const showViaClient = useShowViaClient()
   const setShowViaClient = useSetShowViaClient()
+
+  const hideDisplayNames = useHideDisplayNames()
+  const setHideDisplayNames = useSetHideDisplayNames()
+
+  const showThreadPostIndicators = useShowThreadPostIndicators()
+  const setShowThreadPostIndicators = useSetShowThreadPostIndicators()
+
+  const sixSevenCelebration = useSixSevenCelebration()
+  const setSixSevenCelebration = useSetSixSevenCelebration()
 
   const thumbnailFormat = useThumbnailFormat() ?? 'webp'
   const setThumbnailFormat = useSetThumbnailFormat()
@@ -102,6 +126,19 @@ export function RunesDisplaySettingsScreen() {
         />
       </SettingsList.LinkItem>
       <Toggle.Item
+        name="show_thread_post_indicators"
+        label={l`Show thread position indicators`}
+        value={showThreadPostIndicators}
+        onChange={value => setShowThreadPostIndicators(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={HashtagIcon} />
+          <SettingsList.ItemText>
+            <Trans>Show thread position indicators</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
         name="show_via_client"
         label={l`Show client used to post`}
         value={showViaClient}
@@ -110,6 +147,32 @@ export function RunesDisplaySettingsScreen() {
           <SettingsList.ItemIcon icon={WindowIcon} />
           <SettingsList.ItemText>
             <Trans>Show client used to post</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="hide_display_names"
+        label={l`Hide display names`}
+        value={hideDisplayNames}
+        onChange={value => setHideDisplayNames(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={AtIcon} />
+          <SettingsList.ItemText>
+            <Trans>Hide display names</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="six_seven_celebration"
+        label={l`67 celebration`}
+        value={sixSevenCelebration ?? true}
+        onChange={value => setSixSevenCelebration(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={CelebrateIcon} />
+          <SettingsList.ItemText>
+            <Trans>67 celebration</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

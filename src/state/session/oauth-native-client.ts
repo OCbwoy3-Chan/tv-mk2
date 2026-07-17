@@ -20,7 +20,7 @@ const BSKY_OAUTH_CLIENT = new ExpoOAuthClient({
     client_id: `${OAUTH_BASE_URL}/oauth-client-metadata-native.json`,
     client_name: OAUTH_CLIENT_NAME,
     client_uri: OAUTH_BASE_URL,
-    redirect_uris: [NATIVE_REDIRECT_URI],
+    redirect_uris: ["https://tenna.party/auth/callback"], // NATIVE_REDIRECT_URI fucking react native :(
     scope: OAUTH_SCOPE,
     token_endpoint_auth_method: 'none',
     response_types: ['code'],

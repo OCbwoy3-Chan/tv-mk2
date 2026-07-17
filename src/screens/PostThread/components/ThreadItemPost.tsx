@@ -1,5 +1,5 @@
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {View} from 'react-native'
+import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {
   type AppBskyFeedDefs,
   type AppBskyFeedThreadgate,
@@ -17,19 +17,22 @@ import {
   type Shadow,
   usePostShadow,
 } from '#/state/cache/post-shadow'
-import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useCompactPosts} from '#/state/preferences/compact-posts'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
+import {useShowThreadPostIndicators} from '#/state/preferences/show-thread-post-indicators'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
 import {PostMeta} from '#/view/com/util/PostMeta'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
+import {ThreadPositionChip} from '#/screens/PostThread/components/ThreadPositionChip'
 import {
   LINEAR_AVI_WIDTH,
   OUTER_SPACE,
   REPLY_LINE_WIDTH,
 } from '#/screens/PostThread/const'
+import {type ThreadPostPosition} from '#/screens/PostThread/reader'
 import {atoms as a, useTheme} from '#/alf'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
@@ -58,6 +61,15 @@ export type ThreadItemPostProps = {
     moderation?: boolean
     topBorder?: boolean
   }
+  /**
+   * Adjusts the hover overlay, e.g. to start at the reader bracket edge.
+   */
+  hoverStyle?: StyleProp<ViewStyle>
+  /**
+   * Set in linear view when this post is part of a self-thread: renders a
+   * "(x/n)" position chip at the end of the post text.
+   */
+  threadPosition?: ThreadPostPosition
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: AppBskyFeedThreadgate.Record
 }
@@ -65,6 +77,8 @@ export type ThreadItemPostProps = {
 export function ThreadItemPost({
   item,
   overrides,
+  hoverStyle,
+  threadPosition,
   onPostSuccess,
   threadgateRecord,
 }: ThreadItemPostProps) {
@@ -80,6 +94,8 @@ export function ThreadItemPost({
       postShadow={postShadow}
       threadgateRecord={threadgateRecord}
       overrides={overrides}
+      hoverStyle={hoverStyle}
+      threadPosition={threadPosition}
       onPostSuccess={onPostSuccess}
     />
   )
@@ -199,6 +215,8 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   item,
   postShadow,
   overrides,
+  hoverStyle,
+  threadPosition,
   onPostSuccess,
   threadgateRecord,
 }: ThreadItemPostProps & {
@@ -208,6 +226,11 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   const {openComposer} = useOpenComposer()
   const {currentAccount} = useSession()
   const compactPosts = useCompactPosts()
+  const showThreadPostIndicators = useShowThreadPostIndicators()
+  const resolvedThreadPosition =
+    showThreadPostIndicators && threadPosition && threadPosition.postCount > 2
+      ? threadPosition
+      : undefined
   const avatarSize = compactPosts ? 34 : LINEAR_AVI_WIDTH
 
   const post = item.value.post
@@ -270,7 +293,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   const {isActive: live} = useActorStatus(post.author)
 
   return (
-    <SubtleHoverWrapper>
+    <SubtleHoverWrapper hoverStyle={hoverStyle}>
       <ThreadItemPostOuterWrapper item={item} overrides={overrides}>
         <PostHider
           testID={`postThreadItem-by-${post.author.handle}`}
@@ -334,6 +357,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                 style={[compactPosts ? a.pb_2xs : a.pb_xs]}
               />
               <PostAlerts
+                post={post}
                 modui={moderation.ui('contentList')}
                 style={[a.pb_2xs]}
                 additionalCauses={additionalPostAlerts}
@@ -347,6 +371,13 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                     numberOfLines={limitLines ? MAX_POST_LINES : undefined}
                     authorHandle={post.author.handle}
                     shouldProxyLinks={true}
+                    trailing={
+                      resolvedThreadPosition ? (
+                        <ThreadPositionChip
+                          threadPosition={resolvedThreadPosition}
+                        />
+                      ) : undefined
+                    }
                   />
                   {limitLines && (
                     <ShowMoreTextButton
@@ -354,6 +385,14 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                       onPress={onPressShowMore}
                     />
                   )}
+                </View>
+              ) : resolvedThreadPosition ? (
+                /*
+                 * Text-less posts (e.g. image-only) still show their position
+                 * so the numbering reads without gaps.
+                 */
+                <View style={[a.mb_2xs]}>
+                  <ThreadPositionChip threadPosition={resolvedThreadPosition} />
                 </View>
               ) : undefined}
               <TranslatedPost hideTranslateLink post={post} />
@@ -393,7 +432,13 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   )
 })
 
-function SubtleHoverWrapper({children}: {children: ReactNode}) {
+function SubtleHoverWrapper({
+  hoverStyle,
+  children,
+}: {
+  hoverStyle?: StyleProp<ViewStyle>
+  children: ReactNode
+}) {
   const {
     state: hover,
     onIn: onHoverIn,
@@ -404,7 +449,7 @@ function SubtleHoverWrapper({children}: {children: ReactNode}) {
       onPointerEnter={onHoverIn}
       onPointerLeave={onHoverOut}
       style={a.pointer}>
-      <SubtleHover hover={hover} />
+      <SubtleHover hover={hover} style={hoverStyle} />
       {children}
     </View>
   )

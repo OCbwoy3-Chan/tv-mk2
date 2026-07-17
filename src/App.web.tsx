@@ -70,7 +70,6 @@ import {Provider as ActiveVideoProvider} from '#/components/Post/Embed/VideoEmbe
 import {Provider as VideoVolumeProvider} from '#/components/Post/Embed/VideoEmbed/VideoVolumeContext'
 import * as Toast from '#/components/Toast'
 import {ToastOutlet} from '#/components/Toast'
-import {SixSevenOutlet} from '#/features/sixSeven'
 import {
   prefetchAgeAssuranceConfig,
   Provider as AgeAssuranceV2Provider,
@@ -275,7 +274,6 @@ function InnerApp() {
                                                                     <HotkeysProvider>
                                                                       <Shell />
                                                                       <ToastOutlet />
-                                                                      <SixSevenOutlet />
                                                                     </HotkeysProvider>
                                                                   </TranslateOnDeviceProvider>
                                                                 </IntentDialogProvider>

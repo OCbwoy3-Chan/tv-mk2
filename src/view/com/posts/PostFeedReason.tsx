@@ -7,6 +7,7 @@ import {Trans} from '@lingui/react/macro'
 import {isReasonFeedSource, type ReasonFeedSource} from '#/lib/api/feed/types'
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
 import {makeProfileLink} from '#/lib/routes/links'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useSession} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {Pin_Stroke2_Corner0_Rounded as PinIcon} from '#/components/icons/Pin'
@@ -31,6 +32,7 @@ export function PostFeedReason({
 }) {
   const t = useTheme()
   const {_} = useLingui()
+  const hideDisplayNames = useHideDisplayNames()
 
   const {currentAccount} = useSession()
 
@@ -69,6 +71,7 @@ export function PostFeedReason({
       reason.by,
       false,
       moderation?.ui('displayName'),
+      hideDisplayNames,
     )
     return (
       <Link

@@ -76,6 +76,9 @@ export function usePointerHandlers({
     let overscrollX = 0
 
     el.style.cursor = 'grab'
+    // Mark so nested carousels (e.g. image gallery inside repost carousel)
+    // can detect each other and avoid stealing gestures.
+    el.dataset.carouselScroll = ''
 
     const clearOverscroll = () => {
       overscrollX = 0
@@ -83,7 +86,41 @@ export function usePointerHandlers({
     }
 
     const onMouseDown = (e: MouseEvent) => {
+      const target = e.target
+      if (!(target instanceof Element)) return
+
+      /*
+       * Don't hijack form controls (volume slider, etc.) or buttons. Without
+       * this, preventDefault breaks range inputs and drag becomes a carousel
+       * swipe instead of adjusting the control.
+       */
+      if (
+        target.closest(
+          'input, textarea, select, button, [role="slider"], [role="button"], [data-no-carousel-drag]',
+        )
+      ) {
+        return
+      }
+
+      /*
+       * If a nested carousel scroll surface sits between the target and this
+       * node, let that carousel own the gesture (inner media gallery vs outer
+       * repost carousel).
+       */
+      let node: Element | null = target
+      while (node && node !== el) {
+        if (
+          node instanceof HTMLElement &&
+          node !== el &&
+          node.dataset.carouselScroll != null
+        ) {
+          return
+        }
+        node = node.parentElement
+      }
+
       e.preventDefault() // prevent native image drag
+      e.stopPropagation()
 
       // Cancel any in-progress tween
       if (stopTween) {
@@ -311,6 +348,7 @@ export function usePointerHandlers({
       clearOverscroll()
       el.style.cursor = ''
       el.style.userSelect = ''
+      delete el.dataset.carouselScroll
     }
   }, [
     flatListRef,

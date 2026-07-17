@@ -19,7 +19,7 @@ import {nanoid} from 'nanoid/non-secure'
 import {getImageDim} from '#/lib/media/manip'
 import {openCropper} from '#/lib/media/picker'
 import {type PickerImage} from '#/lib/media/picker.shared'
-import {getDataUriSize} from '#/lib/media/util'
+import {getDataUriSize, resolveUploadImageMime} from '#/lib/media/util'
 import {isCancelledError} from '#/lib/strings/errors'
 import {logger} from '#/logger'
 import {IS_NATIVE, IS_WEB} from '#/env'
@@ -295,7 +295,14 @@ export async function compressImage(
   }
 
   const source = img.transformed || img.source
-  const outputMime = options?.outputMime ?? 'image/webp'
+  /*
+   * HEIC/HEIF → WebP via expo-image-manipulator is unreliable (HDR /
+   * color-space issues). Force JPEG for those sources.
+   */
+  const outputMime = resolveUploadImageMime(
+    source.mime,
+    options?.outputMime ?? 'image/webp',
+  )
   const outputFormat =
     outputMime === 'image/jpeg' ? SaveFormat.JPEG : SaveFormat.WEBP
   let attempts = 0
@@ -459,14 +466,37 @@ function arrayBufferToDataUri(
   return `data:${mime};base64,${base64}`
 }
 
+/**
+ * Caches that the OS image picker and manipulator write into when attaching
+ * media to a post. They live alongside our own `bsky-composer` dir under the OS
+ * cache directory. expo-image-picker copies every originally selected photo and
+ * video here, and expo-image-manipulator leaves intermediate full-resolution
+ * outputs here (compressImage makes several manipulateAsync passes, only the
+ * last of which gets moved into `bsky-composer`). Nothing else cleans these up,
+ * so on iOS - where the OS exposes no "clear cache" - they accumulate
+ * indefinitely, one full-resolution copy per attached item.
+ */
+const SYSTEM_MEDIA_CACHE_DIRS = ['ImagePicker', 'ImageManipulator']
+
 /** Purge files that were created to accomodate image manipulation */
 export async function purgeTemporaryImageFiles() {
-  const cacheDir = IS_NATIVE && getImageCacheDirectory()
+  if (!IS_NATIVE) {
+    return
+  }
 
+  const cacheDir = getImageCacheDirectory()
   if (cacheDir) {
     await deleteAsync(cacheDir, {idempotent: true})
     await makeDirectoryAsync(cacheDir)
   }
+
+  // We don't recreate these - the respective expo modules recreate them on
+  // demand the next time they run.
+  await Promise.all(
+    SYSTEM_MEDIA_CACHE_DIRS.map(dir =>
+      deleteAsync(joinPath(cacheDirectory!, dir), {idempotent: true}),
+    ),
+  )
 }
 
 function joinPath(a: string, b: string) {

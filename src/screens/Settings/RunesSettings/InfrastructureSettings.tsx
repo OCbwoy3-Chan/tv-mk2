@@ -1,256 +1,309 @@
-import {useState} from 'react'
+import {useLayoutEffect, useState} from 'react'
 import {View} from 'react-native'
-import {isDid} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {APPVIEW_DID_PROXY} from '#/lib/constants'
+import {
+  testConstellationUrl,
+  testImageCdnUrl,
+  testPlcDirectoryUrl,
+} from '#/lib/infrastructure/url-test'
 import {usePalette} from '#/lib/hooks/usePalette'
 import * as persisted from '#/state/persisted'
 import {
-  useConstellationInstance,
+  useConstellationInstanceSetting,
+  useConstellationInstanceCustom,
   useSetConstellationInstance,
+  useSetConstellationInstanceCustom,
 } from '#/state/preferences/constellation-instance'
 import {
-  useCustomAppViewDid,
-  useSetCustomAppViewDid,
-} from '#/state/preferences/custom-appview-did'
-import {
-  useImageCdnHost,
+  useImageCdnHostSetting,
+  useImageCdnHostCustom,
   useSetImageCdnHost,
+  useSetImageCdnHostCustom,
 } from '#/state/preferences/image-cdn-host'
 import {
-  usePlcDirectory,
+  usePlcDirectorySetting,
+  usePlcDirectoryCustom,
   useSetPlcDirectory,
+  useSetPlcDirectoryCustom,
 } from '#/state/preferences/plc-directory'
-import {RestartRequiredPrompt} from '#/state/preferences/restart-required-prompt'
-import {
-  useLibreTranslateInstance,
-  useSetLibreTranslateInstance,
-  useSetTranslationServicePreference,
-  useTranslationServicePreference,
-} from '#/state/preferences/translation-service-preference'
-import {findService, useDidDocument} from '#/state/queries/resolve-identity'
-import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
+import {
+  isValidHostnameUrl,
+  isValidPlcDirectoryUrl,
+  normalizeOrigin,
+  useInfrastructureUrlSave,
+} from '#/screens/Settings/components/infrastructureUrlSave'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
-import {Button, ButtonText} from '#/components/Button'
+import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import * as Toggle from '#/components/forms/Toggle'
-import {Earth_Stroke2_Corner2_Rounded as EarthIcon} from '#/components/icons/Globe'
-import {Star_Stroke2_Corner0_Rounded as StarIcon} from '#/components/icons/Star'
-import {InlineLinkText} from '#/components/Link'
+import {Loader} from '#/components/Loader'
+import * as Select from '#/components/Select'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
+const IMAGE_CDN_PRESETS = [
+  'https://porxie-bsky.dollware.net',
+  'https://cdn.blueat.network',
+] as const
+
+const APP_SERVER_CDN_ORIGIN = 'https://cdn.bsky.app'
+
+const PLC_DIRECTORY_PRESETS = [
+  'https://plc.directory',
+  'https://plc.eurosky.network',
+  'https://plc.wafflehouse.dev',
+] as const
+
+const CONSTELLATION_PRESETS = [
+  'https://constellation.microcosm.blue',
+  'https://constellation.wafflehouse.dev',
+] as const
+
 export function RunesInfrastructureSettingsScreen() {
   const {t: l} = useLingui()
 
-  const translationServicePreference = useTranslationServicePreference()
-  const setTranslationServicePreference = useSetTranslationServicePreference()
-  const setLibreTranslateInstanceControl = Dialog.useDialogControl()
-
-  const imageCdnHost = useImageCdnHost()
+  const imageCdnHostSetting = useImageCdnHostSetting()
+  const setImageCdnHost = useSetImageCdnHost()
   const setImageCdnHostControl = Dialog.useDialogControl()
+  const [imageCdnDialogSession, setImageCdnDialogSession] = useState(0)
 
-  const plcDirectory = usePlcDirectory()
+  const plcDirectorySetting = usePlcDirectorySetting()
+  const setPlcDirectory = useSetPlcDirectory()
   const setPlcDirectoryControl = Dialog.useDialogControl()
+  const [plcDirectoryDialogSession, setPlcDirectoryDialogSession] = useState(0)
 
-  const constellationInstance = useConstellationInstance()
+  const constellationInstanceSetting = useConstellationInstanceSetting()
+  const setConstellationInstance = useSetConstellationInstance()
   const setConstellationInstanceControl = Dialog.useDialogControl()
+  const [constellationDialogSession, setConstellationDialogSession] =
+    useState(0)
 
-  const [customAppViewDid] = useCustomAppViewDid()
-  const setCustomAppViewDidControl = Dialog.useDialogControl()
-  const restartPromptControl = Dialog.useDialogControl()
+  const openImageCdnCustomDialog = () => {
+    setImageCdnDialogSession(session => session + 1)
+    setImageCdnHostControl.open()
+  }
+
+  const openPlcDirectoryCustomDialog = () => {
+    setPlcDirectoryDialogSession(session => session + 1)
+    setPlcDirectoryControl.open()
+  }
+
+  const openConstellationCustomDialog = () => {
+    setConstellationDialogSession(session => session + 1)
+    setConstellationInstanceControl.open()
+  }
+
+  const imageCdnSelectValue = getImageCdnSelectValue(imageCdnHostSetting)
+  const plcDirectorySelectValue = getPlcDirectorySelectValue(plcDirectorySetting)
+  const constellationSelectValue = getConstellationSelectValue(
+    constellationInstanceSetting,
+  )
+
+  const imageCdnItems = [
+    {value: 'default', label: l`App server default`},
+    {value: IMAGE_CDN_PRESETS[0], label: l`Dollware Porxie`},
+    {value: IMAGE_CDN_PRESETS[1], label: l`Blueat`},
+    {value: 'custom', label: l`Custom`},
+  ]
+
+  const plcDirectoryItems = [
+    {value: PLC_DIRECTORY_PRESETS[0], label: l`plc.directory`},
+    {value: PLC_DIRECTORY_PRESETS[1], label: l`Eurosky`},
+    {value: PLC_DIRECTORY_PRESETS[2], label: l`Wafflehouse.dev`},
+    {value: 'custom', label: l`Custom`},
+  ]
+
+  const constellationItems = [
+    {value: CONSTELLATION_PRESETS[0], label: l`microcosm.blue`},
+    {value: CONSTELLATION_PRESETS[1], label: l`Wafflehouse.dev`},
+    {value: 'custom', label: l`Custom`},
+  ]
 
   return (
     <RunesScreenLayout titleText={l`Infrastructure`}>
-      <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-        <SettingsList.ItemIcon icon={EarthIcon} />
-        <SettingsList.ItemText>
-          <Trans>Post Translation Provider</Trans>
-        </SettingsList.ItemText>
-        <Toggle.Item
-          name="service_google"
-          label={l`Use Google Translate`}
-          value={translationServicePreference === 'google'}
-          onChange={() => setTranslationServicePreference('google')}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Use Google Translate</Trans>
-          </Toggle.LabelText>
-          <Toggle.Radio />
-        </Toggle.Item>
-        <Toggle.Item
-          name="service_kagi"
-          label={l`Use Kagi Translate`}
-          value={translationServicePreference === 'kagi'}
-          onChange={() => setTranslationServicePreference('kagi')}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Use Kagi Translate</Trans>
-          </Toggle.LabelText>
-          <Toggle.Radio />
-        </Toggle.Item>
-        <Toggle.Item
-          name="service_papago"
-          label={l`Use Naver Papago`}
-          value={translationServicePreference === 'papago'}
-          onChange={() => setTranslationServicePreference('papago')}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Use Naver Papago</Trans>
-          </Toggle.LabelText>
-          <Toggle.Radio />
-        </Toggle.Item>
-        <Toggle.Item
-          name="service_libreTranslate"
-          label={l`Use LibreTranslate`}
-          value={translationServicePreference === 'libreTranslate'}
-          onChange={() => setTranslationServicePreference('libreTranslate')}
-          style={[a.w_full]}>
-          <Toggle.LabelText style={[a.flex_1]}>
-            <Trans>Use LibreTranslate</Trans>
-          </Toggle.LabelText>
-          <Toggle.Radio />
-        </Toggle.Item>
-      </SettingsList.Group>
-
-      {translationServicePreference === 'libreTranslate' && (
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={EarthIcon} />
-          <SettingsList.ItemText>
-            <Trans>{`LibreTranslate Instance`}</Trans>
-          </SettingsList.ItemText>
-          <SettingsList.BadgeButton
-            label={l`Change`}
-            onPress={() => setLibreTranslateInstanceControl.open()}
-          />
-        </SettingsList.Item>
-      )}
-
-      <SettingsList.Divider />
-
-      <SettingsList.Item>
-        <SettingsList.ItemIcon icon={EarthIcon} />
+      <SettingsList.Group iconInset={false}>
         <SettingsList.ItemText>
           <Trans>{`Image CDN`}</Trans>
         </SettingsList.ItemText>
-        <SettingsList.BadgeButton
-          label={l`Change`}
-          onPress={() => setImageCdnHostControl.open()}
-        />
-      </SettingsList.Item>
-      <SettingsList.Item>
-        <Admonition type="info" style={[a.flex_1]}>
-          <Trans>
-            Override the CDN host for all images. Current:&nbsp;
-            <InlineLinkText to={imageCdnHost} label={imageCdnHost}>
-              {imageCdnHost}
-            </InlineLinkText>
-          </Trans>
-        </Admonition>
-      </SettingsList.Item>
-
-      <SettingsList.Item>
-        <SettingsList.ItemIcon icon={EarthIcon} />
-        <SettingsList.ItemText>
-          <Trans>{`PLC Directory`}</Trans>
-        </SettingsList.ItemText>
-        <SettingsList.BadgeButton
-          label={l`Change`}
-          onPress={() => setPlcDirectoryControl.open()}
-        />
-      </SettingsList.Item>
-      <SettingsList.Item>
-        <Admonition type="info" style={[a.flex_1]}>
-          <Trans>
-            Override the PLC directory used to resolve DIDs. Current:&nbsp;
-            <InlineLinkText to={plcDirectory} label={plcDirectory}>
-              {plcDirectory}
-            </InlineLinkText>
-          </Trans>
-        </Admonition>
-      </SettingsList.Item>
-
-      <SettingsList.Item>
-        <SettingsList.ItemIcon icon={StarIcon} />
-        <SettingsList.ItemText>
-          <Trans>{`Constellation Instance`}</Trans>
-        </SettingsList.ItemText>
-        <SettingsList.BadgeButton
-          label={l`Change`}
-          onPress={() => setConstellationInstanceControl.open()}
-        />
-      </SettingsList.Item>
-      <SettingsList.Item>
-        <Admonition type="info" style={[a.flex_1]}>
-          <Trans>
-            Constellation is used to supplement AppView responses for custom
-            verifications and nuclear block bypass, via backlinks. Current
-            instance:&nbsp;
-            <InlineLinkText
-              to={constellationInstance}
-              label={constellationInstance}>
-              {constellationInstance}
-            </InlineLinkText>
-          </Trans>
-        </Admonition>
-      </SettingsList.Item>
+        <View style={[a.gap_md, a.w_full]}>
+          <Text style={[a.leading_snug]}>
+            <Trans>Override the CDN host for all images.</Trans>
+          </Text>
+          <Select.Root
+            value={imageCdnSelectValue}
+            onValueChange={value => {
+              if (value === 'custom') {
+                openImageCdnCustomDialog()
+                return
+              }
+              if (value === 'default') {
+                setImageCdnHost(undefined)
+                return
+              }
+              setImageCdnHost(value)
+            }}>
+            <Select.Trigger label={l`Select image CDN`}>
+              <Select.ValueText />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Content
+              label={l`Image CDN`}
+              renderItem={({label, value}) => (
+                <Select.Item value={value} label={label}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{label}</Select.ItemText>
+                </Select.Item>
+              )}
+              items={imageCdnItems}
+            />
+          </Select.Root>
+        </View>
+      </SettingsList.Group>
 
       <SettingsList.Divider />
 
-      <SettingsList.Item>
-        <SettingsList.ItemIcon icon={StarIcon} />
+      <SettingsList.Group iconInset={false}>
         <SettingsList.ItemText>
-          <Trans>{`Custom AppView DID`}</Trans>
+          <Trans>{`PLC Directory`}</Trans>
         </SettingsList.ItemText>
-        <SettingsList.BadgeButton
-          label={customAppViewDid ? l`Change` : l`Set`}
-          onPress={() => setCustomAppViewDidControl.open()}
-        />
-      </SettingsList.Item>
+        <View style={[a.gap_md, a.w_full]}>
+          <Text style={[a.leading_snug]}>
+            <Trans>The directory used to resolve did:plc accounts.</Trans>
+          </Text>
+          <Select.Root
+            value={plcDirectorySelectValue}
+            onValueChange={value => {
+              if (value === 'custom') {
+                openPlcDirectoryCustomDialog()
+                return
+              }
+              if (value === PLC_DIRECTORY_PRESETS[0]) {
+                setPlcDirectory(undefined)
+                return
+              }
+              setPlcDirectory(value)
+            }}>
+            <Select.Trigger label={l`Select PLC directory`}>
+              <Select.ValueText />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Content
+              label={l`PLC Directory`}
+              renderItem={({label, value}) => (
+                <Select.Item value={value} label={label}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{label}</Select.ItemText>
+                </Select.Item>
+              )}
+              items={plcDirectoryItems}
+            />
+          </Select.Root>
+        </View>
+      </SettingsList.Group>
 
-      <ConstellationInstanceDialog control={setConstellationInstanceControl} />
-      <CustomAppViewDidDialog
-        control={setCustomAppViewDidControl}
-        onRestartRequired={() => {
-          restartPromptControl.open()
-        }}
+      <SettingsList.Divider />
+
+      <SettingsList.Group iconInset={false}>
+        <SettingsList.ItemText>
+          <Trans>{`Constellation Instance`}</Trans>
+        </SettingsList.ItemText>
+        <View style={[a.gap_md, a.w_full]}>
+          <Text style={[a.leading_snug]}>
+            <Trans>
+              Used for custom verifications and fixing 
+              nuclear blocks via backlinks.
+            </Trans>
+          </Text>
+          <Select.Root
+            value={constellationSelectValue}
+            onValueChange={value => {
+              if (value === 'custom') {
+                openConstellationCustomDialog()
+                return
+              }
+              setConstellationInstance(value)
+            }}>
+            <Select.Trigger label={l`Select constellation instance`}>
+              <Select.ValueText />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Content
+              label={l`Constellation Instance`}
+              renderItem={({label, value}) => (
+                <Select.Item value={value} label={label}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{label}</Select.ItemText>
+                </Select.Item>
+              )}
+              items={constellationItems}
+            />
+          </Select.Root>
+        </View>
+      </SettingsList.Group>
+
+      <ConstellationInstanceDialog
+        control={setConstellationInstanceControl}
+        openGeneration={constellationDialogSession}
       />
-      <LibreTranslateInstanceDialog
-        control={setLibreTranslateInstanceControl}
+      <ImageCdnHostDialog
+        control={setImageCdnHostControl}
+        openGeneration={imageCdnDialogSession}
       />
-      <ImageCdnHostDialog control={setImageCdnHostControl} />
-      <PlcDirectoryDialog control={setPlcDirectoryControl} />
-      <RestartRequiredPrompt control={restartPromptControl} />
+      <PlcDirectoryDialog
+        control={setPlcDirectoryControl}
+        openGeneration={plcDirectoryDialogSession}
+      />
     </RunesScreenLayout>
   )
 }
 
 function ConstellationInstanceDialog({
   control,
+  openGeneration,
 }: {
   control: Dialog.DialogControlProps
+  openGeneration: number
 }) {
   const pal = usePalette('default')
   const {t: l} = useLingui()
 
-  const constellationInstance = useConstellationInstance()
-  const [url, setUrl] = useState(constellationInstance ?? '')
+  const constellationInstanceCustom = useConstellationInstanceCustom()
+  const savedCustomUrl = constellationInstanceCustom ?? ''
+  const [url, setUrl] = useState(savedCustomUrl)
   const setConstellationInstance = useSetConstellationInstance()
+  const setConstellationInstanceCustom = useSetConstellationInstanceCustom()
+  const {submit, isTesting, testError, canSubmit, isClear, clearTestError} =
+    useInfrastructureUrlSave({
+      url,
+      isUrlValid: isValidHostnameUrl,
+      testUrl: testConstellationUrl,
+      onSave: nextUrl => {
+        setConstellationInstanceCustom(nextUrl)
+        setConstellationInstance(nextUrl)
+      },
+      onClear: () => {
+        setConstellationInstanceCustom(undefined)
+        setConstellationInstance(persisted.defaults.constellationInstance)
+      },
+      control,
+    })
 
-  const submit = () => {
-    setConstellationInstance(url)
-    control.close()
-  }
+  useLayoutEffect(() => {
+    setUrl(savedCustomUrl)
+    clearTestError()
+  }, [savedCustomUrl, openGeneration, clearTestError])
 
   return (
     <Dialog.Outer
       control={control}
       nativeOptions={{preventExpansion: true}}
-      onClose={() => setUrl(constellationInstance ?? '')}>
+      onClose={() => {
+        setUrl(savedCustomUrl)
+        clearTestError()
+      }}>
       <Dialog.Handle />
       <Dialog.ScrollableInner label={l`Constellations instance URL`}>
         <View style={[a.gap_sm, a.pb_lg]}>
@@ -261,27 +314,34 @@ function ConstellationInstanceDialog({
 
         <View style={a.gap_lg}>
           <Dialog.Input
+            key={openGeneration}
             label="Text input field"
             autoFocus
             style={[styles.textInput, pal.border, pal.text]}
-            onChangeText={setUrl}
+            onChangeText={text => {
+              setUrl(text)
+              clearTestError()
+            }}
             placeholder={persisted.defaults.constellationInstance}
             placeholderTextColor={pal.colors.textLight}
-            onSubmitEditing={submit}
+            onSubmitEditing={() => void submit()}
             accessibilityHint={l`Input the url of the constellations instance to use`}
-            defaultValue={constellationInstance}
+            defaultValue={savedCustomUrl}
           />
+
+          {testError && <Admonition type="error">{testError}</Admonition>}
 
           <View style={IS_WEB && [a.flex_row, a.justify_end]}>
             <Button
-              label={l`Save`}
+              label={isClear ? l`Clear` : l`Save`}
               size="large"
               onPress={() => void submit()}
               variant="solid"
-              color="primary"
-              disabled={!isValidHostnameUrl(url)}>
+              color={isClear ? 'secondary' : 'primary'}
+              disabled={!canSubmit}>
+              {isTesting && <ButtonIcon icon={Loader} />}
               <ButtonText>
-                <Trans>Save</Trans>
+                {isClear ? <Trans>Clear</Trans> : <Trans>Save</Trans>}
               </ButtonText>
             </Button>
           </View>
@@ -293,235 +353,50 @@ function ConstellationInstanceDialog({
   )
 }
 
-function CustomAppViewDidDialog({
+function ImageCdnHostDialog({
   control,
-  onRestartRequired,
+  openGeneration,
 }: {
   control: Dialog.DialogControlProps
-  onRestartRequired: () => void
+  openGeneration: number
 }) {
   const pal = usePalette('default')
   const {t: l} = useLingui()
 
-  const [customAppViewDid] = useCustomAppViewDid()
-  const [did, setDid] = useState(customAppViewDid ?? '')
-  const setCustomAppViewDid = useSetCustomAppViewDid()
-
-  const doc = useDidDocument({did})
-  const bskyAppViewService =
-    doc.data && findService(doc.data, '#bsky_appview', 'BskyAppView')
-
-  const submit = () => {
-    if (did.length === 0) {
-      control.close(() => {
-        setCustomAppViewDid(undefined)
-        onRestartRequired()
-      })
-      return
-    }
-    if (!bskyAppViewService?.serviceEndpoint) return
-    control.close(() => {
-      setCustomAppViewDid(did)
-      onRestartRequired()
-    })
-  }
-
-  return (
-    <Dialog.Outer
-      control={control}
-      nativeOptions={{preventExpansion: true}}
-      onClose={() => setDid(customAppViewDid ?? '')}>
-      <Dialog.Handle />
-      <Dialog.ScrollableInner label={l`Custom AppView Proxy DID`}>
-        <View style={[a.gap_sm, a.pb_lg]}>
-          <Text style={[a.text_2xl, a.font_bold]}>
-            <Trans>Custom AppView Proxy DID</Trans>
-          </Text>
-        </View>
-
-        <View style={a.gap_lg}>
-          <Dialog.Input
-            label="Text input field"
-            autoFocus
-            style={[styles.textInput, pal.border, pal.text]}
-            onChangeText={setDid}
-            placeholder={
-              APPVIEW_DID_PROXY?.substring(0, APPVIEW_DID_PROXY.indexOf('#')) ||
-              'did:web:api.bsky.app'
-            }
-            placeholderTextColor={pal.colors.textLight}
-            onSubmitEditing={submit}
-            accessibilityHint={l`Input the DID of the AppView to proxy requests through`}
-            isInvalid={
-              !!did && !bskyAppViewService?.serviceEndpoint && !doc.isLoading
-            }
-            defaultValue={customAppViewDid ?? ''}
-          />
-
-          {did && !isDid(did) && (
-            <View>
-              <ErrorMessage message={l`must enter a DID`} />
-            </View>
-          )}
-
-          {did && (did.includes('#') || did.includes('?')) && (
-            <View>
-              <ErrorMessage message={l`don't include the service id`} />
-            </View>
-          )}
-
-          {doc.isError && (
-            <View>
-              <ErrorMessage
-                message={doc.error.message || l`document resolution failure`}
-              />
-            </View>
-          )}
-
-          {doc.data &&
-            !bskyAppViewService &&
-            (doc.data as {message?: string}).message && (
-              <View>
-                <ErrorMessage
-                  message={(doc.data as {message: string}).message}
-                />
-              </View>
-            )}
-
-          {doc.data && !bskyAppViewService && (
-            <View>
-              <ErrorMessage
-                message={l`document doesn't contain #bsky_appview service`}
-              />
-            </View>
-          )}
-
-          {bskyAppViewService && (
-            <Text style={[a.text_sm, a.leading_snug]}>
-              {JSON.stringify(bskyAppViewService, null, 2)}
-            </Text>
-          )}
-
-          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
-            <Button
-              label={l`Save`}
-              size="large"
-              onPress={() => void submit()}
-              variant="solid"
-              color={did.length > 0 ? 'primary' : 'secondary'}
-              disabled={
-                did.length !== 0 && !bskyAppViewService?.serviceEndpoint
-              }>
-              <ButtonText>
-                {did.length > 0 ? <Trans>Save</Trans> : <Trans>Reset</Trans>}
-              </ButtonText>
-            </Button>
-          </View>
-        </View>
-
-        <Dialog.Close />
-      </Dialog.ScrollableInner>
-    </Dialog.Outer>
-  )
-}
-
-function LibreTranslateInstanceDialog({
-  control,
-}: {
-  control: Dialog.DialogControlProps
-}) {
-  const pal = usePalette('default')
-  const {t: l} = useLingui()
-
-  const libreTranslateInstance = useLibreTranslateInstance()
-  const [url, setUrl] = useState(libreTranslateInstance ?? '')
-  const setLibreTranslateInstance = useSetLibreTranslateInstance()
-
-  return (
-    <Dialog.Outer
-      control={control}
-      nativeOptions={{preventExpansion: true}}
-      onClose={() => setUrl(libreTranslateInstance ?? '')}>
-      <Dialog.Handle />
-      <Dialog.ScrollableInner label={l`LibreTranslate instance URL`}>
-        <View style={[a.gap_sm, a.pb_lg]}>
-          <Text style={[a.text_2xl, a.font_bold]}>
-            <Trans>LibreTranslate instance URL</Trans>
-          </Text>
-        </View>
-
-        <View style={a.gap_lg}>
-          <Dialog.Input
-            label="Text input field"
-            autoFocus
-            style={[styles.textInput, pal.border, pal.text]}
-            onChangeText={setUrl}
-            placeholder={persisted.defaults.libreTranslateInstance}
-            placeholderTextColor={pal.colors.textLight}
-            onSubmitEditing={() => {
-              setLibreTranslateInstance(url)
-              control.close()
-            }}
-            accessibilityHint={l`Input the url of the LibreTranslate instance to use`}
-            defaultValue={libreTranslateInstance}
-          />
-
-          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
-            <Button
-              label={l`Save`}
-              size="large"
-              onPress={() => {
-                setLibreTranslateInstance(url)
-                control.close()
-              }}
-              variant="solid"
-              color="primary"
-              disabled={!isValidHostnameUrl(url)}>
-              <ButtonText>
-                <Trans>Save</Trans>
-              </ButtonText>
-            </Button>
-          </View>
-        </View>
-
-        <Dialog.Close />
-      </Dialog.ScrollableInner>
-    </Dialog.Outer>
-  )
-}
-
-function ImageCdnHostDialog({control}: {control: Dialog.DialogControlProps}) {
-  const pal = usePalette('default')
-  const {t: l} = useLingui()
-
-  const imageCdnHost = useImageCdnHost()
-  const [url, setUrl] = useState(imageCdnHost ?? '')
+  const imageCdnHostCustom = useImageCdnHostCustom()
+  const savedCustomUrl = imageCdnHostCustom ?? ''
+  const [url, setUrl] = useState(savedCustomUrl)
   const setImageCdnHost = useSetImageCdnHost()
-  const isReset = url.trim().length === 0
-
-  const submit = () => {
-    const trimmedUrl = url.trim()
-    if (!trimmedUrl) {
-      control.close(() => {
+  const setImageCdnHostCustom = useSetImageCdnHostCustom()
+  const {submit, isTesting, testError, canSubmit, isClear, clearTestError} =
+    useInfrastructureUrlSave({
+      url,
+      isUrlValid: isValidHostnameUrl,
+      testUrl: testImageCdnUrl,
+      onSave: nextUrl => {
+        setImageCdnHostCustom(nextUrl)
+        setImageCdnHost(nextUrl)
+      },
+      onClear: () => {
+        setImageCdnHostCustom(undefined)
         setImageCdnHost(undefined)
-      })
-      return
-    }
-
-    control.close(() => {
-      try {
-        setImageCdnHost(new URL(trimmedUrl).origin)
-      } catch {
-        setImageCdnHost(trimmedUrl)
-      }
+      },
+      control,
     })
-  }
+
+  useLayoutEffect(() => {
+    setUrl(savedCustomUrl)
+    clearTestError()
+  }, [savedCustomUrl, openGeneration, clearTestError])
 
   return (
     <Dialog.Outer
       control={control}
       nativeOptions={{preventExpansion: true}}
-      onClose={() => setUrl(imageCdnHost ?? '')}>
+      onClose={() => {
+        setUrl(savedCustomUrl)
+        clearTestError()
+      }}>
       <Dialog.Handle />
       <Dialog.ScrollableInner label={l`Image CDN URL`}>
         <View style={[a.gap_sm, a.pb_lg]}>
@@ -532,27 +407,34 @@ function ImageCdnHostDialog({control}: {control: Dialog.DialogControlProps}) {
 
         <View style={a.gap_lg}>
           <Dialog.Input
+            key={openGeneration}
             label="Text input field"
             autoFocus
             style={[styles.textInput, pal.border, pal.text]}
-            onChangeText={setUrl}
-            placeholder={persisted.defaults.imageCdnHost}
+            onChangeText={text => {
+              setUrl(text)
+              clearTestError()
+            }}
+            placeholder={APP_SERVER_CDN_ORIGIN}
             placeholderTextColor={pal.colors.textLight}
-            onSubmitEditing={submit}
+            onSubmitEditing={() => void submit()}
             accessibilityHint={l`Input the URL of the image CDN to use`}
-            defaultValue={imageCdnHost}
+            defaultValue={savedCustomUrl}
           />
+
+          {testError && <Admonition type="error">{testError}</Admonition>}
 
           <View style={IS_WEB && [a.flex_row, a.justify_end]}>
             <Button
-              label={isReset ? l`Reset` : l`Save`}
+              label={isClear ? l`Clear` : l`Save`}
               size="large"
               onPress={() => void submit()}
               variant="solid"
-              color={isReset ? 'secondary' : 'primary'}
-              disabled={!isReset && !isValidHostnameUrl(url)}>
+              color={isClear ? 'secondary' : 'primary'}
+              disabled={!canSubmit}>
+              {isTesting && <ButtonIcon icon={Loader} />}
               <ButtonText>
-                {isReset ? <Trans>Reset</Trans> : <Trans>Save</Trans>}
+                {isClear ? <Trans>Clear</Trans> : <Trans>Save</Trans>}
               </ButtonText>
             </Button>
           </View>
@@ -564,38 +446,50 @@ function ImageCdnHostDialog({control}: {control: Dialog.DialogControlProps}) {
   )
 }
 
-function PlcDirectoryDialog({control}: {control: Dialog.DialogControlProps}) {
+function PlcDirectoryDialog({
+  control,
+  openGeneration,
+}: {
+  control: Dialog.DialogControlProps
+  openGeneration: number
+}) {
   const pal = usePalette('default')
   const {t: l} = useLingui()
 
-  const plcDirectory = usePlcDirectory()
-  const [url, setUrl] = useState(plcDirectory ?? '')
+  const plcDirectoryCustom = usePlcDirectoryCustom()
+  const savedCustomUrl = plcDirectoryCustom ?? ''
+  const [url, setUrl] = useState(savedCustomUrl)
   const setPlcDirectory = useSetPlcDirectory()
-  const isReset = url.trim().length === 0
-
-  const submit = () => {
-    const trimmedUrl = url.trim()
-    if (!trimmedUrl) {
-      control.close(() => {
+  const setPlcDirectoryCustom = useSetPlcDirectoryCustom()
+  const {submit, isTesting, testError, canSubmit, isClear, clearTestError} =
+    useInfrastructureUrlSave({
+      url,
+      isUrlValid: isValidPlcDirectoryUrl,
+      testUrl: testPlcDirectoryUrl,
+      onSave: nextUrl => {
+        setPlcDirectoryCustom(nextUrl)
+        setPlcDirectory(nextUrl)
+      },
+      onClear: () => {
+        setPlcDirectoryCustom(undefined)
         setPlcDirectory(undefined)
-      })
-      return
-    }
-
-    control.close(() => {
-      try {
-        setPlcDirectory(new URL(trimmedUrl).origin)
-      } catch {
-        setPlcDirectory(trimmedUrl)
-      }
+      },
+      control,
     })
-  }
+
+  useLayoutEffect(() => {
+    setUrl(savedCustomUrl)
+    clearTestError()
+  }, [savedCustomUrl, openGeneration, clearTestError])
 
   return (
     <Dialog.Outer
       control={control}
       nativeOptions={{preventExpansion: true}}
-      onClose={() => setUrl(plcDirectory ?? '')}>
+      onClose={() => {
+        setUrl(savedCustomUrl)
+        clearTestError()
+      }}>
       <Dialog.Handle />
       <Dialog.ScrollableInner label={l`PLC Directory URL`}>
         <View style={[a.gap_sm, a.pb_lg]}>
@@ -606,27 +500,34 @@ function PlcDirectoryDialog({control}: {control: Dialog.DialogControlProps}) {
 
         <View style={a.gap_lg}>
           <Dialog.Input
+            key={openGeneration}
             label="Text input field"
             autoFocus
             style={[styles.textInput, pal.border, pal.text]}
-            onChangeText={setUrl}
+            onChangeText={text => {
+              setUrl(text)
+              clearTestError()
+            }}
             placeholder={persisted.defaults.plcDirectory}
             placeholderTextColor={pal.colors.textLight}
-            onSubmitEditing={submit}
+            onSubmitEditing={() => void submit()}
             accessibilityHint={l`Input the URL of the PLC directory to use`}
-            defaultValue={plcDirectory}
+            defaultValue={savedCustomUrl}
           />
+
+          {testError && <Admonition type="error">{testError}</Admonition>}
 
           <View style={IS_WEB && [a.flex_row, a.justify_end]}>
             <Button
-              label={isReset ? l`Reset` : l`Save`}
+              label={isClear ? l`Clear` : l`Save`}
               size="large"
               onPress={() => void submit()}
               variant="solid"
-              color={isReset ? 'secondary' : 'primary'}
-              disabled={!isReset && !isValidPlcDirectoryUrl(url)}>
+              color={isClear ? 'secondary' : 'primary'}
+              disabled={!canSubmit}>
+              {isTesting && <ButtonIcon icon={Loader} />}
               <ButtonText>
-                {isReset ? <Trans>Reset</Trans> : <Trans>Save</Trans>}
+                {isClear ? <Trans>Clear</Trans> : <Trans>Save</Trans>}
               </ButtonText>
             </Button>
           </View>
@@ -638,21 +539,50 @@ function PlcDirectoryDialog({control}: {control: Dialog.DialogControlProps}) {
   )
 }
 
-function isValidHostnameUrl(url: string) {
-  try {
-    return new URL(url).hostname.includes('.')
-  } catch {
-    return false
+function getImageCdnSelectValue(raw: string | undefined) {
+  if (!raw || normalizeOrigin(raw) === APP_SERVER_CDN_ORIGIN) {
+    return 'default'
   }
+
+  const origin = normalizeOrigin(raw)
+  if (
+    origin &&
+    IMAGE_CDN_PRESETS.includes(origin as (typeof IMAGE_CDN_PRESETS)[number])
+  ) {
+    return origin
+  }
+
+  return 'custom'
 }
 
-function isValidPlcDirectoryUrl(url: string) {
-  try {
-    const nextUrl = new URL(url)
-    return nextUrl.protocol === 'https:' || nextUrl.protocol === 'http:'
-  } catch {
-    return false
+function getPlcDirectorySelectValue(raw: string | undefined) {
+  const origin = normalizeOrigin(raw ?? persisted.defaults.plcDirectory)
+  if (
+    origin &&
+    PLC_DIRECTORY_PRESETS.includes(
+      origin as (typeof PLC_DIRECTORY_PRESETS)[number],
+    )
+  ) {
+    return origin
   }
+
+  return 'custom'
+}
+
+function getConstellationSelectValue(raw: string | undefined) {
+  const origin = normalizeOrigin(
+    raw ?? persisted.defaults.constellationInstance,
+  )
+  if (
+    origin &&
+    CONSTELLATION_PRESETS.includes(
+      origin as (typeof CONSTELLATION_PRESETS)[number],
+    )
+  ) {
+    return origin
+  }
+
+  return 'custom'
 }
 
 const styles = {

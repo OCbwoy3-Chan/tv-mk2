@@ -320,7 +320,9 @@ export const ComposePost = ({
   const textInputRef = useRef<TextInputRef>(null)
   const discardPromptControl = Prompt.usePromptControl()
   const emptyPostsPromptControl = Prompt.usePromptControl()
+  const missingAltTextPromptControl = Prompt.usePromptControl()
   const skipEmptyConfirmedRef = useRef(false)
+  const missingAltTextConfirmedRef = useRef(false)
   const {mutateAsync: saveDraft, isPending: _isSavingDraft} =
     useSaveDraftMutation()
   const {mutate: cleanupPublishedDraft} = useCleanupPublishedDraftMutation()
@@ -476,29 +478,20 @@ export const ComposePost = ({
     [activePost.id],
   )
 
-  const onConvertActiveOverflowToThread = useCallback(() => {
-    const splitPosts = splitOverflowPostIntoThreadTexts(
-      activePost.richtext.text,
-    )
-    if (splitPosts.length < 2) {
-      return
-    }
-
-    setError('')
-    composerDispatch({
-      type: 'replace_post_with_thread',
-      postId: activePost.id,
-      texts: splitPosts,
-    })
-  }, [activePost.id, activePost.richtext.text, composerDispatch])
   const selectVideo = useCallback(
     async (postId: string, asset: ImagePickerAsset) => {
       /*
        * Share-extension deeplinks deliver a video URI without duration, so
        * probe before we decide whether to compress. The picker and web paste
-       * paths already populate duration upstream.
+       * paths already populate duration upstream. GIFs must skip the probe:
+       * they have no video track, so the iOS prober never resolves or rejects
+       * and the await below would hang forever.
        */
-      if (asset.duration == null && IS_NATIVE) {
+      if (
+        asset.duration == null &&
+        IS_NATIVE &&
+        asset.mimeType !== 'image/gif'
+      ) {
         try {
           const probed = await getVideoMetadata(asset.uri)
           asset = {
@@ -1022,27 +1015,52 @@ export const ComposePost = ({
     if (!requireAltTextEnabled) {
       return
     }
-    for (let i = 0; i < thread.posts.length; i++) {
-      const media = thread.posts[i].embed.media
-      if (media) {
-        if (
-          (media.type === 'images' || media.type === 'gallery') &&
-          media.images.some(img => !img.alt)
-        ) {
-          return l`One or more images is missing alt text.`
-        }
-        if (media.type === 'gif' && !media.alt) {
-          return l`One or more GIFs is missing alt text.`
-        }
-        if (
-          media.type === 'video' &&
-          media.video.status !== 'error' &&
-          !media.video.altText
-        ) {
-          return l`One or more videos is missing alt text.`
-        }
+
+    let missingImages = 0
+    let missingGifs = 0
+    let missingVideos = 0
+
+    for (const post of thread.posts) {
+      const media = post.embed.media
+      if (media?.type === 'images' || media?.type === 'gallery') {
+        missingImages += media.images.filter(image => !image.alt).length
+      } else if (media?.type === 'gif' && !media.alt) {
+        missingGifs++
+      } else if (
+        media?.type === 'video' &&
+        media.video.status !== 'error' &&
+        !media.video.altText
+      ) {
+        missingVideos++
       }
     }
+
+    const messages: string[] = []
+    if (missingImages) {
+      messages.push(
+        l`${plural(missingImages, {
+          one: 'One image is missing alt text.',
+          other: '# images are missing alt text.',
+        })}`,
+      )
+    }
+    if (missingGifs) {
+      messages.push(
+        l`${plural(missingGifs, {
+          one: 'One GIF is missing alt text.',
+          other: '# GIFs are missing alt text.',
+        })}`,
+      )
+    }
+    if (missingVideos) {
+      messages.push(
+        l`${plural(missingVideos, {
+          one: 'One video is missing alt text.',
+          other: '# videos are missing alt text.',
+        })}`,
+      )
+    }
+    return messages.join(' ') || undefined
   }, [thread, requireAltTextEnabled, l])
 
   // Subscribe to the resolve-link cache for any link URIs in the thread so we
@@ -1064,7 +1082,6 @@ export const ComposePost = ({
   )
 
   const canPost =
-    !missingAltError &&
     !hasUnavailableChatInvite &&
     thread.posts.some(post => !isEmptyPost(post)) &&
     thread.posts.every(
@@ -1123,6 +1140,11 @@ export const ComposePost = ({
       return
     }
 
+    if (missingAltError && !missingAltTextConfirmedRef.current) {
+      missingAltTextPromptControl.open()
+      return
+    }
+
     if (
       filteredThread.posts.some(
         post =>
@@ -1136,6 +1158,7 @@ export const ComposePost = ({
     }
 
     skipEmptyConfirmedRef.current = false
+    missingAltTextConfirmedRef.current = false
     setError('')
     setIsPublishing(true)
 
@@ -1188,7 +1211,10 @@ export const ComposePost = ({
       // processing has completed by this point.
       for (const post of filteredThread.posts) {
         if (post.embed.media?.type === 'video') {
-          post.embed.media.video.telemetry?.published()
+          const video = post.embed.media.video
+          if ('telemetry' in video) {
+            video.telemetry?.published()
+          }
         }
       }
 
@@ -1395,6 +1421,8 @@ export const ComposePost = ({
     cleanupPublishedDraft,
     loadedDraftCreatedAt,
     emptyPostsPromptControl,
+    missingAltError,
+    missingAltTextPromptControl,
     getFilteredThread,
     linkQueries,
     setLangPrefs,
@@ -1407,6 +1435,11 @@ export const ComposePost = ({
 
   const handleConfirmSkipEmpty = () => {
     skipEmptyConfirmedRef.current = true
+    void onPressPublish()
+  }
+
+  const handleConfirmMissingAltText = () => {
+    missingAltTextConfirmedRef.current = true
     void onPressPublish()
   }
 
@@ -1533,7 +1566,6 @@ export const ComposePost = ({
         onSelectLanguage={onSelectLanguage}
         languageNudgeAt={languageNudgeAt}
         openGallery={openGallery}
-        onConvertOverLimitToThread={onConvertActiveOverflowToThread}
         textInputRef={textInputRef}
       />
     </>
@@ -1706,6 +1738,14 @@ export const ComposePost = ({
           confirmButtonCta={l`Post anyway`}
           cancelButtonCta={l`Keep editing`}
           onConfirm={handleConfirmSkipEmpty}
+        />
+        <Prompt.Basic
+          control={missingAltTextPromptControl}
+          title={l`Post without alt text?`}
+          description={missingAltError}
+          confirmButtonCta={l`Post anyway`}
+          cancelButtonCta={l`Add alt text`}
+          onConfirm={handleConfirmMissingAltText}
         />
       </KeyboardAvoidingView>
     </BottomSheetPortalProvider>
@@ -2175,7 +2215,7 @@ function AltTextReminder({
   }, [openRouterApiKey, openRouterModel, thread, dispatch])
 
   return (
-    <Admonition type="error" style={[a.mt_2xs, a.mb_sm, a.mx_lg]}>
+    <Admonition type="warning" style={[a.mt_2xs, a.mb_sm, a.mx_lg]}>
       <View style={[a.flex_row, a.align_center, a.justify_between, a.gap_sm]}>
         <Text style={[a.flex_1]}>{error}</Text>
         {openRouterConfigured && hasImagesWithoutAlt && (
@@ -2424,7 +2464,6 @@ function ComposerFooter({
   onSelectLanguage,
   languageNudgeAt,
   openGallery,
-  onConvertOverLimitToThread,
   textInputRef,
 }: {
   post: PostDraft
@@ -2440,7 +2479,6 @@ function ComposerFooter({
   onSelectLanguage?: (language: string) => void
   languageNudgeAt: number
   openGallery?: boolean
-  onConvertOverLimitToThread: () => void
   textInputRef: React.RefObject<TextInputRef | null>
 }) {
   const t = useTheme()
@@ -2460,8 +2498,6 @@ function ComposerFooter({
   const video = media?.type === 'video' ? media.video : null
   const isMaxImages = images.length >= MAX_GALLERY_IMAGES
   const isMaxVideos = !!video
-  const isOverLimit = post.shortenedGraphemeLength > MAX_GRAPHEME_LENGTH
-
   let selectedAssetsCount = 0
   let isMediaSelectionDisabled = false
 
@@ -2533,10 +2569,6 @@ function ComposerFooter({
     },
     [post.id, onSelectVideo, onImageAdd],
   )
-
-  const onPressConvertToThread = useCallback(() => {
-    onConvertOverLimitToThread()
-  }, [onConvertOverLimitToThread])
 
   return (
     <View
@@ -2611,34 +2643,10 @@ function ComposerFooter({
           onSelectLanguage={onSelectLanguage}
           nudgeAt={languageNudgeAt}
         />
-        <View style={[a.flex_row, a.align_center, a.gap_sm]}>
-          {isOverLimit && (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={l`Convert long post into thread`}
-              accessibilityHint={l`Splits your post into a thread and appends numbering`}
-              onPress={onPressConvertToThread}>
-              <Text style={[a.text_xs, t.atoms.text_contrast_medium]}>
-                <Trans>Convert to thread</Trans>
-              </Text>
-            </Pressable>
-          )}
-
-          <Pressable
-            accessibilityRole={isOverLimit ? 'button' : undefined}
-            accessibilityLabel={
-              isOverLimit
-                ? l`Convert long post into thread`
-                : l`Character count`
-            }
-            accessibilityHint={l`Shows character count for your post`}
-            onPress={isOverLimit ? onPressConvertToThread : undefined}>
-            <CharProgress
-              count={post.shortenedGraphemeLength}
-              style={{width: 65}}
-            />
-          </Pressable>
-        </View>
+        <CharProgress
+          count={post.shortenedGraphemeLength}
+          style={{width: 65}}
+        />
       </View>
     </View>
   )
@@ -2831,137 +2839,6 @@ function isEmptyPost(post: PostDraft) {
     !post.embed.link &&
     !post.embed.quote
   )
-}
-
-function splitOverflowPostIntoThreadTexts(
-  text: string,
-  maxLength = MAX_GRAPHEME_LENGTH,
-): string[] {
-  const trimmed = text.trim()
-  if (!trimmed) return []
-
-  const words = trimmed.split(/\s+/)
-  if (words.length < 2) return []
-
-  const firstWord = words[0]
-  const rest = words.slice(1)
-
-  let totalGuess = 2
-  let parts: string[] = []
-
-  // Suffix length changes with total digit count; converge on a stable total.
-  for (let i = 0; i < 10; i++) {
-    parts = splitIntoThreadParts({
-      firstWord,
-      rest,
-      total: totalGuess,
-      maxLength,
-    })
-    if (parts.length <= 1) {
-      return []
-    }
-    if (parts.length === totalGuess) {
-      break
-    }
-    totalGuess = parts.length
-  }
-
-  const total = parts.length
-  const numbered = parts.map((part, idx) => `${part} (${idx + 1}/${total})`)
-
-  if (numbered.some(part => getGraphemeLength(part) > maxLength)) {
-    return []
-  }
-
-  return numbered
-}
-
-function splitIntoThreadParts({
-  firstWord,
-  rest,
-  total,
-  maxLength,
-}: {
-  firstWord: string
-  rest: string[]
-  total: number
-  maxLength: number
-}): string[] {
-  const firstPart = `${firstWord} 🧵`
-  const firstLimit = getPartContentLimit(1, total, maxLength)
-  if (getGraphemeLength(firstPart) > firstLimit) {
-    return []
-  }
-
-  const parts = [firstPart]
-
-  for (const originalWord of rest) {
-    let word = originalWord
-
-    if (parts.length === 1) {
-      // Keep post 1 fixed as "<first word> 🧵".
-      parts.push('')
-    }
-
-    while (word.length > 0) {
-      const partNumber = parts.length
-      const limit = getPartContentLimit(partNumber, total, maxLength)
-      if (limit <= 0) {
-        return parts
-      }
-
-      const current = parts[partNumber - 1]
-      const next = current ? `${current} ${word}` : word
-      if (getGraphemeLength(next) <= limit) {
-        parts[partNumber - 1] = next
-        break
-      }
-
-      if (current) {
-        parts.push('')
-        continue
-      }
-
-      // If a single word exceeds the limit, hard-wrap it by grapheme.
-      const [head, tail] = splitAtGrapheme(word, limit)
-      if (!head) {
-        return parts
-      }
-      parts[partNumber - 1] = head
-      word = tail
-      if (word.length > 0) {
-        parts.push('')
-      }
-    }
-  }
-
-  return parts.filter(Boolean)
-}
-
-function getPartContentLimit(
-  partNumber: number,
-  total: number,
-  maxLength: number,
-) {
-  return maxLength - getGraphemeLength(` (${partNumber}/${total})`)
-}
-
-function splitAtGrapheme(text: string, limit: number): [string, string] {
-  if (limit <= 0) return ['', text]
-  const graphemes = splitGraphemes(text)
-  return [graphemes.slice(0, limit).join(''), graphemes.slice(limit).join('')]
-}
-
-function getGraphemeLength(text: string): number {
-  return new RichText({text}).graphemeLength
-}
-
-function splitGraphemes(text: string): string[] {
-  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
-    const segmenter = new Intl.Segmenter(undefined, {granularity: 'grapheme'})
-    return Array.from(segmenter.segment(text), segment => segment.segment)
-  }
-  return Array.from(text)
 }
 
 function useHideKeyboardOnBackground() {

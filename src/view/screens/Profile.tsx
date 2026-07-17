@@ -27,7 +27,9 @@ import {isInvalidHandle} from '#/lib/strings/handles'
 import {colors} from '#/lib/styles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {listenSoftReset} from '#/state/events'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useShowStandardLabelerProfile} from '#/state/preferences/show-standard-labeler-profile'
 import {useLabelerInfoQuery} from '#/state/queries/labeler'
 import {resetProfilePostsQueries} from '#/state/queries/post-feed'
 import {useProfileQuery} from '#/state/queries/profile'
@@ -188,6 +190,8 @@ function ProfileScreenLoaded({
   })
   const [currentPage, setCurrentPage] = useState(0)
   const {_} = useLingui()
+  const showStandardLabelerProfile = useShowStandardLabelerProfile()
+  const hideDisplayNames = useHideDisplayNames()
 
   const [scrollViewTag, setScrollViewTag] = useState<number | null>(null)
 
@@ -201,7 +205,7 @@ function ProfileScreenLoaded({
   const starterPacksSectionRef = useRef<SectionRef>(null)
   const labelsSectionRef = useRef<SectionRef>(null)
 
-  useSetTitle(combinedDisplayName(profile))
+  useSetTitle(combinedDisplayName({...profile, hideDisplayNames}))
 
   const description = profile.description ?? ''
   const hasDescription = description !== ''
@@ -217,8 +221,8 @@ function ProfileScreenLoaded({
   const showFiltersTab = hasLabeler
   const showPostsTab = true
   const showRepliesTab = hasSession
-  const showMediaTab = !hasLabeler
-  const showVideosTab = !hasLabeler
+  const showMediaTab = !hasLabeler || showStandardLabelerProfile
+  const showVideosTab = !hasLabeler || showStandardLabelerProfile
   const showLikesTab = isMe
   const feedGenCount = profile.associated?.feedgens || 0
   const showFeedsTab = isMe || feedGenCount > 0
@@ -228,9 +232,10 @@ function ProfileScreenLoaded({
   const listCount = (profile.associated?.lists || 0) - starterPackCount
   const showListsTab = hasSession && (isMe || listCount > 0)
 
+  const useLabelerTabOrder = hasLabeler && !showStandardLabelerProfile
   const sectionTitles = [
     showFiltersTab ? _(msg`Labels`) : undefined,
-    showListsTab && hasLabeler ? _(msg`Lists`) : undefined,
+    showListsTab && useLabelerTabOrder ? _(msg`Lists`) : undefined,
     showPostsTab ? _(msg`Posts`) : undefined,
     showRepliesTab ? _(msg`Replies`) : undefined,
     showMediaTab ? _(msg`Media`) : undefined,
@@ -238,7 +243,7 @@ function ProfileScreenLoaded({
     showLikesTab ? _(msg`Likes`) : undefined,
     showFeedsTab ? _(msg`Feeds`) : undefined,
     showStarterPacksTab ? _(msg`Starter Packs`) : undefined,
-    showListsTab && !hasLabeler ? _(msg`Lists`) : undefined,
+    showListsTab && !useLabelerTabOrder ? _(msg`Lists`) : undefined,
   ].filter(Boolean) as string[]
 
   let nextIndex = 0
@@ -405,7 +410,7 @@ function ProfileScreenLoaded({
               />
             )
           : null}
-        {showListsTab && !!profile.associated?.labeler
+        {showListsTab && useLabelerTabOrder
           ? ({headerHeight, isFocused, scrollElRef}) => (
               <ProfileLists
                 ref={listsSectionRef}
@@ -571,7 +576,7 @@ function ProfileScreenLoaded({
               />
             )
           : null}
-        {showListsTab && !profile.associated?.labeler
+        {showListsTab && !useLabelerTabOrder
           ? ({headerHeight, isFocused, scrollElRef}) => (
               <ProfileLists
                 ref={listsSectionRef}

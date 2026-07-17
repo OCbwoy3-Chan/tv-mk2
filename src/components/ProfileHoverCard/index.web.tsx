@@ -25,16 +25,17 @@ import {
 import {getModerationCauseKey} from '#/lib/moderation'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
-import {sanitizeHandle} from '#/lib/strings/handles'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {
   useFollowedByMetricsDisplay,
   useFollowersMetricsDisplay,
   useFollowingMetricsDisplay,
 } from '#/state/preferences/metrics-display-preference'
+import {useShowFollowedByOnOwnProfile} from '#/state/preferences/show-followed-by-on-own-profile'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {usePrefetchProfileQuery, useProfileQuery} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
@@ -508,6 +509,11 @@ function Inner({
     logContext: 'ProfileHoverCard',
   })
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const hideDisplayNames = useHideDisplayNames()
+  const authorPrimaryName = getAuthorPrimaryName(profile, {
+    hideDisplayNames,
+    moderation: moderation.ui('displayName'),
+  })
   const isBlockedUser =
     profile.viewer?.blocking ||
     profile.viewer?.blockedBy ||
@@ -515,6 +521,7 @@ function Inner({
   const followersMetricsDisplay = useFollowersMetricsDisplay()
   const followingMetricsDisplay = useFollowingMetricsDisplay()
   const followedByMetricsDisplay = useFollowedByMetricsDisplay()
+  const showFollowedByOnOwnProfile = useShowFollowedByOnOwnProfile()
   const followersCount = profile.followersCount || 0
   const followingCount = profile.followsCount || 0
   const pluralizedFollowers = plural(profile.followersCount || 0, {
@@ -542,10 +549,7 @@ function Inner({
       onRequestFollowConfirmation({
         actionType: 'follow',
         onConfirm: follow,
-        displayName: sanitizeDisplayName(
-          profile.displayName || sanitizeHandle(profile.handle),
-          moderation.ui('displayName'),
-        ),
+        displayName: authorPrimaryName,
         handle: profile.handle,
       })
     } else {
@@ -555,9 +559,8 @@ function Inner({
     confirmFollowUnfollow,
     follow,
     onRequestFollowConfirmation,
-    profile.displayName,
+    authorPrimaryName,
     profile.handle,
-    moderation,
   ])
 
   const handleUnfollow = useCallback(() => {
@@ -565,10 +568,7 @@ function Inner({
       onRequestFollowConfirmation({
         actionType: 'unfollow',
         onConfirm: unfollow,
-        displayName: sanitizeDisplayName(
-          profile.displayName || sanitizeHandle(profile.handle),
-          moderation.ui('displayName'),
-        ),
+        displayName: authorPrimaryName,
         handle: profile.handle,
       })
     } else {
@@ -578,9 +578,8 @@ function Inner({
     confirmFollowUnfollow,
     unfollow,
     onRequestFollowConfirmation,
-    profile.displayName,
+    authorPrimaryName,
     profile.handle,
-    moderation,
   ])
 
   return (
@@ -661,10 +660,7 @@ function Inner({
                 a.font_semi_bold,
                 a.self_start,
               ]}>
-              {sanitizeDisplayName(
-                profile.displayName || sanitizeHandle(profile.handle),
-                moderation.ui('displayName'),
-              )}
+              {authorPrimaryName}
             </Text>
             <ProfileBadges
               profile={profile}
@@ -752,7 +748,7 @@ function Inner({
             </View>
           ) : undefined}
 
-          {!isMe &&
+          {(!isMe || showFollowedByOnOwnProfile) &&
             !isFollowedByMetricHidden(followedByMetricsDisplay) &&
             shouldShowKnownFollowers(profile.viewer?.knownFollowers) && (
               <View style={[a.flex_row, a.align_center, a.gap_sm, a.pt_md]}>

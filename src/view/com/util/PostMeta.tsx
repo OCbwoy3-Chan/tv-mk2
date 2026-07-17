@@ -8,11 +8,12 @@ import {useQueryClient} from '@tanstack/react-query'
 import {makeProfileLink} from '#/lib/routes/links'
 import {forceLTR} from '#/lib/strings/bidi'
 import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {niceDate} from '#/lib/strings/time'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {atoms as a, platform, useTheme, web} from '#/alf'
 import {WebOnlyInlineLinkText} from '#/components/Link'
@@ -44,7 +45,11 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
   const {i18n, _} = useLingui()
 
   const author = useProfileShadow(opts.author)
-  const displayName = author.displayName || author.handle
+  const hideDisplayNames = useHideDisplayNames()
+  const displayName = getAuthorPrimaryName(author, {
+    hideDisplayNames,
+    moderation: opts.moderation?.ui('displayName'),
+  })
   const handle = author.handle
   // remove dumb typing when you update the atproto api package!!
   const pronouns = (author as {pronouns?: string})?.pronouns
@@ -117,12 +122,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 a.leading_tight,
                 a.flex_shrink,
               ]}>
-              {forceLTR(
-                sanitizeDisplayName(
-                  displayName,
-                  opts.moderation?.ui('displayName'),
-                ),
-              )}
+              {forceLTR(displayName)}
             </MaybeLinkText>
             <ProfileBadges
               profile={author}
@@ -136,25 +136,27 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 },
               ]}
             />
-            <MaybeLinkText
-              emoji
-              numberOfLines={1}
-              to={profileLink}
-              label={_(msg`View profile`)}
-              disableMismatchWarning
-              disableUnderline
-              onPress={opts.linkDisabled ? undefined : onBeforePressAuthor}
-              style={[
-                a.text_md,
-                t.atoms.text_contrast_medium,
-                {lineHeight: 1.17},
-                opts.narrowLayout
-                  ? a.flex_shrink
-                  : [{flexBasis: '30%'}, a.flex_grow, a.flex_shrink_0],
-                web({maxWidth: 'max-content'}),
-              ]}>
-              {NON_BREAKING_SPACE + sanitizeHandle(handle, '@')}
-            </MaybeLinkText>
+            {!hideDisplayNames && (
+              <MaybeLinkText
+                emoji
+                numberOfLines={1}
+                to={profileLink}
+                label={_(msg`View profile`)}
+                disableMismatchWarning
+                disableUnderline
+                onPress={opts.linkDisabled ? undefined : onBeforePressAuthor}
+                style={[
+                  a.text_md,
+                  t.atoms.text_contrast_medium,
+                  {lineHeight: 1.17},
+                  opts.narrowLayout
+                    ? a.flex_shrink
+                    : [{flexBasis: '30%'}, a.flex_grow, a.flex_shrink_0],
+                  web({maxWidth: 'max-content'}),
+                ]}>
+                {NON_BREAKING_SPACE + sanitizeHandle(handle, '@')}
+              </MaybeLinkText>
+            )}
             {opts.showPronouns && pronouns && (
               <WebOnlyInlineLinkText
                 emoji

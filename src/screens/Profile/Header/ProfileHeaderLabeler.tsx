@@ -63,51 +63,13 @@ let ProfileHeaderLabeler = ({
 }: Props): React.ReactNode => {
   const profile: Shadow<AppBskyActorDefs.ProfileViewDetailed> =
     useProfileShadow(profileUnshadowed)
-  const t = useTheme()
-  const ax = useAnalytics()
-  const {_} = useLingui()
-  const {currentAccount, hasSession} = useSession()
-  const playHaptic = useHaptics()
+  const {currentAccount} = useSession()
   const isSelf = currentAccount?.did === profile.did
-
-  const enableSquareButtons = useEnableSquareButtons()
 
   const moderation = useMemo(
     () => moderateProfile(profile, moderationOpts),
     [profile, moderationOpts],
   )
-  const {mutateAsync: likeMod, isPending: isLikePending} = useLikeMutation()
-  const {mutateAsync: unlikeMod, isPending: isUnlikePending} =
-    useUnlikeMutation()
-  const [likeUri, setLikeUri] = useState(labeler.viewer?.like || '')
-  const [likeCount, setLikeCount] = useState(labeler.likeCount || 0)
-
-  const onToggleLiked = useCallback(async () => {
-    if (!labeler) {
-      return
-    }
-    try {
-      playHaptic()
-
-      if (likeUri) {
-        await unlikeMod({uri: likeUri})
-        setLikeCount(c => c - 1)
-        setLikeUri('')
-      } else {
-        const res = await likeMod({uri: labeler.uri, cid: labeler.cid})
-        setLikeCount(c => c + 1)
-        setLikeUri(res.uri)
-      }
-    } catch (e: any) {
-      Toast.show(
-        _(
-          msg`There was an issue contacting the server, please check your internet connection and try again.`,
-        ),
-        {type: 'error'},
-      )
-      ax.logger.error(`Failed to toggle labeler like`, {message: e.message})
-    }
-  }, [ax, labeler, playHaptic, likeUri, unlikeMod, likeMod, _])
 
   return (
     <ProfileHeaderShell
@@ -142,61 +104,9 @@ let ProfileHeaderLabeler = ({
                 />
               </View>
             ) : undefined}
-            {!isAppLabeler(profile.did) && (
-              <View style={[a.flex_row, a.gap_xs, a.align_center, a.pt_lg]}>
-                <Button
-                  testID="toggleLikeBtn"
-                  size="small"
-                  color="secondary"
-                  shape={enableSquareButtons ? 'square' : 'round'}
-                  label={_(msg`Like this labeler`)}
-                  disabled={!hasSession || isLikePending || isUnlikePending}
-                  onPress={onToggleLiked}>
-                  {likeUri ? (
-                    <HeartFilled fill={t.palette.negative_400} />
-                  ) : (
-                    <Heart fill={t.atoms.text_contrast_medium.color} />
-                  )}
-                </Button>
-
-                {typeof likeCount === 'number' && (
-                  <Link
-                    to={{
-                      screen: 'ProfileLabelerLikedBy',
-                      params: {
-                        name: labeler.creator.handle || labeler.creator.did,
-                      },
-                    }}
-                    size="tiny"
-                    label={_(
-                      msg`Liked by ${plural(likeCount, {
-                        one: '# user',
-                        other: '# users',
-                      })}`,
-                    )}>
-                    {({hovered, focused, pressed}) => (
-                      <Text
-                        style={[
-                          a.font_semi_bold,
-                          a.text_sm,
-                          t.atoms.text_contrast_medium,
-                          (hovered || focused || pressed) &&
-                            t.atoms.text_contrast_high,
-                        ]}>
-                        <Trans>
-                          Liked by{' '}
-                          <Plural
-                            value={likeCount}
-                            one="# user"
-                            other="# users"
-                          />
-                        </Trans>
-                      </Text>
-                    )}
-                  </Link>
-                )}
-              </View>
-            )}
+            <View style={a.pt_lg}>
+              <LabelerLikeSection labeler={labeler} profile={profile} />
+            </View>
           </>
         )}
       </View>
@@ -233,21 +143,115 @@ function CantSubscribePrompt({
   )
 }
 
-export function HeaderLabelerButtons({
+export function LabelerLikeSection({
+  labeler,
   profile,
-  minimal = false,
 }: {
+  labeler: AppBskyLabelerDefs.LabelerViewDetailed
   profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
-  /** disable the subscribe button */
-  minimal?: boolean
 }) {
   const t = useTheme()
   const ax = useAnalytics()
   const {_} = useLingui()
-  const {currentAccount} = useSession()
+  const {hasSession} = useSession()
+  const playHaptic = useHaptics()
+  const enableSquareButtons = useEnableSquareButtons()
+  const {mutateAsync: likeMod, isPending: isLikePending} = useLikeMutation()
+  const {mutateAsync: unlikeMod, isPending: isUnlikePending} =
+    useUnlikeMutation()
+  const [likeUri, setLikeUri] = useState(labeler.viewer?.like || '')
+  const [likeCount, setLikeCount] = useState(labeler.likeCount || 0)
+
+  const onToggleLiked = useCallback(async () => {
+    try {
+      playHaptic()
+
+      if (likeUri) {
+        await unlikeMod({uri: likeUri})
+        setLikeCount(c => c - 1)
+        setLikeUri('')
+      } else {
+        const res = await likeMod({uri: labeler.uri, cid: labeler.cid})
+        setLikeCount(c => c + 1)
+        setLikeUri(res.uri)
+      }
+    } catch (e: any) {
+      Toast.show(
+        _(
+          msg`There was an issue contacting the server, please check your internet connection and try again.`,
+        ),
+        {type: 'error'},
+      )
+      ax.logger.error(`Failed to toggle labeler like`, {message: e.message})
+    }
+  }, [ax, labeler, playHaptic, likeUri, unlikeMod, likeMod, _])
+
+  if (isAppLabeler(profile.did)) {
+    return null
+  }
+
+  return (
+    <View style={[a.flex_row, a.gap_xs, a.align_center]}>
+      <Button
+        testID="toggleLikeBtn"
+        size="small"
+        color="secondary"
+        shape={enableSquareButtons ? 'square' : 'round'}
+        label={_(msg`Like this labeler`)}
+        disabled={!hasSession || isLikePending || isUnlikePending}
+        onPress={onToggleLiked}>
+        {likeUri ? (
+          <HeartFilled fill={t.palette.negative_400} />
+        ) : (
+          <Heart fill={t.atoms.text_contrast_medium.color} />
+        )}
+      </Button>
+
+      {typeof likeCount === 'number' && (
+        <Link
+          to={{
+            screen: 'ProfileLabelerLikedBy',
+            params: {
+              name: labeler.creator.handle || labeler.creator.did,
+            },
+          }}
+          size="tiny"
+          label={_(
+            msg`Liked by ${plural(likeCount, {
+              one: '# user',
+              other: '# users',
+            })}`,
+          )}>
+          {({hovered, focused, pressed}) => (
+            <Text
+              style={[
+                a.font_semi_bold,
+                a.text_sm,
+                t.atoms.text_contrast_medium,
+                (hovered || focused || pressed) && t.atoms.text_contrast_high,
+              ]}>
+              <Trans>
+                Liked by{' '}
+                <Plural value={likeCount} one="# user" other="# users" />
+              </Trans>
+            </Text>
+          )}
+        </Link>
+      )}
+    </View>
+  )
+}
+
+export function LabelerSubscribeButton({
+  profile,
+}: {
+  profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
+}) {
+  const t = useTheme()
+  const ax = useAnalytics()
+  const {_} = useLingui()
   const requireAuth = useRequireAuth()
   const playHaptic = useHaptics()
-  const editProfileControl = useDialogControl()
   const {data: preferences} = usePreferencesQuery()
   const moderationOpts = useModerationOpts()
   const {
@@ -264,8 +268,6 @@ export function HeaderLabelerButtons({
         ))
 
   const cantSubscribePrompt = Prompt.usePromptControl()
-
-  const isMe = currentAccount?.did === profile.did
 
   const onPressSubscribe = () =>
     requireAuth(async (): Promise<void> => {
@@ -293,6 +295,74 @@ export function HeaderLabelerButtons({
         ax.logger.error(`Failed to subscribe to labeler`, {message: e.message})
       }
     })
+
+  return (
+    <>
+      <Button
+        testID="toggleSubscribeBtn"
+        label={
+          isSubscribed
+            ? _(msg`Unsubscribe from this labeler`)
+            : _(msg`Subscribe to this labeler`)
+        }
+        onPress={onPressSubscribe}>
+        {state => (
+          <View
+            style={[
+              {
+                paddingVertical: 9,
+                paddingHorizontal: 12,
+                borderRadius: 6,
+                gap: 6,
+                backgroundColor: isSubscribed
+                  ? state.hovered || state.pressed
+                    ? t.palette.contrast_50
+                    : t.palette.contrast_25
+                  : state.hovered || state.pressed
+                    ? tokens.color.temp_purple_dark
+                    : tokens.color.temp_purple,
+              },
+            ]}>
+            <Text
+              style={[
+                {
+                  color: isSubscribed
+                    ? t.palette.contrast_700
+                    : t.palette.white,
+                },
+                a.font_semi_bold,
+                a.text_center,
+                a.leading_tight,
+              ]}>
+              {isSubscribed ? (
+                <Trans>Unsubscribe</Trans>
+              ) : (
+                <Trans>Subscribe to Labeler</Trans>
+              )}
+            </Text>
+          </View>
+        )}
+      </Button>
+      <CantSubscribePrompt control={cantSubscribePrompt} />
+    </>
+  )
+}
+
+export function HeaderLabelerButtons({
+  profile,
+  minimal = false,
+}: {
+  profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
+  /** disable the subscribe button */
+  minimal?: boolean
+}) {
+  const {_} = useLingui()
+  const {currentAccount} = useSession()
+  const playHaptic = useHaptics()
+  const editProfileControl = useDialogControl()
+
+  const isMe = currentAccount?.did === profile.did
+
   return (
     <>
       {isMe ? (
@@ -317,54 +387,9 @@ export function HeaderLabelerButtons({
         // hidden in the minimal header, because it's not shadowed so the two buttons
         // can get out of sync. if you want to reenable, you'll need to add shadowing
         // to the subscribed state -sfn
-        <Button
-          testID="toggleSubscribeBtn"
-          label={
-            isSubscribed
-              ? _(msg`Unsubscribe from this labeler`)
-              : _(msg`Subscribe to this labeler`)
-          }
-          onPress={onPressSubscribe}>
-          {state => (
-            <View
-              style={[
-                {
-                  paddingVertical: 9,
-                  paddingHorizontal: 12,
-                  borderRadius: 6,
-                  gap: 6,
-                  backgroundColor: isSubscribed
-                    ? state.hovered || state.pressed
-                      ? t.palette.contrast_50
-                      : t.palette.contrast_25
-                    : state.hovered || state.pressed
-                      ? tokens.color.temp_purple_dark
-                      : tokens.color.temp_purple,
-                },
-              ]}>
-              <Text
-                style={[
-                  {
-                    color: isSubscribed
-                      ? t.palette.contrast_700
-                      : t.palette.white,
-                  },
-                  a.font_semi_bold,
-                  a.text_center,
-                  a.leading_tight,
-                ]}>
-                {isSubscribed ? (
-                  <Trans>Unsubscribe</Trans>
-                ) : (
-                  <Trans>Subscribe to Labeler</Trans>
-                )}
-              </Text>
-            </View>
-          )}
-        </Button>
+        <LabelerSubscribeButton profile={profile} />
       ) : null}
       <ProfileMenu profile={profile} />
-      <CantSubscribePrompt control={cantSubscribePrompt} />
     </>
   )
 }

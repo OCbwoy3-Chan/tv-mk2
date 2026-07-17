@@ -18,13 +18,15 @@ const followedByMetricsDisplayValues = [
   'hidden',
   'lite',
   'visible',
-  'names',
+  'exact',
 ] as const
 
-export const followedByMetricsDisplaySchema = z.preprocess(
-  val => (val === 'accessible' ? 'lite' : val),
-  z.enum(followedByMetricsDisplayValues),
-)
+export const followedByMetricsDisplaySchema = z.preprocess(val => {
+  if (val === 'accessible') return 'lite'
+  // Legacy "names" is the current "visible" (named followers) behavior.
+  if (val === 'names') return 'visible'
+  return val
+}, z.enum(followedByMetricsDisplayValues))
 export type FollowedByMetricsDisplay = z.infer<
   typeof followedByMetricsDisplaySchema
 >
@@ -55,7 +57,7 @@ export function migrateFollowedByMetricsDisplay(
   if (legacyDisabled === true) {
     return 'hidden'
   }
-  return 'names'
+  return 'visible'
 }
 
 export function isCountsMetricHidden(mode: CountsMetricsDisplay): boolean {
@@ -136,15 +138,13 @@ export function isFollowedByMetricHidden(
 export function shouldShowFollowedByText(
   mode: FollowedByMetricsDisplay,
 ): boolean {
-  return mode === 'names'
+  return mode === 'visible' || mode === 'exact'
 }
 
-export function shouldShowFollowedByOverflowCount(
+export function shouldShowFollowedByExactText(
   mode: FollowedByMetricsDisplay,
-  serverCount: number,
-  shownCount: number,
 ): boolean {
-  return mode === 'visible' && serverCount > shownCount
+  return mode === 'exact'
 }
 
 export function shouldShowFollowedByOverflowPlus(

@@ -1,11 +1,11 @@
 import {useRef, useState} from 'react'
-import {Pressable, type TextInput, View} from 'react-native'
+import {View} from 'react-native'
 import {useSift} from '@bsky.app/sift'
 import {useLingui} from '@lingui/react/macro'
 
+import {mergeRefs} from '#/lib/merge-refs'
 import {profileIdentifier} from '#/lib/strings/handles'
-import {useModerationOpts} from '#/state/preferences/moderation-opts'
-import {atoms as a, native, useTheme} from '#/alf'
+import {atoms as a, native} from '#/alf'
 import {
   Autocomplete,
   type AutocompleteItem,
@@ -13,35 +13,36 @@ import {
 } from '#/components/Autocomplete'
 import * as TextField from '#/components/forms/TextField'
 import {At_Stroke2_Corner0_Rounded as At} from '#/components/icons/At'
-import * as ProfileCard from '#/components/ProfileCard'
-import {IS_NATIVE} from '#/env'
+import {type HandleAutocompleteInputProps} from './shared'
 
+/**
+ * Web: typed results float in a Sift dropdown anchored to the input (matching
+ * the search bar). See index.native.tsx for the native overlay variant.
+ */
 export function HandleAutocompleteInput({
   initialValue = '',
   onValueChange,
   onSubmit,
+  onSubmitEditing,
+  submitOnSelect = true,
   editable = true,
   autoFocus,
   testID = 'loginUsernameInput',
   label,
+  placeholder,
   accessibilityHint,
-}: {
-  initialValue?: string
-  onValueChange: (value: string) => void
-  onSubmit: () => void
-  editable?: boolean
-  autoFocus?: boolean
-  testID?: string
-  label: string
-  accessibilityHint?: string
-}) {
+  icon: Icon = At,
+  isInvalid,
+  returnKeyType = 'done',
+  inputRef,
+  showAutocomplete = true,
+  onFocus: onFocusProp,
+  onBlur: onBlurProp,
+}: HandleAutocompleteInputProps) {
   const {t: l} = useLingui()
-  const t = useTheme()
-  const moderationOpts = useModerationOpts()
   const [text, setText] = useState(initialValue)
   const [active, setActive] = useState(false)
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const inputRef = useRef<TextInput>(null)
 
   const sift = useSift({
     offset: a.p_xs.padding,
@@ -50,7 +51,7 @@ export function HandleAutocompleteInput({
   })
 
   const trimmed = text.trim()
-  const showResults = active && trimmed.length > 0
+  const showResults = showAutocomplete && active && trimmed.length > 0
 
   const {items} = useAutocomplete({
     type: 'profile',
@@ -61,9 +62,11 @@ export function HandleAutocompleteInput({
   const onChangeText = (value: string) => {
     setText(value)
     onValueChange(value)
-    if (!active && value.trim()) {
-      setActive(true)
-    }
+    /*
+     * Only open after the user types - focusing a prefilled handle (e.g. from
+     * account switch) should not immediately expand suggestions.
+     */
+    setActive(value.trim().length > 0)
   }
 
   const onSelect = (item: AutocompleteItem) => {
@@ -78,12 +81,12 @@ export function HandleAutocompleteInput({
     setText(identifier)
     onValueChange(identifier)
     setActive(false)
-    if (IS_NATIVE) {
-      inputRef.current?.blur()
+    sift.elements.input?.blur()
+    if (submitOnSelect) {
+      onSubmit?.()
     } else {
-      sift.elements.input?.blur()
+      onSubmitEditing?.()
     }
-    onSubmit()
   }
 
   const onFocus = () => {
@@ -91,12 +94,11 @@ export function HandleAutocompleteInput({
       clearTimeout(blurTimeoutRef.current)
       blurTimeoutRef.current = null
     }
-    if (trimmed.length > 0) {
-      setActive(true)
-    }
+    onFocusProp?.()
   }
 
   const onBlur = () => {
+    onBlurProp?.()
     blurTimeoutRef.current = setTimeout(() => {
       setActive(false)
       blurTimeoutRef.current = null
@@ -108,26 +110,35 @@ export function HandleAutocompleteInput({
   return (
     <View
       collapsable={false}
-      ref={IS_NATIVE ? undefined : sift.refs.setAnchor}
-      style={[a.relative, a.z_20, native({overflow: 'visible'})]}>
-      <TextField.Root>
-        <TextField.Icon icon={At} />
+      ref={sift.refs.setAnchor}
+      style={[a.relative, a.z_20, native({overflow: 'visible'})]}
+      onLayout={() => void sift.updatePosition()}>
+      <TextField.Root isInvalid={isInvalid}>
+        <TextField.Icon icon={Icon} />
         <TextField.Input
           testID={testID}
           label={label}
-          inputRef={IS_NATIVE ? inputRef : siftInputRef}
-          {...(IS_NATIVE ? {} : siftA11yProps)}
+          placeholder={placeholder}
+          inputRef={mergeRefs([siftInputRef, inputRef])}
+          {...siftA11yProps}
           autoCapitalize="none"
           autoFocus={autoFocus}
           autoCorrect={false}
           autoComplete="username"
-          returnKeyType="done"
+          returnKeyType={returnKeyType}
           textContentType="username"
           value={text}
           onChangeText={onChangeText}
           onFocus={onFocus}
           onBlur={onBlur}
-          onSubmitEditing={onSubmit}
+          onSubmitEditing={() => {
+            setActive(false)
+            if (onSubmitEditing) {
+              onSubmitEditing()
+            } else {
+              onSubmit?.()
+            }
+          }}
           blurOnSubmit={false}
           editable={editable}
           accessibilityHint={
@@ -135,46 +146,7 @@ export function HandleAutocompleteInput({
           }
         />
       </TextField.Root>
-      {showResults && items.length > 0 && IS_NATIVE && moderationOpts ? (
-        <View
-          style={[
-            a.mt_xs,
-            a.overflow_hidden,
-            a.rounded_md,
-            a.border,
-            t.atoms.border_contrast_low,
-            t.atoms.bg,
-          ]}>
-          {items.map((item, index) => {
-            if (item.type !== 'profile') return null
-            const isLast = index === items.length - 1
-            return (
-              <Pressable
-                key={item.key}
-                accessibilityRole="button"
-                onPress={() => onSelect(item)}
-                style={({pressed}) => [
-                  a.py_sm,
-                  a.px_md,
-                  pressed && t.atoms.bg_contrast_25,
-                  !isLast && [a.border_b, t.atoms.border_contrast_low],
-                ]}>
-                <ProfileCard.Header>
-                  <ProfileCard.Avatar
-                    disabledPreview
-                    profile={item.profile}
-                    moderationOpts={moderationOpts}
-                  />
-                  <ProfileCard.NameAndHandle
-                    profile={item.profile}
-                    moderationOpts={moderationOpts}
-                  />
-                </ProfileCard.Header>
-              </Pressable>
-            )
-          })}
-        </View>
-      ) : showResults && items.length > 0 && !IS_NATIVE ? (
+      {showResults && items.length > 0 ? (
         <Autocomplete
           sift={sift}
           data={items}

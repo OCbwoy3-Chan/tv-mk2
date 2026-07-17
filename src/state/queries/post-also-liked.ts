@@ -6,6 +6,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import {useDeferredEnable} from '#/lib/hooks/useDeferredEnable'
 import {STALE} from '#/state/queries'
 import {precachePost} from '#/state/queries/post'
 import {useAgent} from '#/state/session'
@@ -72,6 +73,7 @@ export function usePostAlsoLikedQuery(
 ) {
   const agent = useAgent()
   const queryClient = useQueryClient()
+  const enabled = useDeferredEnable(Boolean(uri) && opts?.enabled !== false)
 
   return useInfiniteQuery<
     AlsoLikedPage,
@@ -80,7 +82,7 @@ export function usePostAlsoLikedQuery(
     [string, string],
     string | undefined
   >({
-    enabled: Boolean(uri) && opts?.enabled !== false,
+    enabled,
     staleTime: STALE.MINUTES.FIVE,
     queryKey: RQKEY(uri || ''),
     initialPageParam: undefined as string | undefined,

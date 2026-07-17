@@ -21,7 +21,11 @@ import {logger} from '#/logger'
 import {IS_ANDROID, IS_IOS} from '#/env'
 import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
-import {getDownloadImageUri, getResizedDimensions} from './util'
+import {
+  getDownloadImageUri,
+  getResizedDimensions,
+  resolveUploadImageMime,
+} from './util'
 import {mimeToExt} from './video/util'
 
 export async function compressIfNeeded(
@@ -29,7 +33,10 @@ export async function compressIfNeeded(
   {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
   opts?: {outputMime?: 'image/jpeg' | 'image/webp'; forceEncode?: boolean},
 ): Promise<PickerImage> {
-  const outputMime = opts?.outputMime ?? 'image/jpeg'
+  const outputMime = resolveUploadImageMime(
+    img.mime,
+    opts?.outputMime ?? 'image/jpeg',
+  )
   const needsReencode =
     opts?.forceEncode || img.size >= maxSize || img.mime !== outputMime
 

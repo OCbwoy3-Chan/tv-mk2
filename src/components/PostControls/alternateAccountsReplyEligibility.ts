@@ -4,7 +4,8 @@ import {type QueryClient} from '@tanstack/react-query'
 import {STALE} from '#/state/queries'
 import {createQueryKey} from '#/state/queries/util'
 import {canAttemptSessionResume} from '#/state/session/util'
-import {type SessionAccount, type SessionApiContext} from '#/state/session'
+import {type SessionAccount} from '#/state/session'
+import {type SessionApiContext} from '#/state/session/types'
 
 const queryKeyRoot = 'alternateAccountsReplyEligibility'
 

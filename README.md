@@ -16,16 +16,18 @@ alt="Get it on Obtainium" height="54" /></a> -->
 
 ## Improvements on Witchsky
 
-- Our own settings page: Settings -> Deltas
-- Lightner/Darkner labels
-- Enhanced Custom TID option in composer independent from ([witchsky's implementation](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow)]
-- Unsigned native iOS Builds via GitHub Actions, srry tangled :( (it needs macos ci)
-- Removed labeler limit (max 200 labelers if you're deadass actually insane)
+- Tenna's Settings Page: Settings -> Deltas (above Runes)
+- New fun self-labels: Lightner, Darkner, Tenna and
+- VIP Exclusive labels (hard-coded, they're fun)
+- Enhanced Custom TID option in composer, backported from TV World before it shut down. It's better than ([witchsky's own implementation](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow)].
+- Native iOS via GitHub Actions (Unsigned. Requires Sideloading)
+- Removed the labeler limit (200 max labelers, you're deadass genuinely insane if you hit the limit on this)
+- Brought back AI preferences [after their removal in v128](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mqtl52mokc2p) in Settings -> Deltas
 
 ### TODO: Kris
 
 - [ ] Custom cancellations (like on cred.blue/canceller) & import from repo button
-- [ ] Fix live reload being broken (meh, rspack sucks)
+- [ ] Fix live reload being broken (meh i don't like rspack)
 
 ## Development Resources
 
@@ -43,13 +45,13 @@ TV Time is a fork of Witchsky, which itself is a fork of the official Bluesky cl
 
 ## Contributions
 
-> TV Time is a community fork, and we'd love to merge your PR!
+> tenna.party is a community fork, and we'd love to merge your PR!
 
-As a rule of thumb, the best features for TV Time are those that have any positive impact on the user experience regardless of the maintenance overhead. Since TV Time is a soft-ish fork, any features (patches) we add on top of Witchsky need to be maintained. For example, a change to the way posts are composed may be very invasive, touching lots of code across the codebase. If upstream refactors this component, we will need to rewrite this feature to be compatible or drop it from the client.
+As a rule of thumb, the best features for TV Time are those that have any positive impact on the user experience regardless of the maintenance overhead. Since tenna.party is a soft-ish fork, any features (patches) we add on top of Witchsky need to be maintained. For example, a change to the way posts are composed may be very invasive, touching lots of code across the codebase. If upstream refactors this component, we will need to rewrite this feature to be compatible or drop it from the client.
 
-For this reason, only features that require changing only a small amount of code from upstream should be considered.
+For this reason, only features that require changing only a small or medium amount of code from upstream should be considered.
 
-Without an overriding motivation, opinionated features should exist behind a toggle that is not enabled by default. This allows TV Time to cater to as many users as possible.
+Without an overriding motivation, opinionated features *maybe* should exist behind a toggle that is not enabled by default. This allows our client to cater to as many users as possible.
 
 ### Guidelines
 
@@ -57,7 +59,7 @@ Without an overriding motivation, opinionated features should exist behind a tog
 - Open an issue and give some time for discussion before submitting a PR.
   - This isn't strictly necessary, but the lead developers would love to give their thoughts and scope out your willingness to maintain the feature before you write it.
 - Stay away from PRs like...
-  - Changing "Quote" to "Bitch."
+  - Changing "User" to "Tennaling."
   - Refactoring the codebase, e.g., to replace React Query with Redux Toolkit, etc.
 - Include a new toggle and preference for your feature.
 
@@ -78,8 +80,8 @@ Self hosting is great! It is our intention that TV Time is easy to self host and
 
 ## Security disclosures
 
-If you discover any security issues with TV Time (NOT WITCHSKY), please privately disclose them to [kris.darkworld.download](https://bsky.app/profile/kris.darkworld.download).
-If the issue pertains to infastructure, code, or systems outside the scope of TV Time, please refer to the [disclosure guidelines on social-app](https://github.com/bluesky-social/social-app#security-disclosures) if it is hosted by Bluesky PBC. Otherwise, reference the security policy of that system as applicable <3
+If you discover any __security issues__ with tenna.party (NOT WITCHSKY), please privately disclose them to [kris.darkworld.download](https://bsky.app/profile/kris.darkworld.download).
+If the issue pertains to infastructure, code, or systems outside the scope of tenna.party and Witchsky, please refer to the [disclosure guidelines on social-app](https://github.com/bluesky-social/social-app#security-disclosures) if it is hosted by Bluesky PBC. Otherwise, reference the security policy of that system as applicable <3
 
 ## License (MIT)
 
@@ -89,4 +91,4 @@ Bluesky Social PBC has committed to a software patent non-aggression pledge. For
 
 ## P.S.
 
-We ❤️ you and all of the ways you support us. Thank you for making Witchsky so great! ^.^
+We ❤️ you and all of the ways you support us. Thank you for making Witchsky & tenna.party so great! ^.^ :3

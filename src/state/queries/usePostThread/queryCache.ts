@@ -21,7 +21,7 @@ import {findAllPostsInQueryData as findAllPostsInPostQueryData} from '#/state/qu
 import {findAllPostsInQueryData as findAllPostsInAlsoLikedQueryData} from '#/state/queries/post-also-liked'
 import {findAllPostsInQueryData as findAllPostsInFeedQueryData} from '#/state/queries/post-feed'
 import {findAllPostsInQueryData as findAllPostsInQuoteQueryData} from '#/state/queries/post-quotes'
-import {findAllPostsInQueryData as findAllPostsInSearchQueryData} from '#/state/queries/search-posts'
+import {findAllPostsInQueryData as findAllPostsInSearchQueryData} from '#/state/queries/search-posts-v2'
 import {usePostThreadContext} from '#/state/queries/usePostThread'
 import {getBranch} from '#/state/queries/usePostThread/traversal'
 import {

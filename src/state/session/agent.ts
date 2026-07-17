@@ -32,7 +32,10 @@ import {
 import {unsafeGetAndComputeAgeAssurance} from '#/ageAssurance/state'
 import {features} from '#/analytics'
 import {emitNetworkConfirmed, emitNetworkLost} from '../events'
-import {readCustomAppViewDidUri} from '../preferences/custom-appview-did'
+import {
+  readCustomAppViewDidUri,
+  readCustomAppViewUrl,
+} from '../preferences/custom-appview-did'
 import {addSessionErrorLog} from './logging'
 import {
   configureModerationForAccount,
@@ -46,7 +49,9 @@ export type ProxyHeaderValue = `${Did}#${AtprotoServiceType}`
 export function createPublicAgent() {
   configureModerationForGuest() // Side effect but only relevant for tests
 
-  const agent = new BskyAppAgent({service: PUBLIC_BSKY_SERVICE})
+  const agent = new BskyAppAgent({
+    service: readCustomAppViewUrl() || PUBLIC_BSKY_SERVICE,
+  })
   const proxyDid =
     readCustomAppViewDidUri() || BLUESKY_PROXY_HEADER.get() || APPVIEW_DID_PROXY
   agent.configureProxy(proxyDid as ProxyHeaderValue)
@@ -434,8 +439,8 @@ class BskyAppAgent extends AtpAgent {
   }
 
   cloneWithoutProxy(): AtpAgent {
-    const cloned = new AtpAgent({service: this.serviceUrl.toString()})
-    cloned.sessionManager.session = this.sessionManager.session
+    const cloned = this.clone()
+    cloned.configureProxy(null)
     return cloned
   }
 }

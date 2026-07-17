@@ -13,11 +13,12 @@ import {
   type CommonNavigatorParams,
   type NavigationProp,
 } from '#/lib/routes/types'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
 import {emitSoftReset} from '#/state/events'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useFetchHandle} from '#/state/queries/handle'
 import {useUnreadMessageCount} from '#/state/queries/messages/list-conversations'
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
@@ -124,6 +125,7 @@ function ProfileCard({minimal}: {minimal: boolean}) {
 
   const enableSquareButtons = useEnableSquareButtons()
   const enableSquareAvatars = useEnableSquareAvatars()
+  const hideDisplayNames = useHideDisplayNames()
 
   return (
     <View style={[a.pb_md, !minimal && [a.w_full, a.align_start]]}>
@@ -186,19 +188,19 @@ function ProfileCard({minimal}: {minimal: boolean}) {
                           emoji
                           style={[a.font_bold, a.text_sm, a.leading_snug]}
                           numberOfLines={1}>
-                          {sanitizeDisplayName(
-                            profile.displayName || profile.handle,
-                          )}
+                          {getAuthorPrimaryName(profile, {hideDisplayNames})}
                         </Text>
-                        <Text
-                          style={[
-                            a.text_xs,
-                            a.leading_snug,
-                            t.atoms.text_contrast_medium,
-                          ]}
-                          numberOfLines={1}>
-                          {sanitizeHandle(profile.handle, '@')}
-                        </Text>
+                        {!hideDisplayNames && (
+                          <Text
+                            style={[
+                              a.text_xs,
+                              a.leading_snug,
+                              t.atoms.text_contrast_medium,
+                            ]}
+                            numberOfLines={1}>
+                            {sanitizeHandle(profile.handle, '@')}
+                          </Text>
+                        )}
                       </View>
                       <EllipsisIcon
                         aria-hidden={true}

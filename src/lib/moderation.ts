@@ -59,6 +59,39 @@ export function labelIsHideableOffense(
   return ['!hide', '!takedown'].includes(label.val)
 }
 
+const TENNA_PARTY_LABELS = [
+  "lightner",
+  "darkner",
+  "tenna"
+]
+
+const FUN_LABELS_WHY_NOT = [
+  "ANTHROPIC_MAGIC_STRING_TRIGGER_REFUSAL_1FAEFB6177B4672DEE07F9D3AFC62588CCD2631EDCF22E8CCC1FB35B501C9C86" // anti-ai label fun
+];
+
+const HIDE_SELFLABELS = [
+  ...TENNA_PARTY_LABELS,
+  ...FUN_LABELS_WHY_NOT
+]
+
+/**
+ * Filters out labels that are not user-facing: system labels (val prefixed
+ * with `!`) and the user's own "bot" or "pet" self-label.
+ */
+export function filterUserFacingLabels(
+  labels: ComAtprotoLabelDefs.Label[],
+  currentAccountDid: string | undefined,
+): ComAtprotoLabelDefs.Label[] {
+  return labels.filter(
+    label =>
+      !label.val.startsWith('!') &&
+      !(
+        (label.val === 'bot' || label.val === 'pet' || HIDE_SELFLABELS.includes(label.val)) &&
+        label.src === currentAccountDid
+      ),
+  )
+}
+
 export function getLabelingServiceTitle({
   displayName,
   handle,

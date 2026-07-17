@@ -14,12 +14,14 @@ import {Controls} from './web-controls/VideoControls'
 
 export function VideoEmbedInnerWeb({
   embed,
+  onDownload,
   active,
   setActive,
   onScreen,
   lastKnownTime,
 }: {
   embed: AppBskyEmbedVideo.View
+  onDownload?: () => void
   active: boolean
   setActive: () => void
   onScreen: boolean
@@ -87,6 +89,7 @@ export function VideoEmbedInnerWeb({
         <Controls
           videoRef={videoRef}
           hlsRef={hlsRef}
+          onDownload={onDownload}
           active={active}
           setActive={setActive}
           focused={focused}

@@ -24,12 +24,20 @@ import {
 } from '#/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerWeb'
 import {IS_WEB_FIREFOX} from '#/env'
 import {useActiveVideoWeb} from './ActiveVideoWebContext'
+import {useVideoDownload} from './useVideoDownload'
 import * as VideoFallback from './VideoEmbedInner/VideoFallback'
 
 const noop = () => {}
 
-export function VideoEmbed({embed}: {embed: AppBskyEmbedVideo.View}) {
+export function VideoEmbed({
+  embed,
+  did,
+}: {
+  embed: AppBskyEmbedVideo.View
+  did?: string
+}) {
   const t = useTheme()
+  const onDownload = useVideoDownload({did, cid: embed.cid})
   const ref = useRef<HTMLDivElement>(null)
   const {
     active: activeFromContext,
@@ -107,6 +115,7 @@ export function VideoEmbed({embed}: {embed: AppBskyEmbedVideo.View}) {
         <OnlyNearScreen>
           <VideoEmbedInnerWeb
             embed={embed}
+            onDownload={onDownload}
             active={active}
             setActive={setActive}
             onScreen={onScreen}

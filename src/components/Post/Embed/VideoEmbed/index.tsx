@@ -18,6 +18,7 @@ import * as VideoFallback from './VideoEmbedInner/VideoFallback'
 
 interface Props {
   embed: AppBskyEmbedVideo.View
+  did?: string
 }
 
 export function VideoEmbed({embed}: Props) {
@@ -64,7 +65,7 @@ export function VideoEmbed({embed}: Props) {
   )
 }
 
-function InnerWrapper({embed}: Props) {
+function InnerWrapper({embed}: {embed: AppBskyEmbedVideo.View}) {
   const {_} = useLingui()
   const ref = useRef<{togglePlayback: () => void}>(null)
 

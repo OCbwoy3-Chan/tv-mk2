@@ -17,7 +17,6 @@ import {DeviceLocationRequestDialog} from '#/components/dialogs/DeviceLocationRe
 import {Divider} from '#/components/Divider'
 import * as DateField from '#/components/forms/DateField'
 import {type DateFieldRef} from '#/components/forms/DateField/types'
-import {FormError} from '#/components/forms/FormError'
 import {HostingProvider} from '#/components/forms/HostingProvider'
 import * as TextField from '#/components/forms/TextField'
 import {Envelope_Stroke2_Corner0_Rounded as Envelope} from '#/components/icons/Envelope'
@@ -174,7 +173,7 @@ export function StepInfo({
 
   return (
     <ScreenTransition direction={state.screenTransitionDirection}>
-      <View style={[a.gap_md]}>
+      <View style={[a.gap_md, a.pt_lg]}>
         {state.serviceUrl === DEFAULT_SERVICE && (
           <View style={[a.gap_xl]}>
             <Text style={[a.gap_md, a.leading_normal]}>
@@ -213,7 +212,11 @@ export function StepInfo({
             <Divider style={[a.mb_xl]} />
           </View>
         )}
-        <FormError error={state.error} />
+        {state.error && (
+          <Admonition.Admonition type="error">
+            {state.error}
+          </Admonition.Admonition>
+        )}
         <HostingProvider
           serviceUrl={state.serviceUrl}
           onSelectServiceUrl={v => dispatch({type: 'setServiceUrl', value: v})}

@@ -1,5 +1,7 @@
 import {type ModerationUI} from '@atproto/api'
 
+import {sanitizeHandle} from '#/lib/strings/handles'
+
 // \u2705 = ✅
 // \u2713 = ✓
 // \u2714 = ✔
@@ -26,15 +28,40 @@ export function sanitizeDisplayName(
   return ''
 }
 
+/**
+ * Primary identity label for an author. When hideDisplayNames is on, returns
+ * the bare handle (e.g. alice.bsky.social) instead of a custom display name.
+ */
+export function getAuthorPrimaryName(
+  author: {displayName?: string; handle: string},
+  opts?: {
+    hideDisplayNames?: boolean
+    moderation?: ModerationUI
+  },
+): string {
+  if (opts?.hideDisplayNames) {
+    return sanitizeHandle(author.handle)
+  }
+  return sanitizeDisplayName(
+    author.displayName || sanitizeHandle(author.handle),
+    opts?.moderation,
+  )
+}
+
 export function combinedDisplayName({
   handle,
   displayName,
+  hideDisplayNames,
 }: {
   handle?: string
   displayName?: string
+  hideDisplayNames?: boolean
 }): string {
   if (!handle) {
     return ''
+  }
+  if (hideDisplayNames) {
+    return sanitizeHandle(handle)
   }
   return displayName
     ? `${sanitizeDisplayName(displayName)} (@${handle})`

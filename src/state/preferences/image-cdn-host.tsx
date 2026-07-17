@@ -11,20 +11,25 @@ import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['imageCdnHost']
 type SetContext = (v: persisted.Schema['imageCdnHost']) => void
+type CustomStateContext = persisted.Schema['imageCdnHostCustom']
+type SetCustomContext = (v: persisted.Schema['imageCdnHostCustom']) => void
 
-const stateContext = createContext<StateContext>(
-  persisted.defaults.imageCdnHost,
-)
+const stateContext = createContext<StateContext>(undefined)
 const setContext = createContext<SetContext>(
   (_: persisted.Schema['imageCdnHost']) => {},
 )
-
-const DEFAULT_IMAGE_CDN_ORIGIN = normalizeOrigin(
-  persisted.defaults.imageCdnHost ?? '',
+const customStateContext = createContext<CustomStateContext>(undefined)
+const setCustomContext = createContext<SetCustomContext>(
+  (_: persisted.Schema['imageCdnHostCustom']) => {},
 )
+
+const DEFAULT_IMAGE_CDN_ORIGIN = 'https://cdn.bsky.app'
 
 export function Provider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState(persisted.get('imageCdnHost'))
+  const [customState, setCustomState] = useState(
+    persisted.get('imageCdnHostCustom'),
+  )
 
   const setStateWrapped = useCallback(
     (imageCdnHost: persisted.Schema['imageCdnHost']) => {
@@ -34,27 +39,57 @@ export function Provider({children}: PropsWithChildren<{}>) {
     [setState],
   )
 
+  const setCustomStateWrapped = useCallback(
+    (imageCdnHostCustom: persisted.Schema['imageCdnHostCustom']) => {
+      setCustomState(imageCdnHostCustom)
+      persisted.write('imageCdnHostCustom', imageCdnHostCustom)
+    },
+    [setCustomState],
+  )
+
   useEffect(() => {
     return persisted.onUpdate('imageCdnHost', nextImageCdnHost => {
       setState(nextImageCdnHost)
     })
   }, [setStateWrapped])
 
+  useEffect(() => {
+    return persisted.onUpdate('imageCdnHostCustom', nextImageCdnHostCustom => {
+      setCustomState(nextImageCdnHostCustom)
+    })
+  }, [setCustomStateWrapped])
+
   return (
     <stateContext.Provider value={state}>
       <setContext.Provider value={setStateWrapped}>
-        {children}
+        <customStateContext.Provider value={customState}>
+          <setCustomContext.Provider value={setCustomStateWrapped}>
+            {children}
+          </setCustomContext.Provider>
+        </customStateContext.Provider>
       </setContext.Provider>
     </stateContext.Provider>
   )
 }
 
+export function useImageCdnHostSetting() {
+  return useContext(stateContext)
+}
+
+export function useImageCdnHostCustom() {
+  return useContext(customStateContext)
+}
+
 export function useImageCdnHost() {
-  return useContext(stateContext) ?? persisted.defaults.imageCdnHost!
+  return useContext(stateContext)
 }
 
 export function useSetImageCdnHost() {
   return useContext(setContext)
+}
+
+export function useSetImageCdnHostCustom() {
+  return useContext(setCustomContext)
 }
 
 function normalizeOrigin(input: string) {

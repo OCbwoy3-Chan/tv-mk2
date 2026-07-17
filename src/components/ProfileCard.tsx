@@ -17,10 +17,11 @@ import {getModerationCauseKey} from '#/lib/moderation'
 import {makeProfileLink} from '#/lib/routes/links'
 import {forceLTR} from '#/lib/strings/bidi'
 import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
-import {sanitizeDisplayName} from '#/lib/strings/display-names'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {type SessionAccount, useSession} from '#/state/session'
@@ -149,6 +150,7 @@ export function Link({
   profile: bsky.profile.AnyProfileView
 } & Omit<LinkProps, 'to' | 'label'>) {
   const {t: l} = useLingui()
+  const hideDisplayNames = useHideDisplayNames()
 
   const profileURL = makeProfileLink({
     did: profile.did,
@@ -158,9 +160,9 @@ export function Link({
   return (
     <InternalLink
       testID={`profileCard-${profile.handle}-link`}
-      label={l`View ${
-        profile.displayName || sanitizeHandle(profile.handle)
-      }’s profile`}
+      label={l`View ${getAuthorPrimaryName(profile, {
+        hideDisplayNames,
+      })}’s profile`}
       to={profileURL}
       style={[a.flex_col, style]}
       {...rest}>
@@ -254,11 +256,12 @@ function InlineNameAndHandle({
   moderationOpts: ModerationOpts
 }) {
   const t = useTheme()
+  const hideDisplayNames = useHideDisplayNames()
   const moderation = moderateProfile(profile, moderationOpts)
-  const name = sanitizeDisplayName(
-    profile.displayName || sanitizeHandle(profile.handle),
-    moderation.ui('displayName'),
-  )
+  const name = getAuthorPrimaryName(profile, {
+    hideDisplayNames,
+    moderation: moderation.ui('displayName'),
+  })
   const handle = sanitizeHandle(profile.handle, '@')
   return (
     <View style={[a.flex_row, a.align_end, a.flex_shrink]}>
@@ -268,7 +271,7 @@ function InlineNameAndHandle({
           a.font_semi_bold,
           a.leading_tight,
           a.flex_shrink_0,
-          {maxWidth: '70%'},
+          {maxWidth: hideDisplayNames ? '100%' : '70%'},
         ]}
         numberOfLines={1}>
         {forceLTR(name)}
@@ -281,16 +284,18 @@ function InlineNameAndHandle({
         ]}>
         <ProfileBadges profile={profile} size="sm" />
       </View>
-      <Text
-        emoji
-        style={[
-          a.leading_tight,
-          t.atoms.text_contrast_medium,
-          {flexShrink: 10},
-        ]}
-        numberOfLines={1}>
-        {NON_BREAKING_SPACE + handle}
-      </Text>
+      {!hideDisplayNames && (
+        <Text
+          emoji
+          style={[
+            a.leading_tight,
+            t.atoms.text_contrast_medium,
+            {flexShrink: 10},
+          ]}
+          numberOfLines={1}>
+          {NON_BREAKING_SPACE + handle}
+        </Text>
+      )}
     </View>
   )
 }
@@ -306,11 +311,12 @@ export function Name({
   style?: StyleProp<ViewStyle>
   textStyle?: StyleProp<TextStyle>
 }) {
+  const hideDisplayNames = useHideDisplayNames()
   const moderation = moderateProfile(profile, moderationOpts)
-  const name = sanitizeDisplayName(
-    profile.displayName || sanitizeHandle(profile.handle),
-    moderation.ui('displayName'),
-  )
+  const name = getAuthorPrimaryName(profile, {
+    hideDisplayNames,
+    moderation: moderation.ui('displayName'),
+  })
   return (
     <View style={[a.flex_row, a.align_center, a.max_w_full, style]}>
       <Text
@@ -339,6 +345,10 @@ export function Handle({
   textStyle?: StyleProp<TextStyle>
 }) {
   const t = useTheme()
+  const hideDisplayNames = useHideDisplayNames()
+  if (hideDisplayNames) {
+    return null
+  }
   const handle = sanitizeHandle(profile.handle, '@')
 
   return (
@@ -510,6 +520,11 @@ export function FollowButtonInner({
     account => account.did !== currentAccount?.did,
   )
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const hideDisplayNames = useHideDisplayNames()
+  const authorName = getAuthorPrimaryName(profile, {
+    hideDisplayNames,
+    moderation: moderation.ui('displayName'),
+  })
   const promptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] = useState<'follow' | 'unfollow'>('follow')
   const [pendingEphemeralAccount, setPendingEphemeralAccount] =
@@ -519,10 +534,7 @@ export function FollowButtonInner({
     try {
       await queueFollow()
       Toast.show(
-        l`Following ${sanitizeDisplayName(
-          profile.displayName || profile.handle,
-          moderation.ui('displayName'),
-        )}`,
+        l`Following ${authorName}`,
       )
       onPressProp?.(e)
       onFollow?.()
@@ -540,10 +552,7 @@ export function FollowButtonInner({
     try {
       await queueUnfollow()
       Toast.show(
-        l`No longer following ${sanitizeDisplayName(
-          profile.displayName || profile.handle,
-          moderation.ui('displayName'),
-        )}`,
+        l`No longer following ${authorName}`,
       )
       onPressProp?.(e)
     } catch (e) {
@@ -609,12 +618,6 @@ export function FollowButtonInner({
       })
 
   if (!profile.viewer) return null
-  if (
-    profile.viewer.blockedBy ||
-    profile.viewer.blocking ||
-    profile.viewer.blockingByList
-  )
-    return null
   const viewer = profile.viewer
 
   const renderFollowButton = (onLongPress?: () => void) =>
@@ -684,10 +687,7 @@ export function FollowButtonInner({
       {confirmFollowUnfollow && (
         <FollowConfirmationDialog
           control={promptControl}
-          displayName={sanitizeDisplayName(
-            profile.displayName || profile.handle,
-            moderation.ui('displayName'),
-          )}
+          displayName={authorName}
           handle={profile.handle}
           actionType={confirmationAction}
           onConfirm={onConfirm}

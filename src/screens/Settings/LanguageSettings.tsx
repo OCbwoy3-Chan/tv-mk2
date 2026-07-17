@@ -10,12 +10,19 @@ import {
 } from '#/lib/routes/types'
 import {languageName, sanitizeAppLanguageSetting} from '#/locale/helpers'
 import {APP_LANGUAGES, LANGUAGES} from '#/locale/languages'
-import {useLanguagePrefs, useLanguagePrefsApi} from '#/state/preferences'
+import {
+  useLanguagePrefs,
+  useLanguagePrefsApi,
+  useSetTranslationServicePreference,
+  useTranslationServicePreference,
+} from '#/state/preferences'
+import {LibreTranslateInstanceDialog} from '#/screens/Settings/components/LibreTranslateInstanceDialog'
 import {atoms as a, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button} from '#/components/Button'
 import {useDialogControl} from '#/components/Dialog'
 import {LanguageSelectDialog} from '#/components/dialogs/LanguageSelectDialog'
+import {createStaticClick, InlineLinkText} from '#/components/Link'
 import * as Toggle from '#/components/forms/Toggle'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import * as Layout from '#/components/Layout'
@@ -33,6 +40,16 @@ export function LanguageSettingsScreen({}: Props) {
   const {_} = useLingui()
   const langPrefs = useLanguagePrefs()
   const setLangPrefs = useLanguagePrefsApi()
+  const translationServicePreference = useTranslationServicePreference()
+  const setTranslationServicePreference = useSetTranslationServicePreference()
+  const libreTranslateInstanceControl = useDialogControl()
+
+  const translationProviderItems = [
+    {value: 'google', label: _(msg`Google Translate`)},
+    {value: 'kagi', label: _(msg`Kagi Translate`)},
+    {value: 'papago', label: _(msg`Naver Papago`)},
+    {value: 'libreTranslate', label: _(msg`LibreTranslate`)},
+  ] as const
 
   // changing langPrefs causes a slow re-render, so we use a local state copy
   // and update that first to drive the UI on this screen to keep it snappy
@@ -247,7 +264,54 @@ export function LanguageSettingsScreen({}: Props) {
               />
             </View>
           </SettingsList.Group>
+          <SettingsList.Divider />
+          <SettingsList.Group iconInset={false}>
+            <SettingsList.ItemText>
+              <Trans>Post translation provider</Trans>
+            </SettingsList.ItemText>
+            <View style={[a.gap_md, a.w_full]}>
+              <Text style={[a.leading_snug]}>
+                <Trans>
+                  Select which service to use when translating posts.
+                </Trans>
+              </Text>
+              <Select.Root
+                value={translationServicePreference}
+                onValueChange={value => {
+                  setTranslationServicePreference(
+                    value as typeof translationServicePreference,
+                  )
+                }}>
+                <Select.Trigger label={_(msg`Select post translation provider`)}>
+                  <Select.ValueText />
+                  <Select.Icon />
+                </Select.Trigger>
+                <Select.Content
+                  label={_(msg`Post translation provider`)}
+                  renderItem={({label, value}) => (
+                    <Select.Item value={value} label={label}>
+                      <Select.ItemIndicator />
+                      <Select.ItemText>{label}</Select.ItemText>
+                    </Select.Item>
+                  )}
+                  items={[...translationProviderItems]}
+                />
+              </Select.Root>
+              {translationServicePreference === 'libreTranslate' && (
+                <View style={[a.w_full, a.align_start]}>
+                  <InlineLinkText
+                    label={_(msg`Change instance`)}
+                    {...createStaticClick(() =>
+                      libreTranslateInstanceControl.open(),
+                    )}>
+                    <Trans>Change instance</Trans>
+                  </InlineLinkText>
+                </View>
+              )}
+            </View>
+          </SettingsList.Group>
         </SettingsList.Container>
+        <LibreTranslateInstanceDialog control={libreTranslateInstanceControl} />
       </Layout.Content>
     </Layout.Screen>
   )

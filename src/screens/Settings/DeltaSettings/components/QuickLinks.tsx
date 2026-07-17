@@ -7,6 +7,7 @@ import { DarknerIcon } from '#/components/CrackComponents/Icons'
 import {ShieldCheck_Stroke2_Corner0_Rounded} from '#/components/icons/Shield'
 import {Separator} from '#/components/Select'
 import {Text} from '#/components/Typography'
+import { Sparkle_Stroke2_Corner0_Rounded } from '#/components/icons/Sparkle'
 
 export function TennaQuickLinks() {
   const t = useTheme()
@@ -29,11 +30,16 @@ export function TennaQuickLinks() {
           path: '/settings/deltas/badges',
           icon: DarknerIcon,
         },
-        // {
-        //   text: l`Moderation labels`,
-        //   path: '/settings/deltas/labels',
-        //   icon: ShieldCheck_Stroke2_Corner0_Rounded,
-        // },
+        {
+          text: l`Moderation labels`,
+          path: '/settings/deltas/labels',
+          icon: ShieldCheck_Stroke2_Corner0_Rounded,
+        },
+        {
+          text: l`AI Preferences`,
+          path: '/settings/deltas/ai',
+          icon: Sparkle_Stroke2_Corner0_Rounded
+        }
       ],
     },
   ]
@@ -49,6 +55,7 @@ export function TennaQuickLinks() {
         ]}>
         {title}
       </Text>
+      
       <View
         style={[
           a.w_full,

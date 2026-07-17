@@ -5,6 +5,7 @@ import {PressableWithHover} from '#/view/com/util/PressableWithHover'
 import {atoms as a, useTheme, web} from '#/alf'
 
 export function ControlButton({
+  testID,
   active,
   activeLabel,
   inactiveLabel,
@@ -12,6 +13,7 @@ export function ControlButton({
   inactiveIcon: InactiveIcon,
   onPress,
 }: {
+  testID?: string
   active: boolean
   activeLabel: string
   inactiveLabel: string
@@ -23,6 +25,7 @@ export function ControlButton({
   const enableSquareButtons = useEnableSquareButtons()
   return (
     <PressableWithHover
+      testID={testID}
       accessibilityRole="button"
       accessibilityLabel={active ? activeLabel : inactiveLabel}
       accessibilityHint=""

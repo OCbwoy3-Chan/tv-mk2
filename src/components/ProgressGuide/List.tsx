@@ -9,6 +9,7 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useProfileFollowsQuery} from '#/state/queries/profile-follows'
 import {useSession} from '#/state/session'
 import {
@@ -126,6 +127,7 @@ export function ProgressGuideList({style}: {style?: StyleProp<ViewStyle>}) {
 
 function StackedAvatars({follows}: {follows?: bsky.profile.AnyProfileView[]}) {
   const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
   const [containerWidth, setContainerWidth] = useState(0)
 
   const onLayout = (e: LayoutChangeEvent) => {
@@ -142,6 +144,11 @@ function StackedAvatars({follows}: {follows?: bsky.profile.AnyProfileView[]}) {
   const avatarSize = containerWidth > 0 ? containerWidth / visiblePortions : 0
   const overlap = avatarSize * overlapRatio
   const iconSize = avatarSize * 0.5
+  const borderRadius = enableSquareAvatars
+    ? avatarSize > 32
+      ? 8
+      : 3
+    : 999
 
   const followedAvatars = follows?.slice(0, TOTAL_AVATARS) ?? []
   const remainingSlots = TOTAL_AVATARS - followedAvatars.length
@@ -155,10 +162,10 @@ function StackedAvatars({follows}: {follows?: bsky.profile.AnyProfileView[]}) {
             <View
               key={follow.did}
               style={[
-                a.rounded_full,
                 a.border,
                 t.atoms.border_contrast_low,
                 {
+                  borderRadius,
                   marginLeft: i === 0 ? 0 : -overlap,
                   zIndex: TOTAL_AVATARS - i,
                 },
@@ -180,11 +187,11 @@ function StackedAvatars({follows}: {follows?: bsky.profile.AnyProfileView[]}) {
                 style={[
                   a.align_center,
                   a.justify_center,
-                  a.rounded_full,
                   t.atoms.bg_contrast_300,
                   a.border,
                   t.atoms.border_contrast_low,
                   {
+                    borderRadius,
                     width: avatarSize,
                     height: avatarSize,
                     marginLeft:

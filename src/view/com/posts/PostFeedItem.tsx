@@ -536,6 +536,7 @@ let PostContent = ({
         compactPosts && styles.contentHiderChildCompact,
       ]}>
       <PostAlerts
+        post={post}
         modui={moderation.ui('contentList')}
         style={[a.pb_xs]}
         additionalCauses={additionalPostAlerts}

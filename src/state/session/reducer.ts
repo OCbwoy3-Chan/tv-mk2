@@ -136,8 +136,11 @@ let reducer = (state: State, action: Action): State => {
       const {newAccount, newAgent} = action
       const existingAccount = state.accounts.find(a => a.did === newAccount.did)
       const now = new Date().toISOString()
+      /*
+       * Replace the stored session for this DID so switching auth methods (OAuth
+       * vs password) does not leave stale fields from the previous session.
+       */
       const mergedAccount = {
-        ...existingAccount,
         ...newAccount,
         addedAt: existingAccount?.addedAt ?? now,
         lastActiveAt: now,

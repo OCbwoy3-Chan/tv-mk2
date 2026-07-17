@@ -24,6 +24,7 @@ import {DateField} from '#/components/forms/DateField'
 import {SimpleInlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Span, Text} from '#/components/Typography'
+import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
 import {IS_IOS, IS_WEB} from '#/env'
 
 export function BirthDateSettingsDialog({
@@ -50,11 +51,14 @@ export function BirthDateSettingsDialog({
 
   return (
     <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
-      <Dialog.Handle />
-      {isBirthdateUpdateAllowed ? (
-        <Dialog.ScrollableInner
-          label={l`My birthdate`}
-          style={web({maxWidth: 400})}>
+      {currentAccount?.isOauthSession ? (
+        <LegacyAuthRequiredDialogContent />
+      ) : isBirthdateUpdateAllowed ? (
+        <>
+          <Dialog.Handle />
+          <Dialog.ScrollableInner
+            label={l`My birthdate`}
+            style={web({maxWidth: 400})}>
           <View style={[a.gap_md]}>
             <Text style={[a.text_xl, a.font_semi_bold]}>
               <Trans>My birthdate</Trans>
@@ -89,7 +93,10 @@ export function BirthDateSettingsDialog({
 
           <Dialog.Close />
         </Dialog.ScrollableInner>
+        </>
       ) : (
+        <>
+          <Dialog.Handle />
         <Dialog.ScrollableInner
           label={l`You recently changed your birthdate`}
           style={web({maxWidth: 400})}>
@@ -114,6 +121,7 @@ export function BirthDateSettingsDialog({
 
           <Dialog.Close />
         </Dialog.ScrollableInner>
+        </>
       )}
     </Dialog.Outer>
   )

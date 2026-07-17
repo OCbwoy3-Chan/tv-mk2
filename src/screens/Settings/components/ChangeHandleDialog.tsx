@@ -30,7 +30,7 @@ import {useServiceQuery} from '#/state/queries/service'
 import {useCurrentAccountProfile} from '#/state/queries/useCurrentAccountProfile'
 import {useAgent, useSession} from '#/state/session'
 import {ErrorScreen} from '#/view/com/util/error/ErrorScreen'
-import {atoms as a, native, useBreakpoints, useTheme} from '#/alf'
+import {atoms as a, native, useBreakpoints, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -47,6 +47,7 @@ import {InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationState} from '#/components/verification'
+import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
 import {CopyButton} from './CopyButton'
 
 export function ChangeHandleDialog({
@@ -54,9 +55,18 @@ export function ChangeHandleDialog({
 }: {
   control: Dialog.DialogControlProps
 }) {
+  const {currentAccount} = useSession()
+  const isOauth = !!currentAccount?.isOauthSession
+
   return (
-    <Dialog.Outer control={control} nativeOptions={{fullHeight: true}}>
-      <ChangeHandleDialogInner />
+    <Dialog.Outer
+      control={control}
+      nativeOptions={isOauth ? {preventExpansion: true} : {fullHeight: true}}>
+      {isOauth ? (
+        <LegacyAuthRequiredDialogContent />
+      ) : (
+        <ChangeHandleDialogInner />
+      )}
     </Dialog.Outer>
   )
 }

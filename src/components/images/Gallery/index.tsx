@@ -22,7 +22,12 @@ import debounce from 'lodash.debounce'
 import {type Dimensions} from '#/lib/media/types'
 import {mergeRefs} from '#/lib/merge-refs'
 import {useA11y} from '#/state/a11y'
+import {
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {useLargeAltBadgeEnabled} from '#/state/preferences/large-alt-badge'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {BlockDrawerGesture} from '#/view/shell/BlockDrawerGesture'
 import {atoms as a, tokens, useBreakpoints, useTheme, web} from '#/alf'
 import {ArrowsDiagonalOut_Stroke2_Corner0_Rounded as Fullscreen} from '#/components/icons/ArrowsDiagonal'
@@ -274,9 +279,12 @@ export function Gallery({
           aria-label={l`Image gallery, ${images.length} images`}
           horizontal
           pagingEnabled={false}
-          // Disable Android's stretch overscroll, which can leave the carousel
-          // settled just off the left edge instead of aligned to x = 0
-          overScrollMode={IS_ANDROID ? 'never' : 'auto'}
+          // We use snapToOffsets on Android to ensure that if the stretch overscroll
+          // leaves the carousel slightly off the left edge, it snaps back to 0.
+          // This fixes the offset bug without disabling the native stretch behavior.
+          overScrollMode="auto"
+          snapToOffsets={IS_ANDROID ? [0] : undefined}
+          snapToEnd={false}
           showsHorizontalScrollIndicator={false}
           directionalLockEnabled
           nestedScrollEnabled
@@ -415,6 +423,8 @@ function GalleryImage({
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
+  const thumbnailFormat = useThumbnailFormat()
+  const imageCdnHost = useImageCdnHost()
   const [focused, setFocused] = useState(false)
   const containerRef = useAnimatedRef()
   const [aspectRatio, setAspectRatio] = useState(() =>
@@ -473,7 +483,12 @@ function GalleryImage({
             ]),
           ]}>
           <Image
-            source={{uri: image.thumb}}
+            source={{
+              uri: applyImageTransforms(image.thumb, {
+                imageCdnHost,
+                format: thumbnailFormat,
+              }),
+            }}
             contentFit="cover"
             accessible={true}
             accessibilityLabel={image.alt}

@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Pressable, type GestureResponderEvent, View} from 'react-native'
+import {type GestureResponderEvent, Pressable, View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -23,6 +23,7 @@ import {
   CC_Filled_Corner0_Rounded as CCActiveIcon,
   CC_Stroke2_Corner0_Rounded as CCInactiveIcon,
 } from '#/components/icons/CC'
+import {Download_Stroke2_Corner0_Rounded as DownloadIcon} from '#/components/icons/Download'
 import {Pause_Filled_Corner0_Rounded as PauseIcon} from '#/components/icons/Pause'
 import {Play_Filled_Corner0_Rounded as PlayIcon} from '#/components/icons/Play'
 import {Loader} from '#/components/Loader'
@@ -38,6 +39,7 @@ import {VolumeControl} from './VolumeControl'
 export function Controls({
   videoRef,
   hlsRef,
+  onDownload,
   active,
   setActive,
   focused,
@@ -52,6 +54,7 @@ export function Controls({
 }: {
   videoRef: React.RefObject<HTMLVideoElement | null>
   hlsRef: React.RefObject<Hls | undefined | null>
+  onDownload?: () => void
   active: boolean
   setActive: () => void
   focused: boolean
@@ -451,6 +454,17 @@ export function Controls({
               activeIcon={CCActiveIcon}
               inactiveIcon={CCInactiveIcon}
               onPress={onPressSubtitles}
+            />
+          )}
+          {onDownload && (
+            <ControlButton
+              testID="videoDownloadBtn"
+              active={false}
+              activeLabel={_(msg`Download video`)}
+              inactiveLabel={_(msg`Download video`)}
+              activeIcon={DownloadIcon}
+              inactiveIcon={DownloadIcon}
+              onPress={onDownload}
             />
           )}
           <VolumeControl

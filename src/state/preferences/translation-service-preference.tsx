@@ -94,6 +94,10 @@ export function useSetTranslationServicePreference() {
   return useContext(setContext)
 }
 
+export function useLibreTranslateInstanceSetting() {
+  return useContext(instanceStateContext)
+}
+
 export function useLibreTranslateInstance() {
   return (
     useContext(instanceStateContext) ??

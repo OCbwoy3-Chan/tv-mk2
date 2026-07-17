@@ -59,7 +59,7 @@ export function AIPreferencesSettingsScreen({}: Props) {
         <View style={[a.px_lg, a.pt_lg, a.pb_sm, a.gap_sm]}>
           <View style={[a.flex_row, a.align_center, a.gap_xs, a.flex_wrap]}>
             <Text style={[a.text_lg, a.font_bold, t.atoms.text]}>
-              <Trans>Determine how AI may use your data</Trans>
+              <Trans>AI Preferences</Trans>
             </Text>
             <View
               style={[
@@ -80,33 +80,7 @@ export function AIPreferencesSettingsScreen({}: Props) {
           </View>
           <Text style={[a.leading_snug, t.atoms.text_contrast_medium]}>
             <Trans>
-              You can adjust these settings to configure how AI systems may use
-              your data across the AT Protocol network. In an open source
-              system, your data stays public, but you can say how AI should
-              handle it.
-            </Trans>
-          </Text>
-          <Text style={[a.leading_snug, t.atoms.text_contrast_medium]}>
-            <Trans>
-              Services may follow the preferences you set here, which will be
-              publicly saved to your account repository. Other AT Protocol
-              services may ignore these signals, but that is outside the control
-              of Witchsky, your PDS operator, and other intermediary services on
-              the network.
-            </Trans>
-          </Text>
-          <Text style={[a.leading_snug, t.atoms.text_contrast_medium]}>
-            <Trans>
-              These preferences apply across your entire account. More granular
-              controls will be made available in the future - for example,
-              allowing you to set rules for specific AI services or specific
-              types of content - and will appear on this page when ready.
-            </Trans>
-          </Text>
-          <Text style={[a.leading_snug, t.atoms.text_contrast_medium]}>
-            <Trans>
-              Safety tools like spam and bot detection aren't affected. They
-              stay on for everyone.
+              This page was removed from Witchsky, however you may still access it here!
             </Trans>
           </Text>
         </View>

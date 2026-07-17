@@ -78,6 +78,7 @@ export function VolumeControl({
               max={100}
               value={sliderVolume}
               aria-label={_(msg`Volume`)}
+              data-no-carousel-drag=""
               style={
                 // Ridiculous safari hack for old version of safari. Fixed in sonoma beta -h
                 IS_WEB_SAFARI

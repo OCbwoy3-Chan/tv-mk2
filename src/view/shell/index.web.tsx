@@ -29,6 +29,7 @@ import {
   usePolicyUpdateContext,
 } from '#/components/PolicyUpdateOverlay'
 import {Outlet as PortalOutlet} from '#/components/Portal'
+import {SixSevenOutlet} from '#/features/sixSeven'
 import {WelcomeModal} from '#/components/WelcomeModal'
 import {RedirectOverlay} from '#/ageAssurance/components/RedirectOverlay'
 import {PassiveAnalytics} from '#/analytics/PassiveAnalytics'
@@ -152,6 +153,7 @@ function ShellInner() {
       {policyUpdateState.completed && (
         <>
           <PortalOutlet />
+          <SixSevenOutlet />
         </>
       )}
 

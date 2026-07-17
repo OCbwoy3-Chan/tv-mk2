@@ -151,6 +151,7 @@ const schema = z.object({
       flickr: z.enum(externalEmbedOptions).optional(),
       bandcamp: z.enum(externalEmbedOptions).optional(),
       streamplace: z.enum(externalEmbedOptions).optional(),
+      plyr: z.enum(externalEmbedOptions).optional(),
     })
     .optional(),
   invites: z.object({
@@ -184,6 +185,7 @@ const schema = z.object({
   alsoLikedFeedEnabled: z.boolean().optional(),
   alsoLikedCollapseByDefault: z.boolean().optional(),
   constellationInstance: z.string().optional(),
+  constellationInstanceCustom: z.string().optional(),
   showLinkInHandle: z.boolean().optional(),
   showLinkInHandleOnlyOnWorkingLinks: z.boolean().optional(),
   hideFeedsPromoTab: z.boolean().optional(),
@@ -219,9 +221,12 @@ const schema = z.object({
   followedByMetricsDisplay: followedByMetricsDisplaySchema.optional(),
   postsMetricsDisplay: countsMetricsDisplaySchema.optional(),
   showFollowsYouBadge: z.boolean().optional(),
+  showFollowedByOnOwnProfile: z.boolean().optional(),
+  showThreadPostIndicators: z.boolean().optional(),
   hideSimilarAccountsRecomm: z.boolean().optional(),
   hideScaryFollowButtons: z.boolean().optional(),
   showGermDmButton: z.boolean().optional(),
+  showStandardLabelerProfile: z.boolean().optional(),
   confirmFollowUnfollow: z.boolean().optional(),
   discoverContextEnabled: z.boolean().optional(),
   compactPosts: z.boolean().optional(),
@@ -231,6 +236,8 @@ const schema = z.object({
   autoCompactAccountSwitcher: z.boolean().optional(),
   disableVerifyEmailReminder: z.boolean().optional(),
   showViaClient: z.boolean().optional(),
+  hideDisplayNames: z.boolean().optional(),
+  sixSevenCelebration: z.boolean().optional(),
   deerVerification: z
     .object({
       enabled: z.boolean(),
@@ -246,7 +253,9 @@ const schema = z.object({
   downloadFormat: z.string().optional(),
   loadAsPngs: z.boolean().optional(),
   imageCdnHost: z.string().optional(),
+  imageCdnHostCustom: z.string().optional(),
   plcDirectory: z.string().optional(),
+  plcDirectoryCustom: z.string().optional(),
   hideUnreplyablePosts: z.boolean().optional(),
   pdsLabel: z
     .object({
@@ -374,12 +383,15 @@ export const defaults: Schema = {
   replyMetricsDisplay: 'visible',
   followersMetricsDisplay: 'visible',
   followingMetricsDisplay: 'visible',
-  followedByMetricsDisplay: 'names',
+  followedByMetricsDisplay: 'visible',
   postsMetricsDisplay: 'visible',
-  showFollowsYouBadge: true,
+  showFollowsYouBadge: false,
+  showFollowedByOnOwnProfile: false,
+  showThreadPostIndicators: true,
   hideSimilarAccountsRecomm: true,
   hideScaryFollowButtons: false,
-  showGermDmButton: true,
+  showGermDmButton: false,
+  showStandardLabelerProfile: true,
   confirmFollowUnfollow: true,
   discoverContextEnabled: false,
   compactPosts: false,
@@ -389,6 +401,8 @@ export const defaults: Schema = {
   autoCompactAccountSwitcher: true,
   disableVerifyEmailReminder: false,
   showViaClient: true,
+  hideDisplayNames: false,
+  sixSevenCelebration: true,
   deerVerification: {
     enabled: false,
     trustAppView: true,
@@ -400,7 +414,6 @@ export const defaults: Schema = {
   fullsizeFormat: 'webp',
   downloadFormat: 'jpeg',
   loadAsPngs: true,
-  imageCdnHost: 'https://cdn.bsky.app',
   plcDirectory: 'https://plc.directory',
   hideUnreplyablePosts: false,
   pdsLabel: {

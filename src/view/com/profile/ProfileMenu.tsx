@@ -92,7 +92,7 @@ let ProfileMenu = ({
   const isFollowing = profile.viewer?.following
   const isBlocked = profile.viewer?.blocking || profile.viewer?.blockedBy
   const isFollowingBlockedAccount = isFollowing && isBlocked
-  const isLabelerAndNotBlocked = !!profile.associated?.labeler && !isBlocked
+  const isLabeler = !!profile.associated?.labeler
   const [devModeEnabled] = useDevMode()
   const verification = useFullVerificationState({profile})
   const {canGoLive} = useLiveNowConfig()
@@ -432,7 +432,7 @@ let ProfileMenu = ({
               <Menu.Group>
                 {!isSelf && (
                   <>
-                    {(isLabelerAndNotBlocked || isFollowingBlockedAccount) && (
+                    {(isLabeler || isFollowingBlockedAccount) && (
                       <Menu.Item
                         testID="profileHeaderDropdownFollowBtn"
                         label={
