@@ -130,21 +130,6 @@ export function PdsDialog({
             </Trans>
           </Text>
 
-          {(pdsUrl.endsWith(".darkworld.download") || pdsUrl.endsWith(".tenna.party")) &&
-            <Text style={[a.text_md, a.leading_snug]}>
-              <Trans>
-                This is a community PDS for anyone, including tenna.party users, Lightners and Darkners alike!
-                An invite code is aviable upon request at {' '}
-                <InlineLinkText
-                  to={"https://darkworld.download"}
-                  label={"Link to darkworld.downlod"}
-                  style={[a.text_md, a.font_semi_bold]}>
-                  darkworld.download
-                </InlineLinkText>.
-              </Trans>
-            </Text>
-          }
-
           {isBridged && (
             <Text style={[a.text_md, a.leading_snug]}>
               <Trans>
