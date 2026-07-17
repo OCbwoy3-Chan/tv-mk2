@@ -317,7 +317,9 @@ export const ComposePost = ({
   const textInputRef = useRef<TextInputRef>(null)
   const discardPromptControl = Prompt.usePromptControl()
   const emptyPostsPromptControl = Prompt.usePromptControl()
+  const missingAltTextPromptControl = Prompt.usePromptControl()
   const skipEmptyConfirmedRef = useRef(false)
+  const missingAltTextConfirmedRef = useRef(false)
   const {mutateAsync: saveDraft, isPending: _isSavingDraft} =
     useSaveDraftMutation()
   const {mutate: cleanupPublishedDraft} = useCleanupPublishedDraftMutation()
@@ -1009,27 +1011,52 @@ export const ComposePost = ({
     if (!requireAltTextEnabled) {
       return
     }
-    for (let i = 0; i < thread.posts.length; i++) {
-      const media = thread.posts[i].embed.media
-      if (media) {
-        if (
-          (media.type === 'images' || media.type === 'gallery') &&
-          media.images.some(img => !img.alt)
-        ) {
-          return l`One or more images is missing alt text.`
-        }
-        if (media.type === 'gif' && !media.alt) {
-          return l`One or more GIFs is missing alt text.`
-        }
-        if (
-          media.type === 'video' &&
-          media.video.status !== 'error' &&
-          !media.video.altText
-        ) {
-          return l`One or more videos is missing alt text.`
-        }
+
+    let missingImages = 0
+    let missingGifs = 0
+    let missingVideos = 0
+
+    for (const post of thread.posts) {
+      const media = post.embed.media
+      if (media?.type === 'images' || media?.type === 'gallery') {
+        missingImages += media.images.filter(image => !image.alt).length
+      } else if (media?.type === 'gif' && !media.alt) {
+        missingGifs++
+      } else if (
+        media?.type === 'video' &&
+        media.video.status !== 'error' &&
+        !media.video.altText
+      ) {
+        missingVideos++
       }
     }
+
+    const messages: string[] = []
+    if (missingImages) {
+      messages.push(
+        l`${plural(missingImages, {
+          one: 'One image is missing alt text.',
+          other: '# images are missing alt text.',
+        })}`,
+      )
+    }
+    if (missingGifs) {
+      messages.push(
+        l`${plural(missingGifs, {
+          one: 'One GIF is missing alt text.',
+          other: '# GIFs are missing alt text.',
+        })}`,
+      )
+    }
+    if (missingVideos) {
+      messages.push(
+        l`${plural(missingVideos, {
+          one: 'One video is missing alt text.',
+          other: '# videos are missing alt text.',
+        })}`,
+      )
+    }
+    return messages.join(' ') || undefined
   }, [thread, requireAltTextEnabled, l])
 
   // Subscribe to the resolve-link cache for any link URIs in the thread so we
@@ -1051,7 +1078,6 @@ export const ComposePost = ({
   )
 
   const canPost =
-    !missingAltError &&
     !hasUnavailableChatInvite &&
     thread.posts.some(post => !isEmptyPost(post)) &&
     thread.posts.every(
@@ -1110,6 +1136,11 @@ export const ComposePost = ({
       return
     }
 
+    if (missingAltError && !missingAltTextConfirmedRef.current) {
+      missingAltTextPromptControl.open()
+      return
+    }
+
     if (
       filteredThread.posts.some(
         post =>
@@ -1123,6 +1154,7 @@ export const ComposePost = ({
     }
 
     skipEmptyConfirmedRef.current = false
+    missingAltTextConfirmedRef.current = false
     setError('')
     setIsPublishing(true)
 
@@ -1385,6 +1417,8 @@ export const ComposePost = ({
     cleanupPublishedDraft,
     loadedDraftCreatedAt,
     emptyPostsPromptControl,
+    missingAltError,
+    missingAltTextPromptControl,
     getFilteredThread,
     linkQueries,
     setLangPrefs,
@@ -1397,6 +1431,11 @@ export const ComposePost = ({
 
   const handleConfirmSkipEmpty = () => {
     skipEmptyConfirmedRef.current = true
+    void onPressPublish()
+  }
+
+  const handleConfirmMissingAltText = () => {
+    missingAltTextConfirmedRef.current = true
     void onPressPublish()
   }
 
@@ -1695,6 +1734,14 @@ export const ComposePost = ({
           confirmButtonCta={l`Post anyway`}
           cancelButtonCta={l`Keep editing`}
           onConfirm={handleConfirmSkipEmpty}
+        />
+        <Prompt.Basic
+          control={missingAltTextPromptControl}
+          title={l`Post without alt text?`}
+          description={missingAltError}
+          confirmButtonCta={l`Post anyway`}
+          cancelButtonCta={l`Add alt text`}
+          onConfirm={handleConfirmMissingAltText}
         />
       </KeyboardAvoidingView>
     </BottomSheetPortalProvider>
@@ -2164,7 +2211,7 @@ function AltTextReminder({
   }, [openRouterApiKey, openRouterModel, thread, dispatch])
 
   return (
-    <Admonition type="error" style={[a.mt_2xs, a.mb_sm, a.mx_lg]}>
+    <Admonition type="warning" style={[a.mt_2xs, a.mb_sm, a.mx_lg]}>
       <View style={[a.flex_row, a.align_center, a.justify_between, a.gap_sm]}>
         <Text style={[a.flex_1]}>{error}</Text>
         {openRouterConfigured && hasImagesWithoutAlt && (
