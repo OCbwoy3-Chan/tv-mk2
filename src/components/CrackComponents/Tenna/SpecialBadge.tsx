@@ -12,6 +12,11 @@ import {SpecialAccountAlert} from './SpecialAccountAlert'
 
 const ICONS_FOR_ACCOUNT = {
   'did:plc:vshnclkqqguyg6xcz6q7g65k': require('#/../assets/badges/toby.png'),
+
+  // https://tenna.party/profile/did:plc:7hs24amavcdm4ufoqgonbm75/lists/3mpjcxrxnjp2v we are kris deltarune
+  'did:plc:s27ozzhlwk5jgkpk4adxmy2i': require('#/../assets/badges/lightner.png'),
+  'did:web:vessel.darkworld.download': require('#/../assets/badges/lightner.png'),
+  'did:plc:tywla754gbcxasm4rplh5jvb': require('#/../assets/badges/lightner.png')
 }
 
 function SpecialIcon({

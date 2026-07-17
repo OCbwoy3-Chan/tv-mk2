@@ -15,6 +15,18 @@ export function isBskyPdsUrl(url: string): boolean {
   }
 }
 
+export function isDarkWorldPdsUrl(url: string): boolean {
+  try {
+    const hostname = new URL(url).hostname
+    return (
+      hostname.endsWith(".darkworld.download") ||
+      hostname.endsWith(".tenna.party")
+    )
+  } catch {
+    return false
+  }
+}
+
 export function isBridgedPdsUrl(url: string): boolean {
   try {
     return new URL(url).hostname === BRIDGY_FED_HOSTNAME

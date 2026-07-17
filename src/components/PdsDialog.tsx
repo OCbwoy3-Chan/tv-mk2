@@ -7,13 +7,13 @@ import {
   getPdsFallbackFaviconUrls,
   isBridgedPdsUrl,
   isBskyPdsUrl,
+  isDarkWorldPdsUrl,
 } from '#/state/queries/pds-label.util'
 import {useServiceQuery} from '#/state/queries/service'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
-import {ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {Database_Filled_Corner0_Rounded as DatabaseIcon} from '#/components/icons/Database'
-import {InlineLinkText, Link} from '#/components/Link'
+import {InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 
@@ -51,8 +51,8 @@ function formatBskyPdsDisplayName(hostname: string): string {
   if (hostname === 'pds.pckt.cafe') return 'pckt'
 
   if (hostname === 'castletown.darkworld.download') return 'Castle Town'
-  if (hostname === 'church.darkworld.download') return 'Mr. Tenna\'s PDS'
-  if (hostname === 'ant.tenna.party') return 'Mr. Tenna\'s PDS'
+  if (hostname === 'church.darkworld.download') return 'Church'
+  if (hostname === 'ant.tenna.party') return 'Tenna'
 
   if (hostname === 'protogen.at') return 'protogen.chat'
   if (hostname === 'pds.witchcraft.systems') return 'Witchcraft Systems'
@@ -82,8 +82,9 @@ export function PdsDialog({
   } catch { }
 
   const isBsky = isBskyPdsUrl(pdsUrl)
+  const isDarkworld = isDarkWorldPdsUrl(pdsUrl)
   const isBridged = isBridgedPdsUrl(pdsUrl)
-  const displayName = isBsky ? formatBskyPdsDisplayName(hostname) : hostname
+  const displayName = formatBskyPdsDisplayName(hostname)
   const descriptionUrl = isBsky ? 'https://bsky.social' : pdsUrl
   const shouldLoadDescription = loadDescription && !isBridged
   const description = useServiceQuery(descriptionUrl, {
@@ -123,6 +124,11 @@ export function PdsDialog({
               {isBsky && (
                 <Text style={[a.text_sm, a.leading_tight]}>
                   <Trans>Bluesky Social</Trans>
+                </Text>
+              )}
+              {isDarkworld && (
+                <Text style={[a.text_sm, a.leading_tight]}>
+                  <Trans>Dark World</Trans>
                 </Text>
               )}
             </View>

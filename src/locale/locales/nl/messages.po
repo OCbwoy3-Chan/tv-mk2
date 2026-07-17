@@ -962,7 +962,7 @@ msgstr "<0>{0}</0> leden"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:237
+#: src/components/PdsDialog.tsx:243
 msgid "<0>Learn more</0> about PDSes or how to <1>self-host</1> your own."
 msgstr ""
 
@@ -2565,7 +2565,7 @@ msgstr ""
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:125
+#: src/components/PdsDialog.tsx:126
 msgid "Bluesky Social"
 msgstr ""
 
@@ -3585,7 +3585,7 @@ msgstr ""
 msgid "Constellations instance URL"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:184
+#: src/components/PdsDialog.tsx:190
 msgid "Contact"
 msgstr ""
 
@@ -4000,7 +4000,7 @@ msgstr ""
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:230
+#: src/components/PdsDialog.tsx:236
 msgid "Couldn’t load extra details from this server."
 msgstr ""
 
@@ -4258,6 +4258,10 @@ msgstr "Donker"
 #: src/screens/Settings/AppearanceSettings.tsx:142
 msgid "Dark theme"
 msgstr "Donker thema"
+
+#: src/components/PdsDialog.tsx:131
+msgid "Dark World"
+msgstr ""
 
 #: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:31
 #: src/components/CrackComponents/Tenna/DarknerBadge.tsx:62
@@ -5957,7 +5961,7 @@ msgstr ""
 msgid "Feature gates"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:121
+#: src/components/PdsDialog.tsx:122
 msgid "Fediverse"
 msgstr ""
 
@@ -6922,7 +6926,7 @@ msgstr "Handle te lang. Probeer een kortere."
 msgid "Handle, DID, or PDS address"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:209
+#: src/components/PdsDialog.tsx:215
 msgid "Handles"
 msgstr ""
 
@@ -7710,7 +7714,7 @@ msgstr "Uitnodigingscode"
 msgid "Invite code not accepted. Check that you input it correctly and try again."
 msgstr "Uitnodigingscode niet geaccepteerd. Controleer of je deze correct hebt ingevoerd en probeer het opnieuw."
 
-#: src/components/PdsDialog.tsx:200
+#: src/components/PdsDialog.tsx:206
 msgid "Invite code required"
 msgstr ""
 
@@ -7984,7 +7988,7 @@ msgctxt "english-only-resource"
 msgid "Learn more about importing contacts"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:240
+#: src/components/PdsDialog.tsx:246
 msgid "Learn more about PDSes"
 msgstr ""
 
@@ -7993,7 +7997,7 @@ msgstr ""
 msgid "Learn more about self hosting your PDS."
 msgstr "Leer meer over het zelf hosten van je PDS."
 
-#: src/components/PdsDialog.tsx:152
+#: src/components/PdsDialog.tsx:158
 msgid "Learn more about the Fediverse"
 msgstr ""
 
@@ -8440,7 +8444,7 @@ msgstr ""
 msgid "Loading post interaction settings..."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:172
+#: src/components/PdsDialog.tsx:178
 msgid "Loading server details…"
 msgstr ""
 
@@ -9632,8 +9636,8 @@ msgstr "OK"
 #: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:55
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:52
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:57
-#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:47
-#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:52
+#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:53
+#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:58
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:50
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:55
 #: src/components/dms/InitiateChatFlow.tsx:733
@@ -9786,7 +9790,7 @@ msgstr ""
 msgid "Oops!"
 msgstr "Oeps!"
 
-#: src/components/PdsDialog.tsx:202
+#: src/components/PdsDialog.tsx:208
 msgid "Open"
 msgstr ""
 
@@ -10284,7 +10288,7 @@ msgstr "Video pauzeren"
 msgid "PDS badges"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:104
+#: src/components/PdsDialog.tsx:105
 msgid "PDS Information"
 msgstr ""
 
@@ -12670,7 +12674,7 @@ msgstr ""
 msgid "Self-harm or dangerous behaviors"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:247
+#: src/components/PdsDialog.tsx:253
 msgid "Self-hosting PDS documentation"
 msgstr ""
 
@@ -13337,7 +13341,7 @@ msgstr "Aangemeld als @{0}"
 msgid "Signing in..."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:197
+#: src/components/PdsDialog.tsx:203
 msgid "Signup"
 msgstr ""
 
@@ -14375,7 +14379,7 @@ msgstr "Dit account verzoekt gebruikers zich aan te melden vooraleer het profiel
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr "Dit account wordt geblokkeerd door een of meer van jouw moderatielijsten. Om dit account niet meer te blokkeren: ga rechtstreeks naar de lijsten en verwijder deze gebruiker."
 
-#: src/components/PdsDialog.tsx:148
+#: src/components/PdsDialog.tsx:154
 msgid "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>."
 msgstr ""
 
@@ -14387,7 +14391,7 @@ msgstr ""
 msgid "This account is no longer available"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:133
+#: src/components/PdsDialog.tsx:139
 msgid "This account’s data is stored on a Personal Data Server at <0>{hostname}</0>."
 msgstr ""
 
@@ -14872,8 +14876,8 @@ msgstr ""
 msgid "To log out, <0>click here</0>. Or if you’d prefer, you can <1>delete your account</1>."
 msgstr ""
 
-#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:28
-#: src/components/CrackComponents/Tenna/SpecialBadge.tsx:91
+#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:34
+#: src/components/CrackComponents/Tenna/SpecialBadge.tsx:96
 msgid "Toby"
 msgstr ""
 
