@@ -11,7 +11,7 @@ import {
 
 import {useAgent} from '#/state/session'
 
-const PAGE_SIZE = 50
+const PAGE_SIZE = 100
 type RQPageParam = string | undefined
 
 const RQKEY_ROOT = 'profile-known-followers'

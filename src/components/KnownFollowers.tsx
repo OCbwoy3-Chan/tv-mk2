@@ -247,7 +247,7 @@ function KnownFollowersInner({
                 },
               ]}
               numberOfLines={2}>
-              {showExactText ? (
+              {showExactText && serverCount > 2 ? (
                 <FollowedByExactText
                   serverCount={serverCount}
                   slice={slice}
@@ -343,32 +343,11 @@ function FollowedByExactText({
   slice: Array<{profile: {did: string; displayName: string}}>
   textStyle: object[]
 }) {
-  if (slice.length >= 3) {
+  if (slice.length >= 2) {
     return (
       <Trans>
         Followed by{' '}
-        <Plural value={serverCount} one="# person" other="# others" />,
-        including{' '}
-        <Text emoji key={slice[0].profile.did} style={textStyle}>
-          {slice[0].profile.displayName}
-        </Text>
-        ,{' '}
-        <Text emoji key={slice[1].profile.did} style={textStyle}>
-          {slice[1].profile.displayName}
-        </Text>
-        , and{' '}
-        <Text emoji key={slice[2].profile.did} style={textStyle}>
-          {slice[2].profile.displayName}
-        </Text>
-      </Trans>
-    )
-  }
-
-  if (slice.length === 2) {
-    return (
-      <Trans>
-        Followed by{' '}
-        <Plural value={serverCount} one="# person" other="# others" />,
+        <Plural value={serverCount} one="# person" other="# others" />,{' '}
         including{' '}
         <Text emoji key={slice[0].profile.did} style={textStyle}>
           {slice[0].profile.displayName}
@@ -384,7 +363,8 @@ function FollowedByExactText({
   return (
     <Trans>
       Followed by{' '}
-      <Plural value={serverCount} one="# person" other="# others" />, including{' '}
+      <Plural value={serverCount} one="# person" other="# others" />,{' '}
+      including{' '}
       <Text emoji key={slice[0].profile.did} style={textStyle}>
         {slice[0].profile.displayName}
       </Text>
