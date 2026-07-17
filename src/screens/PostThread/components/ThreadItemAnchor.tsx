@@ -250,9 +250,10 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const compactPosts = useCompactPosts()
   const isCompactPosts = !!compactPosts
   const showThreadPostIndicators = useShowThreadPostIndicators()
-  const resolvedThreadPosition = showThreadPostIndicators
-    ? threadPosition
-    : undefined
+  const resolvedThreadPosition =
+    showThreadPostIndicators && threadPosition && threadPosition.postCount > 2
+      ? threadPosition
+      : undefined
   const avatarSize = isCompactPosts ? 34 : 42
   const sidePadding = isCompactPosts ? OUTER_SPACE - 2 : OUTER_SPACE
 
@@ -541,8 +542,10 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                     }
                   />
                 ) : resolvedThreadPosition ? (
-                  // Text-less anchors (e.g. image-only) still show their
-                  // position so the numbering reads without gaps.
+                  /*
+                   * Text-less anchors (e.g. image-only) still show their
+                   * position so the numbering reads without gaps.
+                   */
                   <ThreadPositionChip threadPosition={resolvedThreadPosition} />
                 ) : undefined}
                 <TranslatedPost

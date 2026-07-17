@@ -227,9 +227,10 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   const {currentAccount} = useSession()
   const compactPosts = useCompactPosts()
   const showThreadPostIndicators = useShowThreadPostIndicators()
-  const resolvedThreadPosition = showThreadPostIndicators
-    ? threadPosition
-    : undefined
+  const resolvedThreadPosition =
+    showThreadPostIndicators && threadPosition && threadPosition.postCount > 2
+      ? threadPosition
+      : undefined
   const avatarSize = compactPosts ? 34 : LINEAR_AVI_WIDTH
 
   const post = item.value.post
@@ -386,8 +387,10 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                   )}
                 </View>
               ) : resolvedThreadPosition ? (
-                // Text-less posts (e.g. image-only) still show their position
-                // so the numbering reads without gaps.
+                /*
+                 * Text-less posts (e.g. image-only) still show their position
+                 * so the numbering reads without gaps.
+                 */
                 <View style={[a.mb_2xs]}>
                   <ThreadPositionChip threadPosition={resolvedThreadPosition} />
                 </View>
