@@ -1554,6 +1554,7 @@ msgid "AI preferences"
 msgstr ""
 
 #: src/Navigation.tsx:440
+#: src/screens/Settings/AIPreferencesSettings.tsx:62
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:39
 msgid "AI Preferences"
 msgstr ""
@@ -3510,7 +3511,7 @@ msgstr "Densigado de GIF..."
 msgid "Compressing video..."
 msgstr "Densigado de videaĵo..."
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:185
+#: src/screens/Settings/AIPreferencesSettings.tsx:159
 msgid "Configure AI preference for: {name}"
 msgstr ""
 
@@ -4260,6 +4261,8 @@ msgstr "Malhela etoso"
 
 #: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:31
 #: src/components/CrackComponents/Tenna/DarknerBadge.tsx:62
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:31
+#: src/components/CrackComponents/Tenna/TennaBadge.tsx:62
 msgid "Darkner"
 msgstr ""
 
@@ -4466,8 +4469,8 @@ msgid "Detach quote post?"
 msgstr "Ĉu malligi citatan afiŝon?"
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:62
-msgid "Determine how AI may use your data"
-msgstr ""
+#~ msgid "Determine how AI may use your data"
+#~ msgstr ""
 
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:181
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:187
@@ -5164,7 +5167,7 @@ msgstr "Enkorpigi ĉi tiun afiŝon en vian retejon. Simple kopiu la jenan kodaĵ
 msgid "Embedded video player"
 msgstr "Enkorpigita videoludilo"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:222
+#: src/screens/Settings/AIPreferencesSettings.tsx:196
 msgid "Embedding"
 msgstr ""
 
@@ -6540,7 +6543,7 @@ msgstr ""
 msgid "Generate invite link"
 msgstr "Generi invitligilon"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:219
+#: src/screens/Settings/AIPreferencesSettings.tsx:193
 msgid "Generate new content or interactions modeled on your data. This includes AI imitations of your writing, photos, or audio."
 msgstr ""
 
@@ -7554,7 +7557,7 @@ msgstr ""
 msgid "Incorrect username or password"
 msgstr "Malĝusta uzantnomo aŭ pasvorto"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:214
+#: src/screens/Settings/AIPreferencesSettings.tsx:188
 msgid "Inference"
 msgstr ""
 
@@ -8497,7 +8500,7 @@ msgstr ""
 msgid "Long press to open tag menu for {0}"
 msgstr "Longe premu por malfermi kradvortan menuon por {0}"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:215
+#: src/screens/Settings/AIPreferencesSettings.tsx:189
 msgid "Look up your data when AI is answering someone's question. The AI doesn't keep it, but it might quote or reference it in real time."
 msgstr ""
 
@@ -9631,6 +9634,8 @@ msgstr "Bone"
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:57
 #: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:47
 #: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:52
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:50
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:55
 #: src/components/dms/InitiateChatFlow.tsx:733
 #: src/components/dms/MessageItem.tsx:749
 #: src/components/PetAccountAlert.tsx:52
@@ -9927,6 +9932,8 @@ msgstr ""
 #: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:69
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:62
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:71
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:60
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:69
 #: src/components/PetAccountAlert.tsx:62
 #: src/components/PetAccountAlert.tsx:71
 msgid "Open settings"
@@ -12079,8 +12086,8 @@ msgid "Sad GIFs"
 msgstr "GIF-oj pri malfeliĉo"
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:107
-msgid "Safety tools like spam and bot detection aren't affected. They stay on for everyone."
-msgstr ""
+#~ msgid "Safety tools like spam and bot detection aren't affected. They stay on for everyone."
+#~ msgstr ""
 
 #: src/components/dialogs/BirthDateSettings.tsx:210
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:312
@@ -12738,8 +12745,8 @@ msgid "Server address"
 msgstr "Servila adreso"
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:90
-msgid "Services may follow the preferences you set here, which will be publicly saved to your account repository. Other AT Protocol services may ignore these signals, but that is outside the control of Witchsky, your PDS operator, and other intermediary services on the network."
-msgstr ""
+#~ msgid "Services may follow the preferences you set here, which will be publicly saved to your account repository. Other AT Protocol services may ignore these signals, but that is outside the control of Witchsky, your PDS operator, and other intermediary services on the network."
+#~ msgstr ""
 
 #: src/screens/Settings/AccessibilitySettings.tsx:113
 msgid "Set"
@@ -13830,7 +13837,7 @@ msgstr ""
 msgid "Sync settings between devices"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:218
+#: src/screens/Settings/AIPreferencesSettings.tsx:192
 msgid "Synthetic content"
 msgstr ""
 
@@ -14316,8 +14323,8 @@ msgid "These hashtags"
 msgstr ""
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:99
-msgid "These preferences apply across your entire account. More granular controls will be made available in the future - for example, allowing you to set rules for specific AI services or specific types of content - and will appear on this page when ready."
-msgstr ""
+#~ msgid "These preferences apply across your entire account. More granular controls will be made available in the future - for example, allowing you to set rules for specific AI services or specific types of content - and will appear on this page when ready."
+#~ msgstr ""
 
 #: src/screens/Settings/FollowingFeedPreferences.tsx:66
 msgid "These settings only apply to the Following feed."
@@ -14632,6 +14639,10 @@ msgstr "Ĉi tiu kontrolservo neatingeblas. Vidu pli da detaloj sube. Se ĉi tiu 
 msgid "This only gets rid of the reminder on app launch, useful if your PDS does not have email verification setup. This does NOT give access to features locked behind email verification."
 msgstr ""
 
+#: src/screens/Settings/AIPreferencesSettings.tsx:82
+msgid "This page was removed from Witchsky, however you may still access it here!"
+msgstr ""
+
 #: src/components/dms/MessagesListDeletedAccountFooter.tsx:47
 msgid "This person has deactivated, been suspended, or deleted their account. You can read chat history but can’t send new messages."
 msgstr ""
@@ -14738,6 +14749,10 @@ msgstr "Ĉ tiu uzanto estas en la listo <0>{0}</0> kiun vi blokis."
 #: src/components/moderation/ModerationDetailsDialog.tsx:111
 msgid "This user is included in the <0>{0}</0> list which you have muted."
 msgstr "Ĉi tiu uzanto estas inkluzivita en la listo <0>{0}</0>, kiun vi silentigis."
+
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:27
+msgid "This user is Mr. Tenna."
+msgstr ""
 
 #: src/components/NewskieDialog.tsx:49
 msgid "This user is new here. Press for more info about when they joined."
@@ -14911,7 +14926,7 @@ msgstr "La plej popularaj respondoj unue"
 msgid "Topic"
 msgstr "Temo"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:210
+#: src/screens/Settings/AIPreferencesSettings.tsx:184
 msgid "Training"
 msgstr ""
 
@@ -15557,11 +15572,11 @@ msgstr "Uzi ĉi tion por registriĝi en la alia aplikaĵo per via identigilo."
 msgid "Use your account email address, or another real email address you control, in case KWS or Bluesky needs to contact you."
 msgstr "Uzu retpoŝtadreson de via konto aŭ alian realan retpoŝtadreson kiun vi posedas, por ke KWS aŭ Bluesky kontakteblos vin se necese."
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:223
+#: src/screens/Settings/AIPreferencesSettings.tsx:197
 msgid "Use your data in AI search and recommendation systems. This is how AI finds similar accounts, groups users by interests, and decides what to show in some personalized feeds."
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:211
+#: src/screens/Settings/AIPreferencesSettings.tsx:185
 msgid "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 msgstr ""
 
@@ -15953,7 +15968,7 @@ msgstr "Vidi pli"
 msgid "View more trending videos"
 msgstr "Vidi pli da furoraj videaĵoj"
 
-#: src/components/ProfileBadges.tsx:233
+#: src/components/ProfileBadges.tsx:236
 msgid "View PDS information"
 msgstr ""
 
@@ -16607,8 +16622,8 @@ msgid "You are verified. You will lose your verification status if you change yo
 msgstr "Vi estas konfirmita. Vi perdos vian konfirman staton, se vi ŝanĝos vian identigilon. <0>Eksciu pli.</0>"
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:82
-msgid "You can adjust these settings to configure how AI systems may use your data across the AT Protocol network. In an open source system, your data stays public, but you can say how AI should handle it."
-msgstr ""
+#~ msgid "You can adjust these settings to configure how AI systems may use your data across the AT Protocol network. In an open source system, your data stays public, but you can say how AI should handle it."
+#~ msgstr ""
 
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:49
 msgid "You can adjust your interests at any time from \"Content and media\" settings."
@@ -16775,6 +16790,10 @@ msgstr ""
 
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:26
 msgid "You have marked yourself as a Lightner. You can remove this label at any time from Tenna's Settings."
+msgstr ""
+
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:26
+msgid "You have marked yourself as Mr. Tenna. You can remove this label at any time from Tenna's Settings."
 msgstr ""
 
 #: src/components/moderation/ModerationDetailsDialog.tsx:124

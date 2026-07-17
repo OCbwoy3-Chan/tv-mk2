@@ -1549,6 +1549,7 @@ msgid "AI preferences"
 msgstr "AI preferences"
 
 #: src/Navigation.tsx:440
+#: src/screens/Settings/AIPreferencesSettings.tsx:62
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:39
 msgid "AI Preferences"
 msgstr "AI Preferences"
@@ -3505,7 +3506,7 @@ msgstr ""
 msgid "Compressing video..."
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:185
+#: src/screens/Settings/AIPreferencesSettings.tsx:159
 msgid "Configure AI preference for: {name}"
 msgstr "Configure AI preference for: {name}"
 
@@ -4255,6 +4256,8 @@ msgstr ""
 
 #: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:31
 #: src/components/CrackComponents/Tenna/DarknerBadge.tsx:62
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:31
+#: src/components/CrackComponents/Tenna/TennaBadge.tsx:62
 msgid "Darkner"
 msgstr "Darkner"
 
@@ -4461,8 +4464,8 @@ msgid "Detach quote post?"
 msgstr ""
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:62
-msgid "Determine how AI may use your data"
-msgstr "Determine how AI may use your data"
+#~ msgid "Determine how AI may use your data"
+#~ msgstr "Determine how AI may use your data"
 
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:181
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:187
@@ -5159,7 +5162,7 @@ msgstr ""
 msgid "Embedded video player"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:222
+#: src/screens/Settings/AIPreferencesSettings.tsx:196
 msgid "Embedding"
 msgstr "Embedding"
 
@@ -6535,7 +6538,7 @@ msgstr "Generate Alt Text with AI"
 msgid "Generate invite link"
 msgstr "Generate invite link"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:219
+#: src/screens/Settings/AIPreferencesSettings.tsx:193
 msgid "Generate new content or interactions modeled on your data. This includes AI imitations of your writing, photos, or audio."
 msgstr "Generate new content or interactions modeled on your data. This includes AI imitations of your writing, photos, or audio."
 
@@ -7549,7 +7552,7 @@ msgstr "Incorrect password"
 msgid "Incorrect username or password"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:214
+#: src/screens/Settings/AIPreferencesSettings.tsx:188
 msgid "Inference"
 msgstr "Inference"
 
@@ -8492,7 +8495,7 @@ msgstr "Logo by ovvie"
 msgid "Long press to open tag menu for {0}"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:215
+#: src/screens/Settings/AIPreferencesSettings.tsx:189
 msgid "Look up your data when AI is answering someone's question. The AI doesn't keep it, but it might quote or reference it in real time."
 msgstr "Look up your data when AI is answering someone's question. The AI doesn't keep it, but it might quote or reference it in real time."
 
@@ -9626,6 +9629,8 @@ msgstr ""
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:57
 #: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:47
 #: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:52
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:50
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:55
 #: src/components/dms/InitiateChatFlow.tsx:733
 #: src/components/dms/MessageItem.tsx:749
 #: src/components/PetAccountAlert.tsx:52
@@ -9922,6 +9927,8 @@ msgstr "Open repo in PDSls"
 #: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:69
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:62
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:71
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:60
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:69
 #: src/components/PetAccountAlert.tsx:62
 #: src/components/PetAccountAlert.tsx:71
 msgid "Open settings"
@@ -12074,8 +12081,8 @@ msgid "Sad GIFs"
 msgstr "Sad GIFs"
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:107
-msgid "Safety tools like spam and bot detection aren't affected. They stay on for everyone."
-msgstr "Safety tools like spam and bot detection aren't affected. They stay on for everyone."
+#~ msgid "Safety tools like spam and bot detection aren't affected. They stay on for everyone."
+#~ msgstr "Safety tools like spam and bot detection aren't affected. They stay on for everyone."
 
 #: src/components/dialogs/BirthDateSettings.tsx:210
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:312
@@ -12733,8 +12740,8 @@ msgid "Server address"
 msgstr ""
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:90
-msgid "Services may follow the preferences you set here, which will be publicly saved to your account repository. Other AT Protocol services may ignore these signals, but that is outside the control of Witchsky, your PDS operator, and other intermediary services on the network."
-msgstr "Services may follow the preferences you set here, which will be publicly saved to your account repository. Other AT Protocol services may ignore these signals, but that is outside the control of Witchsky, your PDS operator, and other intermediary services on the network."
+#~ msgid "Services may follow the preferences you set here, which will be publicly saved to your account repository. Other AT Protocol services may ignore these signals, but that is outside the control of Witchsky, your PDS operator, and other intermediary services on the network."
+#~ msgstr "Services may follow the preferences you set here, which will be publicly saved to your account repository. Other AT Protocol services may ignore these signals, but that is outside the control of Witchsky, your PDS operator, and other intermediary services on the network."
 
 #: src/screens/Settings/AccessibilitySettings.tsx:113
 msgid "Set"
@@ -13825,7 +13832,7 @@ msgstr "Sync OpenRouter API Key"
 msgid "Sync settings between devices"
 msgstr "Sync settings between devices"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:218
+#: src/screens/Settings/AIPreferencesSettings.tsx:192
 msgid "Synthetic content"
 msgstr "Synthetic content"
 
@@ -14311,8 +14318,8 @@ msgid "These hashtags"
 msgstr "These hashtags"
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:99
-msgid "These preferences apply across your entire account. More granular controls will be made available in the future - for example, allowing you to set rules for specific AI services or specific types of content - and will appear on this page when ready."
-msgstr "These preferences apply across your entire account. More granular controls will be made available in the future - for example, allowing you to set rules for specific AI services or specific types of content - and will appear on this page when ready."
+#~ msgid "These preferences apply across your entire account. More granular controls will be made available in the future - for example, allowing you to set rules for specific AI services or specific types of content - and will appear on this page when ready."
+#~ msgstr "These preferences apply across your entire account. More granular controls will be made available in the future - for example, allowing you to set rules for specific AI services or specific types of content - and will appear on this page when ready."
 
 #: src/screens/Settings/FollowingFeedPreferences.tsx:66
 msgid "These settings only apply to the Following feed."
@@ -14627,6 +14634,10 @@ msgstr ""
 msgid "This only gets rid of the reminder on app launch, useful if your PDS does not have email verification setup. This does NOT give access to features locked behind email verification."
 msgstr "This only gets rid of the reminder on app launch, useful if your PDS does not have email verification setup. This does NOT give access to features locked behind email verification."
 
+#: src/screens/Settings/AIPreferencesSettings.tsx:82
+msgid "This page was removed from Witchsky, however you may still access it here!"
+msgstr "This page was removed from Witchsky, however you may still access it here!"
+
 #: src/components/dms/MessagesListDeletedAccountFooter.tsx:47
 msgid "This person has deactivated, been suspended, or deleted their account. You can read chat history but can’t send new messages."
 msgstr "This person has deactivated, been suspended, or deleted their account. You can read chat history but can’t send new messages."
@@ -14733,6 +14744,10 @@ msgstr ""
 #: src/components/moderation/ModerationDetailsDialog.tsx:111
 msgid "This user is included in the <0>{0}</0> list which you have muted."
 msgstr ""
+
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:27
+msgid "This user is Mr. Tenna."
+msgstr "This user is Mr. Tenna."
 
 #: src/components/NewskieDialog.tsx:49
 msgid "This user is new here. Press for more info about when they joined."
@@ -14906,7 +14921,7 @@ msgstr ""
 msgid "Topic"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:210
+#: src/screens/Settings/AIPreferencesSettings.tsx:184
 msgid "Training"
 msgstr "Training"
 
@@ -15552,11 +15567,11 @@ msgstr ""
 msgid "Use your account email address, or another real email address you control, in case KWS or Bluesky needs to contact you."
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:223
+#: src/screens/Settings/AIPreferencesSettings.tsx:197
 msgid "Use your data in AI search and recommendation systems. This is how AI finds similar accounts, groups users by interests, and decides what to show in some personalized feeds."
 msgstr "Use your data in AI search and recommendation systems. This is how AI finds similar accounts, groups users by interests, and decides what to show in some personalized feeds."
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:211
+#: src/screens/Settings/AIPreferencesSettings.tsx:185
 msgid "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 msgstr "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 
@@ -15948,7 +15963,7 @@ msgstr ""
 msgid "View more trending videos"
 msgstr ""
 
-#: src/components/ProfileBadges.tsx:233
+#: src/components/ProfileBadges.tsx:236
 msgid "View PDS information"
 msgstr "View PDS information"
 
@@ -16602,8 +16617,8 @@ msgid "You are verified. You will lose your verification status if you change yo
 msgstr ""
 
 #: src/screens/Settings/AIPreferencesSettings.tsx:82
-msgid "You can adjust these settings to configure how AI systems may use your data across the AT Protocol network. In an open source system, your data stays public, but you can say how AI should handle it."
-msgstr "You can adjust these settings to configure how AI systems may use your data across the AT Protocol network. In an open source system, your data stays public, but you can say how AI should handle it."
+#~ msgid "You can adjust these settings to configure how AI systems may use your data across the AT Protocol network. In an open source system, your data stays public, but you can say how AI should handle it."
+#~ msgstr "You can adjust these settings to configure how AI systems may use your data across the AT Protocol network. In an open source system, your data stays public, but you can say how AI should handle it."
 
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:49
 msgid "You can adjust your interests at any time from \"Content and media\" settings."
@@ -16771,6 +16786,10 @@ msgstr "You have marked yourself as a Darkner. You can remove this label at any 
 #: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:26
 msgid "You have marked yourself as a Lightner. You can remove this label at any time from Tenna's Settings."
 msgstr "You have marked yourself as a Lightner. You can remove this label at any time from Tenna's Settings."
+
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:26
+msgid "You have marked yourself as Mr. Tenna. You can remove this label at any time from Tenna's Settings."
+msgstr "You have marked yourself as Mr. Tenna. You can remove this label at any time from Tenna's Settings."
 
 #: src/components/moderation/ModerationDetailsDialog.tsx:124
 #: src/lib/moderation/useModerationCauseDescription.ts:100
