@@ -5,6 +5,7 @@ import rspack from '@rspack/core'
 import {RspackManifestPlugin} from 'rspack-manifest-plugin'
 import {sentryWebpackPlugin} from '@sentry/webpack-plugin'
 import {version} from './package.json'
+import ReactRefreshPlugin, { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
 
 dotenv.config({path: path.resolve(__dirname, '.env')})
 
@@ -128,7 +129,7 @@ module.exports = {
       ? 'static/js/[name].[contenthash:8].chunk.js'
       : 'static/js/[name].chunk.js',
     assetModuleFilename: 'static/media/[name].[hash:8][ext]',
-    publicPath: isProduction ? 'auto' : '/',
+    publicPath: '/',
     clean: true,
   },
 
@@ -216,8 +217,9 @@ module.exports = {
               ['babel-plugin-react-compiler', {target: '19'}],
               // omitted: react-native-dotenv (we use DefinePlugin instead)
               // omitted: module-resolver (we use rspack's built-in aliasing instead)
+              !isProduction && 'react-refresh/babel',
               'react-native-reanimated/plugin', // NOTE: this plugin MUST be last
-            ],
+            ].filter(Boolean),
             env: {
               production: {
                 plugins: [], // omitted: transform-remove-console
@@ -411,6 +413,7 @@ module.exports = {
           dist: process.env.SENTRY_DIST,
         },
       }),
+    !isProduction && new ReactRefreshRspackPlugin()
   ].filter(Boolean),
 
   optimization: {
