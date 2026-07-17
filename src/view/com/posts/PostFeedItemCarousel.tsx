@@ -1,11 +1,17 @@
 import {useCallback, useRef} from 'react'
-import {type FlatList, ScrollView, View} from 'react-native'
+import {
+  type FlatList,
+  ScrollView,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import {Plural, useLingui} from '@lingui/react/macro'
+import {LinearGradient} from 'expo-linear-gradient'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {type FeedPostSlice} from '#/state/queries/post-feed'
 import {BlockDrawerGesture} from '#/view/shell/BlockDrawerGesture'
-import {atoms as a, useTheme, web} from '#/alf'
+import {atoms as a, useTheme, utils, web} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
 import {
   ChevronLeft_Stroke2_Corner0_Rounded as ChevronLeft,
@@ -24,6 +30,42 @@ import {PostFeedItem} from './PostFeedItem'
 const CARD_WIDTH = 320
 const CARD_INTERVAL = CARD_WIDTH + ITEM_GAP
 const SETTLE_DURATION = 700
+const MAX_CAROUSEL_HEIGHT = 520
+const CAROUSEL_VIEWPORT_RATIO = 0.55
+const BOTTOM_FADE_HEIGHT = 96
+
+function RepostCarouselViewport({children}: {children: React.ReactNode}) {
+  const t = useTheme()
+  const {height} = useWindowDimensions()
+  const maxHeight = Math.min(
+    MAX_CAROUSEL_HEIGHT,
+    height * CAROUSEL_VIEWPORT_RATIO,
+  )
+
+  return (
+    <View style={[a.w_full, a.overflow_hidden, {maxHeight}]}>
+      {children}
+      <LinearGradient
+        key={t.name}
+        pointerEvents="none"
+        colors={[
+          utils.alpha(t.palette.contrast_25, 0),
+          t.palette.contrast_25,
+        ]}
+        locations={[0, 1]}
+        style={[
+          a.absolute,
+          {
+            right: 0,
+            bottom: 0,
+            left: 0,
+            height: BOTTOM_FADE_HEIGHT,
+          },
+        ]}
+      />
+    </View>
+  )
+}
 
 function RepostCard({
   slice,
@@ -156,36 +198,29 @@ function RepostCarouselNative({items}: {items: FeedPostSlice[]}) {
         onScrollLeft={scrollLeft}
         onScrollRight={scrollRight}
       />
-      <BlockDrawerGesture>
-        <ScrollView
-          ref={scrollRef}
-          horizontal
-          nestedScrollEnabled
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={CARD_INTERVAL}
-          decelerationRate="fast"
-          onMomentumScrollEnd={e => {
-            currentIndexRef.current = Math.round(
-              e.nativeEvent.contentOffset.x / CARD_INTERVAL,
-            )
-          }}
-          contentContainerStyle={[
-            a.px_md,
-            a.pt_sm,
-            a.pb_lg,
-          ]}>
-          <View
-            style={[
-              a.flex_row,
-              a.align_start,
-              {gap: ITEM_GAP},
-            ]}>
-            {items.map(slice => (
-              <RepostCard key={slice.items[0]._reactKey} slice={slice} />
-            ))}
-          </View>
-        </ScrollView>
-      </BlockDrawerGesture>
+      <RepostCarouselViewport>
+        <BlockDrawerGesture>
+          <ScrollView
+            ref={scrollRef}
+            horizontal
+            nestedScrollEnabled
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={CARD_INTERVAL}
+            decelerationRate="fast"
+            onMomentumScrollEnd={e => {
+              currentIndexRef.current = Math.round(
+                e.nativeEvent.contentOffset.x / CARD_INTERVAL,
+              )
+            }}
+            contentContainerStyle={[a.px_md, a.pt_sm, a.pb_lg]}>
+            <View style={[a.flex_row, a.align_start, {gap: ITEM_GAP}]}>
+              {items.map(slice => (
+                <RepostCard key={slice.items[0]._reactKey} slice={slice} />
+              ))}
+            </View>
+          </ScrollView>
+        </BlockDrawerGesture>
+      </RepostCarouselViewport>
     </>
   )
 }
@@ -301,8 +336,8 @@ function RepostCarouselWeb({items}: {items: FeedPostSlice[]}) {
         onScrollLeft={scrollLeft}
         onScrollRight={scrollRight}
       />
-      <BlockDrawerGesture>
-        <View style={[a.w_full, a.overflow_hidden]}>
+      <RepostCarouselViewport>
+        <BlockDrawerGesture>
           <ScrollView
             ref={scrollRef}
             horizontal
@@ -341,8 +376,8 @@ function RepostCarouselWeb({items}: {items: FeedPostSlice[]}) {
               })}
             </View>
           </ScrollView>
-        </View>
-      </BlockDrawerGesture>
+        </BlockDrawerGesture>
+      </RepostCarouselViewport>
     </>
   )
 }
