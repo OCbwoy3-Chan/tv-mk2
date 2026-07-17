@@ -63,7 +63,6 @@ export type CommonNavigatorParams = {
   PreferencesThreads: undefined
   PreferencesExternalEmbeds: undefined
   AccessibilitySettings: undefined
-  AIPreferencesSettings: undefined
   AppearanceSettings: undefined
   AppearanceColorThemeSettings: undefined
   RunesSettings: undefined

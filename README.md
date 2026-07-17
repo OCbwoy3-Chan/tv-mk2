@@ -32,7 +32,6 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - Stay on a page when switching accounts
 - 'Mutuals' in place of 'Following' when relevant
 - Pet label (option to toggle, & visibility for everyone else)
-- Account AI preferences screen
 - No unread notifications badge limit (✗30+)
 - No age assurance or blocks based on location
 - No push notifications (hopefully will be added later)

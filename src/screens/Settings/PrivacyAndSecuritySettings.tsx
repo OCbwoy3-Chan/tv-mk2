@@ -15,7 +15,6 @@ import {BellRinging_Stroke2_Corner0_Rounded as BellRingingIcon} from '#/componen
 import {EyeSlash_Stroke2_Corner0_Rounded as EyeSlashIcon} from '#/components/icons/EyeSlash'
 import {Key_Stroke2_Corner2_Rounded as KeyIcon} from '#/components/icons/Key'
 import {ShieldCheck_Stroke2_Corner0_Rounded as ShieldIcon} from '#/components/icons/Shield'
-import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
 import * as Layout from '#/components/Layout'
 import {InlineLinkText} from '#/components/Link'
 import {Email2FAToggle} from './components/Email2FAToggle'
@@ -100,14 +99,6 @@ export function PrivacyAndSecuritySettingsScreen({}: Props) {
               }
               showSkeleton={isPending}
             />
-          </SettingsList.LinkItem>
-          <SettingsList.LinkItem
-            to="/settings/ai-preferences"
-            label={_(msg`AI preferences`)}>
-            <SettingsList.ItemIcon icon={SparkleIcon} />
-            <SettingsList.ItemText>
-              <Trans>AI preferences</Trans>
-            </SettingsList.ItemText>
           </SettingsList.LinkItem>
           <SettingsList.Divider />
           <SettingsList.Group>
