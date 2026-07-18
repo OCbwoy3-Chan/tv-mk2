@@ -300,6 +300,12 @@ const schema = z.object({
   settingsSyncEnabled: z.boolean().optional(),
   settingsSyncDraftId: z.string().optional(),
   syncOpenRouterApiKey: z.boolean().optional(),
+  /** When false, theme prefs are omitted from push/pull. Defaults to true. */
+  syncTheme: z.boolean().optional(),
+  /**
+   * @deprecated No longer used; kept so older persisted storage still parses.
+   */
+  settingsSyncShareAcrossAccounts: z.boolean().optional(),
   // Skip the next startup pull after a restart-required setting change so
   // local edits are not overwritten by stale cloud data.
   settingsSyncSkipNextPull: z.boolean().optional(),
@@ -444,6 +450,8 @@ export const defaults: Schema = {
   settingsSyncEnabled: false,
   settingsSyncDraftId: undefined,
   syncOpenRouterApiKey: false,
+  syncTheme: true,
+  settingsSyncShareAcrossAccounts: false,
   settingsSyncSkipNextPull: false,
 }
 

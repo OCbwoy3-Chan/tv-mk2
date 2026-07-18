@@ -22,16 +22,21 @@ import {
   useSetEnableSquareButtons,
 } from '#/state/preferences/enable-square-buttons'
 import {
+  useHideDisplayNames,
+  useSetHideDisplayNames,
+} from '#/state/preferences/hide-display-names'
+import {useKawaiiMode, useSetKawaiiMode} from '#/state/preferences/kawaii'
+import {
   useRepostCarouselEnabled,
   useSetRepostCarouselEnabled,
 } from '#/state/preferences/repost-carousel-enabled'
-import {useKawaiiMode, useSetKawaiiMode} from '#/state/preferences/kawaii'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
 import {SettingsListItem as AppIconSettingsListItem} from '#/screens/Settings/AppIconSettings/SettingsListItem'
 import {ItemTextWithSubtitle} from '#/screens/Settings/NotificationSettings/components/ItemTextWithSubtitle'
 import {type Alf, atoms as a, native, useAlf, useTheme} from '#/alf'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as Toggle from '#/components/forms/Toggle'
+import {At_Stroke2_Corner0_Rounded as AtIcon} from '#/components/icons/At'
 import {ColorPalette_Stroke2_Corner0_Rounded as ColorPaletteIcon} from '#/components/icons/ColorPalette'
 import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Moon_Stroke2_Corner0_Rounded as MoonIcon} from '#/components/icons/Moon'
@@ -68,6 +73,10 @@ export function AppearanceSettingsScreen({}: Props) {
 
   const enableSquareButtons = useEnableSquareButtons()
   const setEnableSquareButtons = useSetEnableSquareButtons()
+
+  const hideDisplayNames = useHideDisplayNames()
+  const setHideDisplayNames = useSetHideDisplayNames()
+
   const colorSchemes = useColorSchemes()
   const colorSchemeLabel = getColorSchemeLabel(colorSchemes, colorScheme)
 
@@ -168,6 +177,34 @@ export function AppearanceSettingsScreen({}: Props) {
               />
             </SettingsList.LinkItem>
 
+            <Toggle.Item
+              name="hide_display_names"
+              label={_(msg`Hide display names`)}
+              value={hideDisplayNames}
+              onChange={value => setHideDisplayNames(value)}>
+              <SettingsList.Item>
+                <SettingsList.ItemIcon icon={AtIcon} />
+                <SettingsList.ItemText>
+                  <Trans>Hide display names</Trans>
+                </SettingsList.ItemText>
+                <Toggle.Platform />
+              </SettingsList.Item>
+            </Toggle.Item>
+
+            <Toggle.Item
+              name="repost_carousel"
+              label={_(msg`Combine reposts into a horizontal carousel`)}
+              value={repostCarouselEnabled}
+              onChange={value => setRepostCarouselEnabled(value)}>
+              <SettingsList.Item>
+                <SettingsList.ItemIcon icon={RepostIcon} />
+                <SettingsList.ItemText>
+                  <Trans>Combine reposts into a horizontal carousel</Trans>
+                </SettingsList.ItemText>
+                <Toggle.Platform />
+              </SettingsList.Item>
+            </Toggle.Item>
+
             <Animated.View layout={native(LinearTransition)}>
               <SettingsList.Divider />
 
@@ -219,19 +256,6 @@ export function AppearanceSettingsScreen({}: Props) {
                 value={fonts.scale}
                 onChange={onChangeFontScale}
               />
-              <Toggle.Item
-                name="repost_carousel"
-                label={_(msg`Combine reposts into a horizontal carousel`)}
-                value={repostCarouselEnabled}
-                onChange={value => setRepostCarouselEnabled(value)}>
-                <SettingsList.Item>
-                  <SettingsList.ItemIcon icon={RepostIcon} />
-                  <SettingsList.ItemText>
-                    <Trans>Combine reposts into a horizontal carousel</Trans>
-                  </SettingsList.ItemText>
-                  <Toggle.Platform />
-                </SettingsList.Item>
-              </Toggle.Item>
 
               <SettingsList.Divider />
 

@@ -20,13 +20,17 @@ import {type Schema} from '#/state/persisted/schema'
 //   settingsSyncEnabled, settingsSyncDraftId, settingsSyncSkipNextPull
 //   (the mechanism, not the content)
 
-export const SYNCED_PREFS_KEYS = [
+/** Theme-related keys; omitted from push/pull when syncTheme is false. */
+export const THEME_PREFS_KEYS = [
   'colorMode',
   'darkTheme',
   'colorScheme',
   'hue',
   'material3Accent',
   'material3Style',
+] as const satisfies readonly (keyof Schema)[]
+
+export const SYNCED_PREFS_KEYS = [
   'languagePrefs',
   'requireAltTextEnabled',
   'largeAltBadgeEnabled',
@@ -110,9 +114,33 @@ export const SYNCED_PREFS_KEYS = [
   'atprotoRkeySuffixDefault',
   'tidSuffix',
   'syncOpenRouterApiKey',
+  'syncTheme',
 ] as const satisfies readonly (keyof Schema)[]
 
 export type SyncedPrefsKey = (typeof SYNCED_PREFS_KEYS)[number]
+
+const THEME_PREFS_KEY_SET = new Set<string>(THEME_PREFS_KEYS)
+
+/**
+ * Whether theme prefs should be included in the current push/pull.
+ * Defaults to true when unset.
+ */
+export function shouldSyncTheme(): boolean {
+  return persisted.get('syncTheme') !== false
+}
+
+/**
+ * Keys to include for a push/pull given the current opt-in flags.
+ */
+export function getActiveSyncedPrefsKeys(): SyncedPrefsKey[] {
+  const syncApiKey = persisted.get('syncOpenRouterApiKey')
+  const includeTheme = shouldSyncTheme()
+  return SYNCED_PREFS_KEYS.filter(key => {
+    if (key === 'openRouterApiKey' && !syncApiKey) return false
+    if (!includeTheme && THEME_PREFS_KEY_SET.has(key)) return false
+    return true
+  })
+}
 
 // ---------------------------------------------------------------------------
 // Context

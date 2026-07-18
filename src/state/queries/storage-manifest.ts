@@ -5,22 +5,36 @@
  * src/lib/storage-manifest/codec.ts).
  */
 
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import type AtpAgent from '@atproto/api'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
+import deepEqual from 'fast-deep-equal'
 
 import {decode, encode, isManifestSegment} from '#/lib/storage-manifest/codec'
 import {logger} from '#/logger'
 import * as persisted from '#/state/persisted'
-import {SYNCED_PREFS_KEYS} from '#/state/preferences/settings-sync'
-import {useAgent, useSession} from '#/state/session'
+import {getActiveSyncedPrefsKeys} from '#/state/preferences/settings-sync'
+import {useAgent, useSession, useSessionApi} from '#/state/session'
+import {type SessionAccount} from '#/state/session/types'
+import {canAttemptSessionResume} from '#/state/session/util'
 
-// Keyed by DID so switching accounts never serves a stale result.
-// Invalidations use the base key so they match any DID.
+// Invalidations use this base key so they match any DID-scoped cache entry.
 const STORAGE_MANIFEST_BASE_KEY = ['witchsky-storage-manifest'] as const
-const storageManifestQueryKey = (did: string | undefined) =>
-  [...STORAGE_MANIFEST_BASE_KEY, did] as const
+
+export type SyncAllAccountsFailure = {
+  did: string
+  handle: string
+  reason: string
+}
+
+export type SyncAllAccountsProgress = {
+  total: number
+  completed: number
+  currentHandle: string | undefined
+  failures: SyncAllAccountsFailure[]
+}
 
 // ---------------------------------------------------------------------------
-// Finding the storage draft
+// Finding / writing the storage draft
 // ---------------------------------------------------------------------------
 
 /**
@@ -29,11 +43,17 @@ const storageManifestQueryKey = (did: string | undefined) =>
  * fall back to inspecting the first post's text.  Both checks happen inside
  * the same pagination loop so no extra round-trips are wasted regardless of
  * which page the draft lives on.
+ *
+ * When `persistDraftId` is false (multi-account push to a secondary account),
+ * the shared `settingsSyncDraftId` cache is neither read nor written.
  */
 async function findStorageDraft(
-  agent: ReturnType<typeof useAgent>,
+  agent: AtpAgent,
+  {persistDraftId = true}: {persistDraftId?: boolean} = {},
 ): Promise<{id: string; segments: string[]} | null> {
-  const cachedId = persisted.get('settingsSyncDraftId')
+  const cachedId = persistDraftId
+    ? persisted.get('settingsSyncDraftId')
+    : undefined
 
   let cursor: string | undefined
   do {
@@ -57,7 +77,9 @@ async function findStorageDraft(
 
       // Text match: first post starts with 'witchsky:storage\n'
       if (isManifestSegment(first)) {
-        await persisted.write('settingsSyncDraftId', draft.id)
+        if (persistDraftId) {
+          await persisted.write('settingsSyncDraftId', draft.id)
+        }
         return {
           id: draft.id,
           segments: draft.draft.posts.map(p => p.text ?? ''),
@@ -70,36 +92,78 @@ async function findStorageDraft(
   return null
 }
 
-// ---------------------------------------------------------------------------
-// Query: read and decode the storage draft
-// ---------------------------------------------------------------------------
+async function writeManifestToAgent(
+  agent: AtpAgent,
+  segments: string[],
+  {persistDraftId = true}: {persistDraftId?: boolean} = {},
+): Promise<string> {
+  const posts = segments.map(text => ({
+    $type: 'app.bsky.draft.defs#draftPost' as const,
+    text,
+  }))
+  const draft = {
+    $type: 'app.bsky.draft.defs#draft' as const,
+    posts,
+  }
+
+  const existing = await findStorageDraft(agent, {persistDraftId})
+
+  if (existing) {
+    await agent.app.bsky.draft.updateDraft({
+      draft: {id: existing.id, draft},
+    })
+    return existing.id
+  }
+
+  const res = await agent.app.bsky.draft.createDraft({draft})
+  return res.data.id
+}
+
+function collectSyncedPrefs(): Record<string, unknown> {
+  const prefs: Record<string, unknown> = {}
+  for (const key of getActiveSyncedPrefsKeys()) {
+    prefs[key] = persisted.get(key)
+  }
+  return prefs
+}
 
 /**
- * Fetches and decodes the storage manifest draft.
- * Returns the decoded object, or null if no storage draft exists.
- * Only runs when the user has a session.
+ * Merge cloud prefs into local: take cloud values where local is still at
+ * the schema default (unchanged); keep local where the user has customized.
  */
-export function useStorageManifestQuery({enabled = true}: {enabled?: boolean} = {}) {
-  const agent = useAgent()
-  const {currentAccount} = useSession()
+export async function applyMergedCloudPrefs(
+  cloud: Record<string, unknown>,
+): Promise<{applied: number; keptLocal: number}> {
+  let applied = 0
+  let keptLocal = 0
 
-  return useQuery({
-    queryKey: storageManifestQueryKey(currentAccount?.did),
-    queryFn: async () => {
-      const found = await findStorageDraft(agent)
-      if (!found) return null
-      try {
-        return decode(found.segments)
-      } catch (e) {
-        logger.error('storage-manifest: decode failed', {safeMessage: String(e)})
-        throw e
-      }
-    },
-    enabled,
-    // Don't cache stale cloud data for too long; re-check on focus
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    retry: 1,
-  })
+  for (const key of getActiveSyncedPrefsKeys()) {
+    if (!Object.prototype.hasOwnProperty.call(cloud, key)) continue
+
+    const local = persisted.get(key)
+    const cloudVal = cloud[key]
+    if (deepEqual(local, cloudVal)) continue
+
+    if (deepEqual(local, persisted.defaults[key])) {
+      await persisted.write(key, cloudVal as persisted.Schema[typeof key])
+      applied++
+    } else {
+      keptLocal++
+    }
+  }
+
+  return {applied, keptLocal}
+}
+
+function accountLabel(account: SessionAccount): string {
+  return account.handle || account.did
+}
+
+function errorReason(e: unknown): string {
+  if (e instanceof Error && e.message) return e.message
+  const s = String(e)
+  // Avoid "Error: Error: …" when callers already prefix with "Error:".
+  return s.replace(/^Error:\s*/i, '')
 }
 
 // ---------------------------------------------------------------------------
@@ -116,47 +180,19 @@ export function usePushStorageManifestMutation() {
 
   return useMutation({
     mutationFn: async () => {
-      // Collect all synced preference values
-      const prefs: Record<string, unknown> = {}
-      const syncApiKey = persisted.get('syncOpenRouterApiKey')
-      for (const key of SYNCED_PREFS_KEYS) {
-        if (key === 'openRouterApiKey' && !syncApiKey) continue
-        prefs[key] = persisted.get(key)
-      }
-
+      const prefs = collectSyncedPrefs()
+      const keys = getActiveSyncedPrefsKeys()
       const segments = encode(prefs)
       logger.debug('storage-manifest: pushing', {
         segments: segments.length,
-        keys: SYNCED_PREFS_KEYS.length,
+        keys: keys.length,
       })
 
-      // Build a draft whose posts are the segments
-      const posts = segments.map(text => ({
-        $type: 'app.bsky.draft.defs#draftPost' as const,
-        text,
-      }))
-      const draft = {
-        $type: 'app.bsky.draft.defs#draft' as const,
-        posts,
-      }
-
-      // Re-use findStorageDraft so we get the same paginated lookup and
-      // stale-cache handling that the read path uses.
-      const existing = await findStorageDraft(agent)
-
-      if (existing) {
-        await agent.app.bsky.draft.updateDraft({
-          draft: {id: existing.id, draft},
-        })
-        return existing.id
-      } else {
-        const res = await agent.app.bsky.draft.createDraft({draft})
-        return res.data.id
-      }
+      return await writeManifestToAgent(agent, segments)
     },
     onSuccess: async (draftId: string) => {
       await persisted.write('settingsSyncDraftId', draftId)
-      queryClient.invalidateQueries({queryKey: STORAGE_MANIFEST_BASE_KEY})
+      await queryClient.invalidateQueries({queryKey: STORAGE_MANIFEST_BASE_KEY})
       logger.debug('storage-manifest: push succeeded', {draftId})
     },
     onError: e => {
@@ -166,58 +202,130 @@ export function usePushStorageManifestMutation() {
 }
 
 // ---------------------------------------------------------------------------
-// Mutation: pull cloud prefs and apply to local
+// Mutation: merge cloud prefs with local, then push
 // ---------------------------------------------------------------------------
 
 /**
- * Reads the storage draft from the cloud and applies the decoded preferences
- * to the local persisted store.  Only keys present in the decoded object are
- * written; missing keys (e.g. from an older manifest) are left untouched so
- * new preferences added in later versions aren't reset.
+ * Loads the cloud draft (if any), merges it with local prefs (local custom
+ * values win; cloud fills in keys still at defaults), then pushes the
+ * merged result.
  */
-export function usePullStorageManifestMutation() {
+export function useMergeAndSyncStorageManifestMutation() {
   const agent = useAgent()
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async () => {
       const found = await findStorageDraft(agent)
-      if (!found) return null
-
-      const decoded = decode(found.segments)
-      if (typeof decoded !== 'object' || decoded === null) {
-        throw new Error('storage-manifest: decoded value is not an object')
-      }
-      return decoded as Record<string, unknown>
-    },
-    onSuccess: async (decoded: Record<string, unknown> | null) => {
-      if (!decoded) {
-        logger.debug('storage-manifest: pull found no storage draft')
-        return
-      }
-
-      const syncApiKey = persisted.get('syncOpenRouterApiKey')
-
-      let applied = 0
-      for (const key of SYNCED_PREFS_KEYS) {
-        // Skip openRouterApiKey if the user hasn't opted into syncing it
-        if (key === 'openRouterApiKey' && !syncApiKey) continue
-        if (Object.prototype.hasOwnProperty.call(decoded, key)) {
-          // persisted.write is typed per-key; use the cast the same way
-          // the persisted module itself does in normalizeData/tryParse
-          await persisted.write(
-            key,
-            decoded[key] as persisted.Schema[typeof key],
-          )
-          applied++
+      if (found) {
+        const decoded = decode(found.segments)
+        if (typeof decoded !== 'object' || decoded === null) {
+          throw new Error('storage-manifest: decoded value is not an object')
         }
+        const {applied, keptLocal} = await applyMergedCloudPrefs(
+          decoded as Record<string, unknown>,
+        )
+        logger.debug('storage-manifest: merge applied', {applied, keptLocal})
+      } else {
+        logger.debug('storage-manifest: merge found no storage draft')
       }
 
-      logger.debug('storage-manifest: pull applied', {applied})
-      queryClient.invalidateQueries({queryKey: STORAGE_MANIFEST_BASE_KEY})
+      const segments = encode(collectSyncedPrefs())
+      return await writeManifestToAgent(agent, segments)
+    },
+    onSuccess: async (draftId: string) => {
+      await persisted.write('settingsSyncDraftId', draftId)
+      await queryClient.invalidateQueries({queryKey: STORAGE_MANIFEST_BASE_KEY})
+      logger.debug('storage-manifest: merge-and-sync succeeded', {draftId})
     },
     onError: e => {
-      logger.error('storage-manifest: pull failed', {safeMessage: String(e)})
+      logger.error('storage-manifest: merge-and-sync failed', {
+        safeMessage: String(e),
+      })
+    },
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Mutation: sync current prefs to every logged-in account
+// ---------------------------------------------------------------------------
+
+/**
+ * Writes the current synced prefs to the storage draft on every logged-in
+ * account that can resume a session. Reports progress via `onProgress`.
+ *
+ * Uses `createEphemeralAgent` so OAuth accounts work the same as password
+ * sessions (plain `AtpAgent.resumeSession` cannot restore OAuth).
+ */
+export function useSyncSettingsToAllAccountsMutation() {
+  const agent = useAgent()
+  const queryClient = useQueryClient()
+  const {currentAccount} = useSession()
+  const {createEphemeralAgent} = useSessionApi()
+
+  return useMutation({
+    mutationFn: async ({
+      onProgress,
+    }: {
+      onProgress: (progress: SyncAllAccountsProgress) => void
+    }) => {
+      const segments = encode(collectSyncedPrefs())
+      const {accounts} = persisted.get('session')
+      const targets = accounts.filter(canAttemptSessionResume)
+
+      const failures: SyncAllAccountsFailure[] = []
+      let completed = 0
+
+      const report = (currentHandle: string | undefined) => {
+        onProgress({
+          total: targets.length,
+          completed,
+          currentHandle,
+          failures: [...failures],
+        })
+      }
+
+      report(undefined)
+
+      for (const account of targets) {
+        const handle = accountLabel(account)
+        report(handle)
+
+        try {
+          if (account.did === currentAccount?.did) {
+            const draftId = await writeManifestToAgent(agent, segments)
+            await persisted.write('settingsSyncDraftId', draftId)
+          } else {
+            const ephemeralAgent = await createEphemeralAgent(account)
+            await writeManifestToAgent(ephemeralAgent, segments, {
+              persistDraftId: false,
+            })
+          }
+        } catch (e) {
+          failures.push({
+            did: account.did,
+            handle,
+            reason: errorReason(e),
+          })
+          logger.error('storage-manifest: sync-all account failed', {
+            did: account.did,
+            safeMessage: errorReason(e),
+          })
+        }
+
+        completed++
+        report(handle)
+      }
+
+      return {failures, total: targets.length}
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({queryKey: STORAGE_MANIFEST_BASE_KEY})
+    },
+    onError: e => {
+      logger.error('storage-manifest: sync-all failed', {
+        safeMessage: String(e),
+      })
     },
   })
 }

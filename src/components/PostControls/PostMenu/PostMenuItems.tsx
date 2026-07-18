@@ -303,6 +303,7 @@ let PostMenuItems = ({
           author: embed.record.author,
           record: embed.record.value,
           indexedAt: embed.record.indexedAt,
+          embed: embed.record.embeds?.[0],
         } as AppBskyFeedDefs.PostView
       }
     } else if (post.embed?.$type === 'app.bsky.embed.recordWithMedia#view') {
@@ -311,13 +312,14 @@ let PostMenuItems = ({
         AppBskyEmbedRecord.isViewRecord(embed.record.record) &&
         AppBskyFeedPost.isRecord(embed.record.record.value)
       ) {
-        const record = embed.record.record
+        const quoted = embed.record.record
         quotePost = {
-          uri: record.uri,
-          cid: record.cid,
-          author: record.author,
-          record: record.value,
-          indexedAt: record.indexedAt,
+          uri: quoted.uri,
+          cid: quoted.cid,
+          author: quoted.author,
+          record: quoted.value,
+          indexedAt: quoted.indexedAt,
+          embed: quoted.embeds?.[0],
         } as AppBskyFeedDefs.PostView
       }
     }

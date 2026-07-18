@@ -616,8 +616,9 @@ const styles = StyleSheet.create({
     width: 0,
   },
   postMetaCarousel: {
-    flex: 0,
     flexGrow: 0,
+    flexShrink: 1,
+    minWidth: 0,
   },
   alert: {
     marginTop: 6,
