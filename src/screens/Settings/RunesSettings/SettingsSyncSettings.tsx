@@ -1,5 +1,5 @@
 import {useCallback, useState} from 'react'
-import {TextInput, View} from 'react-native'
+import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import * as persisted from '#/state/persisted'
@@ -7,7 +7,6 @@ import {
   useSetSettingsSyncEnabled,
   useSettingsSyncEnabled,
 } from '#/state/preferences'
-import {useStorageManifestQuery} from '#/state/queries/storage-manifest'
 import {useSession} from '#/state/session'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useTheme} from '#/alf'
@@ -15,13 +14,12 @@ import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as Toggle from '#/components/forms/Toggle'
 import {ArrowRotateClockwise_Stroke2_Corner0_Rounded as CloudSyncIcon} from '#/components/icons/ArrowRotate'
-import {Key_Stroke2_Corner2_Rounded as KeyIcon} from '#/components/icons/Key'
+import {ColorPalette_Stroke2_Corner0_Rounded as ColorPaletteIcon} from '#/components/icons/ColorPalette'
 import {Text} from '#/components/Typography'
-import {IS_WEB} from '#/env'
 import {
-  usePullFromCloud,
-  usePushToCloud,
   useSettingsSyncStatus,
+  useSyncAllAccountsState,
+  useSyncSettingsToAllAccounts,
 } from '#/features/settingsSync'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
@@ -30,12 +28,15 @@ function formatStatusLine(
 ): string | null {
   if (status.type === 'idle') return null
   if (status.type === 'pushing') return 'Saving to cloud…'
-  if (status.type === 'pulling') return 'Loading from cloud…'
+  if (status.type === 'merging') return 'Merging with cloud…'
   if (status.type === 'pushed')
     return `Saved to cloud at ${status.at.toLocaleTimeString()}`
-  if (status.type === 'pulled')
-    return `Loaded from cloud at ${status.at.toLocaleTimeString()}`
-  if (status.type === 'error') return `Error: ${status.message}`
+  if (status.type === 'merged')
+    return `Merged with cloud at ${status.at.toLocaleTimeString()}`
+  if (status.type === 'error') {
+    const message = status.message.replace(/^Error:\s*/i, '')
+    return `Error: ${message}`
+  }
   return null
 }
 
@@ -43,40 +44,40 @@ export function RunesSettingsSyncSettingsScreen() {
   const {t: l} = useLingui()
   const t = useTheme()
 
-  const {hasSession} = useSession()
+  const {hasSession, accounts} = useSession()
   const enabled = useSettingsSyncEnabled()
   const setEnabled = useSetSettingsSyncEnabled()
 
   const status = useSettingsSyncStatus()
-  const pushToCloud = usePushToCloud()
-  const pullFromCloud = usePullFromCloud()
+  const syncAllState = useSyncAllAccountsState()
+  const syncSettingsToAllAccounts = useSyncSettingsToAllAccounts()
 
-  const manifestQuery = useStorageManifestQuery({enabled: hasSession})
-  const decodedJson =
-    manifestQuery.data != null
-      ? JSON.stringify(manifestQuery.data, null, 2)
-      : null
-
-  const isBusy = status.type === 'pushing' || status.type === 'pulling'
+  const isBusy = status.type === 'pushing' || status.type === 'merging'
+  const isSyncingAll = syncAllState.type === 'running'
   const isError = status.type === 'error'
 
   const statusLine = formatStatusLine(status)
 
-  const [syncApiKey, setSyncApiKey] = useState<boolean>(
-    () => persisted.get('syncOpenRouterApiKey') ?? false,
+  const [syncTheme, setSyncTheme] = useState<boolean>(
+    () => persisted.get('syncTheme') !== false,
   )
-  const onToggleSyncApiKey = useCallback((next: boolean) => {
-    setSyncApiKey(next)
-    persisted.write('syncOpenRouterApiKey', next)
+  const onToggleSyncTheme = useCallback((next: boolean) => {
+    setSyncTheme(next)
+    void persisted.write('syncTheme', next)
   }, [])
 
   const onToggleEnabled = (next: boolean) => {
     setEnabled(next)
-    // Immediately push when the user first enables sync
-    if (next) {
-      pushToCloud()
-    }
   }
+
+  const syncAllProgress =
+    syncAllState.type === 'running' || syncAllState.type === 'done'
+      ? syncAllState.progress
+      : null
+  const syncAllPercent =
+    syncAllProgress && syncAllProgress.total > 0
+      ? Math.round((syncAllProgress.completed / syncAllProgress.total) * 100)
+      : 0
 
   return (
     <RunesScreenLayout titleText={l`Settings sync`}>
@@ -96,14 +97,14 @@ export function RunesSettingsSyncSettingsScreen() {
 
       {enabled && (
         <Toggle.Item
-          name="cloud_sync_api_key"
-          label={l`Sync OpenRouter API Key`}
-          value={syncApiKey}
-          onChange={onToggleSyncApiKey}>
+          name="cloud_sync_theme"
+          label={l`Include theme in synced settings`}
+          value={syncTheme}
+          onChange={onToggleSyncTheme}>
           <SettingsList.Item>
-            <SettingsList.ItemIcon icon={KeyIcon} />
+            <SettingsList.ItemIcon icon={ColorPaletteIcon} />
             <SettingsList.ItemText>
-              <Trans>Include OpenRouter API Key in synced settings</Trans>
+              <Trans>Include theme in synced settings</Trans>
             </SettingsList.ItemText>
             <Toggle.Platform />
           </SettingsList.Item>
@@ -116,109 +117,104 @@ export function RunesSettingsSyncSettingsScreen() {
             Settings are encoded and stored in a hidden draft post on your
             account. This lets you sync your Witchsky preferences across devices
             without any external service. Your session credentials are never
-            included.
+            included. Enabling sync loads any existing cloud settings and merges
+            them with local changes.
           </Trans>
         </Admonition>
       </SettingsList.Item>
 
-      {enabled && (
+      {statusLine && (
+        <SettingsList.Item>
+          <Text
+            style={[
+              a.text_sm,
+              a.flex_1,
+              isError
+                ? {color: t.palette.negative_500}
+                : t.atoms.text_contrast_medium,
+            ]}>
+            {statusLine}
+          </Text>
+        </SettingsList.Item>
+      )}
+
+      {enabled && hasSession && (
         <>
           <SettingsList.Divider />
 
           <SettingsList.Item>
-            <View style={[a.flex_1, a.gap_md, IS_WEB && a.flex_row]}>
-              <Button
-                label={l`Push settings to cloud`}
-                size="small"
-                color="primary"
-                disabled={isBusy}
-                onPress={pushToCloud}
-                style={IS_WEB ? undefined : [a.flex_1]}>
-                <ButtonText>
-                  <Trans>Push</Trans>
-                </ButtonText>
-              </Button>
-              <Button
-                label={l`Load settings from cloud`}
-                size="small"
-                color="secondary"
-                disabled={isBusy}
-                onPress={pullFromCloud}
-                style={IS_WEB ? undefined : [a.flex_1]}>
-                <ButtonText>
-                  <Trans>Load</Trans>
-                </ButtonText>
-              </Button>
-            </View>
+            <Button
+              label={l`Sync settings to all accounts`}
+              size="small"
+              color="secondary"
+              disabled={isBusy || isSyncingAll || accounts.length === 0}
+              onPress={syncSettingsToAllAccounts}
+              style={[a.flex_1]}>
+              <ButtonText>
+                <Trans>Sync settings to all accounts</Trans>
+              </ButtonText>
+            </Button>
           </SettingsList.Item>
 
-          {statusLine && (
+          {syncAllProgress && (
             <SettingsList.Item>
-              <Text
-                style={[
-                  a.text_sm,
-                  a.flex_1,
-                  isError
-                    ? {color: t.palette.negative_500}
-                    : t.atoms.text_contrast_medium,
-                ]}>
-                {statusLine}
-              </Text>
+              <View style={[a.flex_1, a.gap_sm]}>
+                <View
+                  style={[
+                    a.w_full,
+                    a.rounded_full,
+                    a.overflow_hidden,
+                    t.atoms.bg_contrast_50,
+                    {height: 8},
+                  ]}>
+                  <View
+                    style={[
+                      a.rounded_full,
+                      {
+                        height: 8,
+                        width: `${syncAllPercent}%`,
+                        backgroundColor: t.palette.primary_500,
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
+                  {isSyncingAll ? (
+                    syncAllProgress.currentHandle ? (
+                      <Trans>
+                        Syncing @{syncAllProgress.currentHandle} (
+                        {syncAllProgress.completed}/{syncAllProgress.total})
+                      </Trans>
+                    ) : (
+                      <Trans>
+                        Syncing… ({syncAllProgress.completed}/
+                        {syncAllProgress.total})
+                      </Trans>
+                    )
+                  ) : syncAllProgress.failures.length > 0 ? (
+                    <Trans>
+                      Finished {syncAllProgress.completed}/
+                      {syncAllProgress.total} ·{' '}
+                      {syncAllProgress.failures.length} failed
+                    </Trans>
+                  ) : (
+                    <Trans>
+                      Finished {syncAllProgress.completed}/
+                      {syncAllProgress.total}
+                    </Trans>
+                  )}
+                </Text>
+                {syncAllProgress.failures.map(failure => (
+                  <Text
+                    key={failure.did}
+                    style={[a.text_sm, {color: t.palette.negative_500}]}>
+                    @{failure.handle}: {failure.reason}
+                  </Text>
+                ))}
+              </View>
             </SettingsList.Item>
           )}
 
-          <SettingsList.Item>
-            <Admonition type="warning" style={[a.flex_1]}>
-              <Trans>
-                Loading from cloud will overwrite your local settings. Push
-                first if you want to preserve changes made on this device.
-              </Trans>
-            </Admonition>
-          </SettingsList.Item>
-        </>
-      )}
-
-      {hasSession && (
-        <>
-          <SettingsList.Divider />
-          <SettingsList.Item>
-            <View style={[a.flex_1, a.gap_xs]}>
-              <Text
-                style={[a.text_sm, a.font_bold, t.atoms.text_contrast_medium]}>
-                <Trans>Cloud data</Trans>
-              </Text>
-              {manifestQuery.isLoading ? (
-                <Text style={[a.text_sm, t.atoms.text_contrast_low]}>
-                  <Trans>Loading…</Trans>
-                </Text>
-              ) : manifestQuery.isError ? (
-                <Text style={[a.text_sm, {color: t.palette.negative_500}]}>
-                  {String(manifestQuery.error)}
-                </Text>
-              ) : decodedJson == null ? (
-                <Text style={[a.text_sm, t.atoms.text_contrast_low]}>
-                  <Trans>No cloud data found.</Trans>
-                </Text>
-              ) : (
-                <TextInput
-                  accessibilityLabel={l`Current cloud data`}
-                  accessibilityHint=""
-                  value={decodedJson}
-                  editable={false}
-                  multiline
-                  scrollEnabled={false}
-                  style={[
-                    a.text_xs,
-                    a.p_sm,
-                    a.rounded_sm,
-                    t.atoms.text,
-                    t.atoms.bg_contrast_25,
-                    {fontFamily: 'monospace', minHeight: 300},
-                  ]}
-                />
-              )}
-            </View>
-          </SettingsList.Item>
         </>
       )}
     </RunesScreenLayout>
