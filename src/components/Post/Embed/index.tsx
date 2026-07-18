@@ -439,6 +439,14 @@ export function QuoteEmbed({
         postHref={itemHref}
         timestamp={quote.indexedAt}
         linkDisabled
+        /*
+         * Quotes sit in a nested, width-constrained box (especially carousel
+         * cards with the width:0 flex trick). Give the name row room to
+         * ellipsize instead of collapsing, and cancel Android flex_1.
+         */
+        narrowLayout
+        constrainWidth
+        style={[{flexGrow: 0, flexShrink: 1, minWidth: 0}]}
       />
       {moderation ? (
         <PostAlerts
