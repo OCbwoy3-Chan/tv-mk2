@@ -17,7 +17,7 @@ import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {atoms as a, platform, useTheme, web} from '#/alf'
 import {WebOnlyInlineLinkText} from '#/components/Link'
-import {ProfileBadges} from '#/components/ProfileBadges'
+import {ProfileBadgesFromProfileShadow} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {Text} from '#/components/Typography'
 import {IS_ANDROID} from '#/env'
@@ -141,7 +141,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 {forceLTR(displayName)}
               </MaybeLinkText>
             </View>
-            <ProfileBadges
+            <ProfileBadgesFromProfileShadow
               profile={author}
               size="sm"
               pdsInteractive={false}

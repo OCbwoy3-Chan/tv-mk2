@@ -28,6 +28,7 @@ export function usePdsLabelQuery(did: string | undefined) {
       return {pdsUrl, isBsky, isBridged}
     },
     enabled: !!did,
+    subscribed: !!did,
     staleTime: 1000 * 60 * 60, // 1 hour
   })
 }
@@ -51,6 +52,7 @@ export function usePdsFaviconQuery(pdsUrl: string | undefined) {
     queryFn: () =>
       isEnabled ? getFaviconServiceUrl(pdsUrl!, faviconService!) : undefined,
     enabled: isEnabled,
+    subscribed: isEnabled,
     staleTime: 1000 * 60 * 60, // 1 hour
   })
 }

@@ -26,6 +26,7 @@ import {
   useProfileFollowMutationQueue,
   useProfileMuteMutationQueue,
 } from '#/state/queries/profile'
+import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
 import {useSession} from '#/state/session'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {atoms as a, useTheme} from '#/alf'
@@ -94,7 +95,11 @@ let ProfileMenu = ({
   const isFollowingBlockedAccount = isFollowing && isBlocked
   const isLabeler = !!profile.associated?.labeler
   const [devModeEnabled] = useDevMode()
-  const verification = useFullVerificationState({profile})
+  const profileWithDeerVerification =
+    useDeerVerificationProfileOverlay(profile)
+  const verification = useFullVerificationState({
+    profile: profileWithDeerVerification,
+  })
   const {canGoLive} = useLiveNowConfig()
   const status = useActorStatus(profile)
   const statusNudge = useNux(Nux.LiveNowBetaNudge)
