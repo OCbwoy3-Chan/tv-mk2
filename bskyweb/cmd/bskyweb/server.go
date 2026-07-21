@@ -578,7 +578,7 @@ func (srv *Server) OAuthClientMetadata(c echo.Context) error {
 
 	metadata := map[string]interface{}{
 		"client_id":                  baseURL + "/oauth-client-metadata.json",
-		"client_name":                "TV Time",
+		"client_name":                "tenna.party",
 		"client_uri":                 baseURL,
 		"redirect_uris":              []string{baseURL + "/auth/web/callback"},
 		"scope":                      "atproto transition:generic transition:email transition:chat.bsky",
@@ -601,7 +601,7 @@ func (srv *Server) OAuthClientMetadataNative(c echo.Context) error {
 
 	metadata := map[string]interface{}{
 		"client_id":                  baseURL + "/oauth-client-metadata-native.json",
-		"client_name":                "TV Time",
+		"client_name":                "tenna.party",
 		"client_uri":                 baseURL,
 		"redirect_uris":              []string{"app.witchsky:/auth/callback"},
 		"scope":                      "atproto transition:generic transition:email transition:chat.bsky",

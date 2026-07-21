@@ -11,7 +11,7 @@ export function Logotype({
   return (
     <Image
       source={require('../../../assets/wordmark.png')}
-      accessibilityLabel="TV Time"
+      accessibilityLabel="tenna.party"
       accessibilityHint=""
       accessibilityIgnoresInvertColors
       style={[{height: size * 0.5, aspectRatio: 992 / 204}]}

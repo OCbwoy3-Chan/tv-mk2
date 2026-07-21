@@ -104,7 +104,7 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       a.user_select_none,
                       {color: 'rgb(42, 40, 40)', letterSpacing: -0.5},
                     ]}>
-                    TV Time
+                    tenna.party
                   </Text>
                 </View>
               </View>

@@ -141,8 +141,10 @@ export function isBskyAppUrl(url: string): boolean {
     (url.startsWith('https://witchsky.app/') &&
       !url.startsWith('https://witchsky.app/about')) ||
     url.startsWith('https://bsky.app/') ||
+    url.startsWith('https://tenna.party/') ||
     (url.startsWith('https://deer.social/') &&
       !url.startsWith('https://deer.social/about'))
+      
   )
 }
 

@@ -1,6 +1,6 @@
-# TV Time Social App 📺🎤 (alpha)
+# ????? ????? Social App 📺🎤 (alpha)
 
-Hey, audience! This is the codebase for the TV Time app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
+Hey, audience! This is the codebase for the ????? ????? app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
 
 **EVERYTHING IS WIP, SOME THINGS MAY NOT WORK OR MAY HAVE NOT BEEN IMPLEMENTED YET.**
 
@@ -23,6 +23,7 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - Native iOS via GitHub Actions (Unsigned. Requires Sideloading)
 - Removed the labeler limit (200 max labelers, you're deadass genuinely insane if you hit the limit on this)
 - Brought back AI preferences [after their removal in v128](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mqtl52mokc2p) in Settings -> Deltas
+<!-- - Bypass !hide warnings on things labeled by Bluesky Moderation and other labelers -->
 
 ### TODO: Kris
 
@@ -41,13 +42,13 @@ The [Build Instructions](./docs/build.md) are a good place to get started with t
 The Authenticated Transfer Protocol ("AT Protocol" or "atproto") is a decentralized social media protocol. You don't *need* to understand AT Protocol to work with this application, but it can help.
 You may wish to reference [resources linked in social-app](https://github.com/bluesky-social/social-app#development-resources). However, please don't harass the Bluesky team with issues or questions pertaining to Witchsky.
 
-TV Time is a fork of Witchsky, which itself is a fork of the official Bluesky client, social-app. They both encompass a set of schemas and APIs built in the overall AT Protocol framework. The namespace for these "Lexicons" is `app.bsky.*`.
+v is a fork of Witchsky, which itself is a fork of the official Bluesky client, social-app. They both encompass a set of schemas and APIs built in the overall AT Protocol framework. The namespace for these "Lexicons" is `app.bsky.*`.
 
 ## Contributions
 
 > tenna.party is a community fork, and we'd love to merge your PR!
 
-As a rule of thumb, the best features for TV Time are those that have any positive impact on the user experience regardless of the maintenance overhead. Since tenna.party is a soft-ish fork, any features (patches) we add on top of Witchsky need to be maintained. For example, a change to the way posts are composed may be very invasive, touching lots of code across the codebase. If upstream refactors this component, we will need to rewrite this feature to be compatible or drop it from the client.
+As a rule of thumb, the best features for ????? ????? are those that have any positive impact on the user experience regardless of the maintenance overhead. Since tenna.party is a soft-ish fork, any features (patches) we add on top of Witchsky need to be maintained. For example, a change to the way posts are composed may be very invasive, touching lots of code across the codebase. If upstream refactors this component, we will need to rewrite this feature to be compatible or drop it from the client.
 
 For this reason, only features that require changing only a small or medium amount of code from upstream should be considered.
 
@@ -71,12 +72,12 @@ Just like Witchsky and social-app, you have our blessing 🪄✨ to fork this ap
 
 Please be sure to:
 
-- Change all branding in the repository and UI to clearly differentiate from TV Time.
+- Change all branding in the repository and UI to clearly differentiate from ????? ?????.
 - Change any support links (feedback, email, terms of service, issue tracker, etc) to your own systems.
 
 ## Self hosting & personal builds
 
-Self hosting is great! It is our intention that TV Time is easy to self host and build on your own. If you host your own instance of TV Time, or make your own builds, please make some level of effort to clarify that it is not an "official" build or instance. This can be in the form of a different domain or branding, but can also be as simple as not advertising your hosted instance or builds as "official" releases.
+Self hosting is great! It is our intention that ????? ????? is easy to self host and build on your own. If you host your own instance of ????? ?????, or make your own builds, please make some level of effort to clarify that it is not an "official" build or instance. This can be in the form of a different domain or branding, but can also be as simple as not advertising your hosted instance or builds as "official" releases.
 
 ## Security disclosures
 

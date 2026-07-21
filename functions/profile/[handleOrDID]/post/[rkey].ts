@@ -142,7 +142,7 @@ class HeadHandler {
 
     element.append(
       html`
-        <meta property="og:site_name" content="TV Time" />
+        <meta property="og:site_name" content="tenna.party" />
         <meta property="og:type" content="article" />
         <meta property="profile:username" content="${author.handle}" />
         <meta property="og:url" content="${this.url}" />
