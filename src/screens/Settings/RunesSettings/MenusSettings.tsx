@@ -4,6 +4,7 @@ import {
   useSetShowExternalShareButtons,
   useShowExternalShareButtons,
 } from '#/state/preferences/external-share-buttons'
+import {RestartRequiredPrompt} from '#/state/preferences/restart-required-prompt'
 import {
   useSetShowLinkInHandle,
   useShowLinkInHandle,
@@ -16,9 +17,8 @@ import {
   useHandleInLinks,
   useSetHandleInLinks,
 } from '#/state/preferences/use-handle-in-links'
-import {RestartRequiredPrompt} from '#/state/preferences/restart-required-prompt'
-import * as Dialog from '#/components/Dialog'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
+import * as Dialog from '#/components/Dialog'
 import * as Toggle from '#/components/forms/Toggle'
 import {ArrowShareRight_Stroke2_Corner2_Rounded as ArrowShareRightIcon} from '#/components/icons/ArrowShareRight'
 import {At_Stroke2_Corner2_Rounded as AtIcon} from '#/components/icons/At'
@@ -62,15 +62,13 @@ export function RunesMenusSettingsScreen() {
       </Toggle.Item>
       <Toggle.Item
         name="external_share_buttons"
-        label={l`Show "Open original post" and "Open post in PDSls" buttons`}
+        label={l`Show the Open submenu for external post and profile links`}
         value={showExternalShareButtons}
         onChange={value => setShowExternalShareButtons(value)}>
         <SettingsList.Item>
           <SettingsList.ItemIcon icon={ArrowShareRightIcon} />
           <SettingsList.ItemText>
-            <Trans>
-              Show "Open original post" and "Open post in PDSls" buttons
-            </Trans>
+            <Trans>Show the Open submenu for external links</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

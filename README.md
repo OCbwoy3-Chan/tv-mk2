@@ -22,7 +22,7 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - You can change "post" to any phrase you want in the UI
 - Choose between sharing witchsky.app or bsky.app links
 - Embed player works with [stream.place](https://stream.place/) links!
-- Open posts in PDSls and original bridged fedi instances 
+- Open posts in PDSls, Skythread, and original bridged fedi instances
 - You can delete and redraft (basically edit!) posts
 - Better defaults (alt text required 😉 autoplay off 🫨)
 - Read your chat threads with deleted/deactivated accounts
@@ -43,7 +43,7 @@ These are all available as options in the Runes sub-page of the app's settings.
 
 - Menus
   - Use handles in profile links instead of DIDs
-  - Show "Open original post" and "Open post in PDSls" buttons
+  - Show the Open submenu for external post and profile links
   - On non-bsky.social handles, show a link to that URL
   - Only show URL on handles with working links
 - Badges

@@ -11,6 +11,18 @@ import {type Props as SVGIconProps} from '#/components/icons/common'
 
 export type ContextType = {
   control: Dialog.DialogOuterProps['control']
+  nativeSubmenu?: {
+    activeId: string | null
+    registry: Map<
+      string,
+      {
+        label: string
+        children: React.ReactNode
+      }
+    >
+    open: (id: string) => void
+    close: () => void
+  }
 }
 
 export type ItemContextType = {
@@ -112,3 +124,10 @@ export type ItemIconProps = React.PropsWithChildren<{
 }>
 
 export type GroupProps = React.PropsWithChildren<ViewStyleProp & {}>
+
+export type SubmenuProps = React.PropsWithChildren<
+  ViewStyleProp & {
+    label: string
+    trigger: React.ReactNode
+  }
+>
