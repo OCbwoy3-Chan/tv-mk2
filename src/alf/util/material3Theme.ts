@@ -1,10 +1,27 @@
-import  {type MaterialYouPalette} from '@assembless/react-native-material-you'
+import {type MaterialYouPalette} from '@assembless/react-native-material-you'
 import {createThemes} from '@bsky.app/alf'
+import chroma from 'chroma-js'
 
 import {type Palette, STATIC_VALUES} from '../themes'
 import {getMaterialYouColor} from './materialYou'
 
 export function getMaterial3Colors(palette: MaterialYouPalette) {
+  const lightSurface = getMaterialYouColor(palette, 'system_neutral1', 0)
+  const darkSurface = getMaterialYouColor(palette, 'system_neutral1', 1000)
+  const mixNeutral = (
+    lightShade: Parameters<typeof getMaterialYouColor>[2],
+    darkShade: Parameters<typeof getMaterialYouColor>[2],
+    amount: number,
+  ) =>
+    chroma
+      .mix(
+        getMaterialYouColor(palette, 'system_neutral1', lightShade),
+        getMaterialYouColor(palette, 'system_neutral1', darkShade),
+        amount,
+        'lab',
+      )
+      .hex()
+
   const MATERIAL_3_PALETTE: Palette = {
     white: getMaterialYouColor(palette, 'system_neutral1', 0),
     black: getMaterialYouColor(palette, 'system_neutral1', 1000),
@@ -17,10 +34,10 @@ export function getMaterial3Colors(palette: MaterialYouPalette) {
     ),
     like: getMaterialYouColor(palette, 'system_accent3', 500),
 
-    contrast_0: getMaterialYouColor(palette, 'system_neutral1', 0),
-    contrast_25: getMaterialYouColor(palette, 'system_neutral1', 10),
-    contrast_50: getMaterialYouColor(palette, 'system_neutral1', 50),
-    contrast_100: getMaterialYouColor(palette, 'system_neutral1', 100),
+    contrast_0: lightSurface,
+    contrast_25: chroma.mix(lightSurface, darkSurface, 0.06, 'rgb').hex(),
+    contrast_50: getMaterialYouColor(palette, 'system_neutral1', 100),
+    contrast_100: mixNeutral(100, 200, 0.5),
     contrast_200: getMaterialYouColor(palette, 'system_neutral1', 200),
     contrast_300: getMaterialYouColor(palette, 'system_neutral1', 300),
     contrast_400: getMaterialYouColor(palette, 'system_neutral1', 400),
@@ -28,10 +45,10 @@ export function getMaterial3Colors(palette: MaterialYouPalette) {
     contrast_600: getMaterialYouColor(palette, 'system_neutral1', 600),
     contrast_700: getMaterialYouColor(palette, 'system_neutral1', 700),
     contrast_800: getMaterialYouColor(palette, 'system_neutral1', 800),
-    contrast_900: getMaterialYouColor(palette, 'system_neutral1', 900),
+    contrast_900: mixNeutral(800, 900, 0.5),
     contrast_950: getMaterialYouColor(palette, 'system_neutral1', 900),
-    contrast_975: getMaterialYouColor(palette, 'system_neutral1', 900),
-    contrast_1000: getMaterialYouColor(palette, 'system_neutral1', 1000),
+    contrast_975: mixNeutral(900, 1000, 0.5),
+    contrast_1000: darkSurface,
 
     primary_25: getMaterialYouColor(palette, 'system_accent1', 10),
     primary_50: getMaterialYouColor(palette, 'system_accent1', 50),
@@ -89,19 +106,19 @@ export function getMaterial3Colors(palette: MaterialYouPalette) {
     like: getMaterialYouColor(palette, 'system_accent3', 500),
 
     contrast_0: getMaterialYouColor(palette, 'system_neutral1', 50),
-    contrast_25: getMaterialYouColor(palette, 'system_neutral1', 50),
-    contrast_50: getMaterialYouColor(palette, 'system_neutral1', 50),
+    contrast_25: mixNeutral(50, 100, 0.4),
+    contrast_50: mixNeutral(50, 100, 0.8),
     contrast_100: getMaterialYouColor(palette, 'system_neutral1', 100),
-    contrast_200: getMaterialYouColor(palette, 'system_neutral1', 100),
+    contrast_200: mixNeutral(100, 200, 0.5),
     contrast_300: getMaterialYouColor(palette, 'system_neutral1', 200),
     contrast_400: getMaterialYouColor(palette, 'system_neutral1', 300),
     contrast_500: getMaterialYouColor(palette, 'system_neutral1', 400),
-    contrast_600: getMaterialYouColor(palette, 'system_neutral1', 400),
+    contrast_600: mixNeutral(400, 500, 0.5),
     contrast_700: getMaterialYouColor(palette, 'system_neutral1', 500),
     contrast_800: getMaterialYouColor(palette, 'system_neutral1', 600),
     contrast_900: getMaterialYouColor(palette, 'system_neutral1', 700),
-    contrast_950: getMaterialYouColor(palette, 'system_neutral1', 800),
-    contrast_975: getMaterialYouColor(palette, 'system_neutral1', 800),
+    contrast_950: mixNeutral(700, 800, 0.6),
+    contrast_975: getMaterialYouColor(palette, 'system_neutral2', 800),
     contrast_1000: getMaterialYouColor(palette, 'system_neutral1', 900),
 
     primary_25: getMaterialYouColor(palette, 'system_accent1', 10),
