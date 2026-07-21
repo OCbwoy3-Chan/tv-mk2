@@ -7154,6 +7154,10 @@ msgstr "검토 서비스를 불러올 수 없습니다."
 msgid "Hold up! We’re gradually giving access to video, and you’re still waiting in line. Check back soon!"
 msgstr "잠깐! 동영상에 대한 접근 권한이 점차적으로 제공되고 있지만 아직은 기다려야 합니다. 나중에 다시 확인해 주세요!"
 
+#: src/components/tenna/NativeAppNux.tsx:74
+msgid "Holy Shit!"
+msgstr ""
+
 #: src/Navigation.tsx:906
 #: src/Navigation.tsx:927
 #: src/view/shell/bottom-bar/BottomBar.tsx:200
@@ -7579,9 +7583,12 @@ msgid "Introducing group chats"
 msgstr "그룹 대화를 소개합니다"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:38
-#: src/components/tenna/NativeAppNux.tsx:38
 msgid "Introducing saved posts AKA bookmarks"
 msgstr "새로운 저장된 게시물(일명 '북마크')을 만나보세요"
+
+#: src/components/tenna/NativeAppNux.tsx:38
+msgid "Introducing the native app"
+msgstr ""
 
 #: src/components/dialogs/LegacyAuthRequiredDialog.tsx:75
 #: src/screens/Login/LoginForm.tsx:393
@@ -7739,7 +7746,7 @@ msgid "It's just you right now! Add more people to your starter pack by searchin
 msgstr "아직은 나밖에 없습니다! 위에서 검색하여 스타터 팩에 더 많은 사용자를 추가해 보세요."
 
 #: src/components/tenna/NativeAppNux.tsx:150
-msgid "Jarona! Unsigned iOS builds for tenna.party are now on GitHub Actions!"
+msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
@@ -14844,10 +14851,6 @@ msgstr "사용해 보기"
 #: src/lib/interests.ts:74
 msgid "TV"
 msgstr "TV"
-
-#: src/components/tenna/NativeAppNux.tsx:74
-msgid "TV-Tastic update!"
-msgstr ""
 
 #: src/features/inviteFriends/components/ThemePicker.tsx:32
 msgid "Twilight"

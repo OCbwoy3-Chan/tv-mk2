@@ -51,8 +51,8 @@ const queuedNuxs: {
     enabled: isInviteFriendsAnnouncementEnabled,
   },
   {
-    id: Nux.TennaPartyNativeAppAnnouncement_iOS,
-    enabled: ()=>IS_WEB
+    id: Nux.TennaPartyNativeAppAnnouncement_Android,
+    enabled: ()=>true
   }
 ]
 
@@ -201,7 +201,7 @@ function Inner({
     <Context.Provider value={ctx}>
       {/*For example, activeNux === Nux.NeueTypography && <NeueTypography />*/}
       {activeNux === Nux.GroupChatsAnnouncement && <GroupChatsAnnouncement />}
-      {activeNux === Nux.TennaPartyNativeAppAnnouncement_iOS && <TennaPartyNativeAppNux />}
+      {activeNux === Nux.TennaPartyNativeAppAnnouncement_Android && <TennaPartyNativeAppNux />}
       
       {/*
         Mounted unconditionally: it gates the announcement on `activeNux`

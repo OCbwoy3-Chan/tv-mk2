@@ -35,7 +35,7 @@ export function TennaPartyNativeAppNux() {
       <Dialog.Handle />
 
       <Dialog.ScrollableInner
-        label={_(msg`Introducing saved posts AKA bookmarks`)}
+        label={_(msg`Introducing the native app`)}
         style={[web({ maxWidth: 440 })]}
         contentContainerStyle={[
           {
@@ -71,7 +71,7 @@ export function TennaPartyNativeAppNux() {
                   color: t.palette.primary_800,
                 },
               ]}>
-              <Trans>TV-Tastic update!</Trans>
+              <Trans>Holy Shit!</Trans>
             </Text>
           </View>
 
@@ -148,7 +148,7 @@ export function TennaPartyNativeAppNux() {
                 },
               ]}>
               <Trans>
-                Jarona! Unsigned iOS builds for tenna.party are now on GitHub Actions!
+                Jarona! This app is now on Android! Check it out!
               </Trans>
             </Text>
           </View>

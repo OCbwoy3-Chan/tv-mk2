@@ -30,7 +30,7 @@ build-android-sideload: prebuild-android
 [group('build')]
 [working-directory: 'android']
 build-android-gradle: prebuild-android
-    ./gradlew app:assembleRelease
+    ./gradlew --no-daemon app:assembleRelease
 
 [group('build')]
 postbuild-web:

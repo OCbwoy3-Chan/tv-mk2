@@ -8,11 +8,9 @@ Get the app itself:
 
 - **Web: [tenna.party](https://tenna.party)**
 - **iOS: [native builds are avaiable here](https://github.com/OCbwoy3-Chan/tv-mk2/actions) (unsigned, for sideloading)**
+- **Android: [native builds are MAYBE avaiable here via obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/OCbwoy3-Chan/tv-mk2/actions)**
 
-<!-- - **Android: Maybe APK soon? ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)** -->
-<!-- <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://tangled.org/jollywhoppers.com/witchsky.app/">
-<img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png?raw=true"
-alt="Get it on Obtainium" height="54" /></a> -->
+**PLEASE NOTE THAT ANDROID SUPPORT IS NOT MY #1 PRIORITY RIGHT NOW AS I DO NOT OWN AN ANDROID OF MY OWN NOR EMULATE ONE** 
 
 ## Improvements on Witchsky
 

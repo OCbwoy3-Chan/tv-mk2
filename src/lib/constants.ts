@@ -251,7 +251,7 @@ export const BLUESKY_MOD_SERVICE_HEADERS = {
 }
 
 export const BLUESKY_NOTIF_SERVICE_HEADERS = {
-  'atproto-proxy': `${BLUESKY_PROXY_DID}#bsky_notif`,
+  'atproto-proxy': `did:web:push.tenna.party#bsky_notif`,
 }
 
 export const webLinks = {

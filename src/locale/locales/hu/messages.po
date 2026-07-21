@@ -7154,6 +7154,10 @@ msgstr "Hmmmm… Ez a moderálási szolgáltatás nem található."
 msgid "Hold up! We’re gradually giving access to video, and you’re still waiting in line. Check back soon!"
 msgstr "Egy pillanat! A videófeltöltés lehetősége még nem mindenki számára elérhető. Próbáld újra később."
 
+#: src/components/tenna/NativeAppNux.tsx:74
+msgid "Holy Shit!"
+msgstr ""
+
 #: src/Navigation.tsx:906
 #: src/Navigation.tsx:927
 #: src/view/shell/bottom-bar/BottomBar.tsx:200
@@ -7579,9 +7583,12 @@ msgid "Introducing group chats"
 msgstr "Bemutatjuk a csoportbeszélgetéseket"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:38
-#: src/components/tenna/NativeAppNux.tsx:38
 msgid "Introducing saved posts AKA bookmarks"
 msgstr "Bejegyzések mentése (más néven: könyvjelzők)"
+
+#: src/components/tenna/NativeAppNux.tsx:38
+msgid "Introducing the native app"
+msgstr ""
 
 #: src/components/dialogs/LegacyAuthRequiredDialog.tsx:75
 #: src/screens/Login/LoginForm.tsx:393
@@ -7739,7 +7746,7 @@ msgid "It's just you right now! Add more people to your starter pack by searchin
 msgstr "Még csak Te szerepelsz a kezdőcsomagban. A fenti keresővel másokat is hozzáadhatsz."
 
 #: src/components/tenna/NativeAppNux.tsx:150
-msgid "Jarona! Unsigned iOS builds for tenna.party are now on GitHub Actions!"
+msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
@@ -14846,10 +14853,6 @@ msgstr "Próbáld ki!"
 #: src/lib/interests.ts:74
 msgid "TV"
 msgstr "Televízió"
-
-#: src/components/tenna/NativeAppNux.tsx:74
-msgid "TV-Tastic update!"
-msgstr ""
 
 #: src/features/inviteFriends/components/ThemePicker.tsx:32
 msgid "Twilight"

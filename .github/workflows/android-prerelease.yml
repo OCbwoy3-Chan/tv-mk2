@@ -1,0 +1,60 @@
+name: Android Prerelease Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Decode google-services.json
+        run: |
+          echo "$GOOGLE_SERVICES" | base64 -d > ./android/app/google-services.json
+
+      - name: Build Android APK
+        run: pnpm prebuild && cd android && ./gradlew assembleRelease
+
+      - name: Find release APK
+        id: find_apk
+        run: |
+          APK_PATH=$(find $GITHUB_WORKSPACE/android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: ${{ steps.find_apk.outputs.apk_path }}
+
+      - name: Create prerelease GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.sha }}
+          prerelease: true
+          files: ${{ steps.find_apk.outputs.apk_path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -102,6 +102,9 @@ stats.json
 .env
 .env.*
 
+# Local Android SDK
+local-android-sdk/
+
 # Firebase (Android) Google services
 google-services.json
 

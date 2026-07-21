@@ -7154,6 +7154,10 @@ msgstr "Hmmm, ní raibh muid in ann an tseirbhís modhnóireachta sin a lódáil
 msgid "Hold up! We’re gradually giving access to video, and you’re still waiting in line. Check back soon!"
 msgstr "Foighne ort! Tá físeáin á seoladh de réir a chéile, agus tá tú fós ag fanacht ar d'uain. Déan iarracht go luath!"
 
+#: src/components/tenna/NativeAppNux.tsx:74
+msgid "Holy Shit!"
+msgstr ""
+
 #: src/Navigation.tsx:906
 #: src/Navigation.tsx:927
 #: src/view/shell/bottom-bar/BottomBar.tsx:200
@@ -7579,8 +7583,11 @@ msgid "Introducing group chats"
 msgstr ""
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:38
-#: src/components/tenna/NativeAppNux.tsx:38
 msgid "Introducing saved posts AKA bookmarks"
+msgstr ""
+
+#: src/components/tenna/NativeAppNux.tsx:38
+msgid "Introducing the native app"
 msgstr ""
 
 #: src/components/dialogs/LegacyAuthRequiredDialog.tsx:75
@@ -7739,7 +7746,7 @@ msgid "It's just you right now! Add more people to your starter pack by searchin
 msgstr "Níl ann ach tusa anois! Cuardaigh thuas le tuilleadh daoine a chur le do phacáiste fáilte."
 
 #: src/components/tenna/NativeAppNux.tsx:150
-msgid "Jarona! Unsigned iOS builds for tenna.party are now on GitHub Actions!"
+msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
@@ -14844,10 +14851,6 @@ msgstr ""
 #: src/lib/interests.ts:74
 msgid "TV"
 msgstr "Teilifís"
-
-#: src/components/tenna/NativeAppNux.tsx:74
-msgid "TV-Tastic update!"
-msgstr ""
 
 #: src/features/inviteFriends/components/ThemePicker.tsx:32
 msgid "Twilight"

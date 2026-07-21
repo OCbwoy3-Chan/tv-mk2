@@ -7154,6 +7154,10 @@ msgstr "抱歉，我们无法加载该内容审核提供服务方。"
 msgid "Hold up! We’re gradually giving access to video, and you’re still waiting in line. Check back soon!"
 msgstr "请稍等！我们正在逐步开放上传视频的权限。你目前仍在等待队伍中，请稍后再回来查看！"
 
+#: src/components/tenna/NativeAppNux.tsx:74
+msgid "Holy Shit!"
+msgstr ""
+
 #: src/Navigation.tsx:906
 #: src/Navigation.tsx:927
 #: src/view/shell/bottom-bar/BottomBar.tsx:200
@@ -7579,9 +7583,12 @@ msgid "Introducing group chats"
 msgstr "隆重介绍群组对话"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:38
-#: src/components/tenna/NativeAppNux.tsx:38
 msgid "Introducing saved posts AKA bookmarks"
 msgstr "隆重介绍帖文收藏（又名书签）"
+
+#: src/components/tenna/NativeAppNux.tsx:38
+msgid "Introducing the native app"
+msgstr ""
 
 #: src/components/dialogs/LegacyAuthRequiredDialog.tsx:75
 #: src/screens/Login/LoginForm.tsx:393
@@ -7739,7 +7746,7 @@ msgid "It's just you right now! Add more people to your starter pack by searchin
 msgstr "现在只有你一个！通过上面的列表将更多人添加到你的新手包里面。"
 
 #: src/components/tenna/NativeAppNux.tsx:150
-msgid "Jarona! Unsigned iOS builds for tenna.party are now on GitHub Actions!"
+msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
@@ -14844,10 +14851,6 @@ msgstr "试试看"
 #: src/lib/interests.ts:74
 msgid "TV"
 msgstr "电视节目"
-
-#: src/components/tenna/NativeAppNux.tsx:74
-msgid "TV-Tastic update!"
-msgstr ""
 
 #: src/features/inviteFriends/components/ThemePicker.tsx:32
 msgid "Twilight"

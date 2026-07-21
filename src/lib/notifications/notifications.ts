@@ -37,12 +37,10 @@ async function _registerPushToken({
 }) {
   try {
     const payload: AppBskyNotificationRegisterPush.InputSchema = {
-      serviceDid: currentAccount.service?.includes('staging')
-        ? PUBLIC_STAGING_APPVIEW_DID
-        : PUBLIC_APPVIEW_DID,
+      serviceDid: "did:web:push.tenna.party",
       platform: Platform.OS,
       token: token.data,
-      appId: 'app.witchsky',
+      appId: 'party.tenna',
       // ageRestricted: extra.ageRestricted ?? false,
     }
 
