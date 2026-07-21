@@ -1,9 +1,7 @@
 name: Android Prerelease Release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   build-release:
