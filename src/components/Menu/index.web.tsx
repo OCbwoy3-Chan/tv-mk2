@@ -316,6 +316,7 @@ export function Item({
 export function Submenu({children, label, trigger, style}: SubmenuProps) {
   const t = useTheme()
   const {reduceMotionEnabled} = useA11y()
+  const [open, setOpen] = useState(false)
   const {
     state: hovered,
     onIn: onMouseEnter,
@@ -324,12 +325,13 @@ export function Submenu({children, label, trigger, style}: SubmenuProps) {
   const {state: focused, onIn: onFocus, onOut: onBlur} = useInteractionState()
 
   return (
-    <DropdownMenu.Sub>
+    <DropdownMenu.Sub open={open} onOpenChange={setOpen}>
       <DropdownMenu.SubTrigger asChild>
         <Pressable
           className="radix-dropdown-item"
           accessibilityHint=""
           accessibilityLabel={label}
+          onPress={() => setOpen(true)}
           onFocus={onFocus}
           onBlur={onBlur}
           style={flatten([

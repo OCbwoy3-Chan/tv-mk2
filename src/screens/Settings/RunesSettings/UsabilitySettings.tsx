@@ -1,11 +1,6 @@
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {
-  useGoLinksEnabled,
-  useSetGoLinksEnabled,
-  useSetShowGermDmButton,
-  useShowGermDmButton,
-} from '#/state/preferences'
+import {useGoLinksEnabled, useSetGoLinksEnabled} from '#/state/preferences'
 import {
   useConfirmFollowUnfollow,
   useSetConfirmFollowUnfollow,
@@ -18,14 +13,6 @@ import {
   useHideScaryFollowButtons,
   useSetHideScaryFollowButtons,
 } from '#/state/preferences/hide-scary-follow-buttons'
-import {
-  useHideSimilarAccountsRecomm,
-  useSetHideSimilarAccountsRecomm,
-} from '#/state/preferences/hide-similar-accounts-recommendations'
-import {
-  useSetShowStandardLabelerProfile,
-  useShowStandardLabelerProfile,
-} from '#/state/preferences/show-standard-labeler-profile'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -33,11 +20,9 @@ import * as Toggle from '#/components/forms/Toggle'
 import {ArrowShareRight_Stroke2_Corner2_Rounded as ArrowShareRightIcon} from '#/components/icons/ArrowShareRight'
 import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
 import {Envelope_Stroke2_Corner2_Rounded as EnvelopeIcon} from '#/components/icons/Envelope'
-import {Message_Stroke2_Corner0_Rounded as MessageIcon} from '#/components/icons/Message'
 import {Newspaper_Stroke2_Corner2_Rounded as NewspaperIcon} from '#/components/icons/Newspaper'
 import {PersonGroup_Stroke2_Corner2_Rounded as PersonGroupIcon} from '#/components/icons/Person'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
-import {Shield_Stroke2_Corner0_Rounded as ShieldIcon} from '#/components/icons/Shield'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesUsabilitySettingsScreen() {
@@ -46,17 +31,8 @@ export function RunesUsabilitySettingsScreen() {
   const goLinksEnabled = useGoLinksEnabled()
   const setGoLinksEnabled = useSetGoLinksEnabled()
 
-  const hideSimilarAccountsRecomm = useHideSimilarAccountsRecomm()
-  const setHideSimilarAccountsRecomm = useSetHideSimilarAccountsRecomm()
-
   const hideScaryFollowButtons = useHideScaryFollowButtons()
   const setHideScaryFollowButtons = useSetHideScaryFollowButtons()
-
-  const showGermDmButton = useShowGermDmButton()
-  const setShowGermDmButton = useSetShowGermDmButton()
-
-  const showStandardLabelerProfile = useShowStandardLabelerProfile()
-  const setShowStandardLabelerProfile = useSetShowStandardLabelerProfile()
 
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const setConfirmFollowUnfollow = useSetConfirmFollowUnfollow()
@@ -74,6 +50,14 @@ export function RunesUsabilitySettingsScreen() {
           <Trans>Feeds</Trans>
         </SettingsList.ItemText>
       </SettingsList.LinkItem>
+      <SettingsList.LinkItem
+        to="/settings/runes/usability/profiles"
+        label={l`Profiles`}>
+        <SettingsList.ItemIcon icon={PersonGroupIcon} />
+        <SettingsList.ItemText>
+          <Trans>Profiles</Trans>
+        </SettingsList.ItemText>
+      </SettingsList.LinkItem>
       <Toggle.Item
         name="use_go_links"
         label={l`Redirect through go.bsky.app`}
@@ -83,19 +67,6 @@ export function RunesUsabilitySettingsScreen() {
           <SettingsList.ItemIcon icon={ArrowShareRightIcon} />
           <SettingsList.ItemText>
             <Trans>Redirect through go.bsky.app</Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
-      <Toggle.Item
-        name="disable_similar_accounts_recommendations"
-        label={l`Disable similar accounts recommendations`}
-        value={hideSimilarAccountsRecomm}
-        onChange={value => setHideSimilarAccountsRecomm(value)}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={PersonGroupIcon} />
-          <SettingsList.ItemText>
-            <Trans>Disable similar accounts recommendations</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>
@@ -111,32 +82,6 @@ export function RunesUsabilitySettingsScreen() {
             <Trans>
               Hide follow button on posts and scrolled profile header
             </Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
-      <Toggle.Item
-        name="show_germ_dm_button"
-        label={l`Show Germ DM button on profiles`}
-        value={showGermDmButton}
-        onChange={value => setShowGermDmButton(value)}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={MessageIcon} />
-          <SettingsList.ItemText>
-            <Trans>Show Germ DM button on profiles</Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
-      <Toggle.Item
-        name="show_standard_labeler_profile"
-        label={l`Show standard profile UI on labeler accounts`}
-        value={showStandardLabelerProfile}
-        onChange={value => setShowStandardLabelerProfile(value)}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={ShieldIcon} />
-          <SettingsList.ItemText>
-            <Trans>Show standard profile UI on labeler accounts</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

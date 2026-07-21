@@ -2,9 +2,9 @@ import {type ComponentType} from 'react'
 
 import {BSKY_SERVICE} from '#/lib/constants'
 import {type Props as IconProps} from '#/components/icons/common'
-import {BlackskyIcon} from '#/components/icons/providers/Blacksky'
-import {BlueskyIcon} from '#/components/icons/providers/Bluesky'
-import {EuroskyIcon} from '#/components/icons/providers/Eurosky'
+import {BlackskyIcon} from '#/components/icons/services/Blacksky'
+import {BlueskyIcon} from '#/components/icons/services/Bluesky'
+import {EuroskyIcon} from '#/components/icons/services/Eurosky'
 
 export type SignupProviderId = 'bluesky' | 'blacksky' | 'eurosky' | 'custom'
 

@@ -11,7 +11,10 @@ import {type NavigationProp} from '#/lib/routes/types'
 import {shareText, shareUrl} from '#/lib/sharing'
 import {toShareUrl, toShareUrlBsky} from '#/lib/strings/url-helpers'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {useShowExternalShareButtons} from '#/state/preferences/external-share-buttons'
+import {
+  toAtprotoExplorerUrl,
+  useAtprotoExplorer,
+} from '#/state/preferences/atproto-explorer'
 import {useSession} from '#/state/session'
 import {useBreakpoints} from '#/alf'
 import {useDialogControl} from '#/components/Dialog'
@@ -22,8 +25,8 @@ import {ChevronRight_Stroke2_Corner0_Rounded as ChevronRightIcon} from '#/compon
 import {Clipboard_Stroke2_Corner2_Rounded as ClipboardIcon} from '#/components/icons/Clipboard'
 import {CodeBrackets_Stroke2_Corner0_Rounded as CodeBracketsIcon} from '#/components/icons/CodeBrackets'
 import {PaperPlane_Stroke2_Corner0_Rounded as Send} from '#/components/icons/PaperPlane'
-import {BlueskyIcon} from '#/components/icons/providers/Bluesky'
-import {PDSlsIcon} from '#/components/icons/providers/PDSls'
+import {BlueskyIcon} from '#/components/icons/services/Bluesky'
+import {PDSlsIcon} from '#/components/icons/services/PDSls'
 import {SquareArrowTopRight_Stroke2_Corner0_Rounded as ExternalIcon} from '#/components/icons/SquareArrowTopRight'
 import * as Menu from '#/components/Menu'
 import {useAgeAssurance} from '#/ageAssurance'
@@ -96,7 +99,7 @@ let ShareMenuItems = ({
     void shareText(postAuthor.did)
   }
 
-  const showExternalShareButtons = useShowExternalShareButtons()
+  const atprotoExplorer = useAtprotoExplorer()
   const isBridgedPost =
     !!post.record.bridgyOriginalUrl || !!post.record.fediverseId
   const originalPostUrl = (post.record.bridgyOriginalUrl ||
@@ -108,8 +111,8 @@ let ShareMenuItems = ({
     }
   }
 
-  const onOpenPostInPdsls = () => {
-    openLink(`https://pds.ls/${post.uri}`, true)
+  const onOpenPostInAtprotoExplorer = () => {
+    openLink(toAtprotoExplorerUrl(atprotoExplorer, post.uri), true)
   }
 
   const onOpenPostInSkythread = () => {
@@ -156,51 +159,49 @@ let ShareMenuItems = ({
             </Menu.Item>
           </Menu.Submenu>
 
-          {showExternalShareButtons && (
-            <Menu.Submenu
-              label={_(msg`Open`)}
-              trigger={
-                <>
-                  <Menu.ItemText>
-                    <Trans>Open</Trans>
-                  </Menu.ItemText>
-                  <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
-                </>
-              }>
-              {isBridgedPost && (
-                <Menu.Item
-                  testID="postDropdownOpenOriginalPost"
-                  label={_(msg`Original post`)}
-                  onPress={onOpenOriginalPost}>
-                  <Menu.ItemText>
-                    <Trans>Original post</Trans>
-                  </Menu.ItemText>
-                  <Menu.ItemIcon icon={ExternalIcon} position="right" />
-                </Menu.Item>
-              )}
-              <Menu.Item
-                testID="postDropdownOpenInPdsls"
-                label={_(msg`PDSls`)}
-                onPress={onOpenPostInPdsls}>
+          <Menu.Submenu
+            label={_(msg`Open`)}
+            trigger={
+              <>
                 <Menu.ItemText>
-                  <Trans>PDSls</Trans>
+                  <Trans>Open</Trans>
                 </Menu.ItemText>
-                <Menu.ItemIcon
-                  icon={PDSlsIcon}
-                  position="right"
-                />
-              </Menu.Item>
+                <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
+              </>
+            }>
+            {isBridgedPost && (
               <Menu.Item
-                testID="postDropdownOpenInSkythread"
-                label={_(msg`Skythread`)}
-                onPress={onOpenPostInSkythread}>
+                testID="postDropdownOpenOriginalPost"
+                label={_(msg`Original post`)}
+                onPress={onOpenOriginalPost}>
                 <Menu.ItemText>
-                  <Trans>Skythread</Trans>
+                  <Trans>Original post</Trans>
                 </Menu.ItemText>
                 <Menu.ItemIcon icon={ExternalIcon} position="right" />
               </Menu.Item>
-            </Menu.Submenu>
-          )}
+            )}
+            <Menu.Item
+              testID="postDropdownOpenInAtprotoExplorer"
+              label={atprotoExplorer.name}
+              onPress={onOpenPostInAtprotoExplorer}>
+              <Menu.ItemText>{atprotoExplorer.name}</Menu.ItemText>
+              <Menu.ItemIcon
+                icon={
+                  atprotoExplorer.name === 'PDSls' ? PDSlsIcon : ChainLinkIcon
+                }
+                position="right"
+              />
+            </Menu.Item>
+            <Menu.Item
+              testID="postDropdownOpenInSkythread"
+              label={_(msg`Skythread`)}
+              onPress={onOpenPostInSkythread}>
+              <Menu.ItemText>
+                <Trans>Skythread</Trans>
+              </Menu.ItemText>
+              <Menu.ItemIcon icon={ExternalIcon} position="right" />
+            </Menu.Item>
+          </Menu.Submenu>
         </Menu.Group>
 
         {hasSession && aa.state.access === aa.Access.Full && (

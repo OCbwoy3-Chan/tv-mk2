@@ -3,6 +3,7 @@ import {type PropsWithChildren} from 'react'
 import {Provider as AlsoLikedCollapseByDefaultProvider} from './also-liked-collapse-by-default'
 import {Provider as AlsoLikedFeedProvider} from './also-liked-feed-enabled'
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
+import {Provider as AtprotoExplorerProvider} from './atproto-explorer'
 import {Provider as AutoCompactAccountSwitcherProvider} from './auto-compact-account-switcher'
 import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
 import {Provider as AutoplayProvider} from './autoplay'
@@ -23,14 +24,13 @@ import {Provider as DownloadFormatProvider} from './download-format'
 import {Provider as EnableSquareAvatarsProvider} from './enable-square-avatars'
 import {Provider as EnableSquareButtonsProvider} from './enable-square-buttons'
 import {Provider as ExternalEmbedsProvider} from './external-embeds-prefs'
-import {Provider as ExternalShareButtonsProvider} from './external-share-buttons'
 import {Provider as FaviconServiceProvider} from './favicon-service'
 import {Provider as FullsizeFormatProvider} from './fullsize-format'
 import {Provider as GoLinksProvider} from './go-links-enabled'
 import {Provider as HiddenPostsProvider} from './hidden-posts'
+import {Provider as HideDisplayNamesProvider} from './hide-display-names'
 import {Provider as HideFeedsPromoTabProvider} from './hide-feeds-promo-tab'
 import {Provider as HideScaryFollowButtonsProvider} from './hide-scary-follow-buttons.tsx'
-import {Provider as HideDisplayNamesProvider} from './hide-display-names'
 import {Provider as HideSimilarAccountsRecommProvider} from './hide-similar-accounts-recommendations'
 import {Provider as HideUnreplyablePostsProvider} from './hide-unreplyable-posts'
 import {Provider as IgnoredAppLabelersProvider} from './ignored-app-labelers'
@@ -105,6 +105,7 @@ export {
 export {useFaviconService, useSetFaviconService} from './favicon-service'
 export {useGoLinksEnabled, useSetGoLinksEnabled} from './go-links-enabled'
 export {useHiddenPosts, useHiddenPostsApi} from './hidden-posts'
+export {useHideDisplayNames, useSetHideDisplayNames} from './hide-display-names'
 export {
   useHideFeedsPromoTab,
   useSetHideFeedsPromoTab,
@@ -113,10 +114,6 @@ export {
   useHideScaryFollowButtons,
   useSetHideScaryFollowButtons,
 } from './hide-scary-follow-buttons'
-export {
-  useHideDisplayNames,
-  useSetHideDisplayNames,
-} from './hide-display-names'
 export {useImageCdnHost, useSetImageCdnHost} from './image-cdn-host'
 export {useLabelDefinitions} from './label-defs'
 export {useLanguagePrefs, useLanguagePrefsApi} from './languages'
@@ -166,7 +163,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       <LanguagesProvider>
         <AltTextRequiredProvider>
           <AutoLikeOnRepostProvider>
-            <ExternalShareButtonsProvider>
+            <AtprotoExplorerProvider>
               <GoLinksProvider>
                 <IgnoredAppLabelersProvider>
                   <DirectFetchRecordsProvider>
@@ -292,7 +289,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                   </DirectFetchRecordsProvider>
                 </IgnoredAppLabelersProvider>
               </GoLinksProvider>
-            </ExternalShareButtonsProvider>
+            </AtprotoExplorerProvider>
           </AutoLikeOnRepostProvider>
         </AltTextRequiredProvider>
       </LanguagesProvider>

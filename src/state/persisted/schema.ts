@@ -267,7 +267,14 @@ const schema = z.object({
     postsName: z.string().optional(),
   }),
 
+  /** @deprecated The Open submenu is now always shown. */
   showExternalShareButtons: z.boolean().optional(),
+  atprotoExplorer: z
+    .object({
+      name: z.string(),
+      url: z.string(),
+    })
+    .optional(),
 
   translationServicePreference: z.enum([
     'google',
@@ -419,7 +426,10 @@ export const defaults: Schema = {
     hideBskyPds: true,
   },
   faviconService: 'https://twenty-icons.com/(pds)',
-  showExternalShareButtons: false,
+  atprotoExplorer: {
+    name: 'PDSls',
+    url: 'https://pds.ls/(uri)',
+  },
   translationServicePreference: 'google',
   libreTranslateInstance: 'https://libretranslate.com/',
 

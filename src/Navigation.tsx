@@ -132,6 +132,7 @@ import {RunesUsabilityFeedSettingsScreen} from '#/screens/Settings/RunesSettings
 import {RunesImpressionsSettingsScreen} from '#/screens/Settings/RunesSettings/ImpressionsSettings'
 import {RunesInfrastructureSettingsScreen} from '#/screens/Settings/RunesSettings/InfrastructureSettings'
 import {RunesMenusSettingsScreen} from '#/screens/Settings/RunesSettings/MenusSettings'
+import {RunesUsabilityProfileSettingsScreen} from '#/screens/Settings/RunesSettings/ProfileSettings'
 import {RunesSettingsSyncSettingsScreen} from '#/screens/Settings/RunesSettings/SettingsSyncSettings'
 import {RunesUsabilitySettingsScreen} from '#/screens/Settings/RunesSettings/UsabilitySettings'
 import {SettingsScreen} from '#/screens/Settings/Settings'
@@ -461,6 +462,11 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         name="RunesUsabilityFeedSettings"
         getComponent={() => RunesUsabilityFeedSettingsScreen}
         options={{title: title(msg`Feeds`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="RunesUsabilityProfileSettings"
+        getComponent={() => RunesUsabilityProfileSettingsScreen}
+        options={{title: title(msg`Profiles`), requireAuth: true}}
       />
       <Stack.Screen
         name="RunesDisplaySettings"

@@ -97,7 +97,7 @@ export const SYNCED_PREFS_KEYS = [
   'pdsLabel',
   'faviconService',
   'postReplacement',
-  'showExternalShareButtons',
+  'atprotoExplorer',
   'translationServicePreference',
   'libreTranslateInstance',
   'openRouterApiKey',

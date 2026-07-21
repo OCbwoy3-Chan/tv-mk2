@@ -1,110 +1,98 @@
+import {useCallback, useRef} from 'react'
+import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
+import {useFocusEffect} from '@react-navigation/native'
 
 import {
-  useSetShowExternalShareButtons,
-  useShowExternalShareButtons,
-} from '#/state/preferences/external-share-buttons'
-import {RestartRequiredPrompt} from '#/state/preferences/restart-required-prompt'
-import {
-  useSetShowLinkInHandle,
-  useShowLinkInHandle,
-} from '#/state/preferences/show-link-in-handle.tsx'
-import {
-  useSetShowLinkInHandleOnlyOnWorkingLinks,
-  useShowLinkInHandleOnlyOnWorkingLinks,
-} from '#/state/preferences/show-link-in-handle-only-on-working-links'
-import {
-  useHandleInLinks,
-  useSetHandleInLinks,
-} from '#/state/preferences/use-handle-in-links'
+  DEFAULT_ATPROTO_EXPLORER,
+  useAtprotoExplorerSetting,
+  useSetAtprotoExplorer,
+} from '#/state/preferences/atproto-explorer'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import * as Dialog from '#/components/Dialog'
-import * as Toggle from '#/components/forms/Toggle'
-import {ArrowShareRight_Stroke2_Corner2_Rounded as ArrowShareRightIcon} from '#/components/icons/ArrowShareRight'
-import {At_Stroke2_Corner2_Rounded as AtIcon} from '#/components/icons/At'
-import {ChainLink_Stroke2_Corner0_Rounded as ChainLinkIcon} from '#/components/icons/ChainLink'
+import {atoms as a} from '#/alf'
+import * as TextField from '#/components/forms/TextField'
+import {Text} from '#/components/Typography'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesMenusSettingsScreen() {
   const {t: l} = useLingui()
+  const atprotoExplorer = useAtprotoExplorerSetting()
+  const setAtprotoExplorer = useSetAtprotoExplorer()
+  const atprotoExplorerRef = useRef(atprotoExplorer)
+  atprotoExplorerRef.current = atprotoExplorer
 
-  const handleInLinks = useHandleInLinks()
-  const setHandleInLinks = useSetHandleInLinks()
-  const restartPromptControl = Dialog.useDialogControl()
+  const updateAtprotoExplorer = useCallback(
+    (next: typeof atprotoExplorer) => {
+      atprotoExplorerRef.current = next
+      setAtprotoExplorer(next)
+    },
+    [setAtprotoExplorer],
+  )
 
-  const showExternalShareButtons = useShowExternalShareButtons()
-  const setShowExternalShareButtons = useSetShowExternalShareButtons()
-
-  const showLinkInHandle = useShowLinkInHandle()
-  const setShowLinkInHandle = useSetShowLinkInHandle()
-  const showLinkInHandleOnlyOnWorkingLinks =
-    useShowLinkInHandleOnlyOnWorkingLinks()
-  const setShowLinkInHandleOnlyOnWorkingLinks =
-    useSetShowLinkInHandleOnlyOnWorkingLinks()
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        const current = atprotoExplorerRef.current
+        const next = {
+          name: current.name.trim() || DEFAULT_ATPROTO_EXPLORER.name,
+          url: current.url.trim() || DEFAULT_ATPROTO_EXPLORER.url,
+        }
+        if (next.name !== current.name || next.url !== current.url) {
+          updateAtprotoExplorer(next)
+        }
+      }
+    }, [updateAtprotoExplorer]),
+  )
 
   return (
     <RunesScreenLayout titleText={l`Menus`}>
-      <Toggle.Item
-        name="use_handle_in_links"
-        label={l`Use handles in profile links instead of DIDs (requires restart)`}
-        value={handleInLinks ?? false}
-        onChange={value => {
-          setHandleInLinks(value)
-          restartPromptControl.open()
-        }}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={AtIcon} />
-          <SettingsList.ItemText>
-            <Trans>Use handles in profile links instead of DIDs</Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
-      <Toggle.Item
-        name="external_share_buttons"
-        label={l`Show the Open submenu for external post and profile links`}
-        value={showExternalShareButtons}
-        onChange={value => setShowExternalShareButtons(value)}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={ArrowShareRightIcon} />
-          <SettingsList.ItemText>
-            <Trans>Show the Open submenu for external links</Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
-      <Toggle.Item
-        name="show_link_in_handle"
-        label={l`On non-bsky.social handles, show a link to that URL`}
-        value={showLinkInHandle}
-        onChange={value => setShowLinkInHandle(value)}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={ChainLinkIcon} />
-          <SettingsList.ItemText>
-            <Trans>On non-bsky.social handles, show a link to that URL</Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
-      {showLinkInHandle && (
-        <Toggle.Item
-          name="show_link_in_handle_only_on_working_links"
-          label={l`Only show URL on handles with working links`}
-          value={showLinkInHandleOnlyOnWorkingLinks}
-          onChange={value => setShowLinkInHandleOnlyOnWorkingLinks(value)}>
-          <SettingsList.Item>
-            <SettingsList.ItemIcon icon={ChainLinkIcon} />
-            <SettingsList.ItemText>
-              <Trans>Only show URL on handles with working links</Trans>
-            </SettingsList.ItemText>
-            <Toggle.Platform />
-          </SettingsList.Item>
-        </Toggle.Item>
-      )}
-
-      <RestartRequiredPrompt
-        control={restartPromptControl}
-      />
+      <SettingsList.Group iconInset={false} contentContainerStyle={[a.gap_md]}>
+        <SettingsList.ItemText>
+          <Trans>ATProto explorer</Trans>
+        </SettingsList.ItemText>
+        <Text style={[a.leading_snug]}>
+          <Trans>
+            Choose the explorer used by Open menus. Use (uri) where the post,
+            profile, or repository AT URI should appear.
+          </Trans>
+        </Text>
+        <View style={[a.w_full]}>
+          <TextField.LabelText>
+            <Trans>Name</Trans>
+          </TextField.LabelText>
+          <TextField.Root>
+            <TextField.Input
+              label={l`ATProto explorer name`}
+              placeholder={l`PDSls`}
+              value={atprotoExplorer.name}
+              onChangeText={name =>
+                updateAtprotoExplorer({...atprotoExplorer, name})
+              }
+              autoCapitalize="words"
+              autoCorrect={false}
+            />
+          </TextField.Root>
+        </View>
+        <View style={[a.w_full]}>
+          <TextField.LabelText>
+            <Trans>Link</Trans>
+          </TextField.LabelText>
+          <TextField.Root>
+            <TextField.Input
+              label={l`ATProto explorer link`}
+              placeholder="https://pds.ls/(uri)"
+              value={atprotoExplorer.url}
+              onChangeText={url =>
+                updateAtprotoExplorer({...atprotoExplorer, url})
+              }
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="url"
+              keyboardType="url"
+            />
+          </TextField.Root>
+        </View>
+      </SettingsList.Group>
     </RunesScreenLayout>
   )
 }
