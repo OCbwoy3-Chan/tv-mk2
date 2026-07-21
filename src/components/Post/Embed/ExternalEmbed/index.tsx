@@ -23,8 +23,9 @@ import {atoms as a, useTheme} from '#/alf'
 import {Divider} from '#/components/Divider'
 import {Earth_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
 import {Link} from '#/components/Link'
+import {PostEmbedViewContext} from '#/components/Post/Embed/types'
 import {Text} from '#/components/Typography'
-import {IS_NATIVE} from '#/env'
+import {IS_ANDROID, IS_NATIVE} from '#/env'
 import {ExternalGif} from './ExternalGif'
 import {ExternalPlayer} from './ExternalPlayer'
 import {GifEmbed} from './Gif'
@@ -35,12 +36,14 @@ export const ExternalEmbed = ({
   style,
   hideAlt,
   preview,
+  viewContext,
 }: {
   link: AppBskyEmbedExternal.ViewExternal
   onOpen?: () => void
   style?: StyleProp<ViewStyle>
   hideAlt?: boolean
   preview?: boolean
+  viewContext?: PostEmbedViewContext
 }) => {
   const {_} = useLingui()
   const t = useTheme()
@@ -66,6 +69,8 @@ export const ExternalEmbed = ({
     }
   }, [link.uri, externalEmbedPrefs])
   const hasMedia = Boolean(imageUri || embedPlayerParams)
+  const isAndroidCarousel =
+    IS_ANDROID && viewContext === PostEmbedViewContext.FeedCarousel
 
   const onPress = () => {
     playHaptic('Light')
@@ -145,7 +150,7 @@ export const ExternalEmbed = ({
 
           <View
             style={[
-              a.flex_1,
+              isAndroidCarousel ? {flex: 0} : a.flex_1,
               a.pt_sm,
               {gap: 3},
               hasMedia && a.border_t,

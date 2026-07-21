@@ -35,7 +35,7 @@ import {Loader} from '#/components/Loader'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
+import {useSimpleVerificationStateWithDeer} from '#/components/verification'
 
 const PRONOUNS_MAX_GRAPHEMES = 20
 const WEBSITE_MAX_GRAPHEMES = 2048
@@ -112,7 +112,7 @@ function DialogInner({
   const t = useTheme()
   const control = Dialog.useDialogContext()
   const enableSquareButtons = useEnableSquareButtons()
-  const verification = useSimpleVerificationState({
+  const verification = useSimpleVerificationStateWithDeer({
     profile,
   })
   const {

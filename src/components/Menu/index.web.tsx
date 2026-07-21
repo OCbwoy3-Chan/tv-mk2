@@ -28,6 +28,7 @@ import {
   type ItemProps,
   type ItemTextProps,
   type RadixPassThroughTriggerProps,
+  type SubmenuProps,
   type TriggerProps,
 } from '#/components/Menu/types'
 import {Portal} from '#/components/Portal'
@@ -308,6 +309,74 @@ export function Item({
         </ItemContext.Provider>
       </Pressable>
     </DropdownMenu.Item>
+  )
+}
+
+/** A conventional hover- and keyboard-accessible web submenu. */
+export function Submenu({children, label, trigger, style}: SubmenuProps) {
+  const t = useTheme()
+  const {reduceMotionEnabled} = useA11y()
+  const {
+    state: hovered,
+    onIn: onMouseEnter,
+    onOut: onMouseLeave,
+  } = useInteractionState()
+  const {state: focused, onIn: onFocus, onOut: onBlur} = useInteractionState()
+
+  return (
+    <DropdownMenu.Sub>
+      <DropdownMenu.SubTrigger asChild>
+        <Pressable
+          className="radix-dropdown-item"
+          accessibilityHint=""
+          accessibilityLabel={label}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          style={flatten([
+            a.flex_row,
+            a.align_center,
+            a.gap_lg,
+            a.py_sm,
+            a.rounded_xs,
+            a.overflow_hidden,
+            {minHeight: 32, paddingHorizontal: 10},
+            web({outline: 0}),
+            (hovered || focused) && [
+              web({outline: '0 !important'}),
+              t.name === 'light'
+                ? t.atoms.bg_contrast_25
+                : t.atoms.bg_contrast_50,
+            ],
+            style,
+          ])}
+          {...web({onMouseEnter, onMouseLeave})}>
+          <ItemContext.Provider value={{disabled: false, destructive: false}}>
+            {trigger}
+          </ItemContext.Provider>
+        </Pressable>
+      </DropdownMenu.SubTrigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.SubContent
+          sideOffset={4}
+          collisionPadding={5}
+          loop
+          className="dropdown-menu-transform-origin dropdown-menu-constrain-size">
+          <View
+            style={[
+              a.rounded_sm,
+              a.p_xs,
+              a.border,
+              t.name === 'light' ? t.atoms.bg : t.atoms.bg_contrast_25,
+              t.atoms.shadow_md,
+              t.atoms.border_contrast_low,
+              a.overflow_auto,
+              !reduceMotionEnabled && a.zoom_fade_in,
+            ]}>
+            {children}
+          </View>
+        </DropdownMenu.SubContent>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Sub>
   )
 }
 

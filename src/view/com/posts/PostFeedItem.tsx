@@ -23,10 +23,10 @@ import {
   usePostShadow,
 } from '#/state/cache/post-shadow'
 import {useFeedFeedbackContext} from '#/state/feed-feedback'
+import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
-import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {
   buildPostSourceKey,
   setUnstablePostSource,
@@ -389,7 +389,8 @@ let FeedItemInner = ({
       </View>
 
       <View style={[styles.layout, isCarouselItem && a.w_full]}>
-        <View style={[styles.layoutAvi, compactPosts && styles.layoutAviCompact]}>
+        <View
+          style={[styles.layoutAvi, compactPosts && styles.layoutAviCompact]}>
           <AviFollowButton author={post.author} moderation={moderation}>
             <PreviewableUserAvatar
               size={compactPosts ? 34 : 42}
@@ -572,7 +573,11 @@ let PostContent = ({
             embed={postEmbed}
             moderation={moderation}
             onOpen={onOpenEmbed}
-            viewContext={PostEmbedViewContext.Feed}
+            viewContext={
+              isCarouselItem
+                ? PostEmbedViewContext.FeedCarousel
+                : PostEmbedViewContext.Feed
+            }
             post={post}
             feedDescriptor={feedDescriptor}
           />
@@ -616,9 +621,8 @@ const styles = StyleSheet.create({
     width: 0,
   },
   postMetaCarousel: {
+    flex: 0,
     flexGrow: 0,
-    flexShrink: 1,
-    minWidth: 0,
   },
   alert: {
     marginTop: 6,

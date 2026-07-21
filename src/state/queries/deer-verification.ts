@@ -5,6 +5,7 @@ import {
 } from '@atproto/api'
 import {useQuery} from '@tanstack/react-query'
 
+import {useDeferredEnable} from '#/lib/hooks/useDeferredEnable'
 import {STALE} from '#/state/queries'
 import * as bsky from '#/types/bsky'
 import {type AnyProfileView} from '#/types/bsky/profile'
@@ -183,6 +184,7 @@ export function useDeerVerificationState({
   const instance = useConstellationInstance()
   const trusted = useDeerVerificationTrusted()
   const trustAppView = useDeerVerificationTrustAppView()
+  const deferredEnabled = useDeferredEnable(Boolean(enabled && profile))
 
   const linkedRecords = useQuery<LinkedRecord[] | undefined>({
     staleTime: STALE.HOURS.ONE,
@@ -196,7 +198,8 @@ export function useDeerVerificationState({
         trusted,
       )
     },
-    enabled: enabled && profile !== undefined,
+    enabled: deferredEnabled,
+    subscribed: deferredEnabled,
   })
 
   if (linkedRecords.data === undefined || profile === undefined) return

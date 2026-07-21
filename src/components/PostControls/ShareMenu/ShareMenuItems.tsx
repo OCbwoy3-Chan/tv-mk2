@@ -1,4 +1,4 @@
-import {memo, useMemo} from 'react'
+import {memo, useMemo, useRef} from 'react'
 import * as ExpoClipboard from 'expo-clipboard'
 import {AtUri} from '@atproto/api'
 import {isIOS} from '@bsky.app/alf'
@@ -21,12 +21,15 @@ import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {useDialogControl} from '#/components/Dialog'
 import {SendViaChatDialog} from '#/components/dms/dialogs/ShareViaChatDialog'
-import {ArrowOutOfBoxModified_Stroke2_Corner2_Rounded as ArrowOutOfBoxIcon} from '#/components/icons/ArrowOutOfBox'
 import {ChainLink_Stroke2_Corner0_Rounded as ChainLinkIcon} from '#/components/icons/ChainLink'
+import {ChevronRight_Stroke2_Corner0_Rounded as ChevronRightIcon} from '#/components/icons/Chevron'
 import {Clipboard_Stroke2_Corner2_Rounded as ClipboardIcon} from '#/components/icons/Clipboard'
 import {PaperPlane_Stroke2_Corner0_Rounded as PaperPlaneIcon} from '#/components/icons/PaperPlane'
+import {BlueskyIcon} from '#/components/icons/providers/Bluesky'
+import {PDSlsIcon} from '#/components/icons/providers/PDSls'
 import {SquareArrowTopRight_Stroke2_Corner0_Rounded as ExternalIcon} from '#/components/icons/SquareArrowTopRight'
 import * as Menu from '#/components/Menu'
+import {CheckboxItemText} from '#/components/Menu/CheckboxItem'
 import * as Toast from '#/components/Toast'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
@@ -48,6 +51,7 @@ let ShareMenuItems = ({
   const aa = useAgeAssurance()
   const openLink = useOpenLink()
   const queryClient = useQueryClient()
+  const copyLinksRef = useRef(false)
 
   const postUri = post.uri
   const postAuthor = useProfileShadow(post.author)
@@ -63,17 +67,10 @@ let ShareMenuItems = ({
     )
   }, [postAuthor])
 
-  const onSharePost = () => {
-    ax.metric('share:press:nativeShare', {})
-    const url = toShareUrl(href)
-    shareUrl(url)
-    onShareProp()
-  }
-
   const onSharePostBsky = () => {
     ax.metric('share:press:nativeShare', {})
     const url = toShareUrlBsky(href)
-    shareUrl(url)
+    void shareUrl(url)
     onShareProp()
   }
 
@@ -120,11 +117,11 @@ let ShareMenuItems = ({
   }
 
   const onShareATURI = () => {
-    shareText(postUri)
+    void shareText(postUri)
   }
 
   const onShareAuthorDID = () => {
-    shareText(postAuthor.did)
+    void shareText(postAuthor.did)
   }
 
   const showExternalShareButtons = useShowExternalShareButtons()
@@ -140,7 +137,16 @@ let ShareMenuItems = ({
   }
 
   const onOpenPostInPdsls = () => {
-    openLink(`https://pdsls.dev/${post.uri}`, true)
+    openLink(`https://pds.ls/${post.uri}`, true)
+  }
+
+  const onOpenPostInSkythread = () => {
+    openLink(
+      `https://skythread.mackuba.eu/?q=${encodeURIComponent(
+        toShareUrlBsky(href),
+      )}`,
+      true,
+    )
   }
 
   return (
@@ -169,55 +175,9 @@ let ShareMenuItems = ({
           </Menu.Group>
         )}
 
-        {showExternalShareButtons && (
-          <Menu.Group>
-            {isBridgedPost && (
-              <Menu.Item
-                testID="postDropdownOpenOriginalPost"
-                label={_(msg`Open original post`)}
-                onPress={onOpenOriginalPost}>
-                <Menu.ItemText>
-                  <Trans>Open original post</Trans>
-                </Menu.ItemText>
-                <Menu.ItemIcon icon={ExternalIcon} position="right" />
-              </Menu.Item>
-            )}
-
-            <Menu.Item
-              testID="postDropdownOpenInPdsls"
-              label={_(msg`Open post in PDSls`)}
-              onPress={onOpenPostInPdsls}>
-              <Menu.ItemText>
-                <Trans>Open post in PDSls</Trans>
-              </Menu.ItemText>
-              <Menu.ItemIcon icon={ExternalIcon} position="right" />
-            </Menu.Item>
-          </Menu.Group>
-        )}
-
         <Menu.Group>
           <Menu.Item
-            testID="postDropdownShareBtn"
-            label={_(msg`Share via...`)}
-            onPress={onSharePost}>
-            <Menu.ItemText>
-              <Trans>Share via...</Trans>
-            </Menu.ItemText>
-            <Menu.ItemIcon icon={ArrowOutOfBoxIcon} position="right" />
-          </Menu.Item>
-
-          <Menu.Item
-            testID="postDropdownShareBtn"
-            label={_(msg`Share via bsky.app...`)}
-            onPress={onSharePostBsky}>
-            <Menu.ItemText>
-              <Trans>Share via bsky.app...</Trans>
-            </Menu.ItemText>
-            <Menu.ItemIcon icon={ArrowOutOfBoxIcon} position="right" />
-          </Menu.Item>
-
-          <Menu.Item
-            testID="postDropdownShareBtn"
+            testID="postDropdownCopyLinkBtn"
             label={_(msg`Copy link to post`)}
             onPress={onCopyLink}>
             <Menu.ItemText>
@@ -226,15 +186,89 @@ let ShareMenuItems = ({
             <Menu.ItemIcon icon={ChainLinkIcon} position="right" />
           </Menu.Item>
 
-          <Menu.Item
-            testID="postDropdownShareBtn"
-            label={_(msg`Copy via bsky.app`)}
-            onPress={onCopyLinkBsky}>
-            <Menu.ItemText>
-              <Trans>Copy via bsky.app</Trans>
-            </Menu.ItemText>
-            <Menu.ItemIcon icon={ChainLinkIcon} position="right" />
-          </Menu.Item>
+          <Menu.Submenu
+            label={_(msg`Share`)}
+            trigger={
+              <>
+                <Menu.ItemText>
+                  <Trans>Share</Trans>
+                </Menu.ItemText>
+                <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
+              </>
+            }>
+            <Menu.Group>
+              <Menu.Item
+                testID="postDropdownShareBlueskyBtn"
+                label={_(msg`Bluesky`)}
+                onPress={() => {
+                  if (copyLinksRef.current) {
+                    void onCopyLinkBsky()
+                  } else {
+                    onSharePostBsky()
+                  }
+                }}>
+                <Menu.ItemText>
+                  <Trans>Bluesky</Trans>
+                </Menu.ItemText>
+                <Menu.ItemIcon icon={BlueskyIcon} position="right" />
+              </Menu.Item>
+              <Menu.ContainerItem>
+                <CheckboxItemText
+                  label={_(msg`Copy instead of opening the share sheet`)}
+                  initialValue={copyLinksRef.current}
+                  onChange={value => {
+                    copyLinksRef.current = value
+                  }}>
+                  <Trans>Copy</Trans>
+                </CheckboxItemText>
+              </Menu.ContainerItem>
+            </Menu.Group>
+          </Menu.Submenu>
+
+          {showExternalShareButtons && (
+            <Menu.Submenu
+              label={_(msg`Open`)}
+              trigger={
+                <>
+                  <Menu.ItemText>
+                    <Trans>Open</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
+                </>
+              }>
+              <Menu.Group>
+                {isBridgedPost && (
+                  <Menu.Item
+                    testID="postDropdownOpenOriginalPost"
+                    label={_(msg`Original post`)}
+                    onPress={onOpenOriginalPost}>
+                    <Menu.ItemText>
+                      <Trans>Original post</Trans>
+                    </Menu.ItemText>
+                    <Menu.ItemIcon icon={ExternalIcon} position="right" />
+                  </Menu.Item>
+                )}
+                <Menu.Item
+                  testID="postDropdownOpenInPdsls"
+                  label={_(msg`PDSls`)}
+                  onPress={onOpenPostInPdsls}>
+                  <Menu.ItemText>
+                    <Trans>PDSls</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={PDSlsIcon} position="right" />
+                </Menu.Item>
+                <Menu.Item
+                  testID="postDropdownOpenInSkythread"
+                  label={_(msg`Skythread`)}
+                  onPress={onOpenPostInSkythread}>
+                  <Menu.ItemText>
+                    <Trans>Skythread</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={ExternalIcon} position="right" />
+                </Menu.Item>
+              </Menu.Group>
+            </Menu.Submenu>
+          )}
         </Menu.Group>
 
         {hideInPWI && (

@@ -19,7 +19,7 @@ import {Pet_Filled as PetIcon} from '#/components/icons/Pet'
 import * as Layout from '#/components/Layout'
 import {PetBadge} from '#/components/PetBadge'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
+import {useSimpleVerificationStateWithDeer} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {useAnalytics} from '#/analytics'
 import * as bsky from '#/types/bsky'
@@ -33,7 +33,7 @@ export function PetLabelSettingsScreen({}: Props) {
   const {currentAccount} = useSession()
   const {data: profile} = useProfileQuery({did: currentAccount?.did})
   const updateProfile = useProfileUpdateMutation()
-  const verification = useSimpleVerificationState({profile})
+  const verification = useSimpleVerificationStateWithDeer({profile})
 
   const isPetLabeled =
     profile?.labels?.some(l => l.val === 'pet' && l.src === profile.did) ??

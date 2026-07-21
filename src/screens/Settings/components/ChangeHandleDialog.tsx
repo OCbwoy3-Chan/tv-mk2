@@ -46,7 +46,7 @@ import {SquareBehindSquare4_Stroke2_Corner0_Rounded as CopyIcon} from '#/compone
 import {InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
+import {useSimpleVerificationStateWithDeer} from '#/components/verification'
 import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
 import {CopyButton} from './CopyButton'
 
@@ -169,7 +169,7 @@ function ProvidedHandlePage({
   const {currentAccount} = useSession()
   const queryClient = useQueryClient()
   const profile = useCurrentAccountProfile()
-  const verification = useSimpleVerificationState({
+  const verification = useSimpleVerificationStateWithDeer({
     profile,
   })
 

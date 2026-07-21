@@ -817,4 +817,3 @@ function getShortenedLength(rt: RichText) {
   newRt.detectFacetsWithoutResolution()
   return shortenLinks(newRt).graphemeLength
 }
-

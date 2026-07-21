@@ -17,18 +17,20 @@ alt="Get it on Obtainium" height="54" /></a> -->
 ## Improvements on Witchsky
 
 - Tenna's Settings Page: Settings -> Deltas (above Runes)
-- New fun self-labels: Lightner, Darkner, Tenna and
-- VIP Exclusive labels (hard-coded, they're fun)
-- Enhanced Custom TID option in composer, backported from TV World before it shut down. It's better than ([witchsky's own implementation](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow)].
+- New fun self-labels: Lightner, Darkner, Tenna and well uhhh...
+- VIP Exclusive labels such as... (they're hard-coded, im prob gonna make it use a labeler instead)
+- Enhanced Custom TID option in composer, backported from TV World before it shut down. It's better than ([witchsky's own implementation](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow)).
 - Native iOS via GitHub Actions (Unsigned. Requires Sideloading)
-- Removed the labeler limit (200 max labelers, you're deadass genuinely insane if you hit the limit on this)
+- Removed the labeler limit (200 max if u hit the limit ur you're deadass insane /gen /j)
 - Brought back AI preferences [after their removal in v128](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mqtl52mokc2p) in Settings -> Deltas
 <!-- - Bypass !hide warnings on things labeled by Bluesky Moderation and other labelers -->
 
 ### TODO: Kris
 
 - [ ] Custom cancellations (like on cred.blue/canceller) & import from repo button
-- [ ] Fix live reload being broken (meh i don't like rspack)
+- [ ] AltStore PAL Builds (My broke ass, I need a MacBook and an Apple Dev License) so it can be downloaded in EU & Japan
+- [ ] Notifications (needs our own notif service + dev license, wtf)
+- [ ] Rely on Expo EAS instead for signed builds (Needs rich dad or a bunch of MONEY)
 
 ## Development Resources
 

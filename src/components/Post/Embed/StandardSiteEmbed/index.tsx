@@ -25,7 +25,8 @@ import type * as ssTypes from '#/components/Post/Embed/StandardSiteEmbed/types'
 import {isStandardSitePublicationEmbed} from '#/components/Post/Embed/StandardSiteEmbed/utils'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
-import {IS_NATIVE} from '#/env'
+import {IS_ANDROID, IS_NATIVE} from '#/env'
+import {PostEmbedViewContext} from '../types'
 
 const PUBLICATION_AVATAR_STYLE = {
   borderRadius: a.rounded_sm.borderRadius,
@@ -36,10 +37,12 @@ export const StandardSiteEmbed = ({
   view,
   onEmbedInteractionCallback,
   style,
+  viewContext,
 }: ssTypes.CommonProps &
   ssTypes.PreviewProps &
   ssTypes.PublicApiProps & {
     style?: StyleProp<ViewStyle>
+    viewContext?: PostEmbedViewContext
   }) => {
   const ax = useAnalytics()
   const {t: l, i18n} = useLingui()
@@ -48,6 +51,8 @@ export const StandardSiteEmbed = ({
   const niceUrl = toNiceDomain(view.uri)
   const imageUri = view.thumb
   const hasMedia = Boolean(imageUri)
+  const isAndroidCarousel =
+    IS_ANDROID && viewContext === PostEmbedViewContext.FeedCarousel
   const isStandard = view.associatedRefs?.some(ref =>
     new AtUri(ref.uri).collection.startsWith('site.standard.'),
   )
@@ -113,6 +118,7 @@ export const StandardSiteEmbed = ({
       <PublicationCard
         preview={preview}
         view={view}
+        isAndroidCarousel={isAndroidCarousel}
         onPress={onPressPublication}
         onLongPress={onLongPressPublication}
         style={style}
@@ -185,7 +191,7 @@ export const StandardSiteEmbed = ({
 
             <View
               style={[
-                a.flex_1,
+                isAndroidCarousel ? {flex: 0} : a.flex_1,
                 a.pt_sm,
                 hasMedia && a.border_t,
                 interacted
@@ -281,6 +287,7 @@ export const StandardSiteEmbed = ({
           <PublicationFooter
             preview={preview}
             view={view}
+            isAndroidCarousel={isAndroidCarousel}
             onPress={onPressPublication}
             onLongPress={onLongPressPublication}
             themeColors={themeColors}
@@ -300,6 +307,7 @@ export function PublicationCard({
   onLongPress,
   themeColors,
   style,
+  isAndroidCarousel,
   onEmbedInteractionCallback,
 }: ssTypes.CommonProps &
   ssTypes.PreviewProps &
@@ -308,6 +316,7 @@ export function PublicationCard({
     onLongPress?: () => void
     themeColors: ssTypes.ThemeColors
     style?: StyleProp<ViewStyle>
+    isAndroidCarousel?: boolean
   }) {
   const t = useTheme()
   const {t: l} = useLingui()
@@ -353,7 +362,7 @@ export function PublicationCard({
 
       <View
         style={[
-          a.flex_1,
+          isAndroidCarousel ? {flex: 0} : a.flex_1,
           a.align_center,
           a.justify_between,
           a.gap_md,
@@ -623,6 +632,7 @@ export function PublicationFooter({
   onPress,
   onLongPress,
   interactedOuter,
+  isAndroidCarousel,
   onEmbedInteractionCallback,
 }: ssTypes.CommonProps &
   ssTypes.PreviewProps &
@@ -631,6 +641,7 @@ export function PublicationFooter({
     onPress?: () => void
     onLongPress?: () => void
     interactedOuter?: boolean
+    isAndroidCarousel?: boolean
   }) {
   const t = useTheme()
   const {t: l} = useLingui()
@@ -646,7 +657,7 @@ export function PublicationFooter({
   return (
     <View
       style={[
-        a.flex_1,
+        isAndroidCarousel ? {flex: 0} : a.flex_1,
         a.align_center,
         a.justify_between,
         a.p_md,

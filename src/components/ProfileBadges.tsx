@@ -3,11 +3,13 @@ import {View} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {type Shadow} from '#/state/cache/types'
 import {
   usePdsLabelEnabled,
   usePdsLabelHideBskyPds,
 } from '#/state/preferences/pds-label'
 import {usePdsFaviconQuery, usePdsLabelQuery} from '#/state/queries/pds-label'
+import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
 import {atoms as a, useAlf, type ViewStyleProp} from '#/alf'
 import {useNativeFontScale} from '#/alf/util/dimensions'
 import {BotBadge, BotBadgeButton, isBotAccount} from '#/components/BotBadge'
@@ -53,32 +55,42 @@ const botIconSizes: Record<Size, number> = {
   xl: 23,
 } as const
 
-export function ProfileBadges({
+type ProfileBadgesProps = ViewStyleProp & {
+  profile: bsky.profile.AnyProfileView
+  interactive?: boolean
+  pdsInteractive?: boolean
+  size: Size
+  allowFontScaling?: boolean
+}
+
+export function ProfileBadges(props: ProfileBadgesProps) {
+  const profile = useProfileShadow(props.profile)
+  return <ProfileBadgesFromProfileShadow {...props} profile={profile} />
+}
+
+/**
+ * Use when the parent already owns a profile-shadow subscription. Feed rows
+ * use this path to avoid subscribing twice for the same author.
+ */
+export function ProfileBadgesFromProfileShadow({
   profile,
   interactive = false,
   pdsInteractive = true,
   size,
   style,
   allowFontScaling = true,
-}: ViewStyleProp & {
-  profile: bsky.profile.AnyProfileView
-  interactive?: boolean
-  pdsInteractive?: boolean
-  size: Size
-  allowFontScaling?: boolean
+}: Omit<ProfileBadgesProps, 'profile'> & {
+  profile: Shadow<bsky.profile.AnyProfileView>
 }) {
-  const shadowed = useProfileShadow(profile)
-  const verification = useSimpleVerificationState({profile})
+  const shadowed = useDeerVerificationProfileOverlay(profile)
+  const verification = useSimpleVerificationState({profile: shadowed})
   const pdsLabelEnabled = usePdsLabelEnabled()
   const hideBskyPds = usePdsLabelHideBskyPds()
-
   const isBskyHandle =
     !!shadowed.handle &&
     shadowed.handle.endsWith('.bsky.social')
-
   const shouldResolvePds =
     pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
-
   const {data: pdsData, isLoading: isPdsLoading} = usePdsLabelQuery(
     shouldResolvePds ? shadowed.did : undefined,
   )

@@ -30,18 +30,21 @@ import {
   usePostLikeMutationQueue,
   usePostRepostMutationQueue,
 } from '#/state/queries/post'
-import {useRequireAuth, useSession, useSessionApi} from '#/state/session'
 import {
   threadgateRecordToAllowUISetting,
   threadgateViewToAllowUISetting,
 } from '#/state/queries/threadgate/util'
+import {useRequireAuth, useSession, useSessionApi} from '#/state/session'
 import {
   ProgressGuideAction,
   useProgressGuideControls,
 } from '#/state/shell/progress-guide'
 import * as userActionHistory from '#/state/userActionHistory'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
-import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
+import {
+  EphemeralAccountSwitcherFromScope,
+  EphemeralAccountSwitcherScope,
+} from '#/components/EphemeralAccountSwitcher'
 import {Reply as Bubble} from '#/components/icons/Reply'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
@@ -49,8 +52,8 @@ import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
 import {useAutoLikeOnRepost} from '../../state/preferences/auto-like-on-repost.tsx'
 import {useRunWithEphemeralAgent} from '../hooks/useRunWithEphemeralAgent'
-import {BookmarkButton} from './BookmarkButton'
 import {fetchReplyableSwitcherAccounts} from './alternateAccountsReplyEligibility'
+import {BookmarkButton} from './BookmarkButton'
 import {MetricCountLabel} from './MetricCountLabel'
 import {
   PostControlButton,
@@ -291,7 +294,7 @@ function PostControlsInner({
     big,
     gtPhone,
   })
-  const hasAlternateAccounts = accounts.length > 1
+  const hasAlternateAccounts = accounts.length > 1 && Boolean(currentAccount)
   const switcherAccounts = useMemo(
     () =>
       accounts
@@ -557,7 +560,7 @@ function PostControlsInner({
               replyDisabled ? {opacity: 0.6} : undefined,
             ]}>
             {hasAlternateAccounts && currentAccount ? (
-              <EphemeralAccountSwitcher
+              <EphemeralAccountSwitcherFromScope
                 selectedDid={currentAccount.did}
                 title={l`Reply as`}
                 triggerBehavior="longPress"
@@ -577,7 +580,7 @@ function PostControlsInner({
           </View>
           <View style={[a.flex_1, a.align_start]}>
             {hasAlternateAccounts && currentAccount ? (
-              <EphemeralAccountSwitcher
+              <EphemeralAccountSwitcherFromScope
                 selectedDid={currentAccount.did}
                 title={l`Repost as`}
                 triggerBehavior="longPress"
@@ -594,7 +597,7 @@ function PostControlsInner({
           </View>
           <View style={[a.flex_1, a.align_start]}>
             {hasAlternateAccounts && currentAccount ? (
-              <EphemeralAccountSwitcher
+              <EphemeralAccountSwitcherFromScope
                 selectedDid={currentAccount.did}
                 title={l`Like as`}
                 triggerBehavior="longPress"
@@ -615,7 +618,7 @@ function PostControlsInner({
         <View
           style={[a.flex_row, a.justify_end, secondaryControlSpacingStyles]}>
           {hasAlternateAccounts && currentAccount ? (
-            <EphemeralAccountSwitcher
+            <EphemeralAccountSwitcherFromScope
               selectedDid={currentAccount.did}
               title={l`Save as`}
               triggerBehavior="longPress"
@@ -682,10 +685,22 @@ function PostControlsInner({
   )
 }
 
-const PostControls = memo(function PostControls(
-  props: Parameters<typeof PostControlsInner>[0],
-) {
-  return <PostControlsInner {...props} />
+type PostControlsProps = Parameters<typeof PostControlsInner>[0]
+
+const PostControls = memo(function PostControls(props: PostControlsProps) {
+  const {accounts, currentAccount} = useSession()
+
+  if (accounts.length < 2 || !currentAccount) {
+    return <PostControlsInner {...props} />
+  }
+
+  return (
+    <EphemeralAccountSwitcherScope
+      selectedDid={currentAccount.did}
+      currentProfileFromBatch>
+      <PostControlsInner {...props} />
+    </EphemeralAccountSwitcherScope>
+  )
 })
 export {PostControls}
 

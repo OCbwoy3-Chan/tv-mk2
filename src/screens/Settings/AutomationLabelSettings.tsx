@@ -19,7 +19,7 @@ import * as Toggle from '#/components/forms/Toggle'
 import {Bot_Filled as RobotIcon} from '#/components/icons/Bot'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
-import {useSimpleVerificationState} from '#/components/verification'
+import {useSimpleVerificationStateWithDeer} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {useAnalytics} from '#/analytics'
 import * as bsky from '#/types/bsky'
@@ -36,7 +36,7 @@ export function AutomationLabelSettingsScreen({}: Props) {
   const {currentAccount} = useSession()
   const {data: profile} = useProfileQuery({did: currentAccount?.did})
   const updateProfile = useProfileUpdateMutation()
-  const verification = useSimpleVerificationState({profile})
+  const verification = useSimpleVerificationStateWithDeer({profile})
 
   const isBotLabeled =
     profile?.labels?.some(l => l.val === 'bot' && l.src === profile.did) ??

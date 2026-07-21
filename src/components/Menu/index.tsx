@@ -1,4 +1,12 @@
-import {cloneElement, Fragment, isValidElement, useMemo} from 'react'
+import {
+  cloneElement,
+  Fragment,
+  isValidElement,
+  useCallback,
+  useId,
+  useMemo,
+  useState,
+} from 'react'
 import {
   Pressable,
   type StyleProp,
@@ -14,6 +22,7 @@ import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
+import {ChevronLeft_Stroke2_Corner0_Rounded as ChevronLeftIcon} from '#/components/icons/Chevron'
 import {
   Context,
   ItemContext,
@@ -26,6 +35,7 @@ import {
   type ItemIconProps,
   type ItemProps,
   type ItemTextProps,
+  type SubmenuProps,
   type TriggerProps,
 } from '#/components/Menu/types'
 import {Text} from '#/components/Typography'
@@ -56,11 +66,34 @@ export function Root({
   dismissGuardRef?: React.MutableRefObject<boolean>
 }>) {
   const defaultControl = Dialog.useDialogControl()
+  const [activeSubmenuId, setActiveSubmenuId] = useState<string | null>(null)
+  const submenuRegistry = useMemo<
+    NonNullable<ContextType['nativeSubmenu']>['registry']
+  >(() => new Map(), [])
+  const openSubmenu = useCallback((id: string) => {
+    setActiveSubmenuId(id)
+  }, [])
+  const closeSubmenu = useCallback(() => {
+    setActiveSubmenuId(null)
+  }, [])
   const context = useMemo<ContextType>(
     () => ({
       control: control || defaultControl,
+      nativeSubmenu: {
+        activeId: activeSubmenuId,
+        registry: submenuRegistry,
+        open: openSubmenu,
+        close: closeSubmenu,
+      },
     }),
-    [control, defaultControl],
+    [
+      control,
+      defaultControl,
+      activeSubmenuId,
+      submenuRegistry,
+      openSubmenu,
+      closeSubmenu,
+    ],
   )
 
   return <Context.Provider value={context}>{children}</Context.Provider>
@@ -116,6 +149,7 @@ export function Outer({
   return (
     <Dialog.Outer
       control={context.control}
+      onClose={context.nativeSubmenu?.close}
       nativeOptions={{
         preventExpansion: true,
         minHeight: IS_IOS ? IOS_MENU_MIN_HEIGHT : undefined,
@@ -125,12 +159,67 @@ export function Outer({
       <Context.Provider value={context}>
         <Dialog.ScrollableInner label={l`Menu`}>
           <View style={[a.gap_lg]}>
-            {children}
+            <View
+              style={[
+                a.gap_lg,
+                context.nativeSubmenu?.activeId ? {display: 'none'} : null,
+              ]}>
+              {children}
+            </View>
+            <NativeSubmenuContent />
             {IS_NATIVE && showCancel && <Cancel />}
           </View>
         </Dialog.ScrollableInner>
       </Context.Provider>
     </Dialog.Outer>
+  )
+}
+
+function NativeSubmenuContent() {
+  const t = useTheme()
+  const {t: l} = useLingui()
+  const context = useMenuContext()
+  const activeId = context.nativeSubmenu?.activeId
+  const submenu = activeId
+    ? context.nativeSubmenu?.registry.get(activeId)
+    : undefined
+
+  if (!submenu) {
+    return null
+  }
+
+  return (
+    <View style={[a.gap_lg]}>
+      <LabelText>{submenu.label}</LabelText>
+      <View
+        style={[
+          a.rounded_lg,
+          a.curve_continuous,
+          a.overflow_hidden,
+          a.border,
+          t.atoms.border_contrast_low,
+        ]}>
+        <Pressable
+          accessibilityHint=""
+          accessibilityLabel={l`Back`}
+          accessibilityRole="button"
+          onPress={context.nativeSubmenu?.close}
+          style={[
+            a.flex_row,
+            a.align_center,
+            a.gap_sm,
+            a.px_md,
+            t.atoms.bg_contrast_25,
+            {minHeight: 44, paddingVertical: 10},
+          ]}>
+          <ItemContext.Provider value={{disabled: false, destructive: false}}>
+            <ItemIcon icon={ChevronLeftIcon} />
+            <ItemText>{l`Back`}</ItemText>
+          </ItemContext.Provider>
+        </Pressable>
+      </View>
+      {submenu.children}
+    </View>
   )
 }
 
@@ -202,6 +291,56 @@ export function Item({
         {children}
       </ItemContext.Provider>
     </Pressable>
+  )
+}
+
+/**
+ * A nested menu. On native, submenus replace the contents of the current sheet
+ * and provide a back action; on web the Radix implementation presents a
+ * conventional hover/keyboard submenu.
+ */
+export function Submenu({children, label, trigger, style}: SubmenuProps) {
+  const t = useTheme()
+  const context = useMenuContext()
+  const id = useId()
+  context.nativeSubmenu?.registry.set(id, {label, children})
+  const {state: focused, onIn: onFocus, onOut: onBlur} = useInteractionState()
+  const {
+    state: pressed,
+    onIn: onPressIn,
+    onOut: onPressOut,
+  } = useInteractionState()
+
+  return (
+    <>
+      <Pressable
+        accessibilityHint=""
+        accessibilityLabel={label}
+        accessibilityRole="button"
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onPress={() => context.nativeSubmenu?.open(id)}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        style={[
+          a.flex_row,
+          a.align_center,
+          a.gap_sm,
+          a.px_md,
+          a.rounded_md,
+          a.overflow_hidden,
+          a.border,
+          t.atoms.bg_contrast_25,
+          t.atoms.border_contrast_low,
+          {minHeight: 44, paddingVertical: 10},
+          style,
+          (focused || pressed) && t.atoms.bg_contrast_50,
+        ]}>
+        <ItemContext.Provider value={{disabled: false, destructive: false}}>
+          {trigger}
+        </ItemContext.Provider>
+      </Pressable>
+    </>
   )
 }
 
@@ -347,7 +486,9 @@ export function Group({children, style}: GroupProps) {
       ]}>
       {flattenReactChildren(children).map((child, i) => {
         return isValidElement(child) &&
-          (child.type === Item || child.type === ContainerItem) ? (
+          (child.type === Item ||
+            child.type === ContainerItem ||
+            child.type === Submenu) ? (
           <Fragment key={i}>
             {i > 0 ? (
               <View style={[a.border_b, t.atoms.border_contrast_low]} />

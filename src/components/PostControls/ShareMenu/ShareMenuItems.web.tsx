@@ -18,9 +18,12 @@ import {useDialogControl} from '#/components/Dialog'
 import {EmbedDialog} from '#/components/dialogs/Embed'
 import {SendViaChatDialog} from '#/components/dms/dialogs/ShareViaChatDialog'
 import {ChainLink_Stroke2_Corner0_Rounded as ChainLinkIcon} from '#/components/icons/ChainLink'
+import {ChevronRight_Stroke2_Corner0_Rounded as ChevronRightIcon} from '#/components/icons/Chevron'
 import {Clipboard_Stroke2_Corner2_Rounded as ClipboardIcon} from '#/components/icons/Clipboard'
 import {CodeBrackets_Stroke2_Corner0_Rounded as CodeBracketsIcon} from '#/components/icons/CodeBrackets'
 import {PaperPlane_Stroke2_Corner0_Rounded as Send} from '#/components/icons/PaperPlane'
+import {BlueskyIcon} from '#/components/icons/providers/Bluesky'
+import {PDSlsIcon} from '#/components/icons/providers/PDSls'
 import {SquareArrowTopRight_Stroke2_Corner0_Rounded as ExternalIcon} from '#/components/icons/SquareArrowTopRight'
 import * as Menu from '#/components/Menu'
 import {useAgeAssurance} from '#/ageAssurance'
@@ -64,14 +67,14 @@ let ShareMenuItems = ({
   const onCopyLink = () => {
     ax.metric('share:press:copyLink', {})
     const url = toShareUrl(href)
-    shareUrl(url)
+    void shareUrl(url)
     onShareProp()
   }
 
   const onCopyLinkBsky = () => {
     ax.metric('share:press:copyLink', {})
     const url = toShareUrlBsky(href)
-    shareUrl(url)
+    void shareUrl(url)
     onShareProp()
   }
 
@@ -86,11 +89,11 @@ let ShareMenuItems = ({
   const canEmbed = IS_WEB && gtMobile && !hideInPWI
 
   const onShareATURI = () => {
-    shareText(postUri)
+    void shareText(postUri)
   }
 
   const onShareAuthorDID = () => {
-    shareText(postAuthor.did)
+    void shareText(postAuthor.did)
   }
 
   const showExternalShareButtons = useShowExternalShareButtons()
@@ -106,60 +109,99 @@ let ShareMenuItems = ({
   }
 
   const onOpenPostInPdsls = () => {
-    openLink(`https://pdsls.dev/${post.uri}`, true)
+    openLink(`https://pds.ls/${post.uri}`, true)
   }
 
-  const copyLinkItem = (
-    <Menu.Group>
-      <Menu.Item
-        testID="postDropdownShareBtn"
-        label={_(msg`Copy link to post`)}
-        onPress={onCopyLink}>
-        <Menu.ItemText>
-          <Trans>Copy link to post</Trans>
-        </Menu.ItemText>
-        <Menu.ItemIcon icon={ChainLinkIcon} position="right" />
-      </Menu.Item>
-      <Menu.Item
-        testID="postDropdownShareBtn"
-        label={_(msg`Copy link to post`)}
-        onPress={onCopyLinkBsky}>
-        <Menu.ItemText>
-          <Trans>Copy via bsky.app</Trans>
-        </Menu.ItemText>
-        <Menu.ItemIcon icon={ChainLinkIcon} position="right" />
-      </Menu.Item>
-    </Menu.Group>
-  )
+  const onOpenPostInSkythread = () => {
+    openLink(
+      `https://skythread.mackuba.eu/?q=${encodeURIComponent(
+        toShareUrlBsky(href),
+      )}`,
+      true,
+    )
+  }
 
   return (
     <>
       <Menu.Outer>
-        {copyLinkItem}
-
-        {showExternalShareButtons && isBridgedPost && (
+        <Menu.Group>
           <Menu.Item
-            testID="postDropdownOpenOriginalPost"
-            label={_(msg`Open original post`)}
-            onPress={onOpenOriginalPost}>
+            testID="postDropdownCopyLinkBtn"
+            label={_(msg`Copy link to post`)}
+            onPress={onCopyLink}>
             <Menu.ItemText>
-              <Trans>Open original post</Trans>
+              <Trans>Copy link to post</Trans>
             </Menu.ItemText>
-            <Menu.ItemIcon icon={ExternalIcon} position="right" />
+            <Menu.ItemIcon icon={ChainLinkIcon} position="right" />
           </Menu.Item>
-        )}
 
-        {showExternalShareButtons && (
-          <Menu.Item
-            testID="postDropdownOpenInPdsls"
-            label={_(msg`Open post in PDSls`)}
-            onPress={onOpenPostInPdsls}>
-            <Menu.ItemText>
-              <Trans>Open post in PDSls</Trans>
-            </Menu.ItemText>
-            <Menu.ItemIcon icon={ExternalIcon} position="right" />
-          </Menu.Item>
-        )}
+          <Menu.Submenu
+            label={_(msg`Share`)}
+            trigger={
+              <>
+                <Menu.ItemText>
+                  <Trans>Share</Trans>
+                </Menu.ItemText>
+                <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
+              </>
+            }>
+            <Menu.Item
+              testID="postDropdownShareBlueskyBtn"
+              label={_(msg`Bluesky`)}
+              onPress={onCopyLinkBsky}>
+              <Menu.ItemText>
+                <Trans>Bluesky</Trans>
+              </Menu.ItemText>
+              <Menu.ItemIcon icon={BlueskyIcon} position="right" />
+            </Menu.Item>
+          </Menu.Submenu>
+
+          {showExternalShareButtons && (
+            <Menu.Submenu
+              label={_(msg`Open`)}
+              trigger={
+                <>
+                  <Menu.ItemText>
+                    <Trans>Open</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
+                </>
+              }>
+              {isBridgedPost && (
+                <Menu.Item
+                  testID="postDropdownOpenOriginalPost"
+                  label={_(msg`Original post`)}
+                  onPress={onOpenOriginalPost}>
+                  <Menu.ItemText>
+                    <Trans>Original post</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={ExternalIcon} position="right" />
+                </Menu.Item>
+              )}
+              <Menu.Item
+                testID="postDropdownOpenInPdsls"
+                label={_(msg`PDSls`)}
+                onPress={onOpenPostInPdsls}>
+                <Menu.ItemText>
+                  <Trans>PDSls</Trans>
+                </Menu.ItemText>
+                <Menu.ItemIcon
+                  icon={PDSlsIcon}
+                  position="right"
+                />
+              </Menu.Item>
+              <Menu.Item
+                testID="postDropdownOpenInSkythread"
+                label={_(msg`Skythread`)}
+                onPress={onOpenPostInSkythread}>
+                <Menu.ItemText>
+                  <Trans>Skythread</Trans>
+                </Menu.ItemText>
+                <Menu.ItemIcon icon={ExternalIcon} position="right" />
+              </Menu.Item>
+            </Menu.Submenu>
+          )}
+        </Menu.Group>
 
         {hasSession && aa.state.access === aa.Access.Full && (
           <Menu.Item
@@ -192,7 +234,6 @@ let ShareMenuItems = ({
         {false && hideInPWI && (
           <>
             {hasSession && <Menu.Divider />}
-            {copyLinkItem}
             <Menu.LabelText style={{maxWidth: 220}}>
               <Trans>Note: This post is only visible to logged-in users.</Trans>
             </Menu.LabelText>

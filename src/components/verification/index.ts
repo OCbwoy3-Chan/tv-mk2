@@ -34,8 +34,10 @@ export function useFullVerificationState({
   const {currentAccount} = useSession()
   const currentAccountProfile = useCurrentAccountProfile()
   const profileState = useSimpleVerificationState({profile})
+  const currentAccountProfileWithDeer =
+    useMaybeDeerVerificationProfileOverlay(currentAccountProfile)
   const viewerState = useSimpleVerificationState({
-    profile: currentAccountProfile,
+    profile: currentAccountProfileWithDeer,
   })
 
   return useMemo(() => {
@@ -80,7 +82,7 @@ export type SimpleVerificationState = {
 }
 
 export function useSimpleVerificationState({
-  profile: baseProfile,
+  profile,
 }: {
   profile?: bsky.profile.AnyProfileView
 }): SimpleVerificationState {
@@ -89,8 +91,6 @@ export function useSimpleVerificationState({
     () => preferences.data?.verificationPrefs || {hideBadges: false},
     [preferences.data?.verificationPrefs],
   )
-  const profile = useMaybeDeerVerificationProfileOverlay(baseProfile)
-
   return useMemo(() => {
     if (!profile || !profile.verification) {
       return {
@@ -113,4 +113,18 @@ export function useSimpleVerificationState({
       showBadge: prefs.hideBadges ? false : isVerified,
     }
   }, [profile, prefs])
+}
+
+/**
+ * Fork-specific verification state for profiles that have not already had
+ * the deer verification overlay applied. Keep the upstream-shaped base hook
+ * above free of query work so callers can share one overlay per profile.
+ */
+export function useSimpleVerificationStateWithDeer({
+  profile,
+}: {
+  profile?: bsky.profile.AnyProfileView
+}): SimpleVerificationState {
+  const shadowed = useMaybeDeerVerificationProfileOverlay(profile)
+  return useSimpleVerificationState({profile: shadowed})
 }

@@ -32,6 +32,7 @@ import {isStandardSiteEmbed} from '#/components/Post/Embed/StandardSiteEmbed/uti
 import {RichText} from '#/components/RichText'
 import {Embed as StarterPackCard} from '#/components/StarterPack/StarterPackCard'
 import {SubtleHover} from '#/components/SubtleHover'
+import {IS_ANDROID} from '#/env'
 import * as bsky from '#/types/bsky'
 import {
   type Embed as TEmbed,
@@ -109,6 +110,7 @@ function MediaEmbed({
             <StandardSiteEmbed
               view={embed.view.external}
               onEmbedInteractionCallback={rest.onOpen}
+              viewContext={rest.viewContext}
               style={[a.mt_sm, rest.style]}
             />
           </ContentHider>
@@ -136,6 +138,7 @@ function MediaEmbed({
           <ExternalEmbed
             link={embed.view.external}
             onOpen={rest.onOpen}
+            viewContext={rest.viewContext}
             style={[a.mt_sm, rest.style]}
           />
         </ContentHider>
@@ -398,6 +401,8 @@ export function QuoteEmbed({
   const itemUrip = new AtUri(quote.uri)
   const itemHref = makeProfileLink(quote.author, 'post', itemUrip.rkey)
   const itemTitle = `Post by ${quote.author.handle}`
+  const isAndroidCarousel =
+    IS_ANDROID && viewContext === PostEmbedViewContext.FeedCarousel
 
   const richText = useMemo(() => {
     if (
@@ -439,14 +444,8 @@ export function QuoteEmbed({
         postHref={itemHref}
         timestamp={quote.indexedAt}
         linkDisabled
-        /*
-         * Quotes sit in a nested, width-constrained box (especially carousel
-         * cards with the width:0 flex trick). Give the name row room to
-         * ellipsize instead of collapsing, and cancel Android flex_1.
-         */
-        narrowLayout
-        constrainWidth
-        style={[{flexGrow: 0, flexShrink: 1, minWidth: 0}]}
+        narrowLayout={isAndroidCarousel}
+        style={isAndroidCarousel ? {flex: 0} : undefined}
       />
       {moderation ? (
         <PostAlerts
