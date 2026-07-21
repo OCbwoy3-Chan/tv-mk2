@@ -30,7 +30,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Decode google-services.json
-        run: echo "$GOOGLE_SERVICES" | base64 -d > ./android/app/google-services.json
+        run: echo "$GOOGLE_SERVICES" | base64 -d > ./google-services.json
 
       - name: Prebuild (generate native Android project via Expo)
         run: npx expo prebuild --platform android --no-install
