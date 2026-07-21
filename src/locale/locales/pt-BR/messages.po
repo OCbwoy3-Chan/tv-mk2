@@ -191,7 +191,7 @@ msgstr "{0, plural, one {# item não lido} other {# itens não lidos}}"
 
 #. How long it takes to read an article, in minutes. Displayed in a short form, e.g. "5m" for 5 minutes.
 #. placeholder {0}: view.readingTime
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:251
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:257
 msgid "{0, plural, one {#m} other {#m}}"
 msgstr "{0, plural, one {#me} other {#me}}"
 
@@ -217,12 +217,12 @@ msgid "{0, plural, one {following} other {following}}"
 msgstr "{0, plural, one {seguindo} other {seguindo}}"
 
 #. placeholder {0}: post.likeCount ?? 0
-#: src/components/PostControls/index.tsx:519
+#: src/components/PostControls/index.tsx:522
 msgid "{0, plural, one {like} other {likes}}"
 msgstr ""
 
 #. placeholder {0}: post.replyCount ?? 0
-#: src/components/PostControls/index.tsx:446
+#: src/components/PostControls/index.tsx:449
 msgid "{0, plural, one {reply} other {replies}}"
 msgstr ""
 
@@ -496,7 +496,7 @@ msgstr "{count, plural, one {# solicitação} other {# solicitações}}"
 msgid "{count, plural, one {# unread item} other {# unread items}}"
 msgstr "{count, plural, one {# item não lido} other {# itens não lidos}}"
 
-#: src/view/com/posts/PostFeedItemCarousel.tsx:143
+#: src/view/com/posts/PostFeedItemCarousel.tsx:170
 msgid "{count, plural, one {repost} other {reposts}}"
 msgstr ""
 
@@ -1143,12 +1143,12 @@ msgstr "Conta"
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:678
 #: src/screens/Messages/components/RequestButtons.tsx:104
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:122
-#: src/view/com/profile/ProfileMenu.tsx:206
+#: src/view/com/profile/ProfileMenu.tsx:253
 msgctxt "toast"
 msgid "Account blocked"
 msgstr "Conta bloqueada"
 
-#: src/view/com/profile/ProfileMenu.tsx:227
+#: src/view/com/profile/ProfileMenu.tsx:275
 msgctxt "toast"
 msgid "Account followed"
 msgstr "Conta seguida"
@@ -1166,7 +1166,7 @@ msgid "Account is deactivated"
 msgstr "A conta está desativada"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:721
-#: src/view/com/profile/ProfileMenu.tsx:176
+#: src/view/com/profile/ProfileMenu.tsx:223
 msgctxt "toast"
 msgid "Account muted"
 msgstr "Conta silenciada"
@@ -1195,18 +1195,18 @@ msgstr ""
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:109
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:145
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:473
-#: src/view/com/profile/ProfileMenu.tsx:193
+#: src/view/com/profile/ProfileMenu.tsx:240
 msgctxt "toast"
 msgid "Account unblocked"
 msgstr "Conta desbloqueada"
 
-#: src/view/com/profile/ProfileMenu.tsx:242
+#: src/view/com/profile/ProfileMenu.tsx:290
 msgctxt "toast"
 msgid "Account unfollowed"
 msgstr "Conta deixada de seguir"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:701
-#: src/view/com/profile/ProfileMenu.tsx:163
+#: src/view/com/profile/ProfileMenu.tsx:210
 msgctxt "toast"
 msgid "Account unmuted"
 msgstr "Conta dessilenciada"
@@ -1401,8 +1401,8 @@ msgstr "Adicione o seguinte registro DNS ao seu domínio:"
 msgid "Add this feed to your feeds"
 msgstr "Adicione este feed aos seus feeds"
 
-#: src/view/com/profile/ProfileMenu.tsx:477
-#: src/view/com/profile/ProfileMenu.tsx:480
+#: src/view/com/profile/ProfileMenu.tsx:565
+#: src/view/com/profile/ProfileMenu.tsx:568
 msgid "Add to lists"
 msgstr "Adicionar às listas"
 
@@ -1411,8 +1411,8 @@ msgid "Add to saved posts"
 msgstr "Adicionar às postagens salvas"
 
 #: src/components/dialogs/StarterPackDialog.tsx:187
-#: src/view/com/profile/ProfileMenu.tsx:468
-#: src/view/com/profile/ProfileMenu.tsx:471
+#: src/view/com/profile/ProfileMenu.tsx:556
+#: src/view/com/profile/ProfileMenu.tsx:559
 msgid "Add to starter packs"
 msgstr "Adicionar aos pacotes iniciais"
 
@@ -1836,9 +1836,9 @@ msgstr "Ocorreu um problema ao tentar abrir a conversa"
 #: src/components/hooks/useEphemeralFollowAction.ts:101
 #: src/components/hooks/useFollowMethods.ts:35
 #: src/components/hooks/useFollowMethods.ts:52
-#: src/components/PostControls/index.tsx:346
-#: src/components/PostControls/index.tsx:374
-#: src/components/PostControls/index.tsx:409
+#: src/components/PostControls/index.tsx:349
+#: src/components/PostControls/index.tsx:377
+#: src/components/PostControls/index.tsx:412
 #: src/components/ProfileCard.tsx:544
 #: src/components/ProfileCard.tsx:561
 #: src/screens/PostThread/components/ReaderSeam.tsx:280
@@ -2168,13 +2168,13 @@ msgstr ""
 msgid "ATProto settings"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:242
-#: src/components/Post/Embed/index.tsx:269
+#: src/components/Post/Embed/index.tsx:245
+#: src/components/Post/Embed/index.tsx:272
 msgid "Author account suspended"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:244
-#: src/components/Post/Embed/index.tsx:271
+#: src/components/Post/Embed/index.tsx:247
+#: src/components/Post/Embed/index.tsx:274
 msgid "Author account unavailable"
 msgstr ""
 
@@ -2239,6 +2239,8 @@ msgstr "Disponível"
 #: src/components/dms/InitiateChatFlow.tsx:540
 #: src/components/dms/InitiateChatFlow.tsx:758
 #: src/components/dms/InitiateChatFlow.tsx:765
+#: src/components/Menu/index.tsx:204
+#: src/components/Menu/index.tsx:217
 #: src/components/moderation/AppealForm.tsx:145
 #: src/components/moderation/AppealForm.tsx:146
 #: src/screens/Login/ChooseAccountForm.tsx:106
@@ -2391,8 +2393,8 @@ msgstr "Bloquear {displayName}"
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
 #: src/screens/Messages/components/RequestButtons.tsx:154
 #: src/screens/Messages/components/RequestButtons.tsx:156
-#: src/view/com/profile/ProfileMenu.tsx:616
-#: src/view/com/profile/ProfileMenu.tsx:623
+#: src/view/com/profile/ProfileMenu.tsx:704
+#: src/view/com/profile/ProfileMenu.tsx:711
 msgid "Block account"
 msgstr "Bloquear conta"
 
@@ -2449,9 +2451,9 @@ msgstr "Bloquear usuário e/ou excluir esta conversa"
 msgid "Block user and/or leave this conversation"
 msgstr "Bloquear usuário e/ou sair desta conversa"
 
-#: src/components/Post/Embed/index.tsx:232
-#: src/components/Post/Embed/index.tsx:259
-#: src/components/Post/Embed/index.tsx:275
+#: src/components/Post/Embed/index.tsx:235
+#: src/components/Post/Embed/index.tsx:262
+#: src/components/Post/Embed/index.tsx:278
 msgid "Blocked"
 msgstr "Bloqueado"
 
@@ -2493,10 +2495,16 @@ msgstr ""
 msgid "Blueat"
 msgstr ""
 
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:202
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:211
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:150
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:153
 #: src/screens/Login/components/AppServerDialog.tsx:423
 #: src/screens/Login/components/AppServerDialog.tsx:424
 #: src/screens/Settings/AppearanceSettings/shared.tsx:64
 #: src/screens/Signup/index.tsx:69
+#: src/view/com/profile/ProfileMenu.tsx:444
+#: src/view/com/profile/ProfileMenu.tsx:455
 msgid "Bluesky"
 msgstr "Bluesky"
 
@@ -2735,7 +2743,7 @@ msgstr "Acesso à câmera necessário"
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:302
 #: src/components/dialogs/nuxs/InviteFriendsAnnouncement.tsx:175
 #: src/components/dialogs/nuxs/InviteFriendsAnnouncement.tsx:181
-#: src/components/Menu/index.tsx:381
+#: src/components/Menu/index.tsx:522
 #: src/components/moderation/BlockDialog.tsx:202
 #: src/components/PostControls/RepostButton.tsx:216
 #: src/components/Prompt.tsx:155
@@ -2796,9 +2804,9 @@ msgstr "Cancelar pesquisa"
 msgid "Cancels signing in so you can check your username"
 msgstr ""
 
-#: src/components/PostControls/index.tsx:162
-#: src/components/PostControls/index.tsx:192
-#: src/components/PostControls/index.tsx:231
+#: src/components/PostControls/index.tsx:165
+#: src/components/PostControls/index.tsx:195
+#: src/components/PostControls/index.tsx:234
 #: src/screens/PostThread/components/ReaderSeam.tsx:187
 #: src/screens/PostThread/components/ReaderSeam.tsx:204
 #: src/screens/PostThread/components/ReaderSeam.tsx:220
@@ -2816,7 +2824,7 @@ msgid "Captions & alt text"
 msgstr "Legendas e texto alternativo"
 
 #: src/components/images/Gallery/index.tsx:278
-#: src/view/com/posts/PostFeedItemCarousel.tsx:345
+#: src/view/com/posts/PostFeedItemCarousel.tsx:391
 msgid "carousel"
 msgstr "carrossel"
 
@@ -3335,7 +3343,7 @@ msgstr "Fechar o banner de solicitações recebidas"
 #: src/components/intents/GroupChatJoinDialog.tsx:251
 #: src/components/intents/GroupChatJoinDialog.tsx:287
 #: src/components/intents/GroupChatJoinDialog.tsx:288
-#: src/components/Menu/index.tsx:375
+#: src/components/Menu/index.tsx:516
 msgid "Close this dialog"
 msgstr "Fechar esta janela"
 
@@ -3373,6 +3381,10 @@ msgstr ""
 #: src/view/com/notifications/NotificationFeedItem.tsx:639
 msgid "Collapse list of users"
 msgstr "Esconder lista de usuários"
+
+#: src/view/com/posts/PostFeedItemCarousel.tsx:159
+msgid "Collapse repost carousel"
+msgstr ""
 
 #: src/view/com/notifications/NotificationFeedItem.tsx:1119
 msgid "Collapses list of users for a given notification"
@@ -3619,7 +3631,7 @@ msgstr "Aviso de conteúdo"
 msgid "Content warnings"
 msgstr "Avisos de conteúdo"
 
-#: src/components/Menu/index.web.tsx:102
+#: src/components/Menu/index.web.tsx:103
 msgid "Context menu backdrop, click to close the menu."
 msgstr "Fundo do menu, clique para fechá-lo."
 
@@ -3704,10 +3716,13 @@ msgstr ""
 #: src/components/dms/MessageContextMenu.tsx:97
 #: src/components/PostControls/DiscoverDebug.tsx:39
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:457
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:89
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:104
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:86
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:101
 #: src/lib/sharing.ts:24
 #: src/lib/sharing.ts:42
+#: src/view/com/profile/ProfileMenu.tsx:172
+#: src/view/com/profile/ProfileMenu.tsx:182
+#: src/view/com/profile/ProfileMenu.tsx:187
 msgid "Copied to clipboard"
 msgstr "Copiado"
 
@@ -3725,8 +3740,10 @@ msgstr "Copia o número de versão para a área de transferência"
 msgid "Copies the canonical profile URL to the clipboard"
 msgstr "Copia a URL canônica do perfil para a área de transferência"
 
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:222
 #: src/components/StarterPack/QrCodeDialog.tsx:198
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:266
+#: src/view/com/profile/ProfileMenu.tsx:467
 msgid "Copy"
 msgstr "Copiar"
 
@@ -3734,13 +3751,13 @@ msgstr "Copiar"
 msgid "Copy App Password"
 msgstr "Copiar senha do app"
 
-#: src/view/com/profile/ProfileMenu.tsx:653
-#: src/view/com/profile/ProfileMenu.tsx:656
+#: src/view/com/profile/ProfileMenu.tsx:741
+#: src/view/com/profile/ProfileMenu.tsx:744
 msgid "Copy at:// URI"
 msgstr "Copiar URI at://"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:216
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:219
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:257
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:260
 msgid "Copy author DID"
 msgstr "Copiar DID do autor"
 
@@ -3752,14 +3769,19 @@ msgstr "Copiar código"
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:524
 #: src/screens/Settings/Settings.tsx:945
 #: src/screens/Settings/Settings.tsx:947
-#: src/view/com/profile/ProfileMenu.tsx:662
-#: src/view/com/profile/ProfileMenu.tsx:665
+#: src/view/com/profile/ProfileMenu.tsx:750
+#: src/view/com/profile/ProfileMenu.tsx:753
 msgid "Copy DID"
 msgstr "Copiar DID"
 
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:456
 msgid "Copy host"
 msgstr "Copiar host"
+
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:217
+#: src/view/com/profile/ProfileMenu.tsx:462
+msgid "Copy instead of opening the share sheet"
+msgstr ""
 
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:255
 msgid "Copy invite link"
@@ -3780,16 +3802,15 @@ msgstr "Copiar link"
 msgid "Copy link to list"
 msgstr "Copiar link da lista"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:221
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:224
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:116
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:119
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:125
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:181
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:184
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:130
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:133
 msgid "Copy link to post"
 msgstr "Copiar link da postagem"
 
-#: src/view/com/profile/ProfileMenu.tsx:354
-#: src/view/com/profile/ProfileMenu.tsx:364
+#: src/view/com/profile/ProfileMenu.tsx:402
+#: src/view/com/profile/ProfileMenu.tsx:409
 msgid "Copy link to profile"
 msgstr "Copiar link para o perfil"
 
@@ -3802,8 +3823,8 @@ msgstr "Copiar link para o pacote inicial"
 msgid "Copy message text"
 msgstr "Copiar texto da mensagem"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:207
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:210
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:248
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:251
 msgid "Copy post at:// URI"
 msgstr "Copiar URI at:// da postagem"
 
@@ -3819,14 +3840,6 @@ msgstr "Copiar QR code"
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:477
 msgid "Copy TXT record value"
 msgstr "Copiar valor do registro TXT"
-
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:231
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:234
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:128
-#: src/view/com/profile/ProfileMenu.tsx:376
-#: src/view/com/profile/ProfileMenu.tsx:387
-msgid "Copy via bsky.app"
-msgstr ""
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:41
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:108
@@ -4332,7 +4345,7 @@ msgstr "Excluir esta lista?"
 msgid "Delete this post?"
 msgstr "Excluir esta postagem?"
 
-#: src/components/Post/Embed/index.tsx:246
+#: src/components/Post/Embed/index.tsx:249
 msgid "Deleted"
 msgstr "Excluído"
 
@@ -4621,8 +4634,8 @@ msgstr "Nome de exibição"
 msgid "Ditch the trolls and clickbait. Find real people and conversations that matter to you."
 msgstr "Largue os trolls e o clickbait. Encontre pessoas reais e conversas que importam para você."
 
-#: src/view/com/profile/ProfileMenu.tsx:441
-#: src/view/com/profile/ProfileMenu.tsx:453
+#: src/view/com/profile/ProfileMenu.tsx:529
+#: src/view/com/profile/ProfileMenu.tsx:541
 msgid "Divorce mutual"
 msgstr ""
 
@@ -4945,8 +4958,8 @@ msgstr "Editar configurações do link"
 msgid "Edit list details"
 msgstr "Editar detalhes da lista"
 
-#: src/view/com/profile/ProfileMenu.tsx:516
-#: src/view/com/profile/ProfileMenu.tsx:536
+#: src/view/com/profile/ProfileMenu.tsx:604
+#: src/view/com/profile/ProfileMenu.tsx:624
 msgid "Edit live status"
 msgstr "Editar status ao vivo"
 
@@ -5061,8 +5074,8 @@ msgstr "Código HTML para incorporação"
 
 #: src/components/dialogs/Embed.tsx:105
 #: src/components/dialogs/Embed.tsx:109
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:182
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:187
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:224
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:229
 msgid "Embed post"
 msgstr "Incorporar postagem"
 
@@ -5400,6 +5413,10 @@ msgstr "Expandir ou esconder a postagem que você está respondendo"
 #: src/components/Post/ShowMoreTextButton.tsx:33
 msgid "Expand post text"
 msgstr "Expandir texto da postagem"
+
+#: src/view/com/posts/PostFeedItemCarousel.tsx:159
+msgid "Expand repost carousel"
+msgstr ""
 
 #: src/screens/VideoFeed/index.tsx:1112
 msgid "Expands or collapses post text"
@@ -6165,8 +6182,8 @@ msgstr "Siga 10 pessoas para começar"
 msgid "Follow 7 accounts"
 msgstr "Seguir 7 contas"
 
-#: src/view/com/profile/ProfileMenu.tsx:443
-#: src/view/com/profile/ProfileMenu.tsx:458
+#: src/view/com/profile/ProfileMenu.tsx:531
+#: src/view/com/profile/ProfileMenu.tsx:546
 msgid "Follow account"
 msgstr "Seguir conta"
 
@@ -6633,8 +6650,8 @@ msgstr "Voltar para a etapa anterior"
 msgid "Go home"
 msgstr "Voltar para a tela inicial"
 
-#: src/view/com/profile/ProfileMenu.tsx:517
-#: src/view/com/profile/ProfileMenu.tsx:538
+#: src/view/com/profile/ProfileMenu.tsx:605
+#: src/view/com/profile/ProfileMenu.tsx:626
 msgid "Go live"
 msgstr "Entrar ao vivo"
 
@@ -6645,8 +6662,8 @@ msgstr "Entrar ao vivo"
 msgid "Go Live"
 msgstr "Entrar Ao Vivo"
 
-#: src/view/com/profile/ProfileMenu.tsx:514
-#: src/view/com/profile/ProfileMenu.tsx:534
+#: src/view/com/profile/ProfileMenu.tsx:602
+#: src/view/com/profile/ProfileMenu.tsx:622
 msgid "Go live (disabled)"
 msgstr "Entrar ao vivo (desabilitado)"
 
@@ -6821,6 +6838,8 @@ msgstr "Metade do caminho!"
 
 #: src/screens/Settings/AccountSettings.tsx:137
 #: src/screens/Settings/AccountSettings.tsx:142
+#: src/view/com/profile/ProfileMenu.tsx:427
+#: src/view/com/profile/ProfileMenu.tsx:438
 msgid "Handle"
 msgstr "Nome de usuário"
 
@@ -8063,7 +8082,7 @@ msgstr "Curtir"
 #. Like button, unliked state
 #. placeholder {0}: post.likeCount || 0
 #. placeholder {0}: shadow.likeCount || 0
-#: src/components/PostControls/index.tsx:496
+#: src/components/PostControls/index.tsx:499
 #: src/screens/PostThread/components/ReaderSeam.tsx:357
 msgid "Like ({0, plural, one {# like} other {# likes}})"
 msgstr "Curtidas ({0, plural, one {# curtida} other {# curtidas}})"
@@ -8077,7 +8096,7 @@ msgstr "Curtir 10 postagens"
 msgid "Like 10 posts to train the Discover feed"
 msgstr "Curta 10 postagens para treinar o feed de Descobertas"
 
-#: src/components/PostControls/index.tsx:599
+#: src/components/PostControls/index.tsx:602
 #: src/screens/PostThread/components/ReaderSeam.tsx:450
 msgid "Like as"
 msgstr ""
@@ -8091,7 +8110,7 @@ msgid "Like this labeler"
 msgstr "Curtir este rotulador"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:343
+#: src/components/PostControls/index.tsx:346
 #: src/screens/PostThread/components/ReaderSeam.tsx:277
 msgid "Liked as @{0}"
 msgstr ""
@@ -8544,7 +8563,7 @@ msgstr "Menções"
 msgid "Mentions of these people"
 msgstr ""
 
-#: src/components/Menu/index.tsx:126
+#: src/components/Menu/index.tsx:160
 msgid "Menu"
 msgstr "Menu"
 
@@ -8727,8 +8746,8 @@ msgstr "Mais idiomas..."
 
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:147
 #: src/view/com/composer/drafts/DraftItem.tsx:190
-#: src/view/com/profile/ProfileMenu.tsx:319
-#: src/view/com/profile/ProfileMenu.tsx:326
+#: src/view/com/profile/ProfileMenu.tsx:367
+#: src/view/com/profile/ProfileMenu.tsx:374
 msgid "More options"
 msgstr "Mais opções"
 
@@ -8766,8 +8785,8 @@ msgstr "Silenciar {0}"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1036
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1042
-#: src/view/com/profile/ProfileMenu.tsx:595
-#: src/view/com/profile/ProfileMenu.tsx:602
+#: src/view/com/profile/ProfileMenu.tsx:683
+#: src/view/com/profile/ProfileMenu.tsx:690
 msgid "Mute account"
 msgstr "Silenciar conta"
 
@@ -8945,7 +8964,7 @@ msgid "Nevermind, create a handle for me"
 msgstr "Deixa pra lá, crie um nome de usuário pra mim"
 
 #: src/screens/Search/modules/ExploreTrendingTopics.tsx:188
-#: src/view/com/profile/ProfileMenu.tsx:550
+#: src/view/com/profile/ProfileMenu.tsx:638
 msgid "New"
 msgstr "Novo"
 
@@ -9260,7 +9279,7 @@ msgstr "Ninguém além do autor pode citar esta postagem."
 msgid "No one can send messages"
 msgstr "Ninguém pode enviar mensagens"
 
-#: src/components/PostControls/index.tsx:311
+#: src/components/PostControls/index.tsx:314
 #: src/screens/PostThread/components/ReaderSeam.tsx:251
 #: src/view/com/composer/Composer.tsx:392
 msgid "No other accounts can reply to this post"
@@ -9419,7 +9438,7 @@ msgstr "Não encontrado"
 msgid "Not ready to hit post? Keep your best ideas in Drafts until the timing is just right."
 msgstr "Não sente que é a hora certa para publicar? Guarde as suas melhores ideias nos Rascunhos para utilizar no momento certo."
 
-#: src/view/com/profile/ProfileMenu.tsx:709
+#: src/view/com/profile/ProfileMenu.tsx:799
 msgid "Note about sharing"
 msgstr "Nota sobre compartilhamento"
 
@@ -9427,7 +9446,7 @@ msgstr "Nota sobre compartilhamento"
 msgid "Note: Bluesky is an open and public network. This setting only limits the visibility of your content on the Bluesky app and website, and other apps may not respect this setting. Your content may still be shown to logged-out users by other apps and websites."
 msgstr "Nota: o Bluesky é uma rede aberta e pública. Esta configuração limita somente a visibilidade do seu conteúdo no site e aplicativo do Bluesky, e outros aplicativos podem não respeitar esta configuração. Seu conteúdo ainda poderá ser exibido para usuários não autenticados por outros aplicativos e sites."
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:197
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:238
 msgid "Note: This post is only visible to logged-in users."
 msgstr "Nota: Esta postagem só é visível para usuários conectados."
 
@@ -9534,8 +9553,8 @@ msgstr "Respostas mais antigas primeiro"
 msgid "On"
 msgstr "Ativado"
 
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:80
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:86
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:78
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:84
 msgid "On non-bsky.social handles, show a link to that URL"
 msgstr ""
 
@@ -9624,8 +9643,8 @@ msgstr ""
 msgid "Only replies"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:94
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:100
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:92
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:98
 msgid "Only show URL on handles with working links"
 msgstr ""
 
@@ -9651,6 +9670,12 @@ msgid "Oops!"
 msgstr "Ops!"
 
 #: src/components/PdsDialog.tsx:208
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:230
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:234
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:161
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:165
+#: src/view/com/profile/ProfileMenu.tsx:475
+#: src/view/com/profile/ProfileMenu.tsx:479
 msgid "Open"
 msgstr ""
 
@@ -9728,8 +9753,8 @@ msgstr "Abrir configurações de conversa em grupo"
 msgid "Open in Google Translate"
 msgstr "Abrir no Google Tradutor"
 
-#: src/components/Post/Embed/ExternalEmbed/index.tsx:104
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:147
+#: src/components/Post/Embed/ExternalEmbed/index.tsx:109
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:153
 msgid "Open link to {niceUrl}"
 msgstr "Abrir link para {niceUrl}"
 
@@ -9745,23 +9770,9 @@ msgstr "Abrir página de debug da moderação"
 msgid "Open muted words and tags settings"
 msgstr "Abrir opções de palavras/tags silenciadas"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:177
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:180
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:143
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:146
-msgid "Open original post"
-msgstr ""
-
 #: src/screens/Search/components/StarterPackCard.tsx:121
 msgid "Open pack"
 msgstr "Abrir pacote"
-
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:188
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:191
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:155
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:158
-msgid "Open post in PDSls"
-msgstr ""
 
 #: src/components/PostControls/PostMenu/index.tsx:67
 msgid "Open post options menu"
@@ -9772,19 +9783,9 @@ msgstr "Abrir opções da postagem"
 msgid "Open profile"
 msgstr "Abrir perfil"
 
-#: src/view/com/profile/ProfileMenu.tsx:400
-#: src/view/com/profile/ProfileMenu.tsx:403
-msgid "Open profile in PDSls"
-msgstr ""
-
 #: src/features/inviteFriends/components/ActionButtons.tsx:39
 msgid "Open QR code scanner"
 msgstr "Abrir leitor de código QR"
-
-#: src/view/com/profile/ProfileMenu.tsx:409
-#: src/view/com/profile/ProfileMenu.tsx:412
-msgid "Open repo in PDSls"
-msgstr ""
 
 #: src/components/BotAccountAlert.tsx:62
 #: src/components/BotAccountAlert.tsx:71
@@ -9986,6 +9987,13 @@ msgstr "Ou conecte em uma das suas outras contas."
 msgid "Original · {0}"
 msgstr ""
 
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:243
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:246
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:173
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:176
+msgid "Original post"
+msgstr ""
+
 #: src/screens/Settings/components/OTAInfo.tsx:55
 msgid "OTA status: ..."
 msgstr "Estado OTA: ..."
@@ -10133,6 +10141,23 @@ msgstr ""
 
 #: src/components/PdsDialog.tsx:105
 msgid "PDS Information"
+msgstr ""
+
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:253
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:256
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:183
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:186
+msgid "PDSls"
+msgstr ""
+
+#: src/view/com/profile/ProfileMenu.tsx:487
+#: src/view/com/profile/ProfileMenu.tsx:490
+msgid "PDSls profile"
+msgstr ""
+
+#: src/view/com/profile/ProfileMenu.tsx:496
+#: src/view/com/profile/ProfileMenu.tsx:499
+msgid "PDSls repository"
 msgstr ""
 
 #: src/screens/ProfileList/index.tsx:167
@@ -10645,7 +10670,7 @@ msgstr "Postagem salva"
 msgid "Post translation provider"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:273
+#: src/components/Post/Embed/index.tsx:276
 msgid "Post unavailable"
 msgstr ""
 
@@ -11287,8 +11312,8 @@ msgstr "Remover sugestão"
 msgid "Remove this feed from your saved feeds"
 msgstr "Remover este feed dos feeds salvos"
 
-#: src/view/com/profile/ProfileMenu.tsx:489
-#: src/view/com/profile/ProfileMenu.tsx:494
+#: src/view/com/profile/ProfileMenu.tsx:577
+#: src/view/com/profile/ProfileMenu.tsx:582
 msgid "Remove trust"
 msgstr ""
 
@@ -11307,8 +11332,8 @@ msgstr "Remover usuário da lista"
 
 #: src/components/verification/VerificationRemovePrompt.tsx:48
 #: src/components/verification/VerificationsDialog.tsx:253
-#: src/view/com/profile/ProfileMenu.tsx:568
-#: src/view/com/profile/ProfileMenu.tsx:571
+#: src/view/com/profile/ProfileMenu.tsx:656
+#: src/view/com/profile/ProfileMenu.tsx:659
 msgid "Remove verification"
 msgstr "Remover verificação"
 
@@ -11316,13 +11341,13 @@ msgstr "Remover verificação"
 msgid "Remove your verification for this account?"
 msgstr "Remover a sua verificação para essa conta?"
 
-#: src/components/Post/Embed/index.tsx:287
-#: src/components/Post/Embed/index.tsx:357
+#: src/components/Post/Embed/index.tsx:290
+#: src/components/Post/Embed/index.tsx:360
 msgid "Removed by author"
 msgstr "Removido pelo autor"
 
-#: src/components/Post/Embed/index.tsx:288
-#: src/components/Post/Embed/index.tsx:355
+#: src/components/Post/Embed/index.tsx:291
+#: src/components/Post/Embed/index.tsx:358
 msgid "Removed by you"
 msgstr "Removido por você"
 
@@ -11351,19 +11376,19 @@ msgid "Removed from your feeds"
 msgstr "Removido dos feeds salvos"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:342
+#: src/components/PostControls/index.tsx:345
 #: src/screens/PostThread/components/ReaderSeam.tsx:276
 msgid "Removed like as @{0}"
 msgstr ""
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:370
+#: src/components/PostControls/index.tsx:373
 #: src/screens/PostThread/components/ReaderSeam.tsx:302
 msgid "Removed repost as @{0}"
 msgstr ""
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:405
+#: src/components/PostControls/index.tsx:408
 msgid "Removed save as @{0}"
 msgstr ""
 
@@ -11468,11 +11493,11 @@ msgstr "Responder"
 
 #. Accessibility label for the reply button, verb form followed by number of replies and noun form
 #. placeholder {0}: post.replyCount || 0
-#: src/components/PostControls/index.tsx:433
+#: src/components/PostControls/index.tsx:436
 msgid "Reply ({0, plural, one {# reply} other {# replies}})"
 msgstr "Responder ({0, plural, one {# resposta} other {# respostas}})"
 
-#: src/components/PostControls/index.tsx:562
+#: src/components/PostControls/index.tsx:565
 #: src/screens/PostThread/components/ReaderSeam.tsx:417
 msgid "Reply as"
 msgstr ""
@@ -11510,8 +11535,8 @@ msgstr "Resposta foi ocultada com sucesso"
 msgid "Report"
 msgstr "Denunciar"
 
-#: src/view/com/profile/ProfileMenu.tsx:635
-#: src/view/com/profile/ProfileMenu.tsx:638
+#: src/view/com/profile/ProfileMenu.tsx:723
+#: src/view/com/profile/ProfileMenu.tsx:726
 msgid "Report account"
 msgstr "Denunciar conta"
 
@@ -11614,13 +11639,13 @@ msgstr "Repostar"
 msgid "Repost ({0, plural, one {# repost} other {# reposts}})"
 msgstr "Repostar ({0, plural, one {# repostagem} other {# repostagens}})"
 
-#: src/components/PostControls/index.tsx:582
+#: src/components/PostControls/index.tsx:585
 #: src/screens/PostThread/components/ReaderSeam.tsx:435
 msgid "Repost as"
 msgstr ""
 
 #. placeholder {0}: items.length
-#: src/view/com/posts/PostFeedItemCarousel.tsx:346
+#: src/view/com/posts/PostFeedItemCarousel.tsx:392
 msgid "Repost carousel, {0} reposts"
 msgstr ""
 
@@ -11632,7 +11657,7 @@ msgid "Repost or quote post"
 msgstr "Repostar ou citar uma postagem"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:371
+#: src/components/PostControls/index.tsx:374
 #: src/screens/PostThread/components/ReaderSeam.tsx:303
 msgid "Reposted as @{0}"
 msgstr ""
@@ -11948,7 +11973,7 @@ msgstr "GIFs tristes"
 msgid "Save"
 msgstr "Salvar"
 
-#: src/components/PostControls/index.tsx:620
+#: src/components/PostControls/index.tsx:623
 msgid "Save as"
 msgstr ""
 
@@ -12019,7 +12044,7 @@ msgid "Saved"
 msgstr "Salvos"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:406
+#: src/components/PostControls/index.tsx:409
 msgid "Saved as @{0}"
 msgstr ""
 
@@ -12072,11 +12097,11 @@ msgstr "Escanear código QR"
 msgid "Science"
 msgstr "Ciência"
 
-#: src/view/com/posts/PostFeedItemCarousel.tsx:147
+#: src/view/com/posts/PostFeedItemCarousel.tsx:175
 msgid "Scroll carousel left"
 msgstr ""
 
-#: src/view/com/posts/PostFeedItemCarousel.tsx:156
+#: src/view/com/posts/PostFeedItemCarousel.tsx:184
 msgid "Scroll carousel right"
 msgstr ""
 
@@ -12186,8 +12211,8 @@ msgstr "Procurar idiomas"
 msgid "Search my posts"
 msgstr "Pesquisar minhas postagens"
 
-#: src/view/com/profile/ProfileMenu.tsx:420
-#: src/view/com/profile/ProfileMenu.tsx:423
+#: src/view/com/profile/ProfileMenu.tsx:508
+#: src/view/com/profile/ProfileMenu.tsx:511
 msgid "Search posts"
 msgstr "Pesquisar postagens"
 
@@ -12537,10 +12562,10 @@ msgstr "Envie a mensagem do seu telefone"
 msgid "Send verification email"
 msgstr "Enviar e-mail de verificação"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:159
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:165
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:167
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:173
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:171
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:209
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:215
 msgid "Send via direct message"
 msgstr "Enviar por mensagem direta"
 
@@ -12692,12 +12717,18 @@ msgstr "Sexualmente Sugestivo"
 #: src/components/Link.tsx:445
 #: src/components/MediaPreview.tsx:270
 #: src/components/Post/Embed/ImageContextMenu.tsx:74
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:190
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:194
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:139
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:143
 #: src/components/StarterPack/QrCodeDialog.tsx:198
 #: src/screens/Hashtag.tsx:133
 #: src/screens/Messages/components/InviteLinkDialog.tsx:415
 #: src/screens/Messages/components/InviteLinkDialog.tsx:426
 #: src/screens/StarterPack/StarterPackScreen.tsx:448
 #: src/screens/Topic.tsx:92
+#: src/view/com/profile/ProfileMenu.tsx:415
+#: src/view/com/profile/ProfileMenu.tsx:419
 msgid "Share"
 msgstr "Compartilhar"
 
@@ -12705,12 +12736,12 @@ msgstr "Compartilhar"
 msgid "Share age range"
 msgstr ""
 
-#: src/view/com/profile/ProfileMenu.tsx:712
+#: src/view/com/profile/ProfileMenu.tsx:802
 msgid "Share anyway"
 msgstr "Compartilhar mesmo assim"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:265
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:268
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:299
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:302
 msgid "Share author DID"
 msgstr "Compartilhar DID do autor"
 
@@ -12741,8 +12772,8 @@ msgstr "Compartilhar Link de diálogo"
 msgid "Share my profile"
 msgstr "Compartilhar meu perfil"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:256
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:259
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:290
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:293
 msgid "Share post at:// URI"
 msgstr "Compartilhar URI at:// da postagem"
 
@@ -12773,21 +12804,10 @@ msgstr "Compartilhar este pacote inicial"
 msgid "Share this starter pack and help people join your community on Bluesky."
 msgstr "Compartilhe este pacote inicial e ajude as pessoas a se juntarem à sua comunidade no Bluesky."
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:211
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:214
-#: src/view/com/profile/ProfileMenu.tsx:376
-#: src/view/com/profile/ProfileMenu.tsx:389
-msgid "Share via bsky.app..."
-msgstr ""
-
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:201
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:204
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:163
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:169
 #: src/screens/StarterPack/StarterPackScreen.tsx:641
 #: src/screens/StarterPack/StarterPackScreen.tsx:649
-#: src/view/com/profile/ProfileMenu.tsx:354
-#: src/view/com/profile/ProfileMenu.tsx:366
 msgid "Share via..."
 msgstr "Compartilhar via..."
 
@@ -12823,11 +12843,6 @@ msgstr ""
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:136
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:142
 msgid "Show “Followed by” on own profile"
-msgstr ""
-
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:65
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:71
-msgid "Show \"Open original post\" and \"Open post in PDSls\" buttons"
 msgstr ""
 
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:132
@@ -12958,6 +12973,14 @@ msgstr "Mostrar conteúdo dos seus feeds salvos no feed principal (Following)"
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:133
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:139
 msgid "Show standard profile UI on labeler accounts"
+msgstr ""
+
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:71
+msgid "Show the Open submenu for external links"
+msgstr ""
+
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:65
+msgid "Show the Open submenu for external post and profile links"
 msgstr ""
 
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:122
@@ -13177,6 +13200,13 @@ msgstr "Pular introdução e começar a usar a sua conta"
 #: src/screens/Onboarding/StepSuggestedStarterpacks/index.tsx:102
 msgid "Skip to next step"
 msgstr "Pular para a próxima etapa"
+
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:262
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:265
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:195
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:198
+msgid "Skythread"
+msgstr ""
 
 #: src/components/images/Gallery/index.tsx:448
 msgid "slide"
@@ -13489,13 +13519,13 @@ msgid "Subscribe"
 msgstr "Inscrever-se"
 
 #. placeholder {0}: highlightedPublisher.name
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:447
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:476
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:456
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:485
 msgid "Subscribe on {0}"
 msgstr "Inscreva-se em {0}"
 
 #. placeholder {0}: highlightedPublisher.name
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:475
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:484
 msgid "Subscribe to {publicationTitle} on {0}"
 msgstr "Inscrever-se para {publicationTitle} em {0}"
 
@@ -13600,14 +13630,12 @@ msgstr "Contas suspensas não podem participar de um chat em grupo."
 msgid "Switch account"
 msgstr "Alterar conta"
 
-#: src/components/EphemeralAccountSwitcher.tsx:179
-#: src/components/EphemeralAccountSwitcher.tsx:186
-#: src/components/EphemeralAccountSwitcher.tsx:345
-#: src/components/EphemeralAccountSwitcher.tsx:356
-#: src/components/EphemeralAccountSwitcher.tsx:369
-#: src/components/EphemeralAccountSwitcher.tsx:482
-#: src/components/EphemeralAccountSwitcher.tsx:524
-#: src/components/EphemeralAccountSwitcher.tsx:544
+#: src/components/EphemeralAccountSwitcher.tsx:262
+#: src/components/EphemeralAccountSwitcher.tsx:273
+#: src/components/EphemeralAccountSwitcher.tsx:286
+#: src/components/EphemeralAccountSwitcher.tsx:426
+#: src/components/EphemeralAccountSwitcher.tsx:469
+#: src/components/EphemeralAccountSwitcher.tsx:489
 #: src/view/shell/desktop/LeftNav.tsx:134
 msgid "Switch accounts"
 msgstr "Trocar de conta "
@@ -14069,12 +14097,12 @@ msgstr "Houve um problema ao atualizar seus feeds, por favor verifique sua conex
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:404
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:428
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:478
-#: src/view/com/profile/ProfileMenu.tsx:168
-#: src/view/com/profile/ProfileMenu.tsx:181
-#: src/view/com/profile/ProfileMenu.tsx:198
-#: src/view/com/profile/ProfileMenu.tsx:211
-#: src/view/com/profile/ProfileMenu.tsx:232
-#: src/view/com/profile/ProfileMenu.tsx:247
+#: src/view/com/profile/ProfileMenu.tsx:215
+#: src/view/com/profile/ProfileMenu.tsx:228
+#: src/view/com/profile/ProfileMenu.tsx:245
+#: src/view/com/profile/ProfileMenu.tsx:258
+#: src/view/com/profile/ProfileMenu.tsx:280
+#: src/view/com/profile/ProfileMenu.tsx:295
 msgid "There was an issue! {0}"
 msgstr "Tivemos um problema! {0}"
 
@@ -14437,7 +14465,7 @@ msgstr "Esta postagem alega ter sido criada em <0>{0}</0>, mas ela apareceu no B
 msgid "This post has an unknown type of threadgate on it. Your app may be out of date."
 msgstr "Essa postagem possui uma configuração desconhecida de interações permitidas. O app talvez esteja desatualizado."
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:246
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:280
 msgid "This post is only visible to logged-in users."
 msgstr "Esta postagem só é visível para usuários conectados."
 
@@ -14453,7 +14481,7 @@ msgstr "Esta postagem será ocultada dos feeds e tópicos. Isso não pode ser de
 msgid "This post's author has disabled quote posts."
 msgstr "O autor desta postagem desabilitou as postagens de citação."
 
-#: src/view/com/profile/ProfileMenu.tsx:710
+#: src/view/com/profile/ProfileMenu.tsx:800
 msgid "This profile is only visible to logged-in users. It won't be visible to people who aren't signed in."
 msgstr "Este perfil será visível apenas para usuários registrados. Ele não será visível para usuários desconectados."
 
@@ -14765,8 +14793,8 @@ msgstr "Trollagem"
 msgid "Trust emerges from relationships, communities, and shared context, so we’re also enabling <0>trusted verifiers</0>: organizations that can directly issue verification."
 msgstr "A confiança emerge de relacionamentos, comunidades e contexto compartilhado, por isso também estamos permitindo <0>verificadores confiáveis</0>: organizações que podem conceder verificação diretamente."
 
-#: src/view/com/profile/ProfileMenu.tsx:501
-#: src/view/com/profile/ProfileMenu.tsx:504
+#: src/view/com/profile/ProfileMenu.tsx:589
+#: src/view/com/profile/ProfileMenu.tsx:592
 msgid "Trust verifier"
 msgstr ""
 
@@ -14929,8 +14957,8 @@ msgstr "Desbloquear {displayName}"
 
 #: src/components/dms/ConvoMenu.tsx:287
 #: src/components/dms/ConvoMenu.tsx:291
-#: src/view/com/profile/ProfileMenu.tsx:615
-#: src/view/com/profile/ProfileMenu.tsx:621
+#: src/view/com/profile/ProfileMenu.tsx:703
+#: src/view/com/profile/ProfileMenu.tsx:709
 msgid "Unblock account"
 msgstr "Desbloquear Conta"
 
@@ -14989,8 +15017,8 @@ msgstr "Deixar de seguir {0}"
 msgid "Unfollow {displayName}?"
 msgstr ""
 
-#: src/view/com/profile/ProfileMenu.tsx:442
-#: src/view/com/profile/ProfileMenu.tsx:455
+#: src/view/com/profile/ProfileMenu.tsx:530
+#: src/view/com/profile/ProfileMenu.tsx:543
 msgid "Unfollow account"
 msgstr "Parar de seguir conta"
 
@@ -15031,7 +15059,7 @@ msgstr "Descurtir"
 #. Like button, liked state
 #. placeholder {0}: post.likeCount || 0
 #. placeholder {0}: shadow.likeCount || 0
-#: src/components/PostControls/index.tsx:488
+#: src/components/PostControls/index.tsx:491
 #: src/screens/PostThread/components/ReaderSeam.tsx:350
 msgid "Unlike ({0, plural, one {# like} other {# likes}})"
 msgstr "Descurtir ({0, plural, one {# curtida} other {# curtidas}})"
@@ -15063,8 +15091,8 @@ msgstr "Dessilenciar {0}"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1035
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1041
-#: src/view/com/profile/ProfileMenu.tsx:594
-#: src/view/com/profile/ProfileMenu.tsx:600
+#: src/view/com/profile/ProfileMenu.tsx:682
+#: src/view/com/profile/ProfileMenu.tsx:688
 msgid "Unmute account"
 msgstr "Dessilenciar conta"
 
@@ -15462,8 +15490,8 @@ msgstr "Verificado por:"
 
 #: src/components/verification/VerificationCreatePrompt.tsx:85
 #: src/components/verification/VerificationCreatePrompt.tsx:87
-#: src/view/com/profile/ProfileMenu.tsx:578
-#: src/view/com/profile/ProfileMenu.tsx:581
+#: src/view/com/profile/ProfileMenu.tsx:666
+#: src/view/com/profile/ProfileMenu.tsx:669
 msgid "Verify account"
 msgstr "Verificar conta"
 
@@ -15621,8 +15649,8 @@ msgid "View"
 msgstr "Visualizar"
 
 #. placeholder {0}: view.source.title
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:340
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:670
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:349
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:681
 msgid "View {0}"
 msgstr "Ver {0}"
 
@@ -15656,7 +15684,7 @@ msgstr "Ver perfil de {displayName}"
 msgid "View {firstAuthorName}'s profile"
 msgstr ""
 
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:478
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:487
 msgid "View {publicationTitle}"
 msgstr "Ver {publicationTitle}"
 
@@ -15718,7 +15746,7 @@ msgstr "Ver mais"
 msgid "View more trending videos"
 msgstr "Ver mais vídeos em alta"
 
-#: src/components/ProfileBadges.tsx:236
+#: src/components/ProfileBadges.tsx:248
 msgid "View PDS information"
 msgstr ""
 
@@ -15730,12 +15758,12 @@ msgstr "Visualizar postagem"
 #: src/components/ProfileHoverCard/index.web.tsx:608
 #: src/components/ProfileHoverCard/index.web.tsx:653
 #: src/view/com/posts/PostFeedErrorMessage.tsx:183
-#: src/view/com/util/PostMeta.tsx:132
-#: src/view/com/util/PostMeta.tsx:162
+#: src/view/com/util/PostMeta.tsx:115
+#: src/view/com/util/PostMeta.tsx:144
 msgid "View profile"
 msgstr "Ver perfil"
 
-#: src/view/com/util/PostMeta.tsx:183
+#: src/view/com/util/PostMeta.tsx:165
 msgid "View Profile"
 msgstr ""
 
@@ -15743,10 +15771,10 @@ msgstr ""
 msgid "View profile banner"
 msgstr "Ver imagem de capa do perfil"
 
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:340
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:448
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:479
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:670
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:349
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:457
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:488
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:681
 msgid "View publication"
 msgstr "Ver publicação"
 

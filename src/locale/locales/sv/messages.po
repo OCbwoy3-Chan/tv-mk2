@@ -191,7 +191,7 @@ msgstr "{0, plural, one {# oläst notis} other {# olästa notiser}}"
 
 #. How long it takes to read an article, in minutes. Displayed in a short form, e.g. "5m" for 5 minutes.
 #. placeholder {0}: view.readingTime
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:251
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:257
 msgid "{0, plural, one {#m} other {#m}}"
 msgstr "{0, plural, one {# min} other {# min}}"
 
@@ -217,12 +217,12 @@ msgid "{0, plural, one {following} other {following}}"
 msgstr "{0, plural, one {följd} other {följda}}"
 
 #. placeholder {0}: post.likeCount ?? 0
-#: src/components/PostControls/index.tsx:519
+#: src/components/PostControls/index.tsx:522
 msgid "{0, plural, one {like} other {likes}}"
 msgstr ""
 
 #. placeholder {0}: post.replyCount ?? 0
-#: src/components/PostControls/index.tsx:446
+#: src/components/PostControls/index.tsx:449
 msgid "{0, plural, one {reply} other {replies}}"
 msgstr ""
 
@@ -496,7 +496,7 @@ msgstr "{count, plural, one {# förfrågan} other {# förfrågningar}}"
 msgid "{count, plural, one {# unread item} other {# unread items}}"
 msgstr "{count, plural, one {# oläst notis} other {# olästa notiser}}"
 
-#: src/view/com/posts/PostFeedItemCarousel.tsx:143
+#: src/view/com/posts/PostFeedItemCarousel.tsx:170
 msgid "{count, plural, one {repost} other {reposts}}"
 msgstr ""
 
@@ -1143,12 +1143,12 @@ msgstr "Konto"
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:678
 #: src/screens/Messages/components/RequestButtons.tsx:104
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:122
-#: src/view/com/profile/ProfileMenu.tsx:206
+#: src/view/com/profile/ProfileMenu.tsx:253
 msgctxt "toast"
 msgid "Account blocked"
 msgstr "Kontot blockerades"
 
-#: src/view/com/profile/ProfileMenu.tsx:227
+#: src/view/com/profile/ProfileMenu.tsx:275
 msgctxt "toast"
 msgid "Account followed"
 msgstr "Du följer kontot"
@@ -1166,7 +1166,7 @@ msgid "Account is deactivated"
 msgstr "Kontot är inaktiverat"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:721
-#: src/view/com/profile/ProfileMenu.tsx:176
+#: src/view/com/profile/ProfileMenu.tsx:223
 msgctxt "toast"
 msgid "Account muted"
 msgstr "Kontot ignorerades"
@@ -1195,18 +1195,18 @@ msgstr ""
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:109
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:145
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:473
-#: src/view/com/profile/ProfileMenu.tsx:193
+#: src/view/com/profile/ProfileMenu.tsx:240
 msgctxt "toast"
 msgid "Account unblocked"
 msgstr "Kontot avblockerades"
 
-#: src/view/com/profile/ProfileMenu.tsx:242
+#: src/view/com/profile/ProfileMenu.tsx:290
 msgctxt "toast"
 msgid "Account unfollowed"
 msgstr "Du följer inte längre kontot"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:701
-#: src/view/com/profile/ProfileMenu.tsx:163
+#: src/view/com/profile/ProfileMenu.tsx:210
 msgctxt "toast"
 msgid "Account unmuted"
 msgstr "Kontot ignoreras inte längre"
@@ -1401,8 +1401,8 @@ msgstr "Lägg till följande DNS-post i din domän:"
 msgid "Add this feed to your feeds"
 msgstr "Lägg till i dina flöden"
 
-#: src/view/com/profile/ProfileMenu.tsx:477
-#: src/view/com/profile/ProfileMenu.tsx:480
+#: src/view/com/profile/ProfileMenu.tsx:565
+#: src/view/com/profile/ProfileMenu.tsx:568
 msgid "Add to lists"
 msgstr "Lägg till i listor"
 
@@ -1411,8 +1411,8 @@ msgid "Add to saved posts"
 msgstr "Lägg till i sparade inlägg"
 
 #: src/components/dialogs/StarterPackDialog.tsx:187
-#: src/view/com/profile/ProfileMenu.tsx:468
-#: src/view/com/profile/ProfileMenu.tsx:471
+#: src/view/com/profile/ProfileMenu.tsx:556
+#: src/view/com/profile/ProfileMenu.tsx:559
 msgid "Add to starter packs"
 msgstr "Lägg till i startpaket"
 
@@ -1836,9 +1836,9 @@ msgstr "Ett problem uppstod när chatten skulle öppnas"
 #: src/components/hooks/useEphemeralFollowAction.ts:101
 #: src/components/hooks/useFollowMethods.ts:35
 #: src/components/hooks/useFollowMethods.ts:52
-#: src/components/PostControls/index.tsx:346
-#: src/components/PostControls/index.tsx:374
-#: src/components/PostControls/index.tsx:409
+#: src/components/PostControls/index.tsx:349
+#: src/components/PostControls/index.tsx:377
+#: src/components/PostControls/index.tsx:412
 #: src/components/ProfileCard.tsx:544
 #: src/components/ProfileCard.tsx:561
 #: src/screens/PostThread/components/ReaderSeam.tsx:280
@@ -2168,13 +2168,13 @@ msgstr ""
 msgid "ATProto settings"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:242
-#: src/components/Post/Embed/index.tsx:269
+#: src/components/Post/Embed/index.tsx:245
+#: src/components/Post/Embed/index.tsx:272
 msgid "Author account suspended"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:244
-#: src/components/Post/Embed/index.tsx:271
+#: src/components/Post/Embed/index.tsx:247
+#: src/components/Post/Embed/index.tsx:274
 msgid "Author account unavailable"
 msgstr ""
 
@@ -2239,6 +2239,8 @@ msgstr "Tillgängligt"
 #: src/components/dms/InitiateChatFlow.tsx:540
 #: src/components/dms/InitiateChatFlow.tsx:758
 #: src/components/dms/InitiateChatFlow.tsx:765
+#: src/components/Menu/index.tsx:204
+#: src/components/Menu/index.tsx:217
 #: src/components/moderation/AppealForm.tsx:145
 #: src/components/moderation/AppealForm.tsx:146
 #: src/screens/Login/ChooseAccountForm.tsx:106
@@ -2391,8 +2393,8 @@ msgstr "Blockera {displayName}"
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
 #: src/screens/Messages/components/RequestButtons.tsx:154
 #: src/screens/Messages/components/RequestButtons.tsx:156
-#: src/view/com/profile/ProfileMenu.tsx:616
-#: src/view/com/profile/ProfileMenu.tsx:623
+#: src/view/com/profile/ProfileMenu.tsx:704
+#: src/view/com/profile/ProfileMenu.tsx:711
 msgid "Block account"
 msgstr "Blockera konto"
 
@@ -2449,9 +2451,9 @@ msgstr "Blockera användare och/eller radera den här konversationen"
 msgid "Block user and/or leave this conversation"
 msgstr "Blockera användare och/eller lämna den här konversationen"
 
-#: src/components/Post/Embed/index.tsx:232
-#: src/components/Post/Embed/index.tsx:259
-#: src/components/Post/Embed/index.tsx:275
+#: src/components/Post/Embed/index.tsx:235
+#: src/components/Post/Embed/index.tsx:262
+#: src/components/Post/Embed/index.tsx:278
 msgid "Blocked"
 msgstr "Blockerat"
 
@@ -2493,10 +2495,16 @@ msgstr "bloomscrolling booksky"
 msgid "Blueat"
 msgstr ""
 
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:202
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:211
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:150
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:153
 #: src/screens/Login/components/AppServerDialog.tsx:423
 #: src/screens/Login/components/AppServerDialog.tsx:424
 #: src/screens/Settings/AppearanceSettings/shared.tsx:64
 #: src/screens/Signup/index.tsx:69
+#: src/view/com/profile/ProfileMenu.tsx:444
+#: src/view/com/profile/ProfileMenu.tsx:455
 msgid "Bluesky"
 msgstr "Bluesky"
 
@@ -2735,7 +2743,7 @@ msgstr "Kameraåtkomst krävs"
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:302
 #: src/components/dialogs/nuxs/InviteFriendsAnnouncement.tsx:175
 #: src/components/dialogs/nuxs/InviteFriendsAnnouncement.tsx:181
-#: src/components/Menu/index.tsx:381
+#: src/components/Menu/index.tsx:522
 #: src/components/moderation/BlockDialog.tsx:202
 #: src/components/PostControls/RepostButton.tsx:216
 #: src/components/Prompt.tsx:155
@@ -2796,9 +2804,9 @@ msgstr "Avbryt sökning"
 msgid "Cancels signing in so you can check your username"
 msgstr ""
 
-#: src/components/PostControls/index.tsx:162
-#: src/components/PostControls/index.tsx:192
-#: src/components/PostControls/index.tsx:231
+#: src/components/PostControls/index.tsx:165
+#: src/components/PostControls/index.tsx:195
+#: src/components/PostControls/index.tsx:234
 #: src/screens/PostThread/components/ReaderSeam.tsx:187
 #: src/screens/PostThread/components/ReaderSeam.tsx:204
 #: src/screens/PostThread/components/ReaderSeam.tsx:220
@@ -2816,7 +2824,7 @@ msgid "Captions & alt text"
 msgstr "Undertexter och alternativtexter"
 
 #: src/components/images/Gallery/index.tsx:278
-#: src/view/com/posts/PostFeedItemCarousel.tsx:345
+#: src/view/com/posts/PostFeedItemCarousel.tsx:391
 msgid "carousel"
 msgstr "karusell"
 
@@ -3335,7 +3343,7 @@ msgstr "Stäng banderollen för väntande förfrågningar"
 #: src/components/intents/GroupChatJoinDialog.tsx:251
 #: src/components/intents/GroupChatJoinDialog.tsx:287
 #: src/components/intents/GroupChatJoinDialog.tsx:288
-#: src/components/Menu/index.tsx:375
+#: src/components/Menu/index.tsx:516
 msgid "Close this dialog"
 msgstr "Stäng den här dialogrutan"
 
@@ -3373,6 +3381,10 @@ msgstr ""
 #: src/view/com/notifications/NotificationFeedItem.tsx:639
 msgid "Collapse list of users"
 msgstr "Dölj lista över användare"
+
+#: src/view/com/posts/PostFeedItemCarousel.tsx:159
+msgid "Collapse repost carousel"
+msgstr ""
 
 #: src/view/com/notifications/NotificationFeedItem.tsx:1119
 msgid "Collapses list of users for a given notification"
@@ -3619,7 +3631,7 @@ msgstr "Innehållsvarning"
 msgid "Content warnings"
 msgstr "Innehållsvarningar"
 
-#: src/components/Menu/index.web.tsx:102
+#: src/components/Menu/index.web.tsx:103
 msgid "Context menu backdrop, click to close the menu."
 msgstr "Utanför kontextmenyn. Klicka för att stänga menyn."
 
@@ -3704,10 +3716,13 @@ msgstr "Länken kopierades till urklipp"
 #: src/components/dms/MessageContextMenu.tsx:97
 #: src/components/PostControls/DiscoverDebug.tsx:39
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:457
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:89
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:104
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:86
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:101
 #: src/lib/sharing.ts:24
 #: src/lib/sharing.ts:42
+#: src/view/com/profile/ProfileMenu.tsx:172
+#: src/view/com/profile/ProfileMenu.tsx:182
+#: src/view/com/profile/ProfileMenu.tsx:187
 msgid "Copied to clipboard"
 msgstr "Kopierat till urklipp"
 
@@ -3725,8 +3740,10 @@ msgstr "Kopierar byggversion till urklipp"
 msgid "Copies the canonical profile URL to the clipboard"
 msgstr "Kopierar den kanoniska profil-URL:en till urklipp"
 
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:222
 #: src/components/StarterPack/QrCodeDialog.tsx:198
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:266
+#: src/view/com/profile/ProfileMenu.tsx:467
 msgid "Copy"
 msgstr "Kopiera"
 
@@ -3734,13 +3751,13 @@ msgstr "Kopiera"
 msgid "Copy App Password"
 msgstr "Kopiera applösenord"
 
-#: src/view/com/profile/ProfileMenu.tsx:653
-#: src/view/com/profile/ProfileMenu.tsx:656
+#: src/view/com/profile/ProfileMenu.tsx:741
+#: src/view/com/profile/ProfileMenu.tsx:744
 msgid "Copy at:// URI"
 msgstr "Kopiera at://-URI"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:216
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:219
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:257
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:260
 msgid "Copy author DID"
 msgstr "Kopiera författarens DID"
 
@@ -3752,14 +3769,19 @@ msgstr "Kopiera kod"
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:524
 #: src/screens/Settings/Settings.tsx:945
 #: src/screens/Settings/Settings.tsx:947
-#: src/view/com/profile/ProfileMenu.tsx:662
-#: src/view/com/profile/ProfileMenu.tsx:665
+#: src/view/com/profile/ProfileMenu.tsx:750
+#: src/view/com/profile/ProfileMenu.tsx:753
 msgid "Copy DID"
 msgstr "Kopiera DID"
 
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:456
 msgid "Copy host"
 msgstr "Kopiera värd"
+
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:217
+#: src/view/com/profile/ProfileMenu.tsx:462
+msgid "Copy instead of opening the share sheet"
+msgstr ""
 
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:255
 msgid "Copy invite link"
@@ -3780,16 +3802,15 @@ msgstr "Kopiera länk"
 msgid "Copy link to list"
 msgstr "Kopiera länk till lista"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:221
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:224
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:116
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:119
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:125
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:181
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:184
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:130
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:133
 msgid "Copy link to post"
 msgstr "Kopiera länk till inlägg"
 
-#: src/view/com/profile/ProfileMenu.tsx:354
-#: src/view/com/profile/ProfileMenu.tsx:364
+#: src/view/com/profile/ProfileMenu.tsx:402
+#: src/view/com/profile/ProfileMenu.tsx:409
 msgid "Copy link to profile"
 msgstr "Kopiera länk till profil"
 
@@ -3802,8 +3823,8 @@ msgstr "Kopiera länk till startpaket"
 msgid "Copy message text"
 msgstr "Kopiera meddelandetext"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:207
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:210
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:248
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:251
 msgid "Copy post at:// URI"
 msgstr "Kopiera inläggets at://-URI"
 
@@ -3819,14 +3840,6 @@ msgstr "Kopiera QR-kod"
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:477
 msgid "Copy TXT record value"
 msgstr "Kopiera värde för TXT-post"
-
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:231
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:234
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:128
-#: src/view/com/profile/ProfileMenu.tsx:376
-#: src/view/com/profile/ProfileMenu.tsx:387
-msgid "Copy via bsky.app"
-msgstr ""
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:41
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:108
@@ -4332,7 +4345,7 @@ msgstr "Radera den här listan?"
 msgid "Delete this post?"
 msgstr "Radera det här inlägget?"
 
-#: src/components/Post/Embed/index.tsx:246
+#: src/components/Post/Embed/index.tsx:249
 msgid "Deleted"
 msgstr "Raderat"
 
@@ -4621,8 +4634,8 @@ msgstr "Visningsnamn"
 msgid "Ditch the trolls and clickbait. Find real people and conversations that matter to you."
 msgstr "Lämna troll och klickbeten bakom dig. Hitta riktiga människor och samtal som betyder något för dig."
 
-#: src/view/com/profile/ProfileMenu.tsx:441
-#: src/view/com/profile/ProfileMenu.tsx:453
+#: src/view/com/profile/ProfileMenu.tsx:529
+#: src/view/com/profile/ProfileMenu.tsx:541
 msgid "Divorce mutual"
 msgstr ""
 
@@ -4945,8 +4958,8 @@ msgstr "Redigera länkinställningar"
 msgid "Edit list details"
 msgstr "Redigera listdetaljer"
 
-#: src/view/com/profile/ProfileMenu.tsx:516
-#: src/view/com/profile/ProfileMenu.tsx:536
+#: src/view/com/profile/ProfileMenu.tsx:604
+#: src/view/com/profile/ProfileMenu.tsx:624
 msgid "Edit live status"
 msgstr "Redigera livesändningsstatus"
 
@@ -5061,8 +5074,8 @@ msgstr "Bädda in HTML-kod"
 
 #: src/components/dialogs/Embed.tsx:105
 #: src/components/dialogs/Embed.tsx:109
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:182
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:187
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:224
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:229
 msgid "Embed post"
 msgstr "Bädda in inlägg"
 
@@ -5400,6 +5413,10 @@ msgstr "Utöka eller fäll ihop det inlägg som du svarar på"
 #: src/components/Post/ShowMoreTextButton.tsx:33
 msgid "Expand post text"
 msgstr "Utöka inläggstext"
+
+#: src/view/com/posts/PostFeedItemCarousel.tsx:159
+msgid "Expand repost carousel"
+msgstr ""
 
 #: src/screens/VideoFeed/index.tsx:1112
 msgid "Expands or collapses post text"
@@ -6165,8 +6182,8 @@ msgstr "Följ 10 personer för att komma igång"
 msgid "Follow 7 accounts"
 msgstr "Följ 7 konton"
 
-#: src/view/com/profile/ProfileMenu.tsx:443
-#: src/view/com/profile/ProfileMenu.tsx:458
+#: src/view/com/profile/ProfileMenu.tsx:531
+#: src/view/com/profile/ProfileMenu.tsx:546
 msgid "Follow account"
 msgstr "Följ konto"
 
@@ -6633,8 +6650,8 @@ msgstr "Gå tillbaka till föregående steg"
 msgid "Go home"
 msgstr "Gå till Hem"
 
-#: src/view/com/profile/ProfileMenu.tsx:517
-#: src/view/com/profile/ProfileMenu.tsx:538
+#: src/view/com/profile/ProfileMenu.tsx:605
+#: src/view/com/profile/ProfileMenu.tsx:626
 msgid "Go live"
 msgstr "Sänd live"
 
@@ -6645,8 +6662,8 @@ msgstr "Sänd live"
 msgid "Go Live"
 msgstr "Sänd live"
 
-#: src/view/com/profile/ProfileMenu.tsx:514
-#: src/view/com/profile/ProfileMenu.tsx:534
+#: src/view/com/profile/ProfileMenu.tsx:602
+#: src/view/com/profile/ProfileMenu.tsx:622
 msgid "Go live (disabled)"
 msgstr "Sänd live (inaktiverat)"
 
@@ -6821,6 +6838,8 @@ msgstr "Halvvägs där!"
 
 #: src/screens/Settings/AccountSettings.tsx:137
 #: src/screens/Settings/AccountSettings.tsx:142
+#: src/view/com/profile/ProfileMenu.tsx:427
+#: src/view/com/profile/ProfileMenu.tsx:438
 msgid "Handle"
 msgstr "Användarnamn"
 
@@ -8063,7 +8082,7 @@ msgstr "Gilla"
 #. Like button, unliked state
 #. placeholder {0}: post.likeCount || 0
 #. placeholder {0}: shadow.likeCount || 0
-#: src/components/PostControls/index.tsx:496
+#: src/components/PostControls/index.tsx:499
 #: src/screens/PostThread/components/ReaderSeam.tsx:357
 msgid "Like ({0, plural, one {# like} other {# likes}})"
 msgstr "Gilla ({0, plural, one {# gillamarkering} other {# gillamarkeringar}})"
@@ -8077,7 +8096,7 @@ msgstr "Gilla 10 inlägg"
 msgid "Like 10 posts to train the Discover feed"
 msgstr "Gilla 10 inlägg för att träna Upptäck-flödet"
 
-#: src/components/PostControls/index.tsx:599
+#: src/components/PostControls/index.tsx:602
 #: src/screens/PostThread/components/ReaderSeam.tsx:450
 msgid "Like as"
 msgstr ""
@@ -8091,7 +8110,7 @@ msgid "Like this labeler"
 msgstr "Gilla den här etikettsättaren"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:343
+#: src/components/PostControls/index.tsx:346
 #: src/screens/PostThread/components/ReaderSeam.tsx:277
 msgid "Liked as @{0}"
 msgstr ""
@@ -8544,7 +8563,7 @@ msgstr "Omnämnanden"
 msgid "Mentions of these people"
 msgstr "Omnämnanden av dessa personer"
 
-#: src/components/Menu/index.tsx:126
+#: src/components/Menu/index.tsx:160
 msgid "Menu"
 msgstr "Meny"
 
@@ -8727,8 +8746,8 @@ msgstr "Fler språk…"
 
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:147
 #: src/view/com/composer/drafts/DraftItem.tsx:190
-#: src/view/com/profile/ProfileMenu.tsx:319
-#: src/view/com/profile/ProfileMenu.tsx:326
+#: src/view/com/profile/ProfileMenu.tsx:367
+#: src/view/com/profile/ProfileMenu.tsx:374
 msgid "More options"
 msgstr "Fler alternativ"
 
@@ -8766,8 +8785,8 @@ msgstr "Ignorera {0}"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1036
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1042
-#: src/view/com/profile/ProfileMenu.tsx:595
-#: src/view/com/profile/ProfileMenu.tsx:602
+#: src/view/com/profile/ProfileMenu.tsx:683
+#: src/view/com/profile/ProfileMenu.tsx:690
 msgid "Mute account"
 msgstr "Ignorera konto"
 
@@ -8945,7 +8964,7 @@ msgid "Nevermind, create a handle for me"
 msgstr "Det var inget. Skapa ett användarnamn åt mig"
 
 #: src/screens/Search/modules/ExploreTrendingTopics.tsx:188
-#: src/view/com/profile/ProfileMenu.tsx:550
+#: src/view/com/profile/ProfileMenu.tsx:638
 msgid "New"
 msgstr "Nytt"
 
@@ -9260,7 +9279,7 @@ msgstr "Ingen annan än författaren kan citera det här inlägget."
 msgid "No one can send messages"
 msgstr "Ingen kan skicka meddelanden"
 
-#: src/components/PostControls/index.tsx:311
+#: src/components/PostControls/index.tsx:314
 #: src/screens/PostThread/components/ReaderSeam.tsx:251
 #: src/view/com/composer/Composer.tsx:392
 msgid "No other accounts can reply to this post"
@@ -9419,7 +9438,7 @@ msgstr "Hittades inte"
 msgid "Not ready to hit post? Keep your best ideas in Drafts until the timing is just right."
 msgstr "Inte redo att publicera? Spara dina idéer som utkast tills tiden är inne."
 
-#: src/view/com/profile/ProfileMenu.tsx:709
+#: src/view/com/profile/ProfileMenu.tsx:799
 msgid "Note about sharing"
 msgstr "Anmärkning om delning"
 
@@ -9427,7 +9446,7 @@ msgstr "Anmärkning om delning"
 msgid "Note: Bluesky is an open and public network. This setting only limits the visibility of your content on the Bluesky app and website, and other apps may not respect this setting. Your content may still be shown to logged-out users by other apps and websites."
 msgstr "Obs: Bluesky är ett öppet och publikt nätverk. Den här inställningen begränsar endast ditt kontos synlighet på Blueskys app och webbplats. Andra appar kanske inte respekterar den här inställningen. Ditt innehåll kan fortfarande visas för utloggade användare genom andra appar och webbplatser."
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:197
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:238
 msgid "Note: This post is only visible to logged-in users."
 msgstr "Obs: Det här inlägget visas bara för inloggade användare."
 
@@ -9534,8 +9553,8 @@ msgstr "Äldsta svar först"
 msgid "On"
 msgstr "På"
 
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:80
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:86
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:78
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:84
 msgid "On non-bsky.social handles, show a link to that URL"
 msgstr ""
 
@@ -9624,8 +9643,8 @@ msgstr "Endast inlägg med videoklipp"
 msgid "Only replies"
 msgstr "Endast svar"
 
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:94
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:100
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:92
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:98
 msgid "Only show URL on handles with working links"
 msgstr ""
 
@@ -9651,6 +9670,12 @@ msgid "Oops!"
 msgstr "Hoppsan!"
 
 #: src/components/PdsDialog.tsx:208
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:230
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:234
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:161
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:165
+#: src/view/com/profile/ProfileMenu.tsx:475
+#: src/view/com/profile/ProfileMenu.tsx:479
 msgid "Open"
 msgstr ""
 
@@ -9728,8 +9753,8 @@ msgstr "Öppna inställningar för gruppchatt"
 msgid "Open in Google Translate"
 msgstr "Öppna i Google Översätt"
 
-#: src/components/Post/Embed/ExternalEmbed/index.tsx:104
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:147
+#: src/components/Post/Embed/ExternalEmbed/index.tsx:109
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:153
 msgid "Open link to {niceUrl}"
 msgstr "Öppna länk till {niceUrl}"
 
@@ -9745,23 +9770,9 @@ msgstr "Öppna felsökningssida för moderering"
 msgid "Open muted words and tags settings"
 msgstr "Öppna inställningar för ignorerade ord och taggar"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:177
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:180
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:143
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:146
-msgid "Open original post"
-msgstr ""
-
 #: src/screens/Search/components/StarterPackCard.tsx:121
 msgid "Open pack"
 msgstr "Öppna paket"
-
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:188
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:191
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:155
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:158
-msgid "Open post in PDSls"
-msgstr ""
 
 #: src/components/PostControls/PostMenu/index.tsx:67
 msgid "Open post options menu"
@@ -9772,19 +9783,9 @@ msgstr "Öppna meny för inläggsalternativ"
 msgid "Open profile"
 msgstr "Öppna profil"
 
-#: src/view/com/profile/ProfileMenu.tsx:400
-#: src/view/com/profile/ProfileMenu.tsx:403
-msgid "Open profile in PDSls"
-msgstr ""
-
 #: src/features/inviteFriends/components/ActionButtons.tsx:39
 msgid "Open QR code scanner"
 msgstr "Öppna QR-skannern"
-
-#: src/view/com/profile/ProfileMenu.tsx:409
-#: src/view/com/profile/ProfileMenu.tsx:412
-msgid "Open repo in PDSls"
-msgstr ""
 
 #: src/components/BotAccountAlert.tsx:62
 #: src/components/BotAccountAlert.tsx:71
@@ -9986,6 +9987,13 @@ msgstr "Eller logga in på ett av dina andra konton."
 msgid "Original · {0}"
 msgstr ""
 
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:243
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:246
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:173
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:176
+msgid "Original post"
+msgstr ""
+
 #: src/screens/Settings/components/OTAInfo.tsx:55
 msgid "OTA status: ..."
 msgstr "OTA-status: …"
@@ -10133,6 +10141,23 @@ msgstr ""
 
 #: src/components/PdsDialog.tsx:105
 msgid "PDS Information"
+msgstr ""
+
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:253
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:256
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:183
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:186
+msgid "PDSls"
+msgstr ""
+
+#: src/view/com/profile/ProfileMenu.tsx:487
+#: src/view/com/profile/ProfileMenu.tsx:490
+msgid "PDSls profile"
+msgstr ""
+
+#: src/view/com/profile/ProfileMenu.tsx:496
+#: src/view/com/profile/ProfileMenu.tsx:499
+msgid "PDSls repository"
 msgstr ""
 
 #: src/screens/ProfileList/index.tsx:167
@@ -10645,7 +10670,7 @@ msgstr "Inlägg sparat"
 msgid "Post translation provider"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:273
+#: src/components/Post/Embed/index.tsx:276
 msgid "Post unavailable"
 msgstr ""
 
@@ -11287,8 +11312,8 @@ msgstr "Ta bort förslag"
 msgid "Remove this feed from your saved feeds"
 msgstr "Ta bort det här flödet från dina sparade flöden"
 
-#: src/view/com/profile/ProfileMenu.tsx:489
-#: src/view/com/profile/ProfileMenu.tsx:494
+#: src/view/com/profile/ProfileMenu.tsx:577
+#: src/view/com/profile/ProfileMenu.tsx:582
 msgid "Remove trust"
 msgstr ""
 
@@ -11307,8 +11332,8 @@ msgstr "Ta bort användare från lista"
 
 #: src/components/verification/VerificationRemovePrompt.tsx:48
 #: src/components/verification/VerificationsDialog.tsx:253
-#: src/view/com/profile/ProfileMenu.tsx:568
-#: src/view/com/profile/ProfileMenu.tsx:571
+#: src/view/com/profile/ProfileMenu.tsx:656
+#: src/view/com/profile/ProfileMenu.tsx:659
 msgid "Remove verification"
 msgstr "Ta bort verifiering"
 
@@ -11316,13 +11341,13 @@ msgstr "Ta bort verifiering"
 msgid "Remove your verification for this account?"
 msgstr "Ta bort din verifiering av det här kontot?"
 
-#: src/components/Post/Embed/index.tsx:287
-#: src/components/Post/Embed/index.tsx:357
+#: src/components/Post/Embed/index.tsx:290
+#: src/components/Post/Embed/index.tsx:360
 msgid "Removed by author"
 msgstr "Borttaget av författaren"
 
-#: src/components/Post/Embed/index.tsx:288
-#: src/components/Post/Embed/index.tsx:355
+#: src/components/Post/Embed/index.tsx:291
+#: src/components/Post/Embed/index.tsx:358
 msgid "Removed by you"
 msgstr "Borttaget av dig"
 
@@ -11351,19 +11376,19 @@ msgid "Removed from your feeds"
 msgstr "Togs bort från dina flöden"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:342
+#: src/components/PostControls/index.tsx:345
 #: src/screens/PostThread/components/ReaderSeam.tsx:276
 msgid "Removed like as @{0}"
 msgstr ""
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:370
+#: src/components/PostControls/index.tsx:373
 #: src/screens/PostThread/components/ReaderSeam.tsx:302
 msgid "Removed repost as @{0}"
 msgstr ""
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:405
+#: src/components/PostControls/index.tsx:408
 msgid "Removed save as @{0}"
 msgstr ""
 
@@ -11468,11 +11493,11 @@ msgstr "Svara"
 
 #. Accessibility label for the reply button, verb form followed by number of replies and noun form
 #. placeholder {0}: post.replyCount || 0
-#: src/components/PostControls/index.tsx:433
+#: src/components/PostControls/index.tsx:436
 msgid "Reply ({0, plural, one {# reply} other {# replies}})"
 msgstr "Svara ({0, plural, one {# svar} other {# svar}})"
 
-#: src/components/PostControls/index.tsx:562
+#: src/components/PostControls/index.tsx:565
 #: src/screens/PostThread/components/ReaderSeam.tsx:417
 msgid "Reply as"
 msgstr ""
@@ -11510,8 +11535,8 @@ msgstr "Svaret doldes utan problem"
 msgid "Report"
 msgstr "Anmäl"
 
-#: src/view/com/profile/ProfileMenu.tsx:635
-#: src/view/com/profile/ProfileMenu.tsx:638
+#: src/view/com/profile/ProfileMenu.tsx:723
+#: src/view/com/profile/ProfileMenu.tsx:726
 msgid "Report account"
 msgstr "Anmäl konto"
 
@@ -11614,13 +11639,13 @@ msgstr "Återpublicera"
 msgid "Repost ({0, plural, one {# repost} other {# reposts}})"
 msgstr "Återpublicera ({0, plural, one {# återpublicering} other {# återpubliceringar}})"
 
-#: src/components/PostControls/index.tsx:582
+#: src/components/PostControls/index.tsx:585
 #: src/screens/PostThread/components/ReaderSeam.tsx:435
 msgid "Repost as"
 msgstr ""
 
 #. placeholder {0}: items.length
-#: src/view/com/posts/PostFeedItemCarousel.tsx:346
+#: src/view/com/posts/PostFeedItemCarousel.tsx:392
 msgid "Repost carousel, {0} reposts"
 msgstr ""
 
@@ -11632,7 +11657,7 @@ msgid "Repost or quote post"
 msgstr "Återpublicera eller citera inlägg"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:371
+#: src/components/PostControls/index.tsx:374
 #: src/screens/PostThread/components/ReaderSeam.tsx:303
 msgid "Reposted as @{0}"
 msgstr ""
@@ -11948,7 +11973,7 @@ msgstr "Ledsna gif-bilder"
 msgid "Save"
 msgstr "Spara"
 
-#: src/components/PostControls/index.tsx:620
+#: src/components/PostControls/index.tsx:623
 msgid "Save as"
 msgstr ""
 
@@ -12019,7 +12044,7 @@ msgid "Saved"
 msgstr "Sparat"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:406
+#: src/components/PostControls/index.tsx:409
 msgid "Saved as @{0}"
 msgstr ""
 
@@ -12072,11 +12097,11 @@ msgstr "Skanna QR-kod"
 msgid "Science"
 msgstr "Vetenskap"
 
-#: src/view/com/posts/PostFeedItemCarousel.tsx:147
+#: src/view/com/posts/PostFeedItemCarousel.tsx:175
 msgid "Scroll carousel left"
 msgstr ""
 
-#: src/view/com/posts/PostFeedItemCarousel.tsx:156
+#: src/view/com/posts/PostFeedItemCarousel.tsx:184
 msgid "Scroll carousel right"
 msgstr ""
 
@@ -12186,8 +12211,8 @@ msgstr "Sök språk"
 msgid "Search my posts"
 msgstr "Sök i mina inlägg"
 
-#: src/view/com/profile/ProfileMenu.tsx:420
-#: src/view/com/profile/ProfileMenu.tsx:423
+#: src/view/com/profile/ProfileMenu.tsx:508
+#: src/view/com/profile/ProfileMenu.tsx:511
 msgid "Search posts"
 msgstr "Sök inlägg"
 
@@ -12537,10 +12562,10 @@ msgstr "Skicka meddelandet från din telefon"
 msgid "Send verification email"
 msgstr "Skicka e-post för verifiering"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:159
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:165
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:167
-#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:173
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:171
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:209
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:215
 msgid "Send via direct message"
 msgstr "Skicka via direktmeddelande"
 
@@ -12692,12 +12717,18 @@ msgstr "Sexuellt suggestivt"
 #: src/components/Link.tsx:445
 #: src/components/MediaPreview.tsx:270
 #: src/components/Post/Embed/ImageContextMenu.tsx:74
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:190
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:194
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:139
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:143
 #: src/components/StarterPack/QrCodeDialog.tsx:198
 #: src/screens/Hashtag.tsx:133
 #: src/screens/Messages/components/InviteLinkDialog.tsx:415
 #: src/screens/Messages/components/InviteLinkDialog.tsx:426
 #: src/screens/StarterPack/StarterPackScreen.tsx:448
 #: src/screens/Topic.tsx:92
+#: src/view/com/profile/ProfileMenu.tsx:415
+#: src/view/com/profile/ProfileMenu.tsx:419
 msgid "Share"
 msgstr "Dela"
 
@@ -12705,12 +12736,12 @@ msgstr "Dela"
 msgid "Share age range"
 msgstr ""
 
-#: src/view/com/profile/ProfileMenu.tsx:712
+#: src/view/com/profile/ProfileMenu.tsx:802
 msgid "Share anyway"
 msgstr "Dela ändå"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:265
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:268
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:299
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:302
 msgid "Share author DID"
 msgstr "Dela författarens DID"
 
@@ -12741,8 +12772,8 @@ msgstr "Dialogruta för länkdelning"
 msgid "Share my profile"
 msgstr "Dela min profil"
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:256
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:259
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:290
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:293
 msgid "Share post at:// URI"
 msgstr "Dela inläggets at://-URI"
 
@@ -12773,21 +12804,10 @@ msgstr "Dela det här startpaketet"
 msgid "Share this starter pack and help people join your community on Bluesky."
 msgstr "Dela det här startpaketet och hjälp andra att gå med i din gemenskap på Bluesky."
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:211
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:214
-#: src/view/com/profile/ProfileMenu.tsx:376
-#: src/view/com/profile/ProfileMenu.tsx:389
-msgid "Share via bsky.app..."
-msgstr ""
-
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:201
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:204
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:163
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:169
 #: src/screens/StarterPack/StarterPackScreen.tsx:641
 #: src/screens/StarterPack/StarterPackScreen.tsx:649
-#: src/view/com/profile/ProfileMenu.tsx:354
-#: src/view/com/profile/ProfileMenu.tsx:366
 msgid "Share via..."
 msgstr "Dela via…"
 
@@ -12823,11 +12843,6 @@ msgstr ""
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:136
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:142
 msgid "Show “Followed by” on own profile"
-msgstr ""
-
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:65
-#: src/screens/Settings/RunesSettings/MenusSettings.tsx:71
-msgid "Show \"Open original post\" and \"Open post in PDSls\" buttons"
 msgstr ""
 
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:132
@@ -12958,6 +12973,14 @@ msgstr "Visa utdrag från dina sparade flöden i ditt Följer-flöde"
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:133
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:139
 msgid "Show standard profile UI on labeler accounts"
+msgstr ""
+
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:71
+msgid "Show the Open submenu for external links"
+msgstr ""
+
+#: src/screens/Settings/RunesSettings/MenusSettings.tsx:65
+msgid "Show the Open submenu for external post and profile links"
 msgstr ""
 
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:122
@@ -13177,6 +13200,13 @@ msgstr "Hoppa över introduktionen och börja använda ditt konto"
 #: src/screens/Onboarding/StepSuggestedStarterpacks/index.tsx:102
 msgid "Skip to next step"
 msgstr "Hoppa till nästa steg"
+
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:262
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:265
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:195
+#: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:198
+msgid "Skythread"
+msgstr ""
 
 #: src/components/images/Gallery/index.tsx:448
 msgid "slide"
@@ -13489,13 +13519,13 @@ msgid "Subscribe"
 msgstr "Prenumerera"
 
 #. placeholder {0}: highlightedPublisher.name
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:447
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:476
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:456
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:485
 msgid "Subscribe on {0}"
 msgstr "Prenumerera med {0}"
 
 #. placeholder {0}: highlightedPublisher.name
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:475
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:484
 msgid "Subscribe to {publicationTitle} on {0}"
 msgstr "Prenumerera på {publicationTitle} med {0}"
 
@@ -13600,14 +13630,12 @@ msgstr "Avstängda konton kan inte delta i chatten."
 msgid "Switch account"
 msgstr "Byt konto"
 
-#: src/components/EphemeralAccountSwitcher.tsx:179
-#: src/components/EphemeralAccountSwitcher.tsx:186
-#: src/components/EphemeralAccountSwitcher.tsx:345
-#: src/components/EphemeralAccountSwitcher.tsx:356
-#: src/components/EphemeralAccountSwitcher.tsx:369
-#: src/components/EphemeralAccountSwitcher.tsx:482
-#: src/components/EphemeralAccountSwitcher.tsx:524
-#: src/components/EphemeralAccountSwitcher.tsx:544
+#: src/components/EphemeralAccountSwitcher.tsx:262
+#: src/components/EphemeralAccountSwitcher.tsx:273
+#: src/components/EphemeralAccountSwitcher.tsx:286
+#: src/components/EphemeralAccountSwitcher.tsx:426
+#: src/components/EphemeralAccountSwitcher.tsx:469
+#: src/components/EphemeralAccountSwitcher.tsx:489
 #: src/view/shell/desktop/LeftNav.tsx:134
 msgid "Switch accounts"
 msgstr "Byt mellan konton"
@@ -14069,12 +14097,12 @@ msgstr "Ett problem uppstod med att uppdatera dina flöden. Kontrollera din inte
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:404
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:428
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:478
-#: src/view/com/profile/ProfileMenu.tsx:168
-#: src/view/com/profile/ProfileMenu.tsx:181
-#: src/view/com/profile/ProfileMenu.tsx:198
-#: src/view/com/profile/ProfileMenu.tsx:211
-#: src/view/com/profile/ProfileMenu.tsx:232
-#: src/view/com/profile/ProfileMenu.tsx:247
+#: src/view/com/profile/ProfileMenu.tsx:215
+#: src/view/com/profile/ProfileMenu.tsx:228
+#: src/view/com/profile/ProfileMenu.tsx:245
+#: src/view/com/profile/ProfileMenu.tsx:258
+#: src/view/com/profile/ProfileMenu.tsx:280
+#: src/view/com/profile/ProfileMenu.tsx:295
 msgid "There was an issue! {0}"
 msgstr "Ett problem uppstod! {0}"
 
@@ -14437,7 +14465,7 @@ msgstr "Det här inlägget har <0>{0}</0> som angivet skapelsedatum, men registr
 msgid "This post has an unknown type of threadgate on it. Your app may be out of date."
 msgstr "Det här inlägget har en okänd typ av trådrestriktion inställd. Din app kan vara inaktuell."
 
-#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:246
+#: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:280
 msgid "This post is only visible to logged-in users."
 msgstr "Det här inlägget visas bara för inloggade användare."
 
@@ -14453,7 +14481,7 @@ msgstr "Det här inlägget kommer att hållas dolt från flöden och trådar. De
 msgid "This post's author has disabled quote posts."
 msgstr "Författaren till det här inlägget har inaktiverat citatinlägg."
 
-#: src/view/com/profile/ProfileMenu.tsx:710
+#: src/view/com/profile/ProfileMenu.tsx:800
 msgid "This profile is only visible to logged-in users. It won't be visible to people who aren't signed in."
 msgstr "Den här profilen är syns bara för inloggade användare. Den syns inte för personer som inte är inloggade."
 
@@ -14765,8 +14793,8 @@ msgstr "Avsiktligt störande eller provocerande beteende (”trolling”)"
 msgid "Trust emerges from relationships, communities, and shared context, so we’re also enabling <0>trusted verifiers</0>: organizations that can directly issue verification."
 msgstr "Förtroende skapas genom relationer, gemenskaper och delade sammanhang. Därför inför vi även <0>betrodda verifierare</0> – organisationer med möjlighet att utfärda verifieringar direkt."
 
-#: src/view/com/profile/ProfileMenu.tsx:501
-#: src/view/com/profile/ProfileMenu.tsx:504
+#: src/view/com/profile/ProfileMenu.tsx:589
+#: src/view/com/profile/ProfileMenu.tsx:592
 msgid "Trust verifier"
 msgstr ""
 
@@ -14929,8 +14957,8 @@ msgstr "Häv blockering av {displayName}"
 
 #: src/components/dms/ConvoMenu.tsx:287
 #: src/components/dms/ConvoMenu.tsx:291
-#: src/view/com/profile/ProfileMenu.tsx:615
-#: src/view/com/profile/ProfileMenu.tsx:621
+#: src/view/com/profile/ProfileMenu.tsx:703
+#: src/view/com/profile/ProfileMenu.tsx:709
 msgid "Unblock account"
 msgstr "Häv blockering av konto"
 
@@ -14989,8 +15017,8 @@ msgstr "Sluta följ {0}"
 msgid "Unfollow {displayName}?"
 msgstr ""
 
-#: src/view/com/profile/ProfileMenu.tsx:442
-#: src/view/com/profile/ProfileMenu.tsx:455
+#: src/view/com/profile/ProfileMenu.tsx:530
+#: src/view/com/profile/ProfileMenu.tsx:543
 msgid "Unfollow account"
 msgstr "Sluta följ konto"
 
@@ -15031,7 +15059,7 @@ msgstr "Sluta gilla"
 #. Like button, liked state
 #. placeholder {0}: post.likeCount || 0
 #. placeholder {0}: shadow.likeCount || 0
-#: src/components/PostControls/index.tsx:488
+#: src/components/PostControls/index.tsx:491
 #: src/screens/PostThread/components/ReaderSeam.tsx:350
 msgid "Unlike ({0, plural, one {# like} other {# likes}})"
 msgstr "Sluta gilla ({0, plural, one {# gillamarkering} other {# gillamarkeringar}})"
@@ -15063,8 +15091,8 @@ msgstr "Sluta ignorera {0}"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1035
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1041
-#: src/view/com/profile/ProfileMenu.tsx:594
-#: src/view/com/profile/ProfileMenu.tsx:600
+#: src/view/com/profile/ProfileMenu.tsx:682
+#: src/view/com/profile/ProfileMenu.tsx:688
 msgid "Unmute account"
 msgstr "Sluta ignorera konto"
 
@@ -15462,8 +15490,8 @@ msgstr "Verifierat av:"
 
 #: src/components/verification/VerificationCreatePrompt.tsx:85
 #: src/components/verification/VerificationCreatePrompt.tsx:87
-#: src/view/com/profile/ProfileMenu.tsx:578
-#: src/view/com/profile/ProfileMenu.tsx:581
+#: src/view/com/profile/ProfileMenu.tsx:666
+#: src/view/com/profile/ProfileMenu.tsx:669
 msgid "Verify account"
 msgstr "Verifiera konto"
 
@@ -15621,8 +15649,8 @@ msgid "View"
 msgstr "Visa"
 
 #. placeholder {0}: view.source.title
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:340
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:670
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:349
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:681
 msgid "View {0}"
 msgstr "Visa {0}"
 
@@ -15656,7 +15684,7 @@ msgstr "Visa {displayName}s profil"
 msgid "View {firstAuthorName}'s profile"
 msgstr ""
 
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:478
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:487
 msgid "View {publicationTitle}"
 msgstr "Visa {publicationTitle}"
 
@@ -15718,7 +15746,7 @@ msgstr "Visa mer"
 msgid "View more trending videos"
 msgstr "Visa fler trendande videoklipp"
 
-#: src/components/ProfileBadges.tsx:236
+#: src/components/ProfileBadges.tsx:248
 msgid "View PDS information"
 msgstr ""
 
@@ -15730,12 +15758,12 @@ msgstr "Visa inlägg"
 #: src/components/ProfileHoverCard/index.web.tsx:608
 #: src/components/ProfileHoverCard/index.web.tsx:653
 #: src/view/com/posts/PostFeedErrorMessage.tsx:183
-#: src/view/com/util/PostMeta.tsx:132
-#: src/view/com/util/PostMeta.tsx:162
+#: src/view/com/util/PostMeta.tsx:115
+#: src/view/com/util/PostMeta.tsx:144
 msgid "View profile"
 msgstr "Visa profil"
 
-#: src/view/com/util/PostMeta.tsx:183
+#: src/view/com/util/PostMeta.tsx:165
 msgid "View Profile"
 msgstr ""
 
@@ -15743,10 +15771,10 @@ msgstr ""
 msgid "View profile banner"
 msgstr "Visa profilbanderoll"
 
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:340
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:448
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:479
-#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:670
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:349
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:457
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:488
+#: src/components/Post/Embed/StandardSiteEmbed/index.tsx:681
 msgid "View publication"
 msgstr "Visa publikation"
 
