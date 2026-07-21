@@ -1,12 +1,7 @@
-import {useCallback, useRef} from 'react'
-import {
-  type FlatList,
-  ScrollView,
-  useWindowDimensions,
-  View,
-} from 'react-native'
-import {Plural, useLingui} from '@lingui/react/macro'
+import {useCallback, useRef, useState} from 'react'
+import {ScrollView, useWindowDimensions, View} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
+import {Plural, useLingui} from '@lingui/react/macro'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {type FeedPostSlice} from '#/state/queries/post-feed'
@@ -14,8 +9,10 @@ import {BlockDrawerGesture} from '#/view/shell/BlockDrawerGesture'
 import {atoms as a, useTheme, utils, web} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
 import {
+  ChevronBottom_Stroke2_Corner0_Rounded as ChevronBottom,
   ChevronLeft_Stroke2_Corner0_Rounded as ChevronLeft,
   ChevronRight_Stroke2_Corner0_Rounded as ChevronRight,
+  ChevronTop_Stroke2_Corner0_Rounded as ChevronTop,
 } from '#/components/icons/Chevron'
 import {GalleryBleed} from '#/components/images/Gallery'
 import {ITEM_GAP} from '#/components/images/Gallery/const'
@@ -34,7 +31,13 @@ const MAX_CAROUSEL_HEIGHT = 520
 const CAROUSEL_VIEWPORT_RATIO = 0.55
 const BOTTOM_FADE_HEIGHT = 96
 
-function RepostCarouselViewport({children}: {children: React.ReactNode}) {
+function RepostCarouselViewport({
+  children,
+  expanded,
+}: {
+  children: React.ReactNode
+  expanded: boolean
+}) {
   const t = useTheme()
   const {height} = useWindowDimensions()
   const maxHeight = Math.min(
@@ -43,26 +46,33 @@ function RepostCarouselViewport({children}: {children: React.ReactNode}) {
   )
 
   return (
-    <View style={[a.w_full, a.overflow_hidden, {maxHeight}]}>
+    <View
+      style={[
+        a.w_full,
+        a.overflow_hidden,
+        {maxHeight: expanded ? undefined : maxHeight},
+      ]}>
       {children}
-      <LinearGradient
-        key={t.name}
-        pointerEvents="none"
-        colors={[
-          utils.alpha(t.palette.contrast_25, 0),
-          t.palette.contrast_25,
-        ]}
-        locations={[0, 1]}
-        style={[
-          a.absolute,
-          {
-            right: 0,
-            bottom: 0,
-            left: 0,
-            height: BOTTOM_FADE_HEIGHT,
-          },
-        ]}
-      />
+      {!expanded && (
+        <LinearGradient
+          key={t.name}
+          pointerEvents="none"
+          colors={[
+            utils.alpha(t.palette.contrast_25, 0),
+            t.palette.contrast_25,
+          ]}
+          locations={[0, 1]}
+          style={[
+            a.absolute,
+            {
+              right: 0,
+              bottom: 0,
+              left: 0,
+              height: BOTTOM_FADE_HEIGHT,
+            },
+          ]}
+        />
+      )}
     </View>
   )
 }
@@ -118,10 +128,14 @@ function RepostCard({
 
 function RepostCarouselHeader({
   count,
+  expanded,
+  onToggleExpanded,
   onScrollLeft,
   onScrollRight,
 }: {
   count: number
+  expanded: boolean
+  onToggleExpanded: () => void
   onScrollLeft: () => void
   onScrollRight: () => void
 }) {
@@ -139,9 +153,23 @@ function RepostCarouselHeader({
         a.align_center,
         a.justify_between,
       ]}>
-      <Text style={[a.text_sm, a.font_bold, t.atoms.text_contrast_medium]}>
-        {count} <Plural value={count} one="repost" other="reposts" />
-      </Text>
+      <View style={[a.gap_md, a.flex_row, a.align_center]}>
+        <Button
+          label={
+            expanded ? l`Collapse repost carousel` : l`Expand repost carousel`
+          }
+          accessibilityState={{expanded}}
+          size="tiny"
+          variant="ghost"
+          color="secondary"
+          shape={enableSquareButtons ? 'square' : 'round'}
+          onPress={onToggleExpanded}>
+          <ButtonIcon icon={expanded ? ChevronTop : ChevronBottom} />
+        </Button>
+        <Text style={[a.text_sm, a.font_bold, t.atoms.text_contrast_medium]}>
+          {count} <Plural value={count} one="repost" other="reposts" />
+        </Text>
+      </View>
       <View style={[a.gap_md, a.flex_row, a.align_end]}>
         <Button
           label={l`Scroll carousel left`}
@@ -166,7 +194,15 @@ function RepostCarouselHeader({
   )
 }
 
-function RepostCarouselNative({items}: {items: FeedPostSlice[]}) {
+function RepostCarouselNative({
+  items,
+  expanded,
+  onToggleExpanded,
+}: {
+  items: FeedPostSlice[]
+  expanded: boolean
+  onToggleExpanded: () => void
+}) {
   const scrollRef = useRef<ScrollView>(null)
   const currentIndexRef = useRef(0)
 
@@ -195,10 +231,12 @@ function RepostCarouselNative({items}: {items: FeedPostSlice[]}) {
     <>
       <RepostCarouselHeader
         count={items.length}
+        expanded={expanded}
+        onToggleExpanded={onToggleExpanded}
         onScrollLeft={scrollLeft}
         onScrollRight={scrollRight}
       />
-      <RepostCarouselViewport>
+      <RepostCarouselViewport expanded={expanded}>
         <BlockDrawerGesture>
           <ScrollView
             ref={scrollRef}
@@ -225,7 +263,15 @@ function RepostCarouselNative({items}: {items: FeedPostSlice[]}) {
   )
 }
 
-function RepostCarouselWeb({items}: {items: FeedPostSlice[]}) {
+function RepostCarouselWeb({
+  items,
+  expanded,
+  onToggleExpanded,
+}: {
+  items: FeedPostSlice[]
+  expanded: boolean
+  onToggleExpanded: () => void
+}) {
   const {t: l} = useLingui()
   const scrollRef = useRef<ScrollView>(null)
   const itemWidthsRef = useRef<Map<number, number>>(new Map())
@@ -254,9 +300,7 @@ function RepostCarouselWeb({items}: {items: FeedPostSlice[]}) {
   const scrollToIndex = useCallback(
     (index: number) => {
       const el =
-        scrollRef.current?.getScrollableNode() as unknown as
-          | HTMLElement
-          | null
+        scrollRef.current?.getScrollableNode() as unknown as HTMLElement | null
       if (!el) return
 
       if (stopTweenRef.current) {
@@ -312,7 +356,7 @@ function RepostCarouselWeb({items}: {items: FeedPostSlice[]}) {
    * vertical stack and stretch sibling cards to the tallest item.
    */
   useKeyboardHandlers({
-    flatListRef: scrollRef as unknown as React.RefObject<FlatList | null>,
+    flatListRef: scrollRef,
     itemWidthsRef,
     currentIndexRef,
     scrollTo,
@@ -321,7 +365,7 @@ function RepostCarouselWeb({items}: {items: FeedPostSlice[]}) {
   })
 
   usePointerHandlers({
-    flatListRef: scrollRef as unknown as React.RefObject<FlatList | null>,
+    flatListRef: scrollRef,
     itemWidthsRef,
     currentIndexRef,
     scrollTo,
@@ -333,10 +377,12 @@ function RepostCarouselWeb({items}: {items: FeedPostSlice[]}) {
     <>
       <RepostCarouselHeader
         count={items.length}
+        expanded={expanded}
+        onToggleExpanded={onToggleExpanded}
         onScrollLeft={scrollLeft}
         onScrollRight={scrollRight}
       />
-      <RepostCarouselViewport>
+      <RepostCarouselViewport expanded={expanded}>
         <BlockDrawerGesture>
           <ScrollView
             ref={scrollRef}
@@ -347,17 +393,8 @@ function RepostCarouselWeb({items}: {items: FeedPostSlice[]}) {
             showsHorizontalScrollIndicator={false}
             nestedScrollEnabled
             style={[a.w_full, web({overscrollBehaviorX: 'contain'})]}
-            contentContainerStyle={[
-              a.px_md,
-              a.pt_sm,
-              a.pb_lg,
-            ]}>
-            <View
-              style={[
-                a.flex_row,
-                a.align_start,
-                {gap: ITEM_GAP},
-              ]}>
+            contentContainerStyle={[a.px_md, a.pt_sm, a.pb_lg]}>
+            <View style={[a.flex_row, a.align_start, {gap: ITEM_GAP}]}>
               {items.map((slice, index) => {
                 itemWidthsRef.current.set(index, CARD_WIDTH)
                 return (
@@ -384,14 +421,26 @@ function RepostCarouselWeb({items}: {items: FeedPostSlice[]}) {
 
 export function PostFeedItemCarousel({items}: {items: FeedPostSlice[]}) {
   const t = useTheme()
+  const [expanded, setExpanded] = useState(false)
+  const onToggleExpanded = useCallback(() => {
+    setExpanded(value => !value)
+  }, [])
 
   return (
     <View
       style={[a.border_t, t.atoms.border_contrast_low, t.atoms.bg_contrast_25]}>
       {IS_WEB ? (
-        <RepostCarouselWeb items={items} />
+        <RepostCarouselWeb
+          items={items}
+          expanded={expanded}
+          onToggleExpanded={onToggleExpanded}
+        />
       ) : (
-        <RepostCarouselNative items={items} />
+        <RepostCarouselNative
+          items={items}
+          expanded={expanded}
+          onToggleExpanded={onToggleExpanded}
+        />
       )}
     </View>
   )
