@@ -3,9 +3,9 @@ import {Trans} from '@lingui/react/macro'
 
 import {atoms as a, useTheme} from '#/alf'
 import * as Layout from '#/components/Layout'
-import {Separator} from '#/components/Select'
 import {Text} from '#/components/Typography'
 import {CustomLabelToggle} from './components/CustomLabelToggle'
+import { FictionkinBadgeSettings } from './FictonkinBadgeSettings'
 
 export function DeltaBadgeSettingsScreen() {
   const t = useTheme()
@@ -42,22 +42,11 @@ export function DeltaBadgeSettingsScreen() {
               t.atoms.bg_contrast_50,
             ]}>
             <View style={[a.p_md]}>
-              <CustomLabelToggle isChild label="Lightner" value="lightner" />
-            </View>
-            <Separator />
-            <View style={[a.p_md]}>
-              <CustomLabelToggle isChild label="Darkner" value="darkner" />
-            </View>
-            <Separator />
-            <View style={[a.p_md]}>
-              <CustomLabelToggle isChild label="Tenna" value="tenna" />
-            </View>
-            <Separator />
-            <View style={[a.p_md]}>
               <CustomLabelToggle isChild label="Pet" value="pet" />
             </View>
           </View>
         </View>
+        <FictionkinBadgeSettings/>
       </Layout.Content>
     </Layout.Screen>
   )

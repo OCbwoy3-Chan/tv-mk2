@@ -9,13 +9,7 @@ import {Text} from '#/components/Typography'
 import {navigate} from '#/Navigation'
 import type * as bsky from '#/types/bsky'
 import {TennaIcon} from '../Icons'
-
-const charNames: {[char: string]: string} = {
-  kris: "Kris",
-  susie: "Susie",
-  ralsei: "Ralsei",
-  noelle: "Noelle"
-};
+import { deltaCharNames, isDeltaLabel, deltaCharIcons } from './TennaBadge'
 
 export function TennaAccountAlert({
   control,
@@ -28,21 +22,27 @@ export function TennaAccountAlert({
   const t = useTheme()
   const {currentAccount} = useSession()
 
-  const ll = profile.labels?.find(a=>(a.src===profile.did)&&(a.val.startsWith("dr-")))!;
-  const [chrN, chrT] = ll.val.replaceAll(/^dr\-([a-z]+)-(s|fictive|fictionkin)$/,"$1 $2").split(" ")
-  const isKin = chrT !== "s";
+  const ll = profile.labels?.find(a=>(a.src===profile.did)&&(isDeltaLabel(a.val).char!=="67"));
+
+  if (!ll) return <></>;
+
+  const kin = isDeltaLabel(ll.val);
 
   const isSelf = profile.did === currentAccount?.did
 
   const description = isSelf
-    ? l`You have marked yourself as${isKin ? " a" : ""} ${charNames[chrN]}${isKin ? " "+chrT : ""}. You can remove this label at any time from Tenna's Settings.`
-    : l`This user is${isKin ? " a" : ""} ${charNames[chrN]}${isKin ? " "+chrT : ""}.`
+    ? l`You are${kin.kin ? " a" : ""} ${deltaCharNames[kin.char]}${kin.kin ? " Deltarune "+kin.kin : ""}. You can remove this label at any time from Tenna's Settings.`
+    : l`This user is${kin.kin ? " a" : ""} ${deltaCharNames[kin.char]}${kin.kin ? " Deltarune "+kin.kin : ""}.`
 
   return (
     <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
       <Dialog.ScrollableInner label={l`Darkner`} style={[web({maxWidth: 320})]}>
         <View style={[a.align_center, a.pb_md, a.shadow_sm]}>
-          <TennaIcon width={48} fill={t.atoms.text_contrast_medium.color} />
+          <TennaIcon
+            source={deltaCharIcons[kin.char] ?? deltaCharIcons.toby}
+            width={48}
+            fill={t.atoms.text_contrast_medium.color}
+          />
         </View>
         <View style={[a.align_center]}>
           <Text

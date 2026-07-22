@@ -9,51 +9,54 @@ jobs:
     env:
       GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
     steps:
-      - name: Checkout code
+      - name: ⬇️ Checkout
         uses: actions/checkout@v5
 
       - uses: pnpm/action-setup@v6
 
-      - name: Set up Node.js
+      - name: 🔧 Setup Node
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: pnpm
 
-      - name: Set up Java
+      - name: 🧋 Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install dependencies
+      - name: ⚙️ Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Decode google-services.json
+      - name: 🔤 Compile translations
+        run: pnpm intl:build
+
+      - name: ✏️ Write google-services.json
         run: echo "$GOOGLE_SERVICES" | base64 -d > ./google-services.json
 
-      - name: Prebuild (generate native Android project via Expo)
+      - name: 🏗️ Prebuild (generate native Android project via Expo)
         run: npx expo prebuild --platform android --no-install
 
-      - name: Make gradlew executable
+      - name: 🔧 Make gradlew executable
         run: chmod +x ./android/gradlew
 
-      - name: Build Android APK
+      - name: 📦 Build Android APK
         run: cd android && ./gradlew assembleRelease
 
-      - name: Find release APK
+      - name: 🔍 Find release APK
         id: find_apk
         run: |
           APK_PATH=$(find "$GITHUB_WORKSPACE/android/app/build/outputs/apk/release" -name "*.apk" | head -n 1)
           echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
 
-      - name: Upload APK artifact
+      - name: ⬆️ Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
           path: ${{ steps.find_apk.outputs.apk_path }}
 
-      - name: Create prerelease GitHub Release
+      - name: 🪛 Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.sha }}

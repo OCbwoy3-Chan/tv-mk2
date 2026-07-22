@@ -1,56 +1,39 @@
-import {Image} from 'expo-image'
-import {type PathProps, type SvgProps} from 'react-native-svg'
+import { Image, ImageProps } from 'expo-image'
+import { Svg, Path, type PathProps, type SvgProps } from 'react-native-svg'
 
-export function LightnerIcon({
+export function TobyIcon({
   fill,
   ...rest
-}: {fill?: PathProps['fill']} & SvgProps) {
+}: { fill?: PathProps['fill'] } & SvgProps) {
   // @ts-ignore it's fiiiiine
   const size = parseInt(rest.width || 24)
 
   return (
     <Image
-      source={require('#/../assets/badges/lightner.png')}
-      accessibilityLabel="Lightner"
+      source={require('#/../assets/badges/toby.png')}
+      accessibilityLabel="Toby"
       accessibilityHint=""
       accessibilityIgnoresInvertColors
-      style={{width: size, height: size}}
-    />
-  )
-}
-
-export function DarknerIcon({
-  fill,
-  ...rest
-}: {fill?: PathProps['fill']} & SvgProps) {
-  // @ts-ignore it's fiiiiine
-  const size = parseInt(rest.width || 24)
-
-  return (
-    <Image
-      source={require('#/../assets/badges/darkner.png')}
-      accessibilityLabel="Darkner"
-      accessibilityHint=""
-      accessibilityIgnoresInvertColors
-      style={{width: size, height: size}}
+      style={{ width: size, height: size }}
     />
   )
 }
 
 export function TennaIcon({
   fill,
+  source,
   ...rest
-}: {fill?: PathProps['fill']} & SvgProps) {
+}: { fill?: PathProps['fill'] } & SvgProps & ImageProps) {
   // @ts-ignore it's fiiiiine
-  const size = parseInt(rest.width || 24)
+  const size = parseInt(rest.width || 24);
 
   return (
     <Image
-      source={require('#/../assets/logo.png')}
+      source={source}
       accessibilityLabel="Tenna"
       accessibilityHint=""
       accessibilityIgnoresInvertColors
-      style={{width: size, height: size}}
+      style={{ width: size, height: size }}
     />
   )
 }

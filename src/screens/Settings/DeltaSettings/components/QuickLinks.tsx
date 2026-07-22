@@ -3,7 +3,7 @@ import {Trans, useLingui} from '@lingui/react/macro'
 
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useTheme} from '#/alf'
-import { DarknerIcon } from '#/components/CrackComponents/Icons'
+import { TobyIcon } from '#/components/CrackComponents/Icons'
 import {ShieldCheck_Stroke2_Corner0_Rounded} from '#/components/icons/Shield'
 import {Separator} from '#/components/Select'
 import {Text} from '#/components/Typography'
@@ -28,7 +28,7 @@ export function TennaQuickLinks() {
         {
           text: l`Profile badges`,
           path: '/settings/deltas/badges',
-          icon: DarknerIcon,
+          icon: TobyIcon,
         },
         {
           text: l`Moderation labels`,

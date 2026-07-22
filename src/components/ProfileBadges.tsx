@@ -27,7 +27,7 @@ import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {VerificationCheckButton} from '#/components/verification/VerificationCheckButton'
 import {IS_WEB} from '#/env'
 import type * as bsky from '#/types/bsky'
-import { TennaBadge, TennaBadgeButton } from './CrackComponents/Tenna/TennaBadge'
+import { isTennaAccount, TennaBadge, TennaBadgeButton } from './CrackComponents/Tenna/TennaBadge'
 
 export type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
@@ -110,7 +110,8 @@ export function ProfileBadgesFromProfileShadow({
       l =>
         (l.val === 'lightner' || l.val === 'darkner') && l.src === shadowed.did,
     ) &&
-    !isSpecialAccount(shadowed)
+    !isSpecialAccount(shadowed) && 
+    !isTennaAccount(shadowed)
   )
     return null
 
