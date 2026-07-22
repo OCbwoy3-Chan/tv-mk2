@@ -10,12 +10,6 @@ import {SpecialBadge} from './SpecialBadge'
 
 const TEXTS_FOR_ACCOUNT = {
   'did:plc:vshnclkqqguyg6xcz6q7g65k': 'Toby',
-
-  // https://tenna.party/profile/did:plc:7hs24amavcdm4ufoqgonbm75/lists/3mpjcxrxnjp2v we are kris deltarune
-  'did:plc:s27ozzhlwk5jgkpk4adxmy2i': 'Kris Deltarune Fictionkin',
-  'did:web:vessel.darkworld.download': 'Kris Deltarune Fictionkin',
-  'did:plc:tywla754gbcxasm4rplh5jvb': 'Kris Deltarune Fictionkin'
-  
 }
 
 export function SpecialAccountAlert({

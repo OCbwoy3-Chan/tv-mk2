@@ -10,6 +10,13 @@ import {navigate} from '#/Navigation'
 import type * as bsky from '#/types/bsky'
 import {TennaIcon} from '../Icons'
 
+const charNames: {[char: string]: string} = {
+  kris: "Kris",
+  susie: "Susie",
+  ralsei: "Ralsei",
+  noelle: "Noelle"
+};
+
 export function TennaAccountAlert({
   control,
   profile,
@@ -21,10 +28,15 @@ export function TennaAccountAlert({
   const t = useTheme()
   const {currentAccount} = useSession()
 
+  const ll = profile.labels?.find(a=>(a.src===profile.did)&&(a.val.startsWith("dr-")))!;
+  const [chrN, chrT] = ll.val.replaceAll(/^dr\-([a-z]+)-(s|fictive|fictionkin)$/,"$1 $2").split(" ")
+  const isKin = chrT !== "s";
+
   const isSelf = profile.did === currentAccount?.did
+
   const description = isSelf
-    ? l`You have marked yourself as Mr. Tenna. You can remove this label at any time from Tenna's Settings.`
-    : l`This user is Mr. Tenna.`
+    ? l`You have marked yourself as${isKin ? " a" : ""} ${charNames[chrN]}${isKin ? " "+chrT : ""}. You can remove this label at any time from Tenna's Settings.`
+    : l`This user is${isKin ? " a" : ""} ${charNames[chrN]}${isKin ? " "+chrT : ""}.`
 
   return (
     <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
