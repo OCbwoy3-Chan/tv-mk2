@@ -55,8 +55,10 @@ let ShareMenuItems = ({
   const openLink = useOpenLink()
   const queryClient = useQueryClient()
   const copyLinksRef = useRef(false)
+  const atprotoExplorer = useAtprotoExplorer()
 
   const postUri = post.uri
+  const atprotoExplorerUrl = toAtprotoExplorerUrl(atprotoExplorer, postUri)
   const postAuthor = useProfileShadow(post.author)
 
   const href = useMemo(() => {
@@ -107,6 +109,23 @@ let ShareMenuItems = ({
     onShareProp()
   }
 
+  const onSharePostInAtprotoExplorer = () => {
+    void shareUrl(atprotoExplorerUrl)
+    onShareProp()
+  }
+
+  const onCopyAtprotoExplorerLink = async () => {
+    if (isIOS) {
+      await ExpoClipboard.setUrlAsync(atprotoExplorerUrl)
+    } else {
+      await ExpoClipboard.setStringAsync(atprotoExplorerUrl)
+    }
+    Toast.show(_(msg`Copied to clipboard`), {
+      type: 'success',
+    })
+    onShareProp()
+  }
+
   const onBeforeShareViaChat = () => {
     precachePost(queryClient, postUri, post)
   }
@@ -127,7 +146,6 @@ let ShareMenuItems = ({
     void shareText(postAuthor.did)
   }
 
-  const atprotoExplorer = useAtprotoExplorer()
   const isBridgedPost =
     !!post.record.bridgyOriginalUrl || !!post.record.fediverseId
   const originalPostUrl = (post.record.bridgyOriginalUrl ||
@@ -225,6 +243,24 @@ let ShareMenuItems = ({
                   <Trans>Copy</Trans>
                 </CheckboxItemText>
               </Menu.ContainerItem>
+              <Menu.Item
+                testID="postDropdownShareAtprotoExplorerBtn"
+                label={atprotoExplorer.name}
+                onPress={() => {
+                  if (copyLinksRef.current) {
+                    void onCopyAtprotoExplorerLink()
+                  } else {
+                    onSharePostInAtprotoExplorer()
+                  }
+                }}>
+                <Menu.ItemText>{atprotoExplorer.name}</Menu.ItemText>
+                <Menu.ItemIcon
+                  icon={
+                    atprotoExplorer.name === 'PDSls' ? PDSlsIcon : ChainLinkIcon
+                  }
+                  position="right"
+                />
+              </Menu.Item>
             </Menu.Group>
           </Menu.Submenu>
 

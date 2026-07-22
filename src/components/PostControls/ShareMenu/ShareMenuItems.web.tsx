@@ -51,8 +51,10 @@ let ShareMenuItems = ({
   const [devModeEnabled] = useDevMode()
   const aa = useAgeAssurance()
   const openLink = useOpenLink()
+  const atprotoExplorer = useAtprotoExplorer()
 
   const postUri = post.uri
+  const atprotoExplorerUrl = toAtprotoExplorerUrl(atprotoExplorer, postUri)
   const postCid = post.cid
   const postAuthor = useProfileShadow(post.author)
 
@@ -81,6 +83,11 @@ let ShareMenuItems = ({
     onShareProp()
   }
 
+  const onCopyAtprotoExplorerLink = () => {
+    void shareUrl(atprotoExplorerUrl)
+    onShareProp()
+  }
+
   const onSelectChatToShareTo = (conversation: string) => {
     ax.metric('share:press:dmSelected', {})
     navigation.navigate('MessagesConversation', {
@@ -99,7 +106,6 @@ let ShareMenuItems = ({
     void shareText(postAuthor.did)
   }
 
-  const atprotoExplorer = useAtprotoExplorer()
   const isBridgedPost =
     !!post.record.bridgyOriginalUrl || !!post.record.fediverseId
   const originalPostUrl = (post.record.bridgyOriginalUrl ||
@@ -156,6 +162,18 @@ let ShareMenuItems = ({
                 <Trans>Bluesky</Trans>
               </Menu.ItemText>
               <Menu.ItemIcon icon={BlueskyIcon} position="right" />
+            </Menu.Item>
+            <Menu.Item
+              testID="postDropdownShareAtprotoExplorerBtn"
+              label={atprotoExplorer.name}
+              onPress={onCopyAtprotoExplorerLink}>
+              <Menu.ItemText>{atprotoExplorer.name}</Menu.ItemText>
+              <Menu.ItemIcon
+                icon={
+                  atprotoExplorer.name === 'PDSls' ? PDSlsIcon : ChainLinkIcon
+                }
+                position="right"
+              />
             </Menu.Item>
           </Menu.Submenu>
 

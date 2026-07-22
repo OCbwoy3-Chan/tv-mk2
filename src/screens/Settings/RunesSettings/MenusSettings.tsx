@@ -8,9 +8,15 @@ import {
   useAtprotoExplorerSetting,
   useSetAtprotoExplorer,
 } from '#/state/preferences/atproto-explorer'
+import {
+  useSetShowClearskyProfileLink,
+  useShowClearskyProfileLink,
+} from '#/state/preferences/show-clearsky-profile-link'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import * as TextField from '#/components/forms/TextField'
+import * as Toggle from '#/components/forms/Toggle'
+import {ClearskyIcon} from '#/components/icons/services/Clearsky'
 import {Text} from '#/components/Typography'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
@@ -18,6 +24,8 @@ export function RunesMenusSettingsScreen() {
   const {t: l} = useLingui()
   const atprotoExplorer = useAtprotoExplorerSetting()
   const setAtprotoExplorer = useSetAtprotoExplorer()
+  const showClearskyProfileLink = useShowClearskyProfileLink()
+  const setShowClearskyProfileLink = useSetShowClearskyProfileLink()
   const atprotoExplorerRef = useRef(atprotoExplorer)
   atprotoExplorerRef.current = atprotoExplorer
 
@@ -52,8 +60,9 @@ export function RunesMenusSettingsScreen() {
         </SettingsList.ItemText>
         <Text style={[a.leading_snug]}>
           <Trans>
-            Choose the explorer used by Open menus. Use (uri) where the post,
-            profile, or repository AT URI should appear.
+            Choose the explorer used in Share and Open menus. Use (uri) where 
+            a post, profile, or repository AT URI should appear. Leave fields 
+            empty to reset to defaults.
           </Trans>
         </Text>
         <View style={[a.w_full]}>
@@ -93,6 +102,20 @@ export function RunesMenusSettingsScreen() {
           </TextField.Root>
         </View>
       </SettingsList.Group>
+      <SettingsList.Divider />
+      <Toggle.Item
+        name="show_clearsky_profile_link"
+        label={l`Show Clearsky in profile Open menu`}
+        value={showClearskyProfileLink}
+        onChange={setShowClearskyProfileLink}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={ClearskyIcon} />
+          <SettingsList.ItemText>
+            <Trans>Show Clearsky in profile Open menu</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
     </RunesScreenLayout>
   )
 }

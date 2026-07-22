@@ -23,6 +23,7 @@ import {
   useSetDeerVerificationTrust,
 } from '#/state/preferences/deer-verification'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useShowClearskyProfileLink} from '#/state/preferences/show-clearsky-profile-link'
 import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
 import {Nux, useNux, useSaveNux} from '#/state/queries/nuxs'
 import {
@@ -138,8 +139,13 @@ let ProfileMenu = ({
   const pendingShareAction = useRef<() => void>(() => {})
 
   const atprotoExplorer = useAtprotoExplorer()
+  const showClearskyProfileLink = useShowClearskyProfileLink()
   const openLink = useOpenLink()
 
+  const atprotoExplorerRepositoryUrl = toAtprotoExplorerUrl(
+    atprotoExplorer,
+    `at://${profile.did}`,
+  )
   const showLoggedOutWarning = useMemo(() => {
     return (
       profile.did !== currentAccount?.did &&
@@ -190,6 +196,18 @@ let ProfileMenu = ({
     await ExpoClipboard.setStringAsync(profile.handle)
     Toast.show(l`Copied to clipboard`, {type: 'success'})
   }, [l, profile.handle])
+
+  const onPressCopyAtprotoExplorer = useCallback(
+    async (url: string) => {
+      if (IS_IOS) {
+        await ExpoClipboard.setUrlAsync(url)
+      } else {
+        await ExpoClipboard.setStringAsync(url)
+      }
+      Toast.show(l`Copied to clipboard`, {type: 'success'})
+    },
+    [l],
+  )
 
   const shareOrWarn = useCallback(
     (action: () => void) => {
@@ -479,6 +497,32 @@ let ProfileMenu = ({
                     </CheckboxItemText>
                   </Menu.ContainerItem>
                 )}
+                <Menu.Item
+                  testID="profileHeaderDropdownShareAtprotoExplorerRepositoryBtn"
+                  label={l`Repository`}
+                  onPress={() => {
+                    shareOrWarn(() => {
+                      if (IS_WEB || copyLinksRef.current) {
+                        void onPressCopyAtprotoExplorer(
+                          atprotoExplorerRepositoryUrl,
+                        )
+                      } else {
+                        void shareUrl(atprotoExplorerRepositoryUrl)
+                      }
+                    })
+                  }}>
+                  <Menu.ItemText>
+                    <Trans>Repository</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon
+                    icon={
+                      atprotoExplorer.name === 'PDSls'
+                        ? PDSlsIcon
+                        : ChainLinkIcon
+                    }
+                    position="right"
+                  />
+                </Menu.Item>
               </Menu.Group>
             </Menu.Submenu>
             <Menu.Submenu
@@ -524,15 +568,17 @@ let ProfileMenu = ({
                     position="right"
                   />
                 </Menu.Item>
-                <Menu.Item
-                  testID="profileDropdownOpenInClearsky"
-                  label={l`Clearsky`}
-                  onPress={onOpenProfileInClearsky}>
-                  <Menu.ItemText>
-                    <Trans>Clearsky</Trans>
-                  </Menu.ItemText>
-                  <Menu.ItemIcon icon={ClearskyIcon} position="right" />
-                </Menu.Item>
+                {showClearskyProfileLink && (
+                  <Menu.Item
+                    testID="profileDropdownOpenInClearsky"
+                    label={l`Clearsky`}
+                    onPress={onOpenProfileInClearsky}>
+                    <Menu.ItemText>
+                      <Trans>Clearsky</Trans>
+                    </Menu.ItemText>
+                    <Menu.ItemIcon icon={ClearskyIcon} position="right" />
+                  </Menu.Item>
+                )}
               </Menu.Group>
             </Menu.Submenu>
             <Menu.Item

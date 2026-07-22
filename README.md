@@ -43,6 +43,7 @@ These are all available as options in the Runes sub-page of the app's settings.
 
 - Menus
   - Configure the ATProto explorer name and link used by Open menus
+  - Show Clearsky in profile Open menu
 - Badges
   - Trusted verifiers
     - Use own selection of trusted verifiers

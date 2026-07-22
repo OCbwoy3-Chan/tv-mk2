@@ -1,4 +1,4 @@
-import {forwardRef, useCallback, useId, useMemo, useState} from 'react'
+import {forwardRef, useCallback, useId, useMemo, useRef, useState} from 'react'
 import {
   Pressable,
   type StyleProp,
@@ -317,6 +317,7 @@ export function Submenu({children, label, trigger, style}: SubmenuProps) {
   const t = useTheme()
   const {reduceMotionEnabled} = useA11y()
   const [open, setOpen] = useState(false)
+  const triggerRef = useRef<React.ElementRef<typeof Pressable>>(null)
   const {
     state: hovered,
     onIn: onMouseEnter,
@@ -328,10 +329,32 @@ export function Submenu({children, label, trigger, style}: SubmenuProps) {
     <DropdownMenu.Sub open={open} onOpenChange={setOpen}>
       <DropdownMenu.SubTrigger asChild>
         <Pressable
+          ref={triggerRef}
           className="radix-dropdown-item"
           accessibilityHint=""
           accessibilityLabel={label}
           onPress={() => setOpen(true)}
+          onKeyDown={(event: React.KeyboardEvent<HTMLElement>) => {
+            if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return
+
+            const current = event.currentTarget
+            const parentMenu = current.closest('[role="menu"]')
+            if (!parentMenu) return
+
+            const items = Array.from(
+              parentMenu.querySelectorAll<HTMLElement>(
+                '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]',
+              ),
+            ).filter(item => item.getAttribute('aria-disabled') !== 'true')
+            const currentIndex = items.indexOf(current)
+            if (currentIndex === -1) return
+
+            event.preventDefault()
+            const offset = event.key === 'ArrowDown' ? 1 : -1
+            const nextIndex =
+              (currentIndex + offset + items.length) % items.length
+            items[nextIndex]?.focus()
+          }}
           onFocus={onFocus}
           onBlur={onBlur}
           style={flatten([
@@ -362,6 +385,23 @@ export function Submenu({children, label, trigger, style}: SubmenuProps) {
           sideOffset={4}
           collisionPadding={5}
           loop
+          onKeyDown={event => {
+            const closeKey =
+              document.documentElement.dir === 'rtl'
+                ? 'ArrowRight'
+                : 'ArrowLeft'
+            if (event.key !== closeKey) return
+
+            // Radix normally focuses the trigger before the submenu has
+            // finished closing. Re-focus it after unmount so the parent
+            // menu's roving-focus position is restored to this item.
+            event.preventDefault()
+            setOpen(false)
+            window.requestAnimationFrame(() => {
+              const trigger = triggerRef.current as unknown as HTMLElement
+              trigger?.focus()
+            })
+          }}
           className="dropdown-menu-transform-origin dropdown-menu-constrain-size">
           <View
             style={[
