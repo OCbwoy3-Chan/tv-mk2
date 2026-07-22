@@ -2935,6 +2935,11 @@ msgstr "Chaidh na h-atharraichean a shàbhaladh"
 msgid "Changes to the starter pack will not be reflected in the list after creation. The list will be an independent copy."
 msgstr "Cha bhi buaidh air an liosta ma dh’atharraicheas tu a’ phacaid-thòiseachaidh an dèidh dhut a chruthachadh. Bidh an liosta na lethbhreac neo-eisimeileach."
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:168
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:179
+msgid "Character"
+msgstr ""
+
 #: src/lib/hooks/useNotificationHandler.ts:133
 #: src/Navigation.tsx:651
 #: src/view/shell/bottom-bar/BottomBar.tsx:246
@@ -4199,10 +4204,8 @@ msgstr "Ùrlar dorcha"
 msgid "Dark World"
 msgstr ""
 
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:31
-#: src/components/CrackComponents/Tenna/DarknerBadge.tsx:62
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:31
-#: src/components/CrackComponents/Tenna/TennaBadge.tsx:62
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:39
+#: src/components/CrackComponents/Tenna/TennaBadge.tsx:98
 msgid "Darkner"
 msgstr ""
 
@@ -5105,6 +5108,10 @@ msgstr "Na cuir an comas ach {0}"
 #: src/screens/Moderation/index.tsx:389
 msgid "Enable adult content"
 msgstr "Cuir comas inbheach an comas"
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:149
+msgid "Enable Badge"
+msgstr ""
 
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:453
 msgid "Enable captions"
@@ -8076,11 +8083,6 @@ msgctxt "Name of app icon variant"
 msgid "Light"
 msgstr "Soilleir"
 
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:32
-#: src/components/CrackComponents/Tenna/LightnerBadge.tsx:62
-msgid "Lightner"
-msgstr ""
-
 #: src/screens/Profile/components/ProfileFeedHeader.tsx:513
 msgid "Like"
 msgstr "’S toil"
@@ -9530,14 +9532,10 @@ msgstr "Ceart ma-thà"
 
 #: src/components/BotAccountAlert.tsx:52
 #: src/components/BotAccountAlert.tsx:57
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:50
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:55
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:52
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:57
-#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:53
-#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:58
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:50
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:55
+#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:47
+#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:52
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:62
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:67
 #: src/components/dms/InitiateChatFlow.tsx:733
 #: src/components/dms/MessageItem.tsx:749
 #: src/components/PetAccountAlert.tsx:52
@@ -9796,12 +9794,8 @@ msgstr ""
 
 #: src/components/BotAccountAlert.tsx:62
 #: src/components/BotAccountAlert.tsx:71
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:60
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:69
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:62
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:71
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:60
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:69
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:72
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:81
 #: src/components/PetAccountAlert.tsx:62
 #: src/components/PetAccountAlert.tsx:71
 msgid "Open settings"
@@ -11155,6 +11149,10 @@ msgstr "Diùlt an t-iarrtas cabadaich"
 msgid "Reject join request"
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:215
+msgid "Relationship Type"
+msgstr ""
+
 #: src/screens/Messages/ChatList.tsx:423
 #: src/screens/Messages/Inbox.tsx:206
 msgid "Reload conversations"
@@ -11994,12 +11992,17 @@ msgstr "Sàbhail an latha-breith"
 #: src/screens/SavedFeeds.tsx:124
 #: src/screens/SavedFeeds.tsx:311
 #: src/screens/SavedFeeds.tsx:315
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:233
 #: src/screens/Settings/Settings.tsx:386
 #: src/screens/Settings/Settings.tsx:393
 #: src/view/com/composer/Composer.tsx:1717
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr "Sàbhail na h-atharraichean"
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:239
+msgid "Save Changes"
+msgstr ""
 
 #: src/view/com/composer/Composer.tsx:1689
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
@@ -12066,6 +12069,10 @@ msgstr "Inbhirean a shàbhail thu"
 msgid "Saved Posts"
 msgstr "Puist a shàbhail thu"
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:245
+msgid "Saved successfully!"
+msgstr ""
+
 #: src/screens/Profile/components/ProfileFeedHeader.tsx:133
 #: src/screens/ProfileList/components/Header.tsx:91
 msgid "Saved to your feeds"
@@ -12073,6 +12080,10 @@ msgstr "Air a shàbhaladh sna h-inbhirean agad"
 
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:95
 msgid "Saves"
+msgstr ""
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:239
+msgid "Saving..."
 msgstr ""
 
 #: src/components/NewskieDialog.tsx:141
@@ -12127,6 +12138,10 @@ msgstr ""
 #: src/screens/ProfileList/AboutSection.tsx:132
 msgid "Scroll to top"
 msgstr "Sgrolaich gun bhàrr"
+
+#: src/view/com/auth/SplashScreen.web.tsx:98
+msgid "Seal yo dark fountain! 🗣️"
+msgstr ""
 
 #: src/components/dialogs/SearchablePeopleList.tsx:675
 #: src/components/forms/SearchInput.tsx:54
@@ -13173,10 +13188,6 @@ msgstr ""
 msgid "Since"
 msgstr ""
 
-#: src/view/com/auth/SplashScreen.web.tsx:98
-msgid "Skeet yo shit! 🗣️"
-msgstr ""
-
 #: src/components/contacts/screens/PhoneInput.tsx:163
 #: src/components/contacts/screens/VerifyNumber.tsx:205
 #: src/screens/Onboarding/StepFindContactsIntro/index.tsx:86
@@ -13909,6 +13920,10 @@ msgstr "Thèid an aplacaid ath-thòiseachadh"
 msgid "The author of this thread has hidden this reply."
 msgstr "Dh’fhalaich ùghdar an t-snàithlein seo an fhreagairt seo."
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:121
+msgid "The badge"
+msgstr ""
+
 #: src/components/dialogs/BirthDateSettings.tsx:179
 msgid "The birthdate you've entered means you are under 18 years old. Certain content and features may be unavailable to you."
 msgstr "A rèir latha do bhreith, tha thu nas òige na 18 bliadhna. Bidh cuid a shusbaint is gleusan ann nach fhaigh thu cothrom air math dh’fhaodte."
@@ -14372,6 +14387,10 @@ msgstr ""
 msgid "This invite link is invalid"
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:124
+msgid "this is a tenna.party exclusive 👀"
+msgstr ""
+
 #: src/screens/Login/components/ConfirmHostingProviderDialog.tsx:143
 msgid "This is just a one-time security check, since we haven't seen this account on this device before."
 msgstr ""
@@ -14542,14 +14561,6 @@ msgstr ""
 msgid "This user has requested that their content only be shown to signed-in users."
 msgstr "Dh’iarr an cleachdaiche seo nach fhaic ach daoine clàraichte a-staigh an t-susbaint aca."
 
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:27
-msgid "This user is a Darkner."
-msgstr ""
-
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:27
-msgid "This user is a Lightner."
-msgstr ""
-
 #. placeholder {0}: list.name
 #: src/components/moderation/ModerationDetailsDialog.tsx:79
 msgid "This user is included in the <0>{0}</0> list which you have blocked."
@@ -14560,13 +14571,16 @@ msgstr "Tha an cleachdaiche seo air an liosta <0>{0}</0> agus tha iad sin bacte 
 msgid "This user is included in the <0>{0}</0> list which you have muted."
 msgstr "Tha an cleachdaiche seo air an liosta <0>{0}</0> agus tha iad sin mùchte agad."
 
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:27
-msgid "This user is Mr. Tenna."
-msgstr ""
-
 #: src/components/NewskieDialog.tsx:49
 msgid "This user is new here. Press for more info about when they joined."
 msgstr "Tha an cleachdaiche seo air ùr-thighinn. Dèan brùthadh airson barrachd fiosrachaidh mun latha a chaidh iad an sàs ann."
+
+#. placeholder {0}: kin.kin ? " a" : ""
+#. placeholder {1}: deltaCharNames[kin.char]
+#. placeholder {2}: kin.kin ? " Deltarune "+kin.kin : ""
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:35
+msgid "This user is{0} {1}{2}."
+msgstr ""
 
 #: src/view/com/profile/ProfileFollows.tsx:182
 msgid "This user isn't following anyone."
@@ -14690,8 +14704,8 @@ msgstr "Airson 2FA air a’ phost-d a chur à comas, dearbh gu bheil cead-inntri
 msgid "To log out, <0>click here</0>. Or if you’d prefer, you can <1>delete your account</1>."
 msgstr ""
 
-#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:34
-#: src/components/CrackComponents/Tenna/SpecialBadge.tsx:96
+#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:28
+#: src/components/CrackComponents/Tenna/SpecialBadge.tsx:91
 msgid "Toby"
 msgstr ""
 
@@ -14701,6 +14715,10 @@ msgstr "An-diugh"
 
 #: src/screens/Settings/DeltaSettings/components/CustomLabelToggle.tsx:94
 msgid "Toggle {label} label"
+msgstr ""
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:147
+msgid "Toggle fictionkin badge"
 msgstr ""
 
 #: src/screens/Moderation/index.tsx:392
@@ -14860,6 +14878,7 @@ msgstr ""
 msgid "Two-factor authentication (2FA)"
 msgstr "Dearbhadh dà-cheumnach (2FA)"
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:204
 #: src/view/com/composer/AtprotoBtn.tsx:131
 msgid "Type"
 msgstr ""
@@ -15749,7 +15768,7 @@ msgstr "Seall barrachd"
 msgid "View more trending videos"
 msgstr "Seall barrachd videothan a tha a’ treandadh"
 
-#: src/components/ProfileBadges.tsx:248
+#: src/components/ProfileBadges.tsx:237
 msgid "View PDS information"
 msgstr ""
 
@@ -16402,6 +16421,13 @@ msgstr "Chaidh do dhearbhadh. Caillidh tu d’ inbhe dearbhaidh ma dh’atharrai
 msgid "You are verified. You will lose your verification status if you change your handle. <0>Learn more.</0>"
 msgstr "Chaidh do dhearbhadh. Caillidh tu d’ inbhe dearbhaidh ma dh’atharraicheas tu an làmhrachan agad. <0>Barrachd fiosrachaidh.</0>"
 
+#. placeholder {0}: kin.kin ? " a" : ""
+#. placeholder {1}: deltaCharNames[kin.char]
+#. placeholder {2}: kin.kin ? " Deltarune "+kin.kin : ""
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:34
+msgid "You are{0} {1}{2}. You can remove this label at any time from Tenna's Settings."
+msgstr ""
+
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:49
 msgid "You can adjust your interests at any time from \"Content and media\" settings."
 msgstr "’S urrainn dhut na rudan sa bheil ùidh agad a chur air gleus uair sam bith sna roghainnean “Susbaint is meadhanan”."
@@ -16559,18 +16585,6 @@ msgstr ""
 
 #: src/components/BotAccountAlert.tsx:26
 msgid "You have marked this account as automated. You can remove it at any time from your account settings."
-msgstr ""
-
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:26
-msgid "You have marked yourself as a Darkner. You can remove this label at any time from Tenna's Settings."
-msgstr ""
-
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:26
-msgid "You have marked yourself as a Lightner. You can remove this label at any time from Tenna's Settings."
-msgstr ""
-
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:26
-msgid "You have marked yourself as Mr. Tenna. You can remove this label at any time from Tenna's Settings."
 msgstr ""
 
 #: src/components/moderation/ModerationDetailsDialog.tsx:124

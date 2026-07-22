@@ -2935,6 +2935,11 @@ msgstr "Modificări salvate"
 msgid "Changes to the starter pack will not be reflected in the list after creation. The list will be an independent copy."
 msgstr "Modificările la pachetul de pornire nu se vor reflecta în listă după creare. Lista va fi o copie independentă."
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:168
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:179
+msgid "Character"
+msgstr ""
+
 #: src/lib/hooks/useNotificationHandler.ts:133
 #: src/Navigation.tsx:651
 #: src/view/shell/bottom-bar/BottomBar.tsx:246
@@ -4199,10 +4204,8 @@ msgstr "Temă întunecată"
 msgid "Dark World"
 msgstr ""
 
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:31
-#: src/components/CrackComponents/Tenna/DarknerBadge.tsx:62
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:31
-#: src/components/CrackComponents/Tenna/TennaBadge.tsx:62
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:39
+#: src/components/CrackComponents/Tenna/TennaBadge.tsx:98
 msgid "Darkner"
 msgstr ""
 
@@ -5105,6 +5108,10 @@ msgstr "Activare doar {0}"
 #: src/screens/Moderation/index.tsx:389
 msgid "Enable adult content"
 msgstr "Activare conținut pentru adulți"
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:149
+msgid "Enable Badge"
+msgstr ""
 
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.tsx:453
 msgid "Enable captions"
@@ -8076,11 +8083,6 @@ msgctxt "Name of app icon variant"
 msgid "Light"
 msgstr "Luminoasă"
 
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:32
-#: src/components/CrackComponents/Tenna/LightnerBadge.tsx:62
-msgid "Lightner"
-msgstr ""
-
 #: src/screens/Profile/components/ProfileFeedHeader.tsx:513
 msgid "Like"
 msgstr "Apreciere"
@@ -9530,14 +9532,10 @@ msgstr "OK"
 
 #: src/components/BotAccountAlert.tsx:52
 #: src/components/BotAccountAlert.tsx:57
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:50
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:55
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:52
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:57
-#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:53
-#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:58
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:50
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:55
+#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:47
+#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:52
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:62
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:67
 #: src/components/dms/InitiateChatFlow.tsx:733
 #: src/components/dms/MessageItem.tsx:749
 #: src/components/PetAccountAlert.tsx:52
@@ -9796,12 +9794,8 @@ msgstr "Deschidere scanercod QR"
 
 #: src/components/BotAccountAlert.tsx:62
 #: src/components/BotAccountAlert.tsx:71
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:60
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:69
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:62
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:71
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:60
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:69
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:72
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:81
 #: src/components/PetAccountAlert.tsx:62
 #: src/components/PetAccountAlert.tsx:71
 msgid "Open settings"
@@ -11155,6 +11149,10 @@ msgstr "Respingere cerere de conversație"
 msgid "Reject join request"
 msgstr "Respingere cerere de alăturare"
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:215
+msgid "Relationship Type"
+msgstr ""
+
 #: src/screens/Messages/ChatList.tsx:423
 #: src/screens/Messages/Inbox.tsx:206
 msgid "Reload conversations"
@@ -11994,12 +11992,17 @@ msgstr "Salvați ziua de naștere"
 #: src/screens/SavedFeeds.tsx:124
 #: src/screens/SavedFeeds.tsx:311
 #: src/screens/SavedFeeds.tsx:315
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:233
 #: src/screens/Settings/Settings.tsx:386
 #: src/screens/Settings/Settings.tsx:393
 #: src/view/com/composer/Composer.tsx:1717
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr "Salvare modificări"
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:239
+msgid "Save Changes"
+msgstr ""
 
 #: src/view/com/composer/Composer.tsx:1689
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
@@ -12066,6 +12069,10 @@ msgstr "Fluxuri salvate"
 msgid "Saved Posts"
 msgstr "Postări salvate"
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:245
+msgid "Saved successfully!"
+msgstr ""
+
 #: src/screens/Profile/components/ProfileFeedHeader.tsx:133
 #: src/screens/ProfileList/components/Header.tsx:91
 msgid "Saved to your feeds"
@@ -12073,6 +12080,10 @@ msgstr "Salvat în fluxurile dvs."
 
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:95
 msgid "Saves"
+msgstr ""
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:239
+msgid "Saving..."
 msgstr ""
 
 #: src/components/NewskieDialog.tsx:141
@@ -12127,6 +12138,10 @@ msgstr "Derulați la mesajul la care s-a răspuns"
 #: src/screens/ProfileList/AboutSection.tsx:132
 msgid "Scroll to top"
 msgstr "Derulați până sus"
+
+#: src/view/com/auth/SplashScreen.web.tsx:98
+msgid "Seal yo dark fountain! 🗣️"
+msgstr ""
 
 #: src/components/dialogs/SearchablePeopleList.tsx:675
 #: src/components/forms/SearchInput.tsx:54
@@ -13173,10 +13188,6 @@ msgstr ""
 msgid "Since"
 msgstr "Începând cu"
 
-#: src/view/com/auth/SplashScreen.web.tsx:98
-msgid "Skeet yo shit! 🗣️"
-msgstr ""
-
 #: src/components/contacts/screens/PhoneInput.tsx:163
 #: src/components/contacts/screens/VerifyNumber.tsx:205
 #: src/screens/Onboarding/StepFindContactsIntro/index.tsx:86
@@ -13909,6 +13920,10 @@ msgstr "Aplicația va fi repornită"
 msgid "The author of this thread has hidden this reply."
 msgstr "Autorul acestui fir a ascuns acest răspuns."
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:121
+msgid "The badge"
+msgstr ""
+
 #: src/components/dialogs/BirthDateSettings.tsx:179
 msgid "The birthdate you've entered means you are under 18 years old. Certain content and features may be unavailable to you."
 msgstr "Data nașterii pe care ați introdus-o indică faptul că aveți sub 18 ani. Anumite conținuturi și caracterisitici pot fi indisponibile pentru dvs."
@@ -14372,6 +14387,10 @@ msgstr "Acest link de invitație a fost dezactivat."
 msgid "This invite link is invalid"
 msgstr "Acest link de invitație este invalid"
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:124
+msgid "this is a tenna.party exclusive 👀"
+msgstr ""
+
 #: src/screens/Login/components/ConfirmHostingProviderDialog.tsx:143
 msgid "This is just a one-time security check, since we haven't seen this account on this device before."
 msgstr ""
@@ -14542,14 +14561,6 @@ msgstr "Acest utilizator a dezactivat conversația și nu-i se pot scrie mesaje.
 msgid "This user has requested that their content only be shown to signed-in users."
 msgstr "Acest utilizator a solicitat ca conținutul său să fie afișat numai utilizatorilor conectați."
 
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:27
-msgid "This user is a Darkner."
-msgstr ""
-
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:27
-msgid "This user is a Lightner."
-msgstr ""
-
 #. placeholder {0}: list.name
 #: src/components/moderation/ModerationDetailsDialog.tsx:79
 msgid "This user is included in the <0>{0}</0> list which you have blocked."
@@ -14560,13 +14571,16 @@ msgstr "Acest utilizator este inclus în lista <0>{0}</0> pe care ați blocat-o.
 msgid "This user is included in the <0>{0}</0> list which you have muted."
 msgstr "Acest utilizator este inclus în lista <0>{0}</0> pe care ați amuțit-o."
 
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:27
-msgid "This user is Mr. Tenna."
-msgstr ""
-
 #: src/components/NewskieDialog.tsx:49
 msgid "This user is new here. Press for more info about when they joined."
 msgstr "Acest utilizator este nou aici. Apăsați pentru mai multe informații despre momentul când s-a alăturat."
+
+#. placeholder {0}: kin.kin ? " a" : ""
+#. placeholder {1}: deltaCharNames[kin.char]
+#. placeholder {2}: kin.kin ? " Deltarune "+kin.kin : ""
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:35
+msgid "This user is{0} {1}{2}."
+msgstr ""
 
 #: src/view/com/profile/ProfileFollows.tsx:182
 msgid "This user isn't following anyone."
@@ -14690,8 +14704,8 @@ msgstr "Pentru a dezactiva metoda A2F prin e-mail, verificați accesul la <0>{0}
 msgid "To log out, <0>click here</0>. Or if you’d prefer, you can <1>delete your account</1>."
 msgstr "Pentru a vă deconecta, faceți <0>clic aici</0>. Sau dacă preferați, puteți să vă <1>ștergeți contul</1>."
 
-#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:34
-#: src/components/CrackComponents/Tenna/SpecialBadge.tsx:96
+#: src/components/CrackComponents/Tenna/SpecialAccountAlert.tsx:28
+#: src/components/CrackComponents/Tenna/SpecialBadge.tsx:91
 msgid "Toby"
 msgstr ""
 
@@ -14701,6 +14715,10 @@ msgstr "Astăzi"
 
 #: src/screens/Settings/DeltaSettings/components/CustomLabelToggle.tsx:94
 msgid "Toggle {label} label"
+msgstr ""
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:147
+msgid "Toggle fictionkin badge"
 msgstr ""
 
 #: src/screens/Moderation/index.tsx:392
@@ -14860,6 +14878,7 @@ msgstr "Crepuscul"
 msgid "Two-factor authentication (2FA)"
 msgstr "Autentificare cu doi factori (A2F)"
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:204
 #: src/view/com/composer/AtprotoBtn.tsx:131
 msgid "Type"
 msgstr ""
@@ -15749,7 +15768,7 @@ msgstr "Vedeți mai multe"
 msgid "View more trending videos"
 msgstr "Vizualizați mai multe videoclipuri în tendințe"
 
-#: src/components/ProfileBadges.tsx:248
+#: src/components/ProfileBadges.tsx:237
 msgid "View PDS information"
 msgstr ""
 
@@ -16402,6 +16421,13 @@ msgstr "Sunteți verificat. Veți pierde starea de verificare dacă vă schimba�
 msgid "You are verified. You will lose your verification status if you change your handle. <0>Learn more.</0>"
 msgstr "Sunteți verificat. Veți pierde starea de verificare dacă vă schimbați identificatorul. <0>Aflați mai multe.</0>"
 
+#. placeholder {0}: kin.kin ? " a" : ""
+#. placeholder {1}: deltaCharNames[kin.char]
+#. placeholder {2}: kin.kin ? " Deltarune "+kin.kin : ""
+#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:34
+msgid "You are{0} {1}{2}. You can remove this label at any time from Tenna's Settings."
+msgstr ""
+
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:49
 msgid "You can adjust your interests at any time from \"Content and media\" settings."
 msgstr "Vă puteți ajusta interesele în orice moment din setările „Conținut și media”."
@@ -16560,18 +16586,6 @@ msgstr ""
 #: src/components/BotAccountAlert.tsx:26
 msgid "You have marked this account as automated. You can remove it at any time from your account settings."
 msgstr "Ați marcat acest cont ca fiind automatizat. Îl puteți elimina oricând din setările contului dvs."
-
-#: src/components/CrackComponents/Tenna/DarknerAccountAlert.tsx:26
-msgid "You have marked yourself as a Darkner. You can remove this label at any time from Tenna's Settings."
-msgstr ""
-
-#: src/components/CrackComponents/Tenna/LightnerAccountAlert.tsx:26
-msgid "You have marked yourself as a Lightner. You can remove this label at any time from Tenna's Settings."
-msgstr ""
-
-#: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:26
-msgid "You have marked yourself as Mr. Tenna. You can remove this label at any time from Tenna's Settings."
-msgstr ""
 
 #: src/components/moderation/ModerationDetailsDialog.tsx:124
 #: src/lib/moderation/useModerationCauseDescription.ts:100
