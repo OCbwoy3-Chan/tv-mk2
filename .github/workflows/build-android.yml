@@ -53,13 +53,26 @@ jobs:
       - name: ⬆️ Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
+          name: tenna-party.apk
           path: ${{ steps.find_apk.outputs.apk_path }}
+
+      - name: 🏷️ Create release tag
+        id: create_tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          TAG="v$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::7}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          git tag -a "$TAG" -m "CI release $TAG"
+          git push origin "$TAG"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🪛 Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.sha }}
+          tag_name: ${{ steps.create_tag.outputs.tag }}
           prerelease: true
           files: ${{ steps.find_apk.outputs.apk_path }}
         env:
