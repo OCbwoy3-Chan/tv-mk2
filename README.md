@@ -1,34 +1,39 @@
-# ????? ????? Social App 📺🎤 (alpha)
+# tenna.party app 📺🎤 (alpha)
 
-Hey, audience! This is the codebase for the ????? ????? app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
+Hey, audience! This is the codebase for the tenna.party app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
 
 **EVERYTHING IS WIP, SOME THINGS MAY NOT WORK OR MAY HAVE NOT BEEN IMPLEMENTED YET.**
 
 Get the app itself:
 
 - **Web: [tenna.party](https://tenna.party)**
-- **iOS: [native builds are avaiable here](https://github.com/OCbwoy3-Chan/tv-mk2/actions) (unsigned, for sideloading)**
-- **Android: [native builds are MAYBE avaiable here via obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/OCbwoy3-Chan/tv-mk2/actions)**
+- **iOS: [native builds are avaiable here via github actions](https://github.com/OCbwoy3-Chan/tv-mk2/actions) (unsigned, for sideloading)**
+- **Android: [native builds are avaiable here via obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/OCbwoy3-Chan/tv-mk2/actions) and [github actions](https://github.com/OCbwoy3-Chan/tv-mk2/actions)** (use gh)
 
-**PLEASE NOTE THAT ANDROID SUPPORT IS NOT MY #1 PRIORITY RIGHT NOW AS I DO NOT OWN AN ANDROID OF MY OWN NOR EMULATE ONE** 
+**PLEASE NOTE THAT ANDROID SUPPORT IS NOT MY #1 PRIORITY RIGHT NOW AS I DO NOT OWN AN ANDROID OF MY OWN NOR EMULATE ONE BECAUSE I'M AN IPHONE PERSON**
 
 ## Improvements on Witchsky
 
 - Tenna's Settings Page: Settings -> Deltas (above Runes)
-- New fun self-labels: Lightner, Darkner, Tenna and well uhhh...
-- VIP Exclusive labels such as... (they're hard-coded, im prob gonna make it use a labeler instead)
-- Enhanced Custom TID option in composer, backported from TV World before it shut down. It's better than ([witchsky's own implementation](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow)).
-- Native iOS via GitHub Actions (Unsigned. Requires Sideloading)
-- Removed the labeler limit (200 max if u hit the limit ur you're deadass insane /gen /j)
-- Brought back AI preferences [after their removal in v128](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mqtl52mokc2p) in Settings -> Deltas
-<!-- - Bypass !hide warnings on things labeled by Bluesky Moderation and other labelers -->
+- New fun self-badge system: Character + Fictive / Fictionkin shown in the dialog when clicked.
+- *Enhanced* Custom TID option in composer: Better than the one on [witchsky](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow).
+- Removed the labeler limit (200 max, but its way too much)
+- Brought back AI prefs in our settings (it's atproto, y'all!)
+
+- Native iOS via GitHub Actions (for sideloading)
+
+- Native Android APK via GitHub actions
+- Notifications on Android! (might not work if i fucked something up)
+
+- OUR selfhosted push service at https://push.tenna.party (one computer located in the middle of nowhere in latvia)
 
 ### TODO: Kris
 
 - [ ] Custom cancellations (like on cred.blue/canceller) & import from repo button
 - [ ] AltStore PAL Builds (My broke ass, I need a MacBook and an Apple Dev License) so it can be downloaded in EU & Japan
-- [ ] Notifications (needs our own notif service + dev license, wtf)
+- [ ] Notifications on iOS (europe only, needs mac, apple dev license, alternative app distrib, signing, expo push, real tos & privacy policy and altstore)
 - [ ] Rely on Expo EAS instead for signed builds (Needs rich dad or a bunch of MONEY)
+- [ ] Bypass !hide warnings on things labeled by Bluesky Moderation and other labelers
 
 ## Development Resources
 
@@ -48,7 +53,7 @@ v is a fork of Witchsky, which itself is a fork of the official Bluesky client, 
 
 > tenna.party is a community fork, and we'd love to merge your PR!
 
-As a rule of thumb, the best features for ????? ????? are those that have any positive impact on the user experience regardless of the maintenance overhead. Since tenna.party is a soft-ish fork, any features (patches) we add on top of Witchsky need to be maintained. For example, a change to the way posts are composed may be very invasive, touching lots of code across the codebase. If upstream refactors this component, we will need to rewrite this feature to be compatible or drop it from the client.
+As a rule of thumb, the best features for tenna.party are those that have any positive impact on the user experience regardless of the maintenance overhead. Since tenna.party is a soft-ish fork, any features (patches) we add on top of Witchsky need to be maintained. For example, a change to the way posts are composed may be very invasive, touching lots of code across the codebase. If upstream refactors this component, we will need to rewrite this feature to be compatible or drop it from the client. Just go freestyle, I guess!
 
 For this reason, only features that require changing only a small or medium amount of code from upstream should be considered.
 
@@ -72,12 +77,12 @@ Just like Witchsky and social-app, you have our blessing 🪄✨ to fork this ap
 
 Please be sure to:
 
-- Change all branding in the repository and UI to clearly differentiate from ????? ?????.
+- Change all branding in the repository and UI to clearly differentiate from Bluesky, Witchsky and tenna.party.
 - Change any support links (feedback, email, terms of service, issue tracker, etc) to your own systems.
 
 ## Self hosting & personal builds
 
-Self hosting is great! It is our intention that ????? ????? is easy to self host and build on your own. If you host your own instance of ????? ?????, or make your own builds, please make some level of effort to clarify that it is not an "official" build or instance. This can be in the form of a different domain or branding, but can also be as simple as not advertising your hosted instance or builds as "official" releases.
+Self hosting is great! It is our intention that tenna.party is easy to self host and build on your own. If you host your own instance of tenna.party, or make your own builds, please make some level of effort to clarify that it is not an "official" build or instance. This can be in the form of a different domain or branding, but can also be as simple as not advertising your hosted instance or builds as "official" releases.
 
 ## Security disclosures
 
