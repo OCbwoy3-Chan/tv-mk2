@@ -957,7 +957,7 @@ msgstr "<0>{0}</0> membres"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr "<0>{displayName}</0><1/><2> vous a ajouté·e</2>"
 
-#: src/components/PdsDialog.tsx:243
+#: src/components/PdsDialog.tsx:245
 msgid "<0>Learn more</0> about PDSes or how to <1>self-host</1> your own."
 msgstr ""
 
@@ -2546,7 +2546,7 @@ msgstr "Bluesky, c’est plus sympa avec des amis. Envie de ramener les vôtres�
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr "Bluesky a besoin d’accéder à l’appareil photo pour scanner les QR codes d’autres profils."
 
-#: src/components/PdsDialog.tsx:126
+#: src/components/PdsDialog.tsx:128
 msgid "Bluesky Social"
 msgstr ""
 
@@ -3551,7 +3551,7 @@ msgstr ""
 msgid "Constellations instance URL"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:190
+#: src/components/PdsDialog.tsx:192
 msgid "Contact"
 msgstr ""
 
@@ -3954,7 +3954,7 @@ msgstr "Échec de l’envoi des contacts. Vous devez revérifier votre numéro d
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:236
+#: src/components/PdsDialog.tsx:238
 msgid "Couldn’t load extra details from this server."
 msgstr ""
 
@@ -4200,7 +4200,7 @@ msgstr "Sombre"
 msgid "Dark theme"
 msgstr "Thème sombre"
 
-#: src/components/PdsDialog.tsx:131
+#: src/components/PdsDialog.tsx:133
 msgid "Dark World"
 msgstr ""
 
@@ -5893,7 +5893,7 @@ msgstr ""
 msgid "Feature gates"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:122
+#: src/components/PdsDialog.tsx:124
 msgid "Fediverse"
 msgstr ""
 
@@ -6868,7 +6868,7 @@ msgstr "Ce pseudo est trop long. Veuillez utiliser un pseudo plus court."
 msgid "Handle, DID, or PDS address"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:215
+#: src/components/PdsDialog.tsx:217
 msgid "Handles"
 msgstr ""
 
@@ -7660,7 +7660,7 @@ msgstr "Code d’invitation"
 msgid "Invite code not accepted. Check that you input it correctly and try again."
 msgstr "Code d’invitation refusé. Vérifiez que vous l’avez saisi correctement et réessayez."
 
-#: src/components/PdsDialog.tsx:206
+#: src/components/PdsDialog.tsx:208
 msgid "Invite code required"
 msgstr ""
 
@@ -7925,7 +7925,7 @@ msgctxt "english-only-resource"
 msgid "Learn more about importing contacts"
 msgstr "En savoir plus sur l’import de contacts (en anglais)"
 
-#: src/components/PdsDialog.tsx:246
+#: src/components/PdsDialog.tsx:248
 msgid "Learn more about PDSes"
 msgstr ""
 
@@ -7934,7 +7934,7 @@ msgstr ""
 msgid "Learn more about self hosting your PDS."
 msgstr "En savoir plus sur l’auto-hébergement de PDS (en anglais)."
 
-#: src/components/PdsDialog.tsx:158
+#: src/components/PdsDialog.tsx:160
 msgid "Learn more about the Fediverse"
 msgstr ""
 
@@ -8360,7 +8360,7 @@ msgstr "Chargement des listes…"
 msgid "Loading post interaction settings..."
 msgstr "Chargement des paramètres d’interaction du post…"
 
-#: src/components/PdsDialog.tsx:178
+#: src/components/PdsDialog.tsx:180
 msgid "Loading server details…"
 msgstr ""
 
@@ -9674,7 +9674,7 @@ msgstr "Oups, ce profil n’existe pas. Essayez d’en scanner un autre."
 msgid "Oops!"
 msgstr "Oups !"
 
-#: src/components/PdsDialog.tsx:208
+#: src/components/PdsDialog.tsx:210
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:230
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:234
 #: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:161
@@ -10140,7 +10140,7 @@ msgstr "Mettre en pause la vidéo"
 msgid "PDS badges"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:105
+#: src/components/PdsDialog.tsx:107
 msgid "PDS Information"
 msgstr ""
 
@@ -12531,7 +12531,7 @@ msgstr "La sélection de plusieurs types de médias n’est pas prise en charge.
 msgid "Self-harm or dangerous behaviors"
 msgstr "Automutiliation ou comportement dangereux"
 
-#: src/components/PdsDialog.tsx:253
+#: src/components/PdsDialog.tsx:255
 msgid "Self-hosting PDS documentation"
 msgstr ""
 
@@ -13175,7 +13175,7 @@ msgstr "Connecté en tant que @{0}"
 msgid "Signing in..."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:203
+#: src/components/PdsDialog.tsx:205
 msgid "Signup"
 msgstr ""
 
@@ -14216,7 +14216,7 @@ msgstr "Ce compte a demandé aux personnes de se connecter pour voir son profil.
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr "Ce compte est bloqué par un ou plusieurs de vos listes de modération. Pour le débloquer, visitez vos listes directement et retirez-en ce compte."
 
-#: src/components/PdsDialog.tsx:154
+#: src/components/PdsDialog.tsx:156
 msgid "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>."
 msgstr ""
 
@@ -14224,7 +14224,7 @@ msgstr ""
 msgid "This account is no longer available"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:139
+#: src/components/PdsDialog.tsx:141
 msgid "This account’s data is stored on a Personal Data Server at <0>{hostname}</0>."
 msgstr ""
 

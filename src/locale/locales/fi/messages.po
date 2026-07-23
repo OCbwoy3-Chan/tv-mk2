@@ -957,7 +957,7 @@ msgstr "Listan <0>{0}</0> jäsenet"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:243
+#: src/components/PdsDialog.tsx:245
 msgid "<0>Learn more</0> about PDSes or how to <1>self-host</1> your own."
 msgstr ""
 
@@ -2546,7 +2546,7 @@ msgstr ""
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:126
+#: src/components/PdsDialog.tsx:128
 msgid "Bluesky Social"
 msgstr ""
 
@@ -3551,7 +3551,7 @@ msgstr ""
 msgid "Constellations instance URL"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:190
+#: src/components/PdsDialog.tsx:192
 msgid "Contact"
 msgstr ""
 
@@ -3954,7 +3954,7 @@ msgstr ""
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:236
+#: src/components/PdsDialog.tsx:238
 msgid "Couldn’t load extra details from this server."
 msgstr ""
 
@@ -4200,7 +4200,7 @@ msgstr "Tumma"
 msgid "Dark theme"
 msgstr "Tumma teema"
 
-#: src/components/PdsDialog.tsx:131
+#: src/components/PdsDialog.tsx:133
 msgid "Dark World"
 msgstr ""
 
@@ -5893,7 +5893,7 @@ msgstr ""
 msgid "Feature gates"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:122
+#: src/components/PdsDialog.tsx:124
 msgid "Fediverse"
 msgstr ""
 
@@ -6868,7 +6868,7 @@ msgstr "Käyttäjätunnus liian pitkä. Kokeile lyhyempää."
 msgid "Handle, DID, or PDS address"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:215
+#: src/components/PdsDialog.tsx:217
 msgid "Handles"
 msgstr ""
 
@@ -7660,7 +7660,7 @@ msgstr "Kutsukoodi"
 msgid "Invite code not accepted. Check that you input it correctly and try again."
 msgstr "Kutsukoodia ei hyväksytty. Tarkista, että syötit sen oikein, ja yritä uudelleen."
 
-#: src/components/PdsDialog.tsx:206
+#: src/components/PdsDialog.tsx:208
 msgid "Invite code required"
 msgstr ""
 
@@ -7925,7 +7925,7 @@ msgctxt "english-only-resource"
 msgid "Learn more about importing contacts"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:246
+#: src/components/PdsDialog.tsx:248
 msgid "Learn more about PDSes"
 msgstr ""
 
@@ -7934,7 +7934,7 @@ msgstr ""
 msgid "Learn more about self hosting your PDS."
 msgstr "Lue lisää PDS:n itse hostaamisesta."
 
-#: src/components/PdsDialog.tsx:158
+#: src/components/PdsDialog.tsx:160
 msgid "Learn more about the Fediverse"
 msgstr ""
 
@@ -8360,7 +8360,7 @@ msgstr ""
 msgid "Loading post interaction settings..."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:178
+#: src/components/PdsDialog.tsx:180
 msgid "Loading server details…"
 msgstr ""
 
@@ -9674,7 +9674,7 @@ msgstr ""
 msgid "Oops!"
 msgstr "Hups!"
 
-#: src/components/PdsDialog.tsx:208
+#: src/components/PdsDialog.tsx:210
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:230
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:234
 #: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:161
@@ -10140,7 +10140,7 @@ msgstr "Pysäytä video"
 msgid "PDS badges"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:105
+#: src/components/PdsDialog.tsx:107
 msgid "PDS Information"
 msgstr ""
 
@@ -12531,7 +12531,7 @@ msgstr ""
 msgid "Self-harm or dangerous behaviors"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:253
+#: src/components/PdsDialog.tsx:255
 msgid "Self-hosting PDS documentation"
 msgstr ""
 
@@ -13175,7 +13175,7 @@ msgstr "Kirjautunut sisään käyttäjänä @{0}"
 msgid "Signing in..."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:203
+#: src/components/PdsDialog.tsx:205
 msgid "Signup"
 msgstr ""
 
@@ -14216,7 +14216,7 @@ msgstr "Tämä tili on pyytänyt, että käyttäjät kirjautuvat sisään nähd�
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr "Tämä tili on estetty ainakin yhden moderointilistasi perusteella. Poistaaksesi eston käy suoraan listoissa ja poista tämä käyttäjä."
 
-#: src/components/PdsDialog.tsx:154
+#: src/components/PdsDialog.tsx:156
 msgid "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>."
 msgstr ""
 
@@ -14224,7 +14224,7 @@ msgstr ""
 msgid "This account is no longer available"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:139
+#: src/components/PdsDialog.tsx:141
 msgid "This account’s data is stored on a Personal Data Server at <0>{hostname}</0>."
 msgstr ""
 

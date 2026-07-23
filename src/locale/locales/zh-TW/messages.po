@@ -957,7 +957,7 @@ msgstr "<0>{0}</0> 的成員"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr "<0>{displayName}</0><1/><2> 已將您加入</2>"
 
-#: src/components/PdsDialog.tsx:243
+#: src/components/PdsDialog.tsx:245
 msgid "<0>Learn more</0> about PDSes or how to <1>self-host</1> your own."
 msgstr ""
 
@@ -2546,7 +2546,7 @@ msgstr "與朋友一起使用 Bluesky 更有趣。想邀請一些朋友加入嗎
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr "Bluesky 需要相機存取權限，以掃描其他個人檔案的 QR Code。"
 
-#: src/components/PdsDialog.tsx:126
+#: src/components/PdsDialog.tsx:128
 msgid "Bluesky Social"
 msgstr ""
 
@@ -3551,7 +3551,7 @@ msgstr ""
 msgid "Constellations instance URL"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:190
+#: src/components/PdsDialog.tsx:192
 msgid "Contact"
 msgstr ""
 
@@ -3954,7 +3954,7 @@ msgstr "無法上傳聯絡人。您需要重新驗證電話號碼以繼續"
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:236
+#: src/components/PdsDialog.tsx:238
 msgid "Couldn’t load extra details from this server."
 msgstr ""
 
@@ -4200,7 +4200,7 @@ msgstr "深色"
 msgid "Dark theme"
 msgstr "深色主題"
 
-#: src/components/PdsDialog.tsx:131
+#: src/components/PdsDialog.tsx:133
 msgid "Dark World"
 msgstr ""
 
@@ -5893,7 +5893,7 @@ msgstr ""
 msgid "Feature gates"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:122
+#: src/components/PdsDialog.tsx:124
 msgid "Fediverse"
 msgstr ""
 
@@ -6868,7 +6868,7 @@ msgstr "帳號代碼太長了，請縮短代碼再試一次。"
 msgid "Handle, DID, or PDS address"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:215
+#: src/components/PdsDialog.tsx:217
 msgid "Handles"
 msgstr ""
 
@@ -7660,7 +7660,7 @@ msgstr "邀請碼"
 msgid "Invite code not accepted. Check that you input it correctly and try again."
 msgstr "邀請碼無效。請檢查是否輸入正確，然後再試一次。"
 
-#: src/components/PdsDialog.tsx:206
+#: src/components/PdsDialog.tsx:208
 msgid "Invite code required"
 msgstr ""
 
@@ -7925,7 +7925,7 @@ msgctxt "english-only-resource"
 msgid "Learn more about importing contacts"
 msgstr "深入瞭解匯入聯絡人功能"
 
-#: src/components/PdsDialog.tsx:246
+#: src/components/PdsDialog.tsx:248
 msgid "Learn more about PDSes"
 msgstr ""
 
@@ -7934,7 +7934,7 @@ msgstr ""
 msgid "Learn more about self hosting your PDS."
 msgstr "深入瞭解如何自行架設 PDS。"
 
-#: src/components/PdsDialog.tsx:158
+#: src/components/PdsDialog.tsx:160
 msgid "Learn more about the Fediverse"
 msgstr ""
 
@@ -8360,7 +8360,7 @@ msgstr "正在載入列表……"
 msgid "Loading post interaction settings..."
 msgstr "正在載入貼文互動設定……"
 
-#: src/components/PdsDialog.tsx:178
+#: src/components/PdsDialog.tsx:180
 msgid "Loading server details…"
 msgstr ""
 
@@ -9674,7 +9674,7 @@ msgstr "抱歉，此個人檔案不存在。換一個 QR Code 試試。"
 msgid "Oops!"
 msgstr "糟糕！"
 
-#: src/components/PdsDialog.tsx:208
+#: src/components/PdsDialog.tsx:210
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:230
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:234
 #: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:161
@@ -10140,7 +10140,7 @@ msgstr "暫停影片"
 msgid "PDS badges"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:105
+#: src/components/PdsDialog.tsx:107
 msgid "PDS Information"
 msgstr ""
 
@@ -12531,7 +12531,7 @@ msgstr "不支援選擇多種媒體類型。"
 msgid "Self-harm or dangerous behaviors"
 msgstr "自殘或其他危險行為"
 
-#: src/components/PdsDialog.tsx:253
+#: src/components/PdsDialog.tsx:255
 msgid "Self-hosting PDS documentation"
 msgstr ""
 
@@ -13175,7 +13175,7 @@ msgstr "以 @{0} 的身分登入"
 msgid "Signing in..."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:203
+#: src/components/PdsDialog.tsx:205
 msgid "Signup"
 msgstr ""
 
@@ -14216,7 +14216,7 @@ msgstr "這個帳號要求用戶登入後才能檢視其個人檔案。"
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr "這個帳號已被您的一個或多個內容管理列表封鎖。若要解除封鎖，請逐一檢查這些列表並從中刪除此用戶。"
 
-#: src/components/PdsDialog.tsx:154
+#: src/components/PdsDialog.tsx:156
 msgid "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>."
 msgstr ""
 
@@ -14224,7 +14224,7 @@ msgstr ""
 msgid "This account is no longer available"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:139
+#: src/components/PdsDialog.tsx:141
 msgid "This account’s data is stored on a Personal Data Server at <0>{hostname}</0>."
 msgstr ""
 
