@@ -57,6 +57,7 @@ function formatBskyPdsDisplayName(hostname: string): string {
   if (hostname === 'protogen.at') return 'protogen.chat'
   if (hostname === 'pds.witchcraft.systems') return 'Witchcraft Systems'
   if (hostname === 'pds.synth.download') return 'synth.download'
+  if (hostname === 'pds.tokyonight.city') return 'Tokyo Night City'
 
   return hostname
 }
@@ -79,7 +80,7 @@ export function PdsDialog({
   let hostname = pdsUrl
   try {
     hostname = new URL(pdsUrl).hostname
-  } catch { }
+  } catch {}
 
   const isBsky = isBskyPdsUrl(pdsUrl)
   const isDarkworld = isDarkWorldPdsUrl(pdsUrl)
@@ -94,17 +95,17 @@ export function PdsDialog({
   const contactEmail = description.data?.contact?.email?.trim()
   const handleDomains = description.data?.availableUserDomains ?? []
   const inviteCodeRequired = description.data?.inviteCodeRequired
-  const formattedDomains = handleDomains.map(domain => domain.replace(/^\./, ''))
+  const formattedDomains = handleDomains.map(domain =>
+    domain.replace(/^\./, ''),
+  )
 
   return (
-    <Dialog.Outer
-      control={control}
-      nativeOptions={{preventExpansion: true}}>
+    <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
       <Dialog.Handle />
       <Dialog.ScrollableInner
         label={l`PDS Information`}
         style={[
-          gtMobile ? { width: 'auto', maxWidth: 400, minWidth: 200 } : a.w_full,
+          gtMobile ? {width: 'auto', maxWidth: 400, minWidth: 200} : a.w_full,
         ]}>
         <View style={[a.gap_lg, a.pb_lg]}>
           <View style={[a.flex_row, a.align_center, a.gap_md]}>
@@ -184,52 +185,50 @@ export function PdsDialog({
             description.isSuccess &&
             description.data && (
               <View style={[a.gap_md]}>
+                {contactEmail ? (
+                  <DetailItem
+                    label={l`Contact`}
+                    valueText={
+                      <InlineLinkText
+                        to={`mailto:${contactEmail}`}
+                        label={contactEmail}
+                        style={[a.text_md, a.font_semi_bold]}>
+                        {contactEmail}
+                      </InlineLinkText>
+                    }
+                  />
+                ) : null}
 
-              {contactEmail ? (
                 <DetailItem
-                  label={l`Contact`}
+                  label={l`Signup`}
                   valueText={
-                    <InlineLinkText
-                      to={`mailto:${contactEmail}`}
-                      label={contactEmail}
-                      style={[a.text_md, a.font_semi_bold]}>
-                      {contactEmail}
-                    </InlineLinkText>
+                    inviteCodeRequired ? (
+                      <Trans>Invite code required</Trans>
+                    ) : (
+                      <Trans>Open</Trans>
+                    )
                   }
                 />
-              ) : null}
 
-              <DetailItem
-                label={l`Signup`}
-                valueText={
-                  inviteCodeRequired ? (
-                    <Trans>Invite code required</Trans>
-                  ) : (
-                    <Trans>Open</Trans>
-                  )
-                }
-              />
-
-              {formattedDomains.length > 0 && (
-                <View style={[a.gap_xs]}>
-                  <DetailLabelText>{l`Handles`}</DetailLabelText>
+                {formattedDomains.length > 0 && (
                   <View style={[a.gap_xs]}>
-                    {formattedDomains.map(domain => (
-                      <View
-                        key={domain}
-                        style={[a.flex_row, a.gap_sm, a.align_start]}>
-                        <Text style={[a.text_md, a.leading_snug]}>•</Text>
-                        <Text style={[a.text_md, a.leading_snug, a.flex_1]}>
-                          {domain}
-                        </Text>
-                      </View>
-                    ))}
+                    <DetailLabelText>{l`Handles`}</DetailLabelText>
+                    <View style={[a.gap_xs]}>
+                      {formattedDomains.map(domain => (
+                        <View
+                          key={domain}
+                          style={[a.flex_row, a.gap_sm, a.align_start]}>
+                          <Text style={[a.text_md, a.leading_snug]}>•</Text>
+                          <Text style={[a.text_md, a.leading_snug, a.flex_1]}>
+                            {domain}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
                   </View>
-                </View>
-              )}
-
-            </View>
-          )}
+                )}
+              </View>
+            )}
 
           {shouldLoadDescription && description.isError && (
             <Text style={[a.text_md, t.atoms.text_contrast_medium]}>
@@ -258,7 +257,6 @@ export function PdsDialog({
               </Trans>
             </Text>
           )}
-
         </View>
 
         <Dialog.Close />
@@ -267,13 +265,7 @@ export function PdsDialog({
   )
 }
 
-function DetailItem({
-  label,
-  valueText,
-}: {
-  label: string
-  valueText: ReactNode
-}) {
+function DetailItem({label, valueText}: {label: string; valueText: ReactNode}) {
   return (
     <View style={[a.gap_xs]}>
       <DetailLabelText>{label}</DetailLabelText>
@@ -313,7 +305,7 @@ function BskyBadgeSVG({size}: {size: number}) {
   )
 }
 
-function FediverseBadgeSVG({ size }: { size: number }) {
+function FediverseBadgeSVG({size}: {size: number}) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
       <Rect width={24} height={24} rx={6} fill="#6364FF" />
@@ -395,7 +387,7 @@ function FaviconBadgeIcon({
       ) : null}
       <Image
         key={currentUrl}
-        source={{ uri: currentUrl }}
+        source={{uri: currentUrl}}
         style={{
           width: size,
           height: size,
