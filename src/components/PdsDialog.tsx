@@ -41,6 +41,7 @@ function formatBskyPdsDisplayName(hostname: string): string {
   if (hostname === 'myatproto.social') return 'Blacksky'
   if (hostname === 'cryptoanarchy.network') return 'Blacksky'
   if (hostname === 'eurosky.social') return 'Eurosky'
+  if (hostname === 'pds.wsocial.network') return 'W Social' // basically eurosky but with id verification
   if (hostname === 'northsky.social') return 'Northsky'
 
   if (hostname === 'at.app.wafrn.net') return 'Wafrn'
