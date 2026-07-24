@@ -12,6 +12,10 @@ import {shareText, shareUrl} from '#/lib/sharing'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {toShareUrl, toShareUrlBsky} from '#/lib/strings/url-helpers'
 import {type Shadow} from '#/state/cache/types'
+import {
+  toAtprotoExplorerUrl,
+  useAtprotoExplorer,
+} from '#/state/preferences/atproto-explorer'
 import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
 import {
   useDeerVerificationEnabled,
@@ -19,7 +23,7 @@ import {
   useSetDeerVerificationTrust,
 } from '#/state/preferences/deer-verification'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {useShowExternalShareButtons} from '#/state/preferences/external-share-buttons'
+import {useShowClearskyProfileLink} from '#/state/preferences/show-clearsky-profile-link'
 import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
 import {Nux, useNux, useSaveNux} from '#/state/queries/nuxs'
 import {
@@ -54,8 +58,9 @@ import {
   PersonX_Stroke2_Corner0_Rounded as PersonX,
 } from '#/components/icons/Person'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
-import {BlueskyIcon} from '#/components/icons/providers/Bluesky'
-import {PDSlsIcon} from '#/components/icons/providers/PDSls'
+import {BlueskyIcon} from '#/components/icons/services/Bluesky'
+import {ClearskyIcon} from '#/components/icons/services/Clearsky'
+import {PDSlsIcon} from '#/components/icons/services/PDSls'
 import {SpeakerVolumeFull_Stroke2_Corner0_Rounded as Unmute} from '#/components/icons/Speaker'
 import {StarterPack} from '#/components/icons/StarterPack'
 import * as Menu from '#/components/Menu'
@@ -133,9 +138,14 @@ let ProfileMenu = ({
   const addToListsDialogControl = useDialogControl()
   const pendingShareAction = useRef<() => void>(() => {})
 
-  const showExternalShareButtons = useShowExternalShareButtons()
+  const atprotoExplorer = useAtprotoExplorer()
+  const showClearskyProfileLink = useShowClearskyProfileLink()
   const openLink = useOpenLink()
 
+  const atprotoExplorerRepositoryUrl = toAtprotoExplorerUrl(
+    atprotoExplorer,
+    `at://${profile.did}`,
+  )
   const showLoggedOutWarning = useMemo(() => {
     return (
       profile.did !== currentAccount?.did &&
@@ -186,6 +196,18 @@ let ProfileMenu = ({
     await ExpoClipboard.setStringAsync(profile.handle)
     Toast.show(l`Copied to clipboard`, {type: 'success'})
   }, [l, profile.handle])
+
+  const onPressCopyAtprotoExplorer = useCallback(
+    async (url: string) => {
+      if (IS_IOS) {
+        await ExpoClipboard.setUrlAsync(url)
+      } else {
+        await ExpoClipboard.setStringAsync(url)
+      }
+      Toast.show(l`Copied to clipboard`, {type: 'success'})
+    },
+    [l],
+  )
 
   const shareOrWarn = useCallback(
     (action: () => void) => {
@@ -341,15 +363,22 @@ let ProfileMenu = ({
     navigation.navigate('ProfileSearch', {name: profile.handle})
   }, [navigation, profile.handle])
 
-  const onOpenProfileInPdsls = () => {
+  const onOpenProfileInAtprotoExplorer = () => {
     openLink(
-      `https://pds.ls/at://${profile.did}/app.bsky.actor.profile/self`,
+      toAtprotoExplorerUrl(
+        atprotoExplorer,
+        `at://${profile.did}/app.bsky.actor.profile/self`,
+      ),
       true,
     )
   }
 
-  const onOpenRepoInPdsls = () => {
-    openLink(`https://pds.ls/at://${profile.did}`, true)
+  const onOpenRepoInAtprotoExplorer = () => {
+    openLink(toAtprotoExplorerUrl(atprotoExplorer, `at://${profile.did}`), true)
+  }
+
+  const onOpenProfileInClearsky = () => {
+    openLink(`https://clearsky.app/${profile.did}/profile`, true)
   }
 
   const verificationCreatePromptControl = Prompt.usePromptControl()
@@ -458,51 +487,100 @@ let ProfileMenu = ({
                 </Menu.Item>
                 {!IS_WEB && (
                   <Menu.ContainerItem>
-                      <CheckboxItemText
-                        label={l`Copy instead of opening the share sheet`}
+                    <CheckboxItemText
+                      label={l`Copy instead of opening the share sheet`}
                       initialValue={copyLinksRef.current}
                       onChange={value => {
                         copyLinksRef.current = value
                       }}>
-                        <Trans>Copy</Trans>
+                      <Trans>Copy</Trans>
                     </CheckboxItemText>
                   </Menu.ContainerItem>
                 )}
+                <Menu.Item
+                  testID="profileHeaderDropdownShareAtprotoExplorerRepositoryBtn"
+                  label={l`Repository`}
+                  onPress={() => {
+                    shareOrWarn(() => {
+                      if (IS_WEB || copyLinksRef.current) {
+                        void onPressCopyAtprotoExplorer(
+                          atprotoExplorerRepositoryUrl,
+                        )
+                      } else {
+                        void shareUrl(atprotoExplorerRepositoryUrl)
+                      }
+                    })
+                  }}>
+                  <Menu.ItemText>
+                    <Trans>Repository</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon
+                    icon={
+                      atprotoExplorer.name === 'PDSls'
+                        ? PDSlsIcon
+                        : ChainLinkIcon
+                    }
+                    position="right"
+                  />
+                </Menu.Item>
               </Menu.Group>
             </Menu.Submenu>
-            {showExternalShareButtons && (
-              <Menu.Submenu
-                label={l`Open`}
-                trigger={
-                  <>
-                    <Menu.ItemText>
-                      <Trans>Open</Trans>
-                    </Menu.ItemText>
-                    <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
-                  </>
-                }>
-                <Menu.Group>
+            <Menu.Submenu
+              label={l`Open`}
+              trigger={
+                <>
+                  <Menu.ItemText>
+                    <Trans>Open</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
+                </>
+              }>
+              <Menu.Group>
+                <Menu.Item
+                  testID="profileDropdownOpenRepoInAtprotoExplorer"
+                  label={l`Repository`}
+                  onPress={onOpenRepoInAtprotoExplorer}>
+                  <Menu.ItemText>
+                    <Trans>Repository</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon
+                    icon={
+                      atprotoExplorer.name === 'PDSls'
+                        ? PDSlsIcon
+                        : ChainLinkIcon
+                    }
+                    position="right"
+                  />
+                </Menu.Item>
+                <Menu.Item
+                  testID="profileDropdownOpenProfileInAtprotoExplorer"
+                  label={l`Profile`}
+                  onPress={onOpenProfileInAtprotoExplorer}>
+                  <Menu.ItemText>
+                    <Trans>Profile</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon
+                    icon={
+                      atprotoExplorer.name === 'PDSls'
+                        ? PDSlsIcon
+                        : ChainLinkIcon
+                    }
+                    position="right"
+                  />
+                </Menu.Item>
+                {showClearskyProfileLink && (
                   <Menu.Item
-                    testID="profileDropdownOpenProfileInPdsls"
-                    label={l`PDSls profile`}
-                    onPress={onOpenProfileInPdsls}>
+                    testID="profileDropdownOpenInClearsky"
+                    label={l`Clearsky`}
+                    onPress={onOpenProfileInClearsky}>
                     <Menu.ItemText>
-                      <Trans>PDSls profile</Trans>
+                      <Trans>Clearsky</Trans>
                     </Menu.ItemText>
-                    <Menu.ItemIcon icon={PDSlsIcon} position="right" />
+                    <Menu.ItemIcon icon={ClearskyIcon} position="right" />
                   </Menu.Item>
-                  <Menu.Item
-                    testID="profileDropdownOpenRepoInPdsls"
-                    label={l`PDSls repository`}
-                    onPress={onOpenRepoInPdsls}>
-                    <Menu.ItemText>
-                      <Trans>PDSls repository</Trans>
-                    </Menu.ItemText>
-                    <Menu.ItemIcon icon={PDSlsIcon} position="right" />
-                  </Menu.Item>
-                </Menu.Group>
-              </Menu.Submenu>
-            )}
+                )}
+              </Menu.Group>
+            </Menu.Submenu>
             <Menu.Item
               testID="profileHeaderDropdownSearchBtn"
               label={l`Search posts`}

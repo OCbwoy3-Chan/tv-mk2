@@ -226,6 +226,7 @@ const schema = z.object({
   hideSimilarAccountsRecomm: z.boolean().optional(),
   hideScaryFollowButtons: z.boolean().optional(),
   showGermDmButton: z.boolean().optional(),
+  showClearskyProfileLink: z.boolean().optional(),
   showStandardLabelerProfile: z.boolean().optional(),
   confirmFollowUnfollow: z.boolean().optional(),
   discoverContextEnabled: z.boolean().optional(),
@@ -271,7 +272,14 @@ const schema = z.object({
     postsName: z.string().optional(),
   }),
 
+  /** @deprecated The Open submenu is now always shown. */
   showExternalShareButtons: z.boolean().optional(),
+  atprotoExplorer: z
+    .object({
+      name: z.string(),
+      url: z.string(),
+    })
+    .optional(),
 
   translationServicePreference: z.enum([
     'google',
@@ -397,6 +405,7 @@ export const defaults: Schema = {
   hideSimilarAccountsRecomm: true,
   hideScaryFollowButtons: false,
   showGermDmButton: false,
+  showClearskyProfileLink: false,
   showStandardLabelerProfile: true,
   confirmFollowUnfollow: true,
   discoverContextEnabled: false,
@@ -427,7 +436,10 @@ export const defaults: Schema = {
     hideBskyPds: true,
   },
   faviconService: 'https://twenty-icons.com/(pds)',
-  showExternalShareButtons: false,
+  atprotoExplorer: {
+    name: 'PDSls',
+    url: 'https://pds.ls/(uri)',
+  },
   translationServicePreference: 'google',
   libreTranslateInstance: 'https://libretranslate.com/',
 
