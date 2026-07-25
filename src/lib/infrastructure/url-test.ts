@@ -14,7 +14,7 @@ const IMAGE_CDN_TEST_PATH =
 
 const headers = new Headers({
   Accept: 'application/json',
-  'User-Agent': 'Witchsky (witchsky.app)',
+  'User-Agent': 'tenna.party',
 })
 
 async function withFetchTimeout<T>(

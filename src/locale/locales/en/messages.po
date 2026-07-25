@@ -6108,8 +6108,8 @@ msgid "Find people you know"
 msgstr "Find people you know"
 
 #: src/screens/Search/Shell.tsx:765
-msgid "Find posts, users, and feeds on Witchsky"
-msgstr "Find posts, users, and feeds on Witchsky"
+msgid "Find posts, users, and feeds on Bluesky"
+msgstr "Find posts, users, and feeds on Bluesky"
 
 #: src/components/dialogs/nuxs/FindContactsAnnouncement.tsx:98
 msgid "Find your friends"
@@ -8046,14 +8046,14 @@ msgstr "Leave group chat"
 msgid "Leave this group chat"
 msgstr "Leave this group chat"
 
+#: src/components/dialogs/LinkWarning.tsx:83
+#: src/components/dialogs/LinkWarning.tsx:91
+msgid "Leaving tenna.party"
+msgstr "Leaving tenna.party"
+
 #: src/screens/Messages/ConversationSettings/prompts.tsx:153
 msgid "Leaving this chat will lock it permanently and you won’t be able to rejoin."
 msgstr "Leaving this chat will lock it permanently and you won’t be able to rejoin."
-
-#: src/components/dialogs/LinkWarning.tsx:83
-#: src/components/dialogs/LinkWarning.tsx:91
-msgid "Leaving Witchsky"
-msgstr "Leaving Witchsky"
 
 #: src/components/moderation/BlockDialog.tsx:277
 msgid "Left group chat."
@@ -12683,8 +12683,8 @@ msgid "Settings"
 msgstr ""
 
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:116
-msgid "Settings are encoded and stored in a hidden draft post on your account. This lets you sync your Witchsky preferences across devices without any external service. Your session credentials are never included. Enabling sync loads any existing cloud settings and merges them with local changes."
-msgstr "Settings are encoded and stored in a hidden draft post on your account. This lets you sync your Witchsky preferences across devices without any external service. Your session credentials are never included. Enabling sync loads any existing cloud settings and merges them with local changes."
+msgid "Settings are encoded and stored in a hidden draft post on your account. This lets you sync your tenna.party preferences across devices without any external service. Your session credentials are never included. Enabling sync loads any existing cloud settings and merges them with local changes."
+msgstr "Settings are encoded and stored in a hidden draft post on your account. This lets you sync your tenna.party preferences across devices without any external service. Your session credentials are never included. Enabling sync loads any existing cloud settings and merges them with local changes."
 
 #: src/screens/Settings/NotificationSettings/index.tsx:221
 msgid "Settings for activity from others"
@@ -13850,6 +13850,10 @@ msgstr "Temporarily deactivate your account"
 #: src/Navigation.tsx:449
 msgid "Tenna"
 msgstr "Tenna"
+
+#: src/screens/Signup/index.tsx:167
+msgid "Tenna.party is a Bluesky client. If you already have an account, <0>sign in</0> instead of creating a new one. Otherwise, choose a provider to host your account! You can always switch to a different provider later, or even host your own."
+msgstr "Tenna.party is a Bluesky client. If you already have an account, <0>sign in</0> instead of creating a new one. Otherwise, choose a provider to host your account! You can always switch to a different provider later, or even host your own."
 
 #: src/screens/Signup/StepInfo/index.tsx:180
 msgid "tenna.party is part of the <0>Atmosphere</0>—the network of apps, services, and accounts built on the AT Protocol."
@@ -16273,10 +16277,6 @@ msgstr ""
 msgid "Witchsky"
 msgstr "Witchsky"
 
-#: src/screens/Signup/index.tsx:167
-msgid "Witchsky is a Bluesky client. If you already have an account, <0>sign in</0> instead of creating a new one. Otherwise, choose a provider to host your account! You can always switch to a different provider later, or even host your own."
-msgstr "Witchsky is a Bluesky client. If you already have an account, <0>sign in</0> instead of creating a new one. Otherwise, choose a provider to host your account! You can always switch to a different provider later, or even host your own."
-
 #: src/components/dms/AfterReportDialog.tsx:51
 msgid "Would you like to block this user and/or delete this conversation?"
 msgstr ""
@@ -16984,8 +16984,8 @@ msgid "Your email appears to be invalid."
 msgstr ""
 
 #: src/components/dialogs/EmailDialog/screens/VerificationReminder.tsx:67
-msgid "Your email has not yet been verified. Please verify your email in order to enjoy all the features of Witchsky."
-msgstr "Your email has not yet been verified. Please verify your email in order to enjoy all the features of Witchsky."
+msgid "Your email has not yet been verified. Please verify your email in order to enjoy all the features of Bluesky."
+msgstr "Your email has not yet been verified. Please verify your email in order to enjoy all the features of Bluesky."
 
 #: src/state/shell/progress-guide.tsx:216
 msgid "Your first like!"

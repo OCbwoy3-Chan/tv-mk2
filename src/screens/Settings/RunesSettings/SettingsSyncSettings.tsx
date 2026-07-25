@@ -115,7 +115,7 @@ export function RunesSettingsSyncSettingsScreen() {
         <Admonition type="info" style={[a.flex_1]}>
           <Trans>
             Settings are encoded and stored in a hidden draft post on your
-            account. This lets you sync your Witchsky preferences across devices
+            account. This lets you sync your tenna.party preferences across devices
             without any external service. Your session credentials are never
             included. Enabling sync loads any existing cloud settings and merges
             them with local changes.

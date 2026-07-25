@@ -165,7 +165,7 @@ export function Signup({
                       t.atoms.text_contrast_medium,
                     ]}>
                     <Trans>
-                      Witchsky is a Bluesky client. If you already have an
+                      Tenna.party is a Bluesky client. If you already have an
                       account,{' '}
                       <InlineLinkText
                         label={l`sign in`}

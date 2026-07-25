@@ -6113,7 +6113,7 @@ msgid "Find people you know"
 msgstr ""
 
 #: src/screens/Search/Shell.tsx:765
-msgid "Find posts, users, and feeds on Witchsky"
+msgid "Find posts, users, and feeds on Bluesky"
 msgstr ""
 
 #: src/components/dialogs/nuxs/FindContactsAnnouncement.tsx:98
@@ -8051,13 +8051,13 @@ msgstr ""
 msgid "Leave this group chat"
 msgstr ""
 
-#: src/screens/Messages/ConversationSettings/prompts.tsx:153
-msgid "Leaving this chat will lock it permanently and you won’t be able to rejoin."
-msgstr ""
-
 #: src/components/dialogs/LinkWarning.tsx:83
 #: src/components/dialogs/LinkWarning.tsx:91
-msgid "Leaving Witchsky"
+msgid "Leaving tenna.party"
+msgstr ""
+
+#: src/screens/Messages/ConversationSettings/prompts.tsx:153
+msgid "Leaving this chat will lock it permanently and you won’t be able to rejoin."
 msgstr ""
 
 #: src/components/moderation/BlockDialog.tsx:277
@@ -12688,7 +12688,7 @@ msgid "Settings"
 msgstr "सेटिङ्स"
 
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:116
-msgid "Settings are encoded and stored in a hidden draft post on your account. This lets you sync your Witchsky preferences across devices without any external service. Your session credentials are never included. Enabling sync loads any existing cloud settings and merges them with local changes."
+msgid "Settings are encoded and stored in a hidden draft post on your account. This lets you sync your tenna.party preferences across devices without any external service. Your session credentials are never included. Enabling sync loads any existing cloud settings and merges them with local changes."
 msgstr ""
 
 #: src/screens/Settings/NotificationSettings/index.tsx:221
@@ -13854,6 +13854,10 @@ msgstr ""
 
 #: src/Navigation.tsx:449
 msgid "Tenna"
+msgstr ""
+
+#: src/screens/Signup/index.tsx:167
+msgid "Tenna.party is a Bluesky client. If you already have an account, <0>sign in</0> instead of creating a new one. Otherwise, choose a provider to host your account! You can always switch to a different provider later, or even host your own."
 msgstr ""
 
 #: src/screens/Signup/StepInfo/index.tsx:180
@@ -16278,10 +16282,6 @@ msgstr "यो प्रयोगकर्ता किन समीक्षा
 msgid "Witchsky"
 msgstr ""
 
-#: src/screens/Signup/index.tsx:167
-msgid "Witchsky is a Bluesky client. If you already have an account, <0>sign in</0> instead of creating a new one. Otherwise, choose a provider to host your account! You can always switch to a different provider later, or even host your own."
-msgstr ""
-
 #: src/components/dms/AfterReportDialog.tsx:51
 msgid "Would you like to block this user and/or delete this conversation?"
 msgstr ""
@@ -16989,7 +16989,7 @@ msgid "Your email appears to be invalid."
 msgstr "तपाईंको ईमेल अमान्य देखिन्छ।"
 
 #: src/components/dialogs/EmailDialog/screens/VerificationReminder.tsx:67
-msgid "Your email has not yet been verified. Please verify your email in order to enjoy all the features of Witchsky."
+msgid "Your email has not yet been verified. Please verify your email in order to enjoy all the features of Bluesky."
 msgstr ""
 
 #: src/state/shell/progress-guide.tsx:216
