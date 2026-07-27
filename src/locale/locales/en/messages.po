@@ -426,7 +426,7 @@ msgstr "{0}/{1} {2, plural, one {member} other {members}}"
 
 #. Badge showing the current image position out of the total number of images in a gallery.
 #. placeholder {0}: index + 1
-#: src/components/images/Gallery/index.tsx:536
+#: src/components/images/Gallery/index.tsx:537
 msgctxt "gallery-badge-image-position-numbers"
 msgid "{0}/{imageCount}"
 msgstr "{0}/{imageCount}"
@@ -1283,8 +1283,8 @@ msgid "Add another account"
 msgstr ""
 
 #: src/view/com/composer/Composer.tsx:1800
-msgid "Add another post"
-msgstr ""
+msgid "Add another Jarona"
+msgstr "Add another Jarona"
 
 #: src/view/com/composer/Composer.tsx:2630
 msgid "Add another post to thread"
@@ -1671,7 +1671,7 @@ msgstr "Also liked"
 
 #: src/components/AltBadgeWithDialog.tsx:76
 #: src/components/images/AutoSizedImage.tsx:215
-#: src/components/images/Gallery/index.tsx:600
+#: src/components/images/Gallery/index.tsx:601
 #: src/components/images/ImageLayoutGridItem.tsx:147
 #: src/view/com/composer/GifAltText.tsx:100
 #: src/view/com/composer/photos/Gallery.tsx:214
@@ -2830,7 +2830,7 @@ msgstr ""
 msgid "Captions & alt text"
 msgstr ""
 
-#: src/components/images/Gallery/index.tsx:278
+#: src/components/images/Gallery/index.tsx:279
 #: src/view/com/posts/PostFeedItemCarousel.tsx:391
 msgid "carousel"
 msgstr "carousel"
@@ -6464,7 +6464,7 @@ msgstr "From {sanitizedAuthor}"
 msgid "From @{sanitizedAuthor}"
 msgstr ""
 
-#: src/view/com/posts/PostFeedReason.tsx:50
+#: src/view/com/posts/PostFeedReason.tsx:52
 msgctxt "from-feed"
 msgid "From <0/>"
 msgstr ""
@@ -6716,7 +6716,7 @@ msgstr ""
 msgid "Go to conversation with a deleted or a deactivated account"
 msgstr "Go to conversation with a deleted or a deactivated account"
 
-#: src/view/com/posts/PostFeedReason.tsx:41
+#: src/view/com/posts/PostFeedReason.tsx:43
 msgid "Go to feed"
 msgstr ""
 
@@ -7326,7 +7326,7 @@ msgid "Image"
 msgstr ""
 
 #. placeholder {0}: index + 1
-#: src/components/images/Gallery/index.tsx:464
+#: src/components/images/Gallery/index.tsx:465
 msgid "Image {0}"
 msgstr "Image {0}"
 
@@ -7337,7 +7337,7 @@ msgid "Image {0} of {1}"
 msgstr ""
 
 #. placeholder {0}: index + 1
-#: src/components/images/Gallery/index.tsx:449
+#: src/components/images/Gallery/index.tsx:450
 msgid "Image {0} of {imageCount}"
 msgstr "Image {0} of {imageCount}"
 
@@ -7362,7 +7362,7 @@ msgid "Image CDN URL"
 msgstr "Image CDN URL"
 
 #. placeholder {0}: images.length
-#: src/components/images/Gallery/index.tsx:279
+#: src/components/images/Gallery/index.tsx:280
 msgid "Image gallery, {0} images"
 msgstr "Image gallery, {0} images"
 
@@ -8678,8 +8678,8 @@ msgstr "microcosm.blue"
 
 #: src/view/com/composer/Composer.tsx:1801
 #: src/view/com/feeds/ComposerPrompt.tsx:192
-msgid "MIKE, THE POST please!"
-msgstr "MIKE, THE POST please!"
+msgid "MIKE, THE JARONA please!"
+msgstr "MIKE, THE JARONA please!"
 
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:177
 msgid "Minor harassment or bullying"
@@ -9936,7 +9936,7 @@ msgstr "Opens flow to sign in to your existing Atmosphere account"
 msgid "Opens flow to sign in to your existing Bluesky account"
 msgstr ""
 
-#: src/components/images/Gallery/index.tsx:465
+#: src/components/images/Gallery/index.tsx:466
 msgid "Opens full image"
 msgstr "Opens full image"
 
@@ -10304,7 +10304,7 @@ msgstr ""
 msgid "Pin to your profile"
 msgstr ""
 
-#: src/view/com/posts/PostFeedReason.tsx:119
+#: src/view/com/posts/PostFeedReason.tsx:127
 msgid "Pinned"
 msgstr ""
 
@@ -11694,13 +11694,13 @@ msgstr "Reposted as @{0}"
 msgid "Reposted By"
 msgstr ""
 
-#: src/view/com/posts/PostFeedReason.tsx:81
-#: src/view/com/posts/PostFeedReason.tsx:100
+#: src/view/com/posts/PostFeedReason.tsx:83
+#: src/view/com/posts/PostFeedReason.tsx:108
 msgid "Reposted by {reskeeter}"
 msgstr "Reposted by {reskeeter}"
 
-#: src/view/com/posts/PostFeedReason.tsx:81
-#: src/view/com/posts/PostFeedReason.tsx:98
+#: src/view/com/posts/PostFeedReason.tsx:83
+#: src/view/com/posts/PostFeedReason.tsx:106
 msgid "Reposted by you"
 msgstr ""
 
@@ -13246,7 +13246,7 @@ msgstr ""
 msgid "Skythread"
 msgstr "Skythread"
 
-#: src/components/images/Gallery/index.tsx:448
+#: src/components/images/Gallery/index.tsx:449
 msgid "slide"
 msgstr "slide"
 
@@ -16302,8 +16302,11 @@ msgstr ""
 msgid "Write post"
 msgstr ""
 
-#: src/screens/PostThread/components/ThreadComposePrompt.tsx:107
 #: src/view/com/composer/Composer.tsx:1799
+msgid "Write your Jarona"
+msgstr "Write your Jarona"
+
+#: src/screens/PostThread/components/ThreadComposePrompt.tsx:107
 msgid "Write your reply"
 msgstr ""
 
@@ -16359,6 +16362,10 @@ msgstr ""
 #: src/components/dms/DateDivider.tsx:29
 msgid "Yesterday"
 msgstr ""
+
+#: src/view/com/posts/PostFeedReason.tsx:101
+msgid "You"
+msgstr "You"
 
 #: src/components/verification/VerifierDialog.tsx:62
 msgid "You are a trusted verifier"

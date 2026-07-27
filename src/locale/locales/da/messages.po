@@ -431,7 +431,7 @@ msgstr "{0}/{1} {2, plural, one {medlem} other {medlemmer}}"
 
 #. Badge showing the current image position out of the total number of images in a gallery.
 #. placeholder {0}: index + 1
-#: src/components/images/Gallery/index.tsx:536
+#: src/components/images/Gallery/index.tsx:537
 msgctxt "gallery-badge-image-position-numbers"
 msgid "{0}/{imageCount}"
 msgstr "{0}/{imageCount}"
@@ -1288,8 +1288,8 @@ msgid "Add another account"
 msgstr "Tilføj endnu en konto"
 
 #: src/view/com/composer/Composer.tsx:1800
-msgid "Add another post"
-msgstr "Tilføj endnu et opslag"
+msgid "Add another Jarona"
+msgstr ""
 
 #: src/view/com/composer/Composer.tsx:2630
 msgid "Add another post to thread"
@@ -1676,7 +1676,7 @@ msgstr ""
 
 #: src/components/AltBadgeWithDialog.tsx:76
 #: src/components/images/AutoSizedImage.tsx:215
-#: src/components/images/Gallery/index.tsx:600
+#: src/components/images/Gallery/index.tsx:601
 #: src/components/images/ImageLayoutGridItem.tsx:147
 #: src/view/com/composer/GifAltText.tsx:100
 #: src/view/com/composer/photos/Gallery.tsx:214
@@ -2835,7 +2835,7 @@ msgstr "Undertekster (.vtt)"
 msgid "Captions & alt text"
 msgstr "Undertekster og alt-tekst"
 
-#: src/components/images/Gallery/index.tsx:278
+#: src/components/images/Gallery/index.tsx:279
 #: src/view/com/posts/PostFeedItemCarousel.tsx:391
 msgid "carousel"
 msgstr "karrusel"
@@ -6469,7 +6469,7 @@ msgstr ""
 msgid "From @{sanitizedAuthor}"
 msgstr "Fra @{sanitizedAuthor}"
 
-#: src/view/com/posts/PostFeedReason.tsx:50
+#: src/view/com/posts/PostFeedReason.tsx:52
 msgctxt "from-feed"
 msgid "From <0/>"
 msgstr "Fra <0/>"
@@ -6721,7 +6721,7 @@ msgstr "Gå til samtale med {0}"
 msgid "Go to conversation with a deleted or a deactivated account"
 msgstr ""
 
-#: src/view/com/posts/PostFeedReason.tsx:41
+#: src/view/com/posts/PostFeedReason.tsx:43
 msgid "Go to feed"
 msgstr "Gå til feed"
 
@@ -7331,7 +7331,7 @@ msgid "Image"
 msgstr "Billede"
 
 #. placeholder {0}: index + 1
-#: src/components/images/Gallery/index.tsx:464
+#: src/components/images/Gallery/index.tsx:465
 msgid "Image {0}"
 msgstr "Billede {0}"
 
@@ -7342,7 +7342,7 @@ msgid "Image {0} of {1}"
 msgstr "Billede {0} af {1}"
 
 #. placeholder {0}: index + 1
-#: src/components/images/Gallery/index.tsx:449
+#: src/components/images/Gallery/index.tsx:450
 msgid "Image {0} of {imageCount}"
 msgstr "Billede {0} af {imageCount}"
 
@@ -7367,7 +7367,7 @@ msgid "Image CDN URL"
 msgstr ""
 
 #. placeholder {0}: images.length
-#: src/components/images/Gallery/index.tsx:279
+#: src/components/images/Gallery/index.tsx:280
 msgid "Image gallery, {0} images"
 msgstr "Billedgalleri, {0} billeder"
 
@@ -8683,7 +8683,7 @@ msgstr ""
 
 #: src/view/com/composer/Composer.tsx:1801
 #: src/view/com/feeds/ComposerPrompt.tsx:192
-msgid "MIKE, THE POST please!"
+msgid "MIKE, THE JARONA please!"
 msgstr ""
 
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:177
@@ -9941,7 +9941,7 @@ msgstr ""
 msgid "Opens flow to sign in to your existing Bluesky account"
 msgstr "Åbner formular til at logge ind på din eksisterende Bluesky-konto"
 
-#: src/components/images/Gallery/index.tsx:465
+#: src/components/images/Gallery/index.tsx:466
 msgid "Opens full image"
 msgstr "Viser hele billedet"
 
@@ -10309,7 +10309,7 @@ msgstr "Fastgør til forside"
 msgid "Pin to your profile"
 msgstr "Fastgør til din profil"
 
-#: src/view/com/posts/PostFeedReason.tsx:119
+#: src/view/com/posts/PostFeedReason.tsx:127
 msgid "Pinned"
 msgstr "Fastgjort"
 
@@ -11699,13 +11699,13 @@ msgstr ""
 msgid "Reposted By"
 msgstr "Videredelt af"
 
-#: src/view/com/posts/PostFeedReason.tsx:81
-#: src/view/com/posts/PostFeedReason.tsx:100
+#: src/view/com/posts/PostFeedReason.tsx:83
+#: src/view/com/posts/PostFeedReason.tsx:108
 msgid "Reposted by {reskeeter}"
 msgstr ""
 
-#: src/view/com/posts/PostFeedReason.tsx:81
-#: src/view/com/posts/PostFeedReason.tsx:98
+#: src/view/com/posts/PostFeedReason.tsx:83
+#: src/view/com/posts/PostFeedReason.tsx:106
 msgid "Reposted by you"
 msgstr "Videredelt af dig"
 
@@ -13251,7 +13251,7 @@ msgstr "Spring til næste trin"
 msgid "Skythread"
 msgstr ""
 
-#: src/components/images/Gallery/index.tsx:448
+#: src/components/images/Gallery/index.tsx:449
 msgid "slide"
 msgstr "swipe"
 
@@ -16307,8 +16307,11 @@ msgstr "Skriv et opslag"
 msgid "Write post"
 msgstr "Skriv dit opslag"
 
-#: src/screens/PostThread/components/ThreadComposePrompt.tsx:107
 #: src/view/com/composer/Composer.tsx:1799
+msgid "Write your Jarona"
+msgstr ""
+
+#: src/screens/PostThread/components/ThreadComposePrompt.tsx:107
 msgid "Write your reply"
 msgstr "Skriv dit svar"
 
@@ -16364,6 +16367,10 @@ msgstr "Ja, genaktiver min konto"
 #: src/components/dms/DateDivider.tsx:29
 msgid "Yesterday"
 msgstr "I går"
+
+#: src/view/com/posts/PostFeedReason.tsx:101
+msgid "You"
+msgstr ""
 
 #: src/components/verification/VerifierDialog.tsx:62
 msgid "You are a trusted verifier"
