@@ -34,8 +34,8 @@ export function ImageLayoutGrid({
   const gap = isWithinQuote ? (gtMobile ? a.gap_xs : a.gap_2xs) : a.gap_xs
 
   return (
-    <View style={style}>
-      <View style={[gap, a.rounded_md, a.overflow_hidden]}>
+    <View style={[a.w_full, style]}>
+      <View style={[a.w_full, gap, a.rounded_md, a.overflow_hidden]}>
         <ImageLayoutGridInner
           {...props}
           gap={gap}

@@ -234,6 +234,7 @@ export function Gallery({
     scrollTo,
     onSettle,
     imageCount: images.length,
+    allowButtonDrag: true,
   })
 
   if (screenReaderEnabled) {
