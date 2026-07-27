@@ -1,31 +1,78 @@
 {
-  "fill" : {
-    "automatic-gradient" : "srgb:0.00000,0.41569,1.00000,1.00000"
+  "fill": {
+    "solid": "srgb:0.631,0.576,0.929,1.0"
   },
-  "groups" : [
+  "groups": [
     {
-      "layers" : [
+      "layers": [
         {
-          "fill" : "none",
-          "glass" : false,
-          "image-name" : "iOS transparent.png",
-          "name" : "iOS transparent"
+          "name": "facebg",
+          "image-name": "facebg.png",
+          "fill": { "solid": "srgb:1.0,1.0,1.0,1.0" },
+          "blend-mode": "normal",
+          "opacity": 1.0,
+          "glass": true,
+          "position": { "scale": 1.03, "translation-in-points": [0, 0] }
         }
       ],
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.5
-      }
+      "lighting": "individual",
+      "specular": true,
+      "shadow": { "kind": "none", "opacity": 0.0 },
+      "translucency": { "enabled": true, "value": 0.90 }
+    },
+    {
+      "layers": [
+        {
+          "name": "face",
+          "image-name": "face.png",
+          "fill": { "solid": "srgb:0.851,0.835,0.929,1.0" },
+          "blend-mode": "normal",
+          "opacity": 1.0,
+          "glass": true,
+          "position": { "scale": 1.0, "translation-in-points": [0, 0] }
+        }
+      ],
+      "lighting": "individual",
+      "specular": true,
+      "shadow": { "kind": "none", "opacity": 0.0 },
+      "translucency": { "enabled": true, "value": 0.35 }
+    },
+    {
+      "layers": [
+        {
+          "name": "outline",
+          "image-name": "outline.png",
+          "fill": { "solid": "srgb:0.631,0.576,0.929,1.0" },
+          "blend-mode": "normal",
+          "opacity": 1.0,
+          "glass": true,
+          "position": { "scale": 1.0, "translation-in-points": [0, 0] }
+        }
+      ],
+      "lighting": "individual",
+      "specular": true,
+      "shadow": { "kind": "neutral", "opacity": 0.50 },
+      "translucency": { "enabled": true, "value": 0.10 }
+    },
+    {
+      "layers": [
+        {
+          "name": "antennas",
+          "image-name": "antennas.png",
+          "fill": { "solid": "srgb:0.631,0.576,0.929,1.0" },
+          "blend-mode": "normal",
+          "opacity": 1.0,
+          "glass": true,
+          "position": { "scale": 1.0, "translation-in-points": [0, 1.5] }
+        }
+      ],
+      "lighting": "individual",
+      "specular": true,
+      "shadow": { "kind": "neutral", "opacity": 0.50 },
+      "translucency": { "enabled": true, "value": 0.10 }
     }
   ],
-  "supported-platforms" : {
-    "circles" : [
-      "watchOS"
-    ],
-    "squares" : "shared"
+  "supported-platforms": {
+    "squares": "shared"
   }
 }

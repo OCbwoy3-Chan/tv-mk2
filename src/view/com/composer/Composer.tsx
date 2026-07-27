@@ -1796,9 +1796,9 @@ let ComposerPost = memo(function ComposerPost({
   const forceMinHeight = IS_WEB && isTextOnly && isActive
   const selectTextInputPlaceholder = isReply
     ? isFirstPost
-      ? l`Write your reply`
-      : l`Add another post`
-    : l`MIKE, THE POST please!`
+      ? l`Write your Jarona`
+      : l`Add another Jarona`
+    : l`MIKE, THE JARONA please!`
   const discardPromptControl = Prompt.usePromptControl()
 
   const enableSquareButtons = useEnableSquareButtons()
