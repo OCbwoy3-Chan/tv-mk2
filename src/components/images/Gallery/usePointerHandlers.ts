@@ -5,4 +5,5 @@ export function usePointerHandlers(_args: {
   scrollTo: any
   onSettle: any
   imageCount: any
+  allowButtonDrag?: boolean
 }) {}

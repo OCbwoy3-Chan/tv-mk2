@@ -383,40 +383,43 @@ let FeedItemInner = ({
               reason={reason}
               moderation={moderation}
               onOpenReposter={onOpenReposter}
+              reposterOnly={isCarouselItem}
             />
           )}
         </View>
       </View>
 
       <View style={[styles.layout, isCarouselItem && a.w_full]}>
-        <View
-          style={[styles.layoutAvi, compactPosts && styles.layoutAviCompact]}>
-          <AviFollowButton author={post.author} moderation={moderation}>
-            <PreviewableUserAvatar
-              size={compactPosts ? 34 : 42}
-              profile={post.author}
-              moderation={moderation.ui('avatar')}
-              type={post.author.associated?.labeler ? 'labeler' : 'user'}
-              onBeforePress={onOpenAuthor}
-              live={live}
-            />
-          </AviFollowButton>
-          {isThreadParent && (
-            <View
-              style={[
-                styles.replyLine,
-                {
-                  backgroundColor: select(t.name, {
-                    light: t.palette.contrast_100,
-                    dim: t.palette.contrast_200,
-                    dark: t.palette.contrast_200,
-                  }),
-                  marginTop: live ? 8 : 4,
-                },
-              ]}
-            />
-          )}
-        </View>
+        {!isCarouselItem && (
+          <View
+            style={[styles.layoutAvi, compactPosts && styles.layoutAviCompact]}>
+            <AviFollowButton author={post.author} moderation={moderation}>
+              <PreviewableUserAvatar
+                size={compactPosts ? 34 : 42}
+                profile={post.author}
+                moderation={moderation.ui('avatar')}
+                type={post.author.associated?.labeler ? 'labeler' : 'user'}
+                onBeforePress={onOpenAuthor}
+                live={live}
+              />
+            </AviFollowButton>
+            {isThreadParent && (
+              <View
+                style={[
+                  styles.replyLine,
+                  {
+                    backgroundColor: select(t.name, {
+                      light: t.palette.contrast_100,
+                      dim: t.palette.contrast_200,
+                      dark: t.palette.contrast_200,
+                    }),
+                    marginTop: live ? 8 : 4,
+                  },
+                ]}
+              />
+            )}
+          </View>
+        )}
         <View
           style={[
             styles.layoutContent,
@@ -433,6 +436,8 @@ let FeedItemInner = ({
             timestamp={post.indexedAt}
             postHref={href}
             onOpenAuthor={onOpenAuthor}
+            showAvatar={isCarouselItem}
+            avatarSize={16}
             narrowLayout={isCarouselItem}
             constrainWidth={isCarouselItem && IS_NATIVE}
             style={

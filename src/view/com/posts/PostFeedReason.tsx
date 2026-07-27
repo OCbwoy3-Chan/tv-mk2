@@ -21,6 +21,7 @@ export function PostFeedReason({
   reason,
   moderation,
   onOpenReposter,
+  reposterOnly,
 }: {
   reason:
     | ReasonFeedSource
@@ -29,6 +30,7 @@ export function PostFeedReason({
     | {[k: string]: unknown; $type: string}
   moderation?: ModerationDecision
   onOpenReposter?: () => void
+  reposterOnly?: boolean
 }) {
   const t = useTheme()
   const {_} = useLingui()
@@ -94,7 +96,13 @@ export function PostFeedReason({
               a.leading_snug,
             ]}
             numberOfLines={1}>
-            {isOwner ? (
+            {reposterOnly ? (
+              isOwner ? (
+                <Trans>You</Trans>
+              ) : (
+                reskeeter
+              )
+            ) : isOwner ? (
               <Trans>Reposted by you</Trans>
             ) : (
               <Trans>Reposted by {reskeeter}</Trans>
