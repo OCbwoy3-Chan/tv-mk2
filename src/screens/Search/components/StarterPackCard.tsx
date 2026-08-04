@@ -27,8 +27,10 @@ import * as bsky from '#/types/bsky'
 
 export function StarterPackCard({
   view,
+  onPress,
 }: {
   view: AppBskyGraphDefs.StarterPackView
+  onPress?: () => void
 }) {
   const t = useTheme()
   const {_} = useLingui()
@@ -56,7 +58,10 @@ export function StarterPackCard({
       to={link.to}
       label={link.label}
       onHoverIn={link.precache}
-      onPress={link.precache}>
+      onPress={() => {
+        link.precache()
+        onPress?.()
+      }}>
       {s => (
         <>
           <SubtleHover hover={s.hovered || s.pressed} />
@@ -112,7 +117,10 @@ export function StarterPackCard({
                 to={link.to}
                 label={link.label}
                 onHoverIn={link.precache}
-                onPress={link.precache}
+                onPress={() => {
+                  link.precache()
+                  onPress?.()
+                }}
                 variant="solid"
                 color="secondary"
                 size="small"

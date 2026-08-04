@@ -345,6 +345,7 @@ module.exports = {
     }),
     new rspack.DefinePlugin({
       __DEV__: JSON.stringify(!isProduction),
+      global: 'globalThis',
       'process.env.NODE_ENV': JSON.stringify(
         isProduction ? 'production' : 'development',
       ),

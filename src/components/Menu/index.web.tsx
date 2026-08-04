@@ -34,6 +34,8 @@ import {
 import {Portal} from '#/components/Portal'
 import {Text} from '#/components/Typography'
 
+export {type DialogControlProps as MenuControlProps} from '#/components/Dialog'
+
 export {useMenuContext}
 
 export function useMenuControl(): Dialog.DialogControlProps {
@@ -545,6 +547,6 @@ export function Divider() {
   )
 }
 
-export function ContainerItem() {
+export function ContainerItem(_props: {children?: React.ReactNode}) {
   return null
 }

@@ -27,12 +27,18 @@ export function VideoEmbedInnerNative({
   setStatus,
   setIsLoading,
   setIsActive,
+  onError,
 }: {
   ref: React.Ref<{togglePlayback: () => void}>
   embed: AppBskyEmbedVideo.View
   setStatus: (status: 'playing' | 'paused') => void
   setIsLoading: (isLoading: boolean) => void
   setIsActive: (isActive: boolean) => void
+  /**
+   * Called with the native error message before the component throws to the
+   * surrounding error boundary.
+   */
+  onError?: (error: string) => void
 }) {
   const {_} = useLingui()
   const videoRef = useRef<BlueskyVideoView>(null)
@@ -82,6 +88,7 @@ export function VideoEmbedInnerNative({
           setTimeRemaining(e.nativeEvent.timeRemaining)
         }}
         onError={e => {
+          onError?.(e.nativeEvent.error)
           setError(e.nativeEvent.error)
         }}
         ref={videoRef}

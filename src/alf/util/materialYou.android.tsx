@@ -6,6 +6,8 @@ import {
   type MaterialYouPalette,
 } from '@assembless/react-native-material-you'
 
+import {type GenerationStyle} from './material3'
+
 let palette = getPaletteSync() as MaterialYouPalette
 
 export function getMaterialYouColor(
@@ -67,7 +69,10 @@ const PaletteProvider = createContext(palette)
 
 export function MaterialYouPaletteProvider({
   children,
-}: React.PropsWithChildren) {
+}: React.PropsWithChildren<{
+  accent?: string
+  style?: GenerationStyle
+}>) {
   const [thePalette, setThePalette] = useState(palette)
   useEffect(() => {
     const unsubscribe = onMaterialYouPaletteChange(() => {

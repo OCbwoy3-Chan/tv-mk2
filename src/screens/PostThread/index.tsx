@@ -17,7 +17,10 @@ import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {usePostViewTracking} from '#/lib/hooks/usePostViewTracking'
 import {usePostViewAuthorShadowFilter} from '#/state/cache/profile-shadow'
-import {useFeedFeedback} from '#/state/feed-feedback'
+import {
+  type StateContext as FeedFeedbackStateContext,
+  useFeedFeedback,
+} from '#/state/feed-feedback'
 import {useAlsoLikedCollapseByDefault} from '#/state/preferences/also-liked-collapse-by-default'
 import {useAlsoLikedFeedEnabled} from '#/state/preferences/also-liked-feed-enabled'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -66,7 +69,15 @@ import {
   computeSelfThreadPositions,
   type ReaderItem,
 } from '#/screens/PostThread/reader'
-import {atoms as a, native, platform, tokens, useBreakpoints, useTheme, web} from '#/alf'
+import {
+  atoms as a,
+  native,
+  platform,
+  tokens,
+  useBreakpoints,
+  useTheme,
+  web,
+} from '#/alf'
 import {Button} from '#/components/Button'
 import {ChevronTop_Stroke2_Corner0_Rounded as ChevronTopIcon} from '#/components/icons/Chevron'
 import * as Layout from '#/components/Layout'
@@ -77,6 +88,9 @@ import {IS_NATIVE} from '#/env'
 
 const PARENT_CHUNK_SIZE = IS_NATIVE ? 5 : 20
 const CHILDREN_CHUNK_SIZE = 50
+const analyticsOnlyOnItemSeen: FeedFeedbackStateContext['onItemSeen'] = () => {}
+const analyticsOnlySendInteraction: FeedFeedbackStateContext['sendInteraction'] =
+  () => {}
 
 export function PostThread({
   uri,
@@ -1024,8 +1038,8 @@ export function PostThread({
         canReply &&
         hasSession &&
         thread.state.view !== 'reader' && (
-        <MobileComposePrompt onPressReply={onReplyToAnchor} />
-      )}
+          <MobileComposePrompt onPressReply={onReplyToAnchor} />
+        )}
 
       {showHideRepliesButton && (
         <ReaderHideRepliesButton onPress={() => toggleSeam(expandedSeamUri)} />

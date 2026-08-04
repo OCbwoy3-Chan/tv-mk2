@@ -52,13 +52,12 @@ have already been deployed for this release, incremement the branch name e.g.
 Cherry pick in the commits that need to be deployed on top of the most recent
 release or OTA.
 
-### 5. Manually set build numbers
+### 5. Pull translations
 
-Log in to the EAS CLI with `eas login` and manually set the build numbers to the
-values you found in **Step 1**.
+Since translators may have added new strings, and positions within the code may
+have shifted, it's typically best to pull the latest translations.
 
-> [!NOTE]
-> If you don’t already have the EAS CLI, you can install it with `pnpm add -g eas-cli`.
+Run this and commit the result as the last commit on the OTA branch.
 
 ```sh
 > npx eas build:version:set -p ios
@@ -72,9 +71,6 @@ values you found in **Step 1**.
 > ✔ What version would you like to set? … 639
 ```
 
-👉 **Save the previous values,** in this case `1011` and `641`, so you can reset
-them after the OTA completes.
-
 ### 6. Run the GitHub actions
 You'll need to run two separate actions: one to deploy the iOS/Android OTA
 itself, and one to build the web Docker container.
@@ -85,14 +81,20 @@ and run the action.
 
 | Steps |     |
 | ----- | --- |
-| Select your OTA branch `1.x.0-ota-x`, select `production` in the dropdown, enter the git tag of the latest release `1.x.0`, and click "Run workflow"  | ![workflow](./img/ota_action.png) |
+| Select your OTA branch `1.x.0-ota-x`, select `production` in the dropdown, enter the git tag of the latest release `1.x.0`, enter the iOS build number and Android version code you found in **Step 1**, and click "Run workflow"  | ![workflow](./img/ota_action.png) |
+
+> [!NOTE]
+> Production OTAs are bound to the specific native build they target, so the
+> workflow requires the build numbers to be entered manually. There is no need
+> to change the global EAS build counters (and doing so is no longer necessary
+> for OTAs - they are only used when producing new native builds).
 
 > [!NOTE]
 > If you do enter an incorrect version here, the deployment will either:
 > - Fail, because the action cannot find a commit with your misentered version
-> - Succeed, but with no users receiving the update. This is because the version
->   you entered will not properly correlate to a _build number_ as well, so no
->   clients in the wild will be able to receive the update.
+> - Succeed, but with no users receiving the update. This is because the
+>   version and build numbers you entered will not match any clients in the
+>   wild, so none will be able to receive the update.
 
 **For web,** head to [Actions >
 build-and-push-bskyweb-aws](https://github.com/bluesky-social/social-app/actions/workflows/build-and-push-bskyweb-aws.yaml)
