@@ -2,14 +2,15 @@ import {useState} from 'react'
 import {View} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
+import {HITSLOP_20} from '#/lib/constants'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {type Shadow} from '#/state/cache/types'
 import {
   usePdsLabelEnabled,
   usePdsLabelHideBskyPds,
 } from '#/state/preferences/pds-label'
-import {usePdsFaviconQuery, usePdsLabelQuery} from '#/state/queries/pds-label'
 import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
+import {usePdsFaviconQuery, usePdsLabelQuery} from '#/state/queries/pds-label'
 import {atoms as a, useAlf, type ViewStyleProp} from '#/alf'
 import {useNativeFontScale} from '#/alf/util/dimensions'
 import {BotBadge, BotBadgeButton, isBotAccount} from '#/components/BotBadge'
@@ -22,6 +23,7 @@ import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {VerificationCheckButton} from '#/components/verification/VerificationCheckButton'
 import {IS_WEB} from '#/env'
 import type * as bsky from '#/types/bsky'
+import {BetaBadge, BetaBadgeButton, useIsBetaBadgeVisible} from './BetaBadge'
 
 export type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
@@ -39,6 +41,22 @@ const botIconSizes: Record<Size, number> = {
   md: 15,
   lg: 19,
   xl: 23,
+} as const
+
+const betaIconSizes: Record<Size, number> = {
+  xs: 8,
+  sm: 8,
+  md: 8,
+  lg: 10,
+  xl: 12,
+} as const
+
+const betaBadgePadding: Record<Size, number> = {
+  xs: 1,
+  sm: 2,
+  md: 3,
+  lg: 4,
+  xl: 5,
 } as const
 
 type ProfileBadgesProps = ViewStyleProp & {
@@ -73,10 +91,8 @@ export function ProfileBadgesFromProfileShadow({
   const pdsLabelEnabled = usePdsLabelEnabled()
   const hideBskyPds = usePdsLabelHideBskyPds()
   const isBskyHandle =
-    !!shadowed.handle &&
-    shadowed.handle.endsWith('.bsky.social')
-  const shouldResolvePds =
-    pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
+    !!shadowed.handle && shadowed.handle.endsWith('.bsky.social')
+  const shouldResolvePds = pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
   const {data: pdsData, isLoading: isPdsLoading} = usePdsLabelQuery(
     shouldResolvePds ? shadowed.did : undefined,
   )
@@ -94,14 +110,17 @@ export function ProfileBadgesFromProfileShadow({
     shouldResolvePds &&
     (isPdsLoading || (!!pdsData && !(hideBskyPds && pdsData.isBsky)))
 
+  const isBetaBadgeVisible = useIsBetaBadgeVisible(shadowed)
+  const badgeVisibility = [
+    verification.showBadge,
+    isBetaBadgeVisible,
+    isBotAccount(shadowed),
+    isPetAccount(shadowed),
+  ]
+  const badgeCount = badgeVisibility.filter(Boolean).length
+
   // if nothing to show, don't render the container at all
-  if (
-    !showPdsBadge &&
-    !verification.showBadge &&
-    !isBotAccount(shadowed) &&
-    !isPetAccount(shadowed)
-  )
-    return null
+  if (!showPdsBadge && badgeCount < 1) return null
 
   const isOnTheSmallSide = size === 'xs' || size === 'sm'
 
@@ -111,6 +130,22 @@ export function ProfileBadgesFromProfileShadow({
 
   const verificationIconWidth = verificationIconSizes[size] * scaleMultiplier
   const botIconWidth = botIconSizes[size] * scaleMultiplier
+  const betaIconWidth = betaIconSizes[size] * scaleMultiplier
+  const betaBadgeScaledPadding = betaBadgePadding[size] * scaleMultiplier
+
+  const gap = isOnTheSmallSide ? a.gap_2xs : a.gap_xs
+  const padding = gap.gap / 2
+  let visibleBadgeIndex = 0
+  const hitSlops = badgeVisibility.map(isVisible => {
+    if (!isVisible) return HITSLOP_20
+
+    const index = visibleBadgeIndex++
+    return {
+      ...HITSLOP_20,
+      left: index === 0 ? HITSLOP_20.left : padding,
+      right: index === badgeCount - 1 ? HITSLOP_20.right : padding,
+    }
+  })
 
   return (
     <View
@@ -136,18 +171,34 @@ export function ProfileBadgesFromProfileShadow({
           <VerificationCheckButton
             profile={shadowed}
             width={verificationIconWidth}
+            hitSlop={hitSlops[0]}
           />
-          <BotBadgeButton profile={shadowed} width={botIconWidth} />
+          <BetaBadgeButton
+            profile={shadowed}
+            width={betaIconWidth}
+            padding={betaBadgeScaledPadding}
+            hitSlop={hitSlops[1]}
+          />
+          <BotBadgeButton
+            profile={shadowed}
+            width={botIconWidth}
+            hitSlop={hitSlops[2]}
+          />
           <PetBadgeButton profile={shadowed} width={botIconWidth} />
         </>
       ) : (
         <>
-          {verification.showBadge && (
+          {verification.showBadge ? (
             <VerificationCheck
               verifier={verification.role === 'verifier'}
               width={verificationIconWidth}
             />
-          )}
+          ) : null}
+          <BetaBadge
+            profile={shadowed}
+            width={betaIconWidth}
+            padding={betaBadgeScaledPadding}
+          />
           <BotBadge profile={shadowed} width={botIconWidth} />
           <PetBadge profile={shadowed} width={botIconWidth} />
         </>

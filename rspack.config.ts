@@ -169,6 +169,10 @@ module.exports = {
       // Block packages that should not load on web
       'react-native-gesture-handler': false,
       '@sentry-internal/replay': false,
+      // Sentry probes this optional Expo Router store inside a try/catch. This
+      // app uses React Navigation directly, so resolve the probe to an empty
+      // module instead of emitting a missing-module warning on every web build.
+      'expo-router/build/global-state/router-store': false,
     },
     mainFields: ['browser', 'module', 'main'],
     // Allow importing without file extensions in ESM packages
@@ -345,6 +349,7 @@ module.exports = {
     }),
     new rspack.DefinePlugin({
       __DEV__: JSON.stringify(!isProduction),
+      global: 'globalThis',
       'process.env.NODE_ENV': JSON.stringify(
         isProduction ? 'production' : 'development',
       ),

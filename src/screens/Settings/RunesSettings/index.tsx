@@ -5,6 +5,7 @@ import {type CommonNavigatorParams} from '#/lib/routes/types'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {ArrowRotateClockwise_Stroke2_Corner0_Rounded as CloudSyncIcon} from '#/components/icons/ArrowRotate'
 import {Atom_Stroke2_Corner0_Rounded as AtomIcon} from '#/components/icons/Atom'
+import {Beaker_Stroke2_Corner2_Rounded as BetaIcon} from '#/components/icons/Beaker'
 import {DotGrid3x1_Stroke2_Corner0_Rounded as EllipsisIcon} from '#/components/icons/DotGrid'
 import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/Eye'
 import {Earth_Stroke2_Corner2_Rounded as EarthIcon} from '#/components/icons/Globe'
@@ -76,6 +77,14 @@ export function RunesSettingsScreen({}: Props) {
         <SettingsList.ItemIcon icon={BeakerIcon} />
         <SettingsList.ItemText>
           <Trans>Extra</Trans>
+        </SettingsList.ItemText>
+      </SettingsList.LinkItem>
+      <SettingsList.LinkItem
+        to="/settings/beta-features"
+        label={l`Beta features`}>
+        <SettingsList.ItemIcon icon={BetaIcon} />
+        <SettingsList.ItemText>
+          <Trans>Beta features</Trans>
         </SettingsList.ItemText>
       </SettingsList.LinkItem>
     </RunesScreenLayout>

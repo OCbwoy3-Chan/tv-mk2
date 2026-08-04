@@ -120,7 +120,9 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 a.font_semi_bold,
                 t.atoms.text,
                 a.leading_tight,
-                a.flex_shrink,
+                a.flex_shrink_0,
+                {maxWidth: '70%'},
+                web({direction: 'ltr', unicodeBidi: 'isolate'}),
               ]}>
               {forceLTR(displayName)}
             </MaybeLinkText>

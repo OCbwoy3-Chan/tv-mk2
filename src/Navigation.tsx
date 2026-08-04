@@ -106,11 +106,13 @@ import {AboutSettingsScreen} from '#/screens/Settings/AboutSettings'
 import {AccessibilitySettingsScreen} from '#/screens/Settings/AccessibilitySettings'
 import {AccountSettingsScreen} from '#/screens/Settings/AccountSettings'
 import {ActivityPrivacySettingsScreen} from '#/screens/Settings/ActivityPrivacySettings'
+import {ActivityNotificationSettingsScreen} from '#/screens/Settings/NotificationSettings/ActivityNotificationSettings'
 import {AppearanceSettingsScreen} from '#/screens/Settings/AppearanceSettings'
 import {AppearanceColorThemeSettingsScreen} from '#/screens/Settings/AppearanceSettings/ColorThemeSettings'
 import {AppIconSettingsScreen} from '#/screens/Settings/AppIconSettings'
 import {AppPasswordsScreen} from '#/screens/Settings/AppPasswords'
 import {AutomationLabelSettingsScreen} from '#/screens/Settings/AutomationLabelSettings'
+import {BetaFeaturesSettingsScreen} from '#/screens/Settings/BetaFeaturesSettings'
 import {ContentAndMediaSettingsScreen} from '#/screens/Settings/ContentAndMediaSettings'
 import {ExternalMediaPreferencesScreen} from '#/screens/Settings/ExternalMediaPreferences'
 import {FindContactsSettingsScreen} from '#/screens/Settings/FindContactsSettings'
@@ -528,6 +530,14 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         }}
       />
       <Stack.Screen
+        name="BetaFeaturesSettings"
+        getComponent={() => BetaFeaturesSettingsScreen}
+        options={{
+          title: title(msg`Beta features`),
+          requireAuth: true,
+        }}
+      />
+      <Stack.Screen
         name="AutomationLabelSettings"
         getComponent={() => AutomationLabelSettingsScreen}
         options={{
@@ -571,6 +581,14 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         name="NotificationSettings"
         getComponent={() => NotificationSettingsScreen}
         options={{title: title(msg`Notification settings`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="ActivityNotificationSettings"
+        getComponent={() => ActivityNotificationSettingsScreen}
+        options={{
+          title: title(msg`Activity notifications`),
+          requireAuth: true,
+        }}
       />
       <Stack.Screen
         name="ContentAndMediaSettings"
@@ -1147,14 +1165,15 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
     })
 
     if (IS_WEB) {
-      const referrerInfo = Referrer.getReferrerInfo()
-      if (referrerInfo && referrerInfo.hostname !== 'bsky.app') {
-        ax.metric('deepLink:referrerReceived', {
-          to: window.location.href,
-          referrer: referrerInfo?.referrer,
-          hostname: referrerInfo?.hostname,
-        })
-      }
+      void Referrer.getReferrerInfo().then(referrerInfo => {
+        if (referrerInfo && referrerInfo.hostname !== 'bsky.app') {
+          ax.metric('deepLink:referrerReceived', {
+            to: window.location.href,
+            referrer: referrerInfo?.referrer,
+            hostname: referrerInfo?.hostname,
+          })
+        }
+      })
     }
 
     // temp, just testing

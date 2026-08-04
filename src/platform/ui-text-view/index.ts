@@ -1,1 +1,1 @@
-export {UITextView} from 'react-native-uitextview'
+export {UITextView} from '@bsky.app/react-native-uitextview'

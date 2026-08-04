@@ -225,13 +225,13 @@ let ShareMenuItems = ({
         {hasSession && aa.state.access === aa.Access.Full && (
           <Menu.Item
             testID="postDropdownSendViaDMBtn"
-            label={_(msg`Send via direct message`)}
+            label={_(msg`Send via chat`)}
             onPress={() => {
               ax.metric('share:press:openDmSearch', {})
               sendViaChatControl.open()
             }}>
             <Menu.ItemText>
-              <Trans>Send via direct message</Trans>
+              <Trans>Send via chat</Trans>
             </Menu.ItemText>
             <Menu.ItemIcon icon={Send} position="right" />
           </Menu.Item>
@@ -283,7 +283,6 @@ let ShareMenuItems = ({
           </>
         )}
       </Menu.Outer>
-
       {canEmbed && (
         <EmbedDialog
           control={embedPostControl}
@@ -294,7 +293,6 @@ let ShareMenuItems = ({
           timestamp={timestamp}
         />
       )}
-
       <SendViaChatDialog
         control={sendViaChatControl}
         onSelectChat={onSelectChatToShareTo}

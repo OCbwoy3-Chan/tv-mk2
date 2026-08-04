@@ -183,13 +183,13 @@ let ShareMenuItems = ({
             </Menu.ContainerItem>
             <Menu.Item
               testID="postDropdownSendViaDMBtn"
-              label={_(msg`Send via direct message`)}
+              label={_(msg`Send via chat`)}
               onPress={() => {
                 ax.metric('share:press:openDmSearch', {})
                 sendViaChatControl.open()
               }}>
               <Menu.ItemText>
-                <Trans>Send via direct message</Trans>
+                <Trans>Send via chat</Trans>
               </Menu.ItemText>
               <Menu.ItemIcon icon={PaperPlaneIcon} position="right" />
             </Menu.Item>
@@ -346,7 +346,6 @@ let ShareMenuItems = ({
           </Menu.Group>
         )}
       </Menu.Outer>
-
       <SendViaChatDialog
         control={sendViaChatControl}
         onSelectChat={onSelectChatToShareTo}

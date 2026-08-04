@@ -1,5 +1,5 @@
 import {memo, useMemo, useState} from 'react'
-import {View} from 'react-native'
+import {Pressable, View} from 'react-native'
 import {
   type AppBskyActorDefs,
   type AppBskyLabelerDefs,
@@ -33,14 +33,7 @@ import {
 } from '#/state/queries/profile'
 import {type SessionAccount, useRequireAuth, useSession} from '#/state/session'
 import {ProfileMenu} from '#/view/com/profile/ProfileMenu'
-import {
-  atoms as a,
-  native,
-  platform,
-  tokens,
-  useTheme,
-  web,
-} from '#/alf'
+import {atoms as a, native, platform, tokens, useTheme, web} from '#/alf'
 import {SubscribeProfileButton} from '#/components/activity-notifications/SubscribeProfileButton'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
@@ -68,6 +61,7 @@ import {Link} from '#/components/Link'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
+import * as Tooltip from '#/components/Tooltip'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_IOS, IS_NATIVE} from '#/env'
@@ -117,6 +111,7 @@ let ProfileHeaderStandard = ({
   const [showSuggestedFollows, setShowSuggestedFollows] = useState(false)
   const [hasSeenAllSuggestedFollows, setHasSeenAllSuggestedFollows] =
     useState(false)
+  const [joinDateTooltipVisible, setJoinDateTooltipVisible] = useState(false)
   const isBlockedUser =
     profile.viewer?.blocking ||
     profile.viewer?.blockedBy ||
@@ -232,7 +227,10 @@ let ProfileHeaderStandard = ({
                 ) : undefined}
 
                 {showGermDmButton && profile.associated?.germ && (
-                  <GermButton germ={profile.associated.germ} profile={profile} />
+                  <GermButton
+                    germ={profile.associated.germ}
+                    profile={profile}
+                  />
                 )}
               </View>
             )}
@@ -274,13 +272,37 @@ let ProfileHeaderStandard = ({
                 width={tokens.space.lg}
                 style={{color: t.atoms.text_contrast_medium.color}}
               />
-              {/* Position above so the sticky profile tab bar does not cover it */}
-              <Text
-                style={[t.atoms.text_contrast_medium]}
-                title={dateJoinedExact}
-                dataSet={web({tooltipPos: 'top'})}>
-                <Trans>Joined {dateJoined}</Trans>
-              </Text>
+              {IS_NATIVE && dateJoinedExact ? (
+                <Tooltip.Outer
+                  color="primary"
+                  visible={joinDateTooltipVisible}
+                  onVisibleChange={setJoinDateTooltipVisible}>
+                  <Tooltip.Target>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={_(msg`Joined ${dateJoinedExact}`)}
+                      accessibilityHint=""
+                      onPress={() =>
+                        setJoinDateTooltipVisible(visible => !visible)
+                      }>
+                      <Text style={[t.atoms.text_contrast_medium]}>
+                        <Trans>Joined {dateJoined}</Trans>
+                      </Text>
+                    </Pressable>
+                  </Tooltip.Target>
+                  <Tooltip.BubbleText label={_(msg`Joined ${dateJoinedExact}`)}>
+                    <Trans>Joined {dateJoinedExact}</Trans>
+                  </Tooltip.BubbleText>
+                </Tooltip.Outer>
+              ) : (
+                /* Position above so the sticky profile tab bar does not cover it */
+                <Text
+                  style={[t.atoms.text_contrast_medium]}
+                  title={dateJoinedExact}
+                  dataSet={web({tooltipPos: 'top'})}>
+                  <Trans>Joined {dateJoined}</Trans>
+                </Text>
+              )}
             </View>
           </View>
 

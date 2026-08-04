@@ -36,7 +36,7 @@ function renderItem({
   )
 }
 
-function keyExtractor(item: AppBskyActorDefs.ProfileViewBasic) {
+function keyExtractor(item: AppBskyActorDefs.ProfileView) {
   return item.did
 }
 

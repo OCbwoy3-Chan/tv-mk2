@@ -32,6 +32,7 @@ import {
   type TextStyleProp,
   useTheme,
   type ViewStyleProp,
+  web,
 } from '#/alf'
 import {
   Button,
@@ -272,6 +273,7 @@ function InlineNameAndHandle({
           a.leading_tight,
           a.flex_shrink_0,
           {maxWidth: hideDisplayNames ? '100%' : '70%'},
+          web({direction: 'ltr', unicodeBidi: 'isolate'}),
         ]}
         numberOfLines={1}>
         {forceLTR(name)}
@@ -526,16 +528,16 @@ export function FollowButtonInner({
     moderation: moderation.ui('displayName'),
   })
   const promptControl = Prompt.usePromptControl()
-  const [confirmationAction, setConfirmationAction] = useState<'follow' | 'unfollow'>('follow')
+  const [confirmationAction, setConfirmationAction] = useState<
+    'follow' | 'unfollow'
+  >('follow')
   const [pendingEphemeralAccount, setPendingEphemeralAccount] =
     useState<SessionAccount | null>(null)
 
   const executeFollow = async (e: GestureResponderEvent) => {
     try {
       await queueFollow()
-      Toast.show(
-        l`Following ${authorName}`,
-      )
+      Toast.show(l`Following ${authorName}`)
       onPressProp?.(e)
       onFollow?.()
     } catch (e) {
@@ -551,9 +553,7 @@ export function FollowButtonInner({
   const executeUnfollow = async (e: GestureResponderEvent) => {
     try {
       await queueUnfollow()
-      Toast.show(
-        l`No longer following ${authorName}`,
-      )
+      Toast.show(l`No longer following ${authorName}`)
       onPressProp?.(e)
     } catch (e) {
       const err = e as Error
@@ -703,7 +703,7 @@ export function FollowButtonPlaceholder({style}: ViewStyleProp) {
   return (
     <View
       style={[
-        a.rounded_sm,
+        a.rounded_full,
         t.atoms.bg_contrast_50,
         a.w_full,
         {

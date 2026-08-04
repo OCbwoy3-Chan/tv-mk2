@@ -4,13 +4,13 @@ import {Gesture, type GestureType} from 'react-native-gesture-handler'
 import Animated, {
   clamp,
   interpolate,
-  runOnJS,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
   withSequence,
   withTiming,
 } from 'react-native-reanimated'
+import {scheduleOnRN} from 'react-native-worklets'
 
 import {useHaptics} from '#/lib/haptics'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -113,7 +113,7 @@ export function SwipeToReply({
           if (pastThreshold && !hit.get()) {
             hit.set(true)
             runPop()
-            runOnJS(playHaptic)('Medium')
+            scheduleOnRN(playHaptic, 'Medium')
           } else if (!pastThreshold && hit.get()) {
             hit.set(false)
           }
@@ -122,7 +122,7 @@ export function SwipeToReply({
           'worklet'
           // Only a clean end (finger lifted past threshold) triggers the reply.
           if (hit.get()) {
-            runOnJS(onReply)()
+            scheduleOnRN(onReply)
           }
         })
         .onFinalize(() => {

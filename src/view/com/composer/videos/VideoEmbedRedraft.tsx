@@ -1,6 +1,7 @@
+import {type ComponentType} from 'react'
 import {Platform, View} from 'react-native'
 import {type BlobRef} from '@atproto/api'
-import {BlueskyVideoView} from '@bsky.app/video'
+import {BlueskyVideoView, type BlueskyVideoViewProps} from '@bsky.app/video'
 
 import {atoms as a} from '#/alf'
 import {VideoEmbedInnerWeb} from '#/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerWeb'
@@ -12,6 +13,9 @@ interface Props {
   aspectRatio: {width: number; height: number}
   onRemove: () => void
 }
+
+const NativeBlueskyVideoView =
+  BlueskyVideoView as unknown as ComponentType<BlueskyVideoViewProps>
 
 export function VideoEmbedRedraft({
   blobRef,
@@ -45,7 +49,7 @@ export function VideoEmbedRedraft({
           lastKnownTime={{current: undefined}}
         />
       ) : (
-        <BlueskyVideoView
+        <NativeBlueskyVideoView
           url={playlistUri}
           autoplay={false}
           beginMuted={true}
