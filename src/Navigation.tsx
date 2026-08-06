@@ -448,7 +448,7 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         name="DeltaSettings"
         getComponent={() => DeltaSettingsScreen}
         options={{
-          title: title(msg`Tenna`),
+          title: title(msg`Deltas`),
           requireAuth: true,
         }}
       />

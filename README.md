@@ -21,6 +21,7 @@ Get the app itself:
 - Brought back AI prefs in our settings (it's atproto, y'all!)
 - Ignore block relationships for viewing groupchat messages
 - Option to bypass Bluesky !hide label and block relationships on viewing lists
+- Option to enable Japan-exclusive in-app logo
 
 - Native iOS via GitHub Actions (for sideloading)
 

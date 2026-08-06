@@ -290,6 +290,7 @@
     "@rspack/cli": "^2.0.0",
     "@rspack/core": "^2.0.0",
     "@rspack/dev-server": "^2.0.0",
+    "@rspack/plugin-react-refresh": "^2.0.2",
     "@sentry/vite-plugin": "^5.2.0",
     "@sentry/webpack-plugin": "^3.2.2",
     "@swc/core": "^1.15.30",

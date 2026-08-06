@@ -1,12 +1,15 @@
-import {View} from 'react-native'
-import {Trans} from '@lingui/react/macro'
+import { View } from 'react-native'
+import { Trans } from '@lingui/react/macro'
 
-import {atoms as a, useBreakpoints} from '#/alf'
+import { atoms as a, useBreakpoints, useTheme } from '#/alf'
 import * as Layout from '#/components/Layout'
 import { TennaQuickLinks } from './components/QuickLinks'
+import { DeltasJapanLogoToggle } from './components/JapanLogoToggle'
+import { Text } from '#/components/Typography'
 
 export function DeltaSettingsScreen() {
-  const {gtMobile} = useBreakpoints()
+  const t = useTheme();
+  const { gtMobile } = useBreakpoints()
 
   return (
     <Layout.Screen>
@@ -22,7 +25,19 @@ export function DeltaSettingsScreen() {
 
       <Layout.Content>
         <View style={[a.pt_2xl, a.px_lg, gtMobile && a.px_2xl]}>
-          <TennaQuickLinks/>
+          <TennaQuickLinks />
+          <View style={[a.pt_lg]}>
+            <Text
+              style={[
+                a.text_md,
+                a.font_semi_bold,
+                a.pb_md,
+                t.atoms.text_contrast_high,
+              ]}>
+              App
+            </Text>
+          </View>
+          <DeltasJapanLogoToggle />
         </View>
       </Layout.Content>
     </Layout.Screen>

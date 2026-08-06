@@ -86,7 +86,7 @@ export function filterUserFacingLabels(
     label =>
       !label.val.startsWith('!') &&
       !(
-        (label.val === 'bot' || label.val === 'pet' || HIDE_SELFLABELS.includes(label.val)) &&
+        (label.val === 'bot' || label.val === 'pet' || HIDE_SELFLABELS.includes(label.val) || label.val.startsWith("dr-")) &&
         label.src === currentAccountDid
       ),
   )

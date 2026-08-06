@@ -10,7 +10,7 @@ export function useLogoVariant(allowVariants = true): LogoVariant {
   const kawaii = useKawaiiMode()
   const japanLogoEnabled =
     allowVariants &&
-    geolocation.countryCode === 'JP' &&
+    // geolocation.countryCode === 'JP' &&
     ax.features.enabled(ax.features.CustomLogoJapanEnable)
 
   if (!allowVariants) return 'default'
