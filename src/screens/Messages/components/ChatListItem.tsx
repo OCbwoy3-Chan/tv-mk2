@@ -335,9 +335,7 @@ function BaseChatItem({
         i18n,
       })
       if (info) {
-        lastMessage = info.isBlockedMessage
-          ? l`This message is hidden`
-          : (info.message ?? lastMessage)
+        lastMessage = info.message ?? lastMessage
         lastMessageSentAt = info.sentAt
       }
     }

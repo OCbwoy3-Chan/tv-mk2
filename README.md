@@ -19,6 +19,8 @@ Get the app itself:
 - *Enhanced* Custom TID option in composer: Better than the one on [witchsky](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow).
 - Removed the labeler limit (200 max, but its way too much)
 - Brought back AI prefs in our settings (it's atproto, y'all!)
+- Ignore block relationships for viewing groupchat messages
+- Option to bypass Bluesky !hide label and block relationships on viewing lists
 
 - Native iOS via GitHub Actions (for sideloading)
 

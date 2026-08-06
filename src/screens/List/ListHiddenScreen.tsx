@@ -1,14 +1,14 @@
-import {useState} from 'react'
-import {View} from 'react-native'
-import {AppBskyGraphDefs} from '@atproto/api'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
-import {useQueryClient} from '@tanstack/react-query'
+import { useState } from 'react'
+import { View } from 'react-native'
+import { AppBskyGraphDefs } from '@atproto/api'
+import { msg } from '@lingui/core/macro'
+import { useLingui } from '@lingui/react'
+import { Trans } from '@lingui/react/macro'
+import { useQueryClient } from '@tanstack/react-query'
 
-import {useGoBack} from '#/lib/hooks/useGoBack'
-import {sanitizeHandle} from '#/lib/strings/handles'
-import {logger} from '#/logger'
+import { useGoBack } from '#/lib/hooks/useGoBack'
+import { sanitizeHandle } from '#/lib/strings/handles'
+import { logger } from '#/logger'
 import {
   RQKEY_ROOT as listQueryRoot,
   useListBlockMutation,
@@ -18,15 +18,15 @@ import {
   type UsePreferencesQueryResponse,
   useRemoveFeedMutation,
 } from '#/state/queries/preferences'
-import {useSession} from '#/state/session'
-import {CenteredView} from '#/view/com/util/Views'
-import {atoms as a, useBreakpoints, useTheme} from '#/alf'
-import {Button, ButtonIcon, ButtonText} from '#/components/Button'
-import {EyeSlash_Stroke2_Corner0_Rounded as EyeSlash} from '#/components/icons/EyeSlash'
-import {Loader} from '#/components/Loader'
-import {useHider} from '#/components/moderation/Hider'
+import { useSession } from '#/state/session'
+import { CenteredView } from '#/view/com/util/Views'
+import { atoms as a, useBreakpoints, useTheme } from '#/alf'
+import { Button, ButtonIcon, ButtonText } from '#/components/Button'
+import { EyeSlash_Stroke2_Corner0_Rounded as EyeSlash } from '#/components/icons/EyeSlash'
+import { Loader } from '#/components/Loader'
+import { useHider } from '#/components/moderation/Hider'
 import * as Toast from '#/components/Toast'
-import {Text} from '#/components/Typography'
+import { Text } from '#/components/Typography'
 
 export function ListHiddenScreen({
   list,
@@ -35,10 +35,10 @@ export function ListHiddenScreen({
   list: AppBskyGraphDefs.ListView
   preferences: UsePreferencesQueryResponse
 }) {
-  const {_} = useLingui()
+  const { _ } = useLingui()
   const t = useTheme()
-  const {currentAccount} = useSession()
-  const {gtMobile} = useBreakpoints()
+  const { currentAccount } = useSession()
+  const { gtMobile } = useBreakpoints()
   const isOwner = currentAccount?.did === list.creator.did
   const goBack = useGoBack()
   const queryClient = useQueryClient()
@@ -48,9 +48,9 @@ export function ListHiddenScreen({
   const [isProcessing, setIsProcessing] = useState(false)
   const listBlockMutation = useListBlockMutation()
   const listMuteMutation = useListMuteMutation()
-  const {mutateAsync: removeSavedFeed} = useRemoveFeedMutation()
+  const { mutateAsync: removeSavedFeed } = useRemoveFeedMutation()
 
-  const {setIsContentVisible} = useHider()
+  const { setIsContentVisible } = useHider()
 
   const savedFeedConfig = preferences.savedFeeds.find(f => f.value === list.uri)
 
@@ -58,10 +58,10 @@ export function ListHiddenScreen({
     setIsProcessing(true)
     if (list.viewer?.muted) {
       try {
-        await listMuteMutation.mutateAsync({uri: list.uri, mute: false})
+        await listMuteMutation.mutateAsync({ uri: list.uri, mute: false })
       } catch (e) {
         setIsProcessing(false)
-        logger.error('Failed to unmute list', {message: e})
+        logger.error('Failed to unmute list', { message: e })
         Toast.show(
           _(
             msg`There was an issue. Please check your internet connection and try again.`,
@@ -72,10 +72,10 @@ export function ListHiddenScreen({
     }
     if (list.viewer?.blocked) {
       try {
-        await listBlockMutation.mutateAsync({uri: list.uri, block: false})
+        await listBlockMutation.mutateAsync({ uri: list.uri, block: false })
       } catch (e) {
         setIsProcessing(false)
-        logger.error('Failed to unblock list', {message: e})
+        logger.error('Failed to unblock list', { message: e })
         Toast.show(
           _(
             msg`There was an issue. Please check your internet connection and try again.`,
@@ -97,7 +97,7 @@ export function ListHiddenScreen({
       await removeSavedFeed(savedFeedConfig)
       Toast.show(_(msg`Removed from saved feeds`))
     } catch (e) {
-      logger.error('Failed to remove list from saved feeds', {message: e})
+      logger.error('Failed to remove list from saved feeds', { message: e })
       Toast.show(
         _(
           msg`There was an issue. Please check your internet connection and try again.`,
@@ -116,12 +116,12 @@ export function ListHiddenScreen({
         a.gap_5xl,
         !gtMobile && a.justify_between,
         t.atoms.border_contrast_low,
-        {paddingTop: 175, paddingBottom: 110},
+        { paddingTop: 175, paddingBottom: 110 },
       ]}
       sideBorders={true}>
       <View style={[a.w_full, a.align_center, a.gap_lg]}>
         <EyeSlash
-          style={{color: t.atoms.text_contrast_medium.color}}
+          style={{ color: t.atoms.text_contrast_medium.color }}
           height={42}
           width={42}
         />
@@ -139,7 +139,7 @@ export function ListHiddenScreen({
               a.text_center,
               a.px_md,
               t.atoms.text_contrast_high,
-              {lineHeight: 1.4},
+              { lineHeight: 1.4 },
             ]}>
             {list.creator.viewer?.blocking || list.creator.viewer?.blockedBy ? (
               <Trans>
@@ -164,7 +164,7 @@ export function ListHiddenScreen({
           </Text>
         </View>
       </View>
-      <View style={[a.gap_md, gtMobile ? {width: 350} : [a.w_full, a.px_lg]]}>
+      <View style={[a.gap_md, gtMobile ? { width: 350 } : [a.w_full, a.px_lg]]}>
         <View style={[a.gap_md]}>
           {savedFeedConfig ? (
             <Button
@@ -182,19 +182,18 @@ export function ListHiddenScreen({
               ) : null}
             </Button>
           ) : null}
-          {isOwner ? (
-            <Button
-              variant="solid"
-              color="secondary"
-              size="large"
-              label={_(msg`Show list anyway`)}
-              onPress={() => setIsContentVisible(true)}
-              disabled={isProcessing}>
-              <ButtonText>
-                <Trans>Show anyway</Trans>
-              </ButtonText>
-            </Button>
-          ) : list.viewer?.muted || list.viewer?.blocked ? (
+          <Button
+            variant="solid"
+            color="secondary"
+            size="large"
+            label={_(msg`Show list anyway`)}
+            onPress={() => setIsContentVisible(true)}
+            disabled={isProcessing}>
+            <ButtonText>
+              <Trans>Show anyway</Trans>
+            </ButtonText>
+          </Button>
+          {list.viewer?.muted || list.viewer?.blocked ? (
             <Button
               variant="solid"
               color="secondary"

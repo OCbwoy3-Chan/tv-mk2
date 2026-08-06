@@ -125,7 +125,7 @@ export function TitleAndByline({
         isContentVisibleInitialState={
           creator && currentAccount?.did === creator.did
         }
-        allowOverride={creator && currentAccount?.did === creator.did}>
+        allowOverride={true}>
         <Hider.Mask>
           <Text
             style={[a.text_md, a.font_semi_bold, a.leading_snug, a.italic]}

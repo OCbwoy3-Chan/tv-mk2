@@ -33,7 +33,7 @@ msgid "\"Followed by\" avatars"
 msgstr ""
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:908
+#: src/components/dms/MessageItem.tsx:909
 msgid "(blocked message hidden)"
 msgstr "(mesaj blocat ascuns)"
 
@@ -48,7 +48,7 @@ msgid "(contains embedded content)"
 msgstr "(conține conținut încorporat)"
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:922
+#: src/components/dms/MessageItem.tsx:923
 msgid "(deleted message)"
 msgstr "(mesaj șters)"
 
@@ -63,7 +63,7 @@ msgid "(invalid chat invite link)"
 msgstr "(link de invitație pentru conversație invalid)"
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:916
+#: src/components/dms/MessageItem.tsx:917
 msgid "(message sent before you joined)"
 msgstr ""
 
@@ -288,7 +288,7 @@ msgid "{0} and {1} added to chat"
 msgstr "{0} și {1} au fost adăugați la conversație"
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
-#: src/components/dms/MessageItem.tsx:730
+#: src/components/dms/MessageItem.tsx:731
 msgid "{0} is blocking you"
 msgstr "{0} vă blochează"
 
@@ -817,15 +817,15 @@ msgstr ""
 msgid "{rank}."
 msgstr "{rank}."
 
-#: src/components/dms/MessageItem.tsx:819
+#: src/components/dms/MessageItem.tsx:820
 msgid "{replierDisplayName} replied"
 msgstr "{replierDisplayName} a răspuns"
 
-#: src/components/dms/MessageItem.tsx:818
+#: src/components/dms/MessageItem.tsx:819
 msgid "{replierDisplayName} replied to {originalName}"
 msgstr "{replierDisplayName} a răspuns către {originalName}"
 
-#: src/components/dms/MessageItem.tsx:816
+#: src/components/dms/MessageItem.tsx:817
 msgid "{replierDisplayName} replied to you"
 msgstr "{replierDisplayName} v-a răspuns"
 
@@ -1046,7 +1046,7 @@ msgstr "A fost trimis un nou cod"
 msgid "A new form of verification"
 msgstr "O nouă formă de verificare"
 
-#: src/components/dms/MessageItem.tsx:829
+#: src/components/dms/MessageItem.tsx:830
 msgid "A reply to a message sent before you joined"
 msgstr ""
 
@@ -3249,7 +3249,7 @@ msgstr "Faceți clic aici pentru a vizualiza linkul de invitație pentru aceast�
 msgid "Click to open tag menu for {0}"
 msgstr "Faceți clic pentru a deschide meniul de etichete pentru {0}"
 
-#: src/components/dms/MessageItem.tsx:649
+#: src/components/dms/MessageItem.tsx:650
 msgid "Click to retry failed message"
 msgstr "Faceți clic pentru a reîncerca mesajul eșuat"
 
@@ -4754,7 +4754,7 @@ msgstr "Nu vă faceți griji! Toate mesajele existente și setările sunt salvat
 msgid "Done"
 msgstr "Finalizare"
 
-#: src/components/dms/MessageItem.tsx:547
+#: src/components/dms/MessageItem.tsx:548
 msgid "Double tap or long press the message to add a reaction"
 msgstr "Atingeți de două ori sau apăsați lung mesajul pentru a adăuga o reacție"
 
@@ -6660,7 +6660,7 @@ msgid "Go back"
 msgstr "Mergeți înapoi"
 
 #: src/components/Error.tsx:72
-#: src/screens/List/ListHiddenScreen.tsx:228
+#: src/screens/List/ListHiddenScreen.tsx:227
 #: src/screens/Profile/ErrorState.tsx:63
 #: src/screens/Profile/ErrorState.tsx:67
 #: src/screens/StarterPack/StarterPackScreen.tsx:810
@@ -8638,7 +8638,7 @@ msgctxt "toast"
 msgid "Message deleted"
 msgstr "Mesaj șters"
 
-#: src/components/dms/MessageItem.tsx:643
+#: src/components/dms/MessageItem.tsx:644
 msgid "Message failed to send."
 msgstr "Mesajul nu a putut fi trimis."
 
@@ -8669,11 +8669,11 @@ msgstr "Opțiuni mesaj"
 msgid "Messages"
 msgstr "Mesaje"
 
-#: src/components/dms/MessageItem.tsx:742
+#: src/components/dms/MessageItem.tsx:743
 msgid "Messages from this person are hidden while they are blocking you."
 msgstr "Mesajele de la această persoană sunt ascunse cât timp ea vă blochează."
 
-#: src/components/dms/MessageItem.tsx:737
+#: src/components/dms/MessageItem.tsx:738
 msgid "Messages from this person are hidden while you are blocking them."
 msgstr "Mesajele de la această persoană sunt ascunse cât timp o blocați."
 
@@ -9565,7 +9565,7 @@ msgstr "OK"
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:62
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:67
 #: src/components/dms/InitiateChatFlow.tsx:733
-#: src/components/dms/MessageItem.tsx:749
+#: src/components/dms/MessageItem.tsx:750
 #: src/components/PetAccountAlert.tsx:52
 #: src/components/PetAccountAlert.tsx:57
 #: src/screens/Login/PasswordUpdatedForm.tsx:35
@@ -9737,8 +9737,8 @@ msgstr "Deschidere conversație"
 msgid "Open chat member options for {displayName}"
 msgstr "Deschideți opțiunile pentru membrii conversației pentru {displayName}"
 
-#: src/screens/Messages/components/ChatListItem.tsx:485
-#: src/screens/Messages/components/ChatListItem.tsx:489
+#: src/screens/Messages/components/ChatListItem.tsx:483
+#: src/screens/Messages/components/ChatListItem.tsx:487
 msgid "Open conversation options"
 msgstr "Deschideți opțiunile conversației"
 
@@ -11472,15 +11472,15 @@ msgctxt "description"
 msgid "Replied to you"
 msgstr "Răspuns la dvs."
 
-#: src/components/dms/MessageItem.tsx:932
+#: src/components/dms/MessageItem.tsx:933
 msgid "Replied-to message from {senderName}, tap to scroll to it"
 msgstr "Mesaj la care a răspuns {senderName}, atingeți pentru a derula la el"
 
-#: src/components/dms/MessageItem.tsx:930
+#: src/components/dms/MessageItem.tsx:931
 msgid "Replied-to message was sent before you joined"
 msgstr ""
 
-#: src/components/dms/MessageItem.tsx:933
+#: src/components/dms/MessageItem.tsx:934
 msgid "Replied-to message, tap to scroll to it"
 msgstr "Mesaj la care s-a răspuns, atingeți pentru a derula la el"
 
@@ -11919,7 +11919,7 @@ msgid "Retry loading report options"
 msgstr "Reîncercați să încărcați opțiunile de raport"
 
 #: src/components/Error.tsx:68
-#: src/screens/List/ListHiddenScreen.tsx:223
+#: src/screens/List/ListHiddenScreen.tsx:222
 #: src/screens/StarterPack/StarterPackScreen.tsx:804
 msgid "Return to previous page"
 msgstr "Reveniți la pagina anterioară"
@@ -12159,7 +12159,7 @@ msgstr "Derulați spre stânga"
 msgid "Scroll right"
 msgstr "Derulați spre dreapta"
 
-#: src/components/dms/MessageItem.tsx:828
+#: src/components/dms/MessageItem.tsx:829
 msgid "Scroll to the message this is replying to"
 msgstr "Derulați la mesajul la care s-a răspuns"
 
@@ -12908,7 +12908,7 @@ msgstr "Afișare text alternativ"
 #: src/components/moderation/ScreenHider.tsx:185
 #: src/features/liveNow/components/LiveStatusDialog.tsx:347
 #: src/features/liveNow/components/LiveStatusDialog.tsx:351
-#: src/screens/List/ListHiddenScreen.tsx:194
+#: src/screens/List/ListHiddenScreen.tsx:193
 #: src/screens/VideoFeed/index.tsx:656
 #: src/screens/VideoFeed/index.tsx:662
 msgid "Show anyway"
@@ -12961,7 +12961,7 @@ msgstr "Afișare actualizări conversație de grup"
 msgid "Show less like this"
 msgstr "Afișați mai puține asemănătoare"
 
-#: src/screens/List/ListHiddenScreen.tsx:190
+#: src/screens/List/ListHiddenScreen.tsx:189
 msgid "Show list anyway"
 msgstr "Afișați lista oricum"
 
@@ -13317,7 +13317,7 @@ msgstr "Cineva a reacționat cu {0}"
 msgid "Someone reacted {0} to {target}"
 msgstr "Cineva a reacționat cu {0} la {target}"
 
-#: src/components/dms/MessageItem.tsx:821
+#: src/components/dms/MessageItem.tsx:822
 msgid "Someone replied"
 msgstr ""
 
@@ -13745,7 +13745,7 @@ msgstr ""
 msgid "Tap below to allow Bluesky to access your GPS location. We will then use that data to more accurately determine the content and features available in your region."
 msgstr "Atingeți mai jos pentru a permite aplicației Bluesky să vă acceseze locația GPS. Vom folosi apoi aceste date pentru a determina cu mai multă precizie conținutul și caracteristicile disponibile în regiunea dvs."
 
-#: src/components/dms/MessageItem.tsx:688
+#: src/components/dms/MessageItem.tsx:689
 msgid "Tap for details"
 msgstr "Atingeți pentru detalii"
 
@@ -13803,7 +13803,7 @@ msgstr "Atingeți pentru a vă elimina reacția {0}"
 msgid "Tap to request access to join this group chat"
 msgstr "Atingeți pentru a solicita acces pentru a vă alătura acestei conversații de grup"
 
-#: src/components/dms/MessageItem.tsx:653
+#: src/components/dms/MessageItem.tsx:654
 msgid "Tap to retry"
 msgstr "Atingeți pentru a reîncerca"
 
@@ -14288,7 +14288,7 @@ msgstr "Această conversație s-a încheiat"
 msgid "This chat is full"
 msgstr "Această conversație este plină"
 
-#: src/screens/Messages/components/ChatListItem.tsx:380
+#: src/screens/Messages/components/ChatListItem.tsx:378
 #: src/screens/Messages/components/ChatLocked.tsx:69
 msgid "This chat is locked"
 msgstr "Această conversație este blocată"
@@ -14475,17 +14475,13 @@ msgstr "Această listă este goală."
 msgid "This looks like a hosting provider (PDS) address, not an AppView. Your PDS is detected from your handle, or set separately under Hosting provider; don’t enter it here!"
 msgstr ""
 
-#: src/screens/Messages/components/ChatListItem.tsx:339
-msgid "This message is hidden"
-msgstr "Acest mesaj este ascuns"
-
-#: src/components/dms/MessageItem.tsx:686
-#: src/components/dms/MessageItem.tsx:715
+#: src/components/dms/MessageItem.tsx:687
+#: src/components/dms/MessageItem.tsx:716
 msgid "This message is hidden because this user is blocking you."
 msgstr "Acest mesaj este ascuns deoarece acest utilizator vă blochează."
 
-#: src/components/dms/MessageItem.tsx:685
-#: src/components/dms/MessageItem.tsx:711
+#: src/components/dms/MessageItem.tsx:686
+#: src/components/dms/MessageItem.tsx:712
 msgid "This message is hidden because you are blocking this user."
 msgstr "Acest mesaj este ascuns deoarece blocați acest utilizator."
 
@@ -14982,7 +14978,7 @@ msgstr "Indisponibil"
 msgid "Unavailable feed information"
 msgstr "Informații flux indisponibile"
 
-#: src/components/dms/MessageItem.tsx:753
+#: src/components/dms/MessageItem.tsx:754
 #: src/components/dms/MessagesListBlockedFooter.tsx:99
 #: src/components/dms/MessagesListBlockedFooter.tsx:106
 #: src/components/moderation/BlockDialog.tsx:186
@@ -15218,8 +15214,8 @@ msgstr "Anulați amânarea mementoului prin e-mail"
 msgid "Unsubscribe"
 msgstr "Dezabonare"
 
-#: src/screens/List/ListHiddenScreen.tsx:202
-#: src/screens/List/ListHiddenScreen.tsx:212
+#: src/screens/List/ListHiddenScreen.tsx:201
+#: src/screens/List/ListHiddenScreen.tsx:211
 msgid "Unsubscribe from list"
 msgstr "Dezabonare de la listă"
 
@@ -16391,7 +16387,7 @@ msgid "You are accessing Bluesky from a region that legally requires us to verif
 msgstr "Accesați Bluesky dintr-o regiune care, în mod legal, ne cere să vă verificăm vârsta înainte de a vă permite să accesați aplicația."
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
-#: src/components/dms/MessageItem.tsx:726
+#: src/components/dms/MessageItem.tsx:727
 msgid "You are blocking {0}"
 msgstr "Dvs. blocați pe {0}"
 
@@ -16769,15 +16765,15 @@ msgstr "Ați reacționat cu {0} la {target}"
 msgid "You recently changed your birthdate"
 msgstr "V-ați schimbat recent data nașterii"
 
-#: src/components/dms/MessageItem.tsx:814
+#: src/components/dms/MessageItem.tsx:815
 msgid "You replied"
 msgstr "Ați răspuns"
 
-#: src/components/dms/MessageItem.tsx:813
+#: src/components/dms/MessageItem.tsx:814
 msgid "You replied to {originalName}"
 msgstr "Ați răspuns către {originalName}"
 
-#: src/components/dms/MessageItem.tsx:811
+#: src/components/dms/MessageItem.tsx:812
 msgid "You replied to yourself"
 msgstr "V-ați răspuns"
 

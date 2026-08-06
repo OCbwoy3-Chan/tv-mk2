@@ -33,7 +33,7 @@ msgid "\"Followed by\" avatars"
 msgstr ""
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:908
+#: src/components/dms/MessageItem.tsx:909
 msgid "(blocked message hidden)"
 msgstr ""
 
@@ -48,7 +48,7 @@ msgid "(contains embedded content)"
 msgstr "（包含嵌入內容）"
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:922
+#: src/components/dms/MessageItem.tsx:923
 msgid "(deleted message)"
 msgstr ""
 
@@ -63,7 +63,7 @@ msgid "(invalid chat invite link)"
 msgstr ""
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:916
+#: src/components/dms/MessageItem.tsx:917
 msgid "(message sent before you joined)"
 msgstr ""
 
@@ -288,7 +288,7 @@ msgid "{0} and {1} added to chat"
 msgstr "{0} 和 {1} 已受邀加入對話"
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
-#: src/components/dms/MessageItem.tsx:730
+#: src/components/dms/MessageItem.tsx:731
 msgid "{0} is blocking you"
 msgstr "{0} 已封鎖您"
 
@@ -817,15 +817,15 @@ msgstr ""
 msgid "{rank}."
 msgstr "{rank}."
 
-#: src/components/dms/MessageItem.tsx:819
+#: src/components/dms/MessageItem.tsx:820
 msgid "{replierDisplayName} replied"
 msgstr "{replierDisplayName} 回覆了"
 
-#: src/components/dms/MessageItem.tsx:818
+#: src/components/dms/MessageItem.tsx:819
 msgid "{replierDisplayName} replied to {originalName}"
 msgstr "{replierDisplayName} 回覆了 {originalName}"
 
-#: src/components/dms/MessageItem.tsx:816
+#: src/components/dms/MessageItem.tsx:817
 msgid "{replierDisplayName} replied to you"
 msgstr "{replierDisplayName} 回覆了您"
 
@@ -1046,7 +1046,7 @@ msgstr "已傳送新的驗證碼"
 msgid "A new form of verification"
 msgstr "全新的驗證機制"
 
-#: src/components/dms/MessageItem.tsx:829
+#: src/components/dms/MessageItem.tsx:830
 msgid "A reply to a message sent before you joined"
 msgstr ""
 
@@ -3249,7 +3249,7 @@ msgstr "點一下這裡以檢視此群組對話的邀請連結"
 msgid "Click to open tag menu for {0}"
 msgstr "點此以開啟 {0} 的標籤選單"
 
-#: src/components/dms/MessageItem.tsx:649
+#: src/components/dms/MessageItem.tsx:650
 msgid "Click to retry failed message"
 msgstr "點此以重新傳送訊息"
 
@@ -4754,7 +4754,7 @@ msgstr "不用擔心！您現有的訊息和設定都已儲存，只需驗證您
 msgid "Done"
 msgstr "完成"
 
-#: src/components/dms/MessageItem.tsx:547
+#: src/components/dms/MessageItem.tsx:548
 msgid "Double tap or long press the message to add a reaction"
 msgstr "點兩下或長按訊息以加入反應"
 
@@ -6660,7 +6660,7 @@ msgid "Go back"
 msgstr "返回"
 
 #: src/components/Error.tsx:72
-#: src/screens/List/ListHiddenScreen.tsx:228
+#: src/screens/List/ListHiddenScreen.tsx:227
 #: src/screens/Profile/ErrorState.tsx:63
 #: src/screens/Profile/ErrorState.tsx:67
 #: src/screens/StarterPack/StarterPackScreen.tsx:810
@@ -8638,7 +8638,7 @@ msgctxt "toast"
 msgid "Message deleted"
 msgstr "成功刪除訊息"
 
-#: src/components/dms/MessageItem.tsx:643
+#: src/components/dms/MessageItem.tsx:644
 msgid "Message failed to send."
 msgstr "傳送訊息時發生問題。"
 
@@ -8669,11 +8669,11 @@ msgstr "訊息選項"
 msgid "Messages"
 msgstr "訊息"
 
-#: src/components/dms/MessageItem.tsx:742
+#: src/components/dms/MessageItem.tsx:743
 msgid "Messages from this person are hidden while they are blocking you."
 msgstr "當對方封鎖您時，其傳送的訊息將被隱藏。"
 
-#: src/components/dms/MessageItem.tsx:737
+#: src/components/dms/MessageItem.tsx:738
 msgid "Messages from this person are hidden while you are blocking them."
 msgstr "當您封鎖對方時，其傳送的訊息將被隱藏。"
 
@@ -9565,7 +9565,7 @@ msgstr "好的"
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:62
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:67
 #: src/components/dms/InitiateChatFlow.tsx:733
-#: src/components/dms/MessageItem.tsx:749
+#: src/components/dms/MessageItem.tsx:750
 #: src/components/PetAccountAlert.tsx:52
 #: src/components/PetAccountAlert.tsx:57
 #: src/screens/Login/PasswordUpdatedForm.tsx:35
@@ -9737,8 +9737,8 @@ msgstr "開啟對話"
 msgid "Open chat member options for {displayName}"
 msgstr "開啟 {displayName} 的對話成員選項列表"
 
-#: src/screens/Messages/components/ChatListItem.tsx:485
-#: src/screens/Messages/components/ChatListItem.tsx:489
+#: src/screens/Messages/components/ChatListItem.tsx:483
+#: src/screens/Messages/components/ChatListItem.tsx:487
 msgid "Open conversation options"
 msgstr "開啟對話選項"
 
@@ -11472,15 +11472,15 @@ msgctxt "description"
 msgid "Replied to you"
 msgstr "對您回覆"
 
-#: src/components/dms/MessageItem.tsx:932
+#: src/components/dms/MessageItem.tsx:933
 msgid "Replied-to message from {senderName}, tap to scroll to it"
 msgstr "來自 {senderName} 的回覆訊息，點選以捲動至該訊息"
 
-#: src/components/dms/MessageItem.tsx:930
+#: src/components/dms/MessageItem.tsx:931
 msgid "Replied-to message was sent before you joined"
 msgstr ""
 
-#: src/components/dms/MessageItem.tsx:933
+#: src/components/dms/MessageItem.tsx:934
 msgid "Replied-to message, tap to scroll to it"
 msgstr "回覆的訊息，點選以捲動至該訊息"
 
@@ -11919,7 +11919,7 @@ msgid "Retry loading report options"
 msgstr "重新載入檢舉選項"
 
 #: src/components/Error.tsx:68
-#: src/screens/List/ListHiddenScreen.tsx:223
+#: src/screens/List/ListHiddenScreen.tsx:222
 #: src/screens/StarterPack/StarterPackScreen.tsx:804
 msgid "Return to previous page"
 msgstr "返回上一頁"
@@ -12159,7 +12159,7 @@ msgstr "向左捲動"
 msgid "Scroll right"
 msgstr "向右捲動"
 
-#: src/components/dms/MessageItem.tsx:828
+#: src/components/dms/MessageItem.tsx:829
 msgid "Scroll to the message this is replying to"
 msgstr "捲動至此回覆所對應的訊息"
 
@@ -12908,7 +12908,7 @@ msgstr "顯示替代文字"
 #: src/components/moderation/ScreenHider.tsx:185
 #: src/features/liveNow/components/LiveStatusDialog.tsx:347
 #: src/features/liveNow/components/LiveStatusDialog.tsx:351
-#: src/screens/List/ListHiddenScreen.tsx:194
+#: src/screens/List/ListHiddenScreen.tsx:193
 #: src/screens/VideoFeed/index.tsx:656
 #: src/screens/VideoFeed/index.tsx:662
 msgid "Show anyway"
@@ -12961,7 +12961,7 @@ msgstr "顯示群組對話更新"
 msgid "Show less like this"
 msgstr "減少顯示類似內容"
 
-#: src/screens/List/ListHiddenScreen.tsx:190
+#: src/screens/List/ListHiddenScreen.tsx:189
 msgid "Show list anyway"
 msgstr "仍然顯示列表"
 
@@ -13317,7 +13317,7 @@ msgstr "有人做出了 {0} 反應"
 msgid "Someone reacted {0} to {target}"
 msgstr "有人對 {target} 做出了 {0} 反應"
 
-#: src/components/dms/MessageItem.tsx:821
+#: src/components/dms/MessageItem.tsx:822
 msgid "Someone replied"
 msgstr ""
 
@@ -13745,7 +13745,7 @@ msgstr ""
 msgid "Tap below to allow Bluesky to access your GPS location. We will then use that data to more accurately determine the content and features available in your region."
 msgstr "輕觸下方的「允許」按鈕來讓 Bluesky 存取您的所在位置。我們會利用該資訊來更精確地判斷您所在區域可用的內容和功能。"
 
-#: src/components/dms/MessageItem.tsx:688
+#: src/components/dms/MessageItem.tsx:689
 msgid "Tap for details"
 msgstr "輕觸以瞭解詳細資訊"
 
@@ -13803,7 +13803,7 @@ msgstr "輕觸以收回您的 {0} 反應"
 msgid "Tap to request access to join this group chat"
 msgstr "輕觸以申請加入此群組對話"
 
-#: src/components/dms/MessageItem.tsx:653
+#: src/components/dms/MessageItem.tsx:654
 msgid "Tap to retry"
 msgstr "輕觸以重試"
 
@@ -14288,7 +14288,7 @@ msgstr "此對話已結束"
 msgid "This chat is full"
 msgstr "此對話已滿員"
 
-#: src/screens/Messages/components/ChatListItem.tsx:380
+#: src/screens/Messages/components/ChatListItem.tsx:378
 #: src/screens/Messages/components/ChatLocked.tsx:69
 msgid "This chat is locked"
 msgstr "此對話已鎖定"
@@ -14475,17 +14475,13 @@ msgstr "這個列表是空的。"
 msgid "This looks like a hosting provider (PDS) address, not an AppView. Your PDS is detected from your handle, or set separately under Hosting provider; don’t enter it here!"
 msgstr ""
 
-#: src/screens/Messages/components/ChatListItem.tsx:339
-msgid "This message is hidden"
-msgstr "此訊息已隱藏"
-
-#: src/components/dms/MessageItem.tsx:686
-#: src/components/dms/MessageItem.tsx:715
+#: src/components/dms/MessageItem.tsx:687
+#: src/components/dms/MessageItem.tsx:716
 msgid "This message is hidden because this user is blocking you."
 msgstr "此訊息已隱藏，因為此用戶封鎖了您。"
 
-#: src/components/dms/MessageItem.tsx:685
-#: src/components/dms/MessageItem.tsx:711
+#: src/components/dms/MessageItem.tsx:686
+#: src/components/dms/MessageItem.tsx:712
 msgid "This message is hidden because you are blocking this user."
 msgstr "此訊息已隱藏，因為您封鎖了此用戶。"
 
@@ -14982,7 +14978,7 @@ msgstr "目前無法使用"
 msgid "Unavailable feed information"
 msgstr "無法取得動態源資訊"
 
-#: src/components/dms/MessageItem.tsx:753
+#: src/components/dms/MessageItem.tsx:754
 #: src/components/dms/MessagesListBlockedFooter.tsx:99
 #: src/components/dms/MessagesListBlockedFooter.tsx:106
 #: src/components/moderation/BlockDialog.tsx:186
@@ -15218,8 +15214,8 @@ msgstr "取消暫停電子郵件提醒"
 msgid "Unsubscribe"
 msgstr "取消訂閱"
 
-#: src/screens/List/ListHiddenScreen.tsx:202
-#: src/screens/List/ListHiddenScreen.tsx:212
+#: src/screens/List/ListHiddenScreen.tsx:201
+#: src/screens/List/ListHiddenScreen.tsx:211
 msgid "Unsubscribe from list"
 msgstr "取消套用這個列表"
 
@@ -16391,7 +16387,7 @@ msgid "You are accessing Bluesky from a region that legally requires us to verif
 msgstr "您所在的地區依法要求我們在允許您使用 Bluesky 應用程式之前驗證您的年齡。"
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
-#: src/components/dms/MessageItem.tsx:726
+#: src/components/dms/MessageItem.tsx:727
 msgid "You are blocking {0}"
 msgstr "您封鎖了 {0}"
 
@@ -16769,15 +16765,15 @@ msgstr "您對 {target} 做出了 {0} 反應"
 msgid "You recently changed your birthdate"
 msgstr "您最近變更了出生日期"
 
-#: src/components/dms/MessageItem.tsx:814
+#: src/components/dms/MessageItem.tsx:815
 msgid "You replied"
 msgstr "您回覆了"
 
-#: src/components/dms/MessageItem.tsx:813
+#: src/components/dms/MessageItem.tsx:814
 msgid "You replied to {originalName}"
 msgstr "您回覆了 {originalName}"
 
-#: src/components/dms/MessageItem.tsx:811
+#: src/components/dms/MessageItem.tsx:812
 msgid "You replied to yourself"
 msgstr "您回覆了自己"
 

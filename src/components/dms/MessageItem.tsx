@@ -509,8 +509,9 @@ let MessageItem = ({
                 {displayName}
               </Text>
             ) : null}
-            {profile && isBlockedOrBlocking(profile) && isGroupChat ? (
-              <BlockedPlaceholder profile={profile} style={borderRadiusStyle} />
+            {false ? (// profile && isBlockedOrBlocking(profile) && isGroupChat ? (
+              <View/>
+              // <BlockedPlaceholder profile={profile} style={borderRadiusStyle} />
             ) : (
               <View style={[a.relative]}>
                 <ActionsWrapper

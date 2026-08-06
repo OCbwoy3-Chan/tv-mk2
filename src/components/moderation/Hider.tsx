@@ -51,7 +51,7 @@ export function Outer({
           cause.labelDef.identifier === '!no-unauthenticated',
       ),
     ),
-    allowOverride: allowOverride ?? !modui?.noOverride,
+    allowOverride: true // allowOverride ?? !modui?.noOverride,
   }
 
   const showInfoDialog = () => {

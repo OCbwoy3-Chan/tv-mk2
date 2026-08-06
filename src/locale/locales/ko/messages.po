@@ -33,7 +33,7 @@ msgid "\"Followed by\" avatars"
 msgstr ""
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:908
+#: src/components/dms/MessageItem.tsx:909
 msgid "(blocked message hidden)"
 msgstr "(차단한 메시지 숨겨짐)"
 
@@ -48,7 +48,7 @@ msgid "(contains embedded content)"
 msgstr "(임베드 콘텐츠 포함)"
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:922
+#: src/components/dms/MessageItem.tsx:923
 msgid "(deleted message)"
 msgstr "(삭제된 메시지)"
 
@@ -63,7 +63,7 @@ msgid "(invalid chat invite link)"
 msgstr "(잘못된 대화 초대 링크)"
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:916
+#: src/components/dms/MessageItem.tsx:917
 msgid "(message sent before you joined)"
 msgstr ""
 
@@ -288,7 +288,7 @@ msgid "{0} and {1} added to chat"
 msgstr "{0} 님과 {1} 님이 대화에 추가되었습니다"
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
-#: src/components/dms/MessageItem.tsx:730
+#: src/components/dms/MessageItem.tsx:731
 msgid "{0} is blocking you"
 msgstr "{0} 님이 나를 차단했습니다"
 
@@ -817,15 +817,15 @@ msgstr ""
 msgid "{rank}."
 msgstr "{rank}."
 
-#: src/components/dms/MessageItem.tsx:819
+#: src/components/dms/MessageItem.tsx:820
 msgid "{replierDisplayName} replied"
 msgstr "{replierDisplayName} 님이 보내는 답장"
 
-#: src/components/dms/MessageItem.tsx:818
+#: src/components/dms/MessageItem.tsx:819
 msgid "{replierDisplayName} replied to {originalName}"
 msgstr "{replierDisplayName} 님이 {originalName} 님에게 보내는 답장"
 
-#: src/components/dms/MessageItem.tsx:816
+#: src/components/dms/MessageItem.tsx:817
 msgid "{replierDisplayName} replied to you"
 msgstr "{replierDisplayName} 님이 나에게 보내는 답장"
 
@@ -1046,7 +1046,7 @@ msgstr "새 코드를 보냈습니다"
 msgid "A new form of verification"
 msgstr "새로운 방식의 인증"
 
-#: src/components/dms/MessageItem.tsx:829
+#: src/components/dms/MessageItem.tsx:830
 msgid "A reply to a message sent before you joined"
 msgstr ""
 
@@ -3249,7 +3249,7 @@ msgstr "이곳을 클릭하여 이 그룹 대화의 초대 링크 보기"
 msgid "Click to open tag menu for {0}"
 msgstr "클릭하여 {0}에 대한 태그 메뉴를 엽니다"
 
-#: src/components/dms/MessageItem.tsx:649
+#: src/components/dms/MessageItem.tsx:650
 msgid "Click to retry failed message"
 msgstr "클릭하여 메시지 다시 보내기"
 
@@ -4754,7 +4754,7 @@ msgstr "걱정 마세요! 모든 기존 메시지와 설정은 저장되며 성�
 msgid "Done"
 msgstr "완료"
 
-#: src/components/dms/MessageItem.tsx:547
+#: src/components/dms/MessageItem.tsx:548
 msgid "Double tap or long press the message to add a reaction"
 msgstr "메시지를 두 번 탭하거나 길게 눌러서 반응을 추가합니다"
 
@@ -6660,7 +6660,7 @@ msgid "Go back"
 msgstr "뒤로"
 
 #: src/components/Error.tsx:72
-#: src/screens/List/ListHiddenScreen.tsx:228
+#: src/screens/List/ListHiddenScreen.tsx:227
 #: src/screens/Profile/ErrorState.tsx:63
 #: src/screens/Profile/ErrorState.tsx:67
 #: src/screens/StarterPack/StarterPackScreen.tsx:810
@@ -8638,7 +8638,7 @@ msgctxt "toast"
 msgid "Message deleted"
 msgstr "메시지를 삭제했습니다"
 
-#: src/components/dms/MessageItem.tsx:643
+#: src/components/dms/MessageItem.tsx:644
 msgid "Message failed to send."
 msgstr "메시지를 보내지 못했습니다."
 
@@ -8669,11 +8669,11 @@ msgstr "메시지 옵션"
 msgid "Messages"
 msgstr "메시지"
 
-#: src/components/dms/MessageItem.tsx:742
+#: src/components/dms/MessageItem.tsx:743
 msgid "Messages from this person are hidden while they are blocking you."
 msgstr "나를 차단한 사람이 보낸 메시지는 숨겨집니다."
 
-#: src/components/dms/MessageItem.tsx:737
+#: src/components/dms/MessageItem.tsx:738
 msgid "Messages from this person are hidden while you are blocking them."
 msgstr "차단한 사람이 보낸 메시지는 숨겨집니다."
 
@@ -9565,7 +9565,7 @@ msgstr "확인"
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:62
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:67
 #: src/components/dms/InitiateChatFlow.tsx:733
-#: src/components/dms/MessageItem.tsx:749
+#: src/components/dms/MessageItem.tsx:750
 #: src/components/PetAccountAlert.tsx:52
 #: src/components/PetAccountAlert.tsx:57
 #: src/screens/Login/PasswordUpdatedForm.tsx:35
@@ -9737,8 +9737,8 @@ msgstr "대화 열기"
 msgid "Open chat member options for {displayName}"
 msgstr "{displayName} 님의 대화 멤버 옵션 열기"
 
-#: src/screens/Messages/components/ChatListItem.tsx:485
-#: src/screens/Messages/components/ChatListItem.tsx:489
+#: src/screens/Messages/components/ChatListItem.tsx:483
+#: src/screens/Messages/components/ChatListItem.tsx:487
 msgid "Open conversation options"
 msgstr "대화 옵션 열기"
 
@@ -11472,15 +11472,15 @@ msgctxt "description"
 msgid "Replied to you"
 msgstr "나에게 보내는 답글"
 
-#: src/components/dms/MessageItem.tsx:932
+#: src/components/dms/MessageItem.tsx:933
 msgid "Replied-to message from {senderName}, tap to scroll to it"
 msgstr "답장한 {senderName} 님의 메시지, 탭하여 스크롤하기"
 
-#: src/components/dms/MessageItem.tsx:930
+#: src/components/dms/MessageItem.tsx:931
 msgid "Replied-to message was sent before you joined"
 msgstr ""
 
-#: src/components/dms/MessageItem.tsx:933
+#: src/components/dms/MessageItem.tsx:934
 msgid "Replied-to message, tap to scroll to it"
 msgstr "답장한 메시지, 탭하여 스크롤하기"
 
@@ -11919,7 +11919,7 @@ msgid "Retry loading report options"
 msgstr "신고 옵션 불러오기 다시 시도"
 
 #: src/components/Error.tsx:68
-#: src/screens/List/ListHiddenScreen.tsx:223
+#: src/screens/List/ListHiddenScreen.tsx:222
 #: src/screens/StarterPack/StarterPackScreen.tsx:804
 msgid "Return to previous page"
 msgstr "이전 페이지로 돌아갑니다"
@@ -12159,7 +12159,7 @@ msgstr "왼쪽으로 스크롤"
 msgid "Scroll right"
 msgstr "오른쪽으로 스크롤"
 
-#: src/components/dms/MessageItem.tsx:828
+#: src/components/dms/MessageItem.tsx:829
 msgid "Scroll to the message this is replying to"
 msgstr "답장한 메시지로 스크롤하기"
 
@@ -12908,7 +12908,7 @@ msgstr "대체 텍스트 표시"
 #: src/components/moderation/ScreenHider.tsx:185
 #: src/features/liveNow/components/LiveStatusDialog.tsx:347
 #: src/features/liveNow/components/LiveStatusDialog.tsx:351
-#: src/screens/List/ListHiddenScreen.tsx:194
+#: src/screens/List/ListHiddenScreen.tsx:193
 #: src/screens/VideoFeed/index.tsx:656
 #: src/screens/VideoFeed/index.tsx:662
 msgid "Show anyway"
@@ -12961,7 +12961,7 @@ msgstr "그룹 대화 업데이트를 표시합니다"
 msgid "Show less like this"
 msgstr "이런 항목 덜 보기"
 
-#: src/screens/List/ListHiddenScreen.tsx:190
+#: src/screens/List/ListHiddenScreen.tsx:189
 msgid "Show list anyway"
 msgstr "무시하고 리스트 표시하기"
 
@@ -13317,7 +13317,7 @@ msgstr "누군가가 {0}(으)로 반응했습니다"
 msgid "Someone reacted {0} to {target}"
 msgstr "누군가가 {target}에 {0}(으)로 반응했습니다"
 
-#: src/components/dms/MessageItem.tsx:821
+#: src/components/dms/MessageItem.tsx:822
 msgid "Someone replied"
 msgstr ""
 
@@ -13745,7 +13745,7 @@ msgstr ""
 msgid "Tap below to allow Bluesky to access your GPS location. We will then use that data to more accurately determine the content and features available in your region."
 msgstr "내 지역에서 이용 가능한 콘텐츠와 기능을 더 정확하게 결정할 수 있도록 아래를 탭하여 Bluesky의 GPS 위치 접근을 허용해 주세요."
 
-#: src/components/dms/MessageItem.tsx:688
+#: src/components/dms/MessageItem.tsx:689
 msgid "Tap for details"
 msgstr "탭하여 자세히 알아보기"
 
@@ -13803,7 +13803,7 @@ msgstr "탭하여 내 {0} 반응을 제거합니다"
 msgid "Tap to request access to join this group chat"
 msgstr "탭하여 이 그룹 대화의 참여 권한을 요청합니다"
 
-#: src/components/dms/MessageItem.tsx:653
+#: src/components/dms/MessageItem.tsx:654
 msgid "Tap to retry"
 msgstr "탭하여 다시 시도"
 
@@ -14288,7 +14288,7 @@ msgstr "이 대화는 종료되었습니다"
 msgid "This chat is full"
 msgstr "이 대화는 인원이 가득 찼습니다"
 
-#: src/screens/Messages/components/ChatListItem.tsx:380
+#: src/screens/Messages/components/ChatListItem.tsx:378
 #: src/screens/Messages/components/ChatLocked.tsx:69
 msgid "This chat is locked"
 msgstr "이 대화는 잠겨 있습니다"
@@ -14475,17 +14475,13 @@ msgstr "이 리스트는 비어 있습니다."
 msgid "This looks like a hosting provider (PDS) address, not an AppView. Your PDS is detected from your handle, or set separately under Hosting provider; don’t enter it here!"
 msgstr ""
 
-#: src/screens/Messages/components/ChatListItem.tsx:339
-msgid "This message is hidden"
-msgstr "이 메시지는 숨겨져 있습니다"
-
-#: src/components/dms/MessageItem.tsx:686
-#: src/components/dms/MessageItem.tsx:715
+#: src/components/dms/MessageItem.tsx:687
+#: src/components/dms/MessageItem.tsx:716
 msgid "This message is hidden because this user is blocking you."
 msgstr "이 사용자가 나를 차단했기 때문에 이 메시지는 숨겨졌습니다."
 
-#: src/components/dms/MessageItem.tsx:685
-#: src/components/dms/MessageItem.tsx:711
+#: src/components/dms/MessageItem.tsx:686
+#: src/components/dms/MessageItem.tsx:712
 msgid "This message is hidden because you are blocking this user."
 msgstr "이 사용자를 차단했기 때문에 이 메시지는 숨겨졌습니다."
 
@@ -14982,7 +14978,7 @@ msgstr "사용할 수 없음"
 msgid "Unavailable feed information"
 msgstr "사용할 수 없는 피드 정보"
 
-#: src/components/dms/MessageItem.tsx:753
+#: src/components/dms/MessageItem.tsx:754
 #: src/components/dms/MessagesListBlockedFooter.tsx:99
 #: src/components/dms/MessagesListBlockedFooter.tsx:106
 #: src/components/moderation/BlockDialog.tsx:186
@@ -15218,8 +15214,8 @@ msgstr "이메일 알림 켜기"
 msgid "Unsubscribe"
 msgstr "구독 취소"
 
-#: src/screens/List/ListHiddenScreen.tsx:202
-#: src/screens/List/ListHiddenScreen.tsx:212
+#: src/screens/List/ListHiddenScreen.tsx:201
+#: src/screens/List/ListHiddenScreen.tsx:211
 msgid "Unsubscribe from list"
 msgstr "리스트 구독 취소"
 
@@ -16391,7 +16387,7 @@ msgid "You are accessing Bluesky from a region that legally requires us to verif
 msgstr "회원님이 접속하신 지역은 앱 접근 전 법적으로 연령 확인이 필요한 곳입니다."
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
-#: src/components/dms/MessageItem.tsx:726
+#: src/components/dms/MessageItem.tsx:727
 msgid "You are blocking {0}"
 msgstr "{0} 님을 차단했습니다"
 
@@ -16769,15 +16765,15 @@ msgstr "내가 {target}에 {0}(으)로 반응했습니다"
 msgid "You recently changed your birthdate"
 msgstr "최근 생년월일을 변경했습니다"
 
-#: src/components/dms/MessageItem.tsx:814
+#: src/components/dms/MessageItem.tsx:815
 msgid "You replied"
 msgstr "내가 보내는 답장"
 
-#: src/components/dms/MessageItem.tsx:813
+#: src/components/dms/MessageItem.tsx:814
 msgid "You replied to {originalName}"
 msgstr "내가 {originalName} 님에게 보내는 답장"
 
-#: src/components/dms/MessageItem.tsx:811
+#: src/components/dms/MessageItem.tsx:812
 msgid "You replied to yourself"
 msgstr "내가 나에게 보내는 답장"
 
