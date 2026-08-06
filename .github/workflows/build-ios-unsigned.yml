@@ -75,12 +75,12 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty
 
-      - name: 📦 Upload RUNNER_TEMP for inspection
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: runner-temp-debug
-          path: ${{ runner.temp }}/
+      # - name: 📦 Upload RUNNER_TEMP for inspection
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: runner-temp-debug
+      #     path: ${{ runner.temp }}/
 
       - name: 🔍 Debug - list xcarchive contents
         run: find $RUNNER_TEMP/tennaparty.xcarchive -type d
@@ -91,10 +91,26 @@ jobs:
           cp -r "$RUNNER_TEMP/tennaparty.xcarchive/Products/Applications/tennaparty.app" \
             $RUNNER_TEMP/Payload/
           cd $RUNNER_TEMP
-          zip -r TV-Time.ipa Payload/
+          zip -r tennaparty.ipa Payload/
 
       - name: ⬆️ Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: tennaparty-ios.ipa
-          path: ${{ runner.temp }}/TV-Time.ipa
+          path: ${{ runner.temp }}/tennaparty.ipa
+
+      - name: ⬆️ Push File to R2 Bucket
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: r2 object put shit/tennaparty.ipa --file=${{ runner.temp }}/tennaparty.ipa
+
+      - name: 💬 Send Discord Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{\"content\": \"<@&1534860049879531591> tenna.party (${{ github.ref_name }}) has been updated on ios, check it out! sha: ${{ github.sha }}"}" \
+               $DISCORD_WEBHOOK
