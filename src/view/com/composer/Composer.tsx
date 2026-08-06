@@ -24,17 +24,16 @@ import {
   type ViewStyle,
 } from 'react-native'
 import {KeyboardAvoidingView} from 'react-native-keyboard-controller'
-// @ts-expect-error no type definition
-import ProgressCircle from 'react-native-progress/Circle'
+import {Circle as ProgressCircle} from 'react-native-progress'
 import Animated, {
   type AnimatedRef,
+  type AnimatedStyle,
   Easing,
   FadeIn,
   FadeOut,
   interpolateColor,
   LayoutAnimationConfig,
   LinearTransition,
-  runOnUI,
   scrollTo,
   useAnimatedRef,
   useAnimatedScrollHandler,
@@ -47,6 +46,7 @@ import Animated, {
   ZoomOut,
 } from 'react-native-reanimated'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
+import {scheduleOnUI} from 'react-native-worklets'
 import * as FileSystem from 'expo-file-system'
 import {EncodingType, readAsStringAsync} from 'expo-file-system/legacy'
 import {type ImagePickerAsset} from 'expo-image-picker'
@@ -806,6 +806,11 @@ export const ComposePost = ({
   const [publishOnUpload, setPublishOnUpload] = useState(false)
 
   const onClose = useCallback(() => {
+    // HACKFIX: Android keyboard doesn't consistently dismiss IME
+    // TODO: investigate the root cause and fix properly -sfn
+    if (IS_ANDROID) {
+      Keyboard.dismiss()
+    }
     closeComposer()
     clearThumbnailCache(queryClient)
     revokeAllMediaUrls()
@@ -2012,8 +2017,8 @@ function ComposerTopBar({
   isEditingDraft: boolean
   canSaveDraft: boolean
   textLength: number
-  topBarAnimatedStyle: StyleProp<ViewStyle>
-  children?: ReactNode
+  topBarAnimatedStyle: AnimatedStyle<ViewStyle>
+  children?: React.ReactNode
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
@@ -2372,7 +2377,7 @@ function ComposerPills({
   thread: ThreadDraft
   post: PostDraft
   dispatch: (action: ComposerAction) => void
-  bottomBarAnimatedStyle: StyleProp<ViewStyle>
+  bottomBarAnimatedStyle: AnimatedStyle<ViewStyle>
 }) {
   const t = useTheme()
   const media = post.embed.media
@@ -2739,7 +2744,7 @@ function useScrollTracker({
 
   const onScrollViewContentSizeChange = useCallback(
     (_width: number, height: number) => {
-      runOnUI(onScrollViewContentSizeChangeUIThread)(height)
+      scheduleOnUI(onScrollViewContentSizeChangeUIThread, height)
     },
     [onScrollViewContentSizeChangeUIThread],
   )

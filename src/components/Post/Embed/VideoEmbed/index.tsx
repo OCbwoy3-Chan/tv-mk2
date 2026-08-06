@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {ActivityIndicator, View} from 'react-native'
 import {ImageBackground} from 'expo-image'
 import {type AppBskyEmbedVideo} from '@atproto/api'
@@ -6,12 +6,17 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
+import {
+  createPlaybackTelemetry,
+  type PlaybackTelemetry,
+} from '#/lib/media/video/playbackTelemetry'
 import {ErrorBoundary} from '#/view/com/util/ErrorBoundary'
 import {atoms as a, platform} from '#/alf'
 import {Button} from '#/components/Button'
 import {useThrottledValue} from '#/components/hooks/useThrottledValue'
 import {ConstrainedImage} from '#/components/images/AutoSizedImage'
 import {PlayButtonIcon} from '#/components/video/PlayButtonIcon'
+import {useAnalytics} from '#/analytics'
 import {GifPresentationControls} from './GifPresentationControls'
 import {VideoEmbedInnerNative} from './VideoEmbedInner/VideoEmbedInnerNative'
 import * as VideoFallback from './VideoEmbedInner/VideoFallback'
@@ -67,6 +72,7 @@ export function VideoEmbed({embed}: Props) {
 
 function InnerWrapper({embed}: {embed: AppBskyEmbedVideo.View}) {
   const {_} = useLingui()
+  const ax = useAnalytics()
   const ref = useRef<{togglePlayback: () => void}>(null)
 
   const [status, setStatus] = useState<'playing' | 'paused' | 'pending'>(
@@ -75,6 +81,17 @@ function InnerWrapper({embed}: {embed: AppBskyEmbedVideo.View}) {
   const [isLoading, setIsLoading] = useState(false)
   const [isActive, setIsActive] = useState(false)
   const showSpinner = useThrottledValue(isActive && isLoading, 100)
+
+  /*
+   * Created lazily on first activation so videos that are never scrolled into
+   * the active position cost nothing.
+   */
+  const telemetryRef = useRef<PlaybackTelemetry | null>(null)
+  useEffect(() => {
+    return () => {
+      telemetryRef.current?.deactivated()
+    }
+  }, [])
 
   const showOverlay =
     !isActive ||
@@ -90,9 +107,40 @@ function InnerWrapper({embed}: {embed: AppBskyEmbedVideo.View}) {
     <>
       <VideoEmbedInnerNative
         embed={embed}
-        setStatus={setStatus}
-        setIsLoading={setIsLoading}
-        setIsActive={setIsActive}
+        setStatus={s => {
+          setStatus(s)
+          if (s === 'playing') {
+            telemetryRef.current?.playing()
+          }
+        }}
+        setIsLoading={loading => {
+          setIsLoading(loading)
+          if (!loading) {
+            telemetryRef.current?.ready()
+          }
+        }}
+        setIsActive={active => {
+          setIsActive(active)
+          if (active) {
+            telemetryRef.current ??= createPlaybackTelemetry({
+              surface: 'feed',
+              presentation: embed.presentation === 'gif' ? 'gif' : 'video',
+            })
+            telemetryRef.current.activated()
+          } else {
+            telemetryRef.current?.deactivated()
+          }
+        }}
+        onError={error => {
+          telemetryRef.current?.error(error)
+          ax.metric('video:playback:failed', {
+            surface: 'feed',
+            presentation: embed.presentation === 'gif' ? 'gif' : 'video',
+            errorClass: 'PlayerError',
+            errorMessage: error.slice(0, 256),
+            playlist: embed.playlist,
+          })
+        }}
         ref={ref}
       />
       <ImageBackground

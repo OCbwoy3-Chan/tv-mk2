@@ -48,7 +48,7 @@ export const BookmarkButton = memo(function BookmarkButton({
     }),
   )
 
-  const save = async ({disableUndo}: {disableUndo?: boolean} = {}) => {
+  const save = async () => {
     try {
       await bookmark({
         action: 'create',
@@ -61,25 +61,6 @@ export const BookmarkButton = memo(function BookmarkButton({
         logContext,
         feedDescriptor,
       })
-
-      toast.show(
-        <toast.Outer>
-          <toast.Icon />
-          <toast.Text>
-            <Trans>Post saved</Trans>
-          </toast.Text>
-          {!disableUndo && (
-            <toast.Action
-              label={undoLabel}
-              onPress={() => remove({disableUndo: true})}>
-              {undoLabel}
-            </toast.Action>
-          )}
-        </toast.Outer>,
-        {
-          type: 'success',
-        },
-      )
     } catch (e: any) {
       const {raw, clean} = cleanError(e)
       toast.show(clean || raw || e, {
@@ -88,7 +69,7 @@ export const BookmarkButton = memo(function BookmarkButton({
     }
   }
 
-  const remove = async ({disableUndo}: {disableUndo?: boolean} = {}) => {
+  const remove = async () => {
     try {
       await bookmark({
         action: 'delete',
@@ -108,13 +89,9 @@ export const BookmarkButton = memo(function BookmarkButton({
           <toast.Text>
             <Trans>Removed from saved posts</Trans>
           </toast.Text>
-          {!disableUndo && (
-            <toast.Action
-              label={undoLabel}
-              onPress={() => save({disableUndo: true})}>
-              {undoLabel}
-            </toast.Action>
-          )}
+          <toast.Action label={undoLabel} onPress={() => save()}>
+            {undoLabel}
+          </toast.Action>
         </toast.Outer>,
       )
     } catch (e: any) {

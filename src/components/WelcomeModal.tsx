@@ -1,15 +1,14 @@
 import {useEffect, useState} from 'react'
 import {View} from 'react-native'
 import {ImageBackground} from 'expo-image'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 import {FocusGuards, FocusScope} from 'radix-ui/internal'
 
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {Logo} from '#/view/icons/Logo'
 import {atoms as a, flatten, useBreakpoints, useTheme, web} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
+import {type WelcomeModalControl} from '#/components/hooks/useWelcomeModal.shared'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
@@ -17,15 +16,11 @@ import {useAnalytics} from '#/analytics'
 const welcomeModalBg = require('../../assets/images/welcome-modal-bg.webp')
 
 interface WelcomeModalProps {
-  control: {
-    isOpen: boolean
-    open: () => void
-    close: () => void
-  }
+  control: WelcomeModalControl
 }
 
 export function WelcomeModal({control}: WelcomeModalProps) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const ax = useAnalytics()
   const {requestSwitchToAccount} = useLoggedOutViewControls()
   const {gtMobile} = useBreakpoints()
@@ -96,7 +91,7 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                   a.p_0,
                 ]}>
                 <View style={[a.flex_row, a.align_center, a.gap_xs]}>
-                  <Logo width={26} />
+                  <Logo allowVariants={false} width={26} />
                   <Text
                     style={[
                       a.text_2xl,
@@ -169,7 +164,7 @@ export function WelcomeModal({control}: WelcomeModalProps) {
               </View>
             </View>
             <Button
-              label={_(msg`Close welcome modal`)}
+              label={l`Close welcome modal`}
               style={[
                 a.absolute,
                 {

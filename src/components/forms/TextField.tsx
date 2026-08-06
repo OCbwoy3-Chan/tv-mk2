@@ -24,7 +24,6 @@ import {
 import {HITSLOP_20} from '#/lib/constants'
 import {mergeRefs} from '#/lib/merge-refs'
 import {
-  android,
   applyFonts,
   atoms as a,
   platform,
@@ -163,7 +162,9 @@ export function Root({children, isInvalid = false, style}: RootProps) {
           a.align_center,
           a.relative,
           a.w_full,
-          !(hasMultiline && IS_WEB) && a.px_md,
+          a.px_md,
+          // Contain the input's z-index so it cannot paint over nearby overlays.
+          {zIndex: 0},
           style,
         ]}
         {...web({
@@ -321,10 +322,6 @@ export function createInput(Component: typeof TextInput) {
         paddingTop: 13,
         paddingBottom: 13,
       },
-      android({
-        paddingTop: 8,
-        paddingBottom: 9,
-      }),
       /*
        * Margins are needed here to avoid autofill background overlapping the
        * top and bottom borders - esb
@@ -378,7 +375,16 @@ export function createInput(Component: typeof TextInput) {
             ctx.onBlur()
             onBlur?.(e)
           }}
-          placeholder={placeholder === null ? undefined : placeholder || label}
+          /*
+           * Android sizes an empty input from the font's bounding box instead
+           * of `lineHeight`, so a field with no placeholder shrinks on the
+           * first keystroke.
+           */
+          placeholder={
+            placeholder === null
+              ? platform({android: ' '})
+              : placeholder || label
+          }
           placeholderTextColor={t.palette.contrast_500}
           keyboardAppearance={t.name === 'light' ? 'light' : 'dark'}
           style={flattened}

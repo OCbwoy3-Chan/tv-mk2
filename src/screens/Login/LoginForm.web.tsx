@@ -74,6 +74,7 @@ export const LoginForm = ({
   onPressForgotPassword: () => void
   onAttemptSuccess: () => void
   onAttemptFailed: () => void
+  onPressCreateAccount: () => void
 }) => {
   const t = useTheme()
   const [mode, setMode] = useState<LoginMode>('oauth')

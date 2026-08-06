@@ -70,6 +70,7 @@ export const router = new Router<AllNavigatableRoutes>({
   RunesSettingsSyncSettings: '/settings/runes/settings-sync',
   AppearanceSettings: '/settings/appearance',
   AppearanceColorThemeSettings: '/settings/appearance/color-theme',
+  BetaFeaturesSettings: '/settings/beta-features',
   SavedFeeds: '/settings/saved-feeds',
   AccountSettings: '/settings/account',
   AutomationLabelSettings: '/settings/automation-label',
@@ -81,6 +82,7 @@ export const router = new Router<AllNavigatableRoutes>({
   AboutSettings: '/settings/about',
   AppIconSettings: '/settings/app-icon',
   NotificationSettings: '/settings/notifications',
+  ActivityNotificationSettings: '/settings/notifications/activity',
   FindContactsSettings: '/settings/find-contacts',
   // support
   Support: '/support',

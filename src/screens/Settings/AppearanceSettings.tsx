@@ -298,12 +298,12 @@ export function AppearanceSettingsScreen({}: Props) {
                   <Toggle.Platform />
                 </SettingsList.Item>
               </Toggle.Item>
-              {IS_NATIVE && IS_INTERNAL && (
+              {/* {IS_NATIVE && IS_INTERNAL && (
                 <>
                   <SettingsList.Divider />
                   <AppIconSettingsListItem />
                 </>
-              )}
+              )} */}
             </Animated.View>
           </SettingsList.Container>
         </Layout.Content>

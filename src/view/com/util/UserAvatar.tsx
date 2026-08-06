@@ -432,16 +432,15 @@ let EditableUserAvatar = ({
       return
     }
 
-    onSelectNewAvatar(
-      await compressIfNeeded(
-        await openCamera({
-          aspect: [1, 1],
-        }),
-        IMAGE_SIZE_CONFIG_2K_1MB,
-        avatarCompressOpts,
-      ),
-    )
-  }, [onSelectNewAvatar, requestCameraAccessIfNeeded, avatarCompressOpts])
+    const image = await openCamera({
+      aspect: [1, 1],
+    })
+    if (!image) {
+      return
+    }
+
+    onSelectNewAvatar(await compressIfNeeded(image, IMAGE_SIZE_CONFIG_2K_1MB))
+  }, [onSelectNewAvatar, requestCameraAccessIfNeeded])
 
   const onOpenLibrary = useCallback(async () => {
     if (!(await requestPhotoAccessIfNeeded())) {

@@ -27,6 +27,7 @@ import {ProfileMenu} from '#/view/com/profile/ProfileMenu'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import {type DialogOuterProps, useDialogControl} from '#/components/Dialog'
+import {MessageProfileButton} from '#/components/dms/MessageProfileButton'
 import {
   Heart2_Filled_Stroke2_Corner0_Rounded as HeartFilled,
   Heart2_Stroke2_Corner0_Rounded as Heart,
@@ -63,7 +64,7 @@ let ProfileHeaderLabeler = ({
 }: Props): React.ReactNode => {
   const profile: Shadow<AppBskyActorDefs.ProfileViewDetailed> =
     useProfileShadow(profileUnshadowed)
-  const {currentAccount} = useSession()
+  const {currentAccount, hasSession} = useSession()
   const isSelf = currentAccount?.did === profile.did
 
   const moderation = useMemo(
@@ -250,6 +251,7 @@ export function LabelerSubscribeButton({
   const t = useTheme()
   const ax = useAnalytics()
   const {_} = useLingui()
+  const {currentAccount, hasSession} = useSession()
   const requireAuth = useRequireAuth()
   const playHaptic = useHaptics()
   const {data: preferences} = usePreferencesQuery()
@@ -357,7 +359,7 @@ export function HeaderLabelerButtons({
   minimal?: boolean
 }) {
   const {_} = useLingui()
-  const {currentAccount} = useSession()
+  const {currentAccount, hasSession} = useSession()
   const playHaptic = useHaptics()
   const editProfileControl = useDialogControl()
 
@@ -365,6 +367,11 @@ export function HeaderLabelerButtons({
 
   return (
     <>
+      {hasSession &&
+        !isMe &&
+        !profile.viewer?.blockedBy &&
+        !profile.viewer?.blocking && <MessageProfileButton profile={profile} />}
+
       {isMe ? (
         <>
           <Button
