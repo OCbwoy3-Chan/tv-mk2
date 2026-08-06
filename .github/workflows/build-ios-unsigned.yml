@@ -47,15 +47,31 @@ jobs:
 
       # This generates the ios/ native project without building or signing
       - name: 🏗️ Prebuild (generate native iOS project via Expo)
-        run: npx expo prebuild --platform ios --no-install
+        run: npx expo prebuild --platform ios
 
       - name: 🔧 Copy assets into generated iOS directory
         run: cp -R assets/. ios/tennaparty/
 
-      - name: 📦 Install Pods
+      - name: 📦 Install Pods (bundle + verbose)
         run: |
+          set -o pipefail
           cd ios
-          pod install
+          echo "=== Podfile location ==="
+          pwd; ls -la
+          echo "=== Podfile content (first 200 lines) ==="
+          sed -n '1,200p' Podfile || true
+          echo "=== Ruby & CocoaPods versions ==="
+          ruby -v || true
+          pod --version || true
+          echo "=== Ensure node_modules exists (first 200 entries) ==="
+          ls -la ../node_modules | sed -n '1,200p' || true
+          echo "=== Using bundler to isolate cocoapods version ==="
+          gem install bundler --no-document || true
+          bundle init || true
+          # ensure Gemfile contains cocoapods version pin
+          grep -q "cocoapods" Gemfile || echo "gem 'cocoapods', '1.16.2'" >> Gemfile
+          bundle install --jobs 4 || bundle install
+          bundle exec pod install --repo-update --verbose
 
       - name: 🔍 Debug - list ios directory
         run: ls -la ios/

@@ -67,7 +67,7 @@ module.exports = function (_config) {
       icon: './assets/app-icons/ios_icon_legacy_light.png',
       userInterfaceStyle: 'automatic',
       primaryColor: '#EDBC1A',
-      newArchEnabled: false,
+      newArchEnabled: true,
       ios: {
         supportsTablet: false,
         bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'party.tenna',

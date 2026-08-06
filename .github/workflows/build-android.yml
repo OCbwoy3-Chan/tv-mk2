@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
+      NODE_ENV: production
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v5
@@ -38,11 +39,25 @@ jobs:
       - name: 🏗️ Prebuild (generate native Android project via Expo)
         run: npx expo prebuild --platform android --no-install
 
+      - name: ✍️ Ensure android/gradle.properties (CI-only)
+        run: |
+          # create android dir if missing and write required properties for CI build
+          mkdir -p android
+          # add JVM memory and new architecture flag required by some native modules
+          echo "org.gradle.jvmargs=-Xmx4g" >> android/gradle.properties
+          # ensure we set newArchEnabled to true so react-native-reanimated's check passes
+          echo "newArchEnabled=true" >> android/gradle.properties
+          echo "---- android/gradle.properties ----"
+          cat android/gradle.properties
+
       - name: 🔧 Make gradlew executable
         run: chmod +x ./android/gradlew
 
       - name: 📦 Build Android APK
-        run: cd android && ./gradlew assembleRelease
+        run: |
+          cd android
+          # pass -PnewArchEnabled=true as well to ensure the project property is set for this build
+          ./gradlew assembleRelease -PnewArchEnabled=true
 
       - name: 🔍 Find release APK
         id: find_apk
