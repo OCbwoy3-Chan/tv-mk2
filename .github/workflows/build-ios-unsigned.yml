@@ -116,11 +116,10 @@ jobs:
           path: ${{ runner.temp }}/tennaparty.ipa
 
       - name: ⬆️ Push File to R2 Bucket
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: r2 object put shit/tennaparty.ipa --file=${{ runner.temp }}/tennaparty.ipa
+        run: | 
+          export CLOUDFLARE_API_TOKEN="${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+          pnpm dlx wrangler r2 object delete shit/tennaparty.ipa
+          pnpm dlx wrangler r2 object put shit/tennaparty.ipa --file=${{ runner.temp }}/tennaparty.ipa
 
       - name: 💬 Send Discord Notification
         env:
