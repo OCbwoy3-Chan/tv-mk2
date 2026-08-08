@@ -21,11 +21,67 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
-      - name: 🧋 Setup Java
+      - name: 🧋 Setup Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: 📋 Verify Java, Node, and GLIBC versions
+        run: |
+          echo "=== Java Version ==="
+          java -version
+          javac -version
+          echo ""
+          echo "=== Node.js Version ==="
+          node --version
+          npm --version
+          pnpm --version
+          echo ""
+          echo "=== GLIBC Version ==="
+          ldd --version | head -1
+
+      - name: 🔧 Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          log-accepted-android-sdk-licenses: true
+
+      - name: 📦 Install Android SDK Components
+        run: |
+          # Install NDK versions
+          echo "Installing NDK 27.0.12077973..."
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "ndk;27.0.12077973"
+
+          echo "Installing NDK 27.1.12297006..."
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "ndk;27.1.12297006"
+
+          # Install Platform APIs
+          echo "Installing Android API 35..."
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-35"
+
+          echo "Installing Android API 36..."
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-36"
+
+          # Install Build Tools
+          echo "Installing Build Tools 35.0.0..."
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0"
+
+          echo "Installing Build Tools 37.0.0..."
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;37.0.0"
+
+      - name: ✅ Verify Android SDK Installation
+        run: |
+          echo "=== Android SDK Root ==="
+          echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
+          echo ""
+          echo "=== Installed NDK Versions ==="
+          ls -la "$ANDROID_SDK_ROOT/ndk/" 2>/dev/null || echo "NDK directory not found"
+          echo ""
+          echo "=== Installed Platforms ==="
+          ls -la "$ANDROID_SDK_ROOT/platforms/" 2>/dev/null || echo "Platforms directory not found"
+          echo ""
+          echo "=== Installed Build Tools ==="
+          ls -la "$ANDROID_SDK_ROOT/build-tools/" 2>/dev/null || echo "Build-tools directory not found"
 
       - name: ⚙️ Install dependencies
         run: pnpm install --frozen-lockfile
@@ -41,11 +97,7 @@ jobs:
 
       - name: ✍️ Ensure android/gradle.properties (CI-only)
         run: |
-          # create android dir if missing and write required properties for CI build
           mkdir -p android
-          # add JVM memory and new architecture flag required by some native modules
-          echo "org.gradle.jvmargs=-Xmx4g" >> android/gradle.properties
-          # ensure we set newArchEnabled to true so react-native-reanimated's check passes
           echo "newArchEnabled=true" >> android/gradle.properties
           echo "---- android/gradle.properties ----"
           cat android/gradle.properties
@@ -72,7 +124,7 @@ jobs:
           path: ${{ steps.find_apk.outputs.apk_path }}
 
       - name: ⬆️ Push File to R2 Bucket
-        run: | 
+        run: |
           export CLOUDFLARE_API_TOKEN="${{ secrets.CLOUDFLARE_API_TOKEN }}"
           pnpm dlx wrangler r2 object delete shit/app-release.ipa
           pnpm dlx wrangler r2 object put shit/app-release.apk --file=${{ steps.find_apk.outputs.apk_path }}
@@ -83,5 +135,5 @@ jobs:
         run: |
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d "{\"content\": \"<@&1534855421678981150> tenna.party (${{ github.ref_name }}) has been updated on android, check it out! sha: ${{ github.sha }}"}" \
+               -d "{\"content\": \"<@&1534855421678981150> tenna.party (${{ github.ref_name }}) has been updated on android, check it out! sha: ${{ github.sha }}\"}" \
                $DISCORD_WEBHOOK

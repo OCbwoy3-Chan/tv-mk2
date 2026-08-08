@@ -127,5 +127,5 @@ jobs:
         run: |
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d "{\"content\": \"<@&1534860049879531591> tenna.party (${{ github.ref_name }}) has been updated on ios, check it out! sha: ${{ github.sha }}"}" \
+               -d "{\"content\": \"<@&1534860049879531591> tenna.party (${{ github.ref_name }}) has been updated on ios, check it out! sha: ${{ github.sha }}\"}" \
                $DISCORD_WEBHOOK
