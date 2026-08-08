@@ -17,6 +17,7 @@ import { postThreadQueryKeyRoot } from '#/state/queries/usePostThread/types'
 import { useSession } from '#/state/session'
 import * as bsky from '#/types/bsky'
 import { isDeltaLabel } from '#/components/CrackComponents/Tenna/TennaBadge'
+import { Admonition } from '#/components/Admonition'
 
 export function FictionkinBadgeSettings() {
     const t = useTheme()
@@ -27,7 +28,7 @@ export function FictionkinBadgeSettings() {
     const updateProfile = useProfileUpdateMutation()
 
     const [selectedChar, setSelectedChar] = useState<string>('kris')
-    const [selectedRel, setSelectedRel] = useState<string>('s')
+    const [kinType, setKinType] = useState<string>('s')
     const [isEnabled, setIsEnabled] = useState<boolean>(false)
     const [isSaved, setIsSaved] = useState<boolean>(false)
 
@@ -40,7 +41,7 @@ export function FictionkinBadgeSettings() {
             if (dl) {
                 const p = isDeltaLabel(dl.val)
                 setSelectedChar(p.char)
-                setSelectedRel(p.kin || 's')
+                setKinType(p.kin || 's')
                 setIsEnabled(true)
             } else {
                 setIsEnabled(false)
@@ -52,7 +53,7 @@ export function FictionkinBadgeSettings() {
         if (!profile) return
 
         setIsSaved(false)
-        const newValue = `dr-${selectedChar}-${selectedRel}`
+        const newValue = `dr-${selectedChar}-${kinType}`
         const wasAdded = isEnabled
 
         updateProfile.mutate(
@@ -99,15 +100,34 @@ export function FictionkinBadgeSettings() {
         )
     }
 
+    const CHARACTERS_FRANCHISES: { [a: string]: string } = {
+        "kris": "Deltarune",
+        "susie": "Deltarune",
+        "ralsei": "Deltarune",
+        "noelle": "Deltarune",
+        "tenna": "Deltarune",
+        "flowery": "Deltarune",
+        "seth": "Deltarune",
+        "aqua": "Deltarune"
+    }
+
+    const CHARACTERS_A_AN: { [a: string]: string } = {
+        "aqua": "an"
+    }
+
     const CHARACTERS = [
         { value: 'kris', label: 'Kris' },
         { value: 'susie', label: 'Susie' },
         { value: 'ralsei', label: 'Ralsei' },
         { value: 'noelle', label: 'Noelle' },
+        // TODO: add these
+        // { value: 'aqua', label: 'Aqua' },
+        // { value: 'seth', label: 'Seth' },
+        // { value: 'flowery', label: 'Flowery' }
     ]
 
-    const RELATIONSHIPS = [
-        { value: 's', label: 'I AM THE CHARACTER!!' },
+    const KINS = [
+        { value: 's', label: 'Literal' },
         { value: 'fictive', label: 'Fictive' },
         { value: 'fictionkin', label: 'Fictionkin' },
     ]
@@ -118,14 +138,34 @@ export function FictionkinBadgeSettings() {
         <View style={[a.p_xl, a.gap_xl]}>
             <View style={[a.gap_sm]}>
                 <Text style={[a.text_2xl, a.font_bold]}>
-                    <Trans>The badge</Trans>
+                    <Trans>THE BADGE</Trans>
                 </Text>
                 <Text style={[a.text_md, a.leading_snug]}>
                     <Trans>
-                        this is a tenna.party exclusive 👀
+                        this is a tenna.party exclusive, you can't get this on witchsky 👀
                     </Trans>
                 </Text>
             </View>
+
+            <View style={[a.gap_xl]}>
+                <Admonition type="info">
+                    <Trans>
+                        This feature is intended for those who are a kin of or are any of the characters listed below.
+                    </Trans>
+                </Admonition>
+            </View>
+
+            {isEnabled && <Text style={[a.text_md, a.font_bold, a.italic, t.atoms.text_contrast_medium, a.leading_snug]}>
+                <Trans>
+                    This makes you {kinType !== "s" ? (CHARACTERS_A_AN[selectedChar] ?? "a")+" " : ""}{CHARACTERS.find(a=>a.value===selectedChar)?.label ?? selectedChar}
+                    {" "}{CHARACTERS_FRANCHISES[selectedChar]}{kinType !== "s" ? " "+kinType : ", literally"}.
+                </Trans>
+            </Text>}
+            {isEnabled && <Text style={[a.text_md, t.atoms.text_contrast_medium, a.leading_snug]}>
+                <Trans>
+                    Customize some of the options below and tap save to apply the label!
+                </Trans>
+            </Text>}
 
             <View
                 style={[
@@ -201,24 +241,24 @@ export function FictionkinBadgeSettings() {
                             a.gap_sm,
                         ]}>
                         <Text style={[a.text_sm, a.font_medium, t.atoms.text_contrast_medium]}>
-                            <Trans>Type</Trans>
+                            <Trans>Kin</Trans>
                         </Text>
                         <Toggle.Group
                             type="radio"
-                            values={[selectedRel]}
+                            values={[kinType]}
                             onChange={values => {
                                 if (values[0]) {
-                                    setSelectedRel(values[0])
+                                    setKinType(values[0])
                                     setIsSaved(false)
                                 }
                             }}
-                            label={l`Relationship Type`}>
+                            label={l`Kin Type`}>
                             <View style={[a.gap_sm, a.pt_xs]}>
-                                {RELATIONSHIPS.map(r => (
+                                {KINS.map(r => (
                                     <Toggle.Item key={r.value} name={r.value} label={r.label}>
                                         <Toggle.RadioWithLabel
                                             label={r.label}
-                                            selected={selectedRel === r.value}
+                                            selected={kinType === r.value}
                                         />
                                     </Toggle.Item>
                                 ))}

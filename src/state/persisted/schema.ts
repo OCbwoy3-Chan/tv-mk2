@@ -222,7 +222,6 @@ const schema = z.object({
   postsMetricsDisplay: countsMetricsDisplaySchema.optional(),
   showFollowsYouBadge: z.boolean().optional(),
   showFollowedByOnOwnProfile: z.boolean().optional(),
-  showThreadPostIndicators: z.boolean().optional(),
   hideSimilarAccountsRecomm: z.boolean().optional(),
   hideScaryFollowButtons: z.boolean().optional(),
   showGermDmButton: z.boolean().optional(),
@@ -307,6 +306,10 @@ const schema = z.object({
   // settings sync
   settingsSyncEnabled: z.boolean().optional(),
   settingsSyncDraftId: z.string().optional(),
+  /** Last successfully synced values, keyed by account DID, for 3-way merges. */
+  settingsSyncBaselines: z
+    .record(z.string(), z.record(z.string(), z.unknown()))
+    .optional(),
   syncOpenRouterApiKey: z.boolean().optional(),
   /** When false, theme prefs are omitted from push/pull. Defaults to true. */
   syncTheme: z.boolean().optional(),
@@ -401,7 +404,6 @@ export const defaults: Schema = {
   postsMetricsDisplay: 'visible',
   showFollowsYouBadge: false,
   showFollowedByOnOwnProfile: false,
-  showThreadPostIndicators: true,
   hideSimilarAccountsRecomm: true,
   hideScaryFollowButtons: false,
   showGermDmButton: false,
@@ -461,6 +463,7 @@ export const defaults: Schema = {
 
   settingsSyncEnabled: false,
   settingsSyncDraftId: undefined,
+  settingsSyncBaselines: undefined,
   syncOpenRouterApiKey: false,
   syncTheme: true,
   settingsSyncShareAcrossAccounts: false,

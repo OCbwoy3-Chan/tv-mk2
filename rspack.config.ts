@@ -170,6 +170,10 @@ module.exports = {
       // Block packages that should not load on web
       'react-native-gesture-handler': false,
       '@sentry-internal/replay': false,
+      // Sentry probes this optional Expo Router store inside a try/catch. This
+      // app uses React Navigation directly, so resolve the probe to an empty
+      // module instead of emitting a missing-module warning on every web build.
+      'expo-router/build/global-state/router-store': false,
     },
     mainFields: ['browser', 'module', 'main'],
     // Allow importing without file extensions in ESM packages
@@ -339,6 +343,9 @@ module.exports = {
     }),
     new rspack.CopyRspackPlugin({
       patterns: [
+        // Only internal crawler routes should invoke Pages Functions. A
+        // Cloudflare Transform Rule rewrites link-preview bots to /__embed.
+        {from: 'web/_routes.json', to: '_routes.json'},
         // Serve fonts at /static/fonts/ with stable names
         {from: 'web/static/fonts', to: 'static/fonts'},
         // Serve the global stylesheet

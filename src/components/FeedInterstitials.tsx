@@ -453,10 +453,18 @@ export function ProfileGrid({
     return null
   }
 
-  if (!hideSimilarAccountsRecomm) {
-    return (
+  if (hideSimilarAccountsRecomm) return null
+
+  return (
+    <View
+      ref={containerRef}
+      style={[
+        !isProfileHeaderContext && a.border_t,
+        t.atoms.border_contrast_low,
+        t.atoms.bg_contrast_25,
+      ]}
+      pointerEvents={IS_IOS ? 'auto' : 'box-none'}>
       <View
-        ref={containerRef}
         style={[
           gutters,
           a.pt_md,
@@ -496,8 +504,38 @@ export function ProfileGrid({
           </Button>
         </View>
       </View>
-    )
-  }
+      <FollowDialogWithoutGuide control={followDialogControl} />
+      <LayoutAnimationConfig skipExiting skipEntering>
+        {gtMobile ? (
+          <View style={[a.p_lg, a.pt_md]}>
+            <View style={[a.flex_1, a.flex_row, a.flex_wrap, a.gap_md]}>
+              {content}
+            </View>
+          </View>
+        ) : (
+          <BlockDrawerGesture>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={[a.p_lg, a.pt_md, a.flex_row, a.gap_md]}
+              snapToInterval={MOBILE_CARD_WIDTH + a.gap_md.gap}
+              decelerationRate="fast">
+              {content}
+
+              <SeeMoreSuggestedProfilesCard
+                onPress={() => {
+                  followDialogControl.open()
+                  ax.metric('suggestedUser:seeMore', {
+                    logContext,
+                  })
+                }}
+              />
+            </ScrollView>
+          </BlockDrawerGesture>
+        )}
+      </LayoutAnimationConfig>
+    </View>
+  )
 }
 
 function SeeMoreSuggestedProfilesCard({onPress}: {onPress: () => void}) {

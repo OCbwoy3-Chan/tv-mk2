@@ -156,7 +156,7 @@ export function ScreenHider({
           variant="solid"
           color="primary"
           size="large"
-          style={[a.rounded_full]}
+          style={[enableSquareButtons ? a.rounded_sm : a.rounded_full]}
           label={l`Go back`}
           onPress={() => {
             if (navigation.canGoBack()) {
@@ -174,7 +174,7 @@ export function ScreenHider({
             variant="solid"
             color="secondary"
             size="large"
-            style={[a.rounded_full]}
+            style={[enableSquareButtons ? a.rounded_sm : a.rounded_full]}
             label={l`Show anyway`}
             onPress={() => setOverride(v => !v)}>
             <ButtonText>

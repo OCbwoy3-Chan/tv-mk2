@@ -39,7 +39,6 @@ import {
   useRepostsMetricsDisplay,
   useSavesMetricsDisplay,
 } from '#/state/preferences/metrics-display-preference'
-import {useShowThreadPostIndicators} from '#/state/preferences/show-thread-post-indicators'
 import {useShowViaClient} from '#/state/preferences/show-via-client'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
@@ -50,7 +49,11 @@ import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {ReaderSeam} from '#/screens/PostThread/components/ReaderSeam'
 import {ReaderBracket} from '#/screens/PostThread/components/ReaderSeamControls'
 import {ThreadItemAnchorFollowButton} from '#/screens/PostThread/components/ThreadItemAnchorFollowButton'
-import {ThreadPositionChip} from '#/screens/PostThread/components/ThreadPositionChip'
+import {
+  POST_NUMBER_INLINE_OFFSET,
+  ThreadItemPostNumber,
+  useHasThreadItemPostNumber,
+} from '#/screens/PostThread/components/ThreadItemPostNumber'
 import {
   LINEAR_AVI_WIDTH,
   OUTER_SPACE,
@@ -58,10 +61,7 @@ import {
   READER_SEAM_HEIGHT,
   REPLY_LINE_WIDTH,
 } from '#/screens/PostThread/const'
-import {
-  type ReaderSeam as ReaderSeamData,
-  type ThreadPostPosition,
-} from '#/screens/PostThread/reader'
+import {type ReaderSeam as ReaderSeamData} from '#/screens/PostThread/reader'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
@@ -72,6 +72,7 @@ import {Link} from '#/components/Link'
 import {ContentHider} from '#/components/moderation/ContentHider'
 import {LabelsOnMyPost} from '#/components/moderation/LabelsOnMe'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
+import * as ReportDialogMetadataContext from '#/components/moderation/ReportDialog/ReportDialogMetadataContext'
 import {type AppModerationCause} from '#/components/Pills'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
 import {TranslatedPost} from '#/components/Post/Translated'
@@ -95,7 +96,6 @@ export type ThreadItemAnchorReaderSeam = ReaderSeamData & {
 export function ThreadItemAnchor({
   item,
   readerSeam,
-  threadPosition,
   onPostSuccess,
   threadgateRecord,
   postSource,
@@ -106,11 +106,6 @@ export function ThreadItemAnchor({
    * controls and replies into a seam below the post body.
    */
   readerSeam?: ThreadItemAnchorReaderSeam
-  /**
-   * Set in linear view when the anchor is part of a self-thread: renders a
-   * "(x/n)" position chip at the end of the post text.
-   */
-  threadPosition?: ThreadPostPosition
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: AppBskyFeedThreadgate.Record
   postSource?: PostSource
@@ -124,18 +119,17 @@ export function ThreadItemAnchor({
   }
 
   return (
-    <ThreadItemAnchorInner
-      // Safeguard from clobbering per-post state below:
-      key={postShadow.uri}
-      item={item}
-      isRoot={isRoot}
-      readerSeam={readerSeam}
-      threadPosition={threadPosition}
-      postShadow={postShadow}
-      onPostSuccess={onPostSuccess}
-      threadgateRecord={threadgateRecord}
-      postSource={postSource}
-    />
+    <ReportDialogMetadataContext.Provider key={postShadow.uri}>
+      <ThreadItemAnchorInner
+        item={item}
+        isRoot={isRoot}
+        readerSeam={readerSeam}
+        postShadow={postShadow}
+        onPostSuccess={onPostSuccess}
+        threadgateRecord={threadgateRecord}
+        postSource={postSource}
+      />
+    </ReportDialogMetadataContext.Provider>
   )
 }
 
@@ -225,7 +219,6 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   item,
   isRoot,
   readerSeam,
-  threadPosition,
   postShadow,
   onPostSuccess,
   threadgateRecord,
@@ -234,7 +227,6 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   item: Extract<ThreadItem, {type: 'threadPost'}>
   isRoot: boolean
   readerSeam?: ThreadItemAnchorReaderSeam
-  threadPosition?: ThreadPostPosition
   postShadow: Shadow<AppBskyFeedDefs.PostView>
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: AppBskyFeedThreadgate.Record
@@ -249,16 +241,13 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const feedFeedback = useFeedFeedback(postSource?.feedSourceInfo, hasSession)
   const compactPosts = useCompactPosts()
   const isCompactPosts = !!compactPosts
-  const showThreadPostIndicators = useShowThreadPostIndicators()
-  const resolvedThreadPosition =
-    showThreadPostIndicators && threadPosition && threadPosition.postCount > 2
-      ? threadPosition
-      : undefined
   const avatarSize = isCompactPosts ? 34 : 42
   const sidePadding = isCompactPosts ? OUTER_SPACE - 2 : OUTER_SPACE
 
   const post = postShadow
   const record = item.value.post.record
+  const postNumbering = item.value
+  const showPostNumber = useHasThreadItemPostNumber(postNumbering)
   const moderation = item.moderation
   const authorShadow = useProfileShadow(post.author)
   const {isActive: live} = useActorStatus(post.author)
@@ -533,21 +522,16 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                     style={[a.flex_1, isCompactPosts ? a.text_md : a.text_lg]}
                     authorHandle={post.author.handle}
                     shouldProxyLinks={true}
-                    trailing={
-                      resolvedThreadPosition ? (
-                        <ThreadPositionChip
-                          threadPosition={resolvedThreadPosition}
-                        />
+                    suffixOffset={POST_NUMBER_INLINE_OFFSET}
+                    suffix={
+                      showPostNumber ? (
+                        <ThreadItemPostNumber value={postNumbering} />
                       ) : undefined
                     }
                   />
-                ) : resolvedThreadPosition ? (
-                  /*
-                   * Text-less anchors (e.g. image-only) still show their
-                   * position so the numbering reads without gaps.
-                   */
-                  <ThreadPositionChip threadPosition={resolvedThreadPosition} />
-                ) : undefined}
+                ) : (
+                  <ThreadItemPostNumber inline={false} value={postNumbering} />
+                )}
                 <TranslatedPost
                   post={post}
                   postTextStyle={[isCompactPosts ? a.text_md : a.text_lg]}

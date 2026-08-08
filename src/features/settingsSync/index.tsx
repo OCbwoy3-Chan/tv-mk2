@@ -107,18 +107,15 @@ export function SettingsSyncGate({children}: PropsWithChildren<{}>) {
   const pushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastMergeAtRef = useRef(0)
 
-  // When the account DID changes, clear the cached draft ID (it belongs to
-  // the previous account) and reset the merge guard so we merge fresh data.
+  // When the account DID changes, reset the merge guard so we reconcile the
+  // new account's cloud data. The cached ID is only a hint while scanning the
+  // current account's drafts, so it is safe to retain until the scan replaces
+  // it and useful for detecting upgrades from the pre-baseline sync format.
   useEffect(() => {
     if (currentDid === lastDidRef.current) return
     lastDidRef.current = currentDid
     hasMergedRef.current = false
     setStatus({type: 'idle'})
-    if (currentDid) {
-      // The cached draft ID is per-account; don't let the old one mislead
-      // findStorageDraft into a false fast-path hit on the new account.
-      void persisted.write('settingsSyncDraftId', undefined)
-    }
   }, [currentDid])
 
   const flushPushToCloud = useCallback(async () => {

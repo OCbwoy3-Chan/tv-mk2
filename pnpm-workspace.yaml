@@ -23,7 +23,7 @@ allowBuilds:
   'unrs-resolver': true
 patchedDependencies:
   '@assembless/react-native-material-you@1.0.0-beta.4': patches/@assembless__react-native-material-you@1.0.0-beta.4.patch
-  '@atproto/api@0.20.34': patches/@atproto__api@0.20.34.patch
+  '@atproto/api@0.20.37': patches/@atproto__api@0.20.37.patch
   '@atproto/oauth-client@0.6.1': patches/@atproto__oauth-client@0.6.1.patch
   '@atproto/oauth-client-expo@0.0.10': patches/@atproto__oauth-client-expo@0.0.10.patch
   '@sentry/expo-upload-sourcemaps@8.18.0': patches/@sentry__expo-upload-sourcemaps@8.18.0.patch
@@ -45,6 +45,7 @@ patchedDependencies:
   react-native-screens@4.24.0: patches/react-native-screens@4.24.0.patch
   'react-native-svg@15.12.1': patches/react-native-svg@15.12.1.patch
   'react-native-view-shot@4.0.3': patches/react-native-view-shot@4.0.3.patch
+  react-native-worklets@0.8.3: patches/react-native-worklets@0.8.3.patch
   'react-native@0.81.5': patches/react-native@0.81.5.patch
 minimumReleaseAgeExclude:
   - '@atproto/*'

@@ -272,7 +272,7 @@ function InlineNameAndHandle({
           a.font_semi_bold,
           a.leading_tight,
           a.flex_shrink_0,
-          {maxWidth: '70%'},
+          {maxWidth: hideDisplayNames ? '100%' : '70%'},
           web({direction: 'ltr', unicodeBidi: 'isolate'}),
         ]}
         numberOfLines={1}>
@@ -528,16 +528,16 @@ export function FollowButtonInner({
     moderation: moderation.ui('displayName'),
   })
   const promptControl = Prompt.usePromptControl()
-  const [confirmationAction, setConfirmationAction] = useState<'follow' | 'unfollow'>('follow')
+  const [confirmationAction, setConfirmationAction] = useState<
+    'follow' | 'unfollow'
+  >('follow')
   const [pendingEphemeralAccount, setPendingEphemeralAccount] =
     useState<SessionAccount | null>(null)
 
   const executeFollow = async (e: GestureResponderEvent) => {
     try {
       await queueFollow()
-      Toast.show(
-        l`Following ${authorName}`,
-      )
+      Toast.show(l`Following ${authorName}`)
       onPressProp?.(e)
       onFollow?.()
     } catch (e) {
@@ -553,9 +553,7 @@ export function FollowButtonInner({
   const executeUnfollow = async (e: GestureResponderEvent) => {
     try {
       await queueUnfollow()
-      Toast.show(
-        l`No longer following ${authorName}`,
-      )
+      Toast.show(l`No longer following ${authorName}`)
       onPressProp?.(e)
     } catch (e) {
       const err = e as Error
@@ -728,8 +726,14 @@ export function Labels({
   const modui = moderation.ui('profileList')
   const followedBy = profile.viewer?.followedBy
   const showFollowsYouBadge = useShowFollowsYouBadge()
+  const mutedOnlyReposts = profile.viewer?.mutedOnlyReposts
 
-  if (!(followedBy && showFollowsYouBadge) && !modui.inform && !modui.alert) {
+  if (
+    !(followedBy && showFollowsYouBadge) &&
+    !mutedOnlyReposts &&
+    !modui.inform &&
+    !modui.alert
+  ) {
     return null
   }
 
@@ -742,6 +746,7 @@ export function Labels({
       {modui.informs.map(inform => (
         <Pills.Label key={getModerationCauseKey(inform)} cause={inform} />
       ))}
+      {mutedOnlyReposts && <Pills.MutedOnlyReposts />}
     </Pills.Row>
   )
 }

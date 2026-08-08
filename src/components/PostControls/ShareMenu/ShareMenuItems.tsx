@@ -233,16 +233,6 @@ let ShareMenuItems = ({
                 </Menu.ItemText>
                 <Menu.ItemIcon icon={BlueskyIcon} position="right" />
               </Menu.Item>
-              <Menu.ContainerItem>
-                <CheckboxItemText
-                  label={_(msg`Copy instead of opening the share sheet`)}
-                  initialValue={copyLinksRef.current}
-                  onChange={value => {
-                    copyLinksRef.current = value
-                  }}>
-                  <Trans>Copy</Trans>
-                </CheckboxItemText>
-              </Menu.ContainerItem>
               <Menu.Item
                 testID="postDropdownShareAtprotoExplorerBtn"
                 label={atprotoExplorer.name}
@@ -261,6 +251,16 @@ let ShareMenuItems = ({
                   position="right"
                 />
               </Menu.Item>
+              <Menu.ContainerItem>
+                <CheckboxItemText
+                  label={_(msg`Copy instead of opening the share sheet`)}
+                  initialValue={copyLinksRef.current}
+                  onChange={value => {
+                    copyLinksRef.current = value
+                  }}>
+                  <Trans>Copy</Trans>
+                </CheckboxItemText>
+              </Menu.ContainerItem>
             </Menu.Group>
           </Menu.Submenu>
 

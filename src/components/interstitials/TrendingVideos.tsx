@@ -226,7 +226,7 @@ function ViewMoreCard() {
             <Button
               color="primary"
               size="small"
-              shape="round"
+              shape={enableSquareButtons ? 'square' : 'round'}
               label={l`View more trending videos`}>
               <ButtonIcon icon={ChevronRight} />
             </Button>

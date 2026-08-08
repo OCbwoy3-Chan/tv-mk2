@@ -5,8 +5,10 @@ import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {type Shadow} from '#/state/cache/types'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {atoms as a, platform, useBreakpoints, useTheme} from '#/alf'
+import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
+import {useProfileHandleLink} from './useProfileHandleLink'
 
 export function ProfileHeaderDisplayName({
   profile,
@@ -18,6 +20,11 @@ export function ProfileHeaderDisplayName({
   const t = useTheme()
   const {gtMobile} = useBreakpoints()
   const hideDisplayNames = useHideDisplayNames()
+  const shouldShowProfileLink = useProfileHandleLink(profile.handle)
+  const primaryName = getAuthorPrimaryName(profile, {
+    hideDisplayNames,
+    moderation: moderation.ui('displayName'),
+  })
 
   return (
     <View>
@@ -31,10 +38,21 @@ export function ProfileHeaderDisplayName({
           a.font_bold,
           a.leading_tight,
         ]}>
-        {getAuthorPrimaryName(profile, {
-          hideDisplayNames,
-          moderation: moderation.ui('displayName'),
-        })}
+        {hideDisplayNames && shouldShowProfileLink ? (
+          <InlineLinkText
+            to={`https://${profile.handle}`}
+            label={profile.handle}
+            disableMismatchWarning
+            style={[
+              gtMobile ? a.text_4xl : a.text_3xl,
+              a.font_bold,
+              a.leading_tight,
+            ]}>
+            {primaryName}
+          </InlineLinkText>
+        ) : (
+          primaryName
+        )}
         <View style={[a.pl_xs, {marginTop: platform({ios: 2})}]}>
           <ProfileBadges profile={profile} size="lg" interactive />
         </View>

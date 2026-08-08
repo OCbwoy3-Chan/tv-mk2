@@ -16,7 +16,7 @@ import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import {List, type ListProps, type ListRef} from '#/view/com/util/List'
 import {NotificationFeedLoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
 import {LoadMoreRetryBtn} from '#/view/com/util/LoadMoreRetryBtn'
-import {atoms as a, platform} from '#/alf'
+import {atoms as a, platform, useTheme} from '#/alf'
 import {Bell_Stroke2_Corner0_Rounded as BellIcon} from '#/components/icons/Bell'
 import {NotificationFeedItem} from './NotificationFeedItem'
 
@@ -50,6 +50,7 @@ export function NotificationFeed({
   ListHeaderComponent?: ListProps['ListHeaderComponent']
   refreshNotifications: () => Promise<void>
 }) {
+  const t = useTheme()
   const initialNumToRender = useInitialNumToRender()
   const [isPTRing, setIsPTRing] = useState(false)
   const {t: l} = useLingui()
@@ -158,12 +159,12 @@ export function NotificationFeed({
     () =>
       isFetchingNextPage ? (
         <View style={[a.pt_xl]}>
-          <ActivityIndicator />
+          <ActivityIndicator color={t.palette.primary_500} />
         </View>
       ) : (
         <View />
       ),
-    [isFetchingNextPage],
+    [isFetchingNextPage, t.palette.primary_500],
   )
 
   useEffect(() => {

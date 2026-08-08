@@ -121,7 +121,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 t.atoms.text,
                 a.leading_tight,
                 a.flex_shrink_0,
-                {maxWidth: '70%'},
+                {maxWidth: hideDisplayNames ? '100%' : '70%'},
                 web({direction: 'ltr', unicodeBidi: 'isolate'}),
               ]}>
               {forceLTR(displayName)}

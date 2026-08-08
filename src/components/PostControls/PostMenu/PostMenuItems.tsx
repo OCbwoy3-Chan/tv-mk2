@@ -8,7 +8,6 @@ import {
 import * as Clipboard from 'expo-clipboard'
 import {
   type AppBskyEmbedExternal,
-  type AppBskyEmbedImages,
   AppBskyEmbedRecord,
   type AppBskyEmbedRecordWithMedia,
   type AppBskyEmbedVideo,
@@ -28,13 +27,14 @@ import {DISCOVER_DEBUG_DIDS} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {useOpenLink} from '#/lib/hooks/useOpenLink'
 import {saveVideoToDevice} from '#/lib/media/saveVideoToDevice'
+import {getRedraftImages} from '#/lib/redraft'
 import {getCurrentRoute} from '#/lib/routes/helpers'
 import {makeProfileLink} from '#/lib/routes/links'
 import {
   type CommonNavigatorParams,
   type NavigationProp,
 } from '#/lib/routes/types'
-import {richTextToString} from '#/lib/strings/rich-text-helpers'
+import {richTextToStringPreservingLinks} from '#/lib/strings/rich-text-helpers'
 import {toShareUrl} from '#/lib/strings/url-helpers'
 import {useTranslate} from '#/lib/translation'
 import {getPostLanguageTags} from '#/locale/helpers'
@@ -247,47 +247,8 @@ let PostMenuItems = ({
   }
 
   const onConfirmRedraft = async () => {
-    let imageUris: {
-      uri: string
-      width: number
-      height: number
-      altText?: string
-      blobRef?: AppBskyEmbedImages.Image['image']
-    }[] = []
-
     const recordEmbed = record.embed
-    let recordImages: AppBskyEmbedImages.Image[] = []
-    if (recordEmbed?.$type === 'app.bsky.embed.images') {
-      recordImages = (recordEmbed as AppBskyEmbedImages.Main).images
-    } else if (recordEmbed?.$type === 'app.bsky.embed.recordWithMedia') {
-      const media = (recordEmbed as AppBskyEmbedRecordWithMedia.Main).media
-      if (media.$type === 'app.bsky.embed.images') {
-        recordImages = (media as AppBskyEmbedImages.Main).images
-      }
-    }
-
-    if (post.embed?.$type === 'app.bsky.embed.images#view') {
-      const embed = post.embed as AppBskyEmbedImages.View
-      imageUris = embed.images.map((img, i) => ({
-        uri: img.fullsize,
-        width: img.aspectRatio?.width ?? 1000,
-        height: img.aspectRatio?.height ?? 1000,
-        altText: img.alt,
-        blobRef: recordImages[i]?.image,
-      }))
-    } else if (post.embed?.$type === 'app.bsky.embed.recordWithMedia#view') {
-      const embed = post.embed as AppBskyEmbedRecordWithMedia.View
-      if (embed.media.$type === 'app.bsky.embed.images#view') {
-        const images = embed.media as AppBskyEmbedImages.View
-        imageUris = images.images.map((img, i) => ({
-          uri: img.fullsize,
-          width: img.aspectRatio?.width ?? 1000,
-          height: img.aspectRatio?.height ?? 1000,
-          altText: img.alt,
-          blobRef: recordImages[i]?.image,
-        }))
-      }
-    }
+    const imageUris = getRedraftImages(recordEmbed, post.embed)
 
     let quotePost: AppBskyFeedDefs.PostView | undefined
 
@@ -397,7 +358,7 @@ let PostMenuItems = ({
     }
 
     openComposer({
-      text: richTextToString(richText, true),
+      text: richTextToStringPreservingLinks(richText),
       imageUris,
       videoUri,
       onPost: () => {
@@ -451,7 +412,7 @@ let PostMenuItems = ({
   }
 
   const onCopyPostText = () => {
-    const str = richTextToString(richText, true)
+    const str = richTextToStringPreservingLinks(richText)
 
     void Clipboard.setStringAsync(str)
     Toast.show(l`Copied to clipboard`, {

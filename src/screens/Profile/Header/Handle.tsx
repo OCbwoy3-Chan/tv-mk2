@@ -9,14 +9,12 @@ import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {type Shadow} from '#/state/cache/types'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
-import {useShowLinkInHandle} from '#/state/preferences/show-link-in-handle.tsx'
-import {useShowLinkInHandleOnlyOnWorkingLinks} from '#/state/preferences/show-link-in-handle-only-on-working-links'
-import {useHandleLinkQuery} from '#/state/queries/handle-link'
 import {atoms as a, useTheme, web} from '#/alf'
 import {InlineLinkText} from '#/components/Link.tsx'
 import {NewskieDialog} from '#/components/NewskieDialog'
 import {Text} from '#/components/Typography'
 import {IS_IOS, IS_NATIVE} from '#/env'
+import {useProfileHandleLink} from './useProfileHandleLink'
 
 export function ProfileHeaderHandle({
   profile,
@@ -35,24 +33,8 @@ export function ProfileHeaderHandle({
   const invalidHandle = isInvalidHandle(profile.handle)
   const pronouns = profile.pronouns
   const blockHide = profile.viewer?.blocking || profile.viewer?.blockedBy
-  const isBskySocialHandle = profile.handle.endsWith('.bsky.social')
   const showFollowsYouBadge = useShowFollowsYouBadge()
-  const showProfileInHandle = useShowLinkInHandle()
-  const showLinkInHandleOnlyOnWorkingLinks =
-    useShowLinkInHandleOnlyOnWorkingLinks()
-  const shouldCheckHandleLink =
-    showProfileInHandle &&
-    showLinkInHandleOnlyOnWorkingLinks &&
-    !invalidHandle &&
-    !isBskySocialHandle
-  const {data: hasWorkingHandleLink = false} = useHandleLinkQuery(
-    profile.handle,
-    shouldCheckHandleLink,
-  )
-  const shouldShowProfileLink =
-    showProfileInHandle &&
-    !isBskySocialHandle &&
-    (!showLinkInHandleOnlyOnWorkingLinks || hasWorkingHandleLink)
+  const shouldShowProfileLink = useProfileHandleLink(profile.handle)
   const disableNewskieDialog = disableTaps || disableAuxiliaryTaps
   const sanitized = sanitizeHandle(
     profile.handle,

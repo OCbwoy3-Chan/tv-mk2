@@ -12,8 +12,8 @@ import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
-import {useAccountSwitcher} from '#/lib/hooks/useAccountSwitcher'
 import {HITSLOP_10} from '#/lib/constants'
+import {useAccountSwitcher} from '#/lib/hooks/useAccountSwitcher'
 import {useApplyPullRequestOTAUpdate} from '#/lib/hooks/useOTAUpdates'
 import {
   type CommonNavigatorParams,
@@ -46,8 +46,8 @@ import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useCloseAllActiveElements} from '#/state/util'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {AppServerHeaderControl} from '#/screens/Login/components/AppServerDialog'
-import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {GrowthbookDialog} from '#/screens/Settings/components/GrowthbookDialog'
+import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, platform, tokens, useBreakpoints, useTheme} from '#/alf'
 import {AgeAssuranceDismissibleNotice} from '#/components/ageAssurance/AgeAssuranceDismissibleNotice'
 import {AvatarStackWithFetch} from '#/components/AvatarStack'
@@ -94,7 +94,6 @@ import {device, useStorage} from '#/storage'
 import {useActivitySubscriptionsNudged} from '#/storage/hooks/activity-subscriptions-nudged'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
-import { ArrowTriangleBottom_Stroke2_Corner1_Rounded as UpsideDownDelta } from '#/components/icons/ArrowTriangle'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Settings'>
 type AccountListItem = {
@@ -473,12 +472,6 @@ export function SettingsScreen({}: Props) {
             <SettingsList.ItemIcon icon={EarthIcon} />
             <SettingsList.ItemText>
               <Trans>Languages</Trans>
-            </SettingsList.ItemText>
-          </SettingsList.LinkItem>
-          <SettingsList.LinkItem to="/settings/deltas" label={l`Deltas`}>
-            <SettingsList.ItemIcon icon={(props)=><View style={{transform:"rotate(180deg)"}}><UpsideDownDelta {...props}/></View>} />
-            <SettingsList.ItemText>
-              <Trans>Deltas</Trans>
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
           <SettingsList.LinkItem to="/settings/runes" label={l`Runes`}>

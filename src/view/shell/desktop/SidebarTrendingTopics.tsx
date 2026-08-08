@@ -89,7 +89,7 @@ function Inner() {
             variant="ghost"
             size="tiny"
             color="secondary"
-            shape="round"
+            shape={enableSquareButtons ? 'square' : 'round'}
             label={l`Trending options`}
             onPress={() => trendingPrompt.open()}
             style={[a.bg_transparent]}>

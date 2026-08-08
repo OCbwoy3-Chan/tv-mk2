@@ -83,7 +83,7 @@ export function SubscribeProfileButton({
             testID="dmBtn"
             size="small"
             color={tooltipVisible ? 'primary_subtle' : 'secondary'}
-            shape="round"
+            shape={enableSquareButtons ? 'square' : 'round'}
             label={l`Get notified when ${name} posts`}
             onPress={wrappedOnPress}>
             <ButtonIcon icon={Icon} size="md" />
