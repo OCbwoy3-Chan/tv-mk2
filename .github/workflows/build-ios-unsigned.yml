@@ -117,7 +117,7 @@ jobs:
 
       - name: ⬆️ Push File to R2 Bucket
         run: | 
-          export CLOUDFLARE_API_TOKEN="${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+          export CLOUDFLARE_API_TOKEN="${{ secrets.CLOUDFLARE_API_TOKEN }}"
           pnpm dlx wrangler r2 object delete shit/tennaparty.ipa
           pnpm dlx wrangler r2 object put shit/tennaparty.ipa --file=${{ runner.temp }}/tennaparty.ipa
 

@@ -73,7 +73,7 @@ jobs:
 
       - name: ⬆️ Push File to R2 Bucket
         run: | 
-          export CLOUDFLARE_API_TOKEN="${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+          export CLOUDFLARE_API_TOKEN="${{ secrets.CLOUDFLARE_API_TOKEN }}"
           pnpm dlx wrangler r2 object delete shit/app-release.ipa
           pnpm dlx wrangler r2 object put shit/app-release.apk --file=${{ steps.find_apk.outputs.apk_path }}
 
