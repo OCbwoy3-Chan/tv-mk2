@@ -1,9 +1,9 @@
-import {useMemo, type ReactNode} from 'react'
+import {type ReactNode,useMemo} from 'react'
 import {type StyleProp, type TextStyle} from 'react-native'
 import {AppBskyRichtextFacet, RichText as RichTextAPI} from '@atproto/api'
 
 import {toShortUrl} from '#/lib/strings/url-helpers'
-import {atoms as a, flatten, type TextStyleProp} from '#/alf'
+import {atoms as a, flatten, ios, type TextStyleProp} from '#/alf'
 import {isOnlyEmoji} from '#/alf/typography'
 import {InlineLinkText, type LinkProps} from '#/components/Link'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
@@ -27,6 +27,19 @@ export type RichTextProps = TextStyleProp &
     interactiveStyle?: StyleProp<TextStyle>
     emojiMultiplier?: number
     shouldProxyLinks?: boolean
+    suffix?: React.ReactNode
+    /**
+     * How far below the text baseline `suffix` extends, in px.
+     *
+     * Inline views inside `Text` sit with their bottom edge on the baseline, so
+     * a suffix nudged below it overflows the `Text`'s measured bounds and iOS
+     * clips it. We reserve this much room as bottom padding and cancel it with
+     * an equal negative margin, so the suffix can paint without moving anything
+     * after it. Pass the same offset the suffix nudges itself by.
+     *
+     * Overrides any `paddingBottom`/`marginBottom` set via `style`.
+     */
+    suffixOffset?: number
     /**
      * Rendered inline after the last text segment, so it flows with the final
      * line and wraps with the text, e.g. the thread position indicator in the
@@ -61,6 +74,8 @@ export function RichText({
   onLayout,
   onTextLayout,
   shouldProxyLinks,
+  suffix,
+  suffixOffset = 0,
   disableMentionFacetValidation,
   trailing,
 }: RichTextProps) {
@@ -75,6 +90,10 @@ export function RichText({
   }, [value])
 
   const plainStyles = style
+  const suffixStyles =
+    suffix && suffixOffset
+      ? ios({paddingBottom: suffixOffset, marginBottom: -suffixOffset})
+      : null
   const interactiveStyles = [plainStyles, interactiveStyle]
 
   const {text, facets} = richText
@@ -89,13 +108,15 @@ export function RichText({
           emoji
           selectable={selectable}
           testID={testID}
-          style={[plainStyles, {fontSize}]}
+          style={[plainStyles, {fontSize}, suffixStyles]}
           onLayout={onLayout}
           onTextLayout={onTextLayout}
           // @ts-ignore web only -prf
           dataSet={WORD_WRAP}>
           {text}
           {trailing}
+          {suffix ? ' ' : null}
+          {suffix}
         </Text>
       )
     }
@@ -104,7 +125,7 @@ export function RichText({
         emoji
         selectable={selectable}
         testID={testID}
-        style={plainStyles}
+        style={[plainStyles, suffixStyles]}
         numberOfLines={numberOfLines}
         onLayout={onLayout}
         onTextLayout={onTextLayout}
@@ -112,6 +133,8 @@ export function RichText({
         dataSet={WORD_WRAP}>
         {text}
         {trailing}
+        {suffix ? ' ' : null}
+        {suffix}
       </Text>
     )
   }
@@ -191,7 +214,7 @@ export function RichText({
       emoji
       selectable={selectable}
       testID={testID}
-      style={plainStyles}
+      style={[plainStyles, suffixStyles]}
       numberOfLines={numberOfLines}
       onLayout={onLayout}
       onTextLayout={onTextLayout}
@@ -199,6 +222,8 @@ export function RichText({
       dataSet={WORD_WRAP}>
       {els}
       {trailing}
+      {suffix ? ' ' : null}
+      {suffix}
     </Text>
   )
 }

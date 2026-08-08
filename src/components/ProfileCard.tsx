@@ -726,8 +726,14 @@ export function Labels({
   const modui = moderation.ui('profileList')
   const followedBy = profile.viewer?.followedBy
   const showFollowsYouBadge = useShowFollowsYouBadge()
+  const mutedOnlyReposts = profile.viewer?.mutedOnlyReposts
 
-  if (!(followedBy && showFollowsYouBadge) && !modui.inform && !modui.alert) {
+  if (
+    !(followedBy && showFollowsYouBadge) &&
+    !mutedOnlyReposts &&
+    !modui.inform &&
+    !modui.alert
+  ) {
     return null
   }
 
@@ -740,6 +746,7 @@ export function Labels({
       {modui.informs.map(inform => (
         <Pills.Label key={getModerationCauseKey(inform)} cause={inform} />
       ))}
+      {mutedOnlyReposts && <Pills.MutedOnlyReposts />}
     </Pills.Row>
   )
 }
