@@ -1,8 +1,13 @@
-import {AtpAgent} from '@atproto/api'
+import {renderCachedEmbed} from './embed-cache.ts'
 
-import {type AnyProfileView} from '#/types/bsky/profile'
-
-type PResp = Awaited<ReturnType<AtpAgent['getProfile']>>
+export type ProfileView = {
+  avatar?: string
+  banner?: string
+  description?: string
+  did: string
+  displayName?: string
+  handle: string
+}
 
 // based on https://github.com/Janpot/escape-html-template-tag/blob/master/src/index.ts
 
@@ -54,20 +59,20 @@ export function html(parts: TemplateStringsArray, ...subs: Sub[]) {
   return new HtmlSafeString(parts, subs)
 }
 
-export const renderHandleString = (profile: AnyProfileView) =>
+export const renderHandleString = (profile: ProfileView) =>
   profile.displayName
     ? `${profile.displayName} (@${profile.handle})`
     : `@${profile.handle}`
 
 class HeadHandler {
-  profile: PResp
+  profile: ProfileView
   url: string
-  constructor(profile: PResp, url: string) {
+  constructor(profile: ProfileView, url: string) {
     this.profile = profile
     this.url = url
   }
   async element(element) {
-    const view = this.profile.data
+    const view = this.profile
 
     const description = view.description
       ? html`
@@ -103,22 +108,22 @@ class HeadHandler {
 }
 
 class TitleHandler {
-  profile: PResp
-  constructor(profile: PResp) {
+  profile: ProfileView
+  constructor(profile: ProfileView) {
     this.profile = profile
   }
   async element(element) {
-    element.setInnerContent(renderHandleString(this.profile.data))
+    element.setInnerContent(renderHandleString(this.profile))
   }
 }
 
 class NoscriptHandler {
-  profile: PResp
-  constructor(profile: PResp) {
+  profile: ProfileView
+  constructor(profile: ProfileView) {
     this.profile = profile
   }
   async element(element) {
-    const view = this.profile.data
+    const view = this.profile
 
     element.append(
       html`
@@ -135,23 +140,42 @@ class NoscriptHandler {
   }
 }
 
-export async function onRequest(context) {
-  const agent = new AtpAgent({service: 'https://public.api.bsky.app/'})
+export async function handleProfileEmbed(context) {
   const {request, env} = context
-  const origin = new URL(request.url).origin
 
-  const base = env.ASSETS.fetch(new URL('/', origin))
-  try {
-    const profile = await agent.getProfile({
-      actor: context.params.handleOrDID,
-    })
-    return new HTMLRewriter()
-      .on(`head`, new HeadHandler(profile, request.url))
-      .on(`title`, new TitleHandler(profile))
-      .on(`noscript`, new NoscriptHandler(profile))
-      .transform(await base)
-  } catch (e) {
-    console.error(e)
-    return await base
-  }
+  return renderCachedEmbed({
+    request,
+    executionContext: context,
+    async render(publicUrl) {
+      const origin = new URL(publicUrl).origin
+      const base = env.ASSETS.fetch(new URL('/', origin))
+
+      try {
+        const apiUrl = new URL(
+          'https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile',
+        )
+        apiUrl.searchParams.set('actor', context.params.handleOrDID)
+
+        const apiResponse = await fetch(apiUrl, {
+          headers: {Accept: 'application/json'},
+        })
+        if (!apiResponse.ok) {
+          throw new Error(`getProfile returned ${apiResponse.status}`)
+        }
+
+        const profile = (await apiResponse.json()) as ProfileView
+        return new HTMLRewriter()
+          .on(`head`, new HeadHandler(profile, publicUrl))
+          .on(`title`, new TitleHandler(profile))
+          .on(`noscript`, new NoscriptHandler(profile))
+          .transform(await base)
+      } catch (error) {
+        console.error(error)
+        const baseResponse = await base
+        const response = new Response(baseResponse.body, baseResponse)
+        response.headers.set('Cache-Control', 'no-store')
+        return response
+      }
+    },
+  })
 }
