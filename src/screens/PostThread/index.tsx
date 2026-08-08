@@ -80,7 +80,7 @@ import * as Layout from '#/components/Layout'
 import {ListFooter} from '#/components/Lists'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
-import {IS_NATIVE} from '#/env'
+import {IS_IOS, IS_NATIVE} from '#/env'
 
 const PARENT_CHUNK_SIZE = IS_NATIVE ? 5 : 20
 const CHILDREN_CHUNK_SIZE = 50
@@ -526,6 +526,23 @@ export function PostThread({
     )
   }, [thread.data.items, anchor, isRoot])
 
+  /*
+   * Keep this sticky while a sort change temporarily replaces the response
+   * with anchor-only placeholder data. On iOS, maintaining a visible child
+   * while the reader transform or a sort reorders that child's surrounding
+   * native views can crash the list. Parent prepending still uses the normal
+   * behavior for threads whose item identities remain stable.
+   */
+  const opThreadChainUri = useRef<string | null>(null)
+  if (opThreadChainUri.current !== uri) {
+    opThreadChainUri.current = hasOpThreadChain ? uri : null
+  } else if (hasOpThreadChain) {
+    opThreadChainUri.current = uri
+  }
+  const disableIosVisiblePositionMaintenance =
+    IS_IOS &&
+    (thread.state.view === 'reader' || opThreadChainUri.current === uri)
+
   const onStartReached = () => {
     if (thread.state.isFetching) return
     // can be true after `prepareForParamsUpdate` is called
@@ -967,7 +984,11 @@ export function PostThread({
            * NATIVE ONLY
            * {@link https://reactnative.dev/docs/scrollview#maintainvisiblecontentposition}
            */
-          maintainVisibleContentPosition={{minIndexForVisible: 0}}
+          maintainVisibleContentPosition={
+            disableIosVisiblePositionMaintenance
+              ? undefined
+              : {minIndexForVisible: 0}
+          }
           desktopFixedHeight
           sideBorders={false}
           ListFooterComponent={
