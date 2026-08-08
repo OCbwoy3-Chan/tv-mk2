@@ -17,7 +17,8 @@ import {type Schema} from '#/state/persisted/schema'
 //   session, invites, reminders, onboarding, pdsAddressHistory,
 //   hasCheckedForStarterPack, mutedThreads (deprecated),
 //   lastSelectedHomeFeed (deprecated UI state),
-//   settingsSyncEnabled, settingsSyncDraftId, settingsSyncSkipNextPull
+//   settingsSyncEnabled, settingsSyncDraftId, settingsSyncBaselines,
+//   settingsSyncSkipNextPull
 //   (the mechanism, not the content)
 
 /** Theme-related keys; omitted from push/pull when syncTheme is false. */

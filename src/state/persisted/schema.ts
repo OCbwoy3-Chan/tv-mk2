@@ -303,6 +303,10 @@ const schema = z.object({
   // settings sync
   settingsSyncEnabled: z.boolean().optional(),
   settingsSyncDraftId: z.string().optional(),
+  /** Last successfully synced values, keyed by account DID, for 3-way merges. */
+  settingsSyncBaselines: z
+    .record(z.string(), z.record(z.string(), z.unknown()))
+    .optional(),
   syncOpenRouterApiKey: z.boolean().optional(),
   /** When false, theme prefs are omitted from push/pull. Defaults to true. */
   syncTheme: z.boolean().optional(),
@@ -453,6 +457,7 @@ export const defaults: Schema = {
 
   settingsSyncEnabled: false,
   settingsSyncDraftId: undefined,
+  settingsSyncBaselines: undefined,
   syncOpenRouterApiKey: false,
   syncTheme: true,
   settingsSyncShareAcrossAccounts: false,

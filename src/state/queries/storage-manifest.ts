@@ -10,6 +10,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query'
 import deepEqual from 'fast-deep-equal'
 
 import {decode, encode, isManifestSegment} from '#/lib/storage-manifest/codec'
+import {shouldApplyCloudValue} from '#/lib/storage-manifest/merge'
 import {logger} from '#/logger'
 import * as persisted from '#/state/persisted'
 import {getActiveSyncedPrefsKeys} from '#/state/preferences/settings-sync'
@@ -127,12 +128,38 @@ function collectSyncedPrefs(): Record<string, unknown> {
   return prefs
 }
 
+function getSyncBaseline(
+  did: string | undefined,
+): Record<string, unknown> | undefined {
+  if (!did) return undefined
+  return persisted.get('settingsSyncBaselines')?.[did]
+}
+
+async function saveSyncBaseline(
+  did: string | undefined,
+  prefs: Record<string, unknown>,
+): Promise<void> {
+  if (!did) return
+  await persisted.write('settingsSyncBaselines', {
+    ...persisted.get('settingsSyncBaselines'),
+    [did]: prefs,
+  })
+}
+
 /**
- * Merge cloud prefs into local: take cloud values where local is still at
- * the schema default (unchanged); keep local where the user has customized.
+ * Three-way merge cloud prefs into local using the last successful sync as
+ * the common baseline. A local edit always wins when both sides changed the
+ * same key; cloud-only edits are pulled in. This also treats changing a value
+ * back to its schema default as a real local edit instead of resetting it to a
+ * stale custom value from the cloud.
+ *
+ * The default-value fallback is only used for the first sync on versions that
+ * predate baselines.
  */
 export async function applyMergedCloudPrefs(
   cloud: Record<string, unknown>,
+  baseline?: Record<string, unknown>,
+  preferLocalWithoutBaseline = false,
 ): Promise<{applied: number; keptLocal: number}> {
   let applied = 0
   let keptLocal = 0
@@ -142,12 +169,24 @@ export async function applyMergedCloudPrefs(
 
     const local = persisted.get(key)
     const cloudVal = cloud[key]
-    if (deepEqual(local, cloudVal)) continue
+    const hasBaseline = Object.prototype.hasOwnProperty.call(
+      baseline ?? {},
+      key,
+    )
 
-    if (deepEqual(local, persisted.defaults[key])) {
+    if (
+      shouldApplyCloudValue({
+        local,
+        cloud: cloudVal,
+        defaultValue: persisted.defaults[key],
+        baseline: baseline?.[key],
+        hasBaseline,
+        preferLocalWithoutBaseline,
+      })
+    ) {
       await persisted.write(key, cloudVal as persisted.Schema[typeof key])
       applied++
-    } else {
+    } else if (!deepEqual(local, cloudVal)) {
       keptLocal++
     }
   }
@@ -177,6 +216,7 @@ function errorReason(e: unknown): string {
 export function usePushStorageManifestMutation() {
   const agent = useAgent()
   const queryClient = useQueryClient()
+  const {currentAccount} = useSession()
 
   return useMutation({
     mutationFn: async () => {
@@ -188,7 +228,9 @@ export function usePushStorageManifestMutation() {
         keys: keys.length,
       })
 
-      return await writeManifestToAgent(agent, segments)
+      const draftId = await writeManifestToAgent(agent, segments)
+      await saveSyncBaseline(currentAccount?.did, prefs)
+      return draftId
     },
     onSuccess: async (draftId: string) => {
       await persisted.write('settingsSyncDraftId', draftId)
@@ -206,16 +248,23 @@ export function usePushStorageManifestMutation() {
 // ---------------------------------------------------------------------------
 
 /**
- * Loads the cloud draft (if any), merges it with local prefs (local custom
- * values win; cloud fills in keys still at defaults), then pushes the
- * merged result.
+ * Loads the cloud draft (if any), reconciles it against local prefs and the
+ * last successful sync baseline, then pushes the result.
  */
 export function useMergeAndSyncStorageManifestMutation() {
   const agent = useAgent()
   const queryClient = useQueryClient()
+  const {currentAccount} = useSession()
 
   return useMutation({
     mutationFn: async () => {
+      const baseline = getSyncBaseline(currentAccount?.did)
+      // Existing installations may already have a cached draft but no
+      // baseline yet. Preserve all local values during that one-time upgrade;
+      // otherwise a deliberate change back to a default could be mistaken for
+      // an untouched value and replaced by the old cloud setting.
+      const preferLocalWithoutBaseline =
+        !baseline && Boolean(persisted.get('settingsSyncDraftId'))
       const found = await findStorageDraft(agent)
       if (found) {
         const decoded = decode(found.segments)
@@ -224,14 +273,19 @@ export function useMergeAndSyncStorageManifestMutation() {
         }
         const {applied, keptLocal} = await applyMergedCloudPrefs(
           decoded as Record<string, unknown>,
+          baseline,
+          preferLocalWithoutBaseline,
         )
         logger.debug('storage-manifest: merge applied', {applied, keptLocal})
       } else {
         logger.debug('storage-manifest: merge found no storage draft')
       }
 
-      const segments = encode(collectSyncedPrefs())
-      return await writeManifestToAgent(agent, segments)
+      const prefs = collectSyncedPrefs()
+      const segments = encode(prefs)
+      const draftId = await writeManifestToAgent(agent, segments)
+      await saveSyncBaseline(currentAccount?.did, prefs)
+      return draftId
     },
     onSuccess: async (draftId: string) => {
       await persisted.write('settingsSyncDraftId', draftId)
@@ -269,7 +323,8 @@ export function useSyncSettingsToAllAccountsMutation() {
     }: {
       onProgress: (progress: SyncAllAccountsProgress) => void
     }) => {
-      const segments = encode(collectSyncedPrefs())
+      const prefs = collectSyncedPrefs()
+      const segments = encode(prefs)
       const {accounts} = persisted.get('session')
       const targets = accounts.filter(canAttemptSessionResume)
 
@@ -295,6 +350,7 @@ export function useSyncSettingsToAllAccountsMutation() {
           if (account.did === currentAccount?.did) {
             const draftId = await writeManifestToAgent(agent, segments)
             await persisted.write('settingsSyncDraftId', draftId)
+            await saveSyncBaseline(account.did, prefs)
           } else {
             const ephemeralAgent = await createEphemeralAgent(account)
             await writeManifestToAgent(ephemeralAgent, segments, {
