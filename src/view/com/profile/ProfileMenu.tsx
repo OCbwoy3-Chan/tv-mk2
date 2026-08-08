@@ -526,18 +526,6 @@ let ProfileMenu = ({
                   </Menu.ItemText>
                   <Menu.ItemIcon icon={BlueskyIcon} position="right" />
                 </Menu.Item>
-                {!IS_WEB && (
-                  <Menu.ContainerItem>
-                    <CheckboxItemText
-                      label={l`Copy instead of opening the share sheet`}
-                      initialValue={copyLinksRef.current}
-                      onChange={value => {
-                        copyLinksRef.current = value
-                      }}>
-                      <Trans>Copy</Trans>
-                    </CheckboxItemText>
-                  </Menu.ContainerItem>
-                )}
                 <Menu.Item
                   testID="profileHeaderDropdownShareAtprotoExplorerRepositoryBtn"
                   label={l`Repository`}
@@ -564,6 +552,18 @@ let ProfileMenu = ({
                     position="right"
                   />
                 </Menu.Item>
+                {!IS_WEB && (
+                  <Menu.ContainerItem>
+                    <CheckboxItemText
+                      label={l`Copy instead of opening the share sheet`}
+                      initialValue={copyLinksRef.current}
+                      onChange={value => {
+                        copyLinksRef.current = value
+                      }}>
+                      <Trans>Copy</Trans>
+                    </CheckboxItemText>
+                  </Menu.ContainerItem>
+                )}
               </Menu.Group>
             </Menu.Submenu>
             <Menu.Submenu

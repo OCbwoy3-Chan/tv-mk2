@@ -69,7 +69,6 @@ export const SYNCED_PREFS_KEYS = [
   'postsMetricsDisplay',
   'showFollowsYouBadge',
   'showFollowedByOnOwnProfile',
-  'showThreadPostIndicators',
   'hideSimilarAccountsRecomm',
   'hideScaryFollowButtons',
   'showGermDmButton',

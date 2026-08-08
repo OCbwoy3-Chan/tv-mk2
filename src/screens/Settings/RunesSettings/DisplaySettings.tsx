@@ -31,10 +31,6 @@ import {
   useSetPostReplacement,
 } from '#/state/preferences/post-name-replacement'
 import {
-  useSetShowThreadPostIndicators,
-  useShowThreadPostIndicators,
-} from '#/state/preferences/show-thread-post-indicators'
-import {
   useSetShowViaClient,
   useShowViaClient,
 } from '#/state/preferences/show-via-client'
@@ -52,7 +48,6 @@ import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import * as Toggle from '#/components/forms/Toggle'
 import {Celebrate_Stroke2_Corner0_Rounded as CelebrateIcon} from '#/components/icons/Celebrate'
-import {Hashtag_Stroke2_Corner0_Rounded as HashtagIcon} from '#/components/icons/Hashtag'
 import {Heart2_Stroke2_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
 import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
@@ -72,9 +67,6 @@ export function RunesDisplaySettingsScreen() {
 
   const showViaClient = useShowViaClient()
   const setShowViaClient = useSetShowViaClient()
-
-  const showThreadPostIndicators = useShowThreadPostIndicators()
-  const setShowThreadPostIndicators = useSetShowThreadPostIndicators()
 
   const sixSevenCelebration = useSixSevenCelebration()
   const setSixSevenCelebration = useSetSixSevenCelebration()
@@ -117,19 +109,6 @@ export function RunesDisplaySettingsScreen() {
           subtitleText={<DensityDeclaration />}
         />
       </SettingsList.LinkItem>
-      <Toggle.Item
-        name="show_thread_post_indicators"
-        label={l`Show thread position indicators`}
-        value={showThreadPostIndicators}
-        onChange={value => setShowThreadPostIndicators(value)}>
-        <SettingsList.Item>
-          <SettingsList.ItemIcon icon={HashtagIcon} />
-          <SettingsList.ItemText>
-            <Trans>Show thread position indicators</Trans>
-          </SettingsList.ItemText>
-          <Toggle.Platform />
-        </SettingsList.Item>
-      </Toggle.Item>
       <Toggle.Item
         name="show_via_client"
         label={l`Show client used to post`}

@@ -19,7 +19,6 @@ import {
 } from '#/state/cache/post-shadow'
 import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
-import {useShowThreadPostIndicators} from '#/state/preferences/show-thread-post-indicators'
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
@@ -31,13 +30,11 @@ import {
   ThreadItemPostNumber,
   useHasThreadItemPostNumber,
 } from '#/screens/PostThread/components/ThreadItemPostNumber'
-import {ThreadPositionChip} from '#/screens/PostThread/components/ThreadPositionChip'
 import {
   LINEAR_AVI_WIDTH,
   OUTER_SPACE,
   REPLY_LINE_WIDTH,
 } from '#/screens/PostThread/const'
-import {type ThreadPostPosition} from '#/screens/PostThread/reader'
 import {atoms as a, useTheme} from '#/alf'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
@@ -71,11 +68,6 @@ export type ThreadItemPostProps = {
    * Adjusts the hover overlay, e.g. to start at the reader bracket edge.
    */
   hoverStyle?: StyleProp<ViewStyle>
-  /**
-   * Set in linear view when this post is part of a self-thread: renders a
-   * "(x/n)" position chip at the end of the post text.
-   */
-  threadPosition?: ThreadPostPosition
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: AppBskyFeedThreadgate.Record
 }
@@ -84,7 +76,6 @@ export function ThreadItemPost({
   item,
   overrides,
   hoverStyle,
-  threadPosition,
   onPostSuccess,
   threadgateRecord,
 }: ThreadItemPostProps) {
@@ -102,7 +93,6 @@ export function ThreadItemPost({
         threadgateRecord={threadgateRecord}
         overrides={overrides}
         hoverStyle={hoverStyle}
-        threadPosition={threadPosition}
         onPostSuccess={onPostSuccess}
       />
     </ReportDialogMetadataContext.Provider>
@@ -224,7 +214,6 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   postShadow,
   overrides,
   hoverStyle,
-  threadPosition,
   onPostSuccess,
   threadgateRecord,
 }: ThreadItemPostProps & {
@@ -234,11 +223,6 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   const {openComposer} = useOpenComposer()
   const {currentAccount} = useSession()
   const compactPosts = useCompactPosts()
-  const showThreadPostIndicators = useShowThreadPostIndicators()
-  const resolvedThreadPosition =
-    showThreadPostIndicators && threadPosition && threadPosition.postCount > 2
-      ? threadPosition
-      : undefined
   const avatarSize = compactPosts ? 34 : LINEAR_AVI_WIDTH
 
   const post = item.value.post
@@ -381,13 +365,6 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                     numberOfLines={limitLines ? MAX_POST_LINES : undefined}
                     authorHandle={post.author.handle}
                     shouldProxyLinks={true}
-                    trailing={
-                      resolvedThreadPosition ? (
-                        <ThreadPositionChip
-                          threadPosition={resolvedThreadPosition}
-                        />
-                      ) : undefined
-                    }
                     suffixOffset={POST_NUMBER_INLINE_OFFSET}
                     suffix={
                       !limitLines && showPostNumber ? (
@@ -408,16 +385,9 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                     </View>
                   )}
                 </View>
-              ) : resolvedThreadPosition || showPostNumber ? (
-                <View style={[a.mb_2xs, a.flex_row, a.align_center, a.gap_xs]}>
-                  {resolvedThreadPosition && (
-                    <ThreadPositionChip
-                      threadPosition={resolvedThreadPosition}
-                    />
-                  )}
-                  <ThreadItemPostNumber inline={false} value={postNumbering} />
-                </View>
-              ) : undefined}
+              ) : (
+                <ThreadItemPostNumber inline={false} value={postNumbering} />
+              )}
               <TranslatedPost hideTranslateLink post={post} />
               {post.embed && (
                 <View

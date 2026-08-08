@@ -1,4 +1,4 @@
-import {type ReactNode,useMemo} from 'react'
+import {useMemo} from 'react'
 import {type StyleProp, type TextStyle} from 'react-native'
 import {AppBskyRichtextFacet, RichText as RichTextAPI} from '@atproto/api'
 
@@ -41,13 +41,6 @@ export type RichTextProps = TextStyleProp &
      */
     suffixOffset?: number
     /**
-     * Rendered inline after the last text segment, so it flows with the final
-     * line and wraps with the text, e.g. the thread position indicator in the
-     * post thread's linear view. Must be text-compatible (a string or nested
-     * <Text>).
-     */
-    trailing?: ReactNode
-    /**
      * DANGEROUS: Disable facet lexicon validation
      *
      * `detectFacetsWithoutResolution()` generates technically invalid facets,
@@ -77,7 +70,6 @@ export function RichText({
   suffix,
   suffixOffset = 0,
   disableMentionFacetValidation,
-  trailing,
 }: RichTextProps) {
   const richText = useMemo(() => {
     if (value instanceof RichTextAPI) {
@@ -114,7 +106,6 @@ export function RichText({
           // @ts-ignore web only -prf
           dataSet={WORD_WRAP}>
           {text}
-          {trailing}
           {suffix ? ' ' : null}
           {suffix}
         </Text>
@@ -132,7 +123,6 @@ export function RichText({
         // @ts-ignore web only -prf
         dataSet={WORD_WRAP}>
         {text}
-        {trailing}
         {suffix ? ' ' : null}
         {suffix}
       </Text>
@@ -221,7 +211,6 @@ export function RichText({
       // @ts-ignore web only -prf
       dataSet={WORD_WRAP}>
       {els}
-      {trailing}
       {suffix ? ' ' : null}
       {suffix}
     </Text>
