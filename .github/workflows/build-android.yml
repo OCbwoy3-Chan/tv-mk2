@@ -95,13 +95,6 @@ jobs:
       - name: 🏗️ Prebuild (generate native Android project via Expo)
         run: npx expo prebuild --platform android --no-install
 
-      - name: ✍️ Ensure android/gradle.properties (CI-only)
-        run: |
-          mkdir -p android
-          echo "newArchEnabled=true" >> android/gradle.properties
-          echo "---- android/gradle.properties ----"
-          cat android/gradle.properties
-
       - name: 🔧 Make gradlew executable
         run: chmod +x ./android/gradlew
 
