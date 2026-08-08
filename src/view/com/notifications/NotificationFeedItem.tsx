@@ -21,7 +21,9 @@ import {
   type AppBskyActorDefs,
   type AppBskyFeedDefs,
   AppBskyFeedPost,
+  type AppBskyGraphDefs,
   AppBskyGraphFollow,
+  AppBskyGraphStarterpack,
   moderateProfile,
   type ModerationDecision,
   type ModerationOpts,
@@ -56,7 +58,12 @@ import {formatCount} from '#/view/com/util/numeric/format'
 import {TimeElapsed} from '#/view/com/util/TimeElapsed'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, native, platform, useTheme} from '#/alf'
-import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import {
+  Button,
+  ButtonIcon,
+  ButtonText,
+  type ButtonContext,
+} from '#/components/Button'
 import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {BellRinging_Filled_Corner0_Rounded as BellRingingIcon} from '#/components/icons/BellRinging'
 import {
@@ -80,13 +87,16 @@ import {
 } from '#/components/icons/Repost'
 import {StarterPack} from '#/components/icons/StarterPack'
 import {VerifiedCheck} from '#/components/icons/VerifiedCheck'
-import {InlineLinkText, Link} from '#/components/Link'
+import {InlineLinkText, Link, useLink} from '#/components/Link'
 import * as MediaPreview from '#/components/MediaPreview'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import * as ProfileCard from '#/components/ProfileCard'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import * as Prompt from '#/components/Prompt'
-import {Notification as StarterPackCard} from '#/components/StarterPack/StarterPackCard'
+import {
+  Notification as StarterPackCard,
+  useStarterPackLink,
+} from '#/components/StarterPack/StarterPackCard'
 import {SubtleHover} from '#/components/SubtleHover'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
@@ -263,35 +273,36 @@ let NotificationFeedItem = ({
   }
 
   const firstAuthorLink = (
-    <View style={[a.flex_row, a.align_center, a.flex_shrink]}>
-      <ProfileHoverCard did={firstAuthor.profile.did} inline>
-        <InlineLinkText
-          key={firstAuthor.href}
-          style={[t.atoms.text, a.font_semi_bold, a.text_md, a.leading_tight]}
-          to={firstAuthor.href}
-          disableMismatchWarning
-          emoji
-          label={_(msg`Go to ${firstAuthorName}'s profile`)}>
-          {forceLTR(firstAuthorName)}
-        </InlineLinkText>
-      </ProfileHoverCard>
-      <ProfileBadges
-        profile={firstAuthor.profile}
-        size="md"
-        pdsInteractive={false}
-        style={[
-          a.pl_2xs,
-          a.self_center,
-          a.pointer_events_none,
-          {
-            marginTop: platform({web: 1, ios: 0, android: -1}),
-          },
-        ]}
-      />
-    </View>
+    <ProfileHoverCard did={firstAuthor.profile.did} inline>
+      <InlineLinkText
+        key={firstAuthor.href}
+        style={[t.atoms.text, a.font_semi_bold, a.text_md, a.leading_tight]}
+        to={firstAuthor.href}
+        disableMismatchWarning
+        emoji
+        label={_(msg`Go to ${firstAuthorName}'s profile`)}>
+        {forceLTR(firstAuthorName)}
+        <ProfileBadges
+          profile={firstAuthor.profile}
+          size="sm"
+          style={[a.px_2xs, {transform: [{translateY: 1}]}]}
+        />
+      </InlineLinkText>
+    </ProfileHoverCard>
   )
   const additionalAuthorsCount = authors.length - 1
   const hasMultipleAuthors = additionalAuthorsCount > 0
+  const starterPack = item.notification.starterPack
+  const allFollowedViaSameStarterPack =
+    item.type === 'follow' &&
+    starterPack !== undefined &&
+    (item.additional ?? []).every(
+      notification => notification.starterPack?.uri === starterPack.uri,
+    )
+  const starterPackName =
+    allFollowedViaSameStarterPack && starterPack
+      ? getStarterPackName(starterPack)
+      : undefined
   const formattedAuthorsCount = hasMultipleAuthors
     ? formatCount(i18n, additionalAuthorsCount)
     : ''
@@ -370,17 +381,28 @@ let NotificationFeedItem = ({
        * Follow-backs are ungrouped, grouped follow-backs not supported atm,
        * see `src/state/queries/notifications/util.ts`
        */
-      a11yLabel = _(msg`${firstAuthorName} followed you back`)
+      a11yLabel = starterPackName
+        ? _(msg`${firstAuthorName} followed you back via starter pack ${starterPackName}`)
+        : _(msg`${firstAuthorName} followed you back`)
       notificationContent = <Trans>{firstAuthorLink} followed you back</Trans>
     } else {
-      a11yLabel = hasMultipleAuthors
-        ? _(
-            msg`${firstAuthorName} and ${plural(additionalAuthorsCount, {
-              one: `${formattedAuthorsCount} other`,
-              other: `${formattedAuthorsCount} others`,
-            })} followed you`,
-          )
-        : _(msg`${firstAuthorName} followed you`)
+      a11yLabel = starterPackName
+        ? hasMultipleAuthors
+          ? _(
+              msg`${firstAuthorName} and ${plural(additionalAuthorsCount, {
+                one: `${formattedAuthorsCount} other`,
+                other: `${formattedAuthorsCount} others`,
+              })} followed you via starter pack ${starterPackName}`,
+            )
+          : _(msg`${firstAuthorName} followed you via starter pack ${starterPackName}`)
+        : hasMultipleAuthors
+          ? _(
+              msg`${firstAuthorName} and ${plural(additionalAuthorsCount, {
+                one: `${formattedAuthorsCount} other`,
+                other: `${formattedAuthorsCount} others`,
+              })} followed you`,
+            )
+          : _(msg`${firstAuthorName} followed you`)
       notificationContent = hasMultipleAuthors ? (
         <Trans>
           {firstAuthorLink} and{' '}
@@ -603,35 +625,37 @@ let NotificationFeedItem = ({
     return null
   }
   a11yLabel += ` · ${niceTimestamp}`
+  const isSingularFollow = item.type === 'follow' && !hasMultipleAuthors
 
   return (
-    <Link
-      label={a11yLabel}
-      testID={`feedItem-by-${item.notification.author.handle}`}
-      style={[
-        a.flex_row,
-        a.align_start,
-        {padding: 10},
-        a.pr_lg,
-        t.atoms.border_contrast_low,
-        item.notification.isRead
-          ? undefined
-          : {
-              backgroundColor: t.palette.primary_25,
-              borderColor: t.palette.primary_100,
-            },
-        !hideTopBorder && a.border_t,
-        // Clip horizontal overflow (in case of long handles) but let the timestamp overflow the bottom of the cell.
-        platform({
-          web: {overflowX: 'clip', overflowY: 'visible'},
-          native: {overflow: 'hidden'},
-        }),
-      ]}
-      to={itemHref}
-      accessible={!isAuthorsExpanded}
-      onPress={onBeforePress}
-      accessibilityActions={
-        hasMultipleAuthors
+    <NotificationRow
+      isSingularFollow={isSingularFollow}
+      linkProps={{
+        label: a11yLabel,
+        testID: `feedItem-by-${item.notification.author.handle}`,
+        style: [
+          a.flex_row,
+          a.align_start,
+          {padding: 10},
+          a.pr_lg,
+          t.atoms.border_contrast_low,
+          item.notification.isRead
+            ? undefined
+            : {
+                backgroundColor: t.palette.primary_25,
+                borderColor: t.palette.primary_100,
+              },
+          !hideTopBorder && a.border_t,
+          // Clip horizontal overflow (in case of long handles) but let the timestamp overflow the bottom of the cell.
+          platform({
+            web: {overflowX: 'clip', overflowY: 'visible'},
+            native: {overflow: 'hidden'},
+          }),
+        ],
+        to: itemHref,
+        accessible: !isAuthorsExpanded,
+        onPress: onBeforePress,
+        accessibilityActions: hasMultipleAuthors
           ? [
               {
                 name: 'toggleAuthorsExpanded',
@@ -647,15 +671,15 @@ let NotificationFeedItem = ({
                   msg`View ${firstAuthorName}'s profile`,
                 ),
               },
-            ]
-      }
-      onAccessibilityAction={e => {
-        if (e.nativeEvent.actionName === 'activate') {
-          onBeforePress()
-        }
-        if (e.nativeEvent.actionName === 'toggleAuthorsExpanded') {
-          onToggleAuthorsExpanded()
-        }
+            ],
+        onAccessibilityAction: e => {
+          if (e.nativeEvent.actionName === 'activate') {
+            onBeforePress()
+          }
+          if (e.nativeEvent.actionName === 'toggleAuthorsExpanded') {
+            onToggleAuthorsExpanded()
+          }
+        },
       }}>
       {({hovered}) => (
         <>
@@ -691,6 +715,9 @@ let NotificationFeedItem = ({
                   niceTimestamp={niceTimestamp}
                 />
               </View>
+              {allFollowedViaSameStarterPack && starterPack ? (
+                <FollowedViaStarterPack starterPack={starterPack} />
+              ) : null}
               {(item.type === 'follow' && !hasMultipleAuthors && !isFollowBack) ||
               (item.type === 'contact-match' &&
                 !item.notification.author.viewer?.following) ? (
@@ -737,11 +764,95 @@ let NotificationFeedItem = ({
           </ExpandAuthorsPressable>
         </>
       )}
-    </Link>
+    </NotificationRow>
   )
 }
 NotificationFeedItem = memo(NotificationFeedItem)
 export {NotificationFeedItem}
+
+function NotificationRow({
+  isSingularFollow,
+  linkProps,
+  children,
+}: {
+  isSingularFollow: boolean
+  linkProps: Omit<React.ComponentProps<typeof Link>, 'children'>
+  children: (context: ButtonContext) => React.ReactElement
+}) {
+  const {onPress} = useLink({
+    to: linkProps.to,
+    displayText: '',
+    onPress: linkProps.onPress,
+  })
+
+  if (isSingularFollow) {
+    /*
+     * A Link renders as an anchor on web. Wrapping this row in one would nest
+     * the author's InlineLinkText inside that anchor, which browsers do not
+     * support. Let the profile link be the sole interactive target instead.
+     */
+    return (
+      <Pressable
+        testID={linkProps.testID}
+        style={linkProps.style}
+        onPress={onPress}
+        accessible={false}>
+        {children({hovered: false} as ButtonContext)}
+      </Pressable>
+    )
+  }
+
+  return <Link {...linkProps}>{children}</Link>
+}
+
+function FollowedViaStarterPack({
+  starterPack,
+}: {
+  starterPack: AppBskyGraphDefs.StarterPackViewBasic
+}) {
+  const t = useTheme()
+  const link = useStarterPackLink({view: starterPack})
+  const starterPackName = getStarterPackName(starterPack)
+
+  if (!starterPackName) {
+    return null
+  }
+
+  return (
+    <Text style={[native(a.pt_xs), t.atoms.text_contrast_medium]}>
+      <Trans comment="When the source of a follow is a starter pack, i.e., 'via starter pack {starterPackName}'.">
+        via starter pack{' '}
+        <StarterPack
+          size="sm"
+          gradient="sky"
+          style={[native(a.mr_2xs), {transform: [{translateY: 4}]}]}
+        />
+        <InlineLinkText
+          to={link.to}
+          label={link.label}
+          onPress={e => {
+            e.stopPropagation()
+            link.precache()
+          }}
+          onMouseEnter={link.precache}
+          style={[a.font_semi_bold, t.atoms.text]}>
+          {starterPackName}
+        </InlineLinkText>
+      </Trans>
+    </Text>
+  )
+}
+
+function getStarterPackName(
+  starterPack: AppBskyGraphDefs.StarterPackViewBasic,
+) {
+  return bsky.dangerousIsType<AppBskyGraphStarterpack.Record>(
+    starterPack.record,
+    AppBskyGraphStarterpack.isRecord,
+  )
+    ? starterPack.record.name
+    : undefined
+}
 
 function NotificationContent({
   content,
