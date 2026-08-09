@@ -17,6 +17,8 @@ export type CommonProps = {
   isWithinQuote?: boolean
   allowNestedQuotes?: boolean
   showPronouns?: boolean
+  /** Hides a quoted-post record while leaving any accompanying media visible. */
+  hideRecordEmbedUri?: string
   /**
    * The post that contains this embed. Used for analytics on photo embed
    * events (post:photoEmbed:*). When the embed has no owning post (e.g.

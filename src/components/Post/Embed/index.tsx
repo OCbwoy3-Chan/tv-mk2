@@ -184,6 +184,16 @@ function RecordEmbed({
     enabled: shouldDirectFetch,
   })
 
+  if (
+    (embed.type === 'post' ||
+      embed.type === 'post_blocked' ||
+      embed.type === 'post_detached' ||
+      embed.type === 'post_not_found') &&
+    embed.view.uri === rest.hideRecordEmbedUri
+  ) {
+    return null
+  }
+
   switch (embed.type) {
     case 'feed': {
       return (
