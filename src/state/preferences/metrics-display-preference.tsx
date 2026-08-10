@@ -12,6 +12,7 @@ import {
   type FollowedByMetricsDisplay,
   migrateCountsMetricsDisplay,
   migrateFollowedByMetricsDisplay,
+  type NotificationDotDisplay,
 } from '#/lib/metrics-display'
 import * as persisted from '#/state/persisted'
 
@@ -147,6 +148,53 @@ function createFollowedByMetricsDisplayPreference() {
   return {Provider, useMetricsDisplay, useSetMetricsDisplay}
 }
 
+function createNotificationDotDisplayPreference({
+  displayKey,
+}: {
+  displayKey: 'notificationsTabBadgeDisplay' | 'chatsTabBadgeDisplay'
+}) {
+  const defaultDisplay: NotificationDotDisplay = 'exact'
+  const stateContext = createContext<NotificationDotDisplay>(defaultDisplay)
+  const setContext = createContext<(v: NotificationDotDisplay) => void>(
+    () => {},
+  )
+
+  function Provider({children}: PropsWithChildren<{}>) {
+    const [state, setState] = useState<NotificationDotDisplay>(
+      () => persisted.get(displayKey) ?? defaultDisplay,
+    )
+
+    const setStateWrapped = useCallback((value: NotificationDotDisplay) => {
+      setState(value)
+      void persisted.write(displayKey, value)
+    }, [])
+
+    useEffect(() => {
+      return persisted.onUpdate(displayKey, next => {
+        setState(next ?? defaultDisplay)
+      })
+    }, [])
+
+    return (
+      <stateContext.Provider value={state}>
+        <setContext.Provider value={setStateWrapped}>
+          {children}
+        </setContext.Provider>
+      </stateContext.Provider>
+    )
+  }
+
+  function useDisplay() {
+    return useContext(stateContext)
+  }
+
+  function useSetDisplay() {
+    return useContext(setContext)
+  }
+
+  return {Provider, useDisplay, useSetDisplay}
+}
+
 const likes = createCountsMetricsDisplayPreference({
   displayKey: 'likesMetricsDisplay',
   legacyDisableKey: 'disableLikesMetrics',
@@ -180,6 +228,12 @@ const posts = createCountsMetricsDisplayPreference({
   legacyDisableKey: 'disablePostsMetrics',
 })
 const followedBy = createFollowedByMetricsDisplayPreference()
+const notificationsTabBadge = createNotificationDotDisplayPreference({
+  displayKey: 'notificationsTabBadgeDisplay',
+})
+const chatsTabBadge = createNotificationDotDisplayPreference({
+  displayKey: 'chatsTabBadgeDisplay',
+})
 
 export const useLikesMetricsDisplay = likes.useMetricsDisplay
 export const useSetLikesMetricsDisplay = likes.useSetMetricsDisplay
@@ -199,6 +253,11 @@ export const usePostsMetricsDisplay = posts.useMetricsDisplay
 export const useSetPostsMetricsDisplay = posts.useSetMetricsDisplay
 export const useFollowedByMetricsDisplay = followedBy.useMetricsDisplay
 export const useSetFollowedByMetricsDisplay = followedBy.useSetMetricsDisplay
+export const useNotificationsTabBadgeDisplay = notificationsTabBadge.useDisplay
+export const useSetNotificationsTabBadgeDisplay =
+  notificationsTabBadge.useSetDisplay
+export const useChatsTabBadgeDisplay = chatsTabBadge.useDisplay
+export const useSetChatsTabBadgeDisplay = chatsTabBadge.useSetDisplay
 
 export function MetricsDisplayPreferencesProvider({
   children,
@@ -212,7 +271,11 @@ export function MetricsDisplayPreferencesProvider({
               <followers.Provider>
                 <following.Provider>
                   <followedBy.Provider>
-                    <posts.Provider>{children}</posts.Provider>
+                    <posts.Provider>
+                      <notificationsTabBadge.Provider>
+                        <chatsTabBadge.Provider>{children}</chatsTabBadge.Provider>
+                      </notificationsTabBadge.Provider>
+                    </posts.Provider>
                   </followedBy.Provider>
                 </following.Provider>
               </followers.Provider>

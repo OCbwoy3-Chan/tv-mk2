@@ -2,21 +2,28 @@ import {type ComponentProps} from 'react'
 import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {type CountsMetricsDisplay} from '#/lib/metrics-display'
 import {
+  type CountsMetricsDisplay,
+  type NotificationDotDisplay,
+} from '#/lib/metrics-display'
+import {
+  useChatsTabBadgeDisplay,
   useFollowedByMetricsDisplay,
   useFollowersMetricsDisplay,
   useFollowingMetricsDisplay,
   useLikesMetricsDisplay,
+  useNotificationsTabBadgeDisplay,
   usePostsMetricsDisplay,
   useQuotesMetricsDisplay,
   useReplyMetricsDisplay,
   useRepostsMetricsDisplay,
   useSavesMetricsDisplay,
+  useSetChatsTabBadgeDisplay,
   useSetFollowedByMetricsDisplay,
   useSetFollowersMetricsDisplay,
   useSetFollowingMetricsDisplay,
   useSetLikesMetricsDisplay,
+  useSetNotificationsTabBadgeDisplay,
   useSetPostsMetricsDisplay,
   useSetQuotesMetricsDisplay,
   useSetReplyMetricsDisplay,
@@ -35,6 +42,7 @@ import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useBreakpoints} from '#/alf'
 import * as Toggle from '#/components/forms/Toggle'
 import * as ToggleButton from '#/components/forms/ToggleButton'
+import {Bell_Stroke2_Corner0_Rounded as BellIcon} from '#/components/icons/Bell'
 import {Person_Stroke2_Corner0_Rounded as PersonIcon} from '#/components/icons/Person'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {Text} from '#/components/Typography'
@@ -67,6 +75,10 @@ export function RunesImpressionsSettingsScreen() {
   const setShowFollowsYouBadge = useSetShowFollowsYouBadge()
   const showFollowedByOnOwnProfile = useShowFollowedByOnOwnProfile()
   const setShowFollowedByOnOwnProfile = useSetShowFollowedByOnOwnProfile()
+  const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const setNotificationsTabBadgeDisplay = useSetNotificationsTabBadgeDisplay()
+  const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
+  const setChatsTabBadgeDisplay = useSetChatsTabBadgeDisplay()
 
   const labels = useMetricDisplayLabels()
 
@@ -130,7 +142,6 @@ export function RunesImpressionsSettingsScreen() {
         labels={labels}
         onChange={setFollowedByMetricsDisplay}
       />
-      <SettingsList.Divider style={[a.mt_0, a.mb_0]} />
       <Toggle.Item
         name="show_followed_by_on_own_profile"
         label={l`Show “Followed by” on own profile`}
@@ -153,7 +164,64 @@ export function RunesImpressionsSettingsScreen() {
           <Trans>Enable extra "Follows you" label</Trans>
         </Toggle.LabelText>
       </Toggle.Item>
+      <SettingsList.Divider style={[a.mt_0]} />
+      <ImpressionsSectionHeader icon={BellIcon} label={l`Tab icons`} />
+      <TabBadgeRow
+        name={l`Notifications`}
+        value={notificationsTabBadgeDisplay}
+        onChange={setNotificationsTabBadgeDisplay}
+      />
+      <TabBadgeRow
+        name={l`Chats`}
+        value={chatsTabBadgeDisplay}
+        onChange={setChatsTabBadgeDisplay}
+      />
     </RunesScreenLayout>
+  )
+}
+
+function TabBadgeRow({
+  name,
+  value,
+  onChange,
+}: {
+  name: string
+  value: NotificationDotDisplay
+  onChange: (value: NotificationDotDisplay) => void
+}) {
+  const {t: l} = useLingui()
+
+  const handleChange = (values: string[]) => {
+    const next = values[0] as NotificationDotDisplay | undefined
+    if (next === 'hidden' || next === 'visible' || next === 'exact') {
+      onChange(next)
+    }
+  }
+
+  return (
+    <View style={[a.w_full, a.gap_sm, a.px_lg, a.py_lg]}>
+      <Text style={[a.font_semi_bold, a.text_sm]}>{name}</Text>
+      <ToggleButton.Group
+        label={l`Configure notification dot display for: ${name}`}
+        values={[value]}
+        onChange={handleChange}>
+        <ToggleButton.Button name="hidden" label={l`Hidden`}>
+          <ToggleButton.ButtonText>
+            <Trans>Hidden</Trans>
+          </ToggleButton.ButtonText>
+        </ToggleButton.Button>
+        <ToggleButton.Button name="visible" label={l`Dot`}>
+          <ToggleButton.ButtonText>
+            <Trans>Dot</Trans>
+          </ToggleButton.ButtonText>
+        </ToggleButton.Button>
+        <ToggleButton.Button name="exact" label={l`Number`}>
+          <ToggleButton.ButtonText>
+            <Trans>Number</Trans>
+          </ToggleButton.ButtonText>
+        </ToggleButton.Button>
+      </ToggleButton.Group>
+    </View>
   )
 }
 

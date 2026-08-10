@@ -5,6 +5,7 @@ import {DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
 import {
   countsMetricsDisplaySchema,
   followedByMetricsDisplaySchema,
+  notificationDotDisplaySchema,
 } from '#/lib/metrics-display'
 import {deviceLanguageCodes, deviceLocales} from '#/locale/deviceLocales'
 import {findSupportedAppLanguage} from '#/locale/helpers'
@@ -216,6 +217,10 @@ const schema = z.object({
   followingMetricsDisplay: countsMetricsDisplaySchema.optional(),
   followedByMetricsDisplay: followedByMetricsDisplaySchema.optional(),
   postsMetricsDisplay: countsMetricsDisplaySchema.optional(),
+  /** @deprecated Migrated to notificationsTabBadgeDisplay and chatsTabBadgeDisplay */
+  notificationDotDisplay: notificationDotDisplaySchema.optional(),
+  notificationsTabBadgeDisplay: notificationDotDisplaySchema.optional(),
+  chatsTabBadgeDisplay: notificationDotDisplaySchema.optional(),
   showFollowsYouBadge: z.boolean().optional(),
   showFollowedByOnOwnProfile: z.boolean().optional(),
   hideSimilarAccountsRecomm: z.boolean().optional(),
@@ -394,6 +399,9 @@ export const defaults: Schema = {
   followingMetricsDisplay: 'visible',
   followedByMetricsDisplay: 'visible',
   postsMetricsDisplay: 'visible',
+  notificationDotDisplay: 'exact',
+  notificationsTabBadgeDisplay: 'exact',
+  chatsTabBadgeDisplay: 'exact',
   showFollowsYouBadge: false,
   showFollowedByOnOwnProfile: false,
   hideSimilarAccountsRecomm: true,

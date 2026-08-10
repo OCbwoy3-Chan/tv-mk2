@@ -88,6 +88,10 @@ function migrateMetricsDisplayPrefs(data: Schema): Schema {
       data.followedByMetricsDisplay,
       data.disableFollowedByMetrics,
     ),
+    notificationsTabBadgeDisplay:
+      data.notificationsTabBadgeDisplay ?? data.notificationDotDisplay,
+    chatsTabBadgeDisplay:
+      data.chatsTabBadgeDisplay ?? data.notificationDotDisplay,
   }
 }
 

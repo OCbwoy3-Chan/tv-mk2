@@ -20,6 +20,10 @@ import {type SharedNavTab, TAB_TO_NAV_ITEM} from '#/lib/routes/tab-to-nav-item'
 import {emitSoftReset} from '#/state/events'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {
+  useChatsTabBadgeDisplay,
+  useNotificationsTabBadgeDisplay,
+} from '#/state/preferences/metrics-display-preference'
 import {useUnreadMessageCount} from '#/state/queries/messages/list-conversations'
 import {useUpdateAllRead} from '#/state/queries/messages/update-all-read'
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
@@ -73,6 +77,8 @@ export function BottomBar({navigation}: BottomTabBarProps) {
     useNavigationTabState()
   const numUnreadNotifications = useUnreadNotifications()
   const numUnreadMessages = useUnreadMessageCount()
+  const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
   const aa = useAgeAssurance()
   const footerMinimalShellTransform = useMinimalShellFooterTransform()
   const {data: profile} = useProfileQuery({did: currentAccount?.did})
@@ -238,9 +244,17 @@ export function BottomBar({navigation}: BottomTabBarProps) {
               onPress={onPressMessages}
               onLongPress={onLongPressMessages}
               notificationCount={
-                aa.flags.chatDisabled ? undefined : numUnreadMessages.numUnread
+                !aa.flags.chatDisabled && chatsTabBadgeDisplay === 'exact'
+                  ? numUnreadMessages.numUnread
+                  : undefined
               }
-              hasNew={aa.flags.chatDisabled ? false : numUnreadMessages.hasNew}
+              hasNew={
+                !aa.flags.chatDisabled && chatsTabBadgeDisplay !== 'hidden'
+                  ? chatsTabBadgeDisplay === 'visible'
+                    ? numUnreadMessages.count > 0 || numUnreadMessages.hasNew
+                    : numUnreadMessages.hasNew
+                  : false
+              }
               accessible={true}
               accessibilityRole="tab"
               accessibilityLabel={l`Chat`}
@@ -277,7 +291,15 @@ export function BottomBar({navigation}: BottomTabBarProps) {
                 )
               }
               onPress={onPressNotifications}
-              notificationCount={numUnreadNotifications}
+              notificationCount={
+                notificationsTabBadgeDisplay === 'exact'
+                  ? numUnreadNotifications
+                  : undefined
+              }
+              hasNew={
+                notificationsTabBadgeDisplay === 'visible' &&
+                numUnreadNotifications !== ''
+              }
               accessible={true}
               accessibilityRole="tab"
               accessibilityLabel={l`Notifications`}
