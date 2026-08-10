@@ -120,7 +120,7 @@ jobs:
 
       - name: ⬆️ Push File to R2 Bucket
         uses: rajatkulkarni95/upload-r2-github-action@v0.1.0
-        env:
+        with:
           account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           source_dir: ${{ runner.temp }}/LOL/
           bucket: shit
