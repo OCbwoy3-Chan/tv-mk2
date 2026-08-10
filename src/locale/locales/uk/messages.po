@@ -28,7 +28,7 @@ msgstr ""
 msgid "\"{interestsDisplayName}\" category (active)"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:128
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:140
 msgid "\"Followed by\" avatars"
 msgstr ""
 
@@ -163,7 +163,7 @@ msgid "{0, plural, one {# person} other {# people}} reacted – {1}"
 msgstr ""
 
 #. placeholder {0}: quoteCount ?? 0
-#: src/screens/Post/PostQuotes.tsx:45
+#: src/screens/Post/PostQuotes.tsx:57
 msgid "{0, plural, one {# quote} other {# quotes}}"
 msgstr ""
 
@@ -184,8 +184,8 @@ msgstr ""
 
 #. placeholder {0}: numUnreadMessages.numUnread ?? 0
 #. placeholder {0}: numUnreadNotifications ?? 0
-#: src/view/shell/bottom-bar/BottomBar.tsx:255
-#: src/view/shell/bottom-bar/BottomBar.tsx:287
+#: src/view/shell/bottom-bar/BottomBar.tsx:269
+#: src/view/shell/bottom-bar/BottomBar.tsx:309
 #: src/view/shell/Drawer.tsx:608
 msgid "{0, plural, one {# unread item} other {# unread items}}"
 msgstr ""
@@ -353,7 +353,7 @@ msgstr ""
 
 #. Accessibility hint for the bottom bar chat icon when the number of unread messages exceeds the cap, with the + symbol already included – for example, 99+ unread items
 #. placeholder {0}: numUnreadMessages.numUnread
-#: src/view/shell/bottom-bar/BottomBar.tsx:250
+#: src/view/shell/bottom-bar/BottomBar.tsx:264
 msgid "{0} unread items"
 msgstr ""
 
@@ -493,7 +493,7 @@ msgstr ""
 msgid "{count, plural, one {# request} other {# requests}}"
 msgstr ""
 
-#: src/view/shell/desktop/LeftNav.tsx:542
+#: src/view/shell/desktop/LeftNav.tsx:546
 msgid "{count, plural, one {# unread item} other {# unread items}}"
 msgstr ""
 
@@ -527,167 +527,167 @@ msgstr "{estimatedTimeMins, plural, one {хвилина} few {хвилини} ma
 msgid "{filterCount, plural, one {+# filter} other {+# filters}}"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:407
+#: src/view/com/notifications/NotificationFeedItem.tsx:429
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> followed you"
 msgstr "{firstAuthorLink} та <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} інші} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}}</0> почали вас читати"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:441
+#: src/view/com/notifications/NotificationFeedItem.tsx:463
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> liked your custom feed"
 msgstr "{firstAuthorLink} та <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} інший} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}}</0> вподобали створену вами стрічку"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:339
+#: src/view/com/notifications/NotificationFeedItem.tsx:361
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> liked your post"
 msgstr "{firstAuthorLink} та <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} інший} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}}</0> вподобали ваш пост"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:546
+#: src/view/com/notifications/NotificationFeedItem.tsx:568
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> liked your repost"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:519
+#: src/view/com/notifications/NotificationFeedItem.tsx:541
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> removed their verifications from your account"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:363
+#: src/view/com/notifications/NotificationFeedItem.tsx:385
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> reposted your post"
 msgstr "{firstAuthorLink} та <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} інший} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}}</0> зробили репост"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:571
+#: src/view/com/notifications/NotificationFeedItem.tsx:593
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> reposted your repost"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:465
+#: src/view/com/notifications/NotificationFeedItem.tsx:487
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> signed up with your starter pack"
 msgstr "{firstAuthorLink} та <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} інший} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}}</0> зареєструвались зі створеним вами початковим набором"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:494
+#: src/view/com/notifications/NotificationFeedItem.tsx:516
 msgid "{firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> verified you"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:419
+#: src/view/com/notifications/NotificationFeedItem.tsx:441
 msgid "{firstAuthorLink} followed you"
 msgstr "{firstAuthorLink} почали вас читати"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:387
+#: src/view/com/notifications/NotificationFeedItem.tsx:409
 msgid "{firstAuthorLink} followed you back"
 msgstr "{firstAuthorLink} теж почали вас читати"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:453
+#: src/view/com/notifications/NotificationFeedItem.tsx:475
 msgid "{firstAuthorLink} liked your custom feed"
 msgstr "{firstAuthorLink} вподобав створену вами стрічку"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:351
+#: src/view/com/notifications/NotificationFeedItem.tsx:373
 msgid "{firstAuthorLink} liked your post"
 msgstr "{firstAuthorLink} вподобав ваш пост"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:558
+#: src/view/com/notifications/NotificationFeedItem.tsx:580
 msgid "{firstAuthorLink} liked your repost"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:531
+#: src/view/com/notifications/NotificationFeedItem.tsx:553
 msgid "{firstAuthorLink} removed their verification from your account"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:375
+#: src/view/com/notifications/NotificationFeedItem.tsx:397
 msgid "{firstAuthorLink} reposted your post"
 msgstr "{firstAuthorLink} зробив репост"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:583
+#: src/view/com/notifications/NotificationFeedItem.tsx:605
 msgid "{firstAuthorLink} reposted your repost"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:477
+#: src/view/com/notifications/NotificationFeedItem.tsx:499
 msgid "{firstAuthorLink} signed up with your starter pack"
 msgstr "{firstAuthorLink} зареєструвався зі створеним вами початковим набором"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:506
+#: src/view/com/notifications/NotificationFeedItem.tsx:528
 msgid "{firstAuthorLink} verified you"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:400
+#: src/view/com/notifications/NotificationFeedItem.tsx:422
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} followed you"
 msgstr "{firstAuthorName} та {additionalAuthorsCount, plural, one {{formattedAuthorsCount} інші} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}} почали вас читати"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:392
+#: src/view/com/notifications/NotificationFeedItem.tsx:414
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} followed you via starter pack {starterPackName}"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:434
+#: src/view/com/notifications/NotificationFeedItem.tsx:456
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} liked your custom feed"
 msgstr "{firstAuthorName} та {additionalAuthorsCount, plural, one {{formattedAuthorsCount} інші} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}} вподобали створену вами стрічку"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:332
+#: src/view/com/notifications/NotificationFeedItem.tsx:354
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} liked your post"
 msgstr "{firstAuthorName} та {additionalAuthorsCount, plural, one {{formattedAuthorsCount} інші} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}} вподобали ваш пост"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:539
+#: src/view/com/notifications/NotificationFeedItem.tsx:561
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} liked your repost"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:512
+#: src/view/com/notifications/NotificationFeedItem.tsx:534
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} removed their verifications from your account"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:356
+#: src/view/com/notifications/NotificationFeedItem.tsx:378
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} reposted your post"
 msgstr "{firstAuthorName} та {additionalAuthorsCount, plural, one {{formattedAuthorsCount} інші} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}} зробили репост"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:564
+#: src/view/com/notifications/NotificationFeedItem.tsx:586
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} reposted your repost"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:458
+#: src/view/com/notifications/NotificationFeedItem.tsx:480
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} signed up with your starter pack"
 msgstr "{firstAuthorName} та {additionalAuthorsCount, plural, one {{formattedAuthorsCount} інші} few {{formattedAuthorsCount} інші} many {{formattedAuthorsCount} інші} other {{formattedAuthorsCount} інші}} зареєструвались зі створеним вами початковим набором"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:487
+#: src/view/com/notifications/NotificationFeedItem.tsx:509
 msgid "{firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}} verified you"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:405
+#: src/view/com/notifications/NotificationFeedItem.tsx:427
 msgid "{firstAuthorName} followed you"
 msgstr "{firstAuthorName} почали вас читати"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:386
+#: src/view/com/notifications/NotificationFeedItem.tsx:408
 msgid "{firstAuthorName} followed you back"
 msgstr "{firstAuthorName} теж почали вас читати"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:385
+#: src/view/com/notifications/NotificationFeedItem.tsx:407
 msgid "{firstAuthorName} followed you back via starter pack {starterPackName}"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:397
+#: src/view/com/notifications/NotificationFeedItem.tsx:419
 msgid "{firstAuthorName} followed you via starter pack {starterPackName}"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:439
+#: src/view/com/notifications/NotificationFeedItem.tsx:461
 msgid "{firstAuthorName} liked your custom feed"
 msgstr "{firstAuthorName} сподобалась ваша стрічка"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:337
+#: src/view/com/notifications/NotificationFeedItem.tsx:359
 msgid "{firstAuthorName} liked your post"
 msgstr "{firstAuthorName} сподобався ваш пост"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:544
+#: src/view/com/notifications/NotificationFeedItem.tsx:566
 msgid "{firstAuthorName} liked your repost"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:517
+#: src/view/com/notifications/NotificationFeedItem.tsx:539
 msgid "{firstAuthorName} removed their verification from your account"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:361
+#: src/view/com/notifications/NotificationFeedItem.tsx:383
 msgid "{firstAuthorName} reposted your post"
 msgstr "{firstAuthorName} зробив репост"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:569
+#: src/view/com/notifications/NotificationFeedItem.tsx:591
 msgid "{firstAuthorName} reposted your repost"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:463
+#: src/view/com/notifications/NotificationFeedItem.tsx:485
 msgid "{firstAuthorName} signed up with your starter pack"
 msgstr "{firstAuthorName} зареєструвався з вашим початковим набором"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:492
+#: src/view/com/notifications/NotificationFeedItem.tsx:514
 msgid "{firstAuthorName} verified you"
 msgstr ""
 
@@ -813,8 +813,8 @@ msgstr ""
 msgid "{name}'s starter pack"
 msgstr ""
 
-#: src/view/shell/bottom-bar/BottomBarWeb.tsx:370
-#: src/view/shell/bottom-bar/BottomBarWeb.tsx:487
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:389
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:506
 msgid "{notificationCount, plural, one {# unread item} other {# unread items}}"
 msgstr ""
 
@@ -1111,8 +1111,8 @@ msgstr ""
 
 #: src/Navigation.tsx:649
 #: src/screens/Settings/AboutSettings.tsx:86
-#: src/screens/Settings/Settings.tsx:483
-#: src/screens/Settings/Settings.tsx:486
+#: src/screens/Settings/Settings.tsx:492
+#: src/screens/Settings/Settings.tsx:495
 msgid "About"
 msgstr "Інформація"
 
@@ -1157,8 +1157,8 @@ msgid "Access requested! The group owner will review your request."
 msgstr ""
 
 #: src/screens/Settings/AccessibilitySettings.tsx:71
-#: src/screens/Settings/Settings.tsx:465
-#: src/screens/Settings/Settings.tsx:468
+#: src/screens/Settings/Settings.tsx:466
+#: src/screens/Settings/Settings.tsx:469
 msgid "Accessibility"
 msgstr "Доступність"
 
@@ -1171,8 +1171,8 @@ msgstr "Налаштування доступності"
 #: src/screens/Login/LoginForm.web.tsx:234
 #: src/screens/Settings/AccountSettings.tsx:56
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:26
-#: src/screens/Settings/Settings.tsx:407
-#: src/screens/Settings/Settings.tsx:410
+#: src/screens/Settings/Settings.tsx:408
+#: src/screens/Settings/Settings.tsx:411
 msgid "Account"
 msgstr "Обліковий запис"
 
@@ -1193,7 +1193,7 @@ msgstr "Обліковий запис відстежується"
 msgid "Account has been suspended"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:870
+#: src/screens/Settings/Settings.tsx:879
 msgid "Account hidden from other switchers"
 msgstr ""
 
@@ -1216,11 +1216,11 @@ msgstr "Обліковий запис ігнорується"
 msgid "Account Muted by List"
 msgstr "Обліковий запис ігноровано списком"
 
-#: src/screens/Settings/Settings.tsx:918
+#: src/screens/Settings/Settings.tsx:927
 msgid "Account options"
 msgstr "Параметри облікового запису"
 
-#: src/screens/Settings/Settings.tsx:976
+#: src/screens/Settings/Settings.tsx:985
 msgid "Account removed from quick access"
 msgstr "Обліковий запис вилучено зі швидкого доступу"
 
@@ -1247,7 +1247,7 @@ msgctxt "toast"
 msgid "Account unmuted"
 msgstr "Обліковий запис не ігнорується"
 
-#: src/screens/Settings/Settings.tsx:869
+#: src/screens/Settings/Settings.tsx:878
 msgid "Account will show in other switchers again"
 msgstr ""
 
@@ -1320,10 +1320,10 @@ msgstr "Додати альтернативний текст"
 msgid "Add alt text (optional)"
 msgstr "Додати альтернативний текст (за бажанням)"
 
-#: src/screens/Settings/Settings.tsx:815
-#: src/screens/Settings/Settings.tsx:818
-#: src/view/shell/desktop/LeftNav.tsx:318
-#: src/view/shell/desktop/LeftNav.tsx:321
+#: src/screens/Settings/Settings.tsx:824
+#: src/screens/Settings/Settings.tsx:827
+#: src/view/shell/desktop/LeftNav.tsx:322
+#: src/view/shell/desktop/LeftNav.tsx:325
 msgid "Add another account"
 msgstr "Додати інший обліковий запис"
 
@@ -1681,8 +1681,8 @@ msgstr ""
 msgid "Allows access to direct messages"
 msgstr "Надати доступ до особистих повідомлень"
 
-#: src/screens/Settings/Settings.tsx:267
-#: src/screens/Settings/Settings.tsx:276
+#: src/screens/Settings/Settings.tsx:268
+#: src/screens/Settings/Settings.tsx:277
 msgid "Alphabetical"
 msgstr ""
 
@@ -1872,8 +1872,8 @@ msgstr ""
 #: src/components/ProfileCard.tsx:561
 #: src/screens/PostThread/components/ReaderSeam.tsx:280
 #: src/screens/PostThread/components/ReaderSeam.tsx:306
-#: src/view/com/notifications/NotificationFeedItem.tsx:1043
-#: src/view/com/notifications/NotificationFeedItem.tsx:1060
+#: src/view/com/notifications/NotificationFeedItem.tsx:1146
+#: src/view/com/notifications/NotificationFeedItem.tsx:1163
 msgid "An issue occurred, please try again."
 msgstr "Виникла проблема, будь ласка, спробуйте ще раз."
 
@@ -2059,8 +2059,8 @@ msgstr ""
 
 #: src/Navigation.tsx:548
 #: src/screens/Settings/AppearanceSettings.tsx:118
-#: src/screens/Settings/Settings.tsx:457
-#: src/screens/Settings/Settings.tsx:460
+#: src/screens/Settings/Settings.tsx:458
+#: src/screens/Settings/Settings.tsx:461
 msgid "Appearance"
 msgstr "Оформлення"
 
@@ -2069,8 +2069,8 @@ msgstr "Оформлення"
 msgid "Apply default recommended feeds"
 msgstr "Застосувати рекомендовані стрічки за замовчуванням"
 
-#: src/screens/Settings/Settings.tsx:746
-#: src/screens/Settings/Settings.tsx:748
+#: src/screens/Settings/Settings.tsx:755
+#: src/screens/Settings/Settings.tsx:757
 msgid "Apply Pull Request"
 msgstr ""
 
@@ -2216,13 +2216,13 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:246
-#: src/components/Post/Embed/index.tsx:273
+#: src/components/Post/Embed/index.tsx:256
+#: src/components/Post/Embed/index.tsx:283
 msgid "Author account suspended"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:248
-#: src/components/Post/Embed/index.tsx:275
+#: src/components/Post/Embed/index.tsx:258
+#: src/components/Post/Embed/index.tsx:285
 msgid "Author account unavailable"
 msgstr ""
 
@@ -2526,9 +2526,9 @@ msgstr ""
 msgid "Block user and/or leave this conversation"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:236
-#: src/components/Post/Embed/index.tsx:263
-#: src/components/Post/Embed/index.tsx:279
+#: src/components/Post/Embed/index.tsx:246
+#: src/components/Post/Embed/index.tsx:273
+#: src/components/Post/Embed/index.tsx:289
 msgid "Blocked"
 msgstr "Заблоковано"
 
@@ -2783,13 +2783,13 @@ msgstr "Зі створенням облікового запису ви пог�
 msgid "By creating an account you agree to the <0>Terms of Service</0>."
 msgstr "Зі створенням облікового запису ви погоджуєтеся з <0>Умовами надання послуг</0>."
 
-#: src/screens/Settings/Settings.tsx:293
-#: src/screens/Settings/Settings.tsx:302
+#: src/screens/Settings/Settings.tsx:294
+#: src/screens/Settings/Settings.tsx:303
 msgid "By date added"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:280
-#: src/screens/Settings/Settings.tsx:289
+#: src/screens/Settings/Settings.tsx:281
+#: src/screens/Settings/Settings.tsx:290
 msgid "By date modified"
 msgstr ""
 
@@ -2851,9 +2851,9 @@ msgstr ""
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:99
 #: src/screens/Settings/components/ChangePasswordDialog.tsx:249
 #: src/screens/Settings/components/ChangePasswordDialog.tsx:255
-#: src/screens/Settings/Settings.tsx:377
-#: src/screens/Settings/Settings.tsx:383
-#: src/screens/Settings/Settings.tsx:528
+#: src/screens/Settings/Settings.tsx:378
+#: src/screens/Settings/Settings.tsx:384
+#: src/screens/Settings/Settings.tsx:537
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:37
@@ -2861,7 +2861,7 @@ msgstr ""
 #: src/view/com/composer/Composer.tsx:2077
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
-#: src/view/shell/desktop/LeftNav.tsx:241
+#: src/view/shell/desktop/LeftNav.tsx:245
 msgid "Cancel"
 msgstr "Скасувати"
 
@@ -3023,8 +3023,8 @@ msgstr ""
 
 #: src/lib/hooks/useNotificationHandler.ts:133
 #: src/Navigation.tsx:675
-#: src/view/shell/bottom-bar/BottomBar.tsx:246
-#: src/view/shell/desktop/LeftNav.tsx:766
+#: src/view/shell/bottom-bar/BottomBar.tsx:260
+#: src/view/shell/desktop/LeftNav.tsx:780
 #: src/view/shell/Drawer.tsx:576
 msgid "Chat"
 msgstr "Чат"
@@ -3126,6 +3126,7 @@ msgstr "Сповіщення чату увімкнено"
 #: src/screens/Messages/ChatList.tsx:92
 #: src/screens/Messages/ChatList.tsx:558
 #: src/screens/Messages/ChatList.tsx:598
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:175
 msgid "Chats"
 msgstr ""
 
@@ -3256,11 +3257,11 @@ msgstr "Вкажіть пароль"
 msgid "Clear"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:738
+#: src/screens/Settings/Settings.tsx:747
 msgid "Clear all storage data"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:740
+#: src/screens/Settings/Settings.tsx:749
 msgid "Clear all storage data (restart after this)"
 msgstr ""
 
@@ -3497,7 +3498,7 @@ msgstr ""
 msgid "Collapse also liked posts"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:663
+#: src/view/com/notifications/NotificationFeedItem.tsx:685
 msgid "Collapse list of users"
 msgstr "Згорнути список користувачів"
 
@@ -3505,7 +3506,7 @@ msgstr "Згорнути список користувачів"
 msgid "Collapse repost carousel"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:1230
+#: src/view/com/notifications/NotificationFeedItem.tsx:1333
 msgid "Collapses list of users for a given notification"
 msgstr "Згортає список користувачів для даного сповіщення"
 
@@ -3574,7 +3575,7 @@ msgstr "Завершити ознайомлення та розпочати ко
 
 #: src/lib/hotkeys/index.tsx:66
 #: src/view/com/feeds/ComposerPrompt.tsx:150
-#: src/view/shell/desktop/LeftNav.tsx:647
+#: src/view/shell/desktop/LeftNav.tsx:651
 msgid "Compose new post"
 msgstr "Новий пост"
 
@@ -3603,8 +3604,12 @@ msgstr ""
 msgid "Configure content filtering setting for category: {name}"
 msgstr "Налаштувати фільтрування вмісту для категорії: {name}"
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:219
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:287
 msgid "Configure impression display for: {name}"
+msgstr ""
+
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:205
+msgid "Configure notification dot display for: {name}"
 msgstr ""
 
 #: src/components/moderation/LabelPreference.tsx:254
@@ -3705,8 +3710,8 @@ msgstr ""
 msgid "Content & Media"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:437
-#: src/screens/Settings/Settings.tsx:440
+#: src/screens/Settings/Settings.tsx:438
+#: src/screens/Settings/Settings.tsx:441
 msgid "Content and media"
 msgstr "Вміст та медіа"
 
@@ -3884,8 +3889,8 @@ msgid "Copy code"
 msgstr "Скопіювати код"
 
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:524
-#: src/screens/Settings/Settings.tsx:950
-#: src/screens/Settings/Settings.tsx:952
+#: src/screens/Settings/Settings.tsx:959
+#: src/screens/Settings/Settings.tsx:961
 #: src/view/com/profile/ProfileMenu.tsx:902
 #: src/view/com/profile/ProfileMenu.tsx:905
 msgid "Copy DID"
@@ -4130,10 +4135,10 @@ msgstr "Створення власної підбірки для мене"
 #: src/screens/Signup/index.tsx:125
 #: src/view/com/auth/SplashScreen.tsx:108
 #: src/view/com/auth/SplashScreen.web.tsx:118
-#: src/view/shell/bottom-bar/BottomBar.tsx:357
-#: src/view/shell/bottom-bar/BottomBar.tsx:361
-#: src/view/shell/bottom-bar/BottomBarWeb.tsx:260
-#: src/view/shell/bottom-bar/BottomBarWeb.tsx:265
+#: src/view/shell/bottom-bar/BottomBar.tsx:379
+#: src/view/shell/bottom-bar/BottomBar.tsx:383
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:279
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:284
 #: src/view/shell/NavSignupCard.tsx:48
 #: src/view/shell/NavSignupCard.tsx:53
 msgid "Create account"
@@ -4256,8 +4261,8 @@ msgstr ""
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:109
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:116
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:122
-#: src/screens/Settings/Settings.tsx:306
-#: src/screens/Settings/Settings.tsx:315
+#: src/screens/Settings/Settings.tsx:307
+#: src/screens/Settings/Settings.tsx:316
 msgid "Custom"
 msgstr "Користувацький"
 
@@ -4347,7 +4352,7 @@ msgstr ""
 msgid "Deactivate account"
 msgstr "Деактивувати обліковий запис"
 
-#: src/screens/Settings/Settings.tsx:703
+#: src/screens/Settings/Settings.tsx:712
 msgid "Debug Moderation"
 msgstr "Налагодження модерації"
 
@@ -4408,8 +4413,8 @@ msgstr "Видалити пароль застосунку?"
 msgid "Delete chat"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:708
-#: src/screens/Settings/Settings.tsx:710
+#: src/screens/Settings/Settings.tsx:717
+#: src/screens/Settings/Settings.tsx:719
 msgid "Delete chat declaration record"
 msgstr ""
 
@@ -4469,7 +4474,7 @@ msgstr "Видалити цей список?"
 msgid "Delete this post?"
 msgstr "Видалити цей пост?"
 
-#: src/components/Post/Embed/index.tsx:250
+#: src/components/Post/Embed/index.tsx:260
 msgid "Deleted"
 msgstr "Видалено"
 
@@ -4492,6 +4497,8 @@ msgstr ""
 
 #: src/Navigation.tsx:451
 #: src/screens/Settings/DeltaSettings/index.tsx:20
+#: src/screens/Settings/Settings.tsx:478
+#: src/screens/Settings/Settings.tsx:483
 msgid "Deltas"
 msgstr ""
 
@@ -4546,8 +4553,8 @@ msgctxt "toast"
 msgid "Developer mode enabled"
 msgstr "Режим розробника ввімкнено"
 
-#: src/screens/Settings/Settings.tsx:510
-#: src/screens/Settings/Settings.tsx:513
+#: src/screens/Settings/Settings.tsx:519
+#: src/screens/Settings/Settings.tsx:522
 msgid "Developer options"
 msgstr "Налаштування для розробників"
 
@@ -4563,7 +4570,7 @@ msgstr "Діалог: налаштувати, хто може взаємодія
 msgid "Dialog: Set search filters"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:876
+#: src/screens/Settings/Settings.tsx:885
 msgid "DID copied to clipboard"
 msgstr ""
 
@@ -4850,6 +4857,11 @@ msgstr ""
 #: src/view/com/composer/videos/SubtitleDialog.tsx:204
 msgid "Done"
 msgstr "Готово"
+
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:213
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:215
+msgid "Dot"
+msgstr ""
 
 #: src/components/dms/MessageItem.tsx:549
 msgid "Double tap or long press the message to add a reaction"
@@ -5262,8 +5274,8 @@ msgstr ""
 msgid "Enable external media"
 msgstr "Увімкнути зовнішні медіа"
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:147
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:153
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:158
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:164
 msgid "Enable extra \"Follows you\" label"
 msgstr ""
 
@@ -5506,7 +5518,7 @@ msgstr ""
 msgid "Everything look right?"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:246
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:314
 msgid "Exact"
 msgstr ""
 
@@ -5545,7 +5557,7 @@ msgstr ""
 msgid "Expand alt text"
 msgstr "Розгорнути опис"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:664
+#: src/view/com/notifications/NotificationFeedItem.tsx:686
 msgid "Expand list of users"
 msgstr "Розгорнути список користувачів"
 
@@ -5565,7 +5577,7 @@ msgstr ""
 msgid "Expands or collapses post text"
 msgstr ""
 
-#: src/lib/api/index.ts:587
+#: src/lib/api/index.ts:593
 msgid "Expected uri to resolve to a record"
 msgstr ""
 
@@ -5607,7 +5619,7 @@ msgstr "Відверті сексуальні зображення."
 
 #: src/Navigation.tsx:935
 #: src/screens/Search/Shell.tsx:549
-#: src/view/shell/desktop/LeftNav.tsx:745
+#: src/view/shell/desktop/LeftNav.tsx:751
 #: src/view/shell/Drawer.tsx:524
 msgid "Explore"
 msgstr ""
@@ -5658,6 +5670,10 @@ msgstr ""
 
 #: src/screens/Settings/RunesSettings/index.tsx:76
 msgid "Extra settings "
+msgstr ""
+
+#: src/screens/Post/PostQuotes.tsx:72
+msgid "Extract quoted post"
 msgstr ""
 
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:146
@@ -5852,13 +5868,13 @@ msgid "Failed to lock group chat"
 msgstr ""
 
 #: src/screens/Messages/ChatList.tsx:639
-#: src/view/shell/bottom-bar/BottomBar.tsx:458
+#: src/view/shell/bottom-bar/BottomBar.tsx:480
 msgid "Failed to mark all chats as read"
 msgstr ""
 
 #: src/screens/Messages/ChatList.tsx:648
 #: src/screens/Messages/Inbox.tsx:304
-#: src/view/shell/bottom-bar/BottomBar.tsx:467
+#: src/view/shell/bottom-bar/BottomBar.tsx:489
 msgid "Failed to mark all requests as read"
 msgstr ""
 
@@ -6092,7 +6108,7 @@ msgstr ""
 #: src/screens/StarterPack/StarterPackScreen.tsx:197
 #: src/view/screens/Feeds.tsx:508
 #: src/view/screens/Profile.tsx:246
-#: src/view/shell/desktop/LeftNav.tsx:780
+#: src/view/shell/desktop/LeftNav.tsx:802
 #: src/view/shell/Drawer.tsx:640
 msgid "Feeds"
 msgstr "Стрічки"
@@ -6185,8 +6201,8 @@ msgstr "Знайти облікові записи для підписки"
 
 #: src/features/inviteFriends/components/FollowersPromoBanner.tsx:49
 #: src/screens/Settings/FindContactsSettings.tsx:81
-#: src/screens/Settings/Settings.tsx:448
-#: src/screens/Settings/Settings.tsx:451
+#: src/screens/Settings/Settings.tsx:449
+#: src/screens/Settings/Settings.tsx:452
 msgid "Find and invite friends"
 msgstr ""
 
@@ -6270,8 +6286,8 @@ msgstr ""
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:687
 #: src/screens/VideoFeed/index.tsx:1045
 #: src/screens/VideoFeed/index.tsx:1077
-#: src/view/com/notifications/NotificationFeedItem.tsx:1136
-#: src/view/com/notifications/NotificationFeedItem.tsx:1143
+#: src/view/com/notifications/NotificationFeedItem.tsx:1239
+#: src/view/com/notifications/NotificationFeedItem.tsx:1246
 msgid "Follow"
 msgstr "Підписатися"
 
@@ -6347,8 +6363,8 @@ msgstr ""
 #: src/screens/PostThread/components/ThreadItemAnchorFollowButton.tsx:231
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:649
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:685
-#: src/view/com/notifications/NotificationFeedItem.tsx:1136
-#: src/view/com/notifications/NotificationFeedItem.tsx:1143
+#: src/view/com/notifications/NotificationFeedItem.tsx:1239
+#: src/view/com/notifications/NotificationFeedItem.tsx:1246
 msgid "Follow back"
 msgstr "Підписатися навзаєм"
 
@@ -6395,7 +6411,7 @@ msgstr "Читають <0>{0}</0> та <1>{1}</1>"
 msgid "Followed by <0>{0}</0>, <1>{1}</1>, and {2, plural, one {# other} other {# others}}"
 msgstr "Читають <0>{0}</0>, <1>{1}</1>, та {2, plural, one {# інші} few {# інші} many {# інші} other {# інші}}"
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:110
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:122
 msgid "Followers"
 msgstr ""
 
@@ -6423,11 +6439,11 @@ msgstr "Читачі, яких читаєте ви"
 #: src/screens/PostThread/components/ThreadItemAnchorFollowButton.tsx:238
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:646
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:682
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:116
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:128
 #: src/screens/VideoFeed/index.tsx:1043
 #: src/screens/VideoFeed/index.tsx:1075
-#: src/view/com/notifications/NotificationFeedItem.tsx:1114
-#: src/view/com/notifications/NotificationFeedItem.tsx:1131
+#: src/view/com/notifications/NotificationFeedItem.tsx:1217
+#: src/view/com/notifications/NotificationFeedItem.tsx:1234
 msgid "Following"
 msgstr "Читаю"
 
@@ -6449,7 +6465,7 @@ msgid "Following {0} as @{1}"
 msgstr ""
 
 #: src/components/ProfileCard.tsx:540
-#: src/view/com/notifications/NotificationFeedItem.tsx:1038
+#: src/view/com/notifications/NotificationFeedItem.tsx:1141
 msgid "Following {authorName}"
 msgstr ""
 
@@ -6811,7 +6827,7 @@ msgstr ""
 msgid "Go to {0}'s profile"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:283
+#: src/view/com/notifications/NotificationFeedItem.tsx:286
 msgid "Go to {firstAuthorName}'s profile"
 msgstr ""
 
@@ -6842,8 +6858,8 @@ msgstr "Далі"
 #: src/components/dms/ConvoMenu.tsx:265
 #: src/screens/Messages/components/MessagesListInfoPanel.tsx:102
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:194
-#: src/view/shell/desktop/LeftNav.tsx:381
-#: src/view/shell/desktop/LeftNav.tsx:387
+#: src/view/shell/desktop/LeftNav.tsx:385
+#: src/view/shell/desktop/LeftNav.tsx:391
 msgid "Go to profile"
 msgstr "Перейти до облікового запису"
 
@@ -6968,7 +6984,7 @@ msgstr ""
 msgid "Group name is too long. {MAX_GROUP_NAME_GRAPHEME_LENGTH, plural, other {The maximum number of characters is #.}}"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:688
+#: src/screens/Settings/Settings.tsx:697
 msgid "GrowthBook"
 msgstr ""
 
@@ -7093,7 +7109,9 @@ msgstr ""
 
 #: src/components/VideoPostCard.tsx:176
 #: src/components/VideoPostCard.tsx:459
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:243
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:208
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:210
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:311
 msgid "Hidden"
 msgstr ""
 
@@ -7101,8 +7119,8 @@ msgstr ""
 msgid "Hidden by your moderation settings."
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:937
-#: src/screens/Settings/Settings.tsx:942
+#: src/screens/Settings/Settings.tsx:946
+#: src/screens/Settings/Settings.tsx:951
 msgid "Hidden elsewhere"
 msgstr ""
 
@@ -7130,7 +7148,7 @@ msgstr "Прихований список"
 msgid "Hide"
 msgstr "Приховати"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:1237
+#: src/view/com/notifications/NotificationFeedItem.tsx:1340
 msgctxt "action"
 msgid "Hide"
 msgstr "Приховати"
@@ -7149,8 +7167,8 @@ msgstr ""
 msgid "Hide display names"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:937
-#: src/screens/Settings/Settings.tsx:944
+#: src/screens/Settings/Settings.tsx:946
+#: src/screens/Settings/Settings.tsx:953
 msgid "Hide elsewhere"
 msgstr ""
 
@@ -7242,7 +7260,7 @@ msgstr ""
 msgid "Hide trending videos?"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:1228
+#: src/view/com/notifications/NotificationFeedItem.tsx:1331
 msgid "Hide user list"
 msgstr "Приховати список користувачів"
 
@@ -7314,8 +7332,8 @@ msgstr ""
 
 #: src/Navigation.tsx:930
 #: src/Navigation.tsx:951
-#: src/view/shell/bottom-bar/BottomBar.tsx:200
-#: src/view/shell/desktop/LeftNav.tsx:735
+#: src/view/shell/bottom-bar/BottomBar.tsx:206
+#: src/view/shell/desktop/LeftNav.tsx:741
 #: src/view/shell/Drawer.tsx:550
 msgid "Home"
 msgstr "Головна"
@@ -7557,7 +7575,7 @@ msgid "Imported on {0}"
 msgstr ""
 
 #: src/Navigation.tsx:492
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:74
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:86
 #: src/screens/Settings/RunesSettings/index.tsx:38
 #: src/screens/Settings/RunesSettings/index.tsx:41
 msgid "Impressions"
@@ -8025,8 +8043,8 @@ msgid "Language Settings"
 msgstr "Налаштування мови"
 
 #: src/screens/Settings/LanguageSettings.tsx:115
-#: src/screens/Settings/Settings.tsx:471
-#: src/screens/Settings/Settings.tsx:474
+#: src/screens/Settings/Settings.tsx:472
+#: src/screens/Settings/Settings.tsx:475
 msgid "Languages"
 msgstr "Мови"
 
@@ -8332,7 +8350,7 @@ msgstr ""
 #: src/lib/hooks/useNotificationHandler.ts:158
 #: src/screens/Settings/NotificationSettings/index.tsx:159
 #: src/screens/Settings/NotificationSettings/index.tsx:314
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:77
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:89
 #: src/view/screens/Profile.tsx:245
 msgid "Likes"
 msgstr "Уподобання"
@@ -8452,7 +8470,7 @@ msgstr "Список більше не ігноровано"
 #: src/view/screens/Lists.tsx:60
 #: src/view/screens/Profile.tsx:240
 #: src/view/screens/Profile.tsx:248
-#: src/view/shell/desktop/LeftNav.tsx:790
+#: src/view/shell/desktop/LeftNav.tsx:812
 #: src/view/shell/Drawer.tsx:655
 msgid "Lists"
 msgstr "Списки"
@@ -8465,7 +8483,7 @@ msgstr ""
 msgid "Lists blocking this user:"
 msgstr "Списки, що блокують цього користувача:"
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:244
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:312
 msgid "Lite"
 msgstr ""
 
@@ -8667,15 +8685,15 @@ msgstr ""
 
 #: src/screens/Messages/ChatList.tsx:658
 #: src/screens/Messages/ChatList.tsx:662
-#: src/view/shell/bottom-bar/BottomBar.tsx:476
-#: src/view/shell/bottom-bar/BottomBar.tsx:480
+#: src/view/shell/bottom-bar/BottomBar.tsx:498
+#: src/view/shell/bottom-bar/BottomBar.tsx:502
 msgid "Mark all chats as read"
 msgstr ""
 
 #: src/screens/Messages/ChatList.tsx:666
 #: src/screens/Messages/ChatList.tsx:670
-#: src/view/shell/bottom-bar/BottomBar.tsx:484
-#: src/view/shell/bottom-bar/BottomBar.tsx:488
+#: src/view/shell/bottom-bar/BottomBar.tsx:506
+#: src/view/shell/bottom-bar/BottomBar.tsx:510
 msgid "Mark all requests as read"
 msgstr ""
 
@@ -8689,12 +8707,12 @@ msgid "Marked all as read"
 msgstr ""
 
 #: src/screens/Messages/ChatList.tsx:636
-#: src/view/shell/bottom-bar/BottomBar.tsx:455
+#: src/view/shell/bottom-bar/BottomBar.tsx:477
 msgid "Marked all chats as read"
 msgstr ""
 
 #: src/screens/Messages/ChatList.tsx:645
-#: src/view/shell/bottom-bar/BottomBar.tsx:464
+#: src/view/shell/bottom-bar/BottomBar.tsx:486
 msgid "Marked all requests as read"
 msgstr ""
 
@@ -8865,11 +8883,11 @@ msgstr ""
 
 #: src/Navigation.tsx:224
 #: src/screens/Moderation/index.tsx:100
-#: src/screens/Settings/Settings.tsx:421
+#: src/screens/Settings/Settings.tsx:422
 msgid "Moderation"
 msgstr "Модерація"
 
-#: src/screens/Settings/Settings.tsx:424
+#: src/screens/Settings/Settings.tsx:425
 msgid "Moderation and content filters"
 msgstr ""
 
@@ -9096,7 +9114,7 @@ msgstr ""
 #: src/screens/PostThread/components/ThreadItemAnchorFollowButton.tsx:236
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:644
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:680
-#: src/view/com/notifications/NotificationFeedItem.tsx:1131
+#: src/view/com/notifications/NotificationFeedItem.tsx:1234
 msgid "Mutuals"
 msgstr ""
 
@@ -9180,11 +9198,11 @@ msgctxt "nux-description"
 msgid "New"
 msgstr "Новий"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:618
+#: src/view/com/notifications/NotificationFeedItem.tsx:640
 msgid "New {postsCount, plural, one {post} other {posts}} from {firstAuthorLink}"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:601
+#: src/view/com/notifications/NotificationFeedItem.tsx:623
 msgid "New {postsCount, plural, one {post} other {posts}} from {firstAuthorName}"
 msgstr ""
 
@@ -9289,16 +9307,16 @@ msgid "New post"
 msgstr "Новий пост"
 
 #: src/view/com/feeds/FeedPage.tsx:179
-#: src/view/shell/desktop/LeftNav.tsx:666
+#: src/view/shell/desktop/LeftNav.tsx:670
 msgctxt "action"
 msgid "New post"
 msgstr "Новий пост"
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:607
+#: src/view/com/notifications/NotificationFeedItem.tsx:629
 msgid "New posts from {firstAuthorLink} and <0>{additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}</0> "
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:592
+#: src/view/com/notifications/NotificationFeedItem.tsx:614
 msgid "New posts from {firstAuthorName} and {additionalAuthorsCount, plural, one {{formattedAuthorsCount} other} other {{formattedAuthorsCount} others}}"
 msgstr ""
 
@@ -9452,7 +9470,7 @@ msgid "No longer following {0} as @{1}"
 msgstr ""
 
 #: src/components/ProfileCard.tsx:556
-#: src/view/com/notifications/NotificationFeedItem.tsx:1055
+#: src/view/com/notifications/NotificationFeedItem.tsx:1158
 msgid "No longer following {authorName}"
 msgstr ""
 
@@ -9530,7 +9548,7 @@ msgstr ""
 msgid "No preference"
 msgstr ""
 
-#: src/view/com/post-thread/PostQuotes.tsx:114
+#: src/view/com/post-thread/PostQuotes.tsx:159
 msgid "No quotes yet"
 msgstr "Ще немає цитувань"
 
@@ -9619,7 +9637,7 @@ msgstr "Ніхто"
 msgid "Nobody has liked this yet. Maybe you should be the first!"
 msgstr "Поки що це нікому не сподобалося. Можливо, ви повинні бути першим!"
 
-#: src/view/com/post-thread/PostQuotes.tsx:116
+#: src/view/com/post-thread/PostQuotes.tsx:161
 msgid "Nobody has quoted this yet. Maybe you should be the first!"
 msgstr "Ніхто ще це не цитував. Ймовірно, ви маєте бути першим!"
 
@@ -9708,11 +9726,12 @@ msgstr "Звуки сповіщень"
 #: src/screens/Notifications/ActivityList.tsx:31
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:93
 #: src/screens/Settings/NotificationSettings/index.tsx:125
-#: src/screens/Settings/Settings.tsx:429
-#: src/screens/Settings/Settings.tsx:432
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:170
+#: src/screens/Settings/Settings.tsx:430
+#: src/screens/Settings/Settings.tsx:433
 #: src/view/screens/Notifications.tsx:131
-#: src/view/shell/bottom-bar/BottomBar.tsx:283
-#: src/view/shell/desktop/LeftNav.tsx:755
+#: src/view/shell/bottom-bar/BottomBar.tsx:305
+#: src/view/shell/desktop/LeftNav.tsx:761
 #: src/view/shell/Drawer.tsx:603
 msgid "Notifications"
 msgstr "Сповіщення"
@@ -9725,6 +9744,11 @@ msgstr "щойно"
 #: src/view/com/composer/labels/LabelsBtn.tsx:149
 msgid "Nudity"
 msgstr "Оголеність"
+
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:218
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:220
+msgid "Number"
+msgstr ""
 
 #: src/components/contacts/phone-number.ts:43
 msgid "Number should be a mobile number"
@@ -9795,7 +9819,7 @@ msgstr ""
 msgid "on<0><1/><2><3/></2></0>"
 msgstr "на<0><1/><2><3/></2></0>"
 
-#: src/screens/Settings/Settings.tsx:628
+#: src/screens/Settings/Settings.tsx:637
 msgid "Onboarding reset"
 msgstr "Скинути ознайомлення"
 
@@ -10006,7 +10030,7 @@ msgstr "Відкрити посилання на {niceUrl}"
 msgid "Open message options"
 msgstr "Відкрити налаштування повідомлень"
 
-#: src/screens/Settings/Settings.tsx:701
+#: src/screens/Settings/Settings.tsx:710
 msgid "Open moderation debug page"
 msgstr ""
 
@@ -10048,11 +10072,11 @@ msgstr ""
 msgid "Open starter pack menu"
 msgstr "Відкрити меню власних підбірок"
 
-#: src/screens/Settings/Settings.tsx:694
+#: src/screens/Settings/Settings.tsx:703
 msgid "Open storybook page"
 msgstr "Відкрити storybook сторінку"
 
-#: src/screens/Settings/Settings.tsx:679
+#: src/screens/Settings/Settings.tsx:688
 msgid "Open system log"
 msgstr "Відкрити системний журнал"
 
@@ -10837,7 +10861,7 @@ msgstr ""
 #: src/Navigation.tsx:325
 #: src/Navigation.tsx:332
 #: src/screens/Post/PostLikedBy.tsx:27
-#: src/screens/Post/PostQuotes.tsx:27
+#: src/screens/Post/PostQuotes.tsx:39
 #: src/screens/Post/PostRepostedBy.tsx:27
 #: src/view/screens/PostThread.tsx:24
 msgid "Post by @{0}"
@@ -10848,7 +10872,7 @@ msgctxt "toast"
 msgid "Post deleted"
 msgstr "Пост видалено"
 
-#: src/lib/api/index.ts:240
+#: src/lib/api/index.ts:241
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "Не вдалось завантажити пост. Будь ласка, перевірте з'єднання з інтернетом та спробуйте ще раз."
 
@@ -10917,7 +10941,7 @@ msgstr ""
 msgid "Post type"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:277
+#: src/components/Post/Embed/index.tsx:287
 msgid "Post unavailable"
 msgstr ""
 
@@ -10934,8 +10958,8 @@ msgstr ""
 #: src/components/activity-notifications/SubscribeProfileDialog.tsx:269
 #: src/screens/ProfileList/index.tsx:167
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:216
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:75
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:122
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:87
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:134
 #: src/screens/StarterPack/StarterPackScreen.tsx:198
 #: src/view/screens/Profile.tsx:241
 msgid "Posts"
@@ -11021,8 +11045,8 @@ msgstr ""
 msgid "Privacy"
 msgstr "Конфіденційність"
 
-#: src/screens/Settings/Settings.tsx:415
-#: src/screens/Settings/Settings.tsx:418
+#: src/screens/Settings/Settings.tsx:416
+#: src/screens/Settings/Settings.tsx:419
 msgid "Privacy and security"
 msgstr "Конфіденційність та безпека"
 
@@ -11061,7 +11085,7 @@ msgstr ""
 msgid "Processing video..."
 msgstr "Обробка відео..."
 
-#: src/lib/api/index.ts:74
+#: src/lib/api/index.ts:75
 msgid "Processing..."
 msgstr "Обробка..."
 
@@ -11071,8 +11095,8 @@ msgstr "профіль"
 
 #: src/view/com/profile/ProfileMenu.tsx:598
 #: src/view/com/profile/ProfileMenu.tsx:601
-#: src/view/shell/bottom-bar/BottomBar.tsx:328
-#: src/view/shell/desktop/LeftNav.tsx:813
+#: src/view/shell/bottom-bar/BottomBar.tsx:350
+#: src/view/shell/desktop/LeftNav.tsx:835
 #: src/view/shell/Drawer.tsx:115
 #: src/view/shell/Drawer.tsx:706
 msgid "Profile"
@@ -11099,7 +11123,7 @@ msgid "Profile updated"
 msgstr "Профіль оновлено"
 
 #: src/Navigation.tsx:507
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:108
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:120
 #: src/screens/Settings/RunesSettings/ProfileSettings.tsx:55
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:55
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:58
@@ -11197,10 +11221,10 @@ msgid "Quote posts disabled"
 msgstr "Цитування постів вимкнено"
 
 #: src/lib/hooks/useNotificationHandler.ts:186
-#: src/screens/Post/PostQuotes.tsx:42
+#: src/screens/Post/PostQuotes.tsx:54
 #: src/screens/Settings/NotificationSettings/index.tsx:203
 #: src/screens/Settings/NotificationSettings/index.tsx:346
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:89
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:101
 msgid "Quotes"
 msgstr "Цитування"
 
@@ -11419,7 +11443,7 @@ msgstr "Перезавантажити розмови"
 #: src/screens/Messages/ConversationSettings/prompts.tsx:178
 #: src/screens/Moderation/index.tsx:477
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:568
-#: src/screens/Settings/Settings.tsx:978
+#: src/screens/Settings/Settings.tsx:987
 #: src/view/com/posts/PostFeedErrorMessage.tsx:221
 msgid "Remove"
 msgstr "Видалити"
@@ -11445,8 +11469,8 @@ msgstr ""
 msgid "Remove {q}"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:959
-#: src/screens/Settings/Settings.tsx:962
+#: src/screens/Settings/Settings.tsx:968
+#: src/screens/Settings/Settings.tsx:971
 msgid "Remove account"
 msgstr "Видалити обліковий запис"
 
@@ -11512,7 +11536,7 @@ msgstr ""
 msgid "Remove from my feeds"
 msgstr "Вилучити з моїх стрічок"
 
-#: src/screens/Settings/Settings.tsx:972
+#: src/screens/Settings/Settings.tsx:981
 msgid "Remove from quick access?"
 msgstr "Прибрати зі швидкого доступу?"
 
@@ -11595,13 +11619,13 @@ msgstr ""
 msgid "Remove your verification for this account?"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:291
-#: src/components/Post/Embed/index.tsx:361
+#: src/components/Post/Embed/index.tsx:301
+#: src/components/Post/Embed/index.tsx:371
 msgid "Removed by author"
 msgstr "Вилучено автором"
 
-#: src/components/Post/Embed/index.tsx:292
-#: src/components/Post/Embed/index.tsx:359
+#: src/components/Post/Embed/index.tsx:302
+#: src/components/Post/Embed/index.tsx:369
 msgid "Removed by you"
 msgstr "Вилучено вами"
 
@@ -11719,7 +11743,7 @@ msgstr ""
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:218
 #: src/screens/Settings/NotificationSettings/index.tsx:181
 #: src/screens/Settings/NotificationSettings/index.tsx:330
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:101
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:113
 #: src/view/screens/Profile.tsx:242
 msgid "Replies"
 msgstr "Відповіді"
@@ -11944,7 +11968,7 @@ msgstr "Ви зробили репост"
 #: src/lib/hooks/useNotificationHandler.ts:165
 #: src/screens/Settings/NotificationSettings/index.tsx:214
 #: src/screens/Settings/NotificationSettings/index.tsx:355
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:83
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:95
 msgid "Reposts"
 msgstr ""
 
@@ -12059,8 +12083,8 @@ msgstr "Надіслати лист ще раз"
 msgid "Resend Verification Email"
 msgstr "Надіслати лист з підтвердженням ще раз"
 
-#: src/screens/Settings/Settings.tsx:730
-#: src/screens/Settings/Settings.tsx:732
+#: src/screens/Settings/Settings.tsx:739
+#: src/screens/Settings/Settings.tsx:741
 msgid "Reset activity subscription nudge"
 msgstr ""
 
@@ -12081,8 +12105,8 @@ msgstr ""
 msgid "Reset code"
 msgstr "Код скидання"
 
-#: src/screens/Settings/Settings.tsx:715
-#: src/screens/Settings/Settings.tsx:717
+#: src/screens/Settings/Settings.tsx:724
+#: src/screens/Settings/Settings.tsx:726
 msgid "Reset onboarding state"
 msgstr ""
 
@@ -12198,15 +12222,15 @@ msgstr ""
 msgid "Reveal password"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:321
-#: src/screens/Settings/Settings.tsx:325
+#: src/screens/Settings/Settings.tsx:322
+#: src/screens/Settings/Settings.tsx:326
 msgid "Reverse order"
 msgstr ""
 
 #: src/Navigation.tsx:475
 #: src/screens/Settings/RunesSettings/index.tsx:23
-#: src/screens/Settings/Settings.tsx:477
-#: src/screens/Settings/Settings.tsx:480
+#: src/screens/Settings/Settings.tsx:486
+#: src/screens/Settings/Settings.tsx:489
 msgid "Runes"
 msgstr ""
 
@@ -12275,8 +12299,8 @@ msgstr ""
 #: src/screens/SavedFeeds.tsx:311
 #: src/screens/SavedFeeds.tsx:315
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:273
-#: src/screens/Settings/Settings.tsx:387
-#: src/screens/Settings/Settings.tsx:394
+#: src/screens/Settings/Settings.tsx:388
+#: src/screens/Settings/Settings.tsx:395
 #: src/view/com/composer/Composer.tsx:1751
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
@@ -12331,7 +12355,7 @@ msgstr ""
 msgid "Save to my feeds"
 msgstr "Зберегти до моїх стрічок"
 
-#: src/view/shell/desktop/LeftNav.tsx:800
+#: src/view/shell/desktop/LeftNav.tsx:822
 #: src/view/shell/Drawer.tsx:681
 msgctxt "link to bookmarks screen"
 msgid "Saved"
@@ -12363,7 +12387,7 @@ msgstr ""
 msgid "Saved to your feeds"
 msgstr "Збережено до ваших стрічок"
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:95
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:107
 msgid "Saves"
 msgstr ""
 
@@ -12372,8 +12396,8 @@ msgid "Saving..."
 msgstr ""
 
 #: src/components/NewskieDialog.tsx:141
-#: src/view/com/notifications/NotificationFeedItem.tsx:1176
-#: src/view/com/notifications/NotificationFeedItem.tsx:1201
+#: src/view/com/notifications/NotificationFeedItem.tsx:1279
+#: src/view/com/notifications/NotificationFeedItem.tsx:1304
 msgid "Say hello!"
 msgstr "Привітайтесь!"
 
@@ -12436,7 +12460,7 @@ msgstr ""
 #: src/screens/Search/Shell.tsx:549
 #: src/screens/Search/Shell.tsx:612
 #: src/screens/Search/Shell.tsx:753
-#: src/view/shell/bottom-bar/BottomBar.tsx:220
+#: src/view/shell/bottom-bar/BottomBar.tsx:226
 msgid "Search"
 msgstr "Пошук"
 
@@ -12952,8 +12976,8 @@ msgid "Sets email for password reset"
 msgstr "Встановлює ел. адресу для скидання пароля"
 
 #: src/Navigation.tsx:260
-#: src/screens/Settings/Settings.tsx:188
-#: src/view/shell/desktop/LeftNav.tsx:823
+#: src/screens/Settings/Settings.tsx:189
+#: src/view/shell/desktop/LeftNav.tsx:845
 #: src/view/shell/Drawer.tsx:719
 msgid "Settings"
 msgstr "Налаштування"
@@ -13173,8 +13197,8 @@ msgstr "Показати"
 msgid "Show \"Also liked\" recommendations under post replies"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:136
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:142
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:147
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:153
 msgid "Show “Followed by” on own profile"
 msgstr ""
 
@@ -13284,6 +13308,10 @@ msgstr ""
 msgid "Show quote posts"
 msgstr "Показувати цитовані пости"
 
+#: src/screens/Post/PostQuotes.tsx:71
+msgid "Show quoted post in each quote"
+msgstr ""
+
 #: src/screens/Settings/FollowingFeedPreferences.tsx:72
 #: src/screens/Settings/FollowingFeedPreferences.tsx:82
 msgid "Show replies"
@@ -13344,7 +13372,7 @@ msgstr ""
 msgid "Shows information about when this post was created"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:214
+#: src/screens/Settings/Settings.tsx:215
 msgid "Shows other accounts you can switch to"
 msgstr ""
 
@@ -13380,10 +13408,10 @@ msgstr ""
 #: src/view/com/auth/SplashScreen.tsx:125
 #: src/view/com/auth/SplashScreen.web.tsx:124
 #: src/view/com/auth/SplashScreen.web.tsx:132
-#: src/view/shell/bottom-bar/BottomBar.tsx:366
-#: src/view/shell/bottom-bar/BottomBar.tsx:370
-#: src/view/shell/bottom-bar/BottomBarWeb.tsx:270
-#: src/view/shell/bottom-bar/BottomBarWeb.tsx:275
+#: src/view/shell/bottom-bar/BottomBar.tsx:388
+#: src/view/shell/bottom-bar/BottomBar.tsx:392
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:289
+#: src/view/shell/bottom-bar/BottomBarWeb.tsx:294
 #: src/view/shell/NavSignupCard.tsx:58
 #: src/view/shell/NavSignupCard.tsx:63
 msgid "Sign in"
@@ -13442,15 +13470,15 @@ msgstr ""
 msgid "Sign in with password"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:493
-#: src/screens/Settings/Settings.tsx:495
-#: src/screens/Settings/Settings.tsx:527
+#: src/screens/Settings/Settings.tsx:502
+#: src/screens/Settings/Settings.tsx:504
+#: src/screens/Settings/Settings.tsx:536
 #: src/screens/SignupQueued.tsx:95
 #: src/screens/SignupQueued.tsx:98
 #: src/screens/Takendown.tsx:88
-#: src/view/shell/desktop/LeftNav.tsx:240
-#: src/view/shell/desktop/LeftNav.tsx:326
-#: src/view/shell/desktop/LeftNav.tsx:329
+#: src/view/shell/desktop/LeftNav.tsx:244
+#: src/view/shell/desktop/LeftNav.tsx:330
+#: src/view/shell/desktop/LeftNav.tsx:333
 msgid "Sign out"
 msgstr "Вийти"
 
@@ -13458,8 +13486,8 @@ msgstr "Вийти"
 msgid "Sign Out"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:524
-#: src/view/shell/desktop/LeftNav.tsx:237
+#: src/screens/Settings/Settings.tsx:533
+#: src/view/shell/desktop/LeftNav.tsx:241
 msgid "Sign out?"
 msgstr "Вийти?"
 
@@ -13666,8 +13694,8 @@ msgstr ""
 msgid "Sorry! Your session expired. Please sign in again."
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:245
-#: src/screens/Settings/Settings.tsx:264
+#: src/screens/Settings/Settings.tsx:246
+#: src/screens/Settings/Settings.tsx:265
 msgid "Sort accounts"
 msgstr ""
 
@@ -13794,7 +13822,7 @@ msgstr "Сторінка стану"
 msgid "Step {0} of {1}"
 msgstr "Крок {0} з {1}"
 
-#: src/screens/Settings/Settings.tsx:633
+#: src/screens/Settings/Settings.tsx:642
 msgid "Storage cleared, you need to restart the app now."
 msgstr "Сховище очищено, тепер вам треба перезапустити застосунок."
 
@@ -13803,7 +13831,7 @@ msgid "Stored as part of a secure code for matching with others"
 msgstr ""
 
 #: src/Navigation.tsx:353
-#: src/screens/Settings/Settings.tsx:696
+#: src/screens/Settings/Settings.tsx:705
 msgid "Storybook"
 msgstr ""
 
@@ -13962,11 +13990,11 @@ msgstr ""
 
 #: src/components/dialogs/SwitchAccount.tsx:78
 #: src/components/dialogs/SwitchAccount.tsx:81
-#: src/screens/Settings/Settings.tsx:213
-#: src/screens/Settings/Settings.tsx:230
-#: src/screens/Settings/Settings.tsx:883
-#: src/view/shell/desktop/LeftNav.tsx:292
-#: src/view/shell/desktop/LeftNav.tsx:302
+#: src/screens/Settings/Settings.tsx:214
+#: src/screens/Settings/Settings.tsx:231
+#: src/screens/Settings/Settings.tsx:892
+#: src/view/shell/desktop/LeftNav.tsx:296
+#: src/view/shell/desktop/LeftNav.tsx:306
 msgid "Switch account"
 msgstr "Перемкнути обліковий запис"
 
@@ -13976,12 +14004,12 @@ msgstr "Перемкнути обліковий запис"
 #: src/components/EphemeralAccountSwitcher.tsx:426
 #: src/components/EphemeralAccountSwitcher.tsx:469
 #: src/components/EphemeralAccountSwitcher.tsx:489
-#: src/view/shell/desktop/LeftNav.tsx:134
+#: src/view/shell/desktop/LeftNav.tsx:138
 msgid "Switch accounts"
 msgstr ""
 
 #. placeholder {0}: sanitizeHandle( profile?.handle ?? account.handle, '@', )
-#: src/view/shell/desktop/LeftNav.tsx:411
+#: src/view/shell/desktop/LeftNav.tsx:415
 msgid "Switch to {0}"
 msgstr ""
 
@@ -14022,9 +14050,13 @@ msgstr "Системна"
 #: src/screens/Log.tsx:49
 #: src/screens/Settings/AboutSettings.tsx:124
 #: src/screens/Settings/AboutSettings.tsx:127
-#: src/screens/Settings/Settings.tsx:681
+#: src/screens/Settings/Settings.tsx:690
 msgid "System log"
 msgstr "Системний журнал"
+
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:168
+msgid "Tab icons"
+msgstr ""
 
 #: src/components/dialogs/MutedWords.tsx:292
 msgid "Tags only"
@@ -14218,7 +14250,7 @@ msgstr "Підбірку не вдалось знайти."
 msgid "That username is already taken"
 msgstr ""
 
-#: src/view/com/post-thread/PostQuotes.tsx:142
+#: src/view/com/post-thread/PostQuotes.tsx:192
 msgid "That's all, folks!"
 msgstr "На цьому все!"
 
@@ -14325,6 +14357,10 @@ msgstr "Політика конфіденційності була перемі�
 
 #: src/view/com/composer/state/video.ts:510
 msgid "The processed video is too large. Please try again with a smaller file."
+msgstr ""
+
+#: src/view/com/post-thread/PostQuotes.tsx:54
+msgid "The quoted post has been extracted from the following"
 msgstr ""
 
 #: src/view/com/composer/state/video.ts:485
@@ -14997,7 +15033,7 @@ msgid "This will irreversibly delete your Bluesky account <0>{currentHandle}</0>
 msgstr ""
 
 #. placeholder {0}: account.handle
-#: src/screens/Settings/Settings.tsx:973
+#: src/screens/Settings/Settings.tsx:982
 msgid "This will remove @{0} from the quick access list."
 msgstr "Це прибере @{0} зі списку швидкого доступу."
 
@@ -15328,11 +15364,11 @@ msgstr ""
 msgid "Unable to sign in with this account. Please try again."
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:755
+#: src/screens/Settings/Settings.tsx:764
 msgid "Unapply Pull Request"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:757
+#: src/screens/Settings/Settings.tsx:766
 msgid "Unapply Pull Request {currentChannel}"
 msgstr ""
 
@@ -15577,8 +15613,8 @@ msgstr "Відкріплено від ваших стрічок"
 msgid "Unpinned list"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:722
-#: src/screens/Settings/Settings.tsx:724
+#: src/screens/Settings/Settings.tsx:731
+#: src/screens/Settings/Settings.tsx:733
 msgid "Unsnooze email reminder"
 msgstr ""
 
@@ -15700,13 +15736,13 @@ msgstr "Завантажити з бібліотеки"
 msgid "Uploading GIF..."
 msgstr ""
 
-#: src/lib/api/index.ts:404
-#: src/lib/api/index.ts:442
+#: src/lib/api/index.ts:405
+#: src/lib/api/index.ts:443
 msgid "Uploading images..."
 msgstr "Завантаження зображень..."
 
-#: src/lib/api/index.ts:523
-#: src/lib/api/index.ts:547
+#: src/lib/api/index.ts:529
+#: src/lib/api/index.ts:553
 msgid "Uploading link thumbnail..."
 msgstr "Завантаження ескізу посилання..."
 
@@ -15994,7 +16030,7 @@ msgid "Version {0}"
 msgstr ""
 
 #. When the source of a follow is a starter pack, i.e., 'via starter pack {starterPackName}'.
-#: src/view/com/notifications/NotificationFeedItem.tsx:823
+#: src/view/com/notifications/NotificationFeedItem.tsx:845
 msgid "via starter pack <0/><1>{starterPackName}</1>"
 msgstr ""
 
@@ -16111,7 +16147,7 @@ msgstr ""
 msgid "View {displayName}’s profile"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:671
+#: src/view/com/notifications/NotificationFeedItem.tsx:693
 msgid "View {firstAuthorName}'s profile"
 msgstr ""
 
@@ -16150,7 +16186,7 @@ msgstr ""
 msgid "View full thread"
 msgstr "Переглянути обговорення"
 
-#: src/screens/Settings/Settings.tsx:686
+#: src/screens/Settings/Settings.tsx:695
 msgid "View GrowthBook information"
 msgstr ""
 
@@ -16181,7 +16217,7 @@ msgstr ""
 msgid "View more trending videos"
 msgstr ""
 
-#: src/components/ProfileBadges.tsx:290
+#: src/components/ProfileBadges.tsx:297
 msgid "View PDS information"
 msgstr ""
 
@@ -16285,7 +16321,7 @@ msgstr ""
 msgid "Violent or threatening content"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:245
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:313
 msgid "Visible"
 msgstr ""
 
@@ -17155,7 +17191,7 @@ msgstr ""
 msgid "You previously deactivated @{0}."
 msgstr "Раніше ви деактивували @{0}."
 
-#: src/screens/Settings/Settings.tsx:644
+#: src/screens/Settings/Settings.tsx:653
 msgid "You probably want to restart the app now."
 msgstr ""
 
@@ -17191,8 +17227,8 @@ msgstr ""
 msgid "You requested to join"
 msgstr ""
 
-#: src/screens/Settings/Settings.tsx:525
-#: src/view/shell/desktop/LeftNav.tsx:238
+#: src/screens/Settings/Settings.tsx:534
+#: src/view/shell/desktop/LeftNav.tsx:242
 msgid "You will be signed out of all your accounts."
 msgstr "Ви вийдете з усіх облікових записів."
 
@@ -17370,11 +17406,11 @@ msgstr "Ваші чати вимкнено"
 msgid "Your choice will be remembered for future links. You can change it at any time in settings."
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:426
+#: src/view/com/notifications/NotificationFeedItem.tsx:448
 msgid "Your contact {firstAuthorLink} is on Bluesky"
 msgstr ""
 
-#: src/view/com/notifications/NotificationFeedItem.tsx:424
+#: src/view/com/notifications/NotificationFeedItem.tsx:446
 msgid "Your contact {firstAuthorName} is on Bluesky"
 msgstr ""
 
