@@ -19,8 +19,8 @@ import {
   type Shadow,
   usePostShadow,
 } from '#/state/cache/post-shadow'
-import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useCompactPosts} from '#/state/preferences/compact-posts'
+import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {Link} from '#/view/com/util/Link'
 import {PostMeta} from '#/view/com/util/PostMeta'
@@ -47,12 +47,14 @@ export function Post({
   post,
   showReplyLine,
   hideTopBorder,
+  hideQuoteEmbedUri,
   style,
   onBeforePress,
 }: {
   post: AppBskyFeedDefs.PostView
   showReplyLine?: boolean
   hideTopBorder?: boolean
+  hideQuoteEmbedUri?: string
   style?: StyleProp<ViewStyle>
   onBeforePress?: () => void
 }) {
@@ -92,6 +94,7 @@ export function Post({
           moderation={moderation}
           showReplyLine={showReplyLine}
           hideTopBorder={hideTopBorder}
+          hideQuoteEmbedUri={hideQuoteEmbedUri}
           style={style}
           onBeforePress={onBeforePress}
         />
@@ -108,6 +111,7 @@ function PostInner({
   moderation,
   showReplyLine,
   hideTopBorder,
+  hideQuoteEmbedUri,
   style,
   onBeforePress: outerOnBeforePress,
 }: {
@@ -117,6 +121,7 @@ function PostInner({
   moderation: ModerationDecision
   showReplyLine?: boolean
   hideTopBorder?: boolean
+  hideQuoteEmbedUri?: string
   style?: StyleProp<ViewStyle>
   onBeforePress?: () => void
 }) {
@@ -264,6 +269,7 @@ function PostInner({
                     moderation={moderation}
                     viewContext={PostEmbedViewContext.Feed}
                     post={post}
+                    hideRecordEmbedUri={hideQuoteEmbedUri}
                   />
                 </View>
               ) : null}

@@ -54,7 +54,12 @@ export function ProfileHeaderDisplayName({
           primaryName
         )}
         <View style={[a.pl_xs, {marginTop: platform({ios: 2})}]}>
-          <ProfileBadges profile={profile} size="lg" interactive />
+          <ProfileBadges
+            profile={profile}
+            size="lg"
+            interactive
+            showBetaBadge
+          />
         </View>
         {/*
          * TODO: Workaround for a rounding bug in Android RN.

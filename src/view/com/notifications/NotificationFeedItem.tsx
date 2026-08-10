@@ -272,23 +272,45 @@ let NotificationFeedItem = ({
     )
   }
 
-  const firstAuthorLink = (
-    <ProfileHoverCard did={firstAuthor.profile.did} inline>
-      <InlineLinkText
-        key={firstAuthor.href}
-        style={[t.atoms.text, a.font_semi_bold, a.text_md, a.leading_tight]}
-        to={firstAuthor.href}
-        disableMismatchWarning
-        emoji
-        label={_(msg`Go to ${firstAuthorName}'s profile`)}>
-        {forceLTR(firstAuthorName)}
+  /*
+   * A View nested in native Text is laid out as an attachment and inflates the
+   * line box. Keep badges inline on web, but make them a sibling on native.
+   */
+  const firstAuthorNameLink = (
+    <InlineLinkText
+      key={firstAuthor.href}
+      style={[t.atoms.text, a.font_semi_bold, a.text_md, a.leading_tight]}
+      to={firstAuthor.href}
+      disableMismatchWarning
+      emoji
+      label={_(msg`Go to ${firstAuthorName}'s profile`)}>
+      {forceLTR(firstAuthorName)}
+      {IS_WEB ? (
         <ProfileBadges
           profile={firstAuthor.profile}
           size="sm"
+          pdsInteractive={false}
           style={[a.px_2xs, {transform: [{translateY: 1}]}]}
         />
-      </InlineLinkText>
+      ) : null}
+    </InlineLinkText>
+  )
+  const firstAuthorLink = IS_WEB ? (
+    <ProfileHoverCard did={firstAuthor.profile.did} inline>
+      {firstAuthorNameLink}
     </ProfileHoverCard>
+  ) : (
+    <View style={[a.flex_row, a.align_center, a.flex_shrink, a.pr_xs]}>
+      <ProfileHoverCard did={firstAuthor.profile.did} inline>
+        {firstAuthorNameLink}
+      </ProfileHoverCard>
+      <ProfileBadges
+        profile={firstAuthor.profile}
+        size="sm"
+        pdsInteractive={false}
+        style={[a.pl_2xs, a.pointer_events_none]}
+      />
+    </View>
   )
   const additionalAuthorsCount = authors.length - 1
   const hasMultipleAuthors = additionalAuthorsCount > 0
@@ -380,7 +402,7 @@ let NotificationFeedItem = ({
       /*
        * Follow-backs are ungrouped, grouped follow-backs not supported atm,
        * see `src/state/queries/notifications/util.ts`
-       */
+      */
       a11yLabel = starterPackName
         ? _(msg`${firstAuthorName} followed you back via starter pack ${starterPackName}`)
         : _(msg`${firstAuthorName} followed you back`)
@@ -478,7 +500,7 @@ let NotificationFeedItem = ({
     )
     icon = (
       <View style={{height: 30, width: 30}}>
-        <StarterPack width={30} gradient="sky" />
+        <StarterPack width={30} fill={t.palette.primary_500} />
       </View>
     )
   } else if (item.type === 'verified') {
@@ -824,8 +846,14 @@ function FollowedViaStarterPack({
         via starter pack{' '}
         <StarterPack
           size="sm"
-          gradient="sky"
-          style={[native(a.mr_2xs), {transform: [{translateY: 4}]}]}
+          fill={t.palette.primary_500}
+          style={[
+            native(a.mr_2xs),
+            platform({
+              web: {transform: [{translateY: 4}]},
+              native: {transform: [{translateY: 2}]},
+            }),
+          ]}
         />
         <InlineLinkText
           to={link.to}
@@ -887,6 +915,7 @@ function NotificationTimestamp({
         <Text
           style={[
             a.text_md,
+            a.font_normal,
             a.leading_snug,
             t.atoms.text_contrast_medium,
             a.pointer_events_none,
@@ -911,17 +940,91 @@ function NotificationSentence({
   niceTimestamp: string
 }) {
   const t = useTheme()
+  const inlineChildren = Children.toArray(
+    renderInlineTransChildren(children, t),
+  )
+  const timestampElement = (
+    <NotificationTimestamp
+      key="notification-timestamp"
+      timestamp={timestamp}
+      niceTimestamp={niceTimestamp}
+    />
+  )
+
+  if (!IS_WEB) {
+    groupConjunctionWithAuthorCount(inlineChildren)
+
+    const lastChild = inlineChildren.at(-1)
+    if (
+      isValidElement<{children?: React.ReactNode}>(lastChild) &&
+      lastChild.type === Text
+    ) {
+      const lastContent =
+        typeof lastChild.props.children === 'string'
+          ? lastChild.props.children.trimStart()
+          : lastChild.props.children
+      inlineChildren[inlineChildren.length - 1] = cloneElement(
+        lastChild,
+        undefined,
+        lastContent,
+        timestampElement,
+      )
+    } else {
+      inlineChildren.push(timestampElement)
+    }
+  } else {
+    inlineChildren.push(timestampElement)
+  }
+
   return (
     <View
       style={[a.flex_row, a.flex_wrap, a.align_baseline, a.flex_shrink]}
       pointerEvents="box-none">
-      {renderInlineTransChildren(children, t)}
-      <NotificationTimestamp
-        timestamp={timestamp}
-        niceTimestamp={niceTimestamp}
-      />
+      {inlineChildren}
     </View>
   )
+}
+
+function groupConjunctionWithAuthorCount(children: React.ReactNode[]): void {
+  const authorCountIndex = children.findIndex(isSemiboldTextElement)
+  if (authorCountIndex < 1) return
+
+  const conjunction = children[authorCountIndex - 1]
+  const authorCount = children[authorCountIndex]
+  if (
+    !isValidElement<{children?: React.ReactNode}>(conjunction) ||
+    conjunction.type !== Text
+  ) {
+    return
+  }
+
+  children.splice(
+    authorCountIndex - 1,
+    2,
+    cloneElement(
+      conjunction,
+      undefined,
+      typeof conjunction.props.children === 'string'
+        ? conjunction.props.children.trimStart()
+        : conjunction.props.children,
+      authorCount,
+      ' ',
+    ),
+  )
+}
+
+function isSemiboldTextElement(child: React.ReactNode): boolean {
+  if (
+    !isValidElement<{
+      style?: React.ComponentProps<typeof Text>['style']
+    }>(child) ||
+    child.type !== Text
+  ) {
+    return false
+  }
+  const style = StyleSheet.flatten(child.props.style)
+  const semiboldStyle = StyleSheet.flatten(a.font_semi_bold)
+  return style?.fontWeight === semiboldStyle.fontWeight
 }
 
 function renderInlineTransChildren(
@@ -930,7 +1033,7 @@ function renderInlineTransChildren(
 ): React.ReactNode {
   return Children.map(children, (child, i) => {
     if (typeof child === 'string') {
-      if (!child) {
+      if (!child || (!IS_WEB && child.trim().length === 0)) {
         return null
       }
       return (

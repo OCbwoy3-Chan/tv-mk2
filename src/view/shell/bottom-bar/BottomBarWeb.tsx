@@ -22,6 +22,10 @@ import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {convertBskyAppUrlIfNeeded} from '#/lib/strings/url-helpers'
 import {emitSoftReset} from '#/state/events'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
+import {
+  useChatsTabBadgeDisplay,
+  useNotificationsTabBadgeDisplay,
+} from '#/state/preferences/metrics-display-preference'
 import {useUnreadMessageCount} from '#/state/queries/messages/list-conversations'
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useProfileQuery} from '#/state/queries/profile'
@@ -79,6 +83,8 @@ export function BottomBarWeb() {
 
   const unreadMessageCount = useUnreadMessageCount()
   const notificationCountStr = useUnreadNotifications()
+  const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
   const aa = useAgeAssurance()
   const isLabeler = profile?.associated?.labeler
 
@@ -150,12 +156,17 @@ export function BottomBarWeb() {
                   href="/messages"
                   navItem="chat"
                   notificationCount={
-                    aa.flags.chatDisabled
+                    aa.flags.chatDisabled || chatsTabBadgeDisplay !== 'exact'
                       ? undefined
                       : unreadMessageCount.numUnread
                   }
                   hasNew={
-                    aa.flags.chatDisabled ? false : unreadMessageCount.hasNew
+                    aa.flags.chatDisabled || chatsTabBadgeDisplay === 'hidden'
+                      ? false
+                      : chatsTabBadgeDisplay === 'visible'
+                        ? unreadMessageCount.count > 0 ||
+                          unreadMessageCount.hasNew
+                        : unreadMessageCount.hasNew
                   }>
                   {({isActive}) => {
                     const Icon = isActive ? MessageFilled : Message
@@ -176,7 +187,15 @@ export function BottomBarWeb() {
                   routeName="Notifications"
                   href="/notifications"
                   navItem="notifications"
-                  notificationCount={notificationCountStr}>
+                  notificationCount={
+                    notificationsTabBadgeDisplay === 'exact'
+                      ? notificationCountStr
+                      : undefined
+                  }
+                  hasNew={
+                    notificationsTabBadgeDisplay === 'visible' &&
+                    notificationCountStr !== ''
+                  }>
                   {({isActive}) => {
                     const Icon = isActive ? BellFilled : Bell
                     return (

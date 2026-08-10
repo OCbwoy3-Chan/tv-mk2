@@ -48,6 +48,7 @@ import {
 import {IS_IOS, IS_WEB} from '#/env'
 import * as bsky from '#/types/bsky'
 import {createGIFDescription} from '../gif-alt-text'
+import {reuseGalleryImageBlob} from './resolve-gallery'
 import {uploadBlob} from './upload-blob'
 
 export {uploadBlob}
@@ -442,6 +443,11 @@ async function resolveMedia(
     onStateChange?.(t`Uploading images...`)
     const items: $Typed<AppBskyEmbedGallery.Image>[] = await Promise.all(
       imagesDraft.map(async (image, i) => {
+        const reusedImage = reuseGalleryImageBlob(image)
+        if (reusedImage) {
+          logger.debug(`Reusing existing blob for gallery image #${i}`)
+          return reusedImage
+        }
         logger.debug(`Compressing image #${i}`)
         const {path, width, height, mime} = await compressImage(
           image,

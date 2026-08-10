@@ -19,6 +19,10 @@ import {emitSoftReset} from '#/state/events'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
+import {
+  useChatsTabBadgeDisplay,
+  useNotificationsTabBadgeDisplay,
+} from '#/state/preferences/metrics-display-preference'
 import {useFetchHandle} from '#/state/queries/handle'
 import {useUnreadMessageCount} from '#/state/queries/messages/list-conversations'
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
@@ -685,6 +689,8 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
     useLayoutBreakpoints()
   const numUnreadNotifications = useUnreadNotifications()
   const numUnreadMessages = useUnreadMessageCount()
+  const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
 
   const leftNavMinimal = isMessagesRelatedScreen || leftNavMinimalBreakpoint
 
@@ -756,7 +762,15 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
             href="/notifications"
             navItem="notifications"
             minimal={leftNavMinimal}
-            count={numUnreadNotifications}
+            count={
+              notificationsTabBadgeDisplay === 'exact'
+                ? numUnreadNotifications
+                : undefined
+            }
+            hasNew={
+              notificationsTabBadgeDisplay === 'visible' &&
+              numUnreadNotifications !== ''
+            }
             icons={{
               inactive: BellIcon,
               active: BellFilledIcon,
@@ -768,9 +782,17 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
             navItem="chat"
             minimal={leftNavMinimal}
             count={
-              aa.flags.chatDisabled ? undefined : numUnreadMessages.numUnread
+              !aa.flags.chatDisabled && chatsTabBadgeDisplay === 'exact'
+                ? numUnreadMessages.numUnread
+                : undefined
             }
-            hasNew={!aa.flags.chatDisabled && numUnreadMessages.hasNew}
+            hasNew={
+              !aa.flags.chatDisabled && chatsTabBadgeDisplay !== 'hidden'
+                ? chatsTabBadgeDisplay === 'visible'
+                  ? numUnreadMessages.count > 0 || numUnreadMessages.hasNew
+                  : numUnreadMessages.hasNew
+                : false
+            }
             icons={{
               inactive: MessageIcon,
               active: MessageFilledIcon,

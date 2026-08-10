@@ -72,7 +72,7 @@ function ImageLayoutGridInner(props: ImageLayoutGridInnerProps) {
     case 2: {
       const containerRefs = [containerRef1, containerRef2]
       return (
-        <View style={[a.flex_1, a.flex_row, gap]}>
+        <View style={[a.flex_row, gap]}>
           <View style={[a.flex_1, a.aspect_square]}>
             <GalleryItem
               {...props}
@@ -98,7 +98,7 @@ function ImageLayoutGridInner(props: ImageLayoutGridInnerProps) {
     case 3: {
       const containerRefs = [containerRef1, containerRef2, containerRef3]
       return (
-        <View style={[a.flex_1, a.flex_row, gap]}>
+        <View style={[a.flex_row, gap]}>
           <View style={[a.flex_1, a.aspect_square]}>
             <GalleryItem
               {...props}

@@ -65,6 +65,8 @@ type ProfileBadgesProps = ViewStyleProp & {
   profile: bsky.profile.AnyProfileView
   interactive?: boolean
   pdsInteractive?: boolean
+  /** The beta badge is reserved for the full profile header. */
+  showBetaBadge?: boolean
   size: Size
   allowFontScaling?: boolean
 }
@@ -82,6 +84,7 @@ export function ProfileBadgesFromProfileShadow({
   profile,
   interactive = false,
   pdsInteractive = true,
+  showBetaBadge = false,
   size,
   style,
   allowFontScaling = true,
@@ -112,7 +115,7 @@ export function ProfileBadgesFromProfileShadow({
     shouldResolvePds &&
     (isPdsLoading || (!!pdsData && !(hideBskyPds && pdsData.isBsky)))
 
-  const isBetaBadgeVisible = useIsBetaBadgeVisible(shadowed)
+  const isBetaBadgeVisible = useIsBetaBadgeVisible(shadowed) && showBetaBadge
   const badgeVisibility = [
     verification.showBadge,
     isBetaBadgeVisible,
@@ -175,12 +178,14 @@ export function ProfileBadgesFromProfileShadow({
             width={verificationIconWidth}
             hitSlop={hitSlops[0]}
           />
-          <BetaBadgeButton
-            profile={shadowed}
-            width={betaIconWidth}
-            padding={betaBadgeScaledPadding}
-            hitSlop={hitSlops[1]}
-          />
+          {showBetaBadge ? (
+            <BetaBadgeButton
+              profile={shadowed}
+              width={betaIconWidth}
+              padding={betaBadgeScaledPadding}
+              hitSlop={hitSlops[1]}
+            />
+          ) : null}
           <BotBadgeButton
             profile={shadowed}
             width={botIconWidth}
@@ -204,11 +209,13 @@ export function ProfileBadgesFromProfileShadow({
               width={verificationIconWidth}
             />
           ) : null}
-          <BetaBadge
-            profile={shadowed}
-            width={betaIconWidth}
-            padding={betaBadgeScaledPadding}
-          />
+          {showBetaBadge ? (
+            <BetaBadge
+              profile={shadowed}
+              width={betaIconWidth}
+              padding={betaBadgeScaledPadding}
+            />
+          ) : null}
           <BotBadge profile={shadowed} width={botIconWidth} />
           <PetBadge profile={shadowed} width={botIconWidth} />
           <SpecialBadge

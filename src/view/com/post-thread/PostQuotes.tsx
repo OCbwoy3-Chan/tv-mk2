@@ -1,4 +1,5 @@
 import {useCallback, useState} from 'react'
+import {View} from 'react-native'
 import {
   type AppBskyFeedDefs,
   AppBskyFeedPost,
@@ -7,6 +8,7 @@ import {
 } from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
 
 import {useInitialNumToRender} from '#/lib/hooks/useInitialNumToRender'
 import {usePostViewTracking} from '#/lib/hooks/usePostViewTracking'
@@ -16,23 +18,11 @@ import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {usePostQuotesQuery} from '#/state/queries/post-quotes'
 import {useResolveUriQuery} from '#/state/queries/resolve-uri'
 import {Post} from '#/view/com/post/Post'
+import {atoms as a, useTheme} from '#/alf'
 import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
+import {Text} from '#/components/Typography'
 import * as bsky from '#/types/bsky'
 import {List} from '../util/List'
-
-function renderItem({
-  item,
-  index,
-}: {
-  item: {
-    post: AppBskyFeedDefs.PostView
-    moderation: ModerationDecision
-    record: AppBskyFeedPost.Record
-  }
-  index: number
-}) {
-  return <Post post={item.post} hideTopBorder={index === 0} />
-}
 
 function keyExtractor(item: {
   post: AppBskyFeedDefs.PostView
@@ -42,7 +32,41 @@ function keyExtractor(item: {
   return item.post.uri
 }
 
-export function PostQuotes({uri}: {uri: string}) {
+function ExtractedQuotedPost({post}: {post: AppBskyFeedDefs.PostView}) {
+  const t = useTheme()
+
+  return (
+    <View>
+      <Post
+        post={post}
+        hideTopBorder
+        style={{backgroundColor: t.palette.primary_25}}
+      />
+      <View
+        style={[
+          a.px_lg,
+          a.py_sm,
+          a.border_t,
+          a.border_b,
+          t.atoms.border_contrast_low,
+        ]}>
+        <Text style={[a.text_sm, a.text_center, t.atoms.text_contrast_medium]}>
+          <Trans>The quoted post has been extracted from the following</Trans>
+        </Text>
+      </View>
+    </View>
+  )
+}
+
+export function PostQuotes({
+  uri,
+  quotedPost,
+  isQuotedPostExtracted,
+}: {
+  uri: string
+  quotedPost?: AppBskyFeedDefs.PostView
+  isQuotedPostExtracted: boolean
+}) {
   const {_} = useLingui()
   const initialNumToRender = useInitialNumToRender()
   const [isPTRing, setIsPTRing] = useState(false)
@@ -105,6 +129,27 @@ export function PostQuotes({uri}: {uri: string}) {
     }
   }, [isFetchingNextPage, hasNextPage, isError, fetchNextPage])
 
+  const renderItem = useCallback(
+    ({
+      item,
+      index,
+    }: {
+      item: {
+        post: AppBskyFeedDefs.PostView
+        moderation: ModerationDecision
+        record: AppBskyFeedPost.Record
+      }
+      index: number
+    }) => (
+      <Post
+        post={item.post}
+        hideTopBorder={index === 0 && !isQuotedPostExtracted}
+        hideQuoteEmbedUri={isQuotedPostExtracted ? quotedPost?.uri : undefined}
+      />
+    ),
+    [isQuotedPostExtracted, quotedPost?.uri],
+  )
+
   if (quotes.length < 1) {
     return (
       <ListMaybePlaceholder
@@ -133,6 +178,11 @@ export function PostQuotes({uri}: {uri: string}) {
       onEndReached={onEndReached}
       onEndReachedThreshold={4}
       onItemSeen={item => trackPostView(item.post)}
+      ListHeaderComponent={
+        isQuotedPostExtracted && quotedPost ? (
+          <ExtractedQuotedPost post={quotedPost} />
+        ) : undefined
+      }
       ListFooterComponent={
         <ListFooter
           isFetchingNextPage={isFetchingNextPage}

@@ -48,6 +48,8 @@ describe('persisted schema helpers', () => {
       defaults.thumbnailFormat,
     )
     expect(normalizeData(parsed!).downloadFormat).toBe(defaults.downloadFormat)
+    expect(normalizeData(parsed!).notificationsTabBadgeDisplay).toBe('exact')
+    expect(normalizeData(parsed!).chatsTabBadgeDisplay).toBe('exact')
   })
 
   it('preserves external embed prefs when defaults object is empty', () => {
@@ -99,5 +101,15 @@ describe('persisted schema helpers', () => {
 
     expect(parsed).toBeDefined()
     expect(parsed!.followedByMetricsDisplay).toBe('visible')
+  })
+
+  it('migrates the notification dot display to both tab badges', () => {
+    const parsed = tryParse(
+      JSON.stringify({...partialState, notificationDotDisplay: 'visible'}),
+    )
+
+    const normalized = normalizeData(parsed!)
+    expect(normalized.notificationsTabBadgeDisplay).toBe('visible')
+    expect(normalized.chatsTabBadgeDisplay).toBe('visible')
   })
 })
