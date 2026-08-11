@@ -161,3 +161,20 @@ export function shouldShowFollowedByOverflowPlus(
 ): boolean {
   return mode === 'lite' && serverCount > shownCount
 }
+
+/** Unread label for the browser tab title, respecting notification badge display. */
+export function formatTitleUnreadCountLabel(
+  display: NotificationDotDisplay,
+  unreadCountLabel: string,
+): string | undefined {
+  if (unreadCountLabel === '') {
+    return undefined
+  }
+  if (display === 'hidden') {
+    return undefined
+  }
+  if (display === 'exact') {
+    return unreadCountLabel
+  }
+  return '•'
+}

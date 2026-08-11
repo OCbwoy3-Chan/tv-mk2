@@ -165,7 +165,7 @@ export function RunesImpressionsSettingsScreen() {
         </Toggle.LabelText>
       </Toggle.Item>
       <SettingsList.Divider style={[a.mt_0]} />
-      <ImpressionsSectionHeader icon={BellIcon} label={l`Tab icons`} />
+      <ImpressionsSectionHeader icon={BellIcon} label={l`Badges`} />
       <TabBadgeRow
         name={l`Notifications`}
         value={notificationsTabBadgeDisplay}

@@ -1,16 +1,16 @@
 import {useEffect} from 'react'
 import {useNavigation} from '@react-navigation/native'
 
+import {useTitleUnreadCountLabel} from '#/lib/hooks/useTitleUnreadCountLabel'
 import {type NavigationProp} from '#/lib/routes/types'
 import {bskyTitle} from '#/lib/strings/headings'
-import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 
 export function useSetTitle(title?: string) {
   const navigation = useNavigation<NavigationProp>()
-  const numUnread = useUnreadNotifications()
+  const unreadCountLabel = useTitleUnreadCountLabel()
   useEffect(() => {
     if (title) {
-      navigation.setOptions({title: bskyTitle(title, numUnread)})
+      navigation.setOptions({title: bskyTitle(title, unreadCountLabel)})
     }
-  }, [title, navigation, numUnread])
+  }, [title, navigation, unreadCountLabel])
 }

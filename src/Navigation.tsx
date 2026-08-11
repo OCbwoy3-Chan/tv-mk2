@@ -28,6 +28,7 @@ import {
   notificationToURL,
   storePayloadForAccountSwitch,
 } from '#/lib/hooks/useNotificationHandler'
+import {useTitleUnreadCountLabel} from '#/lib/hooks/useTitleUnreadCountLabel'
 import {useWebScrollRestoration} from '#/lib/hooks/useWebScrollRestoration'
 import {useCallOnce} from '#/lib/once'
 import {buildStateObject, getCurrentRoute} from '#/lib/routes/helpers'
@@ -46,7 +47,6 @@ import {
 import {bskyTitle} from '#/lib/strings/headings'
 import {CHAT_INVITE_CODE_REGEX} from '#/lib/strings/url-helpers'
 import {useDisableVerifyEmailReminder} from '#/state/preferences/disable-verify-email-reminder'
-import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useSession} from '#/state/session'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {
@@ -879,9 +879,10 @@ const FlatNavigator = ({
   layout: React.ComponentProps<typeof Flat.Navigator>['layout']
 }) => {
   const t = useTheme()
-  const numUnread = useUnreadNotifications()
+  const unreadCountLabel = useTitleUnreadCountLabel()
   const screenListeners = useWebScrollRestoration()
-  const title = (page: MessageDescriptor) => bskyTitle(i18n._(page), numUnread)
+  const title = (page: MessageDescriptor) =>
+    bskyTitle(i18n._(page), unreadCountLabel)
 
   return (
     <Flat.Navigator
@@ -914,7 +915,7 @@ const FlatNavigator = ({
         getComponent={() => HomeScreen}
         options={{title: title(msg`Home`)}}
       />
-      {commonScreens(Flat, numUnread)}
+      {commonScreens(Flat, unreadCountLabel)}
     </Flat.Navigator>
   )
 }
