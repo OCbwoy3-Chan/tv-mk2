@@ -104,12 +104,12 @@ import {
   useLanguagePrefsApi,
 } from '#/state/preferences/languages'
 import {useOmitViaField} from '#/state/preferences/omit-via-field'
-import {useTidSuffix} from '#/state/preferences/tid-suffix'
 import {
   useOpenRouterApiKey,
   useOpenRouterConfigured,
   useOpenRouterModel,
 } from '#/state/preferences/openrouter'
+import {useTidSuffix} from '#/state/preferences/tid-suffix'
 import {usePreferencesQuery} from '#/state/queries/preferences'
 import {resolveLinkQueryOptions} from '#/state/queries/resolve-link'
 import {
@@ -134,10 +134,10 @@ import {Gallery} from '#/view/com/composer/photos/Gallery'
 import {OpenCameraBtn} from '#/view/com/composer/photos/OpenCameraBtn'
 import {SelectGifBtn} from '#/view/com/composer/photos/SelectGifBtn'
 import {SuggestedLanguage} from '#/view/com/composer/select-language/SuggestedLanguage'
+import {TagsBtn} from '#/view/com/composer/tags/TagsBtn'
 // TODO: Prevent naming components that coincide with RN primitives
 // due to linting false positives
 import {TextInput} from '#/view/com/composer/text-input/TextInput'
-import {TagsBtn} from '#/view/com/composer/tags/TagsBtn'
 import {ThreadgateBtn} from '#/view/com/composer/threadgate/ThreadgateBtn'
 import {SubtitleDialogBtn} from '#/view/com/composer/videos/SubtitleDialog'
 import {VideoEmbedRedraft} from '#/view/com/composer/videos/VideoEmbedRedraft'
@@ -150,14 +150,18 @@ import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as EmojiPicker from '#/components/EmojiPicker'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
 import {
-  fetchReplyableSwitcherAccounts,
-  type ReplyableAccountListItem,
-} from '#/components/PostControls/alternateAccountsReplyEligibility'
+  ArrowBottom_Stroke2_Corner0_Rounded as ArrowDownIcon,
+  ArrowTop_Stroke2_Corner0_Rounded as ArrowUpIcon,
+} from '#/components/icons/Arrow'
 import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfoIcon} from '#/components/icons/CircleInfo'
 import {EmojiArc_Stroke2_Corner0_Rounded as EmojiSmileIcon} from '#/components/icons/Emoji'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
 import {LazyQuoteEmbed} from '#/components/Post/Embed/LazyQuoteEmbed'
+import {
+  fetchReplyableSwitcherAccounts,
+  type ReplyableAccountListItem,
+} from '#/components/PostControls/alternateAccountsReplyEligibility'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
@@ -473,6 +477,8 @@ export const ComposePost = ({
   const activePost = thread.posts[composerState.activePostIndex]
   const nextPost: PostDraft | undefined =
     thread.posts[composerState.activePostIndex + 1]
+  const canAddPost =
+    !isEmptyPost(activePost) && (!nextPost || !isEmptyPost(nextPost))
   const dispatch = useCallback(
     (postAction: PostAction) => {
       composerDispatch({
@@ -1585,9 +1591,7 @@ export const ComposePost = ({
       <ComposerFooter
         post={activePost}
         dispatch={dispatch}
-        showAddButton={
-          !isEmptyPost(activePost) && (!nextPost || !isEmptyPost(nextPost))
-        }
+        showAddButton={canAddPost}
         onError={setError}
         onSelectVideo={selectVideo}
         onAddPost={() => {
@@ -1686,6 +1690,9 @@ export const ComposePost = ({
                   isReply={index > 0 || !!replyTo}
                   isActive={post.id === activePost.id}
                   canRemovePost={thread.posts.length > 1}
+                  canMovePostUp={index > 0}
+                  canMovePostDown={index < thread.posts.length - 1}
+                  canAddPost={post.id === activePost.id && canAddPost}
                   canRemoveQuote={index > 0 || !initQuote}
                   onSelectVideo={selectVideo}
                   onClearVideo={clearVideo}
@@ -1793,6 +1800,9 @@ let ComposerPost = memo(function ComposerPost({
   isLastPost,
   isPartOfThread,
   canRemovePost,
+  canMovePostUp,
+  canMovePostDown,
+  canAddPost,
   canRemoveQuote,
   onClearVideo,
   onSelectVideo,
@@ -1811,6 +1821,9 @@ let ComposerPost = memo(function ComposerPost({
   isLastPost: boolean
   isPartOfThread: boolean
   canRemovePost: boolean
+  canMovePostUp: boolean
+  canMovePostDown: boolean
+  canAddPost: boolean
   canRemoveQuote: boolean
   onClearVideo: (postId: string) => void
   onSelectVideo: (
@@ -1843,6 +1856,15 @@ let ComposerPost = memo(function ComposerPost({
         postId: post.id,
         postAction: action,
       })
+    },
+    [dispatch, post.id],
+  )
+  const onAddPost = useCallback(() => {
+    dispatch({type: 'add_post'})
+  }, [dispatch])
+  const onMovePost = useCallback(
+    (direction: 'up' | 'down') => {
+      dispatch({type: 'move_post', postId: post.id, direction})
     },
     [dispatch, post.id],
   )
@@ -1945,6 +1967,11 @@ let ComposerPost = memo(function ComposerPost({
           onNewLink={onNewLink}
           onError={onError}
           onPressPublish={onPublish}
+          canAddPost={canAddPost}
+          canMovePostUp={canMovePostUp}
+          canMovePostDown={canMovePostDown}
+          onAddPost={onAddPost}
+          onMovePost={onMovePost}
           accessible={true}
           accessibilityLabel={l`Write post`}
           accessibilityHint={l`Compose posts up to ${plural(
@@ -1958,30 +1985,69 @@ let ComposerPost = memo(function ComposerPost({
 
       {canRemovePost && isActive && (
         <>
-          <Button
-            label={l`Delete post`}
-            size="small"
-            color="secondary"
-            variant="ghost"
-            shape={enableSquareButtons ? 'square' : 'round'}
-            style={[a.absolute, {top: 0, right: 0}]}
-            onPress={() => {
-              if (
-                post.shortenedGraphemeLength > 0 ||
-                post.embed.media ||
-                post.embed.link ||
-                post.embed.quote
-              ) {
-                discardPromptControl.open()
-              } else {
-                dispatch({
-                  type: 'remove_post',
-                  postId: post.id,
-                })
-              }
-            }}>
-            <ButtonIcon icon={XIcon} />
-          </Button>
+          <View style={[a.absolute, styles.postControls]}>
+            {canMovePostUp && (
+              <Button
+                label={l`Move post up`}
+                accessibilityHint={l`Shortcut: Alt plus Up Arrow`}
+                size="small"
+                color="secondary"
+                variant="ghost"
+                shape={enableSquareButtons ? 'square' : 'round'}
+                style={styles.movePostUp}
+                onPress={() => {
+                  dispatch({
+                    type: 'move_post',
+                    postId: post.id,
+                    direction: 'up',
+                  })
+                }}>
+                <ButtonIcon icon={ArrowUpIcon} />
+              </Button>
+            )}
+            <Button
+              label={l`Delete post`}
+              size="small"
+              color="secondary"
+              variant="ghost"
+              shape={enableSquareButtons ? 'square' : 'round'}
+              onPress={() => {
+                if (
+                  post.shortenedGraphemeLength > 0 ||
+                  post.embed.media ||
+                  post.embed.link ||
+                  post.embed.quote
+                ) {
+                  discardPromptControl.open()
+                } else {
+                  dispatch({
+                    type: 'remove_post',
+                    postId: post.id,
+                  })
+                }
+              }}>
+              <ButtonIcon icon={XIcon} />
+            </Button>
+            {canMovePostDown && (
+              <Button
+                label={l`Move post down`}
+                accessibilityHint={l`Shortcut: Alt plus Down Arrow`}
+                size="small"
+                color="secondary"
+                variant="ghost"
+                shape={enableSquareButtons ? 'square' : 'round'}
+                style={styles.movePostDown}
+                onPress={() => {
+                  dispatch({
+                    type: 'move_post',
+                    postId: post.id,
+                    direction: 'down',
+                  })
+                }}>
+                <ButtonIcon icon={ArrowDownIcon} />
+              </Button>
+            )}
+          </View>
           <Prompt.Basic
             control={discardPromptControl}
             title={l`Discard post?`}
@@ -2650,6 +2716,7 @@ function ComposerFooter({
         {showAddButton && (
           <Button
             label={l`Add another post to thread`}
+            accessibilityHint={l`Shortcut: Alt plus Enter`}
             onPress={onAddPost}
             style={[a.p_sm]}
             variant="ghost"
@@ -2884,6 +2951,18 @@ const styles = StyleSheet.create({
     position: 'sticky',
     bottom: 0,
   }),
+  postControls: {
+    top: 0,
+    right: 0,
+  },
+  movePostUp: {
+    position: 'absolute',
+    top: -33,
+  },
+  movePostDown: {
+    position: 'absolute',
+    top: 33,
+  },
   errorLine: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -8,8 +8,8 @@ import {
 } from '@atproto/api'
 import {nanoid} from 'nanoid/non-secure'
 
-import {type VideoTelemetry} from '#/lib/media/video/telemetry'
 import {MAX_TAGS} from '#/lib/constants'
+import {type VideoTelemetry} from '#/lib/media/video/telemetry'
 import {type SelfLabel} from '#/lib/moderation'
 import {insertMentionAt} from '#/lib/strings/mention-manip'
 import {parseMarkdownLinks, shortenLinks} from '#/lib/strings/rich-text-manip'
@@ -29,6 +29,7 @@ import {
   suggestLinkCardUri,
 } from '#/view/com/composer/text-input/text-input-util'
 import {type Gif} from '#/features/gifPicker/types'
+import {moveItem} from './post-order'
 import {
   createRedraftVideoState,
   createVideoState,
@@ -141,6 +142,11 @@ export type ComposerAction =
   | {
       type: 'remove_post'
       postId: string
+    }
+  | {
+      type: 'move_post'
+      postId: string
+      direction: 'up' | 'down'
     }
   | {
       type: 'focus_post'
@@ -286,6 +292,28 @@ export function composerReducer(
         ...state,
         isDirty: true,
         activePostIndex: nextActivePostIndex,
+        mutableNeedsFocusActive: true,
+        thread: {
+          ...state.thread,
+          posts: nextPosts,
+        },
+      }
+    }
+    case 'move_post': {
+      const nextPosts = moveItem(
+        state.thread.posts,
+        action.postId,
+        action.direction,
+      )
+      if (!nextPosts) {
+        return state
+      }
+
+      const activePostId = state.thread.posts[state.activePostIndex].id
+      return {
+        ...state,
+        isDirty: true,
+        activePostIndex: nextPosts.findIndex(post => post.id === activePostId),
         mutableNeedsFocusActive: true,
         thread: {
           ...state.thread,
