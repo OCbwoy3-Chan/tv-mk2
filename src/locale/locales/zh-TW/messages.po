@@ -182,11 +182,16 @@ msgstr "{0, plural, one {# 秒} other {# 秒}}"
 msgid "{0, plural, one {# selected} other {# selected}}"
 msgstr ""
 
+#. placeholder {0}: tags.length
+#: src/view/com/composer/tags/TagsBtn.tsx:71
+msgid "{0, plural, one {# tag} other {# tags}}"
+msgstr ""
+
 #. placeholder {0}: numUnreadMessages.numUnread ?? 0
 #. placeholder {0}: numUnreadNotifications ?? 0
 #: src/view/shell/bottom-bar/BottomBar.tsx:269
 #: src/view/shell/bottom-bar/BottomBar.tsx:309
-#: src/view/shell/Drawer.tsx:608
+#: src/view/shell/Drawer.tsx:611
 msgid "{0, plural, one {# unread item} other {# unread items}}"
 msgstr "{0, plural, one {# 則未讀} other {# 則未讀}}"
 
@@ -203,7 +208,7 @@ msgid "{0, plural, one {#mo} other {#mo}}"
 msgstr "{0, plural, one {# 個月前} other {# 個月前}}"
 
 #. placeholder {0}: draft.meta.replyCount
-#: src/view/com/composer/drafts/DraftItem.tsx:143
+#: src/view/com/composer/drafts/DraftItem.tsx:155
 msgid "{0, plural, one {1 more post} other {# more posts}}"
 msgstr "{0, plural, other {還有 # 則貼文}}"
 
@@ -218,12 +223,12 @@ msgid "{0, plural, one {following} other {following}}"
 msgstr "{0, plural, one {個跟隨中} other {個跟隨中}}"
 
 #. placeholder {0}: post.likeCount ?? 0
-#: src/components/PostControls/index.tsx:522
+#: src/components/PostControls/index.tsx:519
 msgid "{0, plural, one {like} other {likes}}"
 msgstr ""
 
 #. placeholder {0}: post.replyCount ?? 0
-#: src/components/PostControls/index.tsx:449
+#: src/components/PostControls/index.tsx:446
 msgid "{0, plural, one {reply} other {replies}}"
 msgstr ""
 
@@ -256,12 +261,12 @@ msgid "{0} (Account)"
 msgstr "{0}（帳號）"
 
 #. placeholder {0}: !shouldShowCountsMetricLabelOnly( followersMetricsDisplay, followersCount, ) ? ( <Text style={[a.text_md, a.font_semi_bold]}> {formatCountsMetricNumber( i18n, followersMetricsDisplay, followersCount, )} </Text> ) : null
-#: src/view/shell/Drawer.tsx:181
+#: src/view/shell/Drawer.tsx:182
 msgid "{0} {followersCount, plural, one {follower} other {followers}}"
 msgstr ""
 
 #. placeholder {0}: !shouldShowCountsMetricLabelOnly( followingMetricsDisplay, followingCount, ) ? ( <Text style={[a.text_md, a.font_semi_bold]}> {formatCountsMetricNumber( i18n, followingMetricsDisplay, followingCount, )} </Text> ) : null
-#: src/view/shell/Drawer.tsx:204
+#: src/view/shell/Drawer.tsx:205
 msgid "{0} {followingCount, plural, one {following} other {following}}"
 msgstr ""
 
@@ -338,6 +343,11 @@ msgstr "{0} 離開了群組"
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/Scrubber.tsx:205
 msgid "{0} of {1}"
 msgstr "第 {0} 個（共 {1} 個）"
+
+#. placeholder {0}: tags.length
+#: src/view/com/composer/tags/TagsBtn.tsx:242
+msgid "{0} of {MAX_TAGS} tags"
+msgstr ""
 
 #. Accessibility label describing how many characters the user has entered out of a 50-character limit in a text input field
 #. placeholder {0}: state.name?.length
@@ -477,7 +487,7 @@ msgstr "{0} 秒前"
 msgid "{count, plural, =0 {No requests to join} one {# request to join} other {# requests to join}}"
 msgstr "{count, plural, =0 {尚未加入申請} other {# 個加入申請}}"
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:855
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:857
 msgid "{count, plural, one {{one}} other {{other}}}"
 msgstr ""
 
@@ -770,7 +780,7 @@ msgstr "{MAX_DESCRIPTION, plural, other {簡介太長了，不得超過 # 個字
 msgid "{MAX_DISPLAY_NAME, plural, other {Display name is too long. The maximum number of characters is #.}}"
 msgstr "{MAX_DISPLAY_NAME, plural, other {名稱太長了，不得超過 # 個字元。}}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:540
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:541
 msgid "{MAX_HIDDEN_REPLIES, plural, other {You can hide a maximum of # replies.}}"
 msgstr "{MAX_HIDDEN_REPLIES, plural, other {您最多可以隱藏 # 則回覆。}}"
 
@@ -783,15 +793,15 @@ msgstr "{memberCount}/{memberLimit}"
 msgid "{minutes, plural, one {# minute} other {# minutes}}"
 msgstr "{minutes, plural, other {# 分鐘}}"
 
-#: src/view/com/composer/Composer.tsx:1083
+#: src/view/com/composer/Composer.tsx:1092
 msgid "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1075
+#: src/view/com/composer/Composer.tsx:1084
 msgid "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1091
+#: src/view/com/composer/Composer.tsx:1100
 msgid "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 msgstr ""
 
@@ -957,7 +967,7 @@ msgstr "<0>{0}</0> {1, plural, other {次收藏}}"
 
 #. Metric count display, the <0> tags enclose the number in bold (will never be 0)
 #. placeholder {0}: formatCountsMetricNumber(i18n, display, count)
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:862
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:864
 msgid "<0>{0}</0> {count, plural, one {{one}} other {{other}}}"
 msgstr ""
 
@@ -1109,7 +1119,7 @@ msgstr "一張貼文編輯器的螢幕截圖。在發布按鈕旁有一個標示
 msgid "A selected recipient is not followed by the sender."
 msgstr "選擇的部分對象沒有被傳送者跟隨。"
 
-#: src/Navigation.tsx:649
+#: src/Navigation.tsx:809
 #: src/screens/Settings/AboutSettings.tsx:86
 #: src/screens/Settings/Settings.tsx:492
 #: src/screens/Settings/Settings.tsx:495
@@ -1162,11 +1172,11 @@ msgstr "已送出申請！請靜待擁有者確認以加入群組。"
 msgid "Accessibility"
 msgstr "無障礙"
 
-#: src/Navigation.tsx:435
+#: src/Navigation.tsx:595
 msgid "Accessibility Settings"
 msgstr "無障礙設定"
 
-#: src/Navigation.tsx:564
+#: src/Navigation.tsx:724
 #: src/screens/Login/LoginForm.tsx:255
 #: src/screens/Login/LoginForm.web.tsx:234
 #: src/screens/Settings/AccountSettings.tsx:56
@@ -1176,7 +1186,7 @@ msgstr "無障礙設定"
 msgid "Account"
 msgstr "帳號"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:639
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:640
 #: src/screens/Messages/components/RequestButtons.tsx:104
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:122
 #: src/view/com/profile/ProfileMenu.tsx:316
@@ -1201,7 +1211,7 @@ msgstr ""
 msgid "Account is deactivated"
 msgstr "帳號已停用"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:682
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:683
 #: src/view/com/profile/ProfileMenu.tsx:252
 msgctxt "toast"
 msgid "Account muted"
@@ -1241,7 +1251,7 @@ msgctxt "toast"
 msgid "Account unfollowed"
 msgstr "成功取消跟隨帳號"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:662
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:663
 #: src/view/com/profile/ProfileMenu.tsx:239
 msgctxt "toast"
 msgid "Account unmuted"
@@ -1262,7 +1272,7 @@ msgstr ""
 msgid "Activity from others"
 msgstr "來自其他人的動態"
 
-#: src/Navigation.tsx:625
+#: src/Navigation.tsx:785
 msgid "Activity notifications"
 msgstr ""
 
@@ -1305,7 +1315,7 @@ msgstr "將使用者新增至此列表"
 msgid "Add account"
 msgstr "新增帳號"
 
-#: src/view/com/composer/Composer.tsx:1779
+#: src/view/com/composer/Composer.tsx:1789
 #: src/view/com/composer/GifAltText.tsx:76
 #: src/view/com/composer/GifAltText.tsx:150
 #: src/view/com/composer/GifAltText.tsx:216
@@ -1327,11 +1337,11 @@ msgstr "新增替代文字（選填）"
 msgid "Add another account"
 msgstr "新增其他帳號"
 
-#: src/view/com/composer/Composer.tsx:1834
+#: src/view/com/composer/Composer.tsx:1850
 msgid "Add another Jarona"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2664
+#: src/view/com/composer/Composer.tsx:2740
 msgid "Add another post to thread"
 msgstr "新增另一則貼文至討論串"
 
@@ -1428,6 +1438,15 @@ msgstr "加入推薦的動態源"
 #: src/screens/StarterPack/Wizard/index.tsx:540
 msgid "Add some feeds to your starter pack!"
 msgstr "新增一些動態源到您的新手包中吧！"
+
+#: src/view/com/composer/tags/TagsBtn.tsx:225
+msgid "Add tag"
+msgstr ""
+
+#: src/view/com/composer/tags/TagsBtn.tsx:181
+#: src/view/com/composer/tags/TagsBtn.tsx:186
+msgid "Add tags"
+msgstr ""
 
 #: src/screens/Feeds/NoFollowingFeed.tsx:40
 msgid "Add the default feed of only people you follow"
@@ -1575,7 +1594,7 @@ msgstr "只需幾分鐘即可完成年齡驗證。"
 msgid "AI preferences"
 msgstr ""
 
-#: src/Navigation.tsx:443
+#: src/Navigation.tsx:603
 #: src/screens/Settings/AIPreferencesSettings.tsx:62
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:39
 msgid "AI Preferences"
@@ -1652,7 +1671,7 @@ msgid "Allow location access"
 msgstr "允許存取位置"
 
 #: src/screens/Settings/ActivityPrivacySettings.tsx:53
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:92
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:115
 msgid "Allow others to be notified of your posts"
 msgstr "允許其他人在您發布貼文時收到通知"
 
@@ -1697,7 +1716,7 @@ msgstr "已經有重設驗證碼了？"
 msgid "Already signed in as @{0}"
 msgstr "已經以 @{0} 的身分登入"
 
-#: src/Navigation.tsx:517
+#: src/Navigation.tsx:677
 #: src/screens/PostThread/components/ThreadAlsoLiked.tsx:91
 #: src/screens/Settings/RunesSettings/AlsoLikedSettings.tsx:28
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:89
@@ -1865,9 +1884,9 @@ msgstr ""
 #: src/components/hooks/useEphemeralFollowAction.ts:101
 #: src/components/hooks/useFollowMethods.ts:35
 #: src/components/hooks/useFollowMethods.ts:52
-#: src/components/PostControls/index.tsx:349
-#: src/components/PostControls/index.tsx:377
-#: src/components/PostControls/index.tsx:412
+#: src/components/PostControls/index.tsx:346
+#: src/components/PostControls/index.tsx:374
+#: src/components/PostControls/index.tsx:409
 #: src/components/ProfileCard.tsx:546
 #: src/components/ProfileCard.tsx:561
 #: src/screens/PostThread/components/ReaderSeam.tsx:280
@@ -1943,7 +1962,7 @@ msgstr "任何人都可以申請加入"
 
 #: src/screens/Settings/ActivityPrivacySettings.tsx:112
 #: src/screens/Settings/ActivityPrivacySettings.tsx:117
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:163
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:192
 msgid "Anyone who follows me"
 msgstr "跟隨我的人"
 
@@ -1955,7 +1974,7 @@ msgstr "任何人都無法再透過此連結加入群組，但您可以隨時建
 msgid "Anything else"
 msgstr ""
 
-#: src/Navigation.tsx:657
+#: src/Navigation.tsx:817
 #: src/screens/Settings/AppIconSettings/index.tsx:65
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:19
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:24
@@ -1988,12 +2007,12 @@ msgstr "應用程式密碼名稱只能包含字母、數字、空格、連字號
 msgid "App password names must be at least 4 characters long"
 msgstr "密碼名稱必須至少包含 4 個字元"
 
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:72
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:75
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:94
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:97
 msgid "App passwords"
 msgstr "應用程式專用密碼"
 
-#: src/Navigation.tsx:403
+#: src/Navigation.tsx:563
 #: src/screens/Settings/AppPasswords.tsx:51
 msgid "App Passwords"
 msgstr "應用程式專用密碼"
@@ -2057,7 +2076,7 @@ msgstr "對此處分提出申訴"
 msgid "Appeal this label"
 msgstr "申訴此標記"
 
-#: src/Navigation.tsx:548
+#: src/Navigation.tsx:708
 #: src/screens/Settings/AppearanceSettings.tsx:118
 #: src/screens/Settings/Settings.tsx:458
 #: src/screens/Settings/Settings.tsx:461
@@ -2080,14 +2099,14 @@ msgstr ""
 
 #. placeholder {0}: niceDate(i18n, createdAt, 'medium')
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:402
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:797
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:799
 msgid "Archived from {0}"
 msgstr "封存於 {0}"
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:372
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:411
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:768
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:806
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:770
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:808
 msgid "Archived post"
 msgstr "已封存的貼文"
 
@@ -2153,7 +2172,7 @@ msgstr "您確定要將此從您的動態源中移除嗎？"
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "您確定要撤回加入 {0} 的申請嗎？"
 
-#: src/view/com/composer/Composer.tsx:1989
+#: src/view/com/composer/Composer.tsx:2058
 msgid "Are you sure you'd like to discard this post?"
 msgstr "您確定要放棄發布這則貼文嗎？"
 
@@ -2178,8 +2197,8 @@ msgstr "藝術"
 msgid "Artistic or non-erotic nudity."
 msgstr "帶有藝術性或非色情的裸體。"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:874
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:876
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:875
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:877
 msgid "Assign topic for algo"
 msgstr "為演算法指定主題"
 
@@ -2216,13 +2235,13 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:256
-#: src/components/Post/Embed/index.tsx:283
+#: src/components/Post/Embed/index.tsx:257
+#: src/components/Post/Embed/index.tsx:284
 msgid "Author account suspended"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:258
-#: src/components/Post/Embed/index.tsx:285
+#: src/components/Post/Embed/index.tsx:259
+#: src/components/Post/Embed/index.tsx:286
 msgid "Author account unavailable"
 msgstr ""
 
@@ -2250,7 +2269,7 @@ msgstr "自動化帳號"
 msgid "Automatic"
 msgstr "自動"
 
-#: src/view/com/composer/Composer.tsx:2257
+#: src/view/com/composer/Composer.tsx:2326
 msgid "Automatically generate alt text for images in this post using AI. Requires configured OpenRouter API key."
 msgstr ""
 
@@ -2264,7 +2283,7 @@ msgstr ""
 msgid "Automation label"
 msgstr "自動化標記"
 
-#: src/Navigation.tsx:580
+#: src/Navigation.tsx:740
 #: src/screens/Settings/AutomationLabelSettings.tsx:103
 msgid "Automation Label"
 msgstr "自動化標記"
@@ -2330,8 +2349,9 @@ msgstr "返回"
 msgid "Back to Chats"
 msgstr "返回對話"
 
-#: src/Navigation.tsx:487
+#: src/Navigation.tsx:647
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:76
+#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:168
 #: src/screens/Settings/RunesSettings/index.tsx:30
 #: src/screens/Settings/RunesSettings/index.tsx:33
 msgid "Badges"
@@ -2412,7 +2432,7 @@ msgstr "請填寫以下欄位，以開始年齡驗證程序。"
 msgid "Beta Feature"
 msgstr "測試功能"
 
-#: src/Navigation.tsx:572
+#: src/Navigation.tsx:732
 #: src/screens/Settings/BetaFeaturesSettings.tsx:108
 #: src/screens/Settings/RunesSettings/index.tsx:84
 #: src/screens/Settings/RunesSettings/index.tsx:87
@@ -2464,8 +2484,8 @@ msgstr "封鎖 {displayName}"
 
 #: src/components/dms/ConvoMenu.tsx:287
 #: src/components/dms/ConvoMenu.tsx:291
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1014
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1016
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1015
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1017
 #: src/screens/Messages/components/RequestButtons.tsx:154
 #: src/screens/Messages/components/RequestButtons.tsx:156
 #: src/view/com/profile/ProfileMenu.tsx:854
@@ -2526,9 +2546,9 @@ msgstr "封鎖此帳號或刪除整個對話（複選）"
 msgid "Block user and/or leave this conversation"
 msgstr "封鎖此帳號或退出對話（複選）"
 
-#: src/components/Post/Embed/index.tsx:246
-#: src/components/Post/Embed/index.tsx:273
-#: src/components/Post/Embed/index.tsx:289
+#: src/components/Post/Embed/index.tsx:247
+#: src/components/Post/Embed/index.tsx:274
+#: src/components/Post/Embed/index.tsx:290
 msgid "Blocked"
 msgstr "已被封鎖"
 
@@ -2536,7 +2556,7 @@ msgstr "已被封鎖"
 msgid "Blocked accounts"
 msgstr "已封鎖帳號"
 
-#: src/Navigation.tsx:239
+#: src/Navigation.tsx:399
 #: src/view/screens/ModerationBlockedAccounts.tsx:95
 msgid "Blocked Accounts"
 msgstr "已封鎖帳號"
@@ -2586,7 +2606,7 @@ msgid "Bluesky"
 msgstr "Bluesky"
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:427
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:822
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:824
 msgid "Bluesky cannot confirm the authenticity of the claimed date."
 msgstr "Bluesky 無法確認貼文發布日期的真實性。"
 
@@ -2857,8 +2877,8 @@ msgstr "需要相機存取權限"
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:37
-#: src/view/com/composer/Composer.tsx:2067
-#: src/view/com/composer/Composer.tsx:2077
+#: src/view/com/composer/Composer.tsx:2136
+#: src/view/com/composer/Composer.tsx:2146
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
 #: src/view/shell/desktop/LeftNav.tsx:245
@@ -2885,13 +2905,13 @@ msgstr "放棄搜尋"
 msgid "Cancels signing in so you can check your username"
 msgstr "取消登入以便您檢查使用者名稱"
 
-#: src/components/PostControls/index.tsx:165
-#: src/components/PostControls/index.tsx:195
-#: src/components/PostControls/index.tsx:234
+#: src/components/PostControls/index.tsx:162
+#: src/components/PostControls/index.tsx:192
+#: src/components/PostControls/index.tsx:231
 #: src/screens/PostThread/components/ReaderSeam.tsx:187
 #: src/screens/PostThread/components/ReaderSeam.tsx:204
 #: src/screens/PostThread/components/ReaderSeam.tsx:220
-#: src/state/shell/composer/index.tsx:122
+#: src/state/shell/composer/index.tsx:126
 msgid "Cannot interact with a blocked user"
 msgstr "無法與被封鎖的使用者進行互動"
 
@@ -3022,10 +3042,10 @@ msgid "Character"
 msgstr ""
 
 #: src/lib/hooks/useNotificationHandler.ts:133
-#: src/Navigation.tsx:675
+#: src/Navigation.tsx:835
 #: src/view/shell/bottom-bar/BottomBar.tsx:260
 #: src/view/shell/desktop/LeftNav.tsx:780
-#: src/view/shell/Drawer.tsx:576
+#: src/view/shell/Drawer.tsx:578
 msgid "Chat"
 msgstr "對話"
 
@@ -3082,7 +3102,7 @@ msgstr "對話擁有者無法離開群組對話。"
 msgid "Chat recipient is not followed by the sender."
 msgstr "訊息接收者沒有被傳送者跟隨。"
 
-#: src/Navigation.tsx:695
+#: src/Navigation.tsx:855
 msgid "Chat request inbox"
 msgstr "對話邀請收件匣"
 
@@ -3092,7 +3112,7 @@ msgid "Chat requests"
 msgstr "對話邀請"
 
 #: src/components/dms/ConvoMenu.tsx:91
-#: src/Navigation.tsx:690
+#: src/Navigation.tsx:850
 #: src/screens/Messages/ChatList.tsx:98
 #: src/screens/Messages/ChatList.tsx:102
 #: src/screens/Messages/ChatList.tsx:674
@@ -3475,7 +3495,7 @@ msgstr "關閉歡迎畫面"
 msgid "Closes password update alert"
 msgstr "關閉密碼更新警告"
 
-#: src/view/com/composer/Composer.tsx:2075
+#: src/view/com/composer/Composer.tsx:2144
 msgid "Closes post composer and discards post draft"
 msgstr "關閉貼文編輯器並捨棄草稿"
 
@@ -3485,7 +3505,7 @@ msgstr ""
 
 #: src/view/shell/desktop/RightNav.tsx:130
 #: src/view/shell/desktop/RightNav.tsx:133
-#: src/view/shell/Drawer.tsx:491
+#: src/view/shell/Drawer.tsx:492
 msgid "Code"
 msgstr ""
 
@@ -3523,7 +3543,7 @@ msgstr "色彩模式"
 msgid "Color theme"
 msgstr "色彩主題"
 
-#: src/Navigation.tsx:556
+#: src/Navigation.tsx:716
 #: src/screens/Settings/AppearanceSettings.tsx:175
 #: src/screens/Settings/AppearanceSettings/ColorThemeSettings.tsx:49
 msgid "Color Theme"
@@ -3551,7 +3571,7 @@ msgid "Community"
 msgstr ""
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:46
-#: src/Navigation.tsx:393
+#: src/Navigation.tsx:553
 #: src/view/screens/CommunityGuidelines.tsx:28
 msgid "Community Guidelines"
 msgstr "社群準則"
@@ -3580,7 +3600,7 @@ msgid "Compose new post"
 msgstr "撰寫新貼文"
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
-#: src/view/com/composer/Composer.tsx:1951
+#: src/view/com/composer/Composer.tsx:1981
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr "撰寫最多 {0, plural,other {# 個字元}}的貼文"
 
@@ -3588,11 +3608,11 @@ msgstr "撰寫最多 {0, plural,other {# 個字元}}的貼文"
 msgid "Compose reply"
 msgstr "撰寫回覆"
 
-#: src/view/com/composer/Composer.tsx:3070
+#: src/view/com/composer/Composer.tsx:3159
 msgid "Compressing GIF..."
 msgstr "正在壓縮 GIF……"
 
-#: src/view/com/composer/Composer.tsx:3072
+#: src/view/com/composer/Composer.tsx:3161
 msgid "Compressing video..."
 msgstr "正在壓縮影片……"
 
@@ -3715,7 +3735,7 @@ msgstr "內容與媒體"
 msgid "Content and media"
 msgstr "內容與媒體"
 
-#: src/Navigation.tsx:633
+#: src/Navigation.tsx:793
 msgid "Content and Media"
 msgstr "內容與媒體"
 
@@ -3835,7 +3855,7 @@ msgstr ""
 #: src/components/dms/ChatInvite/Root.tsx:99
 #: src/components/dms/MessageContextMenu.tsx:97
 #: src/components/PostControls/DiscoverDebug.tsx:39
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:418
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:419
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:91
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:106
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:123
@@ -3950,8 +3970,8 @@ msgstr "複製訊息文字"
 msgid "Copy post at:// URI"
 msgstr "複製貼文 at:// 連結"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:829
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:831
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:830
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:832
 msgid "Copy post text"
 msgstr "複製貼文文字"
 
@@ -3965,7 +3985,7 @@ msgstr "複製 TXT 記錄值"
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:41
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:108
-#: src/Navigation.tsx:398
+#: src/Navigation.tsx:558
 #: src/view/screens/CopyrightPolicy.tsx:25
 msgid "Copyright Policy"
 msgstr "著作權政策"
@@ -4118,7 +4138,7 @@ msgstr "為新手包建立 QR Code"
 
 #: src/components/StarterPack/ProfileStarterPacks.tsx:210
 #: src/components/StarterPack/ProfileStarterPacks.tsx:319
-#: src/Navigation.tsx:726
+#: src/Navigation.tsx:886
 msgid "Create a starter pack"
 msgstr "建立一個新手包"
 
@@ -4381,7 +4401,7 @@ msgid "Default layout only"
 msgstr ""
 
 #: src/components/dms/MessageOverlays.tsx:184
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1070
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1071
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:278
 #: src/screens/Settings/AppPasswords.tsx:213
 #: src/screens/StarterPack/StarterPackScreen.tsx:618
@@ -4451,9 +4471,9 @@ msgstr "為我刪除訊息"
 msgid "Delete my account"
 msgstr "刪除我的帳號"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1054
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1056
-#: src/view/com/composer/Composer.tsx:1963
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1057
+#: src/view/com/composer/Composer.tsx:2013
 msgid "Delete post"
 msgstr "刪除貼文"
 
@@ -4470,11 +4490,11 @@ msgstr "要刪除新手包嗎？"
 msgid "Delete this list?"
 msgstr "要刪除這個列表嗎？"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1067
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1068
 msgid "Delete this post?"
 msgstr "要刪除這則貼文嗎？"
 
-#: src/components/Post/Embed/index.tsx:260
+#: src/components/Post/Embed/index.tsx:261
 msgid "Deleted"
 msgstr "已刪除"
 
@@ -4495,14 +4515,14 @@ msgstr "驗證後由 Plivo 刪除"
 msgid "Deleted list"
 msgstr "已刪除的列表"
 
-#: src/Navigation.tsx:451
+#: src/Navigation.tsx:611
 #: src/screens/Settings/DeltaSettings/index.tsx:20
 #: src/screens/Settings/Settings.tsx:478
 #: src/screens/Settings/Settings.tsx:483
 msgid "Deltas"
 msgstr ""
 
-#: src/Navigation.tsx:522
+#: src/Navigation.tsx:682
 #: src/screens/Settings/RunesSettings/DensitySettings.tsx:32
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:104
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:108
@@ -4529,12 +4549,12 @@ msgstr "簡介（最多 1000 個字元）"
 msgid "Descriptive alt text"
 msgstr "描述性替代文字"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:958
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:968
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:959
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:969
 msgid "Detach quote"
 msgstr "分離引用"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1103
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1104
 msgid "Detach quote post?"
 msgstr "要解除引用貼文嗎？"
 
@@ -4656,10 +4676,10 @@ msgstr "停用"
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:102
 #: src/screens/Profile/Header/EditProfileDialog.tsx:93
-#: src/view/com/composer/Composer.tsx:1713
-#: src/view/com/composer/Composer.tsx:1757
-#: src/view/com/composer/Composer.tsx:1996
-#: src/view/com/composer/drafts/DraftItem.tsx:242
+#: src/view/com/composer/Composer.tsx:1723
+#: src/view/com/composer/Composer.tsx:1767
+#: src/view/com/composer/Composer.tsx:2065
+#: src/view/com/composer/drafts/DraftItem.tsx:254
 #: src/view/com/composer/drafts/DraftsButton.tsx:138
 msgid "Discard"
 msgstr "捨棄"
@@ -4669,14 +4689,14 @@ msgstr "捨棄"
 msgid "Discard changes?"
 msgstr "要放棄變更嗎？"
 
-#: src/view/com/composer/Composer.tsx:1711
-#: src/view/com/composer/drafts/DraftItem.tsx:239
+#: src/view/com/composer/Composer.tsx:1721
+#: src/view/com/composer/drafts/DraftItem.tsx:251
 #: src/view/com/composer/drafts/DraftsButton.tsx:105
 msgid "Discard draft?"
 msgstr "要捨棄草稿嗎？"
 
-#: src/view/com/composer/Composer.tsx:1728
-#: src/view/com/composer/Composer.tsx:1988
+#: src/view/com/composer/Composer.tsx:1738
+#: src/view/com/composer/Composer.tsx:2057
 msgid "Discard post?"
 msgstr "要放棄發布嗎？"
 
@@ -4714,7 +4734,7 @@ msgstr "跳過"
 msgid "Dismiss banner"
 msgstr "關閉提示橫幅"
 
-#: src/view/com/composer/Composer.tsx:2991
+#: src/view/com/composer/Composer.tsx:3080
 msgid "Dismiss error"
 msgstr "跳過錯誤"
 
@@ -4743,7 +4763,7 @@ msgstr "忽略此建議"
 msgid "Dismisses the QR scanner"
 msgstr "關閉 QR Code 掃描器"
 
-#: src/Navigation.tsx:512
+#: src/Navigation.tsx:672
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:86
 #: src/screens/Settings/RunesSettings/index.tsx:52
 #: src/screens/Settings/RunesSettings/index.tsx:55
@@ -4853,6 +4873,8 @@ msgstr "不用擔心！您現有的訊息和設定都已儲存，只需驗證您
 #: src/screens/Settings/components/AddAppPasswordDialog.tsx:221
 #: src/view/com/composer/labels/LabelsBtn.tsx:219
 #: src/view/com/composer/labels/LabelsBtn.tsx:226
+#: src/view/com/composer/tags/TagsBtn.tsx:268
+#: src/view/com/composer/tags/TagsBtn.tsx:275
 #: src/view/com/composer/videos/SubtitleDialog.tsx:193
 #: src/view/com/composer/videos/SubtitleDialog.tsx:204
 msgid "Done"
@@ -4899,8 +4921,8 @@ msgstr "下載對話資料"
 msgid "Download format"
 msgstr ""
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:780
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:782
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:781
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:783
 msgid "Download GIF"
 msgstr ""
 
@@ -4927,18 +4949,18 @@ msgstr "下載個人檔案資料"
 msgid "Download video"
 msgstr ""
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:765
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:767
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:766
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:768
 msgid "Download Video"
 msgstr ""
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:614
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:615
 msgctxt "toast"
 msgid "Downloading GIF..."
 msgstr ""
 
 #: src/components/Post/Embed/VideoEmbed/useVideoDownload.ts:21
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:599
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:600
 msgctxt "toast"
 msgid "Downloading video..."
 msgstr ""
@@ -4958,7 +4980,7 @@ msgstr "人肉搜尋"
 msgid "Drafts"
 msgstr "草稿"
 
-#: src/view/com/composer/text-input/TextInput.web.tsx:458
+#: src/view/com/composer/text-input/TextInput.web.tsx:503
 msgid "Drop to add images"
 msgstr "拖放即可新增圖片"
 
@@ -5005,6 +5027,10 @@ msgstr ""
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:374
 msgid "e.g. Great Posters"
 msgstr "例如：優秀的發文者"
+
+#: src/view/com/composer/tags/TagsBtn.tsx:205
+msgid "e.g. photography"
+msgstr ""
 
 #: src/screens/Profile/Header/EditProfileDialog.tsx:442
 msgid "e.g. she/her"
@@ -5066,8 +5092,8 @@ msgstr ""
 msgid "Edit image"
 msgstr "編輯圖片"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1035
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1048
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1036
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1049
 msgid "Edit interaction settings"
 msgstr "編輯互動設定"
 
@@ -5103,7 +5129,7 @@ msgstr "編輯直播狀態"
 msgid "Edit moderation list"
 msgstr "編輯內容管理列表"
 
-#: src/Navigation.tsx:408
+#: src/Navigation.tsx:568
 #: src/view/screens/Feeds.tsx:515
 msgid "Edit My Feeds"
 msgstr "編輯我的動態源"
@@ -5155,7 +5181,7 @@ msgstr "編輯使用者列表"
 msgid "Edit who can reply"
 msgstr "修改哪些人可以回覆"
 
-#: src/Navigation.tsx:731
+#: src/Navigation.tsx:891
 msgid "Edit your starter pack"
 msgstr "編輯您的新手包"
 
@@ -5181,7 +5207,7 @@ msgctxt "toast"
 msgid "Email 2FA disabled"
 msgstr "成功停用電子郵件雙重驗證"
 
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:63
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:85
 msgid "Email 2FA enabled"
 msgstr "已啟用電子郵件雙重驗證"
 
@@ -5363,6 +5389,14 @@ msgstr "輸入密碼"
 msgid "Enter a PDS address"
 msgstr ""
 
+#: src/view/com/composer/tags/TagsBtn.tsx:204
+msgid "Enter a tag"
+msgstr ""
+
+#: src/view/com/composer/tags/TagsBtn.tsx:112
+msgid "Enter a valid tag"
+msgstr ""
+
 #: src/components/dialogs/MutedWords.tsx:137
 #: src/components/dialogs/MutedWords.tsx:138
 msgid "Enter a word or tag"
@@ -5443,7 +5477,7 @@ msgstr "進入全螢幕"
 msgid "Entertainment"
 msgstr "娛樂"
 
-#: src/view/com/composer/Composer.tsx:3090
+#: src/view/com/composer/Composer.tsx:3179
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "錯誤"
@@ -5456,7 +5490,7 @@ msgstr "取得最新資料時發生錯誤。"
 msgid "Error loading post"
 msgstr "載入貼文時發生錯誤"
 
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:154
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:183
 msgid "Error loading preference"
 msgstr "載入偏好設定時發生錯誤"
 
@@ -5577,7 +5611,7 @@ msgstr ""
 msgid "Expands or collapses post text"
 msgstr "展開或摺疊貼文文字"
 
-#: src/lib/api/index.ts:593
+#: src/lib/api/index.ts:595
 msgid "Expected uri to resolve to a record"
 msgstr "URI 應解析為記錄"
 
@@ -5617,10 +5651,10 @@ msgstr "血腥、露骨或災害等可能會引起不適的媒體內容。"
 msgid "Explicit sexual images."
 msgstr "露骨的色情圖片。"
 
-#: src/Navigation.tsx:935
+#: src/Navigation.tsx:1096
 #: src/screens/Search/Shell.tsx:549
 #: src/view/shell/desktop/LeftNav.tsx:751
-#: src/view/shell/Drawer.tsx:524
+#: src/view/shell/Drawer.tsx:526
 msgid "Explore"
 msgstr "探索"
 
@@ -5654,7 +5688,7 @@ msgstr "外部媒體"
 msgid "External media may allow websites to collect information about you and your device. No information is sent or requested until you press the \"play\" button."
 msgstr "外部媒體網站可能會收集有關您個人和裝置的資訊。在您按下「播放」按鈕之前，不會傳輸任何資料。"
 
-#: src/Navigation.tsx:427
+#: src/Navigation.tsx:587
 #: src/screens/Settings/ExternalMediaPreferences.tsx:36
 msgid "External Media Preferences"
 msgstr "外部媒體選項"
@@ -5664,7 +5698,7 @@ msgstr "外部媒體選項"
 msgid "Extra"
 msgstr ""
 
-#: src/Navigation.tsx:532
+#: src/Navigation.tsx:692
 msgid "Extra settings"
 msgstr ""
 
@@ -5762,14 +5796,14 @@ msgstr "停用邀請連結時發生問題"
 msgid "Failed to disconnect Germ DM. Error: {0}"
 msgstr "中斷連結 Germ DM 時發生問題。錯誤：{0}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:624
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:625
 msgctxt "toast"
 msgid "Failed to download GIF"
 msgstr ""
 
 #: src/components/Post/Embed/VideoEmbed/useVideoDownload.ts:31
 #: src/components/Post/Embed/VideoEmbed/useVideoDownload.ts:35
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:606
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:607
 msgctxt "toast"
 msgid "Failed to download video"
 msgstr ""
@@ -5936,7 +5970,7 @@ msgstr "無法撤銷您的申請，請再試一次。"
 msgid "Failed to resolve location. Please try again."
 msgstr "存取位置資訊時發生問題，請再試一次。"
 
-#: src/view/com/composer/Composer.tsx:853
+#: src/view/com/composer/Composer.tsx:862
 msgid "Failed to save draft"
 msgstr "儲存草稿時發生問題"
 
@@ -5974,7 +6008,7 @@ msgstr "提交檢舉時發生問題"
 msgid "Failed to submit appeal, please try again."
 msgstr "提交申訴時發生問題，請再試一次。"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:397
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:398
 msgid "Failed to toggle thread mute, please try again"
 msgstr "將討論串設為靜音時發生問題，請再試一次"
 
@@ -6040,7 +6074,7 @@ msgstr ""
 msgid "Favicon Service URL"
 msgstr ""
 
-#: src/Navigation.tsx:537
+#: src/Navigation.tsx:697
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:194
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:197
 #: src/screens/Settings/RunesSettings/FeatureGatesSettings.tsx:20
@@ -6051,7 +6085,7 @@ msgstr ""
 msgid "Fediverse"
 msgstr ""
 
-#: src/Navigation.tsx:338
+#: src/Navigation.tsx:498
 msgid "Feed"
 msgstr "動態源"
 
@@ -6087,18 +6121,18 @@ msgstr "動態源目前無法使用"
 
 #: src/view/shell/desktop/RightNav.tsx:109
 #: src/view/shell/desktop/RightNav.tsx:110
-#: src/view/shell/Drawer.tsx:478
+#: src/view/shell/Drawer.tsx:479
 msgid "Feedback"
 msgstr "意見回饋"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:453
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:476
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:454
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:477
 msgctxt "toast"
 msgid "Feedback sent to feed operator"
 msgstr "意見已提交給動態源維護者"
 
-#: src/Navigation.tsx:502
-#: src/Navigation.tsx:711
+#: src/Navigation.tsx:662
+#: src/Navigation.tsx:871
 #: src/screens/SavedFeeds.tsx:112
 #: src/screens/SavedFeeds.tsx:303
 #: src/screens/Search/SearchResults.tsx:114
@@ -6109,7 +6143,7 @@ msgstr "意見已提交給動態源維護者"
 #: src/view/screens/Feeds.tsx:508
 #: src/view/screens/Profile.tsx:246
 #: src/view/shell/desktop/LeftNav.tsx:802
-#: src/view/shell/Drawer.tsx:640
+#: src/view/shell/Drawer.tsx:651
 msgid "Feeds"
 msgstr "動態源"
 
@@ -6206,8 +6240,8 @@ msgstr "去跟隨更多帳號"
 msgid "Find and invite friends"
 msgstr "尋找並邀請朋友"
 
-#: src/Navigation.tsx:612
-#: src/Navigation.tsx:753
+#: src/Navigation.tsx:772
+#: src/Navigation.tsx:913
 msgid "Find Contacts"
 msgstr "尋找聯絡人"
 
@@ -6421,7 +6455,7 @@ msgstr "跟隨者可以加入"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:292
+#: src/Navigation.tsx:452
 #: src/screens/Profile/KnownFollowers.tsx:73
 msgid "Followers of @{0} that you know"
 msgstr "您認識的這些人也跟隨了 @{0}"
@@ -6488,7 +6522,7 @@ msgstr ""
 msgid "Following feed preferences"
 msgstr "「Following」（跟隨中）動態源選項"
 
-#: src/Navigation.tsx:414
+#: src/Navigation.tsx:574
 #: src/screens/Settings/FollowingFeedPreferences.tsx:57
 msgid "Following Feed Preferences"
 msgstr "「Following」（跟隨中）動態源選項"
@@ -6600,7 +6634,7 @@ msgstr ""
 msgid "Full-size format"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2264
+#: src/view/com/composer/Composer.tsx:2333
 msgid "Generate"
 msgstr ""
 
@@ -6608,7 +6642,7 @@ msgstr ""
 msgid "Generate a starter pack"
 msgstr "產生一個新手包"
 
-#: src/view/com/composer/Composer.tsx:2256
+#: src/view/com/composer/Composer.tsx:2325
 msgid "Generate Alt Text"
 msgstr ""
 
@@ -6741,12 +6775,12 @@ msgstr "開始吧"
 msgid "GIF"
 msgstr "GIF"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:620
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:621
 msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3095
+#: src/view/com/composer/Composer.tsx:3184
 msgid "GIF uploaded"
 msgstr "GIF 上傳成功"
 
@@ -6939,7 +6973,7 @@ msgctxt "toast"
 msgid "Group chat name updated"
 msgstr "已更新群組對話名稱"
 
-#: src/Navigation.tsx:680
+#: src/Navigation.tsx:840
 #: src/screens/Messages/ConversationSettings/index.tsx:113
 msgid "Group chat settings"
 msgstr "群組對話設定"
@@ -7052,7 +7086,7 @@ msgstr "有害或高風險活動"
 msgid "Harming or endangering minors"
 msgstr "傷害或危及未成年人安全"
 
-#: src/Navigation.tsx:664
+#: src/Navigation.tsx:824
 msgid "Hashtag"
 msgstr "標籤"
 
@@ -7138,7 +7172,7 @@ msgstr "隱藏列表"
 #: src/components/moderation/ContentHider.tsx:218
 #: src/components/moderation/LabelPreference.tsx:141
 #: src/components/moderation/PostHider.tsx:140
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1078
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1079
 #: src/lib/moderation/useLabelBehaviorDescription.ts:18
 #: src/lib/moderation/useLabelBehaviorDescription.ts:23
 #: src/lib/moderation/useLabelBehaviorDescription.ts:28
@@ -7195,8 +7229,8 @@ msgstr "隱藏密碼"
 msgid "Hide PDS badge for Bluesky-hosted accounts"
 msgstr ""
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:918
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:921
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:919
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:922
 msgid "Hide post for me"
 msgstr "為我隱藏貼文"
 
@@ -7210,13 +7244,13 @@ msgstr ""
 msgid "Hide replies"
 msgstr ""
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:932
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:942
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:933
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:943
 msgid "Hide reply for everyone"
 msgstr "為所有人隱藏回覆"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:918
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:921
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:919
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:922
 msgid "Hide reply for me"
 msgstr "為我隱藏回覆"
 
@@ -7229,19 +7263,19 @@ msgstr ""
 msgid "Hide this card"
 msgstr "隱藏這張卡片"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1075
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1076
 msgid "Hide this post?"
 msgstr "要隱藏這則貼文嗎？"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1075
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1110
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1076
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1111
 msgid "Hide this reply?"
 msgstr "要隱藏這則回覆嗎？"
 
 #: src/components/Post/Translated/index.tsx:216
 #: src/components/Post/Translated/index.tsx:350
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:804
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:806
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:805
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:807
 msgid "Hide translation"
 msgstr "隱藏翻譯"
 
@@ -7330,11 +7364,11 @@ msgstr "等一下！我們正在逐步開放上傳影片功能。您還在等候
 msgid "Holy Shit!"
 msgstr ""
 
-#: src/Navigation.tsx:930
-#: src/Navigation.tsx:951
+#: src/Navigation.tsx:1091
+#: src/Navigation.tsx:1112
 #: src/view/shell/bottom-bar/BottomBar.tsx:206
 #: src/view/shell/desktop/LeftNav.tsx:741
-#: src/view/shell/Drawer.tsx:550
+#: src/view/shell/Drawer.tsx:552
 msgid "Home"
 msgstr "首頁"
 
@@ -7440,7 +7474,7 @@ msgstr "如果您擁有自己的網域，可以將其設定為您的帳號代碼
 msgid "If you need to update your email, <0>click here</0>."
 msgstr "如果您需要更新電子信箱，請<0>點一下這裡</0>。"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1068
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1069
 msgid "If you remove this post, you won't be able to recover it."
 msgstr "一旦您刪除這則貼文，以後將無法再恢復。"
 
@@ -7574,7 +7608,7 @@ msgstr "匯入聯絡人來尋找您的朋友"
 msgid "Imported on {0}"
 msgstr "已於 {0} 匯入"
 
-#: src/Navigation.tsx:492
+#: src/Navigation.tsx:652
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:86
 #: src/screens/Settings/RunesSettings/index.tsx:38
 #: src/screens/Settings/RunesSettings/index.tsx:41
@@ -7674,7 +7708,7 @@ msgstr "使用者名稱或密碼錯誤"
 msgid "Inference"
 msgstr ""
 
-#: src/Navigation.tsx:527
+#: src/Navigation.tsx:687
 #: src/screens/Settings/RunesSettings/index.tsx:60
 #: src/screens/Settings/RunesSettings/index.tsx:63
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:126
@@ -7774,7 +7808,7 @@ msgstr "無效的群組對話邀請。"
 msgid "Invalid handle. Please try a different one."
 msgstr "無法使用這個帳號代碼，請選擇不同的代碼再試一次。"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:546
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:547
 msgctxt "toast"
 msgid "Invalid interaction settings."
 msgstr "無效的互動設定。"
@@ -7827,7 +7861,7 @@ msgid "Invite code required"
 msgstr ""
 
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:552
-#: src/view/shell/Drawer.tsx:145
+#: src/view/shell/Drawer.tsx:146
 msgid "Invite friends"
 msgstr "邀請朋友"
 
@@ -7919,7 +7953,7 @@ msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3010
+#: src/view/com/composer/Composer.tsx:3099
 msgid "Job ID: {0}"
 msgstr "作業 ID：{0}"
 
@@ -7974,12 +8008,12 @@ msgid "Kagi Translate"
 msgstr ""
 
 #: src/view/shell/desktop/RightNav.tsx:154
-#: src/view/shell/Drawer.tsx:820
+#: src/view/shell/Drawer.tsx:845
 msgid "Kawaii logo by <0>ovvie</0>"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1761
 #: src/view/com/composer/Composer.tsx:1771
+#: src/view/com/composer/Composer.tsx:1781
 #: src/view/com/composer/drafts/DraftsButton.tsx:142
 msgid "Keep editing"
 msgstr "繼續編輯"
@@ -8038,7 +8072,7 @@ msgstr "您帳號上的標記"
 msgid "Language"
 msgstr ""
 
-#: src/Navigation.tsx:265
+#: src/Navigation.tsx:425
 msgid "Language Settings"
 msgstr "語言設定"
 
@@ -8139,8 +8173,8 @@ msgctxt "english-only-resource"
 msgid "Learn more about verification on Bluesky"
 msgstr "深入瞭解 Bluesky 的驗證機制（英文）"
 
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:128
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:131
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:151
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:154
 msgid "Learn more about what is public on Bluesky."
 msgstr "深入瞭解在 Bluesky 上公開的內容。"
 
@@ -8269,7 +8303,7 @@ msgstr "喜歡"
 #. Like button, unliked state
 #. placeholder {0}: post.likeCount || 0
 #. placeholder {0}: shadow.likeCount || 0
-#: src/components/PostControls/index.tsx:499
+#: src/components/PostControls/index.tsx:496
 #: src/screens/PostThread/components/ReaderSeam.tsx:357
 msgid "Like ({0, plural, one {# like} other {# likes}})"
 msgstr "喜歡（{0, plural, other {# 個喜歡}}）"
@@ -8283,7 +8317,7 @@ msgstr "喜歡 10 則貼文"
 msgid "Like 10 posts to train the Discover feed"
 msgstr "喜歡 10 則貼文，以訓練「Discover」動態源"
 
-#: src/components/PostControls/index.tsx:602
+#: src/components/PostControls/index.tsx:599
 #: src/screens/PostThread/components/ReaderSeam.tsx:450
 msgid "Like as"
 msgstr ""
@@ -8298,13 +8332,13 @@ msgid "Like this labeler"
 msgstr "對此標記服務表示喜歡"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:346
+#: src/components/PostControls/index.tsx:343
 #: src/screens/PostThread/components/ReaderSeam.tsx:277
 msgid "Liked as @{0}"
 msgstr ""
 
-#: src/Navigation.tsx:343
-#: src/Navigation.tsx:348
+#: src/Navigation.tsx:503
+#: src/Navigation.tsx:508
 msgid "Liked by"
 msgstr "表示喜歡的使用者"
 
@@ -8363,7 +8397,7 @@ msgstr "喜歡您轉發的貼文"
 
 #: src/screens/PostThread/components/LikesStat.tsx:39
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:274
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:632
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:634
 msgid "Likes on this post"
 msgstr "這則貼文的喜歡數"
 
@@ -8380,7 +8414,7 @@ msgstr ""
 msgid "Link copied to clipboard"
 msgstr "已複製連結至剪貼簿"
 
-#: src/Navigation.tsx:298
+#: src/Navigation.tsx:458
 msgid "List"
 msgstr "列表"
 
@@ -8466,12 +8500,12 @@ msgctxt "toast"
 msgid "List unmuted"
 msgstr "成功取消靜音列表"
 
-#: src/Navigation.tsx:219
+#: src/Navigation.tsx:379
 #: src/view/screens/Lists.tsx:60
 #: src/view/screens/Profile.tsx:240
 #: src/view/screens/Profile.tsx:248
 #: src/view/shell/desktop/LeftNav.tsx:812
-#: src/view/shell/Drawer.tsx:655
+#: src/view/shell/Drawer.tsx:666
 msgid "Lists"
 msgstr "列表"
 
@@ -8591,7 +8625,7 @@ msgstr "鎖定此群組對話"
 msgid "Locked"
 msgstr "已鎖定"
 
-#: src/Navigation.tsx:373
+#: src/Navigation.tsx:533
 msgid "Log"
 msgstr "記錄檔"
 
@@ -8599,7 +8633,7 @@ msgstr "記錄檔"
 msgid "Logged out"
 msgstr "已登出"
 
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:107
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:130
 msgid "Logged-out visibility"
 msgstr "登出可見度"
 
@@ -8741,11 +8775,11 @@ msgstr "媒體"
 
 #. Example: "Media stored on John's iPhone"
 #. placeholder {0}: draft.draft.deviceName
-#: src/view/com/composer/drafts/DraftItem.tsx:119
+#: src/view/com/composer/drafts/DraftItem.tsx:131
 msgid "Media stored on {0}"
 msgstr "媒體儲存於 {0}"
 
-#: src/view/com/composer/drafts/DraftItem.tsx:117
+#: src/view/com/composer/drafts/DraftItem.tsx:129
 msgid "Media stored on another device"
 msgstr "媒體儲存於其他裝置"
 
@@ -8786,7 +8820,7 @@ msgstr "提及這些使用者"
 msgid "Menu"
 msgstr "選單"
 
-#: src/Navigation.tsx:482
+#: src/Navigation.tsx:642
 #: src/screens/Settings/RunesSettings/index.tsx:24
 #: src/screens/Settings/RunesSettings/index.tsx:27
 #: src/screens/Settings/RunesSettings/MenusSettings.tsx:56
@@ -8848,7 +8882,7 @@ msgstr "訊息內容太長了（{graphemeCount}/{MAX_DM_GRAPHEME_LENGTH}）"
 msgid "Message options"
 msgstr "訊息選項"
 
-#: src/Navigation.tsx:945
+#: src/Navigation.tsx:1106
 msgid "Messages"
 msgstr "訊息"
 
@@ -8864,7 +8898,7 @@ msgstr "當您封鎖對方時，其傳送的訊息將被隱藏。"
 msgid "microcosm.blue"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1835
+#: src/view/com/composer/Composer.tsx:1851
 #: src/view/com/feeds/ComposerPrompt.tsx:195
 msgid "MIKE, THE JARONA please!"
 msgstr ""
@@ -8877,11 +8911,11 @@ msgstr "輕度騷擾或霸凌"
 msgid "Misleading"
 msgstr "不實資訊"
 
-#: src/view/com/composer/drafts/DraftItem.tsx:131
+#: src/view/com/composer/drafts/DraftItem.tsx:143
 msgid "Missing media"
 msgstr "缺失媒體檔案"
 
-#: src/Navigation.tsx:224
+#: src/Navigation.tsx:384
 #: src/screens/Moderation/index.tsx:100
 #: src/screens/Settings/Settings.tsx:422
 msgid "Moderation"
@@ -8895,7 +8929,7 @@ msgstr "內容管理"
 msgid "Moderation details"
 msgstr "內容管理詳情"
 
-#: src/Navigation.tsx:467
+#: src/Navigation.tsx:627
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:34
 #: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:19
 msgid "Moderation labels"
@@ -8931,7 +8965,7 @@ msgstr "成功更新內容管理列表"
 msgid "Moderation lists"
 msgstr "內容管理列表"
 
-#: src/Navigation.tsx:229
+#: src/Navigation.tsx:389
 #: src/view/screens/ModerationModlists.tsx:60
 msgid "Moderation Lists"
 msgstr "內容管理列表"
@@ -8940,7 +8974,7 @@ msgstr "內容管理列表"
 msgid "moderation settings"
 msgstr "內容管理設定"
 
-#: src/Navigation.tsx:358
+#: src/Navigation.tsx:518
 msgid "Moderation states"
 msgstr "內容管理狀態"
 
@@ -8964,7 +8998,7 @@ msgid "More languages..."
 msgstr "更多語言……"
 
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:147
-#: src/view/com/composer/drafts/DraftItem.tsx:190
+#: src/view/com/composer/drafts/DraftItem.tsx:202
 #: src/view/com/profile/ProfileMenu.tsx:437
 #: src/view/com/profile/ProfileMenu.tsx:444
 msgid "More options"
@@ -8977,6 +9011,14 @@ msgstr "下移動態源"
 #: src/screens/SavedFeeds.tsx:478
 msgid "Move feed up"
 msgstr "上移動態源"
+
+#: src/view/com/composer/Composer.tsx:2037
+msgid "Move post down"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:1995
+msgid "Move post up"
+msgstr ""
 
 #: src/lib/interests.ts:64
 msgid "Movies"
@@ -9002,8 +9044,8 @@ msgstr "靜音"
 msgid "Mute {0}"
 msgstr "靜音 {0}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:997
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1003
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:998
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1004
 #: src/view/com/profile/ProfileMenu.tsx:830
 #: src/view/com/profile/ProfileMenu.tsx:837
 msgid "Mute account"
@@ -9059,13 +9101,13 @@ msgstr "僅隱藏包含該標籤的貼文"
 msgid "Mute this word until you unmute it"
 msgstr "將這個字詞靜音，直到您取消靜音為止"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:888
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:891
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:889
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:892
 msgid "Mute thread"
 msgstr "靜音討論串"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:901
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:903
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:902
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:904
 msgid "Mute words & tags"
 msgstr "靜音字詞或標籤"
 
@@ -9081,7 +9123,7 @@ msgstr "已靜音"
 msgid "Muted accounts"
 msgstr "已靜音帳號"
 
-#: src/Navigation.tsx:234
+#: src/Navigation.tsx:394
 #: src/view/screens/ModerationMutedAccounts.tsx:107
 msgid "Muted Accounts"
 msgstr "已靜音帳號"
@@ -9170,7 +9212,7 @@ msgstr "前往新手包"
 msgid "Navigates to the next screen"
 msgstr "前往下一個畫面"
 
-#: src/view/shell/Drawer.tsx:116
+#: src/view/shell/Drawer.tsx:117
 msgid "Navigates to your profile"
 msgstr "前往您的個人檔案"
 
@@ -9511,7 +9553,7 @@ msgstr "沒有人"
 
 #: src/screens/Settings/ActivityPrivacySettings.tsx:130
 #: src/screens/Settings/ActivityPrivacySettings.tsx:135
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:160
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:189
 msgctxt "enable for"
 msgid "No one"
 msgstr "沒有人"
@@ -9524,9 +9566,9 @@ msgstr "僅限發布者可以引用這則貼文。"
 msgid "No one can send messages"
 msgstr "沒有人可以傳送訊息"
 
-#: src/components/PostControls/index.tsx:314
+#: src/components/PostControls/index.tsx:311
 #: src/screens/PostThread/components/ReaderSeam.tsx:251
-#: src/view/com/composer/Composer.tsx:399
+#: src/view/com/composer/Composer.tsx:405
 msgid "No other accounts can reply to this post"
 msgstr ""
 
@@ -9683,7 +9725,7 @@ msgstr "此功能無法在這個平台上使用。"
 msgid "Not followed by anyone you’re following"
 msgstr "沒有被任何您認識的人跟隨"
 
-#: src/Navigation.tsx:209
+#: src/Navigation.tsx:369
 #: src/view/screens/Profile.tsx:135
 msgid "Not Found"
 msgstr "找不到"
@@ -9696,7 +9738,7 @@ msgstr "還沒準備好按下發布嗎？先把好點子收進草稿，靜待最
 msgid "Note about sharing"
 msgstr "關於分享的注意事項"
 
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:117
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:140
 msgid "Note: Bluesky is an open and public network. This setting only limits the visibility of your content on the Bluesky app and website, and other apps may not respect this setting. Your content may still be shown to logged-out users by other apps and websites."
 msgstr "註：Bluesky 是一個開放的公共社群網路。這項設定僅限制您的內容在 Bluesky 官方應用程式和網站上的可見度，其他第三方應用程式可能不會遵循這項設定。您的內容仍可能被其他應用程式和網站顯示給未登入的使用者。"
 
@@ -9709,8 +9751,8 @@ msgid "Nothing saved yet"
 msgstr "還沒有收藏任何內容"
 
 #: src/components/dialogs/NotificationSettingsDialog.tsx:72
-#: src/Navigation.tsx:619
-#: src/Navigation.tsx:706
+#: src/Navigation.tsx:779
+#: src/Navigation.tsx:866
 #: src/view/screens/Notifications.tsx:137
 msgid "Notification settings"
 msgstr "通知設定"
@@ -9720,8 +9762,8 @@ msgstr "通知設定"
 msgid "Notification sounds"
 msgstr "通知音效"
 
-#: src/Navigation.tsx:701
-#: src/Navigation.tsx:940
+#: src/Navigation.tsx:861
+#: src/Navigation.tsx:1101
 #: src/screens/Messages/Settings.tsx:255
 #: src/screens/Notifications/ActivityList.tsx:31
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:93
@@ -9732,7 +9774,7 @@ msgstr "通知音效"
 #: src/view/screens/Notifications.tsx:131
 #: src/view/shell/bottom-bar/BottomBar.tsx:305
 #: src/view/shell/desktop/LeftNav.tsx:761
-#: src/view/shell/Drawer.tsx:603
+#: src/view/shell/Drawer.tsx:606
 msgid "Notifications"
 msgstr "通知"
 
@@ -9794,7 +9836,7 @@ msgstr "好的"
 #: src/components/PetAccountAlert.tsx:57
 #: src/screens/Login/PasswordUpdatedForm.tsx:35
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:433
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:828
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:830
 msgid "Okay"
 msgstr "了解"
 
@@ -9841,7 +9883,7 @@ msgstr "至少有一個選擇的檔案為不支援的格式。"
 msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
 msgstr "至少有一個選擇的檔案太大了。最大檔案尺寸為 {VIDEO_MAX_SIZE_MB} MB。"
 
-#: src/view/com/composer/Composer.tsx:864
+#: src/view/com/composer/Composer.tsx:873
 msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
 msgstr "有一則或多則貼文內容過長，無法儲存為草稿。{MAX_DRAFT_GRAPHEME_LENGTH, plural, other {字數上限為 # 個字元。}}"
 
@@ -9854,7 +9896,7 @@ msgstr "只有{0}可以回覆。"
 #. placeholder {0}: result.accepted.length
 #. placeholder {1}: next.length
 #. placeholder {2}: next.length
-#: src/view/com/composer/Composer.tsx:263
+#: src/view/com/composer/Composer.tsx:268
 msgid "Only {0} of {1} {2, plural, one {image} other {images}} added; limit is {MAX_GALLERY_IMAGES}"
 msgstr "僅會保留前 {0} {2, plural, other {張圖片}}（您上傳了 {1} 張）；上限為 {MAX_GALLERY_IMAGES} 張圖片"
 
@@ -9872,7 +9914,7 @@ msgstr "只有跟隨者可以加入此群組對話。"
 
 #: src/screens/Settings/ActivityPrivacySettings.tsx:121
 #: src/screens/Settings/ActivityPrivacySettings.tsx:126
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:158
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:187
 msgid "Only followers who I follow"
 msgstr "僅限我回跟的跟隨者"
 
@@ -9981,7 +10023,7 @@ msgid "Open drawer menu"
 msgstr "開啟側邊選單"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2641
+#: src/view/com/composer/Composer.tsx:2717
 msgid "Open emoji picker"
 msgstr "開啟表情符號選擇器"
 
@@ -10016,8 +10058,8 @@ msgstr "開啟群組對話"
 msgid "Open group chat settings"
 msgstr "開啟群組對話設定"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:814
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:820
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:815
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:821
 msgid "Open in Google Translate"
 msgstr "在 Google 翻譯中開啟"
 
@@ -10104,6 +10146,10 @@ msgstr "開啟 {0} 動態源"
 #: src/view/com/composer/labels/LabelsBtn.tsx:63
 msgid "Opens a dialog to add a content warning to your post"
 msgstr "開啟對話框來向您的貼文加入內容警告"
+
+#: src/view/com/composer/tags/TagsBtn.tsx:67
+msgid "Opens a dialog to add tags to your post"
+msgstr ""
 
 #: src/screens/Login/components/AppServerDialog.tsx:83
 msgid "Opens a dialog to change the AppView used for feeds and profiles"
@@ -10209,7 +10255,7 @@ msgstr "開啟尋找與邀請朋友的設定"
 msgid "Opens the GIF picker dialog"
 msgstr "開啟 GIF 選擇對話框"
 
-#: src/view/shell/Drawer.tsx:147
+#: src/view/shell/Drawer.tsx:148
 msgid "Opens the invite friends sheet to share your profile"
 msgstr "開啟朋友邀請畫面來分享您的個人檔案"
 
@@ -10426,14 +10472,14 @@ msgstr "被 {ownerName} 跟隨的人可以申請加入"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:285
+#: src/Navigation.tsx:445
 #: src/screens/Profile/ProfileFollows.tsx:29
 msgid "People followed by @{0}"
 msgstr "被 @{0} 跟隨的人"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:278
+#: src/Navigation.tsx:438
 #: src/screens/Profile/ProfileFollowers.tsx:28
 msgid "People following @{0}"
 msgstr "跟隨 @{0} 的人"
@@ -10496,7 +10542,7 @@ msgstr ""
 msgid "Pet label"
 msgstr ""
 
-#: src/Navigation.tsx:588
+#: src/Navigation.tsx:748
 #: src/screens/Settings/PetLabelSettings.tsx:100
 msgid "Pet Label"
 msgstr ""
@@ -10545,8 +10591,8 @@ msgstr "釘選到首頁"
 msgid "Pin to Home"
 msgstr "釘選到首頁"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:735
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:740
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:736
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:741
 msgid "Pin to your profile"
 msgstr "釘選到您的個人檔案"
 
@@ -10776,7 +10822,7 @@ msgid "Please sign in as @{0}"
 msgstr "請以 @{0} 的身分登入"
 
 #. placeholder {0}: activeAccount.handle
-#: src/view/com/composer/Composer.tsx:1221
+#: src/view/com/composer/Composer.tsx:1230
 msgid "Please sign in as @{0} to post as them"
 msgstr ""
 
@@ -10814,7 +10860,7 @@ msgstr "政治"
 msgid "Porn"
 msgstr "色情"
 
-#: src/view/com/composer/Composer.tsx:2141
+#: src/view/com/composer/Composer.tsx:2210
 msgctxt "action"
 msgid "Post"
 msgstr "發布"
@@ -10840,13 +10886,13 @@ msgstr "發布一張照片"
 msgid "Post a video"
 msgstr "發布一段影片"
 
-#: src/view/com/composer/Composer.tsx:2139
+#: src/view/com/composer/Composer.tsx:2208
 msgctxt "action"
 msgid "Post All"
 msgstr "全部發布"
 
-#: src/view/com/composer/Composer.tsx:1770
-#: src/view/com/composer/Composer.tsx:1778
+#: src/view/com/composer/Composer.tsx:1780
+#: src/view/com/composer/Composer.tsx:1788
 msgid "Post anyway"
 msgstr "仍然發布"
 
@@ -10856,10 +10902,10 @@ msgstr "貼文已被封鎖"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:311
-#: src/Navigation.tsx:318
-#: src/Navigation.tsx:325
-#: src/Navigation.tsx:332
+#: src/Navigation.tsx:471
+#: src/Navigation.tsx:478
+#: src/Navigation.tsx:485
+#: src/Navigation.tsx:492
 #: src/screens/Post/PostLikedBy.tsx:27
 #: src/screens/Post/PostQuotes.tsx:39
 #: src/screens/Post/PostRepostedBy.tsx:27
@@ -10872,18 +10918,18 @@ msgctxt "toast"
 msgid "Post deleted"
 msgstr "成功刪除貼文"
 
-#: src/lib/api/index.ts:241
+#: src/lib/api/index.ts:243
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "貼文發布失敗。請檢查您的網路連線狀態後再試一次。"
 
-#: src/view/com/composer/Composer.tsx:1905
+#: src/view/com/composer/Composer.tsx:1930
 msgid "Post from account"
 msgstr ""
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:172
-#: src/screens/PostThread/components/ThreadItemPost.tsx:137
-#: src/screens/PostThread/components/ThreadItemReaderSegment.tsx:90
-#: src/screens/PostThread/components/ThreadItemTreePost.tsx:116
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:173
+#: src/screens/PostThread/components/ThreadItemPost.tsx:138
+#: src/screens/PostThread/components/ThreadItemReaderSegment.tsx:91
+#: src/screens/PostThread/components/ThreadItemTreePost.tsx:117
 #: src/screens/VideoFeed/index.tsx:562
 msgid "Post has been deleted"
 msgstr "貼文已被刪除"
@@ -10902,7 +10948,7 @@ msgstr "這則貼文被您隱藏"
 msgid "Post interaction settings"
 msgstr "貼文互動設定"
 
-#: src/Navigation.tsx:245
+#: src/Navigation.tsx:405
 #: src/screens/ModerationInteractionSettings/index.tsx:35
 msgid "Post Interaction Settings"
 msgstr "貼文互動設定"
@@ -10941,7 +10987,7 @@ msgstr ""
 msgid "Post type"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:287
+#: src/components/Post/Embed/index.tsx:288
 msgid "Post unavailable"
 msgstr ""
 
@@ -10950,7 +10996,7 @@ msgctxt "toast"
 msgid "Post unpinned"
 msgstr "成功取消釘選貼文"
 
-#: src/view/com/composer/Composer.tsx:1776
+#: src/view/com/composer/Composer.tsx:1786
 msgid "Post without alt text?"
 msgstr ""
 
@@ -11050,10 +11096,10 @@ msgstr "隱私"
 msgid "Privacy and security"
 msgstr "隱私與安全"
 
-#: src/Navigation.tsx:596
-#: src/Navigation.tsx:604
+#: src/Navigation.tsx:756
+#: src/Navigation.tsx:764
 #: src/screens/Settings/ActivityPrivacySettings.tsx:41
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:45
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:67
 msgid "Privacy and Security"
 msgstr "隱私與安全"
 
@@ -11064,12 +11110,12 @@ msgstr "隱私與安全設定"
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:36
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:103
-#: src/Navigation.tsx:383
+#: src/Navigation.tsx:543
 #: src/screens/Settings/AboutSettings.tsx:103
 #: src/screens/Settings/AboutSettings.tsx:106
 #: src/view/screens/PrivacyPolicy.tsx:25
-#: src/view/shell/Drawer.tsx:815
-#: src/view/shell/Drawer.tsx:816
+#: src/view/shell/Drawer.tsx:840
+#: src/view/shell/Drawer.tsx:841
 msgid "Privacy Policy"
 msgstr "隱私權政策"
 
@@ -11077,11 +11123,11 @@ msgstr "隱私權政策"
 msgid "Privacy violation of a minor"
 msgstr "侵犯未成年者隱私"
 
-#: src/view/com/composer/Composer.tsx:3084
+#: src/view/com/composer/Composer.tsx:3173
 msgid "Processing GIF..."
 msgstr "正在處理 GIF……"
 
-#: src/view/com/composer/Composer.tsx:3086
+#: src/view/com/composer/Composer.tsx:3175
 msgid "Processing video..."
 msgstr "正在處理影片……"
 
@@ -11097,12 +11143,12 @@ msgstr "個人檔案"
 #: src/view/com/profile/ProfileMenu.tsx:601
 #: src/view/shell/bottom-bar/BottomBar.tsx:350
 #: src/view/shell/desktop/LeftNav.tsx:835
-#: src/view/shell/Drawer.tsx:115
-#: src/view/shell/Drawer.tsx:706
+#: src/view/shell/Drawer.tsx:116
+#: src/view/shell/Drawer.tsx:717
 msgid "Profile"
 msgstr "個人檔案"
 
-#: src/Navigation.tsx:459
+#: src/Navigation.tsx:619
 #: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:19
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:29
 msgid "Profile badges"
@@ -11122,7 +11168,7 @@ msgctxt "toast"
 msgid "Profile updated"
 msgstr "成功更新個人檔案"
 
-#: src/Navigation.tsx:507
+#: src/Navigation.tsx:667
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:120
 #: src/screens/Settings/RunesSettings/ProfileSettings.tsx:55
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:55
@@ -11149,22 +11195,22 @@ msgid "Public, sharable lists of users to mute or block in bulk."
 msgstr "公開、可分享的列表，可用來批次靜音或封鎖帳號。"
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:2125
+#: src/view/com/composer/Composer.tsx:2194
 msgid "Publish post"
 msgstr "發布貼文"
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:2120
+#: src/view/com/composer/Composer.tsx:2189
 msgid "Publish posts"
 msgstr "發布貼文"
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:2109
+#: src/view/com/composer/Composer.tsx:2178
 msgid "Publish replies"
 msgstr "發布回覆"
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:2114
+#: src/view/com/composer/Composer.tsx:2183
 msgid "Publish reply"
 msgstr "發布回覆"
 
@@ -11201,15 +11247,15 @@ msgstr "QR Code 已儲存至您的裝置相簿！"
 #: src/components/PostControls/RepostButton.tsx:205
 #: src/components/PostControls/RepostButton.web.tsx:91
 #: src/components/PostControls/RepostButton.web.tsx:98
-#: src/view/com/composer/drafts/DraftItem.tsx:137
+#: src/view/com/composer/drafts/DraftItem.tsx:149
 msgid "Quote post"
 msgstr "引用貼文"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:496
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:497
 msgid "Quote post was re-attached"
 msgstr "引用已重新連結"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:495
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:496
 msgid "Quote post was successfully detached"
 msgstr "成功分離貼文引用"
 
@@ -11229,7 +11275,7 @@ msgid "Quotes"
 msgstr "引用"
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:260
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:618
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:620
 msgid "Quotes of this post"
 msgstr "引用這則貼文"
 
@@ -11241,8 +11287,8 @@ msgstr "超過速率限制 —— 您在短時間內嘗試變更帳號代碼的�
 msgid "Rate limit exceeded. Please try again later."
 msgstr "暫時達到速率限制，請稍後再試。"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:957
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:967
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:958
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:968
 msgid "Re-attach quote"
 msgstr "重新連結引用"
 
@@ -11395,13 +11441,13 @@ msgstr ""
 msgid "Redirects to your authorization server"
 msgstr ""
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:725
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:749
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:751
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:726
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:750
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:752
 msgid "Redraft"
 msgstr ""
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:722
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:723
 msgid "Redraft this post?"
 msgstr ""
 
@@ -11467,6 +11513,10 @@ msgstr "要移除 {displayName} 嗎？"
 
 #: src/screens/Search/components/SearchHistory.tsx:184
 msgid "Remove {q}"
+msgstr ""
+
+#: src/view/com/composer/tags/TagsBtn.tsx:254
+msgid "Remove #{tag}"
 msgstr ""
 
 #: src/screens/Settings/Settings.tsx:968
@@ -11619,13 +11669,13 @@ msgstr "撤回驗證"
 msgid "Remove your verification for this account?"
 msgstr "要撤回您對這個帳號的驗證嗎？"
 
-#: src/components/Post/Embed/index.tsx:301
-#: src/components/Post/Embed/index.tsx:371
+#: src/components/Post/Embed/index.tsx:302
+#: src/components/Post/Embed/index.tsx:372
 msgid "Removed by author"
 msgstr "已被發布者刪除"
 
-#: src/components/Post/Embed/index.tsx:302
-#: src/components/Post/Embed/index.tsx:369
+#: src/components/Post/Embed/index.tsx:303
+#: src/components/Post/Embed/index.tsx:370
 msgid "Removed by you"
 msgstr "由您刪除"
 
@@ -11655,19 +11705,19 @@ msgid "Removed from your feeds"
 msgstr "成功從您的動態源中刪除"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:345
+#: src/components/PostControls/index.tsx:342
 #: src/screens/PostThread/components/ReaderSeam.tsx:276
 msgid "Removed like as @{0}"
 msgstr ""
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:373
+#: src/components/PostControls/index.tsx:370
 #: src/screens/PostThread/components/ReaderSeam.tsx:302
 msgid "Removed repost as @{0}"
 msgstr ""
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:408
+#: src/components/PostControls/index.tsx:405
 msgid "Removed save as @{0}"
 msgstr ""
 
@@ -11766,18 +11816,18 @@ msgstr "這則貼文的回覆已關閉。"
 msgid "Reply"
 msgstr "回覆"
 
-#: src/view/com/composer/Composer.tsx:2137
+#: src/view/com/composer/Composer.tsx:2206
 msgctxt "action"
 msgid "Reply"
 msgstr "回覆"
 
 #. Accessibility label for the reply button, verb form followed by number of replies and noun form
 #. placeholder {0}: post.replyCount || 0
-#: src/components/PostControls/index.tsx:436
+#: src/components/PostControls/index.tsx:433
 msgid "Reply ({0, plural, one {# reply} other {# replies}})"
 msgstr "回覆（{0, plural, other {# 則回覆}}）"
 
-#: src/components/PostControls/index.tsx:565
+#: src/components/PostControls/index.tsx:562
 #: src/screens/PostThread/components/ReaderSeam.tsx:417
 msgid "Reply as"
 msgstr ""
@@ -11800,12 +11850,12 @@ msgstr "由此討論串的發布者選擇的回覆設定"
 msgid "Reply sorting"
 msgstr "回覆排序"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:534
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:535
 msgctxt "toast"
 msgid "Reply visibility updated"
 msgstr "成功更新回覆可見度"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:533
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:534
 msgid "Reply was successfully hidden"
 msgstr "成功隱藏回覆"
 
@@ -11848,8 +11898,8 @@ msgstr "檢舉列表"
 msgid "Report message"
 msgstr "檢舉訊息"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1023
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1025
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1024
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1026
 msgid "Report post"
 msgstr "檢舉貼文"
 
@@ -11928,7 +11978,7 @@ msgstr "轉發"
 msgid "Repost ({0, plural, one {# repost} other {# reposts}})"
 msgstr "轉發（{0, plural, other {# 則轉發}}）"
 
-#: src/components/PostControls/index.tsx:585
+#: src/components/PostControls/index.tsx:582
 #: src/screens/PostThread/components/ReaderSeam.tsx:435
 msgid "Repost as"
 msgstr ""
@@ -11946,7 +11996,7 @@ msgid "Repost or quote post"
 msgstr "轉發或引用貼文"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:374
+#: src/components/PostControls/index.tsx:371
 #: src/screens/PostThread/components/ReaderSeam.tsx:303
 msgid "Reposted as @{0}"
 msgstr ""
@@ -11977,7 +12027,7 @@ msgid "Reposts Hidden"
 msgstr ""
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:242
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:604
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:606
 msgid "Reposts of this post"
 msgstr "轉發這則貼文"
 
@@ -12028,7 +12078,7 @@ msgstr "已送出申請"
 msgid "Requests"
 msgstr "邀請"
 
-#: src/Navigation.tsx:685
+#: src/Navigation.tsx:845
 #: src/screens/Messages/JoinRequests.tsx:59
 #: src/screens/Messages/JoinRequests.tsx:425
 msgid "Requests to join"
@@ -12227,7 +12277,7 @@ msgstr "顯示密碼"
 msgid "Reverse order"
 msgstr ""
 
-#: src/Navigation.tsx:475
+#: src/Navigation.tsx:635
 #: src/screens/Settings/RunesSettings/index.tsx:23
 #: src/screens/Settings/Settings.tsx:486
 #: src/screens/Settings/Settings.tsx:489
@@ -12284,7 +12334,7 @@ msgstr "傷心 GIFs"
 msgid "Save"
 msgstr "儲存"
 
-#: src/components/PostControls/index.tsx:623
+#: src/components/PostControls/index.tsx:620
 msgid "Save as"
 msgstr ""
 
@@ -12301,7 +12351,7 @@ msgstr "儲存出生日期"
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:273
 #: src/screens/Settings/Settings.tsx:388
 #: src/screens/Settings/Settings.tsx:395
-#: src/view/com/composer/Composer.tsx:1751
+#: src/view/com/composer/Composer.tsx:1761
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr "儲存變更"
@@ -12310,17 +12360,17 @@ msgstr "儲存變更"
 msgid "Save Changes"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1723
+#: src/view/com/composer/Composer.tsx:1733
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
 msgid "Save changes?"
 msgstr "儲存變更？"
 
-#: src/view/com/composer/Composer.tsx:1751
+#: src/view/com/composer/Composer.tsx:1761
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save draft"
 msgstr "儲存草稿"
 
-#: src/view/com/composer/Composer.tsx:1725
+#: src/view/com/composer/Composer.tsx:1735
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
 msgid "Save draft?"
 msgstr "儲存草稿？"
@@ -12356,13 +12406,13 @@ msgid "Save to my feeds"
 msgstr "儲存到我的動態源"
 
 #: src/view/shell/desktop/LeftNav.tsx:822
-#: src/view/shell/Drawer.tsx:681
+#: src/view/shell/Drawer.tsx:692
 msgctxt "link to bookmarks screen"
 msgid "Saved"
 msgstr "收藏"
 
 #. placeholder {0}: account.handle
-#: src/components/PostControls/index.tsx:409
+#: src/components/PostControls/index.tsx:406
 msgid "Saved as @{0}"
 msgstr ""
 
@@ -12372,7 +12422,7 @@ msgid "Saved Feeds"
 msgstr "已儲存的動態源"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:145
-#: src/Navigation.tsx:745
+#: src/Navigation.tsx:905
 #: src/screens/Bookmarks.tsx:59
 msgid "Saved Posts"
 msgstr "貼文收藏"
@@ -12416,7 +12466,7 @@ msgstr "掃描"
 
 #: src/features/inviteFriends/InviteScannerScreen.tsx:82
 #: src/features/inviteFriends/InviteScannerScreen.web.tsx:23
-#: src/Navigation.tsx:363
+#: src/Navigation.tsx:523
 msgid "Scan QR code"
 msgstr "掃描 QR Code"
 
@@ -12466,7 +12516,7 @@ msgstr "搜尋"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:304
+#: src/Navigation.tsx:464
 #: src/screens/Profile/ProfileSearch.tsx:24
 #: src/screens/Profile/ProfileSearch.tsx:40
 msgid "Search @{0}'s posts"
@@ -12876,7 +12926,7 @@ msgstr "傳送電子郵件"
 msgid "Send error report"
 msgstr "提交錯誤報告"
 
-#: src/view/shell/Drawer.tsx:471
+#: src/view/shell/Drawer.tsx:472
 msgid "Send feedback"
 msgstr "提交意見"
 
@@ -12975,10 +13025,10 @@ msgstr ""
 msgid "Sets email for password reset"
 msgstr "設定用於重設密碼的電子郵件"
 
-#: src/Navigation.tsx:260
+#: src/Navigation.tsx:420
 #: src/screens/Settings/Settings.tsx:189
 #: src/view/shell/desktop/LeftNav.tsx:845
-#: src/view/shell/Drawer.tsx:719
+#: src/view/shell/Drawer.tsx:730
 msgid "Settings"
 msgstr "設定"
 
@@ -12990,7 +13040,7 @@ msgstr ""
 msgid "Settings for activity from others"
 msgstr "來自其他人的動態通知設定"
 
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:85
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:108
 msgid "Settings for allowing others to be notified of your posts"
 msgstr "允許其他人接收您的貼文發布通知設定"
 
@@ -13045,7 +13095,7 @@ msgctxt "toast"
 msgid "Settings saved"
 msgstr "成功儲存設定"
 
-#: src/Navigation.tsx:542
+#: src/Navigation.tsx:702
 #: src/screens/Settings/RunesSettings/index.tsx:71
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:83
 msgid "Settings sync"
@@ -13172,7 +13222,7 @@ msgstr "分享您的聯絡人來尋找朋友"
 msgid "Share your thoughts…"
 msgstr "分享您的想法……"
 
-#: src/Navigation.tsx:368
+#: src/Navigation.tsx:528
 msgid "Shared Preferences Tester"
 msgstr "共用偏好測試器"
 
@@ -13185,6 +13235,18 @@ msgstr "分享您的年齡層僅會揭露與您 Apple 帳號相關聯的資訊�
 #: src/ageAssurance/components/DeviceSignalsNotice.tsx:43
 msgid "Sharing your age range reveals only the range associated with your Google Account – for example, that you’re at least 18. <0>Your exact age and birthday are never shared,</0> and this data never leaves this device. Therefore, it only enables access on this device. Alternatively, <1>you can use our trusted partner, KWS</1>, to complete your verification and enable access on all platforms."
 msgstr "分享您的年齡層僅會揭露與您 Google 帳號相關聯的資訊（例如：您已年滿 18 歲）。<0>您的確切年齡和生日絕不會被分享，</0>且此資訊絕不會離開此裝置，故此功能僅能為此裝置解除限制。或者，<1>您可以使用我們信任的合作夥伴 KWS</1> 來完成驗證，以在所有平台上啟用存取權限。"
+
+#: src/view/com/composer/Composer.tsx:2038
+msgid "Shortcut: Alt plus Down Arrow"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:2741
+msgid "Shortcut: Alt plus Enter"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:1996
+msgid "Shortcut: Alt plus Up Arrow"
+msgstr ""
 
 #: src/components/moderation/ContentHider.tsx:218
 #: src/components/moderation/LabelPreference.tsx:143
@@ -13263,8 +13325,8 @@ msgstr ""
 msgid "Show group chat updates"
 msgstr "顯示群組對話更新"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:860
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:862
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:861
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:863
 msgid "Show less like this"
 msgstr "減少顯示類似內容"
 
@@ -13280,8 +13342,8 @@ msgstr "顯示可供選擇的使用者列表"
 msgid "Show more"
 msgstr ""
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:852
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:854
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:853
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:855
 msgid "Show more like this"
 msgstr "顯示更多類似內容"
 
@@ -13321,8 +13383,8 @@ msgstr "顯示回覆"
 msgid "Show replies as"
 msgstr "顯示回覆為"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:931
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:941
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:932
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:942
 msgid "Show reply for everyone"
 msgstr "為所有人顯示回覆"
 
@@ -13368,7 +13430,7 @@ msgid "Shown in thread views, expanded by default"
 msgstr ""
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:373
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:769
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:771
 msgid "Shows information about when this post was created"
 msgstr "顯示有關此貼文建立時間的資訊"
 
@@ -13455,8 +13517,8 @@ msgstr "登入 Bluesky 或建立新的帳號"
 msgid "Sign in to request access to this group chat."
 msgstr "登入以申請加入此群組對話。"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:838
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:840
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:839
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:841
 msgid "Sign in to view post"
 msgstr "登入以檢視貼文"
 
@@ -13506,7 +13568,7 @@ msgstr "需要登入"
 msgid "Signed in as @{0}"
 msgstr "以 @{0} 的身分登入"
 
-#: src/Navigation.tsx:214
+#: src/Navigation.tsx:374
 msgid "Signing in..."
 msgstr ""
 
@@ -13536,7 +13598,7 @@ msgstr "跳過"
 msgid "Skip contact sharing and continue to the app"
 msgstr "略過分享聯絡人並繼續使用應用程式"
 
-#: src/view/com/composer/Composer.tsx:1768
+#: src/view/com/composer/Composer.tsx:1778
 msgid "Skip empty posts?"
 msgstr "跳過空白貼文？"
 
@@ -13689,8 +13751,8 @@ msgstr "看起來不太對勁？讓我們知道。"
 msgid "Sorry, we're unable to load account suggestions at this time."
 msgstr "很抱歉，我們目前無法載入帳號建議。"
 
-#: src/App.tsx:140
-#: src/App.web.tsx:233
+#: src/App.tsx:141
+#: src/App.web.tsx:234
 msgid "Sorry! Your session expired. Please sign in again."
 msgstr "抱歉！您的登入階段已過期。請重新登入。"
 
@@ -13766,8 +13828,8 @@ msgstr "開始對話"
 msgid "Start chat with {displayName}"
 msgstr "與 {displayName} 開始對話"
 
-#: src/Navigation.tsx:716
-#: src/Navigation.tsx:721
+#: src/Navigation.tsx:876
+#: src/Navigation.tsx:881
 #: src/screens/StarterPack/Wizard/index.tsx:198
 msgid "Starter Pack"
 msgstr "新手包"
@@ -13830,7 +13892,7 @@ msgstr "已清除儲存資料，請立即重新啟動應用程式。"
 msgid "Stored as part of a secure code for matching with others"
 msgstr "儲存為安全代碼的一部分，以匹配其他人"
 
-#: src/Navigation.tsx:353
+#: src/Navigation.tsx:513
 #: src/screens/Settings/Settings.tsx:705
 msgid "Storybook"
 msgstr "故事書"
@@ -13968,7 +14030,7 @@ msgstr "性暗示"
 msgid "Sunlight"
 msgstr ""
 
-#: src/Navigation.tsx:378
+#: src/Navigation.tsx:538
 #: src/view/screens/Support.tsx:25
 #: src/view/screens/Support.tsx:28
 msgid "Support"
@@ -13998,12 +14060,12 @@ msgstr "已停權的帳號無法參與對話。"
 msgid "Switch account"
 msgstr "切換帳號"
 
-#: src/components/EphemeralAccountSwitcher.tsx:262
-#: src/components/EphemeralAccountSwitcher.tsx:273
-#: src/components/EphemeralAccountSwitcher.tsx:286
-#: src/components/EphemeralAccountSwitcher.tsx:426
-#: src/components/EphemeralAccountSwitcher.tsx:469
-#: src/components/EphemeralAccountSwitcher.tsx:489
+#: src/components/EphemeralAccountSwitcher.tsx:282
+#: src/components/EphemeralAccountSwitcher.tsx:289
+#: src/components/EphemeralAccountSwitcher.tsx:302
+#: src/components/EphemeralAccountSwitcher.tsx:442
+#: src/components/EphemeralAccountSwitcher.tsx:485
+#: src/components/EphemeralAccountSwitcher.tsx:505
 #: src/view/shell/desktop/LeftNav.tsx:138
 msgid "Switch accounts"
 msgstr "切換帳號"
@@ -14054,8 +14116,13 @@ msgstr "系統"
 msgid "System log"
 msgstr "系統記錄"
 
-#: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:168
-msgid "Tab icons"
+#: src/view/com/composer/tags/TagsBtn.tsx:66
+#: src/view/com/composer/tags/TagsBtn.tsx:76
+msgid "Tags"
+msgstr ""
+
+#: src/view/com/composer/tags/TagsBtn.tsx:189
+msgid "Tags help people find your post. They are stored separately from the post text, so they do not count toward the character limit."
 msgstr ""
 
 #: src/components/dialogs/MutedWords.tsx:292
@@ -14197,12 +14264,12 @@ msgstr "條款"
 #: src/components/dialogs/BirthDateSettings.tsx:191
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:31
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:98
-#: src/Navigation.tsx:388
+#: src/Navigation.tsx:548
 #: src/screens/Settings/AboutSettings.tsx:95
 #: src/screens/Settings/AboutSettings.tsx:98
 #: src/view/screens/TermsOfService.tsx:25
-#: src/view/shell/Drawer.tsx:808
-#: src/view/shell/Drawer.tsx:810
+#: src/view/shell/Drawer.tsx:833
+#: src/view/shell/Drawer.tsx:835
 msgid "Terms of Service"
 msgstr "服務條款"
 
@@ -14471,7 +14538,7 @@ msgid "There was an issue fetching notifications. Tap here to try again."
 msgstr "取得通知時發生問題，按這裡重試。"
 
 #: src/screens/Search/Explore.tsx:1015
-#: src/view/com/posts/PostFeed.tsx:946
+#: src/view/com/posts/PostFeed.tsx:996
 msgid "There was an issue fetching posts. Tap here to try again."
 msgstr "取得貼文時發生問題，按這裡重試。"
 
@@ -14504,9 +14571,9 @@ msgid "There was an issue updating your feeds, please check your internet connec
 msgstr "更新動態源時發生問題，請檢查您的網路連線狀態後再試一次。"
 
 #. placeholder {0}: e.toString()
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:644
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:667
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:687
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:645
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:668
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:688
 #: src/screens/Messages/ConversationSettings/Member.tsx:75
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:114
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:127
@@ -14710,7 +14777,7 @@ msgstr "這項內容需要登入 Bluesky 帳號才能檢視。"
 msgid "This conversation is locked."
 msgstr "此對話已鎖定。"
 
-#: src/view/com/composer/drafts/DraftItem.tsx:240
+#: src/view/com/composer/drafts/DraftItem.tsx:252
 msgid "This draft will be permanently deleted."
 msgstr "這份草稿將被永久刪除。"
 
@@ -14898,7 +14965,7 @@ msgstr "這個使用者封鎖了您"
 #. placeholder {0}: niceDate(i18n, createdAt)
 #. placeholder {1}: niceDate(i18n, indexedAt)
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:414
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:809
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:811
 msgid "This post claims to have been created on <0>{0}</0>, but was first seen by Bluesky on <1>{1}</1>."
 msgstr "這則貼文宣告的發布時間為 <0>{0}</0>，但首次出現在 Bluesky 的時間是 <1>{1}</1>。"
 
@@ -14914,11 +14981,11 @@ msgstr "這則貼文僅限已登入使用者可以檢視。"
 msgid "This post was deleted by its author"
 msgstr "這則貼文已被發布者刪除"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1076
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1077
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr "這則貼文將會從動態及討論串中隱藏，之後將無法取消。"
 
-#: src/view/com/composer/Composer.tsx:1316
+#: src/view/com/composer/Composer.tsx:1325
 msgid "This post's author has disabled quote posts."
 msgstr "這則貼文的發布者拒絕引用貼文。"
 
@@ -14926,7 +14993,7 @@ msgstr "這則貼文的發布者拒絕引用貼文。"
 msgid "This profile is only visible to logged-in users. It won't be visible to people who aren't signed in."
 msgstr "此個人檔案僅限已登入使用者可以檢視。未登入者則無法查看。"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1111
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1112
 msgid "This reply will be sorted into a hidden section at the bottom of your thread and will mute notifications for subsequent replies - both for yourself and others."
 msgstr "這則回覆將被折疊到您討論串底部的隱藏部分，並將為您自己和其他人靜音後續回覆的通知。"
 
@@ -14950,6 +15017,10 @@ msgstr "這應該會在下列位置建立一個網域名稱記錄："
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:214
 msgid "This should only take a few minutes."
 msgstr "這應該只需要幾分鐘。"
+
+#: src/view/com/composer/tags/TagsBtn.tsx:121
+msgid "This tag is already added"
+msgstr ""
 
 #: src/components/verification/VerificationCreatePrompt.tsx:94
 msgid "This user does not have a display name, and therefore cannot be verified."
@@ -15024,7 +15095,7 @@ msgstr "這會建立一個與此新手包相同名稱、描述及成員的列表
 msgid "This will delete \"{0}\" from your muted words. You can always add it back later."
 msgstr "這將會把「{0}」從您的靜音字詞中刪除。您隨時可以重新新增回來。"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:723
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:724
 msgid "This will delete the original post and open the composer with its content."
 msgstr ""
 
@@ -15037,7 +15108,7 @@ msgstr "這會永久刪除您的 Bluesky 帳號 <0>{currentHandle}</0> 和所有
 msgid "This will remove @{0} from the quick access list."
 msgstr "這將從快速存取列表中移除 @{0}。"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1104
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1105
 msgid "This will remove your post from this quote post for all users, and replace it with a placeholder."
 msgstr "您的貼文將從這則引用貼文中刪除，並取代為一個佔位標記。"
 
@@ -15065,7 +15136,7 @@ msgstr "討論串選項"
 msgid "Threaded"
 msgstr "樹狀模式"
 
-#: src/Navigation.tsx:421
+#: src/Navigation.tsx:581
 msgid "Threads Preferences"
 msgstr "討論串選項"
 
@@ -15176,7 +15247,7 @@ msgstr "熱門"
 msgid "Top replies first"
 msgstr "熱門回覆優先"
 
-#: src/Navigation.tsx:669
+#: src/Navigation.tsx:829
 msgid "Topic"
 msgstr "話題"
 
@@ -15188,8 +15259,8 @@ msgstr ""
 #: src/components/dms/MessageContextMenu.tsx:194
 #: src/components/Post/Translated/index.tsx:150
 #: src/components/Post/Translated/index.tsx:157
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:815
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:821
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:816
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:822
 msgid "Translate"
 msgstr "翻譯"
 
@@ -15201,8 +15272,8 @@ msgstr "已翻譯"
 msgid "Translating"
 msgstr "正在翻譯"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:796
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:798
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:797
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:799
 msgid "Translating…"
 msgstr "正在翻譯……"
 
@@ -15300,7 +15371,7 @@ msgstr "電視節目"
 msgid "Twilight"
 msgstr ""
 
-#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:65
+#: src/screens/Settings/PrivacyAndSecuritySettings.tsx:87
 msgid "Two-factor authentication (2FA)"
 msgstr "雙重驗證 (2FA)"
 
@@ -15509,7 +15580,7 @@ msgstr "取消喜歡"
 #. Like button, liked state
 #. placeholder {0}: post.likeCount || 0
 #. placeholder {0}: shadow.likeCount || 0
-#: src/components/PostControls/index.tsx:491
+#: src/components/PostControls/index.tsx:488
 #: src/screens/PostThread/components/ReaderSeam.tsx:350
 msgid "Unlike ({0, plural, one {# like} other {# likes}})"
 msgstr "取消喜歡（{0, plural, other {# 個喜歡}}）"
@@ -15539,8 +15610,8 @@ msgstr "取消靜音"
 msgid "Unmute {0}"
 msgstr "取消靜音 {0}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:996
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1002
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:997
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1003
 #: src/view/com/profile/ProfileMenu.tsx:829
 #: src/view/com/profile/ProfileMenu.tsx:835
 msgid "Unmute account"
@@ -15559,8 +15630,8 @@ msgstr "取消靜音列表"
 msgid "Unmute this group chat"
 msgstr "取消靜音此群組對話"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:888
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:891
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:889
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:892
 msgid "Unmute thread"
 msgstr "取消靜音討論串"
 
@@ -15589,8 +15660,8 @@ msgstr "取消釘選動態源"
 msgid "Unpin from home"
 msgstr "從首頁取消釘選"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:735
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:740
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:736
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:741
 msgid "Unpin from profile"
 msgstr "從您的個人檔案中取消釘選"
 
@@ -15635,11 +15706,11 @@ msgstr "取消訂閱這個標記服務"
 msgid "Unsubscribed from list"
 msgstr "成功取消套用列表"
 
-#: src/view/com/composer/text-input/TextInput.tsx:213
+#: src/view/com/composer/text-input/TextInput.tsx:218
 msgid "Unsupported clipboard content"
 msgstr "不支援的剪貼簿內容"
 
-#: src/view/com/composer/Composer.tsx:1873
+#: src/view/com/composer/Composer.tsx:1898
 msgid "Unsupported video type: {mimeType}"
 msgstr "不支援的影片類型：{mimeType}"
 
@@ -15695,12 +15766,12 @@ msgstr "更新您的電子信箱"
 msgid "Update your location"
 msgstr "更新您的位置"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:501
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:502
 msgctxt "toast"
 msgid "Updating quote attachment failed"
 msgstr "更新引用分離狀態時發生問題"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:550
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:551
 msgctxt "toast"
 msgid "Updating reply visibility failed"
 msgstr "更新回覆可見度時發生問題"
@@ -15732,21 +15803,21 @@ msgstr "從檔案上傳"
 msgid "Upload from Library"
 msgstr "從相簿上傳"
 
-#: src/view/com/composer/Composer.tsx:3077
+#: src/view/com/composer/Composer.tsx:3166
 msgid "Uploading GIF..."
 msgstr "正在上傳 GIF……"
 
-#: src/lib/api/index.ts:405
-#: src/lib/api/index.ts:443
+#: src/lib/api/index.ts:407
+#: src/lib/api/index.ts:445
 msgid "Uploading images..."
 msgstr "正在上傳圖片……"
 
-#: src/lib/api/index.ts:529
-#: src/lib/api/index.ts:553
+#: src/lib/api/index.ts:531
+#: src/lib/api/index.ts:555
 msgid "Uploading link thumbnail..."
 msgstr "正在上傳連結縮圖……"
 
-#: src/view/com/composer/Composer.tsx:3079
+#: src/view/com/composer/Composer.tsx:3168
 msgid "Uploading video..."
 msgstr "正在上傳影片……"
 
@@ -15754,7 +15825,7 @@ msgstr "正在上傳影片……"
 msgid "URL"
 msgstr ""
 
-#: src/Navigation.tsx:497
+#: src/Navigation.tsx:657
 #: src/screens/Settings/RunesSettings/index.tsx:46
 #: src/screens/Settings/RunesSettings/index.tsx:49
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:44
@@ -15930,7 +16001,7 @@ msgstr "無法授予驗證，請再試一次。"
 msgid "Verification settings"
 msgstr "驗證設定"
 
-#: src/Navigation.tsx:253
+#: src/Navigation.tsx:413
 #: src/screens/Moderation/VerificationSettings.tsx:34
 msgid "Verification Settings"
 msgstr "驗證設定"
@@ -16040,7 +16111,7 @@ msgid "Video"
 msgstr "影片"
 
 #: src/components/Post/Embed/VideoEmbed/useVideoDownload.ts:30
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:605
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:606
 msgctxt "toast"
 msgid "Video downloaded"
 msgstr ""
@@ -16049,7 +16120,7 @@ msgstr ""
 msgid "Video failed to process"
 msgstr "影片處理失敗"
 
-#: src/Navigation.tsx:737
+#: src/Navigation.tsx:897
 msgid "Video Feed"
 msgstr "影片動態源"
 
@@ -16084,7 +16155,7 @@ msgstr "找不到影片。"
 msgid "Video settings"
 msgstr "影片設定"
 
-#: src/view/com/composer/Composer.tsx:3097
+#: src/view/com/composer/Composer.tsx:3186
 msgid "Video uploaded"
 msgstr "影片上傳成功"
 
@@ -16097,19 +16168,19 @@ msgstr "影片：{0}"
 msgid "Videos"
 msgstr "影片"
 
-#: src/view/com/composer/Composer.tsx:547
-#: src/view/com/composer/Composer.tsx:690
+#: src/view/com/composer/Composer.tsx:556
+#: src/view/com/composer/Composer.tsx:699
 #: src/view/com/composer/SelectMediaButton.tsx:453
 msgid "Videos must be 10 minutes or less."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:548
-#: src/view/com/composer/Composer.tsx:691
+#: src/view/com/composer/Composer.tsx:557
+#: src/view/com/composer/Composer.tsx:700
 #: src/view/com/composer/SelectMediaButton.tsx:454
 msgid "Videos must be less than 3 minutes long."
 msgstr "影片長度不得超過 3 分鐘。"
 
-#: src/view/com/composer/Composer.tsx:1428
+#: src/view/com/composer/Composer.tsx:1437
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr "檢視"
@@ -16181,8 +16252,8 @@ msgstr "檢視詳細資訊"
 msgid "View edit history"
 msgstr ""
 
-#: src/view/com/posts/ViewFullThread.tsx:31
-#: src/view/com/posts/ViewFullThread.tsx:65
+#: src/view/com/posts/ViewFullThread.tsx:33
+#: src/view/com/posts/ViewFullThread.tsx:67
 msgid "View full thread"
 msgstr "檢視完整討論串"
 
@@ -16217,11 +16288,11 @@ msgstr "檢視更多"
 msgid "View more trending videos"
 msgstr "檢視更多熱門影片"
 
-#: src/components/ProfileBadges.tsx:297
+#: src/components/ProfileBadges.tsx:302
 msgid "View PDS information"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1423
+#: src/view/com/composer/Composer.tsx:1432
 msgid "View post"
 msgstr "檢視貼文"
 
@@ -16329,7 +16400,7 @@ msgstr ""
 msgid "Visit {websiteFormatted}"
 msgstr ""
 
-#: src/view/shell/Drawer.tsx:482
+#: src/view/shell/Drawer.tsx:483
 msgid "Visit code repository"
 msgstr ""
 
@@ -16573,7 +16644,7 @@ msgstr "很抱歉，無法完成您的搜尋要求。請稍後幾分鐘再試一
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr "很抱歉，您目前無權存取這個頁面。"
 
-#: src/view/com/composer/Composer.tsx:1314
+#: src/view/com/composer/Composer.tsx:1323
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr "很抱歉！您要回覆的貼文已被刪除。"
 
@@ -16726,7 +16797,7 @@ msgstr "需要封鎖此帳號、退出對話，或兩者一併執行嗎？"
 msgid "Would you like to save this as a draft before viewing your drafts?"
 msgstr "在檢視其他草稿前，需要先儲存現有內容嗎？"
 
-#: src/view/com/composer/Composer.tsx:1739
+#: src/view/com/composer/Composer.tsx:1749
 msgid "Would you like to save this as a draft to edit later?"
 msgstr "需要把現有內容儲存為草稿，以供日後編輯嗎？"
 
@@ -16735,11 +16806,11 @@ msgstr "需要把現有內容儲存為草稿，以供日後編輯嗎？"
 msgid "Write a post"
 msgstr "撰寫一篇貼文"
 
-#: src/view/com/composer/Composer.tsx:1950
+#: src/view/com/composer/Composer.tsx:1980
 msgid "Write post"
 msgstr "撰寫貼文"
 
-#: src/view/com/composer/Composer.tsx:1833
+#: src/view/com/composer/Composer.tsx:1849
 msgid "Write your Jarona"
 msgstr ""
 
@@ -16790,11 +16861,11 @@ msgstr "是，刪除我的帳號"
 msgid "Yes, delete this starter pack"
 msgstr "是，刪除這個新手包"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1106
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1107
 msgid "Yes, detach"
 msgstr "是，分離貼文"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1113
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1114
 msgid "Yes, hide"
 msgstr "是，隱藏回覆"
 
@@ -16898,6 +16969,10 @@ msgstr "您已得到驗證。一旦您修改帳號代碼，將會失去驗證狀
 msgid "You are{0} {1}{2}. You can remove this label at any time from Tenna's Settings."
 msgstr ""
 
+#: src/view/com/composer/tags/TagsBtn.tsx:117
+msgid "You can add up to {MAX_TAGS} tags"
+msgstr ""
+
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:46
 msgid "You can adjust your interests at any time from \"Content and media\" settings."
 msgstr "您可以隨時在「內容與媒體」設定中調整您的興趣。"
@@ -16942,11 +17017,11 @@ msgid "You can now sign in with your new password."
 msgstr "您可以使用新密碼登入了。"
 
 #. Toast shown when the user tries to add more images but the post gallery is already at the cap
-#: src/view/com/composer/Composer.tsx:250
+#: src/view/com/composer/Composer.tsx:255
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "貼文最多只能加入 {MAX_GALLERY_IMAGES, plural, other {# 張圖片}}"
 
-#: src/view/com/composer/Composer.tsx:1744
+#: src/view/com/composer/Composer.tsx:1754
 msgid "You can only save drafts up to 1000 characters."
 msgstr "您只能儲存最多 1000 個字元的草稿。"
 
@@ -17098,7 +17173,7 @@ msgstr "您已成功驗證電子郵件地址。現在您可以關閉此對話框
 msgid "You have temporarily reached the limit for video uploads. Please try again later."
 msgstr "您已暫時達到影片上傳的限制。請稍後再試。"
 
-#: src/view/com/composer/Composer.tsx:1734
+#: src/view/com/composer/Composer.tsx:1744
 msgid "You have unsaved changes to this draft, would you like to save them?"
 msgstr "您的草稿還有尚未儲存的變更，需要儲存嗎？"
 
@@ -17237,11 +17312,11 @@ msgstr "您即將登出所有帳號。"
 msgid "You will no longer receive notifications for {0}"
 msgstr "您將不會再收到 {0} 的動態通知"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:391
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:392
 msgid "You will no longer receive notifications for this thread"
 msgstr "您將不會再收到這條討論串的通知"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:382
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:383
 msgid "You will now receive notifications for this thread"
 msgstr "您將繼續收到這條討論串的通知"
 
@@ -17330,7 +17405,7 @@ msgstr "您已到達內容的尾端。"
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr "您已經瀏覽完所有的貼文了！不妨試著再跟隨一些帳號吧。"
 
-#: src/view/com/composer/Composer.tsx:851
+#: src/view/com/composer/Composer.tsx:860
 msgid "You've reached the maximum number of drafts"
 msgstr "您已達到草稿數量上限"
 
@@ -17473,7 +17548,7 @@ msgstr ""
 msgid "Your hosting provider is detected automatically from the username you enter."
 msgstr "系統會根據您輸入的使用者名稱自動偵測您的託管服務提供者。"
 
-#: src/Navigation.tsx:641
+#: src/Navigation.tsx:801
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:65
 #: src/screens/Settings/ContentAndMediaSettings.tsx:94
 #: src/screens/Settings/ContentAndMediaSettings.tsx:97
@@ -17510,11 +17585,11 @@ msgstr "已成功變更您的密碼！往後請使用您的新密碼登入 Blues
 msgid "Your password must be at least 8 characters long."
 msgstr "您輸入的密碼必須至少包含 8 個字元。"
 
-#: src/view/com/composer/Composer.tsx:1419
+#: src/view/com/composer/Composer.tsx:1428
 msgid "Your post was sent"
 msgstr "已發布您的貼文"
 
-#: src/view/com/composer/Composer.tsx:1416
+#: src/view/com/composer/Composer.tsx:1425
 msgid "Your posts were sent"
 msgstr "已發布您的貼文"
 
@@ -17535,7 +17610,7 @@ msgstr "您的大頭貼照在中心，周圈環繞著許多使用者的大頭貼
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr "其他 Bluesky 使用者將無法再看到您的個人檔案、貼文、動態源和列表。您隨時都可以登入以重新啟用您的帳號。"
 
-#: src/view/com/composer/Composer.tsx:1418
+#: src/view/com/composer/Composer.tsx:1427
 msgid "Your reply was sent"
 msgstr "已發布您的回覆"
 
@@ -17548,7 +17623,7 @@ msgstr "您的檢舉將提交至 <0>{0}</0>。"
 msgid "Your selected interests help us serve you content you care about."
 msgstr "您選擇的興趣主題可以協助我們提供更多您想看到的內容。"
 
-#: src/view/com/composer/Composer.tsx:1769
+#: src/view/com/composer/Composer.tsx:1779
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "您的討論串中包含空白貼文，繼續發布將跳過這些內容。其餘貼文會重新整理成完整的討論串發布。"
 

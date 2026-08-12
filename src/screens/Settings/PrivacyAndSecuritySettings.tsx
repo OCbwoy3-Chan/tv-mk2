@@ -1,3 +1,4 @@
+import {useEffect, useState} from 'react'
 import {type AppBskyNotificationDeclaration} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -11,6 +12,8 @@ import {useSession} from '#/state/session'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useTheme} from '#/alf'
 import * as Admonition from '#/components/Admonition'
+import * as Dialog from '#/components/Dialog'
+import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
 import {BellRinging_Stroke2_Corner0_Rounded as BellRingingIcon} from '#/components/icons/BellRinging'
 import {EyeSlash_Stroke2_Corner0_Rounded as EyeSlashIcon} from '#/components/icons/EyeSlash'
 import {Key_Stroke2_Corner2_Rounded as KeyIcon} from '#/components/icons/Key'
@@ -25,16 +28,35 @@ type Props = NativeStackScreenProps<
   CommonNavigatorParams,
   'PrivacyAndSecuritySettings'
 >
-export function PrivacyAndSecuritySettingsScreen({}: Props) {
+export function PrivacyAndSecuritySettingsScreen({navigation}: Props) {
   const {_} = useLingui()
   const t = useTheme()
-  const {data: appPasswords} = useAppPasswordsQuery()
   const {currentAccount} = useSession()
+  const isOauth = !!currentAccount?.isOauthSession
+  const {data: appPasswords} = useAppPasswordsQuery({enabled: !isOauth})
+  const legacyAuthControl = Dialog.useDialogControl()
+  const [awaitingPasswordAuth, setAwaitingPasswordAuth] = useState(false)
   const {
     data: notificationDeclaration,
     isPending,
     isError,
   } = useNotificationDeclarationQuery()
+
+  useEffect(() => {
+    if (awaitingPasswordAuth && !isOauth) {
+      setAwaitingPasswordAuth(false)
+      legacyAuthControl.close(() => navigation.navigate('AppPasswords'))
+    }
+  }, [awaitingPasswordAuth, isOauth, legacyAuthControl, navigation])
+
+  const onPressAppPasswords = () => {
+    if (isOauth) {
+      setAwaitingPasswordAuth(true)
+      legacyAuthControl.open()
+    } else {
+      navigation.navigate('AppPasswords')
+    }
+  }
 
   return (
     <Layout.Screen>
@@ -67,8 +89,8 @@ export function PrivacyAndSecuritySettingsScreen({}: Props) {
             </SettingsList.ItemText>
             <Email2FAToggle />
           </SettingsList.Item>
-          <SettingsList.LinkItem
-            to="/settings/app-passwords"
+          <SettingsList.PressableItem
+            onPress={onPressAppPasswords}
             label={_(msg`App passwords`)}>
             <SettingsList.ItemIcon icon={KeyIcon} />
             <SettingsList.ItemText>
@@ -79,7 +101,8 @@ export function PrivacyAndSecuritySettingsScreen({}: Props) {
                 {appPasswords.length}
               </SettingsList.BadgeText>
             )}
-          </SettingsList.LinkItem>
+            <SettingsList.Chevron />
+          </SettingsList.PressableItem>
           <SettingsList.LinkItem
             label={_(
               msg`Settings for allowing others to be notified of your posts`,
@@ -137,6 +160,12 @@ export function PrivacyAndSecuritySettingsScreen({}: Props) {
           </SettingsList.Item>
         </SettingsList.Container>
       </Layout.Content>
+      <Dialog.Outer
+        control={legacyAuthControl}
+        onClose={() => setAwaitingPasswordAuth(false)}
+        nativeOptions={{preventExpansion: true}}>
+        <LegacyAuthRequiredDialogContent />
+      </Dialog.Outer>
     </Layout.Screen>
   )
 }

@@ -39,6 +39,10 @@ import {logger} from '#/logger'
 import {usePostAuthorShadowFilter} from '#/state/cache/profile-shadow'
 import {listenPostCreated} from '#/state/events'
 import {useFeedFeedbackContext} from '#/state/feed-feedback'
+import {
+  createPdsViewabilityStore,
+  PdsViewabilityProvider,
+} from '#/state/pds-viewability'
 import {useDisableComposerPrompt} from '#/state/preferences/disable-composer-prompt'
 import {useHideUnreplyablePosts} from '#/state/preferences/hide-unreplyable-posts'
 import {useRepostCarouselEnabled} from '#/state/preferences/repost-carousel-enabled'
@@ -54,7 +58,11 @@ import {
   RQKEY,
   usePostFeedQuery,
 } from '#/state/queries/post-feed'
-import {truncateAndInvalidate} from '#/state/queries/util'
+import {
+  embedViewRecordToPostView,
+  getEmbeddedPost,
+  truncateAndInvalidate,
+} from '#/state/queries/util'
 import {useSession} from '#/state/session'
 import {useProgressGuide} from '#/state/shell/progress-guide'
 import {useSelectedFeed} from '#/state/shell/selected-feed'
@@ -190,6 +198,47 @@ type FeedRow =
       type: 'liveEventFeedsAndTrendingBanner'
       key: string
     }
+
+function collectPdsProfileDids(
+  post: AppBskyFeedDefs.PostView,
+  dids = new Set<string>(),
+  depth = 0,
+) {
+  dids.add(post.author.did)
+
+  // Quote embeds can themselves contain another quote. Bound recursion to
+  // malformed or unexpectedly deep data while covering real nested quotes.
+  if (depth < 4) {
+    const embeddedPost = getEmbeddedPost(post.embed)
+    if (embeddedPost) {
+      collectPdsProfileDids(
+        embedViewRecordToPostView(embeddedPost),
+        dids,
+        depth + 1,
+      )
+    }
+  }
+
+  return dids
+}
+
+function collectPdsProfileDidsForFeedRow(item: FeedRow) {
+  const dids = new Set<string>()
+  if (item.type === 'sliceItem') {
+    collectPdsProfileDids(item.slice.items[item.indexInSlice].post, dids)
+  } else if (item.type === 'reposts') {
+    for (const slice of item.items) {
+      for (const sliceItem of slice.items) {
+        collectPdsProfileDids(sliceItem.post, dids)
+      }
+    }
+  } else if (item.type === 'videoGridRow') {
+    for (const sliceItem of item.items) {
+      collectPdsProfileDids(sliceItem.post, dids)
+    }
+  }
+  return dids
+}
 
 type FeedPostSliceOrGroup =
   | (FeedPostSlice & {
@@ -341,6 +390,7 @@ let PostFeed = ({
   const {currentAccount, hasSession} = useSession()
   const initialNumToRender = useInitialNumToRender()
   const feedFeedback = useFeedFeedbackContext()
+  const pdsViewabilityStore = useMemo(() => createPdsViewabilityStore(), [])
   const [isPTRing, setIsPTRing] = useState(false)
   // eslint-disable-next-line react-hooks/purity
   const lastFetchRef = useRef<number>(Date.now())
@@ -1138,8 +1188,26 @@ let PostFeed = ({
     },
   )
 
+  const markPdsProfilesNearViewport = useCallback(
+    (item: FeedRow) => {
+      pdsViewabilityStore.markNearViewport(
+        collectPdsProfileDidsForFeedRow(item),
+      )
+    },
+    [pdsViewabilityStore],
+  )
+
+  const markPdsProfilesVisible = useCallback(
+    (item: FeedRow) => {
+      pdsViewabilityStore.markVisible(collectPdsProfileDidsForFeedRow(item))
+    },
+    [pdsViewabilityStore],
+  )
+
   const onItemSeen = useCallback(
     (item: FeedRow) => {
+      markPdsProfilesVisible(item)
+
       feedFeedback.onItemSeen(item)
 
       // Events that should fire exactly once for every new post, regardless of
@@ -1245,41 +1313,51 @@ let PostFeed = ({
         }
       }
     },
-    [feedFeedback, feed, liveNowConfig, getPostPosition, ax],
+    [
+      feedFeedback,
+      feed,
+      liveNowConfig,
+      getPostPosition,
+      ax,
+      markPdsProfilesVisible,
+    ],
   )
 
   return (
-    <View testID={testID} style={style}>
-      <List
-        testID={testID ? `${testID}-flatlist` : undefined}
-        ref={scrollElRef}
-        data={feedItems}
-        keyExtractor={(item: FeedRow) => item.key}
-        renderItem={renderItem}
-        ListFooterComponent={FeedFooter}
-        ListHeaderComponent={ListHeaderComponent}
-        refreshing={isPTRing}
-        onRefresh={() => void onRefresh()}
-        headerOffset={headerOffset}
-        progressViewOffset={progressViewOffset}
-        contentContainerStyle={{
-          minHeight: Dimensions.get('window').height * 1.5,
-        }}
-        onScrolledDownChange={handleScrolledDownChange}
-        onEndReached={() => void onEndReached()}
-        onEndReachedThreshold={2} // number of posts left to trigger load more
-        removeClippedSubviews={true}
-        extraData={extraData}
-        desktopFixedHeight={
-          desktopFixedHeightOffset ? desktopFixedHeightOffset : true
-        }
-        initialNumToRender={initialNumToRenderOverride ?? initialNumToRender}
-        windowSize={9}
-        maxToRenderPerBatch={IS_IOS ? 5 : 1}
-        updateCellsBatchingPeriod={40}
-        onItemSeen={onItemSeen}
-      />
-    </View>
+    <PdsViewabilityProvider store={pdsViewabilityStore}>
+      <View testID={testID} style={style}>
+        <List
+          testID={testID ? `${testID}-flatlist` : undefined}
+          ref={scrollElRef}
+          data={feedItems}
+          keyExtractor={(item: FeedRow) => item.key}
+          renderItem={renderItem}
+          ListFooterComponent={FeedFooter}
+          ListHeaderComponent={ListHeaderComponent}
+          refreshing={isPTRing}
+          onRefresh={() => void onRefresh()}
+          headerOffset={headerOffset}
+          progressViewOffset={progressViewOffset}
+          contentContainerStyle={{
+            minHeight: Dimensions.get('window').height * 1.5,
+          }}
+          onScrolledDownChange={handleScrolledDownChange}
+          onEndReached={() => void onEndReached()}
+          onEndReachedThreshold={2} // number of posts left to trigger load more
+          removeClippedSubviews={true}
+          extraData={extraData}
+          desktopFixedHeight={
+            desktopFixedHeightOffset ? desktopFixedHeightOffset : true
+          }
+          initialNumToRender={initialNumToRenderOverride ?? initialNumToRender}
+          windowSize={9}
+          maxToRenderPerBatch={IS_IOS ? 5 : 1}
+          updateCellsBatchingPeriod={40}
+          onItemNearViewport={markPdsProfilesNearViewport}
+          onItemSeen={onItemSeen}
+        />
+      </View>
+    </PdsViewabilityProvider>
   )
 }
 PostFeed = memo(PostFeed)

@@ -38,6 +38,7 @@ import {PostRepliedTo} from '#/components/Post/PostRepliedTo'
 import {ShowMoreTextButton} from '#/components/Post/ShowMoreTextButton'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls} from '#/components/PostControls'
+import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import {SubtleHover} from '#/components/SubtleHover'
 import * as bsky from '#/types/bsky'
@@ -255,9 +256,10 @@ function PostInner({
                     />
                   )}
                 </View>
-              ) : undefined}
-              <TranslatedPost hideTranslateLink post={post} />
-              {post.embed ? (
+                  ) : undefined}
+                  <PostTags post={post} style={[a.pb_2xs]} />
+                  <TranslatedPost hideTranslateLink post={post} />
+                  {post.embed ? (
                 <View
                   style={maybeApplyGalleryOffsetStyles('embed', {
                     post,

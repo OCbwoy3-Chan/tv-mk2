@@ -34,6 +34,43 @@ const outputFile = entrypoints
   .join('\n')
 fs.writeFileSync(templateFile, outputFile)
 
+function copyPath(source, target) {
+  const sourcePath = path.join(projectRoot, source)
+  if (!fs.existsSync(sourcePath)) {
+    console.log(`Skipping ${source} (does not exist)`)
+    return
+  }
+
+  const targetPath = path.join(projectRoot, target)
+  fs.mkdirSync(path.dirname(targetPath), {recursive: true})
+  fs.cpSync(sourcePath, targetPath, {recursive: true})
+  console.log(`Copied ${sourcePath} to ${targetPath}`)
+}
+
+// Ensure static assets resolve from non-root pages.
+const indexFile = path.join(projectRoot, 'web-build', 'index.html')
+const indexHtml = fs.readFileSync(indexFile, 'utf8')
+fs.writeFileSync(
+  indexFile,
+  indexHtml.replace(/(src|href)="static\//g, '$1="/static/'),
+)
+
+// Copy the static files that are not emitted by the web bundler.
+copyPath('bskyweb/static/iframe', 'web-build/iframe')
+copyPath('bskyweb/static/.well-known', 'web-build/.well-known')
+copyPath(
+  'bskyweb/static/oauth-client-metadata.json',
+  'web-build/oauth-client-metadata.json',
+)
+copyPath(
+  'bskyweb/static/oauth-client-metadata-native.json',
+  'web-build/oauth-client-metadata-native.json',
+)
+copyPath('witchsky-static-about', 'web-build/about')
+copyPath('src/style.css', 'web-build/style.css')
+copyPath('src/style.css', 'web-build/static/style.css')
+copyPath('assets/favicon.png', 'web-build/favicon.ico')
+
 function copyFiles(sourceDir, targetDir) {
   const srcPath = path.join(projectRoot, sourceDir)
   if (!fs.existsSync(srcPath)) {

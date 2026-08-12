@@ -22,7 +22,7 @@ import {sha256} from 'js-sha256'
 import {CID} from 'multiformats/cid'
 import * as Hasher from 'multiformats/hashes/hasher'
 
-import {IMAGE_SIZE_CONFIG_POSTS} from '#/lib/constants'
+import {IMAGE_SIZE_CONFIG_POSTS, MAX_TAGS} from '#/lib/constants'
 import {isNetworkError} from '#/lib/strings/errors'
 import {
   parseMarkdownLinks,
@@ -119,6 +119,7 @@ export async function post(
         values: draft.labels.map(val => ({val})),
       }
     }
+    const tags = draft.tags.length ? draft.tags.slice(0, MAX_TAGS) : undefined
 
     // The sorting behavior for multiple posts sharing the same createdAt time is
     // undefined, so what we'll do here is increment the time by 1 for every post
@@ -173,6 +174,7 @@ export async function post(
       embed,
       langs,
       labels,
+      tags,
     }
     if (!opts.omitViaField) {
       record.via = via

@@ -8,6 +8,7 @@ import {
 } from '@atproto/api'
 import {nanoid} from 'nanoid/non-secure'
 
+import {MAX_TAGS} from '#/lib/constants'
 import {type VideoTelemetry} from '#/lib/media/video/telemetry'
 import {type SelfLabel} from '#/lib/moderation'
 import {insertMentionAt} from '#/lib/strings/mention-manip'
@@ -28,6 +29,7 @@ import {
   suggestLinkCardUri,
 } from '#/view/com/composer/text-input/text-input-util'
 import {type Gif} from '#/features/gifPicker/types'
+import {moveItem} from './post-order'
 import {
   createRedraftVideoState,
   createVideoState,
@@ -77,6 +79,10 @@ export type PostDraft = {
   id: string
   richtext: RichText
   labels: SelfLabel[]
+  /**
+   * Outline tags written to `app.bsky.feed.post` `tags` (not in-text hashtags).
+   */
+  tags: string[]
   embed: EmbedDraft
   shortenedGraphemeLength: number
   /** Per-post ATProto rkey settings (optional). */
@@ -91,6 +97,7 @@ export type PostAction =
   | {type: 'update_richtext'; richtext: RichText}
   | {type: 'update_labels'; labels: SelfLabel[]}
   | {type: 'update_rkey'; generation: 'tid' | 'prefix' | 'suffix'; prefix?: string; suffix?: string}
+  | {type: 'update_tags'; tags: string[]}
   | {type: 'embed_add_images'; images: ComposerImage[]}
   | {type: 'embed_update_image'; image: ComposerImage}
   | {type: 'embed_remove_image'; image: ComposerImage}
@@ -143,6 +150,11 @@ export type ComposerAction =
   | {
       type: 'remove_post'
       postId: string
+    }
+  | {
+      type: 'move_post'
+      postId: string
+      direction: 'up' | 'down'
     }
   | {
       type: 'focus_post'
@@ -251,6 +263,7 @@ export function composerReducer(
         richtext: new RichText({text: ''}),
         shortenedGraphemeLength: 0,
         labels: [],
+        tags: [],
         embed: {
           quote: undefined,
           media: undefined,
@@ -293,6 +306,28 @@ export function composerReducer(
         ...state,
         isDirty: true,
         activePostIndex: nextActivePostIndex,
+        mutableNeedsFocusActive: true,
+        thread: {
+          ...state.thread,
+          posts: nextPosts,
+        },
+      }
+    }
+    case 'move_post': {
+      const nextPosts = moveItem(
+        state.thread.posts,
+        action.postId,
+        action.direction,
+      )
+      if (!nextPosts) {
+        return state
+      }
+
+      const activePostId = state.thread.posts[state.activePostIndex].id
+      return {
+        ...state,
+        isDirty: true,
+        activePostIndex: nextPosts.findIndex(post => post.id === activePostId),
         mutableNeedsFocusActive: true,
         thread: {
           ...state.thread,
@@ -386,6 +421,12 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
           prefix: action.prefix ?? '',
           suffix: action.suffix ?? '',
         },
+      }
+    }
+    case 'update_tags': {
+      return {
+        ...state,
+        tags: action.tags,
       }
     }
     case 'embed_add_images': {
@@ -650,6 +691,7 @@ export function createComposerState({
   initInteractionSettings,
   initVideoUri,
   initAtprotoRkey,
+  initTags,
 }: {
   initText: string | undefined
   initMention: string | undefined
@@ -660,6 +702,7 @@ export function createComposerState({
     | undefined
   initVideoUri?: ComposerOpts['videoUri']
   initAtprotoRkey?: {generation: 'tid' | 'prefix' | 'suffix'; prefix?: string; suffix?: string}
+  initTags?: string[]
 }): ComposerState {
   let media: ImagesMedia | GalleryMedia | VideoMedia | undefined
   if (initImageUris?.length) {
@@ -774,6 +817,7 @@ export function createComposerState({
           richtext: initRichText,
           shortenedGraphemeLength: getShortenedLength(initRichText),
           labels: [],
+          tags: initTags?.length ? initTags.slice(0, MAX_TAGS) : [],
           embed: {
             quote,
             media,

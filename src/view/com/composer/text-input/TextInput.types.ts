@@ -31,6 +31,11 @@ export type TextInputProps = {
   onNewLink: (uri: string) => void
   onError: (err: string) => void
   onFocus: () => void
+  canAddPost: boolean
+  canMovePostUp: boolean
+  canMovePostDown: boolean
+  onAddPost: () => void
+  onMovePost: (direction: 'up' | 'down') => void
 } & Pick<
   React.ComponentProps<typeof TextInput>,
   | 'placeholder'

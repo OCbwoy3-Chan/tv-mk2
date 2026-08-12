@@ -105,6 +105,18 @@ export function DraftItem({
               />
             )}
 
+            {post.tags && post.tags.length > 0 ? (
+              <Text
+                style={[
+                  a.text_sm,
+                  a.leading_snug,
+                  t.atoms.text_contrast_medium,
+                ]}
+                numberOfLines={2}>
+                {post.tags.map(tag => `#${tag}`).join(' ')}
+              </Text>
+            ) : null}
+
             {!mediaExistsOnOtherDevice && <DraftMediaPreview post={post} />}
 
             {hasMetadata && (

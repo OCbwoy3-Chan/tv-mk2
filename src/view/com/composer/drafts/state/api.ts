@@ -5,6 +5,7 @@ import {AppBskyDraftDefs, AtUri, RichText} from '@atproto/api'
 import {nanoid} from 'nanoid/non-secure'
 
 import {resolveLink} from '#/lib/api/resolve'
+import {MAX_TAGS} from '#/lib/constants'
 import {getDeviceName} from '#/lib/deviceName'
 import {getImageDim} from '#/lib/media/manip'
 import {mimeToExt} from '#/lib/media/video/util'
@@ -28,6 +29,22 @@ import * as storage from './storage'
 
 const TENOR_HOSTNAME = 'media.tenor.com'
 const KLIPY_HOSTNAME = 'static.klipy.com'
+
+/**
+ * Draft lexicon does not include outline tags; Witchsky stores them as an
+ * extra field on draft posts (valid AT Protocol open object).
+ */
+type DraftPostWithTags = AppBskyDraftDefs.DraftPost & {tags?: string[]}
+
+function getDraftPostTags(post: AppBskyDraftDefs.DraftPost): string[] {
+  const tags = (post as DraftPostWithTags).tags
+  if (!Array.isArray(tags)) {
+    return []
+  }
+  return tags
+    .filter((tag): tag is string => typeof tag === 'string' && tag.length > 0)
+    .slice(0, MAX_TAGS)
+}
 
 /**
  * Video data from a draft that needs to be restored by re-processing.
@@ -107,6 +124,11 @@ async function postDraftToServerPost(
       $type: 'com.atproto.label.defs#selfLabels',
       values: post.labels.map(label => ({val: label})),
     }
+  }
+
+  // Outline tags are not in the draft lexicon; store as an extra field.
+  if (post.tags.length > 0) {
+    ;(draftPost as DraftPostWithTags).tags = post.tags
   }
 
   // Add embeds
@@ -356,6 +378,7 @@ export function draftViewToSummary({
     const images: DraftPostDisplay['images'] = []
     const videos: DraftPostDisplay['video'][] = []
     let gif: DraftPostDisplay['gif']
+    const tags = getDraftPostTags(post)
 
     // Process images
     if (post.embedImages) {
@@ -429,6 +452,7 @@ export function draftViewToSummary({
     return {
       id: `post-${index}`,
       text: post.text || '',
+      tags: tags.length > 0 ? tags : undefined,
       images: images.length > 0 ? images : undefined,
       video: videos[0], // Only one video per post
       gif,
@@ -626,11 +650,14 @@ export async function draftToComposerPosts(
         }
       }
 
+      const tags = getDraftPostTags(post)
+
       return {
         id: `draft-post-${index}`,
         richtext,
         shortenedGraphemeLength: shortenLinks(richtext).graphemeLength,
         labels,
+        tags,
         embed,
       } as PostDraft
     }),

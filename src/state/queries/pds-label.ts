@@ -1,5 +1,6 @@
-import {useQuery} from '@tanstack/react-query'
+import {useCallback, useEffect, useSyncExternalStore} from 'react'
 
+import {type PdsProfilePriority} from '#/state/pds-viewability'
 import {useFaviconService} from '#/state/preferences/favicon-service'
 import {
   getFaviconServiceUrl,
@@ -7,52 +8,45 @@ import {
   isBridgedPdsUrl,
   isBskyPdsUrl,
 } from '#/state/queries/pds-label.util'
-import {resolvePdsServiceUrl} from '#/state/queries/resolve-identity'
+import {
+  getPdsLabelSnapshot,
+  requestPdsLabel,
+  subscribePdsLabel,
+} from '#/state/queries/pds-label-resolver'
 
 export {getPdsFallbackFaviconUrl, isBridgedPdsUrl, isBskyPdsUrl}
 
-export const RQKEY_ROOT = 'pds-label'
-export const RQKEY = (did: string) => [RQKEY_ROOT, did]
+export function usePdsLabelQuery(
+  did: string | undefined,
+  priority: PdsProfilePriority,
+) {
+  const enabled = !!did && priority !== 'off'
+  const subscribe = useCallback(
+    (listener: () => void) =>
+      did ? subscribePdsLabel(did, listener) : () => {},
+    [did],
+  )
+  const getSnapshot = useCallback(
+    () => (did ? getPdsLabelSnapshot(did) : getPdsLabelSnapshot('')),
+    [did],
+  )
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 
-export function usePdsLabelQuery(did: string | undefined) {
-  return useQuery({
-    queryKey: RQKEY(did ?? ''),
-    queryFn: async () => {
-      if (!did) return null
-      const pdsUrl = await resolvePdsServiceUrl(
+  useEffect(() => {
+    if (enabled) {
+      requestPdsLabel(
         did as `did:${string}:${string}`,
+        priority === 'visible' ? 'visible' : 'near',
       )
-      if (!pdsUrl) return undefined
-      const isBsky = isBskyPdsUrl(pdsUrl)
-      const isBridged = isBridgedPdsUrl(pdsUrl)
-      return {pdsUrl, isBsky, isBridged}
-    },
-    enabled: !!did,
-    subscribed: !!did,
-    staleTime: 1000 * 60 * 60, // 1 hour
-  })
+    }
+  }, [did, enabled, priority])
+
+  return snapshot
 }
 
-export const RQKEY_FAVICON_ROOT = 'pds-favicon'
-export const RQKEY_FAVICON = (pdsUrl: string, faviconService: string) => [
-  RQKEY_FAVICON_ROOT,
-  pdsUrl,
-  faviconService,
-]
-
-export function usePdsFaviconQuery(pdsUrl: string | undefined) {
+export function usePdsFaviconUrl(pdsUrl: string | undefined) {
   const faviconService = useFaviconService()
-  const isEnabled = Boolean(pdsUrl && faviconService)
-  const queryKey = isEnabled
-    ? RQKEY_FAVICON(pdsUrl!, faviconService!)
-    : ['pds-favicon-disabled']
-
-  return useQuery({
-    queryKey,
-    queryFn: () =>
-      isEnabled ? getFaviconServiceUrl(pdsUrl!, faviconService!) : undefined,
-    enabled: isEnabled,
-    subscribed: isEnabled,
-    staleTime: 1000 * 60 * 60, // 1 hour
-  })
+  return pdsUrl && faviconService
+    ? getFaviconServiceUrl(pdsUrl, faviconService)
+    : undefined
 }

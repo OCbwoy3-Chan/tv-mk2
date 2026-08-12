@@ -41,6 +41,7 @@ import {type Emoji} from '#/components/EmojiPicker'
 import {Portal} from '#/components/Portal'
 import {Text} from '#/components/Typography'
 import {type TextInputProps} from './TextInput.types'
+import {getThreadShortcut} from './thread-shortcuts'
 import {type AutocompleteRef, createSuggestion} from './web/Autocomplete'
 import {LinkDecorator} from './web/LinkDecorator'
 import {TagDecorator} from './web/TagDecorator'
@@ -57,6 +58,11 @@ export function TextInput({
   onPressPublish,
   onNewLink,
   onFocus,
+  canAddPost,
+  canMovePostUp,
+  canMovePostDown,
+  onAddPost,
+  onMovePost,
   autoFocus,
 }: TextInputProps) {
   const {theme: t, fonts} = useAlf()
@@ -65,6 +71,16 @@ export function TextInput({
 
   const [isDropping, setIsDropping] = useState(false)
   const autocompleteRef = useRef<AutocompleteRef>(null)
+  const threadShortcutState = useRef({
+    canAddPost,
+    canMovePostUp,
+    canMovePostDown,
+  })
+  threadShortcutState.current = {
+    canAddPost,
+    canMovePostUp,
+    canMovePostDown,
+  }
 
   const extensions = useMemo(
     () => [
@@ -92,11 +108,24 @@ export function TextInput({
     if (!isActive) {
       return
     }
-    textInputWebEmitter.addListener('publish', onPressPublish)
+    const onPublish = () => onPressPublish(richtext)
+    textInputWebEmitter.addListener('publish', onPublish)
     return () => {
-      textInputWebEmitter.removeListener('publish', onPressPublish)
+      textInputWebEmitter.removeListener('publish', onPublish)
     }
-  }, [onPressPublish, isActive])
+  }, [onPressPublish, richtext, isActive])
+
+  useEffect(() => {
+    if (!isActive) {
+      return
+    }
+    textInputWebEmitter.addListener('add-post', onAddPost)
+    textInputWebEmitter.addListener('move-post', onMovePost)
+    return () => {
+      textInputWebEmitter.removeListener('add-post', onAddPost)
+      textInputWebEmitter.removeListener('move-post', onMovePost)
+    }
+  }, [isActive, onAddPost, onMovePost])
 
   useEffect(() => {
     if (!isActive) {
@@ -243,6 +272,22 @@ export function TextInput({
           if ((event.metaKey || event.ctrlKey) && event.code === 'Enter') {
             textInputWebEmitter.emit('publish')
             return true
+          }
+
+          const threadShortcut = getThreadShortcut(
+            event,
+            threadShortcutState.current,
+          )
+          switch (threadShortcut) {
+            case 'add-post':
+              textInputWebEmitter.emit('add-post')
+              return true
+            case 'move-post-up':
+              textInputWebEmitter.emit('move-post', 'up')
+              return true
+            case 'move-post-down':
+              textInputWebEmitter.emit('move-post', 'down')
+              return true
           }
 
           if (

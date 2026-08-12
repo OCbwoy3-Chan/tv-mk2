@@ -138,7 +138,11 @@ const dehydrateOptions: PersistQueryClientProviderProps['persistOptions']['dehyd
   {
     shouldDehydrateMutation: (_: any) => false,
     shouldDehydrateQuery: query => {
-      return isQueryPersisted(query.queryKey)
+      // PDS labels moved to a bounded, interaction-aware cache. Excluding the
+      // old keys removes them from the shared persisted query cache on save.
+      return (
+        query.queryKey[0] !== 'pds-label' && isQueryPersisted(query.queryKey)
+      )
     },
   }
 

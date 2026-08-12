@@ -2,19 +2,20 @@ import { useState } from 'react'
 import { View } from 'react-native'
 import { useLingui } from '@lingui/react/macro'
 
-import { HITSLOP_20 } from '#/lib/constants'
-import { useProfileShadow } from '#/state/cache/profile-shadow'
-import { type Shadow } from '#/state/cache/types'
+import {HITSLOP_20} from '#/lib/constants'
+import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {type Shadow} from '#/state/cache/types'
+import {usePdsProfilePriority} from '#/state/pds-viewability'
 import {
   usePdsLabelEnabled,
   usePdsLabelHideBskyPds,
 } from '#/state/preferences/pds-label'
-import { useDeerVerificationProfileOverlay } from '#/state/queries/deer-verification'
-import { usePdsFaviconQuery, usePdsLabelQuery } from '#/state/queries/pds-label'
-import { atoms as a, useAlf, type ViewStyleProp } from '#/alf'
-import { useNativeFontScale } from '#/alf/util/dimensions'
-import { BotBadge, BotBadgeButton, isBotAccount } from '#/components/BotBadge'
-import { Button } from '#/components/Button'
+import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
+import {usePdsFaviconUrl, usePdsLabelQuery} from '#/state/queries/pds-label'
+import {atoms as a, useAlf, type ViewStyleProp} from '#/alf'
+import {useNativeFontScale} from '#/alf/util/dimensions'
+import {BotBadge, BotBadgeButton, isBotAccount} from '#/components/BotBadge'
+import {Button} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import { PdsBadgeIcon, PdsDialog } from '#/components/PdsDialog'
 import { isPetAccount, PetBadge, PetBadgeButton } from '#/components/PetBadge'
@@ -97,11 +98,16 @@ export function ProfileBadgesFromProfileShadow({
   const hideBskyPds = usePdsLabelHideBskyPds()
   const isBskyHandle =
     !!shadowed.handle && shadowed.handle.endsWith('.bsky.social')
-  const shouldResolvePds = pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
-  const { data: pdsData, isLoading: isPdsLoading } = usePdsLabelQuery(
+  const shouldShowPdsCandidate =
+    pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
+  const pdsProfilePriority = usePdsProfilePriority(shadowed.did)
+  const shouldResolvePds =
+    shouldShowPdsCandidate && pdsProfilePriority !== 'off'
+  const {data: pdsData, isLoading: isPdsLoading} = usePdsLabelQuery(
     shouldResolvePds ? shadowed.did : undefined,
+    pdsProfilePriority,
   )
-  const { data: pdsFaviconUrl } = usePdsFaviconQuery(
+  const pdsFaviconUrl = usePdsFaviconUrl(
     pdsData && !pdsData.isBsky && !pdsData.isBridged
       ? pdsData.pdsUrl
       : undefined,
@@ -112,8 +118,7 @@ export function ProfileBadgesFromProfileShadow({
   } = useAlf()
 
   const showPdsBadge =
-    shouldResolvePds &&
-    (isPdsLoading || (!!pdsData && !(hideBskyPds && pdsData.isBsky)))
+    shouldShowPdsCandidate && (!pdsData || !(hideBskyPds && pdsData.isBsky))
 
   const isBetaBadgeVisible = useIsBetaBadgeVisible(shadowed) && showBetaBadge
   const badgeVisibility = [
@@ -164,7 +169,7 @@ export function ProfileBadgesFromProfileShadow({
         <PdsInlineIcon
           size={size}
           interactive={pdsInteractive}
-          isLoading={isPdsLoading}
+          isLoading={!pdsData || isPdsLoading}
           isBsky={pdsData?.isBsky ?? isBskyHandle}
           isBridged={pdsData?.isBridged ?? false}
           pdsUrl={pdsData?.pdsUrl}

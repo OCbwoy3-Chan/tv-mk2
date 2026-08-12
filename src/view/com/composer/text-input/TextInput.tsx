@@ -44,6 +44,11 @@ export function TextInput({
   onPhotoPasted,
   onNewLink,
   onError,
+  canAddPost: _canAddPost,
+  canMovePostUp: _canMovePostUp,
+  canMovePostDown: _canMovePostDown,
+  onAddPost: _onAddPost,
+  onMovePost: _onMovePost,
   ...props
 }: TextInputProps) {
   const {t: l} = useLingui()

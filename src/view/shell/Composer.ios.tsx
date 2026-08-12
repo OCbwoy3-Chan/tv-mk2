@@ -46,6 +46,7 @@ export function Composer() {
             quote={state?.quote}
             mention={state?.mention}
             text={state?.text}
+            tags={state?.tags}
             imageUris={state?.imageUris}
             videoUri={state?.videoUri}
           />

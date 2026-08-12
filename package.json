@@ -336,7 +336,8 @@
     "swc-loader": "^0.2.7",
     "ts-plugin-sort-import-suggestions": "^1.0.4",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "webpack-bundle-analyzer": "^4.10.1"
+    "webpack-bundle-analyzer": "^4.10.1",
+    "wrangler": "^4.120.0"
   },
   "jest": {
     "preset": "jest-expo/ios",

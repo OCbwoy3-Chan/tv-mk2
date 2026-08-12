@@ -155,6 +155,26 @@ export function EphemeralAccountSwitcherScope({
   )
 }
 
+/**
+ * Provides one shared account/profile query and prompt control for the active
+ * app shell. Single-account sessions skip the provider entirely.
+ */
+export function EphemeralAccountSwitcherRootScope({
+  children,
+}: React.PropsWithChildren) {
+  const {accounts, currentAccount} = useSession()
+
+  if (accounts.length < 2 || !currentAccount) return children
+
+  return (
+    <EphemeralAccountSwitcherScope
+      selectedDid={currentAccount.did}
+      currentProfileFromBatch>
+      {children}
+    </EphemeralAccountSwitcherScope>
+  )
+}
+
 export function useEphemeralAccountSwitcher() {
   const context = useContext(EphemeralAccountSwitcherContext)
   if (!context) {
@@ -265,11 +285,7 @@ export function EphemeralAccountSwitcherMenu({
   }
 
   return (
-    <Menu.Root
-      control={menuControl}
-      modal={false}
-      disableBackdrop
-      dismissGuardRef={dismissGuardRef}>
+    <Menu.Root control={menuControl} dismissGuardRef={dismissGuardRef}>
       <Menu.Trigger label={l`Switch accounts`}>
         {({props: menuTriggerProps}) => (
           <View {...(menuTriggerProps)}>

@@ -65,7 +65,6 @@ function getTranspileModuleDirs({
   }
 
   for (const entry of readDirNames(nodeModulesDir)) {
-    console.log('Checking node_modules entry:', entry)
     if (
       prefixes.some(
         prefix => entry === prefix || entry.startsWith(`${prefix}-`),

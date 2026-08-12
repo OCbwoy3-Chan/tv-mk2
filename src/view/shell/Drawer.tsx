@@ -31,6 +31,7 @@ import {useKawaiiMode} from '#/state/preferences/kawaii'
 import {
   useFollowersMetricsDisplay,
   useFollowingMetricsDisplay,
+  useNotificationsTabBadgeDisplay,
 } from '#/state/preferences/metrics-display-preference'
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useProfileQuery} from '#/state/queries/profile'
@@ -500,6 +501,7 @@ interface MenuItemProps extends ComponentProps<typeof PressableScale> {
   icon: JSX.Element
   label: string
   count?: string
+  hasNew?: boolean
   bold?: boolean
 }
 
@@ -591,6 +593,7 @@ let NotificationsMenuItem = ({
   const {_} = useLingui()
   const t = useTheme()
   const numUnreadNotifications = useUnreadNotifications()
+  const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
   return (
     <MenuItem
       icon={
@@ -611,7 +614,15 @@ let NotificationsMenuItem = ({
               }),
             )
       }
-      count={numUnreadNotifications}
+      count={
+        notificationsTabBadgeDisplay === 'exact'
+          ? numUnreadNotifications
+          : undefined
+      }
+      hasNew={
+        notificationsTabBadgeDisplay === 'visible' &&
+        numUnreadNotifications !== ''
+      }
       bold={isActive}
       onPress={onPress}
     />
@@ -723,7 +734,7 @@ let SettingsMenuItem = ({onPress}: {onPress: () => void}): React.ReactNode => {
 }
 SettingsMenuItem = memo(SettingsMenuItem)
 
-function MenuItem({icon, label, count, bold, onPress}: MenuItemProps) {
+function MenuItem({icon, label, count, hasNew, bold, onPress}: MenuItemProps) {
   const t = useTheme()
   const enableSquareButtons = useEnableSquareButtons()
   return (
@@ -778,6 +789,20 @@ function MenuItem({icon, label, count, bold, onPress}: MenuItemProps) {
                   </Text>
                 </View>
               </View>
+            ) : hasNew ? (
+              <View
+                style={[
+                  a.absolute,
+                  a.rounded_full,
+                  {
+                    top: -2,
+                    right: -2,
+                    width: 8,
+                    height: 8,
+                    backgroundColor: t.palette.primary_500,
+                  },
+                ]}
+              />
             ) : undefined}
           </View>
           <Text

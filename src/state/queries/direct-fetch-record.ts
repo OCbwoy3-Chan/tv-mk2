@@ -125,7 +125,7 @@ export async function directFetchEmbedRecord(
           author: profile as AppBskyActorDefs.ProfileViewBasic,
           cid: 'directfetch',
           value: record,
-          indexedAt: new Date().toISOString(),
+          indexedAt: record.createdAt,
         } satisfies AppBskyEmbedRecord.ViewRecord,
       },
     }
@@ -168,7 +168,7 @@ export async function directFetchPostRecord(
       author: profile as AppBskyActorDefs.ProfileViewBasic,
       cid: 'directfetch',
       record,
-      indexedAt: new Date().toISOString(),
+      indexedAt: record.createdAt,
     } satisfies AppBskyFeedDefs.PostView
   } else {
     return undefined

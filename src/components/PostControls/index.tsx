@@ -41,10 +41,7 @@ import {
 } from '#/state/shell/progress-guide'
 import * as userActionHistory from '#/state/userActionHistory'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
-import {
-  EphemeralAccountSwitcherFromScope,
-  EphemeralAccountSwitcherScope,
-} from '#/components/EphemeralAccountSwitcher'
+import {EphemeralAccountSwitcherFromScope} from '#/components/EphemeralAccountSwitcher'
 import {Reply as Bubble} from '#/components/icons/Reply'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
@@ -685,23 +682,7 @@ function PostControlsInner({
   )
 }
 
-type PostControlsProps = Parameters<typeof PostControlsInner>[0]
-
-const PostControls = memo(function PostControls(props: PostControlsProps) {
-  const {accounts, currentAccount} = useSession()
-
-  if (accounts.length < 2 || !currentAccount) {
-    return <PostControlsInner {...props} />
-  }
-
-  return (
-    <EphemeralAccountSwitcherScope
-      selectedDid={currentAccount.did}
-      currentProfileFromBatch>
-      <PostControlsInner {...props} />
-    </EphemeralAccountSwitcherScope>
-  )
-})
+const PostControls = memo(PostControlsInner)
 export {PostControls}
 
 export function PostControlsSkeleton({

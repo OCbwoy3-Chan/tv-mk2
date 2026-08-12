@@ -5,6 +5,7 @@ import {AtUri} from '@atproto/api'
 import {useLingui} from '@lingui/react/macro'
 
 import {makeProfileLink} from '#/lib/routes/links'
+import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {atoms as a, select, useTheme} from '#/alf'
 import {Link} from '#/components/Link'
 import {SubtleHover} from '#/components/SubtleHover'
@@ -12,6 +13,7 @@ import {Text} from '#/components/Typography'
 
 export function ViewFullThread({uri}: {uri: string}) {
   const t = useTheme()
+  const compactPosts = useCompactPosts()
   const itemHref = useMemo(() => {
     const urip = new AtUri(uri)
     return makeProfileLink({did: urip.hostname, handle: ''}, 'post', urip.rkey)
@@ -23,8 +25,8 @@ export function ViewFullThread({uri}: {uri: string}) {
       style={[
         a.flex_row,
         {
-          gap: 10,
-          paddingLeft: 18,
+          gap: compactPosts ? 8 : 10,
+          paddingLeft: compactPosts ? 16 : 18,
         },
       ]}
       to={itemHref}
@@ -36,7 +38,7 @@ export function ViewFullThread({uri}: {uri: string}) {
             // adjust position for visual alignment - the actual box has lots of top padding and not much bottom padding -sfn
             style={{top: 8, bottom: -5}}
           />
-          <View style={[a.align_center, {width: 42}]}>
+          <View style={[a.align_center, {width: compactPosts ? 34 : 42}]}>
             <Svg width="4" height="40">
               <Line
                 x1="2"

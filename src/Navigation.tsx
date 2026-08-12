@@ -1,4 +1,11 @@
-import {type JSX, useCallback, useRef, useState} from 'react'
+import {
+  type ComponentProps,
+  type ComponentType,
+  type JSX,
+  useCallback,
+  useRef,
+  useState,
+} from 'react'
 import * as Linking from 'expo-linking'
 import * as Notifications from 'expo-notifications'
 import {i18n, type MessageDescriptor} from '@lingui/core'
@@ -28,6 +35,7 @@ import {
   notificationToURL,
   storePayloadForAccountSwitch,
 } from '#/lib/hooks/useNotificationHandler'
+import {useTitleUnreadCountLabel} from '#/lib/hooks/useTitleUnreadCountLabel'
 import {useWebScrollRestoration} from '#/lib/hooks/useWebScrollRestoration'
 import {useCallOnce} from '#/lib/once'
 import {buildStateObject, getCurrentRoute} from '#/lib/routes/helpers'
@@ -46,7 +54,6 @@ import {
 import {bskyTitle} from '#/lib/strings/headings'
 import {CHAT_INVITE_CODE_REGEX} from '#/lib/strings/url-helpers'
 import {useDisableVerifyEmailReminder} from '#/state/preferences/disable-verify-email-reminder'
-import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useSession} from '#/state/session'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {
@@ -73,13 +80,9 @@ import {SupportScreen} from '#/view/screens/Support'
 import {TermsOfServiceScreen} from '#/view/screens/TermsOfService'
 import {BottomBar} from '#/view/shell/bottom-bar/BottomBar'
 import {createNativeStackNavigatorWithAuth} from '#/view/shell/createNativeStackNavigatorWithAuth'
-import {BookmarksScreen} from '#/screens/Bookmarks'
 import {CustomFeedScreen} from '#/screens/CustomFeed'
 import {CustomFeedLikedByScreen} from '#/screens/CustomFeed/CustomFeedLikedBy'
-import {SharedPreferencesTesterScreen} from '#/screens/E2E/SharedPreferencesTesterScreen'
-import {FindContactsFlowScreen} from '#/screens/FindContactsFlowScreen'
 import HashtagScreen from '#/screens/Hashtag'
-import {LogScreen} from '#/screens/Log'
 import {AuthCallback} from '#/screens/Login/AuthCallback'
 import {MessagesScreen} from '#/screens/Messages/ChatList'
 import {MessagesConversationScreen} from '#/screens/Messages/Conversation'
@@ -102,50 +105,7 @@ import {ProfileSearchScreen} from '#/screens/Profile/ProfileSearch'
 import {ProfileListScreen} from '#/screens/ProfileList'
 import {SavedFeeds} from '#/screens/SavedFeeds'
 import {SearchScreen} from '#/screens/Search'
-import {AboutSettingsScreen} from '#/screens/Settings/AboutSettings'
-import {AccessibilitySettingsScreen} from '#/screens/Settings/AccessibilitySettings'
-import {AccountSettingsScreen} from '#/screens/Settings/AccountSettings'
-import {ActivityPrivacySettingsScreen} from '#/screens/Settings/ActivityPrivacySettings'
-import {ActivityNotificationSettingsScreen} from '#/screens/Settings/NotificationSettings/ActivityNotificationSettings'
-import {AppearanceSettingsScreen} from '#/screens/Settings/AppearanceSettings'
-import {AppearanceColorThemeSettingsScreen} from '#/screens/Settings/AppearanceSettings/ColorThemeSettings'
-import {AppIconSettingsScreen} from '#/screens/Settings/AppIconSettings'
-import {AppPasswordsScreen} from '#/screens/Settings/AppPasswords'
-import {AutomationLabelSettingsScreen} from '#/screens/Settings/AutomationLabelSettings'
-import {BetaFeaturesSettingsScreen} from '#/screens/Settings/BetaFeaturesSettings'
-import {ContentAndMediaSettingsScreen} from '#/screens/Settings/ContentAndMediaSettings'
-import {ExternalMediaPreferencesScreen} from '#/screens/Settings/ExternalMediaPreferences'
-import {FindContactsSettingsScreen} from '#/screens/Settings/FindContactsSettings'
-import {FollowingFeedPreferencesScreen} from '#/screens/Settings/FollowingFeedPreferences'
-import {InterestsSettingsScreen} from '#/screens/Settings/InterestsSettings'
-import {LanguageSettingsScreen} from '#/screens/Settings/LanguageSettings'
-import {LegacyNotificationSettingsScreen} from '#/screens/Settings/LegacyNotificationSettings'
-import {NotificationSettingsScreen} from '#/screens/Settings/NotificationSettings'
-import {PetLabelSettingsScreen} from '#/screens/Settings/PetLabelSettings'
-import {PrivacyAndSecuritySettingsScreen} from '#/screens/Settings/PrivacyAndSecuritySettings'
-import {RunesSettingsScreen} from '#/screens/Settings/RunesSettings'
-import {RunesDisplayAlsoLikedSettingsScreen} from '#/screens/Settings/RunesSettings/AlsoLikedSettings'
-import {RunesBadgesSettingsScreen} from '#/screens/Settings/RunesSettings/BadgesSettings'
-import {RunesDisplayDensitySettingsScreen} from '#/screens/Settings/RunesSettings/DensitySettings'
-import {RunesDisplaySettingsScreen} from '#/screens/Settings/RunesSettings/DisplaySettings'
-import {RunesExtraSettingsScreen} from '#/screens/Settings/RunesSettings/ExtraSettings'
-import {RunesExtraFeatureGatesSettingsScreen} from '#/screens/Settings/RunesSettings/FeatureGatesSettings'
-import {RunesUsabilityFeedSettingsScreen} from '#/screens/Settings/RunesSettings/FeedSettings'
-import {RunesImpressionsSettingsScreen} from '#/screens/Settings/RunesSettings/ImpressionsSettings'
-import {RunesInfrastructureSettingsScreen} from '#/screens/Settings/RunesSettings/InfrastructureSettings'
-import {RunesMenusSettingsScreen} from '#/screens/Settings/RunesSettings/MenusSettings'
-import {RunesUsabilityProfileSettingsScreen} from '#/screens/Settings/RunesSettings/ProfileSettings'
-import {RunesSettingsSyncSettingsScreen} from '#/screens/Settings/RunesSettings/SettingsSyncSettings'
-import {RunesUsabilitySettingsScreen} from '#/screens/Settings/RunesSettings/UsabilitySettings'
-import {SettingsScreen} from '#/screens/Settings/Settings'
-import {ThreadPreferencesScreen} from '#/screens/Settings/ThreadPreferences'
-import {
-  StarterPackScreen,
-  StarterPackScreenShort,
-} from '#/screens/StarterPack/StarterPackScreen'
-import {Wizard} from '#/screens/StarterPack/Wizard'
 import TopicScreen from '#/screens/Topic'
-import {VideoFeed} from '#/screens/VideoFeed'
 import {type Theme, useTheme} from '#/alf'
 import {
   EmailDialogScreenID,
@@ -154,7 +114,6 @@ import {
 import {useAnalytics} from '#/analytics'
 import {setNavigationMetadata} from '#/analytics/metadata'
 import {IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
-import {InviteScannerScreen} from '#/features/inviteFriends'
 import {router} from '#/routes'
 import {Referrer} from '../modules/expo-bluesky-swiss-army'
 import {renderMessagesSplitViewLayout} from './screens/Messages/components/splitView/MessagesSplitViewLayout'
@@ -162,6 +121,207 @@ import { DeltaSettingsScreen } from './screens/Settings/DeltaSettings'
 import { DeltaBadgeSettingsScreen } from './screens/Settings/DeltaSettings/BadgeSettings'
 import { DeltaModLabelSettingsScreen } from './screens/Settings/DeltaSettings/ModLabelSettings'
 import { AIPreferencesSettingsScreen } from './screens/Settings/AIPreferencesSettings'
+
+function deferredNamedScreen<
+  Name extends string,
+  // Screen route props are intentionally heterogeneous.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Module extends Record<Name, ComponentType<any>>,
+>(load: () => Module, exportName: Name) {
+  type Screen = Module[Name]
+  let Screen: Screen | undefined
+
+  return function DeferredScreen(props: ComponentProps<Screen>) {
+    Screen ??= load()[exportName]
+    return <Screen {...props} />
+  }
+}
+
+const BookmarksScreen = deferredNamedScreen(
+  () => require('#/screens/Bookmarks'),
+  'BookmarksScreen',
+)
+const SharedPreferencesTesterScreen = deferredNamedScreen(
+  () => require('#/screens/E2E/SharedPreferencesTesterScreen'),
+  'SharedPreferencesTesterScreen',
+)
+const FindContactsFlowScreen = deferredNamedScreen(
+  () => require('#/screens/FindContactsFlowScreen'),
+  'FindContactsFlowScreen',
+)
+const LogScreen = deferredNamedScreen(
+  () => require('#/screens/Log'),
+  'LogScreen',
+)
+const AboutSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AboutSettings'),
+  'AboutSettingsScreen',
+)
+const AccessibilitySettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AccessibilitySettings'),
+  'AccessibilitySettingsScreen',
+)
+const AccountSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AccountSettings'),
+  'AccountSettingsScreen',
+)
+const ActivityPrivacySettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/ActivityPrivacySettings'),
+  'ActivityPrivacySettingsScreen',
+)
+const ActivityNotificationSettingsScreen = deferredNamedScreen(
+  () =>
+    require('#/screens/Settings/NotificationSettings/ActivityNotificationSettings'),
+  'ActivityNotificationSettingsScreen',
+)
+const AppearanceSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AppearanceSettings'),
+  'AppearanceSettingsScreen',
+)
+const AppearanceColorThemeSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AppearanceSettings/ColorThemeSettings'),
+  'AppearanceColorThemeSettingsScreen',
+)
+const AppIconSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AppIconSettings'),
+  'AppIconSettingsScreen',
+)
+const AppPasswordsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AppPasswords'),
+  'AppPasswordsScreen',
+)
+const AutomationLabelSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AutomationLabelSettings'),
+  'AutomationLabelSettingsScreen',
+)
+const BetaFeaturesSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/BetaFeaturesSettings'),
+  'BetaFeaturesSettingsScreen',
+)
+const ContentAndMediaSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/ContentAndMediaSettings'),
+  'ContentAndMediaSettingsScreen',
+)
+const ExternalMediaPreferencesScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/ExternalMediaPreferences'),
+  'ExternalMediaPreferencesScreen',
+)
+const FindContactsSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/FindContactsSettings'),
+  'FindContactsSettingsScreen',
+)
+const FollowingFeedPreferencesScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/FollowingFeedPreferences'),
+  'FollowingFeedPreferencesScreen',
+)
+const InterestsSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/InterestsSettings'),
+  'InterestsSettingsScreen',
+)
+const LanguageSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/LanguageSettings'),
+  'LanguageSettingsScreen',
+)
+const LegacyNotificationSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/LegacyNotificationSettings'),
+  'LegacyNotificationSettingsScreen',
+)
+const NotificationSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/NotificationSettings'),
+  'NotificationSettingsScreen',
+)
+const PetLabelSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/PetLabelSettings'),
+  'PetLabelSettingsScreen',
+)
+const PrivacyAndSecuritySettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/PrivacyAndSecuritySettings'),
+  'PrivacyAndSecuritySettingsScreen',
+)
+const RunesSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings'),
+  'RunesSettingsScreen',
+)
+const RunesDisplayAlsoLikedSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/AlsoLikedSettings'),
+  'RunesDisplayAlsoLikedSettingsScreen',
+)
+const RunesBadgesSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/BadgesSettings'),
+  'RunesBadgesSettingsScreen',
+)
+const RunesDisplayDensitySettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/DensitySettings'),
+  'RunesDisplayDensitySettingsScreen',
+)
+const RunesDisplaySettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/DisplaySettings'),
+  'RunesDisplaySettingsScreen',
+)
+const RunesExtraSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/ExtraSettings'),
+  'RunesExtraSettingsScreen',
+)
+const RunesExtraFeatureGatesSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/FeatureGatesSettings'),
+  'RunesExtraFeatureGatesSettingsScreen',
+)
+const RunesUsabilityFeedSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/FeedSettings'),
+  'RunesUsabilityFeedSettingsScreen',
+)
+const RunesImpressionsSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/ImpressionsSettings'),
+  'RunesImpressionsSettingsScreen',
+)
+const RunesInfrastructureSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/InfrastructureSettings'),
+  'RunesInfrastructureSettingsScreen',
+)
+const RunesMenusSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/MenusSettings'),
+  'RunesMenusSettingsScreen',
+)
+const RunesUsabilityProfileSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/ProfileSettings'),
+  'RunesUsabilityProfileSettingsScreen',
+)
+const RunesSettingsSyncSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/SettingsSyncSettings'),
+  'RunesSettingsSyncSettingsScreen',
+)
+const RunesUsabilitySettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/RunesSettings/UsabilitySettings'),
+  'RunesUsabilitySettingsScreen',
+)
+const SettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/Settings'),
+  'SettingsScreen',
+)
+const ThreadPreferencesScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/ThreadPreferences'),
+  'ThreadPreferencesScreen',
+)
+const StarterPackScreen = deferredNamedScreen(
+  () => require('#/screens/StarterPack/StarterPackScreen'),
+  'StarterPackScreen',
+)
+const StarterPackScreenShort = deferredNamedScreen(
+  () => require('#/screens/StarterPack/StarterPackScreen'),
+  'StarterPackScreenShort',
+)
+const Wizard = deferredNamedScreen(
+  () => require('#/screens/StarterPack/Wizard'),
+  'Wizard',
+)
+const VideoFeed = deferredNamedScreen(
+  () => require('#/screens/VideoFeed'),
+  'VideoFeed',
+)
+const InviteScannerScreen = deferredNamedScreen(
+  () => require('#/features/inviteFriends'),
+  'InviteScannerScreen',
+)
 
 const navigationRef = createNavigationContainerRef<AllNavigatorParams>()
 
@@ -915,9 +1075,10 @@ const FlatNavigator = ({
   layout: React.ComponentProps<typeof Flat.Navigator>['layout']
 }) => {
   const t = useTheme()
-  const numUnread = useUnreadNotifications()
+  const unreadCountLabel = useTitleUnreadCountLabel()
   const screenListeners = useWebScrollRestoration()
-  const title = (page: MessageDescriptor) => bskyTitle(i18n._(page), numUnread)
+  const title = (page: MessageDescriptor) =>
+    bskyTitle(i18n._(page), unreadCountLabel)
 
   return (
     <Flat.Navigator
@@ -950,7 +1111,7 @@ const FlatNavigator = ({
         getComponent={() => HomeScreen}
         options={{title: title(msg`Home`)}}
       />
-      {commonScreens(Flat, numUnread)}
+      {commonScreens(Flat, unreadCountLabel)}
     </Flat.Navigator>
   )
 }
