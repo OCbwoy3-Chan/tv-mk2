@@ -222,6 +222,24 @@ function collectPdsProfileDids(
   return dids
 }
 
+function collectPdsProfileDidsForFeedRow(item: FeedRow) {
+  const dids = new Set<string>()
+  if (item.type === 'sliceItem') {
+    collectPdsProfileDids(item.slice.items[item.indexInSlice].post, dids)
+  } else if (item.type === 'reposts') {
+    for (const slice of item.items) {
+      for (const sliceItem of slice.items) {
+        collectPdsProfileDids(sliceItem.post, dids)
+      }
+    }
+  } else if (item.type === 'videoGridRow') {
+    for (const sliceItem of item.items) {
+      collectPdsProfileDids(sliceItem.post, dids)
+    }
+  }
+  return dids
+}
+
 type FeedPostSliceOrGroup =
   | (FeedPostSlice & {
       isRepostSlice?: false
@@ -1172,32 +1190,23 @@ let PostFeed = ({
 
   const markPdsProfilesNearViewport = useCallback(
     (item: FeedRow) => {
-      if (item.type === 'sliceItem') {
-        pdsViewabilityStore.markViewable(
-          collectPdsProfileDids(item.slice.items[item.indexInSlice].post),
-        )
-      } else if (item.type === 'reposts') {
-        pdsViewabilityStore.markViewable(
-          item.items.flatMap(slice =>
-            slice.items.flatMap(sliceItem =>
-              Array.from(collectPdsProfileDids(sliceItem.post)),
-            ),
-          ),
-        )
-      } else if (item.type === 'videoGridRow') {
-        pdsViewabilityStore.markViewable(
-          item.items.flatMap(sliceItem =>
-            Array.from(collectPdsProfileDids(sliceItem.post)),
-          ),
-        )
-      }
+      pdsViewabilityStore.markNearViewport(
+        collectPdsProfileDidsForFeedRow(item),
+      )
+    },
+    [pdsViewabilityStore],
+  )
+
+  const markPdsProfilesVisible = useCallback(
+    (item: FeedRow) => {
+      pdsViewabilityStore.markVisible(collectPdsProfileDidsForFeedRow(item))
     },
     [pdsViewabilityStore],
   )
 
   const onItemSeen = useCallback(
     (item: FeedRow) => {
-      markPdsProfilesNearViewport(item)
+      markPdsProfilesVisible(item)
 
       feedFeedback.onItemSeen(item)
 
@@ -1310,7 +1319,7 @@ let PostFeed = ({
       liveNowConfig,
       getPostPosition,
       ax,
-      markPdsProfilesNearViewport,
+      markPdsProfilesVisible,
     ],
   )
 

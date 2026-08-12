@@ -5,13 +5,13 @@ import {useLingui} from '@lingui/react/macro'
 import {HITSLOP_20} from '#/lib/constants'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {type Shadow} from '#/state/cache/types'
-import {useIsPdsProfileViewable} from '#/state/pds-viewability'
+import {usePdsProfilePriority} from '#/state/pds-viewability'
 import {
   usePdsLabelEnabled,
   usePdsLabelHideBskyPds,
 } from '#/state/preferences/pds-label'
 import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
-import {usePdsFaviconQuery, usePdsLabelQuery} from '#/state/queries/pds-label'
+import {usePdsFaviconUrl, usePdsLabelQuery} from '#/state/queries/pds-label'
 import {atoms as a, useAlf, type ViewStyleProp} from '#/alf'
 import {useNativeFontScale} from '#/alf/util/dimensions'
 import {BotBadge, BotBadgeButton, isBotAccount} from '#/components/BotBadge'
@@ -98,12 +98,14 @@ export function ProfileBadgesFromProfileShadow({
     !!shadowed.handle && shadowed.handle.endsWith('.bsky.social')
   const shouldShowPdsCandidate =
     pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
-  const isPdsProfileViewable = useIsPdsProfileViewable(shadowed.did)
-  const shouldResolvePds = shouldShowPdsCandidate && isPdsProfileViewable
+  const pdsProfilePriority = usePdsProfilePriority(shadowed.did)
+  const shouldResolvePds =
+    shouldShowPdsCandidate && pdsProfilePriority !== 'off'
   const {data: pdsData, isLoading: isPdsLoading} = usePdsLabelQuery(
     shouldResolvePds ? shadowed.did : undefined,
+    pdsProfilePriority,
   )
-  const {data: pdsFaviconUrl} = usePdsFaviconQuery(
+  const pdsFaviconUrl = usePdsFaviconUrl(
     pdsData && !pdsData.isBsky && !pdsData.isBridged
       ? pdsData.pdsUrl
       : undefined,
