@@ -117,28 +117,3 @@ jobs:
         with:
           name: tenna-party.apk
           path: ${{ steps.find_apk.outputs.apk_path }}
-
-      - name: ⬆️ Delete old file from R2 Bucket
-        run: |
-          curl -X DELETE \
-            --aws-sigv4 "aws:amz:auto:s3" \
-            --user "${{ secrets.S3_ACCESS_KEY_ID }}:${{ secrets.S3_SECRET_ACCESS_KEY }}" \
-            "https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com/shit/app-release.apk"
-
-      - name: ⬆️ Push File to R2 Bucket
-        uses: rajatkulkarni95/upload-r2-github-action@v0.1.0
-        with:
-          account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          source_dir: ${{ runner.temp }}/LOL/
-          bucket: shit
-          access_key_id: ${{ secrets.S3_ACCESS_KEY_ID }}
-          secret_access_key: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-
-      - name: 💬 Send Discord Notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: |
-          curl -H "Content-Type: application/json" \
-               -X POST \
-               -d "{\"content\": \"<@&1534855421678981150> tenna.party (${{ github.ref_name }}) has been updated on android, check it out! sha: ${{ github.sha }}\"}" \
-               $DISCORD_WEBHOOK
