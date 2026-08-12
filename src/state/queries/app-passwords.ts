@@ -8,9 +8,12 @@ import {pdsAgent} from '../session/agent'
 const RQKEY_ROOT = 'app-passwords'
 export const RQKEY = () => [RQKEY_ROOT]
 
-export function useAppPasswordsQuery() {
+export function useAppPasswordsQuery({
+  enabled = true,
+}: {enabled?: boolean} = {}) {
   const agent = useAgent()
   return useQuery({
+    enabled,
     staleTime: STALE.MINUTES.FIVE,
     queryKey: RQKEY(),
     queryFn: async () => {
