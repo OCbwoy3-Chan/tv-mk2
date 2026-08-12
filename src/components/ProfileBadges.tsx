@@ -5,6 +5,7 @@ import {useLingui} from '@lingui/react/macro'
 import {HITSLOP_20} from '#/lib/constants'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {type Shadow} from '#/state/cache/types'
+import {useIsPdsProfileViewable} from '#/state/pds-viewability'
 import {
   usePdsLabelEnabled,
   usePdsLabelHideBskyPds,
@@ -95,7 +96,10 @@ export function ProfileBadgesFromProfileShadow({
   const hideBskyPds = usePdsLabelHideBskyPds()
   const isBskyHandle =
     !!shadowed.handle && shadowed.handle.endsWith('.bsky.social')
-  const shouldResolvePds = pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
+  const shouldShowPdsCandidate =
+    pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
+  const isPdsProfileViewable = useIsPdsProfileViewable(shadowed.did)
+  const shouldResolvePds = shouldShowPdsCandidate && isPdsProfileViewable
   const {data: pdsData, isLoading: isPdsLoading} = usePdsLabelQuery(
     shouldResolvePds ? shadowed.did : undefined,
   )
@@ -110,8 +114,7 @@ export function ProfileBadgesFromProfileShadow({
   } = useAlf()
 
   const showPdsBadge =
-    shouldResolvePds &&
-    (isPdsLoading || (!!pdsData && !(hideBskyPds && pdsData.isBsky)))
+    shouldShowPdsCandidate && (!pdsData || !(hideBskyPds && pdsData.isBsky))
 
   const isBetaBadgeVisible = useIsBetaBadgeVisible(shadowed) && showBetaBadge
   const badgeVisibility = [
@@ -162,7 +165,7 @@ export function ProfileBadgesFromProfileShadow({
         <PdsInlineIcon
           size={size}
           interactive={pdsInteractive}
-          isLoading={isPdsLoading}
+          isLoading={!pdsData || isPdsLoading}
           isBsky={pdsData?.isBsky ?? isBskyHandle}
           isBridged={pdsData?.isBridged ?? false}
           pdsUrl={pdsData?.pdsUrl}

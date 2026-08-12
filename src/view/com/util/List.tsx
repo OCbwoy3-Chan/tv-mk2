@@ -1,5 +1,16 @@
-import {forwardRef, memo, useDeferredValue, useMemo} from 'react'
-import {RefreshControl, type ViewToken} from 'react-native'
+import {
+  forwardRef,
+  memo,
+  type ReactNode,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+} from 'react'
+import {
+  type ListRenderItemInfo,
+  RefreshControl,
+  type ViewToken,
+} from 'react-native'
 import {
   type FlatListPropsWithLayout,
   useAnimatedScrollHandler,
@@ -36,6 +47,7 @@ export type ListProps<ItemT = any> = Omit<
   headerOffset?: number
   refreshing?: boolean
   onRefresh?: () => void
+  onItemNearViewport?: (item: ItemT) => void
   onItemSeen?: (item: ItemT) => void
   desktopFixedHeight?: number | boolean
   // Web only prop to contain the scroll to the container rather than the window
@@ -54,6 +66,7 @@ let List = forwardRef<ListMethods, ListProps>(
       onScrollOffsetChange,
       refreshing,
       onRefresh,
+      onItemNearViewport,
       onItemSeen,
       headerOffset,
       style,
@@ -132,9 +145,7 @@ let List = forwardRef<ListMethods, ListProps>(
           changed: Array<ViewToken>
         }) => {
           for (const item of info.changed) {
-            if (item.isViewable) {
-              onItemSeen(item.item)
-            }
+            if (item.isViewable) onItemSeen(item.item)
           }
         },
         {
@@ -143,6 +154,19 @@ let List = forwardRef<ListMethods, ListProps>(
         },
       ]
     }, [onItemSeen])
+
+    const renderItem = useMemo(() => {
+      const render = props.renderItem
+      if (!onItemNearViewport || typeof render !== 'function') return render
+
+      return (info: ListRenderItemInfo<unknown>) => (
+        <ItemNearViewport
+          item={info.item}
+          onItemNearViewport={onItemNearViewport}>
+          {render(info)}
+        </ItemNearViewport>
+      )
+    }, [onItemNearViewport, props.renderItem])
 
     let refreshControl
     if (refreshing !== undefined || onRefresh !== undefined) {
@@ -170,6 +194,7 @@ let List = forwardRef<ListMethods, ListProps>(
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
         {...props}
+        renderItem={renderItem}
         automaticallyAdjustsScrollIndicatorInsets={
           automaticallyAdjustsScrollIndicatorInsets
         }
@@ -194,6 +219,22 @@ List.displayName = 'List'
 
 List = memo(List)
 export {List}
+
+function ItemNearViewport<ItemT>({
+  item,
+  onItemNearViewport,
+  children,
+}: {
+  item: ItemT
+  onItemNearViewport: (item: ItemT) => void
+  children: ReactNode
+}) {
+  useEffect(() => {
+    onItemNearViewport(item)
+  }, [item, onItemNearViewport])
+
+  return children
+}
 
 // We only want to use this context value on iOS because the `scrollsToTop` prop is iOS-only
 // removing it saves us a re-render on Android

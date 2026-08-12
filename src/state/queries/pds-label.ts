@@ -1,6 +1,7 @@
 import {useQuery} from '@tanstack/react-query'
 
 import {useFaviconService} from '#/state/preferences/favicon-service'
+import {GCTIME} from '#/state/queries'
 import {
   getFaviconServiceUrl,
   getPdsFallbackFaviconUrl,
@@ -8,11 +9,13 @@ import {
   isBskyPdsUrl,
 } from '#/state/queries/pds-label.util'
 import {resolvePdsServiceUrl} from '#/state/queries/resolve-identity'
+import {createQueryKey} from '#/state/queries/util'
 
 export {getPdsFallbackFaviconUrl, isBridgedPdsUrl, isBskyPdsUrl}
 
 export const RQKEY_ROOT = 'pds-label'
-export const RQKEY = (did: string) => [RQKEY_ROOT, did]
+export const RQKEY = (did: string) =>
+  createQueryKey(RQKEY_ROOT, {did}, {persistedVersion: 1})
 
 export function usePdsLabelQuery(did: string | undefined) {
   return useQuery({
@@ -30,6 +33,7 @@ export function usePdsLabelQuery(did: string | undefined) {
     enabled: !!did,
     subscribed: !!did,
     staleTime: 1000 * 60 * 60, // 1 hour
+    gcTime: GCTIME.INFINITY,
   })
 }
 

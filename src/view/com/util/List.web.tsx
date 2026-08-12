@@ -54,6 +54,7 @@ export type ListProps<ItemT = any> = Omit<
   headerOffset?: number
   refreshing?: boolean
   onRefresh?: () => void
+  onItemNearViewport?: (item: ItemT) => void
   onItemSeen?: (item: ItemT) => void
   desktopFixedHeight?: number | boolean
   // Web only prop to contain the scroll to the container rather than the window
@@ -69,6 +70,9 @@ const ON_ITEM_SEEN_WAIT_DURATION = 0.5e3 // when we consider post to  be "seen"
 const ON_ITEM_SEEN_INTERSECTION_OPTS = {
   rootMargin: '-200px 0px -200px 0px',
 } // post must be 200px visible to be "seen"
+const ON_ITEM_NEAR_VIEWPORT_INTERSECTION_OPTS = {
+  rootMargin: '800px 0px 800px 0px',
+}
 
 function ListImpl<ItemT>(
   {
@@ -90,6 +94,7 @@ function ListImpl<ItemT>(
     onScrolledDownChange,
     onScrollOffsetChange,
     onContentSizeChange,
+    onItemNearViewport,
     onItemSeen,
     renderItem,
     extraData,
@@ -441,6 +446,7 @@ function ListImpl<ItemT>(
                     index={index}
                     renderItem={renderItem}
                     extraData={extraData}
+                    onItemNearViewport={onItemNearViewport}
                     onItemSeen={onItemSeen}
                     registerRowNode={registerRowNode}
                   />
@@ -520,6 +526,7 @@ let Row = function RowImpl<ItemT>({
   index,
   renderItem,
   extraData: _unused,
+  onItemNearViewport,
   onItemSeen,
   registerRowNode,
 }: {
@@ -530,6 +537,7 @@ let Row = function RowImpl<ItemT>({
     | undefined
     | ((info: ListRenderItemInfo<ItemT>) => React.ReactNode)
   extraData: unknown
+  onItemNearViewport: ((item: ItemT) => void) | undefined
   onItemSeen: ((item: ItemT) => void) | undefined
   registerRowNode: (index: number, node: HTMLElement | null) => void
 }): React.ReactNode {
@@ -537,6 +545,26 @@ let Row = function RowImpl<ItemT>({
   const intersectionTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   )
+
+  const handleNearViewportIntersection = useNonReactiveCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        onItemNearViewport?.(item)
+      }
+    },
+  )
+
+  useEffect(() => {
+    if (!onItemNearViewport) return
+
+    const observer = new IntersectionObserver(
+      handleNearViewportIntersection,
+      ON_ITEM_NEAR_VIEWPORT_INTERSECTION_OPTS,
+    )
+    const row: Element | null = rowRef.current
+    if (row) observer.observe(row)
+    return () => observer.disconnect()
+  }, [handleNearViewportIntersection, onItemNearViewport])
 
   const handleIntersection = useNonReactiveCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -613,6 +641,7 @@ Row = memo(Row) as <ItemT>(props: {
     | undefined
     | ((info: ListRenderItemInfo<ItemT>) => React.ReactNode)
   extraData: unknown
+  onItemNearViewport: ((item: ItemT) => void) | undefined
   onItemSeen: ((item: ItemT) => void) | undefined
   registerRowNode: (index: number, node: HTMLElement | null) => void
 }) => React.ReactNode
