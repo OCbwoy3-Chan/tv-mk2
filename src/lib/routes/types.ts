@@ -63,6 +63,10 @@ export type CommonNavigatorParams = {
   PreferencesThreads: undefined
   PreferencesExternalEmbeds: undefined
   AccessibilitySettings: undefined
+  DeltaSettings: undefined
+  DeltaBadgeSettings: undefined
+  DeltaLabelSettings: undefined
+  AIPreferencesSettings: undefined
   AltTextAiSettings: undefined
   AppearanceSettings: undefined
   AppearanceColorThemeSettings: undefined

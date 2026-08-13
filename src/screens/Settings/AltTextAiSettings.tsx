@@ -95,6 +95,14 @@ export function AltTextAiSettingsScreen({}: Props) {
             </View>
           </SettingsList.Group>
 
+          <SettingsList.Item>
+            <Admonition type="warning" style={[a.flex_1]}>
+              <Trans>
+                Please avoid using this feature, it uses LLM text generation, it is a pain in the ass to remove entirely.
+              </Trans>
+            </Admonition>
+          </SettingsList.Item>
+
           {provider === 'none' ? (
             <SettingsList.Item>
               <Admonition type="info" style={[a.flex_1]}>

@@ -1,8 +1,8 @@
-import {View} from 'react-native'
-import {Trans, useLingui} from '@lingui/react/macro'
-import {type NativeStackScreenProps} from '@react-navigation/native-stack'
+import { View } from 'react-native'
+import { Trans, useLingui } from '@lingui/react/macro'
+import { type NativeStackScreenProps } from '@react-navigation/native-stack'
 
-import {type CommonNavigatorParams} from '#/lib/routes/types'
+import { type CommonNavigatorParams } from '#/lib/routes/types'
 import {
   useHapticsDisabled,
   useRequireAltTextEnabled,
@@ -13,24 +13,25 @@ import {
   useLargeAltBadgeEnabled,
   useSetLargeAltBadgeEnabled,
 } from '#/state/preferences/large-alt-badge'
-import {useAltTextAiProvider} from '#/state/preferences/openrouter'
+import { useAltTextAiProvider } from '#/state/preferences/openrouter'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import {atoms as a, useTheme} from '#/alf'
+import { atoms as a, useTheme } from '#/alf'
 import * as Toggle from '#/components/forms/Toggle'
-import {Accessibility_Stroke2_Corner2_Rounded as AccessibilityIcon} from '#/components/icons/Accessibility'
-import {Haptic_Stroke2_Corner2_Rounded as HapticIcon} from '#/components/icons/Haptic'
-import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
+import { Accessibility_Stroke2_Corner2_Rounded as AccessibilityIcon } from '#/components/icons/Accessibility'
+import { Haptic_Stroke2_Corner2_Rounded as HapticIcon } from '#/components/icons/Haptic'
+import { Lab_Stroke2_Corner0_Rounded as BeakerIcon } from '#/components/icons/Lab'
 import * as Layout from '#/components/Layout'
-import {Text} from '#/components/Typography'
-import {IS_NATIVE} from '#/env'
+import { Text } from '#/components/Typography'
+import { IS_NATIVE } from '#/env'
+import {Admonition} from '#/components/Admonition'
 
 type Props = NativeStackScreenProps<
   CommonNavigatorParams,
   'AccessibilitySettings'
 >
 
-export function AccessibilitySettingsScreen({}: Props) {
-  const {t: l} = useLingui()
+export function AccessibilitySettingsScreen({ }: Props) {
+  const { t: l } = useLingui()
   const t = useTheme()
   const requireAltTextEnabled = useRequireAltTextEnabled()
   const setRequireAltTextEnabled = useSetRequireAltTextEnabled()
@@ -133,6 +134,14 @@ export function AccessibilitySettingsScreen({}: Props) {
               </SettingsList.Group>
             </>
           )}
+
+          <SettingsList.Item>
+            <Admonition type="warning" style={[a.flex_1]}>
+              <Trans>
+                We do not support inclusion and the usage of AI slop / LLMs in the AT Protocol ecosystem, including Bluesky and apps such as Attie.
+              </Trans>
+            </Admonition>
+          </SettingsList.Item>
         </SettingsList.Container>
       </Layout.Content>
     </Layout.Screen>

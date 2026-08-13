@@ -56,7 +56,7 @@ v is a fork of Witchsky, which itself is a fork of the official Bluesky client, 
 
 > tenna.party is a community fork, and we'd love to merge your PR!
 
-As a rule of thumb, the best features for tenna.party are those that have any positive impact on the user experience regardless of the maintenance overhead. Since tenna.party is a soft-ish fork, any features (patches) we add on top of Witchsky need to be maintained. For example, a change to the way posts are composed may be very invasive, touching lots of code across the codebase. If upstream refactors this component, we will need to rewrite this feature to be compatible or drop it from the client. Just go freestyle, I guess!
+As a rule of thumb, the best features for tenna.party are those that have any positive impact on the user experience regardless of the maintenance overhead. Since tenna.party is a soft-ish fork, any features (patches) we add on top of Witchsky need to be maintained. For example, a change to the way posts are composed may be very invasive, touching lots of code across the codebase. If upstream refactors this component, we will need to rewrite this feature to be compatible or drop it from the client. Just go freestyle, I guess! But please DON'T add AI.
 
 For this reason, only features that require changing only a small or medium amount of code from upstream should be considered.
 
@@ -68,6 +68,7 @@ Without an overriding motivation, opinionated features *maybe* should exist behi
 - Open an issue and give some time for discussion before submitting a PR.
   - This isn't strictly necessary, but the lead developers would love to give their thoughts and scope out your willingness to maintain the feature before you write it.
 - Stay away from PRs like...
+  - Adding AI Slop / LLM text generation to posts
   - Changing "User" to "Tennaling."
   - Refactoring the codebase, e.g., to replace React Query with Redux Toolkit, etc.
 - Include a new toggle and preference for your feature.
