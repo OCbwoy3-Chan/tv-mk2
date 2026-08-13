@@ -2,6 +2,7 @@ const path = require('path')
 const fs = require('fs')
 
 const projectRoot = path.join(__dirname, '..')
+require('dotenv').config({path: path.join(projectRoot, '.env')})
 const templateFile = path.join(
   projectRoot,
   'bskyweb',
@@ -58,10 +59,11 @@ fs.writeFileSync(
 // Copy the static files that are not emitted by the web bundler.
 copyPath('bskyweb/static/iframe', 'web-build/iframe')
 copyPath('bskyweb/static/.well-known', 'web-build/.well-known')
-copyPath(
-  'bskyweb/static/oauth-client-metadata.json',
-  'web-build/oauth-client-metadata.json',
-)
+const oauthMetadataSource =
+  process.env.EXPO_PUBLIC_OAUTH_BASE_URL === 'https://dev.tenna.party'
+    ? 'bskyweb/static/oauth-client-metadata-canary.json'
+    : 'bskyweb/static/oauth-client-metadata.json'
+copyPath(oauthMetadataSource, 'web-build/oauth-client-metadata.json')
 copyPath(
   'bskyweb/static/oauth-client-metadata-native.json',
   'web-build/oauth-client-metadata-native.json',

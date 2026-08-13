@@ -54,6 +54,7 @@ export const router = new Router<AllNavigatableRoutes>({
   DeltaSettings: '/settings/deltas',
   DeltaBadgeSettings: '/settings/deltas/badges',
   DeltaLabelSettings: '/settings/deltas/labels',
+  AltTextAiSettings: '/settings/accessibility/ai-alt-text',
   RunesSettings: '/settings/runes',
   RunesMenusSettings: '/settings/runes/menus',
   RunesBadgesSettings: '/settings/runes/badges',

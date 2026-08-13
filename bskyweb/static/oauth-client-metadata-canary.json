@@ -1,0 +1,12 @@
+{
+  "client_id": "https://dev.tenna.party/oauth-client-metadata.json",
+  "client_name": "Witchsky",
+  "client_uri": "https://dev.tenna.party",
+  "redirect_uris": ["https://dev.tenna.party/auth/web/callback"],
+  "scope": "atproto transition:generic transition:email transition:chat.bsky",
+  "token_endpoint_auth_method": "none",
+  "response_types": ["code"],
+  "grant_types": ["authorization_code", "refresh_token"],
+  "application_type": "web",
+  "dpop_bound_access_tokens": true
+}

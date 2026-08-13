@@ -296,6 +296,12 @@ const schema = z.object({
   openRouterApiKey: z.string().optional(),
   openRouterModel: z.string().optional(),
   openRouterPrompt: z.string().optional(),
+  altTextAiProvider: z
+    .enum(['none', 'openrouter', 'cocore', 'openaiCompatible'])
+    .optional(),
+  openAiCompatibleApiKey: z.string().optional(),
+  openAiCompatibleBaseUrl: z.string().optional(),
+  openAiCompatibleModel: z.string().optional(),
 
   useHandleInLinks: z.boolean().optional(),
 
@@ -456,6 +462,10 @@ export const defaults: Schema = {
   openRouterApiKey: undefined,
   openRouterModel: DEFAULT_ALT_TEXT_AI_MODEL,
   openRouterPrompt: undefined,
+  altTextAiProvider: 'none',
+  openAiCompatibleApiKey: undefined,
+  openAiCompatibleBaseUrl: undefined,
+  openAiCompatibleModel: undefined,
 
   useHandleInLinks: false,
 

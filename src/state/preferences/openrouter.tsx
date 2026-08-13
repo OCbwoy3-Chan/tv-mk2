@@ -4,130 +4,284 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react'
 
+import {
+  COCORE_ALT_TEXT_AI_BASE_URL,
+  DEFAULT_ALT_TEXT_AI_MODEL,
+  OPENROUTER_ALT_TEXT_AI_BASE_URL,
+} from '#/lib/constants'
 import * as persisted from '#/state/persisted'
 
-type ApiKeyStateContext = persisted.Schema['openRouterApiKey']
-type SetApiKeyContext = (v: persisted.Schema['openRouterApiKey']) => void
-type ModelStateContext = persisted.Schema['openRouterModel']
-type SetModelContext = (v: persisted.Schema['openRouterModel']) => void
-type PromptStateContext = persisted.Schema['openRouterPrompt']
-type SetPromptContext = (v: persisted.Schema['openRouterPrompt']) => void
+export type AltTextAiProvider = NonNullable<
+  persisted.Schema['altTextAiProvider']
+>
+type EnabledAltTextAiProvider = Exclude<AltTextAiProvider, 'none'>
 
-const apiKeyStateContext = createContext<ApiKeyStateContext>(
-  persisted.defaults.openRouterApiKey,
-)
-const setApiKeyContext = createContext<SetApiKeyContext>(
-  (_: persisted.Schema['openRouterApiKey']) => {},
-)
-const modelStateContext = createContext<ModelStateContext>(
-  persisted.defaults.openRouterModel,
-)
-const setModelContext = createContext<SetModelContext>(
-  (_: persisted.Schema['openRouterModel']) => {},
-)
-const promptStateContext = createContext<PromptStateContext>(
-  persisted.defaults.openRouterPrompt,
-)
-const setPromptContext = createContext<SetPromptContext>(
-  (_: persisted.Schema['openRouterPrompt']) => {},
-)
+export type AltTextAiConfig = {
+  provider: EnabledAltTextAiProvider
+  apiKey?: string
+  baseUrl: string
+  model?: string
+  prompt?: string
+}
+
+type Settings = {
+  provider: AltTextAiProvider
+  openRouterApiKey?: string
+  openRouterModel?: string
+  prompt?: string
+  openAiCompatibleApiKey?: string
+  openAiCompatibleBaseUrl?: string
+  openAiCompatibleModel?: string
+}
+
+type SettingsApi = {
+  setProvider: (value: AltTextAiProvider) => void
+  setOpenRouterApiKey: (value?: string) => void
+  setOpenRouterModel: (value?: string) => void
+  setPrompt: (value?: string) => void
+  setOpenAiCompatibleApiKey: (value?: string) => void
+  setOpenAiCompatibleBaseUrl: (value?: string) => void
+  setOpenAiCompatibleModel: (value?: string) => void
+}
+
+const settingsContext = createContext<Settings>({
+  provider: 'none',
+  openRouterModel: DEFAULT_ALT_TEXT_AI_MODEL,
+})
+const settingsApiContext = createContext<SettingsApi>({
+  setProvider: () => {},
+  setOpenRouterApiKey: () => {},
+  setOpenRouterModel: () => {},
+  setPrompt: () => {},
+  setOpenAiCompatibleApiKey: () => {},
+  setOpenAiCompatibleBaseUrl: () => {},
+  setOpenAiCompatibleModel: () => {},
+})
+
+function usePersistedState<K extends keyof persisted.Schema>(key: K) {
+  const [value, setValue] = useState(() => persisted.get(key))
+
+  const setValueWrapped = useCallback(
+    (next: persisted.Schema[K]) => {
+      setValue(next)
+      void persisted.write(key, next)
+    },
+    [key],
+  )
+
+  useEffect(() => persisted.onUpdate(key, setValue), [key])
+
+  return [value, setValueWrapped] as const
+}
 
 export function Provider({children}: PropsWithChildren<{}>) {
-  const [apiKeyState, setApiKeyState] = useState(
-    persisted.get('openRouterApiKey'),
+  const [provider, setProvider] = usePersistedState('altTextAiProvider')
+  const [openRouterApiKey, setOpenRouterApiKey] =
+    usePersistedState('openRouterApiKey')
+  const [openRouterModel, setOpenRouterModel] =
+    usePersistedState('openRouterModel')
+  const [prompt, setPrompt] = usePersistedState('openRouterPrompt')
+  const [openAiCompatibleApiKey, setOpenAiCompatibleApiKey] = usePersistedState(
+    'openAiCompatibleApiKey',
   )
-  const [modelState, setModelState] = useState(persisted.get('openRouterModel'))
-  const [promptState, setPromptState] = useState(
-    persisted.get('openRouterPrompt'),
-  )
-
-  const setApiKeyWrapped = useCallback(
-    (openRouterApiKey: persisted.Schema['openRouterApiKey']) => {
-      setApiKeyState(openRouterApiKey)
-      persisted.write('openRouterApiKey', openRouterApiKey)
-    },
-    [setApiKeyState],
-  )
-
-  const setModelWrapped = useCallback(
-    (openRouterModel: persisted.Schema['openRouterModel']) => {
-      setModelState(openRouterModel)
-      persisted.write('openRouterModel', openRouterModel)
-    },
-    [setModelState],
+  const [openAiCompatibleBaseUrl, setOpenAiCompatibleBaseUrl] =
+    usePersistedState('openAiCompatibleBaseUrl')
+  const [openAiCompatibleModel, setOpenAiCompatibleModel] = usePersistedState(
+    'openAiCompatibleModel',
   )
 
-  const setPromptWrapped = useCallback(
-    (openRouterPrompt: persisted.Schema['openRouterPrompt']) => {
-      setPromptState(openRouterPrompt)
-      persisted.write('openRouterPrompt', openRouterPrompt)
-    },
-    [setPromptState],
+  const settings = useMemo<Settings>(
+    () => ({
+      provider: provider ?? 'none',
+      openRouterApiKey,
+      openRouterModel,
+      prompt,
+      openAiCompatibleApiKey,
+      openAiCompatibleBaseUrl,
+      openAiCompatibleModel,
+    }),
+    [
+      provider,
+      openRouterApiKey,
+      openRouterModel,
+      prompt,
+      openAiCompatibleApiKey,
+      openAiCompatibleBaseUrl,
+      openAiCompatibleModel,
+    ],
   )
-
-  useEffect(() => {
-    return persisted.onUpdate('openRouterApiKey', nextApiKey => {
-      setApiKeyState(nextApiKey)
-    })
-  }, [setApiKeyWrapped])
-
-  useEffect(() => {
-    return persisted.onUpdate('openRouterModel', nextModel => {
-      setModelState(nextModel)
-    })
-  }, [setModelWrapped])
-
-  useEffect(() => {
-    return persisted.onUpdate('openRouterPrompt', nextPrompt => {
-      setPromptState(nextPrompt)
-    })
-  }, [setPromptWrapped])
+  const api = useMemo<SettingsApi>(
+    () => ({
+      setProvider,
+      setOpenRouterApiKey,
+      setOpenRouterModel,
+      setPrompt,
+      setOpenAiCompatibleApiKey,
+      setOpenAiCompatibleBaseUrl,
+      setOpenAiCompatibleModel,
+    }),
+    [
+      setProvider,
+      setOpenRouterApiKey,
+      setOpenRouterModel,
+      setPrompt,
+      setOpenAiCompatibleApiKey,
+      setOpenAiCompatibleBaseUrl,
+      setOpenAiCompatibleModel,
+    ],
+  )
 
   return (
-    <apiKeyStateContext.Provider value={apiKeyState}>
-      <setApiKeyContext.Provider value={setApiKeyWrapped}>
-        <modelStateContext.Provider value={modelState}>
-          <setModelContext.Provider value={setModelWrapped}>
-            <promptStateContext.Provider value={promptState}>
-              <setPromptContext.Provider value={setPromptWrapped}>
-                {children}
-              </setPromptContext.Provider>
-            </promptStateContext.Provider>
-          </setModelContext.Provider>
-        </modelStateContext.Provider>
-      </setApiKeyContext.Provider>
-    </apiKeyStateContext.Provider>
+    <settingsContext.Provider value={settings}>
+      <settingsApiContext.Provider value={api}>
+        {children}
+      </settingsApiContext.Provider>
+    </settingsContext.Provider>
   )
 }
 
+export function useAltTextAiProvider() {
+  return useContext(settingsContext).provider
+}
+
+export function useSetAltTextAiProvider() {
+  return useContext(settingsApiContext).setProvider
+}
+
+export function useAltTextAiApiKey() {
+  const settings = useContext(settingsContext)
+  switch (settings.provider) {
+    case 'openaiCompatible':
+      return settings.openAiCompatibleApiKey
+    case 'cocore':
+    case 'none':
+      return undefined
+    default:
+      return settings.openRouterApiKey
+  }
+}
+
+export function useSetAltTextAiApiKey() {
+  const {provider} = useContext(settingsContext)
+  const api = useContext(settingsApiContext)
+  return useMemo(() => {
+    switch (provider) {
+      case 'openaiCompatible':
+        return api.setOpenAiCompatibleApiKey
+      default:
+        return api.setOpenRouterApiKey
+    }
+  }, [api, provider])
+}
+
+export function useAltTextAiModel() {
+  const settings = useContext(settingsContext)
+  switch (settings.provider) {
+    case 'cocore':
+    case 'none':
+      return undefined
+    case 'openaiCompatible':
+      return settings.openAiCompatibleModel
+    default:
+      return settings.openRouterModel ?? DEFAULT_ALT_TEXT_AI_MODEL
+  }
+}
+
+export function useSetAltTextAiModel() {
+  const {provider} = useContext(settingsContext)
+  const api = useContext(settingsApiContext)
+  return useMemo(() => {
+    switch (provider) {
+      case 'openaiCompatible':
+        return api.setOpenAiCompatibleModel
+      default:
+        return api.setOpenRouterModel
+    }
+  }, [api, provider])
+}
+
+export function useAltTextAiBaseUrl() {
+  const settings = useContext(settingsContext)
+  switch (settings.provider) {
+    case 'cocore':
+      return COCORE_ALT_TEXT_AI_BASE_URL
+    case 'none':
+      return undefined
+    case 'openaiCompatible':
+      return settings.openAiCompatibleBaseUrl
+    default:
+      return OPENROUTER_ALT_TEXT_AI_BASE_URL
+  }
+}
+
+export function useSetOpenAiCompatibleBaseUrl() {
+  return useContext(settingsApiContext).setOpenAiCompatibleBaseUrl
+}
+
+export function useAltTextAiPrompt() {
+  return useContext(settingsContext).prompt
+}
+
+export function useSetAltTextAiPrompt() {
+  return useContext(settingsApiContext).setPrompt
+}
+
+export function useAltTextAiConfig(): AltTextAiConfig | undefined {
+  const provider = useAltTextAiProvider()
+  const apiKey = useAltTextAiApiKey()
+  const model = useAltTextAiModel()
+  const baseUrl = useAltTextAiBaseUrl()
+  const prompt = useAltTextAiPrompt()
+
+  if (provider === 'none') return undefined
+  if (!baseUrl) {
+    return undefined
+  }
+  if (provider === 'openrouter' && (!apiKey || !model)) return undefined
+  if (provider === 'openaiCompatible' && !model) return undefined
+  return {provider, apiKey, model, baseUrl, prompt}
+}
+
+export function useAltTextAiConfigured() {
+  return !!useAltTextAiConfig()
+}
+
+/** @deprecated Use the provider-neutral alt text AI hooks. */
 export function useOpenRouterApiKey() {
-  return useContext(apiKeyStateContext)
+  return useContext(settingsContext).openRouterApiKey
 }
 
+/** @deprecated Use the provider-neutral alt text AI hooks. */
 export function useSetOpenRouterApiKey() {
-  return useContext(setApiKeyContext)
+  return useContext(settingsApiContext).setOpenRouterApiKey
 }
 
+/** @deprecated Use the provider-neutral alt text AI hooks. */
 export function useOpenRouterModel() {
-  return useContext(modelStateContext)
+  return useContext(settingsContext).openRouterModel
 }
 
+/** @deprecated Use the provider-neutral alt text AI hooks. */
 export function useSetOpenRouterModel() {
-  return useContext(setModelContext)
+  return useContext(settingsApiContext).setOpenRouterModel
 }
 
+/** @deprecated Use the provider-neutral alt text AI hooks. */
 export function useOpenRouterPrompt() {
-  return useContext(promptStateContext)
+  return useAltTextAiPrompt()
 }
 
+/** @deprecated Use the provider-neutral alt text AI hooks. */
 export function useSetOpenRouterPrompt() {
-  return useContext(setPromptContext)
+  return useSetAltTextAiPrompt()
 }
 
+/** @deprecated Use useAltTextAiConfigured. */
 export function useOpenRouterConfigured() {
   const apiKey = useOpenRouterApiKey()
-  return !!apiKey && apiKey.length > 0
+  return !!apiKey
 }
