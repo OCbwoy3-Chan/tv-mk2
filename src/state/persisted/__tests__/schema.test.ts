@@ -50,6 +50,7 @@ describe('persisted schema helpers', () => {
     expect(normalizeData(parsed!).downloadFormat).toBe(defaults.downloadFormat)
     expect(normalizeData(parsed!).notificationsTabBadgeDisplay).toBe('exact')
     expect(normalizeData(parsed!).chatsTabBadgeDisplay).toBe('exact')
+    expect(normalizeData(parsed!).altTextAiProvider).toBe('none')
   })
 
   it('preserves external embed prefs when defaults object is empty', () => {

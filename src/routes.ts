@@ -50,6 +50,7 @@ export const router = new Router<AllNavigatableRoutes>({
   PreferencesThreads: '/settings/threads',
   PreferencesExternalEmbeds: '/settings/external-embeds',
   AccessibilitySettings: '/settings/accessibility',
+  AltTextAiSettings: '/settings/accessibility/ai-alt-text',
   RunesSettings: '/settings/runes',
   RunesMenusSettings: '/settings/runes/menus',
   RunesBadgesSettings: '/settings/runes/badges',

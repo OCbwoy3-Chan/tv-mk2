@@ -12,15 +12,14 @@ import {useLingui} from '@lingui/react'
 import {Plural, Trans} from '@lingui/react/macro'
 
 import {generateAltText} from '#/lib/ai/generateAltText'
-import {DEFAULT_ALT_TEXT_AI_MODEL, MAX_ALT_TEXT} from '#/lib/constants'
+import {MAX_ALT_TEXT} from '#/lib/constants'
 import {enforceLen} from '#/lib/strings/helpers'
 import {type ComposerImage} from '#/state/gallery'
 import {
-  useOpenRouterApiKey,
-  useOpenRouterConfigured,
-  useOpenRouterModel,
-  useOpenRouterPrompt,
+  useAltTextAiConfig,
+  useAltTextAiConfigured,
 } from '#/state/preferences/openrouter'
+import {useAgent} from '#/state/session'
 import {AltTextCounterWrapper} from '#/view/com/composer/AltTextCounterWrapper'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
@@ -85,15 +84,14 @@ const ImageAltTextInner = ({
 }): React.ReactNode => {
   const {_, i18n} = useLingui()
   const t = useTheme()
+  const agent = useAgent()
   const {width: screenWidth} = useWindowDimensions()
 
   const [isGenerating, setIsGenerating] = useState(false)
   const [generateError, setGenerateError] = useState<string | null>(null)
 
-  const openRouterConfigured = useOpenRouterConfigured()
-  const openRouterApiKey = useOpenRouterApiKey()
-  const openRouterModel = useOpenRouterModel()
-  const openRouterPrompt = useOpenRouterPrompt()
+  const aiConfigured = useAltTextAiConfigured()
+  const aiConfig = useAltTextAiConfig()
 
   const imageStyle = useMemo<ImageStyle>(() => {
     const maxWidth = IS_WEB
@@ -118,7 +116,7 @@ const ImageAltTextInner = ({
   }, [image, screenWidth])
 
   const handleGenerateAltText = useCallback(async () => {
-    if (!openRouterApiKey) return
+    if (!aiConfig) return
 
     setIsGenerating(true)
     setGenerateError(null)
@@ -150,13 +148,7 @@ const ImageAltTextInner = ({
         mimeType = ext === 'png' ? 'image/png' : 'image/jpeg'
       }
 
-      const generated = await generateAltText(
-        openRouterApiKey,
-        openRouterModel ?? DEFAULT_ALT_TEXT_AI_MODEL,
-        base64,
-        mimeType,
-        openRouterPrompt ?? undefined,
-      )
+      const generated = await generateAltText(aiConfig, base64, mimeType, agent)
 
       setAltText(enforceLen(generated, MAX_ALT_TEXT, true))
     } catch (err) {
@@ -166,7 +158,7 @@ const ImageAltTextInner = ({
     } finally {
       setIsGenerating(false)
     }
-  }, [openRouterApiKey, openRouterModel, openRouterPrompt, image, setAltText])
+  }, [agent, aiConfig, image, setAltText])
 
   return (
     <Dialog.ScrollableInner label={_(msg`Add alt text`)}>
@@ -243,13 +235,13 @@ const ImageAltTextInner = ({
           )}
         </View>
 
-        {openRouterConfigured && (
+        {aiConfigured && (
           <Button
-            label={_(msg`Generate alt text with AI`)}
+            label={_(msg`Generate alt text`)}
             size="large"
             color="secondary"
             variant="solid"
-            onPress={handleGenerateAltText}
+            onPress={() => void handleGenerateAltText()}
             disabled={isGenerating}
             style={[a.flex_grow]}>
             {isGenerating ? (
@@ -258,7 +250,7 @@ const ImageAltTextInner = ({
               <SparkleIcon size="sm" />
             )}
             <ButtonText>
-              <Trans>Generate Alt Text with AI</Trans>
+              <Trans>Generate alt text</Trans>
             </ButtonText>
           </Button>
         )}

@@ -77,6 +77,10 @@ export const MAX_GROUP_NAME_GRAPHEME_LENGTH = 50
 // but increasing limit per user feedback
 export const MAX_ALT_TEXT = 2000
 export const DEFAULT_ALT_TEXT_AI_MODEL = 'google/gemma-4-26b-a4b-it:free'
+export const OPENROUTER_ALT_TEXT_AI_BASE_URL = 'https://openrouter.ai/api/v1'
+export const COCORE_ALT_TEXT_AI_BASE_URL = 'https://cocore.dev/v1'
+export const COCORE_SERVICE_AUTH_AUD = 'did:web:console.cocore.dev'
+export const COCORE_INFERENCE_LXM = 'dev.cocore.inference.dispatch'
 export const DEFAULT_ALT_TEXT_AI_PROMPT =
   'Write alt text for this image. Be concise — 1-2 sentences for simple images. If the image contains readable text, transcribe it rather than describing it. Only describe what you can clearly see; do not guess at names or details.'
 

@@ -71,7 +71,6 @@ import {useAppState} from '#/lib/appState'
 import {retry} from '#/lib/async/retry'
 import {until} from '#/lib/async/until'
 import {
-  DEFAULT_ALT_TEXT_AI_MODEL,
   MAX_ALT_TEXT,
   MAX_DRAFT_GRAPHEME_LENGTH,
   MAX_GRAPHEME_LENGTH,
@@ -105,9 +104,8 @@ import {
 } from '#/state/preferences/languages'
 import {useOmitViaField} from '#/state/preferences/omit-via-field'
 import {
-  useOpenRouterApiKey,
-  useOpenRouterConfigured,
-  useOpenRouterModel,
+  useAltTextAiConfig,
+  useAltTextAiConfigured,
 } from '#/state/preferences/openrouter'
 import {useTidSuffix} from '#/state/preferences/tid-suffix'
 import {usePreferencesQuery} from '#/state/queries/preferences'
@@ -2226,9 +2224,9 @@ function AltTextReminder({
 }) {
   const {t: l} = useLingui()
   const t = useTheme()
-  const openRouterConfigured = useOpenRouterConfigured()
-  const openRouterApiKey = useOpenRouterApiKey()
-  const openRouterModel = useOpenRouterModel()
+  const agent = useAgent()
+  const aiConfigured = useAltTextAiConfigured()
+  const aiConfig = useAltTextAiConfig()
   const [isGenerating, setIsGenerating] = useState(false)
 
   const hasImagesWithoutAlt = useMemo(() => {
@@ -2242,7 +2240,7 @@ function AltTextReminder({
   }, [thread])
 
   const handleGenerateAltText = useCallback(async () => {
-    if (!openRouterApiKey) return
+    if (!aiConfig) return
 
     setIsGenerating(true)
 
@@ -2280,10 +2278,10 @@ function AltTextReminder({
                 }
 
                 const generated = await generateAltText(
-                  openRouterApiKey,
-                  openRouterModel ?? DEFAULT_ALT_TEXT_AI_MODEL,
+                  aiConfig,
                   base64,
                   mimeType,
+                  agent,
                 )
 
                 dispatch({
@@ -2309,24 +2307,24 @@ function AltTextReminder({
     } finally {
       setIsGenerating(false)
     }
-  }, [openRouterApiKey, openRouterModel, thread, dispatch])
+  }, [agent, aiConfig, thread, dispatch])
 
   return (
     <Admonition type="warning" style={[a.mt_2xs, a.mb_sm, a.mx_lg]}>
       <View style={[a.flex_row, a.align_center, a.justify_between, a.gap_sm]}>
         <Text style={[a.flex_1]}>{error}</Text>
-        {openRouterConfigured && hasImagesWithoutAlt && (
+        {aiConfigured && hasImagesWithoutAlt && (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={l`Generate Alt Text`}
-            accessibilityHint={l`Automatically generate alt text for images in this post using AI. Requires configured OpenRouter API key.`}
-            onPress={handleGenerateAltText}
+            accessibilityLabel={l`Generate alt text`}
+            accessibilityHint={l`Automatically generate alt text for images in this post using the configured AI provider.`}
+            onPress={() => void handleGenerateAltText()}
             disabled={isGenerating}>
             {isGenerating ? (
               <ActivityIndicator size="small" color={t.palette.primary_500} />
             ) : (
               <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
-                <Trans>Generate</Trans>
+                <Trans>Generate alt text</Trans>
               </Text>
             )}
           </Pressable>

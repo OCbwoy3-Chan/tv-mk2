@@ -157,6 +157,10 @@ const AccessibilitySettingsScreen = deferredNamedScreen(
   () => require('#/screens/Settings/AccessibilitySettings'),
   'AccessibilitySettingsScreen',
 )
+const AltTextAiSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AltTextAiSettings'),
+  'AltTextAiSettingsScreen',
+)
 const AccountSettingsScreen = deferredNamedScreen(
   () => require('#/screens/Settings/AccountSettings'),
   'AccountSettingsScreen',
@@ -589,6 +593,14 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         getComponent={() => AccessibilitySettingsScreen}
         options={{
           title: title(msg`Accessibility Settings`),
+          requireAuth: true,
+        }}
+      />
+      <Stack.Screen
+        name="AltTextAiSettings"
+        getComponent={() => AltTextAiSettingsScreen}
+        options={{
+          title: title(msg`Automatic alt text generation`),
           requireAuth: true,
         }}
       />

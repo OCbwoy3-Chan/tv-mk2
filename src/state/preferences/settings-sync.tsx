@@ -107,6 +107,10 @@ export const SYNCED_PREFS_KEYS = [
   'openRouterApiKey',
   'openRouterModel',
   'openRouterPrompt',
+  'altTextAiProvider',
+  'openAiCompatibleApiKey',
+  'openAiCompatibleBaseUrl',
+  'openAiCompatibleModel',
   'useHandleInLinks',
   'trendingDisabled',
   'trendingVideoDisabled',
@@ -136,7 +140,12 @@ export function getActiveSyncedPrefsKeys(): SyncedPrefsKey[] {
   const syncApiKey = persisted.get('syncOpenRouterApiKey')
   const includeTheme = shouldSyncTheme()
   return SYNCED_PREFS_KEYS.filter(key => {
-    if (key === 'openRouterApiKey' && !syncApiKey) return false
+    if (
+      (key === 'openRouterApiKey' || key === 'openAiCompatibleApiKey') &&
+      !syncApiKey
+    ) {
+      return false
+    }
     if (!includeTheme && THEME_PREFS_KEY_SET.has(key)) return false
     return true
   })
