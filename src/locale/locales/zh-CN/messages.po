@@ -793,15 +793,15 @@ msgstr "{memberCount}/{memberLimit}"
 msgid "{minutes, plural, one {# minute} other {# minutes}}"
 msgstr "{minutes, plural, one {# 分钟} other {# 分钟}}"
 
-#: src/view/com/composer/Composer.tsx:1092
+#: src/view/com/composer/Composer.tsx:1090
 msgid "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1084
+#: src/view/com/composer/Composer.tsx:1082
 msgid "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1100
+#: src/view/com/composer/Composer.tsx:1098
 msgid "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 msgstr ""
 
@@ -846,6 +846,14 @@ msgstr "{profileName}在 {timeAgoString}前使用新手包加入了 Bluesky"
 
 #: src/screens/Profile/Header/EditProfileDialog.tsx:454
 msgid "{PRONOUNS_MAX_GRAPHEMES, plural, other {The maximum number of characters is #.}}"
+msgstr ""
+
+#: src/screens/Settings/AltTextAiSettings.tsx:276
+msgid "{providerName} API key"
+msgstr ""
+
+#: src/screens/Settings/AltTextAiSettings.tsx:325
+msgid "{providerName} vision model"
 msgstr ""
 
 #. The trending topic rank, i.e. "1. March Madness", "2. The Bachelor"
@@ -1119,7 +1127,7 @@ msgstr "一张帖文编辑器的截图。在发布按钮旁边有一个新的草
 msgid "A selected recipient is not followed by the sender."
 msgstr "选择的收信人未被发信人关注。"
 
-#: src/Navigation.tsx:809
+#: src/Navigation.tsx:821
 #: src/screens/Settings/AboutSettings.tsx:86
 #: src/screens/Settings/Settings.tsx:492
 #: src/screens/Settings/Settings.tsx:495
@@ -1166,17 +1174,17 @@ msgstr "应用此建议语言"
 msgid "Access requested! The group owner will review your request."
 msgstr "已发送申请！请等待群组所有者同意以加入群组。"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:71
+#: src/screens/Settings/AccessibilitySettings.tsx:58
 #: src/screens/Settings/Settings.tsx:466
 #: src/screens/Settings/Settings.tsx:469
 msgid "Accessibility"
 msgstr "无障碍"
 
-#: src/Navigation.tsx:595
+#: src/Navigation.tsx:599
 msgid "Accessibility Settings"
 msgstr "无障碍设置"
 
-#: src/Navigation.tsx:724
+#: src/Navigation.tsx:736
 #: src/screens/Login/LoginForm.tsx:255
 #: src/screens/Login/LoginForm.web.tsx:234
 #: src/screens/Settings/AccountSettings.tsx:56
@@ -1272,7 +1280,7 @@ msgstr ""
 msgid "Activity from others"
 msgstr "其他人的动态"
 
-#: src/Navigation.tsx:785
+#: src/Navigation.tsx:797
 msgid "Activity notifications"
 msgstr "活动通知"
 
@@ -1315,14 +1323,14 @@ msgstr "将用户添加至此列表"
 msgid "Add account"
 msgstr "添加账户"
 
-#: src/view/com/composer/Composer.tsx:1789
+#: src/view/com/composer/Composer.tsx:1787
 #: src/view/com/composer/GifAltText.tsx:76
 #: src/view/com/composer/GifAltText.tsx:150
 #: src/view/com/composer/GifAltText.tsx:216
 #: src/view/com/composer/photos/Gallery.tsx:204
 #: src/view/com/composer/photos/Gallery.tsx:247
+#: src/view/com/composer/photos/ImageAltTextDialog.tsx:164
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:172
-#: src/view/com/composer/photos/ImageAltTextDialog.tsx:180
 msgid "Add alt text"
 msgstr "添加替代文本"
 
@@ -1337,11 +1345,11 @@ msgstr "添加替代文本（可选）"
 msgid "Add another account"
 msgstr "添加其他账户"
 
-#: src/view/com/composer/Composer.tsx:1850
+#: src/view/com/composer/Composer.tsx:1848
 msgid "Add another Jarona"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2740
+#: src/view/com/composer/Composer.tsx:2738
 msgid "Add another post to thread"
 msgstr "添加另一则帖文至帖文串"
 
@@ -1590,14 +1598,22 @@ msgstr "只需几分钟即可完成年龄验证"
 msgid "Age assurance only takes a few minutes."
 msgstr "只需几分钟即可完成年龄验证。"
 
+#: src/screens/Settings/AltTextAiSettings.tsx:85
+msgid "AI alt text provider"
+msgstr ""
+
 #: src/screens/Settings/AIPreferencesSettings.tsx:53
 msgid "AI preferences"
 msgstr ""
 
-#: src/Navigation.tsx:603
+#: src/Navigation.tsx:607
 #: src/screens/Settings/AIPreferencesSettings.tsx:62
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:39
 msgid "AI Preferences"
+msgstr ""
+
+#: src/screens/Settings/AltTextAiSettings.tsx:270
+msgid "AI provider API key"
 msgstr ""
 
 #: src/components/dialogs/EmailDialog/screens/Update.tsx:220
@@ -1716,7 +1732,7 @@ msgstr "已经有验证码了？"
 msgid "Already signed in as @{0}"
 msgstr "已经以 @{0} 身份登录"
 
-#: src/Navigation.tsx:677
+#: src/Navigation.tsx:689
 #: src/screens/PostThread/components/ThreadAlsoLiked.tsx:91
 #: src/screens/Settings/RunesSettings/AlsoLikedSettings.tsx:28
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:89
@@ -1733,9 +1749,9 @@ msgstr ""
 msgid "ALT"
 msgstr "替代文本"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:81
+#: src/screens/Settings/AccessibilitySettings.tsx:68
 #: src/view/com/composer/GifAltText.tsx:160
-#: src/view/com/composer/photos/ImageAltTextDialog.tsx:205
+#: src/view/com/composer/photos/ImageAltTextDialog.tsx:197
 #: src/view/com/composer/videos/SubtitleDialog.tsx:42
 #: src/view/com/composer/videos/SubtitleDialog.tsx:60
 #: src/view/com/composer/videos/SubtitleDialog.tsx:111
@@ -1752,15 +1768,15 @@ msgstr "替代文本"
 msgid "Alt text describes images for blind and low-vision users, and helps give context to everyone."
 msgstr "为图片新增替代文本，从而帮助视障者大致了解图片内容。"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:164
-#: src/screens/Settings/AccessibilitySettings.tsx:363
-#: src/screens/Settings/AccessibilitySettings.tsx:366
-msgid "Alt Text Prompt"
+#: src/screens/Settings/AltTextAiSettings.tsx:205
+#: src/screens/Settings/AltTextAiSettings.tsx:418
+#: src/screens/Settings/AltTextAiSettings.tsx:421
+msgid "Alt text prompt"
 msgstr ""
 
 #. placeholder {0}: i18n.number(MAX_ALT_TEXT)
 #: src/view/com/composer/GifAltText.tsx:184
-#: src/view/com/composer/photos/ImageAltTextDialog.tsx:225
+#: src/view/com/composer/photos/ImageAltTextDialog.tsx:217
 msgid "Alt text will be truncated. {MAX_ALT_TEXT, plural, other {Limit: {0} characters.}}"
 msgstr "替代文本太长将被截断，{MAX_ALT_TEXT, plural,other {限制为：{0} 个字符。}}"
 
@@ -1974,7 +1990,22 @@ msgstr "任何人都无法再通过此链接加入对话，但你随时可以重
 msgid "Anything else"
 msgstr ""
 
-#: src/Navigation.tsx:817
+#: src/screens/Settings/AltTextAiSettings.tsx:145
+#: src/screens/Settings/AltTextAiSettings.tsx:365
+#: src/screens/Settings/AltTextAiSettings.tsx:368
+#: src/screens/Settings/AltTextAiSettings.tsx:371
+msgid "API base URL"
+msgstr ""
+
+#: src/screens/Settings/AltTextAiSettings.tsx:132
+#: src/screens/Settings/AltTextAiSettings.tsx:154
+#: src/screens/Settings/AltTextAiSettings.tsx:274
+#: src/screens/Settings/AltTextAiSettings.tsx:280
+#: src/screens/Settings/AltTextAiSettings.tsx:284
+msgid "API key"
+msgstr ""
+
+#: src/Navigation.tsx:829
 #: src/screens/Settings/AppIconSettings/index.tsx:65
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:19
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:24
@@ -2012,7 +2043,7 @@ msgstr "应用密码名称至少应包含 4 个字符"
 msgid "App passwords"
 msgstr "应用密码"
 
-#: src/Navigation.tsx:563
+#: src/Navigation.tsx:567
 #: src/screens/Settings/AppPasswords.tsx:51
 msgid "App Passwords"
 msgstr "应用密码"
@@ -2076,7 +2107,7 @@ msgstr "对此决定提出申诉"
 msgid "Appeal this label"
 msgstr "对此标记提出申诉"
 
-#: src/Navigation.tsx:708
+#: src/Navigation.tsx:720
 #: src/screens/Settings/AppearanceSettings.tsx:118
 #: src/screens/Settings/Settings.tsx:458
 #: src/screens/Settings/Settings.tsx:461
@@ -2172,7 +2203,7 @@ msgstr "你确定要将此从你的动态源中删除吗？"
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "你确定要撤销加入 {0} 的申请吗？"
 
-#: src/view/com/composer/Composer.tsx:2058
+#: src/view/com/composer/Composer.tsx:2056
 msgid "Are you sure you'd like to discard this post?"
 msgstr "你确定要放弃发布这则帖文吗？"
 
@@ -2269,8 +2300,22 @@ msgstr "自动化账户"
 msgid "Automatic"
 msgstr "自动"
 
-#: src/view/com/composer/Composer.tsx:2326
-msgid "Automatically generate alt text for images in this post using AI. Requires configured OpenRouter API key."
+#: src/Navigation.tsx:639
+#: src/screens/Settings/AccessibilitySettings.tsx:102
+#: src/screens/Settings/AltTextAiSettings.tsx:63
+msgid "Automatic alt text generation"
+msgstr ""
+
+#: src/screens/Settings/AltTextAiSettings.tsx:109
+msgid "Automatic alt text generation is turned off."
+msgstr ""
+
+#: src/screens/Settings/AccessibilitySettings.tsx:98
+msgid "Automatic alt text generation, {providerName}"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:2324
+msgid "Automatically generate alt text for images in this post using the configured AI provider."
 msgstr ""
 
 #: src/screens/Settings/RunesSettings/DensitySettings.tsx:51
@@ -2283,7 +2328,7 @@ msgstr ""
 msgid "Automation label"
 msgstr "自动化标记"
 
-#: src/Navigation.tsx:740
+#: src/Navigation.tsx:752
 #: src/screens/Settings/AutomationLabelSettings.tsx:103
 msgid "Automation Label"
 msgstr "自动化标记"
@@ -2349,7 +2394,7 @@ msgstr "返回"
 msgid "Back to Chats"
 msgstr "返回对话"
 
-#: src/Navigation.tsx:647
+#: src/Navigation.tsx:659
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:76
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:168
 #: src/screens/Settings/RunesSettings/index.tsx:30
@@ -2432,7 +2477,7 @@ msgstr "请填写以下栏位，以开始年龄验证流程。"
 msgid "Beta Feature"
 msgstr "测试功能"
 
-#: src/Navigation.tsx:732
+#: src/Navigation.tsx:744
 #: src/screens/Settings/BetaFeaturesSettings.tsx:108
 #: src/screens/Settings/RunesSettings/index.tsx:84
 #: src/screens/Settings/RunesSettings/index.tsx:87
@@ -2556,7 +2601,7 @@ msgstr "已被屏蔽"
 msgid "Blocked accounts"
 msgstr "已屏蔽账户"
 
-#: src/Navigation.tsx:399
+#: src/Navigation.tsx:403
 #: src/view/screens/ModerationBlockedAccounts.tsx:95
 msgid "Blocked Accounts"
 msgstr "已屏蔽账户"
@@ -2877,8 +2922,8 @@ msgstr "需要相机权限"
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:37
-#: src/view/com/composer/Composer.tsx:2136
-#: src/view/com/composer/Composer.tsx:2146
+#: src/view/com/composer/Composer.tsx:2134
+#: src/view/com/composer/Composer.tsx:2144
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
 #: src/view/shell/desktop/LeftNav.tsx:245
@@ -2943,9 +2988,11 @@ msgid "cats dogs"
 msgstr "猫 狗"
 
 #: src/components/Post/Translated/index.tsx:439
-#: src/screens/Settings/AccessibilitySettings.tsx:113
-#: src/screens/Settings/AccessibilitySettings.tsx:139
-#: src/screens/Settings/AccessibilitySettings.tsx:167
+#: src/screens/Settings/AltTextAiSettings.tsx:135
+#: src/screens/Settings/AltTextAiSettings.tsx:148
+#: src/screens/Settings/AltTextAiSettings.tsx:157
+#: src/screens/Settings/AltTextAiSettings.tsx:169
+#: src/screens/Settings/AltTextAiSettings.tsx:208
 #: src/screens/Settings/components/Email2FAToggle.tsx:31
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:162
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:144
@@ -3042,7 +3089,7 @@ msgid "Character"
 msgstr ""
 
 #: src/lib/hooks/useNotificationHandler.ts:133
-#: src/Navigation.tsx:835
+#: src/Navigation.tsx:847
 #: src/view/shell/bottom-bar/BottomBar.tsx:260
 #: src/view/shell/desktop/LeftNav.tsx:780
 #: src/view/shell/Drawer.tsx:578
@@ -3102,7 +3149,7 @@ msgstr "对话所有者无法离开对话。"
 msgid "Chat recipient is not followed by the sender."
 msgstr "对话收信人未被发信人关注。"
 
-#: src/Navigation.tsx:855
+#: src/Navigation.tsx:867
 msgid "Chat request inbox"
 msgstr "对话邀请收件箱"
 
@@ -3112,7 +3159,7 @@ msgid "Chat requests"
 msgstr "对话邀请"
 
 #: src/components/dms/ConvoMenu.tsx:91
-#: src/Navigation.tsx:850
+#: src/Navigation.tsx:862
 #: src/screens/Messages/ChatList.tsx:98
 #: src/screens/Messages/ChatList.tsx:102
 #: src/screens/Messages/ChatList.tsx:674
@@ -3176,14 +3223,27 @@ msgstr "儿童安全"
 msgid "Child Sexual Abuse Material (CSAM)"
 msgstr "儿童性虐待内容（CSAM）"
 
+#: src/screens/Settings/AltTextAiSettings.tsx:169
+msgid "Choose"
+msgstr ""
+
 #: src/screens/Signup/index.tsx:143
 msgid "Choose a provider"
+msgstr ""
+
+#: src/screens/Settings/AltTextAiSettings.tsx:177
+msgid "Choose an image-capable model from OpenRouter's live catalog. Get an API key at <0>openrouter.ai</0>."
 msgstr ""
 
 #: src/screens/Onboarding/StepInterests/index.tsx:79
 #: src/screens/Onboarding/StepInterests/index.tsx:85
 #: src/screens/Onboarding/StepInterests/index.tsx:139
 msgid "Choose an interest"
+msgstr ""
+
+#: src/screens/Settings/components/OpenRouterModelPickerDialog.tsx:90
+#: src/screens/Settings/components/OpenRouterModelPickerDialog.tsx:121
+msgid "Choose an OpenRouter model"
 msgstr ""
 
 #: src/screens/Onboarding/StepInterests/index.tsx:140
@@ -3264,6 +3324,10 @@ msgstr "设置你的密码"
 #: src/screens/Search/components/AdvancedSearchDialog/AutocompleteInput/index.native.tsx:73
 #: src/screens/Search/components/AdvancedSearchDialog/AutocompleteInput/index.tsx:110
 #: src/screens/Search/components/AdvancedSearchDialog/ClearableInput.tsx:59
+#: src/screens/Settings/AltTextAiSettings.tsx:440
+#: src/screens/Settings/AltTextAiSettings.tsx:442
+#: src/screens/Settings/AltTextAiSettings.tsx:460
+#: src/screens/Settings/AltTextAiSettings.tsx:461
 #: src/screens/Settings/components/LibreTranslateInstanceDialog.tsx:87
 #: src/screens/Settings/components/LibreTranslateInstanceDialog.tsx:95
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:252
@@ -3495,12 +3559,21 @@ msgstr "关闭欢迎界面"
 msgid "Closes password update alert"
 msgstr "关闭密码更新警告"
 
-#: src/view/com/composer/Composer.tsx:2144
+#: src/view/com/composer/Composer.tsx:2142
 msgid "Closes post composer and discards post draft"
 msgstr "关闭编辑器并舍弃草稿"
 
 #: src/screens/Settings/RunesSettings/index.tsx:68
 msgid "Cloud sync"
+msgstr ""
+
+#: src/screens/Settings/AccessibilitySettings.tsx:47
+#: src/screens/Settings/AltTextAiSettings.tsx:50
+msgid "co/core"
+msgstr ""
+
+#: src/screens/Settings/AltTextAiSettings.tsx:115
+msgid "co/core is automatic. Witchsky mints a short-lived AT Protocol service-auth token and selects the best vision model currently online. No API key or model setup is needed. If co/core requires one-time account connection, visit <0>cocore.dev</0>."
 msgstr ""
 
 #: src/view/shell/desktop/RightNav.tsx:130
@@ -3543,7 +3616,7 @@ msgstr "主题模式"
 msgid "Color theme"
 msgstr "颜色主题"
 
-#: src/Navigation.tsx:716
+#: src/Navigation.tsx:728
 #: src/screens/Settings/AppearanceSettings.tsx:175
 #: src/screens/Settings/AppearanceSettings/ColorThemeSettings.tsx:49
 msgid "Color Theme"
@@ -3571,7 +3644,7 @@ msgid "Community"
 msgstr ""
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:46
-#: src/Navigation.tsx:553
+#: src/Navigation.tsx:557
 #: src/view/screens/CommunityGuidelines.tsx:28
 msgid "Community Guidelines"
 msgstr "社群准则"
@@ -3600,7 +3673,7 @@ msgid "Compose new post"
 msgstr "撰写新帖文"
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
-#: src/view/com/composer/Composer.tsx:1981
+#: src/view/com/composer/Composer.tsx:1979
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr "撰写最多 {0, plural,other {# 个字符}} 的帖文"
 
@@ -3608,11 +3681,11 @@ msgstr "撰写最多 {0, plural,other {# 个字符}} 的帖文"
 msgid "Compose reply"
 msgstr "撰写回复"
 
-#: src/view/com/composer/Composer.tsx:3159
+#: src/view/com/composer/Composer.tsx:3157
 msgid "Compressing GIF..."
 msgstr "正在压缩 GIF……"
 
-#: src/view/com/composer/Composer.tsx:3161
+#: src/view/com/composer/Composer.tsx:3159
 msgid "Compressing video..."
 msgstr "正在压缩视频……"
 
@@ -3735,7 +3808,7 @@ msgstr "内容与媒体"
 msgid "Content and media"
 msgstr "内容与媒体"
 
-#: src/Navigation.tsx:793
+#: src/Navigation.tsx:805
 msgid "Content and Media"
 msgstr "内容与媒体"
 
@@ -3985,7 +4058,7 @@ msgstr "复制 TXT 记录值"
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:41
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:108
-#: src/Navigation.tsx:558
+#: src/Navigation.tsx:562
 #: src/view/screens/CopyrightPolicy.tsx:25
 msgid "Copyright Policy"
 msgstr "版权许可"
@@ -4052,6 +4125,10 @@ msgstr "无法加载动态源"
 #: src/screens/ProfileList/index.tsx:102
 msgid "Could not load list"
 msgstr "无法加载列表"
+
+#: src/screens/Settings/components/OpenRouterModelPickerDialog.tsx:108
+msgid "Could not load models. Your saved model is still available."
+msgstr ""
 
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:170
 msgid "Could not load profile"
@@ -4138,7 +4215,7 @@ msgstr "为新手包创建二维码"
 
 #: src/components/StarterPack/ProfileStarterPacks.tsx:210
 #: src/components/StarterPack/ProfileStarterPacks.tsx:319
-#: src/Navigation.tsx:886
+#: src/Navigation.tsx:898
 msgid "Create a starter pack"
 msgstr "创建新手包"
 
@@ -4271,11 +4348,6 @@ msgstr "当前测试功能"
 msgid "Current chat"
 msgstr "当前对话"
 
-#. placeholder {0}: openRouterModel ?? DEFAULT_ALT_TEXT_AI_MODEL
-#: src/screens/Settings/AccessibilitySettings.tsx:148
-msgid "Current model: {0}. <0>Search models</0>"
-msgstr ""
-
 #: src/screens/Login/components/AppServerDialog.tsx:435
 #: src/screens/Login/components/AppServerDialog.tsx:436
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:109
@@ -4307,10 +4379,6 @@ msgstr "自定义选项"
 
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:165
 msgid "Customize some of the options below and tap save to apply the label!"
-msgstr ""
-
-#: src/screens/Settings/AccessibilitySettings.tsx:176
-msgid "Customize the prompt sent to the AI model when generating alt text. Leave empty to use the default prompt."
 msgstr ""
 
 #: src/screens/Onboarding/Layout.tsx:60
@@ -4473,7 +4541,7 @@ msgstr "删除我的账户"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1057
-#: src/view/com/composer/Composer.tsx:2013
+#: src/view/com/composer/Composer.tsx:2011
 msgid "Delete post"
 msgstr "删除帖文"
 
@@ -4515,14 +4583,14 @@ msgstr "验证后由 Plivo 删除"
 msgid "Deleted list"
 msgstr "删除列表"
 
-#: src/Navigation.tsx:611
+#: src/Navigation.tsx:615
 #: src/screens/Settings/DeltaSettings/index.tsx:20
 #: src/screens/Settings/Settings.tsx:478
 #: src/screens/Settings/Settings.tsx:483
 msgid "Deltas"
 msgstr ""
 
-#: src/Navigation.tsx:682
+#: src/Navigation.tsx:694
 #: src/screens/Settings/RunesSettings/DensitySettings.tsx:32
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:104
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:108
@@ -4545,7 +4613,7 @@ msgid "Description (1000 characters max)"
 msgstr "描述（最多 1000 个字符）"
 
 #: src/view/com/composer/GifAltText.tsx:156
-#: src/view/com/composer/photos/ImageAltTextDialog.tsx:201
+#: src/view/com/composer/photos/ImageAltTextDialog.tsx:193
 msgid "Descriptive alt text"
 msgstr "扩充描述替代文本"
 
@@ -4625,8 +4693,8 @@ msgstr "停用电子邮箱两步验证"
 msgid "Disable Email 2FA"
 msgstr "停用电子邮箱两步验证"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:194
-#: src/screens/Settings/AccessibilitySettings.tsx:199
+#: src/screens/Settings/AccessibilitySettings.tsx:125
+#: src/screens/Settings/AccessibilitySettings.tsx:130
 msgid "Disable haptic feedback"
 msgstr "停用触觉反馈"
 
@@ -4676,9 +4744,9 @@ msgstr "停用"
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:102
 #: src/screens/Profile/Header/EditProfileDialog.tsx:93
-#: src/view/com/composer/Composer.tsx:1723
-#: src/view/com/composer/Composer.tsx:1767
-#: src/view/com/composer/Composer.tsx:2065
+#: src/view/com/composer/Composer.tsx:1721
+#: src/view/com/composer/Composer.tsx:1765
+#: src/view/com/composer/Composer.tsx:2063
 #: src/view/com/composer/drafts/DraftItem.tsx:254
 #: src/view/com/composer/drafts/DraftsButton.tsx:138
 msgid "Discard"
@@ -4689,14 +4757,14 @@ msgstr "舍弃"
 msgid "Discard changes?"
 msgstr "要放弃更改吗？"
 
-#: src/view/com/composer/Composer.tsx:1721
+#: src/view/com/composer/Composer.tsx:1719
 #: src/view/com/composer/drafts/DraftItem.tsx:251
 #: src/view/com/composer/drafts/DraftsButton.tsx:105
 msgid "Discard draft?"
 msgstr "要舍弃草稿吗？"
 
-#: src/view/com/composer/Composer.tsx:1738
-#: src/view/com/composer/Composer.tsx:2057
+#: src/view/com/composer/Composer.tsx:1736
+#: src/view/com/composer/Composer.tsx:2055
 msgid "Discard post?"
 msgstr "要放弃发布吗？"
 
@@ -4734,7 +4802,7 @@ msgstr "跳过"
 msgid "Dismiss banner"
 msgstr "忽略横幅提示"
 
-#: src/view/com/composer/Composer.tsx:3080
+#: src/view/com/composer/Composer.tsx:3078
 msgid "Dismiss error"
 msgstr "忽略错误"
 
@@ -4763,15 +4831,15 @@ msgstr "忽略此建议"
 msgid "Dismisses the QR scanner"
 msgstr "关闭二维码扫描器"
 
-#: src/Navigation.tsx:672
+#: src/Navigation.tsx:684
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:86
 #: src/screens/Settings/RunesSettings/index.tsx:52
 #: src/screens/Settings/RunesSettings/index.tsx:55
 msgid "Display"
 msgstr ""
 
-#: src/screens/Settings/AccessibilitySettings.tsx:96
-#: src/screens/Settings/AccessibilitySettings.tsx:101
+#: src/screens/Settings/AccessibilitySettings.tsx:83
+#: src/screens/Settings/AccessibilitySettings.tsx:88
 msgid "Display larger alt text badges"
 msgstr "显示更大的替代文本标签"
 
@@ -4869,8 +4937,11 @@ msgstr "别担心！你现有的对话及设置都已保存，只需验证你已
 #: src/screens/Login/components/HostingProviderDialog.tsx:259
 #: src/screens/Onboarding/StepProfile/index.tsx:356
 #: src/screens/Onboarding/StepProfile/index.tsx:359
+#: src/screens/Settings/AltTextAiSettings.tsx:440
+#: src/screens/Settings/AltTextAiSettings.tsx:442
 #: src/screens/Settings/components/AddAppPasswordDialog.tsx:214
 #: src/screens/Settings/components/AddAppPasswordDialog.tsx:221
+#: src/screens/Settings/components/OpenRouterModelPickerDialog.tsx:174
 #: src/view/com/composer/labels/LabelsBtn.tsx:219
 #: src/view/com/composer/labels/LabelsBtn.tsx:226
 #: src/view/com/composer/tags/TagsBtn.tsx:268
@@ -5129,7 +5200,7 @@ msgstr "编辑直播状态"
 msgid "Edit moderation list"
 msgstr "编辑内容审核列表"
 
-#: src/Navigation.tsx:568
+#: src/Navigation.tsx:572
 #: src/view/screens/Feeds.tsx:515
 msgid "Edit My Feeds"
 msgstr "编辑我的动态源"
@@ -5181,7 +5252,7 @@ msgstr "编辑用户列表"
 msgid "Edit who can reply"
 msgstr "编辑哪些人可以回复"
 
-#: src/Navigation.tsx:891
+#: src/Navigation.tsx:903
 msgid "Edit your starter pack"
 msgstr "编辑你的新手包"
 
@@ -5376,10 +5447,6 @@ msgstr "请确认你已为每个字幕文件都选择了一种语言。"
 msgid "Enter 6-digit code that was sent to your phone number"
 msgstr "输入发送到你电话号码的 6 位确认代码"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:384
-msgid "Enter a custom prompt for AI alt text generation"
-msgstr ""
-
 #: src/screens/Login/SetNewPasswordForm.tsx:136
 msgid "Enter a password"
 msgstr "输入密码"
@@ -5420,6 +5487,10 @@ msgstr "输入发送到 {prettyNumber} 的 6 位确认代码"
 msgid "Enter the address of the Personal Data Server that will host your account. You’ll finish creating your account through that provider."
 msgstr ""
 
+#: src/screens/Settings/AltTextAiSettings.tsx:188
+msgid "Enter the base URL and model ID for any API that supports OpenAI-compatible image inputs and chat completions. Local services may not require an API key."
+msgstr ""
+
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:402
 msgid "Enter the domain you want to use"
 msgstr "输入你想使用的域名"
@@ -5430,10 +5501,6 @@ msgstr "输入你创建账户时使用的电子邮箱。我们将向你发送用
 
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:224
 msgid "Enter the favicon service URL with (pds) as placeholder"
-msgstr ""
-
-#: src/screens/Settings/AccessibilitySettings.tsx:318
-msgid "Enter the model ID to use for alt text generation"
 msgstr ""
 
 #: src/screens/Login/LoginForm.tsx:549
@@ -5459,10 +5526,6 @@ msgstr ""
 msgid "Enter your handle to sign in"
 msgstr ""
 
-#: src/screens/Settings/AccessibilitySettings.tsx:253
-msgid "Enter your OpenRouter API key for AI alt text generation"
-msgstr ""
-
 #: src/screens/Login/LoginForm.tsx:600
 #: src/screens/Login/LoginForm.web.tsx:583
 #: src/screens/Settings/components/DeleteAccountDialog.tsx:291
@@ -5477,7 +5540,7 @@ msgstr "进入全屏模式"
 msgid "Entertainment"
 msgstr "娱乐"
 
-#: src/view/com/composer/Composer.tsx:3179
+#: src/view/com/composer/Composer.tsx:3177
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "错误"
@@ -5651,7 +5714,7 @@ msgstr "血腥、露骨或其他可能引起不适的媒体内容。"
 msgid "Explicit sexual images."
 msgstr "露骨的色情图片。"
 
-#: src/Navigation.tsx:1096
+#: src/Navigation.tsx:1108
 #: src/screens/Search/Shell.tsx:549
 #: src/view/shell/desktop/LeftNav.tsx:751
 #: src/view/shell/Drawer.tsx:526
@@ -5688,7 +5751,7 @@ msgstr "外部媒体"
 msgid "External media may allow websites to collect information about you and your device. No information is sent or requested until you press the \"play\" button."
 msgstr "外部媒体可能会收集你或设备储存的个人信息。在你按下“播放”按钮之前，平台不会发送任何请求给外部媒体。"
 
-#: src/Navigation.tsx:587
+#: src/Navigation.tsx:591
 #: src/screens/Settings/ExternalMediaPreferences.tsx:36
 msgid "External Media Preferences"
 msgstr "外部媒体偏好设置"
@@ -5698,7 +5761,7 @@ msgstr "外部媒体偏好设置"
 msgid "Extra"
 msgstr ""
 
-#: src/Navigation.tsx:692
+#: src/Navigation.tsx:704
 msgid "Extra settings"
 msgstr ""
 
@@ -5970,7 +6033,7 @@ msgstr "无法撤销你的申请，请重试。"
 msgid "Failed to resolve location. Please try again."
 msgstr "无法获取位置信息，请重试。"
 
-#: src/view/com/composer/Composer.tsx:862
+#: src/view/com/composer/Composer.tsx:860
 msgid "Failed to save draft"
 msgstr "无法保存草稿"
 
@@ -6074,7 +6137,7 @@ msgstr ""
 msgid "Favicon Service URL"
 msgstr ""
 
-#: src/Navigation.tsx:697
+#: src/Navigation.tsx:709
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:194
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:197
 #: src/screens/Settings/RunesSettings/FeatureGatesSettings.tsx:20
@@ -6085,7 +6148,7 @@ msgstr ""
 msgid "Fediverse"
 msgstr ""
 
-#: src/Navigation.tsx:498
+#: src/Navigation.tsx:502
 msgid "Feed"
 msgstr "动态源"
 
@@ -6131,8 +6194,8 @@ msgctxt "toast"
 msgid "Feedback sent to feed operator"
 msgstr "已提交反馈给动态源维护者"
 
-#: src/Navigation.tsx:662
-#: src/Navigation.tsx:871
+#: src/Navigation.tsx:674
+#: src/Navigation.tsx:883
 #: src/screens/SavedFeeds.tsx:112
 #: src/screens/SavedFeeds.tsx:303
 #: src/screens/Search/SearchResults.tsx:114
@@ -6240,8 +6303,8 @@ msgstr "去关注更多账户"
 msgid "Find and invite friends"
 msgstr "寻找并邀请朋友"
 
-#: src/Navigation.tsx:772
-#: src/Navigation.tsx:913
+#: src/Navigation.tsx:784
+#: src/Navigation.tsx:925
 msgid "Find Contacts"
 msgstr "寻找联系人"
 
@@ -6455,7 +6518,7 @@ msgstr "关注者可以加入"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:452
+#: src/Navigation.tsx:456
 #: src/screens/Profile/KnownFollowers.tsx:73
 msgid "Followers of @{0} that you know"
 msgstr "你认识的这些人也关注了 @{0}"
@@ -6522,7 +6585,7 @@ msgstr ""
 msgid "Following feed preferences"
 msgstr "“Following”动态源偏好设置"
 
-#: src/Navigation.tsx:574
+#: src/Navigation.tsx:578
 #: src/screens/Settings/FollowingFeedPreferences.tsx:57
 msgid "Following Feed Preferences"
 msgstr "“Following”动态源偏好设置"
@@ -6634,24 +6697,15 @@ msgstr "来自这些人"
 msgid "Full-size format"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2333
-msgid "Generate"
-msgstr ""
-
 #: src/components/StarterPack/ProfileStarterPacks.tsx:340
 msgid "Generate a starter pack"
 msgstr "创建一个新手包"
 
-#: src/view/com/composer/Composer.tsx:2325
-msgid "Generate Alt Text"
-msgstr ""
-
-#: src/view/com/composer/photos/ImageAltTextDialog.tsx:248
-msgid "Generate alt text with AI"
-msgstr ""
-
-#: src/view/com/composer/photos/ImageAltTextDialog.tsx:261
-msgid "Generate Alt Text with AI"
+#: src/view/com/composer/Composer.tsx:2323
+#: src/view/com/composer/Composer.tsx:2331
+#: src/view/com/composer/photos/ImageAltTextDialog.tsx:240
+#: src/view/com/composer/photos/ImageAltTextDialog.tsx:253
+msgid "Generate alt text"
 msgstr ""
 
 #: src/screens/Messages/components/InviteLinkDialog.tsx:239
@@ -6780,7 +6834,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3184
+#: src/view/com/composer/Composer.tsx:3182
 msgid "GIF uploaded"
 msgstr "已上传 GIF"
 
@@ -6973,7 +7027,7 @@ msgctxt "toast"
 msgid "Group chat name updated"
 msgstr "已更新群组对话名称"
 
-#: src/Navigation.tsx:840
+#: src/Navigation.tsx:852
 #: src/screens/Messages/ConversationSettings/index.tsx:113
 msgid "Group chat settings"
 msgstr "群组对话设置"
@@ -7070,7 +7124,7 @@ msgstr "正在进行"
 msgid "Happy GIFs"
 msgstr "快乐 GIFs"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:190
+#: src/screens/Settings/AccessibilitySettings.tsx:121
 msgid "Haptics"
 msgstr "触感"
 
@@ -7086,7 +7140,7 @@ msgstr "有害或高风险活动"
 msgid "Harming or endangering minors"
 msgstr "伤害或危及未成年人安全"
 
-#: src/Navigation.tsx:824
+#: src/Navigation.tsx:836
 msgid "Hashtag"
 msgstr "标签"
 
@@ -7364,8 +7418,8 @@ msgstr "请稍等！我们正在逐步开放上传视频的权限。你目前仍
 msgid "Holy Shit!"
 msgstr ""
 
-#: src/Navigation.tsx:1091
-#: src/Navigation.tsx:1112
+#: src/Navigation.tsx:1103
+#: src/Navigation.tsx:1124
 #: src/view/shell/bottom-bar/BottomBar.tsx:206
 #: src/view/shell/desktop/LeftNav.tsx:741
 #: src/view/shell/Drawer.tsx:552
@@ -7608,7 +7662,7 @@ msgstr "导入通讯录来寻找你的朋友"
 msgid "Imported on {0}"
 msgstr "已于 {0} 导入"
 
-#: src/Navigation.tsx:652
+#: src/Navigation.tsx:664
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:86
 #: src/screens/Settings/RunesSettings/index.tsx:38
 #: src/screens/Settings/RunesSettings/index.tsx:41
@@ -7708,7 +7762,7 @@ msgstr "用户名或密码不正确"
 msgid "Inference"
 msgstr ""
 
-#: src/Navigation.tsx:687
+#: src/Navigation.tsx:699
 #: src/screens/Settings/RunesSettings/index.tsx:60
 #: src/screens/Settings/RunesSettings/index.tsx:63
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:126
@@ -7953,7 +8007,7 @@ msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3099
+#: src/view/com/composer/Composer.tsx:3097
 msgid "Job ID: {0}"
 msgstr "作业 ID：{0}"
 
@@ -8012,8 +8066,8 @@ msgstr ""
 msgid "Kawaii logo by <0>ovvie</0>"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1771
-#: src/view/com/composer/Composer.tsx:1781
+#: src/view/com/composer/Composer.tsx:1769
+#: src/view/com/composer/Composer.tsx:1779
 #: src/view/com/composer/drafts/DraftsButton.tsx:142
 msgid "Keep editing"
 msgstr "保留编辑内容"
@@ -8072,7 +8126,7 @@ msgstr "你账户上的标记"
 msgid "Language"
 msgstr "语言"
 
-#: src/Navigation.tsx:425
+#: src/Navigation.tsx:429
 msgid "Language Settings"
 msgstr "语言设置"
 
@@ -8202,6 +8256,10 @@ msgstr "离开"
 msgctxt "Button"
 msgid "Leave"
 msgstr "离开"
+
+#: src/screens/Settings/AltTextAiSettings.tsx:284
+msgid "Leave blank if not required"
+msgstr ""
 
 #: src/components/dms/MessagesListBlockedFooter.tsx:111
 #: src/components/dms/MessagesListBlockedFooter.tsx:118
@@ -8337,8 +8395,8 @@ msgstr "喜欢此标记者"
 msgid "Liked as @{0}"
 msgstr ""
 
-#: src/Navigation.tsx:503
-#: src/Navigation.tsx:508
+#: src/Navigation.tsx:507
+#: src/Navigation.tsx:512
 msgid "Liked by"
 msgstr "喜欢的用户"
 
@@ -8414,7 +8472,7 @@ msgstr ""
 msgid "Link copied to clipboard"
 msgstr "已复制链接至剪贴板"
 
-#: src/Navigation.tsx:458
+#: src/Navigation.tsx:462
 msgid "List"
 msgstr "列表"
 
@@ -8500,7 +8558,7 @@ msgctxt "toast"
 msgid "List unmuted"
 msgstr "已取消隐藏该列表"
 
-#: src/Navigation.tsx:379
+#: src/Navigation.tsx:383
 #: src/view/screens/Lists.tsx:60
 #: src/view/screens/Profile.tsx:240
 #: src/view/screens/Profile.tsx:248
@@ -8593,6 +8651,10 @@ msgstr "正在加载对话……"
 msgid "Loading lists..."
 msgstr "正在加载列表……"
 
+#: src/screens/Settings/components/OpenRouterModelPickerDialog.tsx:103
+msgid "Loading models…"
+msgstr ""
+
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:279
 msgid "Loading post interaction settings..."
 msgstr "正在加载帖文互动选项……"
@@ -8625,7 +8687,7 @@ msgstr "锁定此群组对话"
 msgid "Locked"
 msgstr "已锁定"
 
-#: src/Navigation.tsx:533
+#: src/Navigation.tsx:537
 msgid "Log"
 msgstr "日志"
 
@@ -8820,7 +8882,7 @@ msgstr "提及这些用户"
 msgid "Menu"
 msgstr "菜单"
 
-#: src/Navigation.tsx:642
+#: src/Navigation.tsx:654
 #: src/screens/Settings/RunesSettings/index.tsx:24
 #: src/screens/Settings/RunesSettings/index.tsx:27
 #: src/screens/Settings/RunesSettings/MenusSettings.tsx:56
@@ -8882,7 +8944,7 @@ msgstr "信息过长（{graphemeCount}/{MAX_DM_GRAPHEME_LENGTH}）"
 msgid "Message options"
 msgstr "信息选项"
 
-#: src/Navigation.tsx:1106
+#: src/Navigation.tsx:1118
 msgid "Messages"
 msgstr "信息"
 
@@ -8898,7 +8960,7 @@ msgstr "当你屏蔽此用户时，其发送的信息将会隐藏。"
 msgid "microcosm.blue"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1851
+#: src/view/com/composer/Composer.tsx:1849
 #: src/view/com/feeds/ComposerPrompt.tsx:195
 msgid "MIKE, THE JARONA please!"
 msgstr ""
@@ -8915,7 +8977,12 @@ msgstr "误导"
 msgid "Missing media"
 msgstr "缺失媒体文件"
 
-#: src/Navigation.tsx:384
+#: src/screens/Settings/AltTextAiSettings.tsx:328
+#: src/screens/Settings/AltTextAiSettings.tsx:332
+msgid "Model ID"
+msgstr ""
+
+#: src/Navigation.tsx:388
 #: src/screens/Moderation/index.tsx:100
 #: src/screens/Settings/Settings.tsx:422
 msgid "Moderation"
@@ -8929,7 +8996,7 @@ msgstr "内容审核过滤器"
 msgid "Moderation details"
 msgstr "内容审核详情"
 
-#: src/Navigation.tsx:627
+#: src/Navigation.tsx:631
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:34
 #: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:19
 msgid "Moderation labels"
@@ -8965,7 +9032,7 @@ msgstr "已更新内容审核列表"
 msgid "Moderation lists"
 msgstr "内容审核列表"
 
-#: src/Navigation.tsx:389
+#: src/Navigation.tsx:393
 #: src/view/screens/ModerationModlists.tsx:60
 msgid "Moderation Lists"
 msgstr "内容审核列表"
@@ -8974,7 +9041,7 @@ msgstr "内容审核列表"
 msgid "moderation settings"
 msgstr "内容审核设置"
 
-#: src/Navigation.tsx:518
+#: src/Navigation.tsx:522
 msgid "Moderation states"
 msgstr "内容审核状态"
 
@@ -9012,11 +9079,11 @@ msgstr "下移动态源"
 msgid "Move feed up"
 msgstr "上移动态源"
 
-#: src/view/com/composer/Composer.tsx:2037
+#: src/view/com/composer/Composer.tsx:2035
 msgid "Move post down"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1995
+#: src/view/com/composer/Composer.tsx:1993
 msgid "Move post up"
 msgstr ""
 
@@ -9123,7 +9190,7 @@ msgstr "已隐藏"
 msgid "Muted accounts"
 msgstr "已隐藏账户"
 
-#: src/Navigation.tsx:394
+#: src/Navigation.tsx:398
 #: src/view/screens/ModerationMutedAccounts.tsx:107
 msgid "Muted Accounts"
 msgstr "已隐藏账户"
@@ -9516,6 +9583,10 @@ msgstr ""
 msgid "No longer following {authorName}"
 msgstr ""
 
+#: src/screens/Settings/components/OpenRouterModelPickerDialog.tsx:132
+msgid "No matching image-capable models."
+msgstr ""
+
 #: src/screens/Search/components/AdvancedSearchDialog/MediaDropdown.tsx:22
 #: src/screens/Search/components/AdvancedSearchDialog/MediaDropdown.tsx:27
 msgid "No media filter"
@@ -9568,7 +9639,7 @@ msgstr "没有人可以发送信息"
 
 #: src/components/PostControls/index.tsx:311
 #: src/screens/PostThread/components/ReaderSeam.tsx:251
-#: src/view/com/composer/Composer.tsx:405
+#: src/view/com/composer/Composer.tsx:403
 msgid "No other accounts can reply to this post"
 msgstr ""
 
@@ -9703,6 +9774,8 @@ msgstr "非色情裸露"
 msgid "Non-standard OTA channel"
 msgstr ""
 
+#: src/screens/Settings/AccessibilitySettings.tsx:45
+#: src/screens/Settings/AltTextAiSettings.tsx:49
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:220
 msgid "None"
 msgstr "无"
@@ -9725,7 +9798,7 @@ msgstr "此功能无法在这个平台上使用。"
 msgid "Not followed by anyone you’re following"
 msgstr "没有被任何你认识的人关注"
 
-#: src/Navigation.tsx:369
+#: src/Navigation.tsx:373
 #: src/view/screens/Profile.tsx:135
 msgid "Not Found"
 msgstr "找不到"
@@ -9751,8 +9824,8 @@ msgid "Nothing saved yet"
 msgstr "目前没有收藏内容"
 
 #: src/components/dialogs/NotificationSettingsDialog.tsx:72
-#: src/Navigation.tsx:779
-#: src/Navigation.tsx:866
+#: src/Navigation.tsx:791
+#: src/Navigation.tsx:878
 #: src/view/screens/Notifications.tsx:137
 msgid "Notification settings"
 msgstr "通知设置"
@@ -9762,8 +9835,8 @@ msgstr "通知设置"
 msgid "Notification sounds"
 msgstr "通知提示音"
 
-#: src/Navigation.tsx:861
-#: src/Navigation.tsx:1101
+#: src/Navigation.tsx:873
+#: src/Navigation.tsx:1113
 #: src/screens/Messages/Settings.tsx:255
 #: src/screens/Notifications/ActivityList.tsx:31
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:93
@@ -9883,7 +9956,7 @@ msgstr "你所选中的部分文件格式不被支持。"
 msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
 msgstr "你选中的部分文件太大，最大的文件大小为 {VIDEO_MAX_SIZE_MB} MB。"
 
-#: src/view/com/composer/Composer.tsx:873
+#: src/view/com/composer/Composer.tsx:871
 msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
 msgstr "一则或多则帖文内容过长，无法保存为草稿{MAX_DRAFT_GRAPHEME_LENGTH, plural,one {最大字数限制为 # 个字符。}other {最大字数限制为 # 个字符。}}"
 
@@ -9896,7 +9969,7 @@ msgstr "仅限{0}可以回复。"
 #. placeholder {0}: result.accepted.length
 #. placeholder {1}: next.length
 #. placeholder {2}: next.length
-#: src/view/com/composer/Composer.tsx:268
+#: src/view/com/composer/Composer.tsx:266
 msgid "Only {0} of {1} {2, plural, one {image} other {images}} added; limit is {MAX_GALLERY_IMAGES}"
 msgstr "你共上传了 {1} 张图片，我们仅会保留前 {0} {2, plural,one {张} other {张}}；上限为 {MAX_GALLERY_IMAGES}"
 
@@ -10023,7 +10096,7 @@ msgid "Open drawer menu"
 msgstr "开启抽屉菜单"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2717
+#: src/view/com/composer/Composer.tsx:2715
 msgid "Open emoji picker"
 msgstr "开启表情符号选择器"
 
@@ -10126,16 +10199,14 @@ msgstr "开启系统日志"
 msgid "Open this group chat"
 msgstr "开启此群组对话"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:110
-#: src/screens/Settings/AccessibilitySettings.tsx:234
-#: src/screens/Settings/AccessibilitySettings.tsx:237
-msgid "OpenRouter API Key"
+#: src/screens/Settings/AccessibilitySettings.tsx:50
+#: src/screens/Settings/AltTextAiSettings.tsx:52
+msgid "OpenAI-compatible API"
 msgstr ""
 
-#: src/screens/Settings/AccessibilitySettings.tsx:136
-#: src/screens/Settings/AccessibilitySettings.tsx:299
-#: src/screens/Settings/AccessibilitySettings.tsx:302
-msgid "OpenRouter Model"
+#: src/screens/Settings/AccessibilitySettings.tsx:49
+#: src/screens/Settings/AltTextAiSettings.tsx:51
+msgid "OpenRouter"
 msgstr ""
 
 #. placeholder {0}: feedInfo.displayName
@@ -10472,14 +10543,14 @@ msgstr "{ownerName} 的关注者可以申请加入"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:445
+#: src/Navigation.tsx:449
 #: src/screens/Profile/ProfileFollows.tsx:29
 msgid "People followed by @{0}"
 msgstr "被 @{0} 关注的用户"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:438
+#: src/Navigation.tsx:442
 #: src/screens/Profile/ProfileFollowers.tsx:28
 msgid "People following @{0}"
 msgstr "关注 @{0} 的用户"
@@ -10542,7 +10613,7 @@ msgstr ""
 msgid "Pet label"
 msgstr ""
 
-#: src/Navigation.tsx:748
+#: src/Navigation.tsx:760
 #: src/screens/Settings/PetLabelSettings.tsx:100
 msgid "Pet Label"
 msgstr ""
@@ -10673,6 +10744,10 @@ msgstr ""
 #: src/view/com/composer/labels/LabelsBtn.tsx:111
 msgid "Please add any content warning labels that are applicable for the media you are posting."
 msgstr "请为你所发布的媒体内容添加适当的内容警告标记。"
+
+#: src/screens/Settings/AltTextAiSettings.tsx:100
+msgid "Please avoid using this feature, it uses LLM text generation, it is a pain in the ass to remove entirely."
+msgstr ""
 
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:189
 msgid "Please check your email inbox for further instructions. It may take a minute or two to arrive."
@@ -10822,7 +10897,7 @@ msgid "Please sign in as @{0}"
 msgstr "请以 @{0} 身份登录"
 
 #. placeholder {0}: activeAccount.handle
-#: src/view/com/composer/Composer.tsx:1230
+#: src/view/com/composer/Composer.tsx:1228
 msgid "Please sign in as @{0} to post as them"
 msgstr ""
 
@@ -10860,7 +10935,7 @@ msgstr "政治"
 msgid "Porn"
 msgstr "色情"
 
-#: src/view/com/composer/Composer.tsx:2210
+#: src/view/com/composer/Composer.tsx:2208
 msgctxt "action"
 msgid "Post"
 msgstr "发布"
@@ -10886,13 +10961,13 @@ msgstr "发布一张图片"
 msgid "Post a video"
 msgstr "发布一段视频"
 
-#: src/view/com/composer/Composer.tsx:2208
+#: src/view/com/composer/Composer.tsx:2206
 msgctxt "action"
 msgid "Post All"
 msgstr "全部发布"
 
-#: src/view/com/composer/Composer.tsx:1780
-#: src/view/com/composer/Composer.tsx:1788
+#: src/view/com/composer/Composer.tsx:1778
+#: src/view/com/composer/Composer.tsx:1786
 msgid "Post anyway"
 msgstr "仍然发布"
 
@@ -10902,10 +10977,10 @@ msgstr "帖文已被屏蔽"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:471
-#: src/Navigation.tsx:478
-#: src/Navigation.tsx:485
-#: src/Navigation.tsx:492
+#: src/Navigation.tsx:475
+#: src/Navigation.tsx:482
+#: src/Navigation.tsx:489
+#: src/Navigation.tsx:496
 #: src/screens/Post/PostLikedBy.tsx:27
 #: src/screens/Post/PostQuotes.tsx:39
 #: src/screens/Post/PostRepostedBy.tsx:27
@@ -10922,7 +10997,7 @@ msgstr "已删除帖文"
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "帖文发布失败。请检查网络连接并重试。"
 
-#: src/view/com/composer/Composer.tsx:1930
+#: src/view/com/composer/Composer.tsx:1928
 msgid "Post from account"
 msgstr ""
 
@@ -10948,7 +11023,7 @@ msgstr "你已隐藏这则帖文"
 msgid "Post interaction settings"
 msgstr "帖文互动选项"
 
-#: src/Navigation.tsx:405
+#: src/Navigation.tsx:409
 #: src/screens/ModerationInteractionSettings/index.tsx:35
 msgid "Post Interaction Settings"
 msgstr "帖文互动选项"
@@ -10996,7 +11071,7 @@ msgctxt "toast"
 msgid "Post unpinned"
 msgstr "已取消固定帖文"
 
-#: src/view/com/composer/Composer.tsx:1786
+#: src/view/com/composer/Composer.tsx:1784
 msgid "Post without alt text?"
 msgstr ""
 
@@ -11096,8 +11171,8 @@ msgstr "隐私"
 msgid "Privacy and security"
 msgstr "隐私与安全"
 
-#: src/Navigation.tsx:756
-#: src/Navigation.tsx:764
+#: src/Navigation.tsx:768
+#: src/Navigation.tsx:776
 #: src/screens/Settings/ActivityPrivacySettings.tsx:41
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:67
 msgid "Privacy and Security"
@@ -11110,7 +11185,7 @@ msgstr "隐私与安全设置"
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:36
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:103
-#: src/Navigation.tsx:543
+#: src/Navigation.tsx:547
 #: src/screens/Settings/AboutSettings.tsx:103
 #: src/screens/Settings/AboutSettings.tsx:106
 #: src/view/screens/PrivacyPolicy.tsx:25
@@ -11123,11 +11198,11 @@ msgstr "隐私政策"
 msgid "Privacy violation of a minor"
 msgstr "侵犯未成年隐私"
 
-#: src/view/com/composer/Composer.tsx:3173
+#: src/view/com/composer/Composer.tsx:3171
 msgid "Processing GIF..."
 msgstr "正在处理 GIF……"
 
-#: src/view/com/composer/Composer.tsx:3175
+#: src/view/com/composer/Composer.tsx:3173
 msgid "Processing video..."
 msgstr "正在处理视频……"
 
@@ -11148,7 +11223,7 @@ msgstr "个人资料"
 msgid "Profile"
 msgstr "个人资料"
 
-#: src/Navigation.tsx:619
+#: src/Navigation.tsx:623
 #: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:19
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:29
 msgid "Profile badges"
@@ -11168,7 +11243,7 @@ msgctxt "toast"
 msgid "Profile updated"
 msgstr "已更新个人资料"
 
-#: src/Navigation.tsx:667
+#: src/Navigation.tsx:679
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:120
 #: src/screens/Settings/RunesSettings/ProfileSettings.tsx:55
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:55
@@ -11180,9 +11255,17 @@ msgstr ""
 msgid "Promoting or selling prohibited items or services"
 msgstr "宣传或销售违法物品或服务"
 
+#: src/screens/Settings/AltTextAiSettings.tsx:424
+msgid "Prompt"
+msgstr ""
+
 #: src/screens/Profile/Header/EditProfileDialog.tsx:435
 #: src/screens/Profile/Header/EditProfileDialog.tsx:441
 msgid "Pronouns"
+msgstr ""
+
+#: src/screens/Settings/AltTextAiSettings.tsx:72
+msgid "Provider"
 msgstr ""
 
 #: src/view/com/composer/threadgate/ThreadgateBtn.tsx:160
@@ -11195,22 +11278,22 @@ msgid "Public, sharable lists of users to mute or block in bulk."
 msgstr "公开且可对外分享的列表，可用来批量隐藏或屏蔽账户。"
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:2194
+#: src/view/com/composer/Composer.tsx:2192
 msgid "Publish post"
 msgstr "发布帖文"
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:2189
+#: src/view/com/composer/Composer.tsx:2187
 msgid "Publish posts"
 msgstr "发布帖文"
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:2178
+#: src/view/com/composer/Composer.tsx:2176
 msgid "Publish replies"
 msgstr "发布回复"
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:2183
+#: src/view/com/composer/Composer.tsx:2181
 msgid "Publish reply"
 msgstr "发布回复"
 
@@ -11816,7 +11899,7 @@ msgstr "这则帖文的回复已被停用。"
 msgid "Reply"
 msgstr "回复"
 
-#: src/view/com/composer/Composer.tsx:2206
+#: src/view/com/composer/Composer.tsx:2204
 msgctxt "action"
 msgid "Reply"
 msgstr "回复"
@@ -12078,7 +12161,7 @@ msgstr "已发送申请"
 msgid "Requests"
 msgstr "邀请"
 
-#: src/Navigation.tsx:845
+#: src/Navigation.tsx:857
 #: src/screens/Messages/JoinRequests.tsx:59
 #: src/screens/Messages/JoinRequests.tsx:425
 msgid "Requests to join"
@@ -12277,7 +12360,7 @@ msgstr "显示密码"
 msgid "Reverse order"
 msgstr ""
 
-#: src/Navigation.tsx:635
+#: src/Navigation.tsx:647
 #: src/screens/Settings/RunesSettings/index.tsx:23
 #: src/screens/Settings/Settings.tsx:486
 #: src/screens/Settings/Settings.tsx:489
@@ -12302,12 +12385,8 @@ msgstr "悲伤 GIFs"
 #: src/screens/Profile/Header/EditProfileDialog.tsx:291
 #: src/screens/SavedFeeds.tsx:124
 #: src/screens/SavedFeeds.tsx:315
-#: src/screens/Settings/AccessibilitySettings.tsx:260
-#: src/screens/Settings/AccessibilitySettings.tsx:269
-#: src/screens/Settings/AccessibilitySettings.tsx:324
-#: src/screens/Settings/AccessibilitySettings.tsx:333
-#: src/screens/Settings/AccessibilitySettings.tsx:390
-#: src/screens/Settings/AccessibilitySettings.tsx:399
+#: src/screens/Settings/AltTextAiSettings.tsx:460
+#: src/screens/Settings/AltTextAiSettings.tsx:461
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:285
 #: src/screens/Settings/components/LibreTranslateInstanceDialog.tsx:87
 #: src/screens/Settings/components/LibreTranslateInstanceDialog.tsx:95
@@ -12329,8 +12408,8 @@ msgstr "悲伤 GIFs"
 #: src/view/com/composer/GifAltText.tsx:207
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:66
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:79
-#: src/view/com/composer/photos/ImageAltTextDialog.tsx:268
-#: src/view/com/composer/photos/ImageAltTextDialog.tsx:278
+#: src/view/com/composer/photos/ImageAltTextDialog.tsx:260
+#: src/view/com/composer/photos/ImageAltTextDialog.tsx:270
 msgid "Save"
 msgstr "保存"
 
@@ -12351,7 +12430,7 @@ msgstr "保存出生日期"
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:273
 #: src/screens/Settings/Settings.tsx:388
 #: src/screens/Settings/Settings.tsx:395
-#: src/view/com/composer/Composer.tsx:1761
+#: src/view/com/composer/Composer.tsx:1759
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr "保存更改"
@@ -12360,17 +12439,17 @@ msgstr "保存更改"
 msgid "Save Changes"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1733
+#: src/view/com/composer/Composer.tsx:1731
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
 msgid "Save changes?"
 msgstr "保存更改？"
 
-#: src/view/com/composer/Composer.tsx:1761
+#: src/view/com/composer/Composer.tsx:1759
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save draft"
 msgstr "保存草稿"
 
-#: src/view/com/composer/Composer.tsx:1735
+#: src/view/com/composer/Composer.tsx:1733
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
 msgid "Save draft?"
 msgstr "保存草稿？"
@@ -12382,6 +12461,10 @@ msgstr "保存草稿？"
 #: src/components/StarterPack/ShareDialog.tsx:150
 msgid "Save image"
 msgstr "保存图片"
+
+#: src/screens/Settings/components/OpenRouterModelPickerDialog.tsx:168
+msgid "Save model"
+msgstr ""
 
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:271
 msgid "Save new handle"
@@ -12422,7 +12505,7 @@ msgid "Saved Feeds"
 msgstr "已保存动态源"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:145
-#: src/Navigation.tsx:905
+#: src/Navigation.tsx:917
 #: src/screens/Bookmarks.tsx:59
 msgid "Saved Posts"
 msgstr "帖文收藏"
@@ -12466,7 +12549,7 @@ msgstr "扫描"
 
 #: src/features/inviteFriends/InviteScannerScreen.tsx:82
 #: src/features/inviteFriends/InviteScannerScreen.web.tsx:23
-#: src/Navigation.tsx:523
+#: src/Navigation.tsx:527
 msgid "Scan QR code"
 msgstr "扫描二维码"
 
@@ -12516,7 +12599,7 @@ msgstr "搜索"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:464
+#: src/Navigation.tsx:468
 #: src/screens/Profile/ProfileSearch.tsx:24
 #: src/screens/Profile/ProfileSearch.tsx:40
 msgid "Search @{0}'s posts"
@@ -12588,9 +12671,17 @@ msgstr "搜索 KLIPY"
 msgid "Search languages"
 msgstr "搜索语言"
 
+#: src/screens/Settings/components/OpenRouterModelPickerDialog.tsx:97
+msgid "Search models"
+msgstr ""
+
 #: src/screens/Profile/ProfileSearch.tsx:39
 msgid "Search my posts"
 msgstr "搜索我的帖文"
+
+#: src/screens/Settings/components/OpenRouterModelPickerDialog.tsx:96
+msgid "Search OpenRouter models"
+msgstr ""
 
 #: src/view/com/profile/ProfileMenu.tsx:627
 #: src/view/com/profile/ProfileMenu.tsx:630
@@ -12715,6 +12806,10 @@ msgstr "选择一个原因"
 #: src/screens/Login/ChooseAccountForm.tsx:89
 msgid "Select account"
 msgstr "选择账户"
+
+#: src/screens/Settings/AltTextAiSettings.tsx:80
+msgid "Select AI alt text provider"
+msgstr ""
 
 #: src/components/AppLanguageDropdown.tsx:63
 msgid "Select an app language"
@@ -12978,7 +13073,9 @@ msgstr "发送到我们的电话号码验证提供商 Plivo"
 msgid "Server address"
 msgstr "服务器地址"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:113
+#: src/screens/Settings/AltTextAiSettings.tsx:135
+#: src/screens/Settings/AltTextAiSettings.tsx:148
+#: src/screens/Settings/AltTextAiSettings.tsx:157
 msgid "Set"
 msgstr ""
 
@@ -13017,15 +13114,11 @@ msgstr "手动设置托管服务提供商"
 msgid "Set your hosting provider manually"
 msgstr "手动设置托管服务提供商"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:120
-msgid "Set your OpenRouter API key to enable AI-powered alt text generation for images in the composer. Get an API key at <0>openrouter.ai</0>"
-msgstr ""
-
 #: src/screens/Login/ForgotPasswordForm.tsx:104
 msgid "Sets email for password reset"
 msgstr "设置用于重置密码的电子邮箱"
 
-#: src/Navigation.tsx:420
+#: src/Navigation.tsx:424
 #: src/screens/Settings/Settings.tsx:189
 #: src/view/shell/desktop/LeftNav.tsx:845
 #: src/view/shell/Drawer.tsx:730
@@ -13095,7 +13188,7 @@ msgctxt "toast"
 msgid "Settings saved"
 msgstr "已保存设置"
 
-#: src/Navigation.tsx:702
+#: src/Navigation.tsx:714
 #: src/screens/Settings/RunesSettings/index.tsx:71
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:83
 msgid "Settings sync"
@@ -13222,7 +13315,7 @@ msgstr "分享你的联系人来寻找朋友"
 msgid "Share your thoughts…"
 msgstr "分享你的想法……"
 
-#: src/Navigation.tsx:528
+#: src/Navigation.tsx:532
 msgid "Shared Preferences Tester"
 msgstr "共享偏好测试器"
 
@@ -13236,15 +13329,15 @@ msgstr "分享您的年龄范围只会透露你 Apple 账户关联的大致信�
 msgid "Sharing your age range reveals only the range associated with your Google Account – for example, that you’re at least 18. <0>Your exact age and birthday are never shared,</0> and this data never leaves this device. Therefore, it only enables access on this device. Alternatively, <1>you can use our trusted partner, KWS</1>, to complete your verification and enable access on all platforms."
 msgstr "分享您的年龄范围只会透露你 Google 账户关联的大致信息——例如，你已年满 18 岁。<0>你的确切年龄和生日信息永远不会被分享，</0>年龄范围数据也永远不会离开此设备。因此，它只能在此设备上启用访问权限。或者，<1>你可以使用我们的可信合作伙伴 KWS</1>来完成验证，从而在所有平台上启用访问权限。"
 
-#: src/view/com/composer/Composer.tsx:2038
+#: src/view/com/composer/Composer.tsx:2036
 msgid "Shortcut: Alt plus Down Arrow"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2741
+#: src/view/com/composer/Composer.tsx:2739
 msgid "Shortcut: Alt plus Enter"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1996
+#: src/view/com/composer/Composer.tsx:1994
 msgid "Shortcut: Alt plus Up Arrow"
 msgstr ""
 
@@ -13568,7 +13661,7 @@ msgstr "需要登录"
 msgid "Signed in as @{0}"
 msgstr "以 @{0} 的身份登录"
 
-#: src/Navigation.tsx:374
+#: src/Navigation.tsx:378
 msgid "Signing in..."
 msgstr ""
 
@@ -13598,7 +13691,7 @@ msgstr "跳过"
 msgid "Skip contact sharing and continue to the app"
 msgstr "跳过分享通讯录并继续使用应用程序"
 
-#: src/view/com/composer/Composer.tsx:1778
+#: src/view/com/composer/Composer.tsx:1776
 msgid "Skip empty posts?"
 msgstr "跳过空白帖文？"
 
@@ -13828,8 +13921,8 @@ msgstr "开始对话"
 msgid "Start chat with {displayName}"
 msgstr "与 {displayName} 开始对话"
 
-#: src/Navigation.tsx:876
-#: src/Navigation.tsx:881
+#: src/Navigation.tsx:888
+#: src/Navigation.tsx:893
 #: src/screens/StarterPack/Wizard/index.tsx:198
 msgid "Starter Pack"
 msgstr "新手包"
@@ -13892,7 +13985,7 @@ msgstr "已清除数据，请立即重新启动应用。"
 msgid "Stored as part of a secure code for matching with others"
 msgstr "存储为安全代码的一部分，以匹配其他人"
 
-#: src/Navigation.tsx:513
+#: src/Navigation.tsx:517
 #: src/screens/Settings/Settings.tsx:705
 msgid "Storybook"
 msgstr "Storybook"
@@ -14030,7 +14123,7 @@ msgstr "性暗示"
 msgid "Sunlight"
 msgstr "阳光"
 
-#: src/Navigation.tsx:538
+#: src/Navigation.tsx:542
 #: src/view/screens/Support.tsx:25
 #: src/view/screens/Support.tsx:28
 msgid "Support"
@@ -14264,7 +14357,7 @@ msgstr "条款"
 #: src/components/dialogs/BirthDateSettings.tsx:191
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:31
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:98
-#: src/Navigation.tsx:548
+#: src/Navigation.tsx:552
 #: src/screens/Settings/AboutSettings.tsx:95
 #: src/screens/Settings/AboutSettings.tsx:98
 #: src/view/screens/TermsOfService.tsx:25
@@ -14985,7 +15078,7 @@ msgstr "这则帖文已被发布者删除"
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr "这则帖文将从动态源和讨论串中隐藏。注意：此操作无法撤消。"
 
-#: src/view/com/composer/Composer.tsx:1325
+#: src/view/com/composer/Composer.tsx:1323
 msgid "This post's author has disabled quote posts."
 msgstr "这则帖文的发布者已停用引用帖文。"
 
@@ -15136,7 +15229,7 @@ msgstr "讨论串偏好设置"
 msgid "Threaded"
 msgstr "树形视图"
 
-#: src/Navigation.tsx:581
+#: src/Navigation.tsx:585
 msgid "Threads Preferences"
 msgstr "讨论串偏好设置"
 
@@ -15247,7 +15340,7 @@ msgstr "热门"
 msgid "Top replies first"
 msgstr "热门回复优先"
 
-#: src/Navigation.tsx:829
+#: src/Navigation.tsx:841
 msgid "Topic"
 msgstr "话题"
 
@@ -15710,7 +15803,7 @@ msgstr "已从列表中取消订阅"
 msgid "Unsupported clipboard content"
 msgstr "不支持的剪贴板内容"
 
-#: src/view/com/composer/Composer.tsx:1898
+#: src/view/com/composer/Composer.tsx:1896
 msgid "Unsupported video type: {mimeType}"
 msgstr "不支持的视频类型：{mimeType}"
 
@@ -15803,7 +15896,7 @@ msgstr "从文件上传"
 msgid "Upload from Library"
 msgstr "从照片图库上传"
 
-#: src/view/com/composer/Composer.tsx:3166
+#: src/view/com/composer/Composer.tsx:3164
 msgid "Uploading GIF..."
 msgstr "正在上传 GIF……"
 
@@ -15817,7 +15910,7 @@ msgstr "正在上传图片……"
 msgid "Uploading link thumbnail..."
 msgstr "正在上传链接缩略图……"
 
-#: src/view/com/composer/Composer.tsx:3168
+#: src/view/com/composer/Composer.tsx:3166
 msgid "Uploading video..."
 msgstr "正在上传视频……"
 
@@ -15825,7 +15918,7 @@ msgstr "正在上传视频……"
 msgid "URL"
 msgstr ""
 
-#: src/Navigation.tsx:657
+#: src/Navigation.tsx:669
 #: src/screens/Settings/RunesSettings/index.tsx:46
 #: src/screens/Settings/RunesSettings/index.tsx:49
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:44
@@ -15876,6 +15969,10 @@ msgstr ""
 #: src/screens/Feeds/NoSavedFeedsOfAnyType.tsx:57
 msgid "Use recommended"
 msgstr "使用推荐"
+
+#: src/screens/Settings/AltTextAiSettings.tsx:385
+msgid "Use the API base URL, usually ending in /v1. A full /chat/completions URL also works."
+msgstr ""
 
 #: src/screens/Settings/components/AddAppPasswordDialog.tsx:190
 msgid "Use this to sign in to the other app along with your handle."
@@ -16001,7 +16098,7 @@ msgstr "无法授予认证，请重试。"
 msgid "Verification settings"
 msgstr "认证设置"
 
-#: src/Navigation.tsx:413
+#: src/Navigation.tsx:417
 #: src/screens/Moderation/VerificationSettings.tsx:34
 msgid "Verification Settings"
 msgstr "认证设置"
@@ -16120,7 +16217,7 @@ msgstr ""
 msgid "Video failed to process"
 msgstr "视频处理失败"
 
-#: src/Navigation.tsx:897
+#: src/Navigation.tsx:909
 msgid "Video Feed"
 msgstr "视频动态源"
 
@@ -16155,7 +16252,7 @@ msgstr "无法找到视频。"
 msgid "Video settings"
 msgstr "视频设置"
 
-#: src/view/com/composer/Composer.tsx:3186
+#: src/view/com/composer/Composer.tsx:3184
 msgid "Video uploaded"
 msgstr "已上传视频"
 
@@ -16168,19 +16265,19 @@ msgstr "视频：{0}"
 msgid "Videos"
 msgstr "视频"
 
-#: src/view/com/composer/Composer.tsx:556
-#: src/view/com/composer/Composer.tsx:699
+#: src/view/com/composer/Composer.tsx:554
+#: src/view/com/composer/Composer.tsx:697
 #: src/view/com/composer/SelectMediaButton.tsx:453
 msgid "Videos must be 10 minutes or less."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:557
-#: src/view/com/composer/Composer.tsx:700
+#: src/view/com/composer/Composer.tsx:555
+#: src/view/com/composer/Composer.tsx:698
 #: src/view/com/composer/SelectMediaButton.tsx:454
 msgid "Videos must be less than 3 minutes long."
 msgstr "视频长度不得超过 3 分钟。"
 
-#: src/view/com/composer/Composer.tsx:1437
+#: src/view/com/composer/Composer.tsx:1435
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr "查看"
@@ -16292,7 +16389,7 @@ msgstr "浏览更多热门视频"
 msgid "View PDS information"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1432
+#: src/view/com/composer/Composer.tsx:1430
 msgid "View post"
 msgstr "查看帖文"
 
@@ -16396,6 +16493,11 @@ msgstr "暴力或威胁性内容"
 msgid "Visible"
 msgstr ""
 
+#: src/screens/Settings/AltTextAiSettings.tsx:166
+#: src/screens/Settings/AltTextAiSettings.tsx:322
+msgid "Vision model"
+msgstr ""
+
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:251
 msgid "Visit {websiteFormatted}"
 msgstr ""
@@ -16428,8 +16530,8 @@ msgstr ""
 msgid "Warn"
 msgstr "警告"
 
-#: src/screens/Settings/AccessibilitySettings.tsx:85
-#: src/screens/Settings/AccessibilitySettings.tsx:90
+#: src/screens/Settings/AccessibilitySettings.tsx:72
+#: src/screens/Settings/AccessibilitySettings.tsx:77
 msgid "Warn before posting without alt text"
 msgstr ""
 
@@ -16491,6 +16593,10 @@ msgstr "我们无法验证你所属的托管服务提供商。请检查你的网
 #: src/components/contacts/screens/GetContacts.tsx:244
 msgid "We delete hashes after matches are made"
 msgstr "我们会在确认联系人后删除哈希值"
+
+#: src/screens/Settings/AccessibilitySettings.tsx:140
+msgid "We do not support inclusion and the usage of AI slop / LLMs in the AT Protocol ecosystem, including Bluesky and apps such as Attie."
+msgstr ""
 
 #: src/components/contacts/components/InviteInfo.tsx:67
 msgid "We don't store your friends' phone numbers or send any messages"
@@ -16644,7 +16750,7 @@ msgstr "很抱歉，无法完成你的搜索。请几分钟后重试。"
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr "很抱歉，你目前无法访问此页面。"
 
-#: src/view/com/composer/Composer.tsx:1323
+#: src/view/com/composer/Composer.tsx:1321
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr "很抱歉！你回复的帖文已被删除。"
 
@@ -16797,7 +16903,7 @@ msgstr "需要屏蔽该用户、离开对话，或两者一并执行吗？"
 msgid "Would you like to save this as a draft before viewing your drafts?"
 msgstr "在查看其他草稿之前，需要先保存现有内容吗？"
 
-#: src/view/com/composer/Composer.tsx:1749
+#: src/view/com/composer/Composer.tsx:1747
 msgid "Would you like to save this as a draft to edit later?"
 msgstr "需要把现有内容保存为草稿，以便日后编辑吗？"
 
@@ -16806,11 +16912,11 @@ msgstr "需要把现有内容保存为草稿，以便日后编辑吗？"
 msgid "Write a post"
 msgstr "撰写一篇帖文"
 
-#: src/view/com/composer/Composer.tsx:1980
+#: src/view/com/composer/Composer.tsx:1978
 msgid "Write post"
 msgstr "撰写帖文"
 
-#: src/view/com/composer/Composer.tsx:1849
+#: src/view/com/composer/Composer.tsx:1847
 msgid "Write your Jarona"
 msgstr ""
 
@@ -17017,11 +17123,11 @@ msgid "You can now sign in with your new password."
 msgstr "你现在可以使用新密码登录。"
 
 #. Toast shown when the user tries to add more images but the post gallery is already at the cap
-#: src/view/com/composer/Composer.tsx:255
+#: src/view/com/composer/Composer.tsx:253
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "帖文最多只能添加 {MAX_GALLERY_IMAGES, plural,other {# 张图片}}"
 
-#: src/view/com/composer/Composer.tsx:1754
+#: src/view/com/composer/Composer.tsx:1752
 msgid "You can only save drafts up to 1000 characters."
 msgstr "你目前只能保存最多 1000 个字符的草稿。"
 
@@ -17173,7 +17279,7 @@ msgstr "你已成功验证电子邮箱地址，现在你可以关闭此对话框
 msgid "You have temporarily reached the limit for video uploads. Please try again later."
 msgstr "你已暂时达到视频上传的限制。请稍后再试。"
 
-#: src/view/com/composer/Composer.tsx:1744
+#: src/view/com/composer/Composer.tsx:1742
 msgid "You have unsaved changes to this draft, would you like to save them?"
 msgstr "你有未保存的更改，需要保存吗？"
 
@@ -17405,7 +17511,7 @@ msgstr "你已到达内容的结尾。"
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr "你已经浏览完动态源的所有帖文啦！寻找一些更多的账户关注吧。"
 
-#: src/view/com/composer/Composer.tsx:860
+#: src/view/com/composer/Composer.tsx:858
 msgid "You've reached the maximum number of drafts"
 msgstr "你已达到最大草稿保存数量"
 
@@ -17548,7 +17654,7 @@ msgstr ""
 msgid "Your hosting provider is detected automatically from the username you enter."
 msgstr "你的托管服务提供商将根据你输入的用户名自动检测。"
 
-#: src/Navigation.tsx:801
+#: src/Navigation.tsx:813
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:65
 #: src/screens/Settings/ContentAndMediaSettings.tsx:94
 #: src/screens/Settings/ContentAndMediaSettings.tsx:97
@@ -17585,11 +17691,11 @@ msgstr "已成功更改你的密码！请你今后使用你的新密码登录 Bl
 msgid "Your password must be at least 8 characters long."
 msgstr "你输入的密码至少应包含 8 个字符。"
 
-#: src/view/com/composer/Composer.tsx:1428
+#: src/view/com/composer/Composer.tsx:1426
 msgid "Your post was sent"
 msgstr "已发布你的帖文"
 
-#: src/view/com/composer/Composer.tsx:1425
+#: src/view/com/composer/Composer.tsx:1423
 msgid "Your posts were sent"
 msgstr "已发布你的帖文"
 
@@ -17610,7 +17716,7 @@ msgstr "你的头像周围环绕着许多其他人的头像"
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr "其他 Bluesky 用户将无法看到你的个人资料、帖文、列表与其他相关个人信息。你可以随时登录以重新启用你的账户。"
 
-#: src/view/com/composer/Composer.tsx:1427
+#: src/view/com/composer/Composer.tsx:1425
 msgid "Your reply was sent"
 msgstr "已发布你的回复"
 
@@ -17623,7 +17729,7 @@ msgstr "你的举报信息将提交给 <0>{0}</0>。"
 msgid "Your selected interests help us serve you content you care about."
 msgstr "你选择的兴趣主题将帮助我们提供更多你想看到的内容。"
 
-#: src/view/com/composer/Composer.tsx:1779
+#: src/view/com/composer/Composer.tsx:1777
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "你的帖文串中包含空白帖文，继续发布将会跳过这些内容，其余帖文会重新组合成完整的帖文串发布。"
 
