@@ -35,6 +35,7 @@ import {useBottomBarOffset} from '#/lib/hooks/useBottomBarOffset'
 import {useInitialNumToRender} from '#/lib/hooks/useInitialNumToRender'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {isNetworkError} from '#/lib/strings/errors'
+import {userStyle} from '#/lib/userstyles'
 import {logger} from '#/logger'
 import {usePostAuthorShadowFilter} from '#/state/cache/profile-shadow'
 import {listenPostCreated} from '#/state/events'
@@ -1325,7 +1326,7 @@ let PostFeed = ({
 
   return (
     <PdsViewabilityProvider store={pdsViewabilityStore}>
-      <View testID={testID} style={style}>
+      <View testID={testID} style={[style, userStyle('wsky-feed')]}>
         <List
           testID={testID ? `${testID}-flatlist` : undefined}
           ref={scrollElRef}

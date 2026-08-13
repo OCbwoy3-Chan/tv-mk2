@@ -29,6 +29,7 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - Unique repost icons in notifications
 - Repost carousels in following feed
 - Can download videos
+- Stable [CSS hooks for browser userstyles](./docs/userstyles.md)
 - Stay on a page when switching accounts
 - 'Mutuals' in place of 'Following' when relevant
 - Pet label (option to toggle, & visibility for everyone else)

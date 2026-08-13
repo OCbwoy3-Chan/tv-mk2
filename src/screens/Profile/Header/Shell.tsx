@@ -13,6 +13,7 @@ import {useNavigation} from '@react-navigation/native'
 import {BACK_HITSLOP} from '#/lib/constants'
 import {useHaptics} from '#/lib/haptics'
 import {type NavigationProp} from '#/lib/routes/types'
+import {userStyle} from '#/lib/userstyles'
 import {type Shadow} from '#/state/cache/types'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -181,7 +182,9 @@ let ProfileHeaderShell = ({
   }, [profile.banner, moderation, _openLightbox, bannerRef])
 
   return (
-    <View style={t.atoms.bg} pointerEvents={IS_IOS ? 'auto' : 'box-none'}>
+    <View
+      style={[t.atoms.bg, userStyle('wsky-profile__header')]}
+      pointerEvents={IS_IOS ? 'auto' : 'box-none'}>
       <View
         pointerEvents={IS_IOS ? 'auto' : 'box-none'}
         style={[a.relative, {height: 150}]}>

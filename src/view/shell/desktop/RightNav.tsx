@@ -6,6 +6,7 @@ import {Trans} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 
 import {FEEDBACK_FORM_URL, HELP_DESK_URL} from '#/lib/constants'
+import {userStyle} from '#/lib/userstyles'
 import {useSession} from '#/state/session'
 import {useLogoVariant} from '#/view/icons/useLogoVariant'
 import {DesktopFeeds} from '#/view/shell/desktop/Feeds'
@@ -66,6 +67,7 @@ export function DesktopRightNav({routeName}: {routeName: string}) {
   return (
     <View
       style={[
+        userStyle('wsky-sidebar', 'wsky-sidebar--right'),
         gutters,
         a.gap_lg,
         a.pr_2xs,

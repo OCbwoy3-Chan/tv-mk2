@@ -2,6 +2,7 @@ import {useCallback, useEffect, useRef} from 'react'
 import {type ScrollView, StyleSheet, View} from 'react-native'
 import {type SharedValue} from 'react-native-reanimated'
 
+import {userStyle} from '#/lib/userstyles'
 import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {Text} from '#/components/Typography'
 import {PressableWithHover} from '../util/PressableWithHover'
@@ -101,7 +102,7 @@ export function TabBar({
   return (
     <View
       testID={testID}
-      style={[t.atoms.bg, styles.outer]}
+      style={[t.atoms.bg, styles.outer, userStyle('wsky-tabs')]}
       accessibilityRole="tablist">
       <DraggableScrollView
         testID={`${testID}-selector`}

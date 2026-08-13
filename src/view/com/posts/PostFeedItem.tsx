@@ -17,6 +17,7 @@ import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {usePalette} from '#/lib/hooks/usePalette'
 import {makeProfileLink} from '#/lib/routes/links'
 import {countLines} from '#/lib/strings/helpers'
+import {userStyle} from '#/lib/userstyles'
 import {
   POST_TOMBSTONE,
   type Shadow,
@@ -343,11 +344,17 @@ let FeedItemInner = ({
     <Link
       testID={`feedItem-by-${post.author.handle}`}
       style={outerStyles}
+      outerStyle={userStyle('wsky-feed-item', 'wsky-post')}
       href={href}
       noFeedback
       accessible={false}
       onBeforePress={onBeforePress}
-      dataSet={{feedContext}}
+      dataSet={{
+        feedContext,
+        wskyEmbed: post.embed ? 'true' : 'false',
+        wskyReply: record.reply ? 'true' : 'false',
+        wskyRepost: AppBskyFeedDefs.isReasonRepost(reason) ? 'true' : 'false',
+      }}
       onPointerEnter={() => {
         setHover(true)
       }}
@@ -537,6 +544,7 @@ let PostContent = ({
   return (
     <ContentHider
       testID="contentHider-post"
+      style={userStyle('wsky-post__content')}
       modui={moderation.ui('contentList')}
       ignoreMute
       childContainerStyle={[
@@ -550,7 +558,7 @@ let PostContent = ({
         additionalCauses={additionalPostAlerts}
       />
       {richText.text ? (
-        <View style={[a.mb_2xs]}>
+        <View style={[a.mb_2xs, userStyle('wsky-post__text')]}>
           <RichText
             enableTags
             testID="postText"
@@ -570,6 +578,7 @@ let PostContent = ({
       {postEmbed ? (
         <View
           style={[
+            userStyle('wsky-post__embed'),
             a.pb_xs,
             maybeApplyGalleryOffsetStyles('embed', {
               post,

@@ -7,6 +7,7 @@ import {
   type NativeStackScreenProps,
 } from '#/lib/routes/types'
 import {makeRecordUri} from '#/lib/strings/url-helpers'
+import {userStyle} from '#/lib/userstyles'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
 import {PostThread} from '#/screens/PostThread'
@@ -24,7 +25,9 @@ export function PostThreadScreen({route}: Props) {
   useSetTitle(profile ? _(msg`Post by @${profile.handle}`) : undefined)
 
   return (
-    <Layout.Screen testID="postThreadScreen">
+    <Layout.Screen
+      testID="postThreadScreen"
+      style={userStyle('wsky-screen--post-thread')}>
       <PostThread
         uri={uri}
         // `view` can be a web query param, so validate it

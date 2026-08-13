@@ -26,6 +26,7 @@ import {
 } from '@react-navigation/native-stack'
 
 import {useWebMediaQueries} from '#/lib/hooks/useWebMediaQueries'
+import {userStyle} from '#/lib/userstyles'
 import {useSession} from '#/state/session'
 import {useOnboardingState} from '#/state/shell'
 import {
@@ -190,7 +191,7 @@ function NativeStackNavigator({
 
   return (
     <NavigationContent>
-      <View role="main" style={a.flex_1}>
+      <View role="main" style={[a.flex_1, userStyle('wsky-main')]}>
         <NativeStackView
           {...rest}
           state={state}
