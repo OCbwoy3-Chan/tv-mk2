@@ -22,11 +22,18 @@ steps:
       release_version="$(node --print "require('./package.json').version")"
       bundle_date="$(date -u +%y%m%d%H)"
 
+      case "$TANGLED_REF_NAME" in
+        main) oauth_base_url="https://canary.witchsky.app" ;;
+        prod) oauth_base_url="https://witchsky.app" ;;
+        *) echo "Refusing to build unexpected branch: $TANGLED_REF_NAME" >&2; exit 1 ;;
+      esac
+
       printf '%s\n' \
         "EXPO_PUBLIC_ENV=production" \
         "EXPO_PUBLIC_RELEASE_VERSION=$release_version" \
         "EXPO_PUBLIC_BUNDLE_IDENTIFIER=$TANGLED_SHA" \
         "EXPO_PUBLIC_BUNDLE_DATE=$bundle_date" \
+        "EXPO_PUBLIC_OAUTH_BASE_URL=$oauth_base_url" \
         > .env
 
   - name: Build
