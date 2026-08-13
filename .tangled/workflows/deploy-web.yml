@@ -23,8 +23,8 @@ steps:
       bundle_date="$(date -u +%y%m%d%H)"
 
       case "$TANGLED_REF_NAME" in
-        main) oauth_base_url="https://dev.tenna.party" ;;
-        prod) oauth_base_url="https://tenna.party" ;;
+        main) oauth_base_url="https://tenna.party" ;;
+        dev) oauth_base_url="https://dev.tenna.party" ;;
         *) echo "Refusing to build unexpected branch: $TANGLED_REF_NAME" >&2; exit 1 ;;
       esac
 
