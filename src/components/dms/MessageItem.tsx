@@ -890,7 +890,7 @@ function ReplyQuote({
   )
   // Hide the quoted content if we block, or are blocked by, the original
   // sender - mirroring how the message bubble itself is hidden.
-  const isBlocked = senderProfile ? isBlockedOrBlocking(senderProfile) : false
+  const isBlocked = false // senderProfile ? isBlockedOrBlocking(senderProfile) : false
   const senderName =
     senderProfile && !isBlocked
       ? createSanitizedDisplayName(senderProfile)
