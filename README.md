@@ -28,7 +28,6 @@ Moderation:
 App:
 - Brought back AI prefs in our settings
 - Big warning on stuff that has to do with AI (too much work to remove)
-- 
 
 Infra:
 - Native iOS via GitHub Actions (for sideloading)
@@ -38,12 +37,16 @@ Infra:
 
 ### TODO: Kris
 
-- [ ] Replace the Butterfly and make a custom Japan logo (Bluesky ASSETS.md told me so)
-- [ ] https://github.com/bluesky-social/social-app/blob/main/ASSETS.md (maybe just have witchsky do it instead)
+- [ ] Ensure compliance with brand new https://github.com/bluesky-social/social-app/blob/main/ASSETS.md (impossible, just have witchsky do it instead)
+- [ ] Replace the Butterfly and make a custom Japan logo (just tenna's head with football field texture i guess)
+- [ ] Native Labeler integrations
+- [ ] tenna.party user badge (needs own labeler + did:plc sucks)
+- [ ] Opt-in clientside interaction block when interacting with 18+/MDNI accounts via [labeler.unlabeled.fyi](https://bsky.app/profile/did:web:jb.waf.moe/post/3mt2kgplrxwaf) (will have to hook the appview, labeler and atproto directly or change a shit ton of the app code for a ui)
 - [ ] Custom cancellations (like on cred.blue/canceller) & import from repo button
 - [ ] AltStore PAL Builds (My broke ass, I need a MacBook and an Apple Dev License) so it can be downloaded in EU & Japan
-- [ ] Notifications on iOS (europe only, needs mac, apple dev license, alternative app distrib, signing, expo push, real tos & privacy policy and altstore)
 - [ ] Rely on Expo EAS instead for signed builds (Needs rich dad or a bunch of MONEY)
+- [ ] Notifications on iOS (europe only, needs mac, apple dev license, alternative app distrib, signing, expo push, real tos & privacy policy and altstore)
+- [ ] Make our own tos & privacy policy instead of piggybacking off of bsky pbc for it
 
 ## Development Resources
 
