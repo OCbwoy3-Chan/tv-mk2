@@ -14,29 +14,36 @@ Get the app itself:
 
 ## Improvements on Witchsky
 
-- Tenna's Settings Page: Settings -> Deltas (above Runes)
-- New fun self-badge system: Character + Fictive / Fictionkin shown in the dialog when clicked.
-- *Enhanced* Custom TID option in composer: Better than the one on [witchsky](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow).
-- Removed the labeler limit (200 max, but its way too much)
-- Brought back AI prefs in our settings (it's atproto, y'all!)
-- Ignore block relationships for viewing groupchat messages
-- Option to bypass Bluesky !hide label and block relationships on viewing lists
-- Option to enable Japan-exclusive in-app logo
+Fun:
+- Brand new settings Page: Settings -> Deltas
+- New fun self-badge system: Character + kin selector.
+- Enhanced composer Custom TID option ([there's one in witchsky too but it's suffix only](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow))
+- Option to enable Japan-exclusive logo (TODO: REMAKE THIS)
 
+Moderation:
+- 200 max labeler limit (its way too much)
+- Ignore blocks for viewing groupchat messages
+- Bypass Bluesky !hide label and blocks on viewing lists
+
+App:
+- Brought back AI prefs in our settings
+- Big warning on stuff that has to do with AI (too much work to remove)
+- 
+
+Infra:
 - Native iOS via GitHub Actions (for sideloading)
-
 - Native Android APK via GitHub actions
-- Notifications on Android! (might not work if i fucked something up)
-
-- OUR selfhosted push service at https://push.tenna.party (one computer located in the middle of nowhere in latvia)
+- Working Push Notifications on Android!
+- Own selfhosted push service at https://push.tenna.party (one computer in latvia)
 
 ### TODO: Kris
 
+- [ ] Replace the Butterfly and make a custom Japan logo (Bluesky ASSETS.md told me so)
+- [ ] https://github.com/bluesky-social/social-app/blob/main/ASSETS.md (maybe just have witchsky do it instead)
 - [ ] Custom cancellations (like on cred.blue/canceller) & import from repo button
 - [ ] AltStore PAL Builds (My broke ass, I need a MacBook and an Apple Dev License) so it can be downloaded in EU & Japan
 - [ ] Notifications on iOS (europe only, needs mac, apple dev license, alternative app distrib, signing, expo push, real tos & privacy policy and altstore)
 - [ ] Rely on Expo EAS instead for signed builds (Needs rich dad or a bunch of MONEY)
-- [ ] Bypass !hide warnings on things labeled by Bluesky Moderation and other labelers
 
 ## Development Resources
 
