@@ -533,7 +533,6 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                 ) : (
                   <ThreadItemPostNumber inline={false} value={postNumbering} />
                 )}
-                <PostTags post={post} style={[a.pt_sm, a.pb_0]} />
                 <TranslatedPost
                   post={post}
                   postTextStyle={[isCompactPosts ? a.text_md : a.text_lg]}
@@ -559,6 +558,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                     />
                   </View>
                 )}
+                <PostTags post={post} style={[a.pb_0]} />
               </ContentHider>
               {!inReader && (
                 <>

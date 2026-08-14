@@ -147,7 +147,6 @@ const ThreadItemReaderSegmentInner = memo(
                   />
                 </View>
               ) : undefined}
-              <PostTags post={post} style={[a.pb_2xs]} />
               <TranslatedPost
                 hideTranslateLink
                 post={post}
@@ -163,6 +162,7 @@ const ThreadItemReaderSegmentInner = memo(
                   />
                 </View>
               )}
+              <PostTags post={post} style={[a.pb_2xs]} />
             </View>
           </View>
         </GalleryBleed>

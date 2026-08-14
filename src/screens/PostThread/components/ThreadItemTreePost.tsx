@@ -390,7 +390,6 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
                       value={postNumbering}
                     />
                   )}
-                  <PostTags post={post} style={[a.pb_2xs]} />
                   <TranslatedPost hideTranslateLink post={post} />
                   {post.embed && (
                     <View style={[a.pb_xs]}>
@@ -402,6 +401,7 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
                       />
                     </View>
                   )}
+                  <PostTags post={post} style={[a.pb_2xs]} />
                   <PostControls
                     variant="compact"
                     post={postShadow}

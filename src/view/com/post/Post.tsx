@@ -256,10 +256,9 @@ function PostInner({
                     />
                   )}
                 </View>
-                  ) : undefined}
-                  <PostTags post={post} style={[a.pb_2xs]} />
-                  <TranslatedPost hideTranslateLink post={post} />
-                  {post.embed ? (
+              ) : undefined}
+              <TranslatedPost hideTranslateLink post={post} />
+              {post.embed ? (
                 <View
                   style={maybeApplyGalleryOffsetStyles('embed', {
                     post,
@@ -275,6 +274,7 @@ function PostInner({
                   />
                 </View>
               ) : null}
+              <PostTags post={post} style={[a.pb_2xs]} />
             </ContentHider>
             <PostControls
               variant={compactPosts ? 'compact' : undefined}

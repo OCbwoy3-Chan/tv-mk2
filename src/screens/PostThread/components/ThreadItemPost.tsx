@@ -389,7 +389,6 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
               ) : (
                 <ThreadItemPostNumber inline={false} value={postNumbering} />
               )}
-              <PostTags post={post} style={[a.pb_2xs]} />
               <TranslatedPost hideTranslateLink post={post} />
               {post.embed && (
                 <View
@@ -409,6 +408,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                   />
                 </View>
               )}
+              <PostTags post={post} style={[a.pb_2xs]} />
               <PostControls
                 variant={compactPosts ? 'compact' : undefined}
                 post={postShadow}

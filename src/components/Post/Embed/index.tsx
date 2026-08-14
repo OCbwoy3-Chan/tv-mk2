@@ -474,7 +474,6 @@ export function QuoteEmbed({
           disableLinks
         />
       ) : null}
-      <PostTags post={quote} style={[a.pb_2xs]} />
       {quote.embed && (
         <Embed
           embed={quote.embed}
@@ -490,6 +489,7 @@ export function QuoteEmbed({
           post={quote}
         />
       )}
+      <PostTags post={quote} style={[a.pb_2xs]} />
     </ReportDialogMetadataContext.Provider>
   )
 

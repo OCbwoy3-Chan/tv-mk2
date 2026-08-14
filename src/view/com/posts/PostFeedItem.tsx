@@ -573,7 +573,6 @@ let PostContent = ({
           )}
         </View>
       ) : undefined}
-      <PostTags post={post} style={[a.pb_2xs]} />
       {record && <TranslatedPost hideTranslateLink post={post} />}
       {postEmbed ? (
         <View
@@ -600,6 +599,7 @@ let PostContent = ({
           />
         </View>
       ) : null}
+      <PostTags post={post} style={[a.pb_2xs]} />
     </ContentHider>
   )
 }
