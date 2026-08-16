@@ -1,4 +1,5 @@
 import {
+  startTransition,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -385,7 +386,17 @@ export function TextInput({
           )
         }
 
-        setRichText(newRt)
+        /*
+         * TipTap owns the editable DOM, so its transaction has already made
+         * the new character visible. The composer state update can re-render
+         * most of the sheet (counter, controls, embeds, etc.), which is not
+         * urgent and can be expensive on slower browsers. Marking it as a
+         * transition lets React yield to the browser so the editor paints the
+         * keystroke before doing that work.
+         */
+        startTransition(() => {
+          setRichText(newRt)
+        })
 
         const nextDetectedUris = new Map<string, LinkFacetMatch>()
         if (newRt.facets) {
