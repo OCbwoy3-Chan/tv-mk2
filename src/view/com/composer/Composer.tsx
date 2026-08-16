@@ -454,6 +454,9 @@ export const ComposePost = ({
     setLanguageNudgeAt(prev => (now - prev > 10_000 ? now : prev))
   }
 
+  const uInitRkeyS = useAtprotoRkeySettings()
+  const initAtprotoRkey = { generation: uInitRkeyS.generation ?? "tid", prefix: uInitRkeyS.prefix, suffix: uInitRkeyS.suffix }
+
   const [composerState, composerDispatch] = useReducer(
     composerReducer,
     createComposerState({
@@ -463,7 +466,7 @@ export const ComposePost = ({
       initMention,
       initInteractionSettings: preferences?.postInteractionSettings,
       initVideoUri,
-      initAtprotoRkey: useAtprotoRkeySettings(),
+      initAtprotoRkey,
       initTags,
     }),
   )
@@ -2483,6 +2486,8 @@ function ComposerPills({
     media?.type === 'gif' ||
     media?.type === 'video'
   const hasLink = !!post.embed.link
+
+  const rkeySettings = useAtprotoRkeySettings();
 
   return (
     <Animated.View

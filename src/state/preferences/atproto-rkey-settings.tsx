@@ -21,8 +21,8 @@ type SetContext = (value: StateContext) => void
 
 const getDefaultState = (): StateContext => ({
   generation: persisted.defaults.atprotoRkeyGenerationDefault,
-  prefix: persisted.defaults.atprotoRkeyPrefixDefault,
-  suffix: persisted.defaults.atprotoRkeySuffixDefault,
+  prefix: persisted.defaults.atprotoRkeyPrefixDefault ?? "",
+  suffix: persisted.defaults.atprotoRkeySuffixDefault ?? "",
 })
 
 const stateContext = createContext<StateContext>(getDefaultState())
@@ -32,13 +32,13 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const [state, setState] = useState<StateContext>(() => ({
     generation:
       persisted.get('atprotoRkeyGenerationDefault') ??
-      persisted.defaults.atprotoRkeyGenerationDefault,
+      persisted.defaults.atprotoRkeyGenerationDefault ?? "tid",
     prefix:
       persisted.get('atprotoRkeyPrefixDefault') ??
-      persisted.defaults.atprotoRkeyPrefixDefault,
+      persisted.defaults.atprotoRkeyPrefixDefault ?? "",
     suffix:
       persisted.get('atprotoRkeySuffixDefault') ??
-      persisted.defaults.atprotoRkeySuffixDefault,
+      persisted.defaults.atprotoRkeySuffixDefault ?? "",
   }))
 
   const setStateWrapped = useCallback((value: StateContext) => {
@@ -62,7 +62,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
     return persisted.onUpdate('atprotoRkeyPrefixDefault', next => {
       setState(prev => ({
         ...prev,
-        prefix: next ?? persisted.defaults.atprotoRkeyPrefixDefault,
+        prefix: next ?? persisted.defaults.atprotoRkeyPrefixDefault ?? "",
       }))
     })
   }, [])
@@ -71,7 +71,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
     return persisted.onUpdate('atprotoRkeySuffixDefault', next => {
       setState(prev => ({
         ...prev,
-        suffix: next ?? persisted.defaults.atprotoRkeySuffixDefault,
+        suffix: next ?? persisted.defaults.atprotoRkeySuffixDefault ?? "",
       }))
     })
   }, [])

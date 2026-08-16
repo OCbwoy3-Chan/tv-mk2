@@ -271,7 +271,7 @@ export function composerReducer(
         },
         atprotoRkey:
           state.thread.posts[activePostIndex]?.atprotoRkey ?? {
-            generation: persisted.defaults.atprotoRkeyGenerationDefault,
+            generation: persisted.defaults.atprotoRkeyGenerationDefault ?? "tid",
             prefix: persisted.defaults.atprotoRkeyPrefixDefault,
             suffix: persisted.defaults.atprotoRkeySuffixDefault,
           },
@@ -701,7 +701,7 @@ export function createComposerState({
     | AppBskyActorDefs.PostInteractionSettingsPref
     | undefined
   initVideoUri?: ComposerOpts['videoUri']
-  initAtprotoRkey?: {generation: 'tid' | 'prefix' | 'suffix'; prefix?: string; suffix?: string}
+  initAtprotoRkey?: {generation: 'tid' | 'prefix' | 'suffix'; prefix?: string | undefined; suffix?: string | undefined}
   initTags?: string[]
 }): ComposerState {
   let media: ImagesMedia | GalleryMedia | VideoMedia | undefined
@@ -806,6 +806,12 @@ export function createComposerState({
     initRichText.detectFacetsWithoutResolution()
   }
 
+  const kirkprotoRkeyS =  {
+    generation: persisted.defaults.atprotoRkeyGenerationDefault ?? "tid",
+    prefix: persisted.defaults.atprotoRkeyPrefixDefault,
+    suffix: persisted.defaults.atprotoRkeySuffixDefault,
+  }
+
   return {
     activePostIndex: 0,
     mutableNeedsFocusActive: false,
@@ -823,11 +829,7 @@ export function createComposerState({
             media,
             link,
           },
-          atprotoRkey: initAtprotoRkey ?? {
-            generation: persisted.defaults.atprotoRkeyGenerationDefault,
-            prefix: persisted.defaults.atprotoRkeyPrefixDefault,
-            suffix: persisted.defaults.atprotoRkeySuffixDefault,
-          },
+          atprotoRkey: initAtprotoRkey ?? kirkprotoRkeyS,
         },
       ],
       postgate: createPostgateRecord({

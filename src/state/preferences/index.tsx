@@ -66,6 +66,7 @@ import {Provider as TranslationServicePreferenceProvider} from './translation-se
 import {Provider as TrendingSettingsProvider} from './trending'
 import {Provider as UseHandleInLinksProvider} from './use-handle-in-links'
 import {Provider as UsedStarterPacksProvider} from './used-starter-packs'
+import {Provider as AtprotoRkeySettingsProvider} from "./atproto-rkey-settings.tsx"
 
 export {
   useAlsoLikedCollapseByDefault,
@@ -226,9 +227,11 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                   <DiscoverContextEnabledProvider>
                                                                                                                                     <OmitViaFieldProvider>
                                                                                                                                       <TidSuffixProvider>
-                                                                                                                                        {
-                                                                                                                                          children
-                                                                                                                                        }
+                                                                                                                                        <AtprotoRkeySettingsProvider>
+                                                                                                                                          {
+                                                                                                                                            children
+                                                                                                                                          }
+                                                                                                                                        </AtprotoRkeySettingsProvider>
                                                                                                                                       </TidSuffixProvider>
                                                                                                                                     </OmitViaFieldProvider>
                                                                                                                                   </DiscoverContextEnabledProvider>
