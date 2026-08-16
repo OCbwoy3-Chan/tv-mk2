@@ -11,6 +11,7 @@ import {
   type NativeStackScreenProps,
   type NavigationProp,
 } from '#/lib/routes/types'
+import {userStyle} from '#/lib/userstyles'
 import {MyLists} from '#/view/com/lists/MyLists'
 import {atoms as a} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
@@ -52,7 +53,7 @@ export function ListsScreen({}: Props) {
   )
 
   return (
-    <Layout.Screen testID="listsScreen">
+    <Layout.Screen testID="listsScreen" style={userStyle('wsky-screen--lists')}>
       <Layout.Header.Outer>
         <Layout.Header.BackButton />
         <Layout.Header.Content align="left">
@@ -73,7 +74,7 @@ export function ListsScreen({}: Props) {
         </Button>
       </Layout.Header.Outer>
 
-      <MyLists filter="curate" style={a.flex_grow} />
+      <MyLists filter="curate" style={[a.flex_grow, userStyle('wsky-lists')]} />
 
       <CreateOrEditListDialog
         purpose="app.bsky.graph.defs#curatelist"

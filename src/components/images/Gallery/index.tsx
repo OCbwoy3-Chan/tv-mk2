@@ -21,6 +21,7 @@ import debounce from 'lodash.debounce'
 
 import {type Dimensions} from '#/lib/media/types'
 import {mergeRefs} from '#/lib/merge-refs'
+import {userStyle} from '#/lib/userstyles'
 import {useA11y} from '#/state/a11y'
 import {
   applyImageTransforms,
@@ -352,6 +353,7 @@ export function Gallery({
             }
           }}
           style={[
+            userStyle('wsky-post__gallery-scroll'),
             {
               height: contentHeight,
               marginLeft: -insetLeft,

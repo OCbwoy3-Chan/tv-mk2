@@ -10,6 +10,7 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {DropdownMenu} from 'radix-ui'
 
+import {userStyle} from '#/lib/userstyles'
 import {useA11y} from '#/state/a11y'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, flatten, useTheme, web} from '#/alf'
@@ -218,6 +219,7 @@ export function Outer({
         className="dropdown-menu-transform-origin dropdown-menu-constrain-size">
         <View
           style={[
+            userStyle('wsky-menu'),
             a.rounded_sm,
             a.p_xs,
             a.border,
@@ -266,6 +268,10 @@ export function Item({
     <DropdownMenu.Item asChild>
       <Pressable
         {...rest}
+        ref={node => {
+          const element = node as unknown as HTMLElement | null
+          element?.classList.add('wsky-menu__item')
+        }}
         className="radix-dropdown-item"
         accessibilityHint=""
         accessibilityLabel={label}
@@ -331,7 +337,11 @@ export function Submenu({children, label, trigger, style}: SubmenuProps) {
     <DropdownMenu.Sub open={open} onOpenChange={setOpen}>
       <DropdownMenu.SubTrigger asChild>
         <Pressable
-          ref={triggerRef}
+          ref={node => {
+            triggerRef.current = node
+            const element = node as unknown as HTMLElement | null
+            element?.classList.add('wsky-menu__item')
+          }}
           className="radix-dropdown-item"
           accessibilityHint=""
           accessibilityLabel={label}
@@ -407,6 +417,7 @@ export function Submenu({children, label, trigger, style}: SubmenuProps) {
           className="dropdown-menu-transform-origin dropdown-menu-constrain-size">
           <View
             style={[
+              userStyle('wsky-menu'),
               a.rounded_sm,
               a.p_xs,
               a.border,

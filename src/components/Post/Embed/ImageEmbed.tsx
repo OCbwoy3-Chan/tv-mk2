@@ -5,6 +5,7 @@ import {Image} from 'expo-image'
 import {AppBskyEmbedGallery, type AppBskyEmbedImages} from '@atproto/api'
 
 import {resolveEmbedImageUris} from '#/lib/media/embed-image-formats'
+import {userStyle} from '#/lib/userstyles'
 import {useFullsizeFormat} from '#/state/preferences/fullsize-format'
 import {
   applyImageTransforms,
@@ -136,7 +137,7 @@ export function ImageEmbed({
       }
 
       return (
-        <View style={[a.mt_sm, rest.style]}>
+        <View style={[a.mt_sm, rest.style, userStyle('wsky-post__media')]}>
           <ImageContextMenu
             fullsizeUri={image.fullsize}
             thumbUri={image.thumb}
@@ -168,7 +169,7 @@ export function ImageEmbed({
 
     if (useExpandedLayout) {
       return (
-        <View style={[a.mt_sm, rest.style]}>
+        <View style={[a.mt_sm, rest.style, userStyle('wsky-post__media')]}>
           <Gallery
             images={images}
             onPress={onPress}
@@ -182,7 +183,7 @@ export function ImageEmbed({
     }
 
     return (
-      <View style={[a.mt_sm, rest.style]}>
+      <View style={[a.mt_sm, rest.style, userStyle('wsky-post__media')]}>
         <ImageLayoutGrid
           images={images}
           onPress={onPress}

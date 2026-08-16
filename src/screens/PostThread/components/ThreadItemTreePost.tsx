@@ -12,6 +12,7 @@ import {MAX_POST_LINES} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {makeProfileLink} from '#/lib/routes/links'
 import {countLines} from '#/lib/strings/helpers'
+import {userStyle} from '#/lib/userstyles'
 import {
   POST_TOMBSTONE,
   type Shadow,
@@ -139,7 +140,14 @@ const ThreadItemTreePostOuterWrapper = memo(
     return (
       <GalleryBleed>
         <View
+          // @ts-expect-error web only -wsky
+          dataSet={{
+            wskyEmbed: item.value.post.embed ? 'true' : 'false',
+            wskyReply: item.value.post.record.reply ? 'true' : 'false',
+            wskyRepost: 'false',
+          }}
           style={[
+            userStyle('wsky-post', 'wsky-post__surface'),
             a.flex_row,
             item.ui.indent === 1 &&
               !item.ui.showParentReplyLine && [
@@ -336,7 +344,7 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
           profile={post.author}
           interpretFilterAsBlur>
           <ThreadItemTreePostInnerWrapper item={item}>
-            <View style={[a.flex_1]}>
+            <View style={[a.flex_1, userStyle('wsky-post__content')]}>
               <PostMeta
                 author={post.author}
                 moderation={moderation}
@@ -356,7 +364,7 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
                     additionalCauses={additionalPostAlerts}
                   />
                   {richText?.text ? (
-                    <View style={[a.mb_2xs]}>
+                    <View style={[a.mb_2xs, userStyle('wsky-post__text')]}>
                       <RichText
                         enableTags
                         value={richText}
@@ -392,7 +400,7 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
                   )}
                   <TranslatedPost hideTranslateLink post={post} />
                   {post.embed && (
-                    <View style={[a.pb_xs]}>
+                    <View style={[a.pb_xs, userStyle('wsky-post__embed')]}>
                       <Embed
                         embed={post.embed}
                         moderation={moderation}
@@ -433,7 +441,7 @@ function SubtleHoverWrapper({children}: {children: React.ReactNode}) {
       onPointerEnter={onHoverIn}
       onPointerLeave={onHoverOut}
       style={[a.flex_1, a.pointer]}>
-      <SubtleHover hover={hover} />
+      <SubtleHover hover={hover} style={userStyle('wsky-post__hover')} />
       {children}
     </View>
   )

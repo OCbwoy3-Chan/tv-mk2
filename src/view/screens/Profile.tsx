@@ -609,6 +609,7 @@ function ProfileScreenLoaded({
       {hasSession && (
         <FAB
           testID="composeFAB"
+          userStyleVariant="compose"
           onPress={onPressCompose}
           icon={<EditBigIcon size="lg" fill={t.palette.white} />}
           accessibilityRole="button"

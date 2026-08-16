@@ -343,7 +343,7 @@ let FeedItemInner = ({
   const feedItem = (
     <Link
       testID={`feedItem-by-${post.author.handle}`}
-      style={outerStyles}
+      style={[outerStyles, userStyle('wsky-post__surface')]}
       outerStyle={userStyle('wsky-feed-item', 'wsky-post')}
       href={href}
       noFeedback
@@ -361,7 +361,10 @@ let FeedItemInner = ({
       onPointerLeave={() => {
         setHover(false)
       }}>
-      <SubtleHover hover={hover} />
+      <SubtleHover
+        hover={hover}
+        style={userStyle('wsky-post__hover')}
+      />
       <View
         style={{
           flexDirection: 'row',

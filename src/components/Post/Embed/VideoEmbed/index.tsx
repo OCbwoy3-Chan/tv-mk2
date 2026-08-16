@@ -10,6 +10,7 @@ import {
   createPlaybackTelemetry,
   type PlaybackTelemetry,
 } from '#/lib/media/video/playbackTelemetry'
+import {userStyle} from '#/lib/userstyles'
 import {ErrorBoundary} from '#/view/com/util/ErrorBoundary'
 import {atoms as a, platform} from '#/alf'
 import {Button} from '#/components/Button'
@@ -58,7 +59,7 @@ export function VideoEmbed({embed}: Props) {
   )
 
   return (
-    <View style={[a.pt_xs]}>
+    <View style={[a.pt_xs, userStyle('wsky-post__media')]}>
       <ConstrainedImage
         aspectRatio={constrained || 1}
         // slightly smaller max height than images

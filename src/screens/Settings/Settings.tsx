@@ -21,6 +21,7 @@ import {
 } from '#/lib/routes/types'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {userStyle} from '#/lib/userstyles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import * as persisted from '#/state/persisted'
 import {clearStorage} from '#/state/persisted'
@@ -180,7 +181,7 @@ export function SettingsScreen({}: Props) {
   }
 
   return (
-    <Layout.Screen>
+    <Layout.Screen style={userStyle('wsky-screen--settings')}>
       <Layout.Header.Outer>
         <Layout.Header.BackButton />
         <Layout.Header.Content>
@@ -190,7 +191,10 @@ export function SettingsScreen({}: Props) {
         </Layout.Header.Content>
         <AppServerHeaderControl />
       </Layout.Header.Outer>
-      <Layout.Content ref={scrollRef} scrollEnabled={!isDraggingAccounts}>
+      <Layout.Content
+        ref={scrollRef}
+        scrollEnabled={!isDraggingAccounts}
+        style={userStyle('wsky-settings')}>
         <SettingsList.Container>
           <AgeAssuranceDismissibleNotice style={[a.px_lg, a.pt_xs, a.pb_xl]} />
 

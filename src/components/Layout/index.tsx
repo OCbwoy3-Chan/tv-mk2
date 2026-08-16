@@ -110,6 +110,7 @@ export const Content = memo(function Content({
       automaticallyAdjustsScrollIndicatorInsets={false}
       indicatorStyle={t.scheme === 'dark' ? 'white' : 'black'}
       style={[
+        userStyle('wsky-center'),
         a.w_full,
         animatedStyle,
         isWithinSplitView &&
@@ -192,6 +193,7 @@ const WebCenterBorders = memo(function LayoutWebCenterBorders() {
   return gtMobile ? (
     <View
       style={[
+        userStyle('wsky-center-borders'),
         a.fixed,
         a.inset_0,
         a.border_l,

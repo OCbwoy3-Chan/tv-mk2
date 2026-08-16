@@ -5,6 +5,7 @@ import {useLingui} from '@lingui/react'
 import {useNavigation} from '@react-navigation/native'
 
 import {type NavigationProp} from '#/lib/routes/types'
+import {userStyle} from '#/lib/userstyles'
 import {useSetDrawerOpen} from '#/state/shell'
 import {useIsWithinSplitView} from '#/screens/Messages/components/splitView/context'
 import {
@@ -56,6 +57,7 @@ export function Outer({
     <View
       ref={headerRef}
       style={[
+        userStyle('wsky-header'),
         a.w_full,
         !noBottomBorder && a.border_b,
         a.flex_row,

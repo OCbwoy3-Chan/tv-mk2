@@ -651,7 +651,11 @@ function ComposeBtn({minimal}: {minimal: boolean}) {
     openComposer({mention: await getProfileHandle(), logContext: 'Fab'})
 
   return (
-    <View style={minimal ? [a.px_sm, a.pt_lg] : [a.flex_row, a.pl_md, a.pt_lg]}>
+    <View
+      style={[
+        userStyle('wsky-nav__compose'),
+        minimal ? [a.px_sm, a.pt_lg] : [a.flex_row, a.pl_md, a.pt_lg],
+      ]}>
       <Button
         disabled={isFetchingHandle}
         label={l`Compose new post`}
@@ -708,7 +712,11 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
     <View
       role="navigation"
       style={[
-        userStyle('wsky-nav', 'wsky-nav--desktop'),
+        userStyle(
+          'wsky-nav',
+          'wsky-nav--desktop',
+          leftNavMinimal && 'wsky-nav--compact',
+        ),
         a.fixed,
         a.top_0,
         a.p_lg,

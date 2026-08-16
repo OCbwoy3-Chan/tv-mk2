@@ -16,6 +16,7 @@ import {
   type CommonNavigatorParams,
   type NavigationProp,
 } from '#/lib/routes/types'
+import {userStyle} from '#/lib/userstyles'
 import {logger} from '#/logger'
 import {useA11y} from '#/state/a11y'
 import {
@@ -104,7 +105,7 @@ function SavedFeedsInner({
   }
 
   return (
-    <Layout.Screen>
+    <Layout.Screen style={userStyle('wsky-screen--saved-feeds')}>
       <Layout.Header.Outer>
         <Layout.Header.BackButton />
         <Layout.Header.Content align="left">
@@ -126,7 +127,10 @@ function SavedFeedsInner({
         </Button>
       </Layout.Header.Outer>
 
-      <Layout.Content ref={scrollRef} scrollEnabled={!isDragging}>
+      <Layout.Content
+        ref={scrollRef}
+        scrollEnabled={!isDragging}
+        style={userStyle('wsky-saved-feeds')}>
         {noSavedFeedsOfAnyType && (
           <View style={[t.atoms.border_contrast_low, a.border_b]}>
             <NoSavedFeedsOfAnyType
@@ -295,7 +299,7 @@ function SavedFeedsA11y({
   }
 
   return (
-    <Layout.Screen>
+    <Layout.Screen style={userStyle('wsky-screen--saved-feeds')}>
       <Layout.Header.Outer>
         <Layout.Header.BackButton />
         <Layout.Header.Content align="left">
@@ -317,7 +321,7 @@ function SavedFeedsA11y({
         </Button>
       </Layout.Header.Outer>
 
-      <Layout.Content>
+      <Layout.Content style={userStyle('wsky-saved-feeds')}>
         {noSavedFeedsOfAnyType && (
           <View style={[t.atoms.border_contrast_low, a.border_b]}>
             <NoSavedFeedsOfAnyType
@@ -450,7 +454,12 @@ function PinnedFeedItem({
   }
 
   return (
-    <View style={[a.flex_row, t.atoms.bg]}>
+    <View
+      style={[
+        userStyle('wsky-saved-feeds__item', 'wsky-saved-feeds__item--pinned'),
+        a.flex_row,
+        t.atoms.bg,
+      ]}>
       {feed.type === 'timeline' ? (
         <FollowingFeedCard />
       ) : (
@@ -533,7 +542,13 @@ function UnpinnedFeedItem({
   }
 
   return (
-    <View style={[a.flex_row, a.border_b, t.atoms.border_contrast_low]}>
+    <View
+      style={[
+        userStyle('wsky-saved-feeds__item', 'wsky-saved-feeds__item--unpinned'),
+        a.flex_row,
+        a.border_b,
+        t.atoms.border_contrast_low,
+      ]}>
       {feed.type === 'timeline' ? (
         <FollowingFeedCard />
       ) : (

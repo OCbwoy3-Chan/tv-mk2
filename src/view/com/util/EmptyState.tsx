@@ -2,6 +2,7 @@ import {isValidElement} from 'react'
 import {type StyleProp, type TextStyle, type ViewStyle} from 'react-native'
 import {View} from 'react-native'
 
+import {userStyle} from '#/lib/userstyles'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {
   Button,
@@ -74,7 +75,9 @@ export function EmptyState({
   }
 
   return (
-    <View testID={testID} style={[a.w_full, style]}>
+    <View
+      testID={testID}
+      style={[userStyle('wsky-empty-state'), a.w_full, style]}>
       <View
         style={[
           a.flex_row,

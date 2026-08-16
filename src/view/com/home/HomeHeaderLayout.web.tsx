@@ -4,6 +4,7 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
 import {HITSLOP_10} from '#/lib/constants'
+import {userStyle} from '#/lib/userstyles'
 import {useSession} from '#/state/session'
 import {useShellLayout} from '#/state/shell/shell-layout'
 import {HomeHeaderLayoutMobile} from '#/view/com/home/HomeHeaderLayoutMobile'
@@ -48,7 +49,14 @@ function HomeHeaderLayoutDesktopAndTablet({
       {hasSession && (
         <Layout.Center>
           <View
-            style={[a.flex_row, a.align_center, gutters, a.pt_md, t.atoms.bg]}>
+            style={[
+              userStyle('wsky-home__topbar'),
+              a.flex_row,
+              a.align_center,
+              gutters,
+              a.pt_md,
+              t.atoms.bg,
+            ]}>
             <View style={{width: 34}} />
             <View style={[a.flex_1, a.align_center, a.justify_center]}>
               <Logo
@@ -80,7 +88,14 @@ function HomeHeaderLayoutDesktopAndTablet({
       )}
       {tabBarAnchor}
       <Layout.Center
-        style={[a.sticky, a.z_10, a.align_center, t.atoms.bg, {top: 0}]}
+        style={[
+          userStyle('wsky-home__tabs-region'),
+          a.sticky,
+          a.z_10,
+          a.align_center,
+          t.atoms.bg,
+          {top: 0},
+        ]}
         onLayout={e => {
           headerHeight.set(e.nativeEvent.layout.height)
         }}>

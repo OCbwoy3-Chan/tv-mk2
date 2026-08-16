@@ -22,6 +22,7 @@ import {useLingui} from '@lingui/react'
 import {DismissableLayer, FocusGuards, FocusScope} from 'radix-ui/internal'
 import {RemoveScrollBar} from 'react-remove-scroll-bar'
 
+import {userStyle} from '#/lib/userstyles'
 import {logger} from '#/logger'
 import {useA11y} from '#/state/a11y'
 import {useDialogStateControlContext} from '#/state/dialogs'
@@ -217,6 +218,7 @@ export function Inner({
           style,
         ])}>
         <DismissableLayer.DismissableLayer
+          className="wsky-dialog"
           onInteractOutside={preventDefault}
           onFocusOutside={preventDefault}
           onDismiss={close}
@@ -364,7 +366,7 @@ export function Backdrop() {
   const t = useTheme()
   const {reduceMotionEnabled} = useA11y()
   return (
-    <View style={{opacity: 0.8}}>
+    <View style={[userStyle('wsky-dialog__backdrop'), {opacity: 0.8}]}>
       <View
         style={[
           a.fixed,

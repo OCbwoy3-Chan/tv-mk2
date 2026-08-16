@@ -5,6 +5,7 @@ import {Trans, useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
 import {cleanError} from '#/lib/strings/errors'
+import {userStyle} from '#/lib/userstyles'
 import {unstableCacheProfileView} from '#/state/queries/profile'
 import {
   buildPostSourceKey,
@@ -64,7 +65,12 @@ export function ThreadAlsoLiked({
   return (
     <View>
       {hasSection && (
-        <View style={[a.border_t, t.atoms.border_contrast_low]}>
+        <View
+          style={[
+            userStyle('wsky-also-liked'),
+            a.border_t,
+            t.atoms.border_contrast_low,
+          ]}>
           <Button.Button
             ref={headerRef}
             label={
@@ -77,6 +83,7 @@ export function ThreadAlsoLiked({
             {({hovered, pressed}) => (
               <View
                 style={[
+                  userStyle('wsky-also-liked__header'),
                   a.w_full,
                   a.flex_row,
                   a.align_center,

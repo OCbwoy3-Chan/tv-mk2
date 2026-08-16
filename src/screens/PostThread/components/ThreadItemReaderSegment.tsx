@@ -7,6 +7,7 @@ import {
 } from '@atproto/api'
 import {Trans} from '@lingui/react/macro'
 
+import {userStyle} from '#/lib/userstyles'
 import {
   POST_TOMBSTONE,
   type Shadow,
@@ -120,10 +121,17 @@ const ThreadItemReaderSegmentInner = memo(
       [record],
     )
     return (
-      <View>
+      <View
+        // @ts-expect-error web only -wsky
+        dataSet={{
+          wskyEmbed: post.embed ? 'true' : 'false',
+          wskyReply: record.reply ? 'true' : 'false',
+          wskyRepost: 'false',
+        }}
+        style={userStyle('wsky-post', 'wsky-post__surface')}>
         <GalleryBleed>
           <View style={[{paddingHorizontal: OUTER_SPACE}]}>
-            <View>
+            <View style={userStyle('wsky-post__content')}>
               {seam.expanded && (
                 <>
                   <LabelsOnMyPost post={post} style={[a.pb_xs]} />
@@ -134,7 +142,7 @@ const ThreadItemReaderSegmentInner = memo(
                 </>
               )}
               {richText?.text ? (
-                <View style={[a.mb_2xs]}>
+                <View style={[a.mb_2xs, userStyle('wsky-post__text')]}>
                   {/* Intentionally not line-limited: reader view is for
                       uninterrupted reading */}
                   <RichText
@@ -153,7 +161,7 @@ const ThreadItemReaderSegmentInner = memo(
                 postTextStyle={[a.text_lg]}
               />
               {post.embed && (
-                <View style={[a.pb_2xs]}>
+                <View style={[a.pb_2xs, userStyle('wsky-post__embed')]}>
                   <Embed
                     embed={post.embed}
                     moderation={moderation}

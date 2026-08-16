@@ -231,6 +231,7 @@ function ProfileListScreenLoaded({
             </PagerWithHeader>
             <FAB
               testID="composeFAB"
+              userStyleVariant="compose"
               onPress={() => openComposer({logContext: 'Fab'})}
               icon={<EditBigIcon size="lg" fill={t.palette.white} />}
               accessibilityRole="button"
@@ -274,6 +275,7 @@ function ProfileListScreenLoaded({
           )}
           <FAB
             testID="composeFAB"
+            userStyleVariant="compose"
             onPress={() => openComposer({logContext: 'Fab'})}
             icon={<EditBigIcon size="lg" fill={t.palette.white} />}
             accessibilityRole="button"
