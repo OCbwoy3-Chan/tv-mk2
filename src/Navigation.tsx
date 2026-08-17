@@ -250,10 +250,6 @@ const RunesBadgesSettingsScreen = deferredNamedScreen(
   () => require('#/screens/Settings/RunesSettings/BadgesSettings'),
   'RunesBadgesSettingsScreen',
 )
-const RunesDisplayDensitySettingsScreen = deferredNamedScreen(
-  () => require('#/screens/Settings/RunesSettings/DensitySettings'),
-  'RunesDisplayDensitySettingsScreen',
-)
 const RunesDisplaySettingsScreen = deferredNamedScreen(
   () => require('#/screens/Settings/RunesSettings/DisplaySettings'),
   'RunesDisplaySettingsScreen',
@@ -651,11 +647,6 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         name="RunesDisplayAlsoLikedSettings"
         getComponent={() => RunesDisplayAlsoLikedSettingsScreen}
         options={{title: title(msg`Also liked`), requireAuth: true}}
-      />
-      <Stack.Screen
-        name="RunesDisplayDensitySettings"
-        getComponent={() => RunesDisplayDensitySettingsScreen}
-        options={{title: title(msg`Density`), requireAuth: true}}
       />
       <Stack.Screen
         name="RunesInfrastructureSettings"
