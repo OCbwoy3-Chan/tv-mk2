@@ -1,5 +1,10 @@
 import {createContext, useCallback, useContext, useMemo, useState} from 'react'
-import {createTheme, type Theme, type ThemeName, utils as baseUtils} from '@bsky.app/alf'
+import {
+  createTheme,
+  type Theme,
+  type ThemeName,
+  utils as baseUtils,
+} from '@bsky.app/alf'
 import chroma from 'chroma-js'
 
 import {useThemePrefs} from '#/state/shell/color-mode'
@@ -30,6 +35,8 @@ import {
   lighten,
   rgbToHex,
 } from '#/alf/util/colorGeneration'
+import {activeThemeToScheme} from '#/features/themes/semanticTheme'
+import {isSupportedTheme} from '#/features/themes/types'
 import {type Device} from '#/storage'
 import {getMaterial3Colors} from './util/material3Theme'
 import {
@@ -53,7 +60,6 @@ export const utils = {
   darken,
   contrastRatio,
 }
-
 
 export type Alf = {
   themeName: ThemeName
@@ -166,10 +172,16 @@ export function hueShifter(scheme: SchemeType, hueShift: number): SchemeType {
 }
 
 export function useScheme(): SchemeType {
-  const {hue, colorScheme} = useThemePrefs()
+  const {hue, colorScheme, activeTheme} = useThemePrefs()
   const palette = useMaterialYouPalette()
 
   return useMemo(() => {
+    const recordScheme =
+      activeTheme &&
+      isSupportedTheme(activeTheme.light.record) &&
+      isSupportedTheme(activeTheme.dark.record) &&
+      activeThemeToScheme(activeTheme)
+    if (recordScheme) return recordScheme
     let currentScheme = themes
     switch (colorScheme) {
       case 'witchsky':
@@ -211,7 +223,7 @@ export function useScheme(): SchemeType {
     }
 
     return hueShifter(currentScheme, hue)
-  }, [colorScheme, hue, palette])
+  }, [activeTheme, colorScheme, hue, palette])
 }
 
 function ThemeProviderInner({
@@ -250,9 +262,7 @@ function ThemeProviderInner({
 
   const value = useMemo<Alf>(() => {
     // Use currentScheme for Witchsky's custom theming, but allow themesOverride from upstream
-    const t = themesOverride
-      ? {...themes, ...themesOverride}
-      : currentScheme
+    const t = themesOverride ? {...themes, ...themesOverride} : currentScheme
     return {
       themes: t,
       themeName: themeName,

@@ -56,6 +56,66 @@ const currentAccountSchema = accountSchema.extend({
 })
 export type PersistedCurrentAccount = z.infer<typeof currentAccountSchema>
 
+const semanticColorsSchema = z.object({
+  canvas: z.string(),
+  surface: z.string(),
+  surfaceRaised: z.string(),
+  text: z.string(),
+  textMuted: z.string(),
+  border: z.string(),
+  accent: z.string(),
+  accentSoft: z.string(),
+  onAccent: z.string(),
+  positive: z.string(),
+  warning: z.string(),
+  critical: z.string(),
+  favorite: z.string(),
+})
+const semanticColorOverridesSchema = semanticColorsSchema.partial()
+
+const themeRecordSchema = z.object({
+  $type: z.literal('app.witchsky.theme.colors').optional(),
+  name: z.string(),
+  description: z.string().optional(),
+  mode: z.enum(['light', 'dark']),
+  recommendedPair: z.string().optional(),
+  base: z.object({
+    name: z.string(),
+    colors: semanticColorsSchema,
+  }),
+  variants: z
+    .array(
+      z.object({
+        name: z.string(),
+        colors: semanticColorOverridesSchema.optional(),
+      }),
+    )
+    .optional(),
+  special: z
+    .object({
+      $type: z.string(),
+      accent: z.string().optional(),
+    })
+    .passthrough()
+    .optional(),
+  createdAt: z.string(),
+  updatedAt: z.string().optional(),
+})
+
+const activeThemeSelectionSchema = z.object({
+  uri: z.string(),
+  cid: z.string(),
+  author: z.string(),
+  record: themeRecordSchema,
+  colorSet: z.string(),
+  hue: z.number().optional(),
+})
+
+const activeThemeSchema = z.object({
+  light: activeThemeSelectionSchema,
+  dark: activeThemeSelectionSchema,
+})
+
 const schema = z.object({
   colorMode: z.enum(['system', 'light', 'dark']),
   darkTheme: z.enum(['dim', 'dark']).optional(),
@@ -92,6 +152,7 @@ const schema = z.object({
       'MONOCHROMATIC',
     ])
     .default('TONAL_SPOT'),
+  activeTheme: activeThemeSchema.optional(),
   session: z.object({
     accounts: z.array(accountSchema),
     currentAccount: currentAccountSchema.optional(),
@@ -183,6 +244,8 @@ const schema = z.object({
   alsoLikedCollapseByDefault: z.boolean().optional(),
   constellationInstance: z.string().optional(),
   constellationInstanceCustom: z.string().optional(),
+  slingshotInstance: z.string().optional(),
+  slingshotInstanceCustom: z.string().optional(),
   showLinkInHandle: z.boolean().optional(),
   showLinkInHandleOnlyOnWorkingLinks: z.boolean().optional(),
   hideFeedsPromoTab: z.boolean().optional(),
@@ -337,6 +400,7 @@ export const defaults: Schema = {
   hue: 0,
   material3Accent: '#ee6300',
   material3Style: 'TONAL_SPOT',
+  activeTheme: undefined,
   session: {
     accounts: [],
     currentAccount: undefined,
@@ -389,6 +453,7 @@ export const defaults: Schema = {
   alsoLikedFeedEnabled: true,
   alsoLikedCollapseByDefault: true,
   constellationInstance: 'https://constellation.microcosm.blue/',
+  slingshotInstance: 'https://slingshot.microcosm.blue/',
   showLinkInHandle: true,
   showLinkInHandleOnlyOnWorkingLinks: true,
   hideFeedsPromoTab: false,

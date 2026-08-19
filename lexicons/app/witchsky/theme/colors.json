@@ -1,0 +1,108 @@
+{
+  "lexicon": 1,
+  "id": "app.witchsky.theme.colors",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "mode", "base", "createdAt"],
+        "properties": {
+          "name": {"type": "string", "maxLength": 64, "maxGraphemes": 48},
+          "description": {"type": "string", "maxLength": 300, "maxGraphemes": 300},
+          "mode": {"type": "string", "knownValues": ["light", "dark"]},
+          "recommendedPair": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Theme recommended for the opposite appearance mode."
+          },
+          "base": {"type": "ref", "ref": "#colorSet"},
+          "variants": {
+            "type": "array",
+            "maxLength": 11,
+            "items": {"type": "ref", "ref": "#variant"}
+          },
+          "special": {
+            "type": "union",
+            "refs": [
+              "app.witchsky.theme.defs#materialYou",
+              "app.witchsky.theme.defs#hue"
+            ],
+            "closed": false,
+            "description": "Generator metadata requiring special client support. Unsupported union variants may be hidden."
+          },
+          "createdAt": {"type": "string", "format": "datetime"},
+          "updatedAt": {"type": "string", "format": "datetime"}
+        }
+      }
+    },
+    "colorSet": {
+      "type": "object",
+      "required": ["name", "colors"],
+      "properties": {
+        "name": {"type": "string", "maxLength": 48, "maxGraphemes": 32},
+        "colors": {"type": "ref", "ref": "#semanticColors"}
+      }
+    },
+    "variant": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {"type": "string", "maxLength": 48, "maxGraphemes": 32},
+        "colors": {"type": "ref", "ref": "#semanticColorOverrides"}
+      }
+    },
+    "semanticColors": {
+      "type": "object",
+      "required": [
+        "canvas",
+        "surface",
+        "surfaceRaised",
+        "text",
+        "textMuted",
+        "border",
+        "accent",
+        "accentSoft",
+        "onAccent",
+        "positive",
+        "warning",
+        "critical",
+        "favorite"
+      ],
+      "properties": {
+        "canvas": {"type": "string", "description": "App background."},
+        "surface": {"type": "string", "description": "Cards, sheets, and controls."},
+        "surfaceRaised": {"type": "string", "description": "Menus and elevated surfaces."},
+        "text": {"type": "string", "description": "Primary content text."},
+        "textMuted": {"type": "string", "description": "Secondary labels and metadata."},
+        "border": {"type": "string", "description": "Dividers and control outlines."},
+        "accent": {"type": "string", "description": "Links, selected controls, and primary actions."},
+        "accentSoft": {"type": "string", "description": "Subtle selected and accent backgrounds."},
+        "onAccent": {"type": "string", "description": "Content drawn on the accent color."},
+        "positive": {"type": "string", "description": "Success and confirmation states."},
+        "warning": {"type": "string", "description": "Caution states."},
+        "critical": {"type": "string", "description": "Errors and destructive actions."},
+        "favorite": {"type": "string", "description": "Like and favorite actions."}
+      }
+    },
+    "semanticColorOverrides": {
+      "type": "object",
+      "properties": {
+        "canvas": {"type": "string", "description": "App background."},
+        "surface": {"type": "string", "description": "Cards, sheets, and controls."},
+        "surfaceRaised": {"type": "string", "description": "Menus and elevated surfaces."},
+        "text": {"type": "string", "description": "Primary content text."},
+        "textMuted": {"type": "string", "description": "Secondary labels and metadata."},
+        "border": {"type": "string", "description": "Dividers and control outlines."},
+        "accent": {"type": "string", "description": "Links, selected controls, and primary actions."},
+        "accentSoft": {"type": "string", "description": "Subtle selected and accent backgrounds."},
+        "onAccent": {"type": "string", "description": "Content drawn on the accent color."},
+        "positive": {"type": "string", "description": "Success and confirmation states."},
+        "warning": {"type": "string", "description": "Caution states."},
+        "critical": {"type": "string", "description": "Errors and destructive actions."},
+        "favorite": {"type": "string", "description": "Like and favorite actions."}
+      }
+    }
+  }
+}

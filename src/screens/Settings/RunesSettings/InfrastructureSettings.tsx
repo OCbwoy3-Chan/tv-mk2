@@ -6,6 +6,7 @@ import {
   testConstellationUrl,
   testImageCdnUrl,
   testPlcDirectoryUrl,
+  testSlingshotUrl,
 } from '#/lib/infrastructure/url-test'
 import {usePalette} from '#/lib/hooks/usePalette'
 import * as persisted from '#/state/persisted'
@@ -27,6 +28,12 @@ import {
   useSetPlcDirectory,
   useSetPlcDirectoryCustom,
 } from '#/state/preferences/plc-directory'
+import {
+  useSetSlingshotInstance,
+  useSetSlingshotInstanceCustom,
+  useSlingshotInstanceCustom,
+  useSlingshotInstanceSetting,
+} from '#/state/preferences/slingshot-instance'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {
   isValidHostnameUrl,
@@ -62,6 +69,11 @@ const CONSTELLATION_PRESETS = [
   'https://constellation.wafflehouse.dev',
 ] as const
 
+const SLINGSHOT_PRESETS = [
+  'https://slingshot.microcosm.blue',
+  'https://slingshot.wafflehouse.dev',
+] as const
+
 export function RunesInfrastructureSettingsScreen() {
   const {t: l} = useLingui()
 
@@ -81,6 +93,11 @@ export function RunesInfrastructureSettingsScreen() {
   const [constellationDialogSession, setConstellationDialogSession] =
     useState(0)
 
+  const slingshotInstanceSetting = useSlingshotInstanceSetting()
+  const setSlingshotInstance = useSetSlingshotInstance()
+  const setSlingshotInstanceControl = Dialog.useDialogControl()
+  const [slingshotDialogSession, setSlingshotDialogSession] = useState(0)
+
   const openImageCdnCustomDialog = () => {
     setImageCdnDialogSession(session => session + 1)
     setImageCdnHostControl.open()
@@ -96,11 +113,18 @@ export function RunesInfrastructureSettingsScreen() {
     setConstellationInstanceControl.open()
   }
 
+  const openSlingshotCustomDialog = () => {
+    setSlingshotDialogSession(session => session + 1)
+    setSlingshotInstanceControl.open()
+  }
+
   const imageCdnSelectValue = getImageCdnSelectValue(imageCdnHostSetting)
-  const plcDirectorySelectValue = getPlcDirectorySelectValue(plcDirectorySetting)
+  const plcDirectorySelectValue =
+    getPlcDirectorySelectValue(plcDirectorySetting)
   const constellationSelectValue = getConstellationSelectValue(
     constellationInstanceSetting,
   )
+  const slingshotSelectValue = getSlingshotSelectValue(slingshotInstanceSetting)
 
   const imageCdnItems = [
     {value: 'default', label: l`App server default`},
@@ -119,6 +143,12 @@ export function RunesInfrastructureSettingsScreen() {
   const constellationItems = [
     {value: CONSTELLATION_PRESETS[0], label: l`microcosm.blue`},
     {value: CONSTELLATION_PRESETS[1], label: l`Wafflehouse.dev`},
+    {value: 'custom', label: l`Custom`},
+  ]
+
+  const slingshotItems = [
+    {value: SLINGSHOT_PRESETS[0], label: l`microcosm.blue`},
+    {value: SLINGSHOT_PRESETS[1], label: l`Wafflehouse.dev`},
     {value: 'custom', label: l`Custom`},
   ]
 
@@ -213,8 +243,8 @@ export function RunesInfrastructureSettingsScreen() {
         <View style={[a.gap_md, a.w_full]}>
           <Text style={[a.leading_snug]}>
             <Trans>
-              Used for custom verifications and fixing 
-              nuclear blocks via backlinks.
+              Used for custom verifications and fixing nuclear blocks via
+              backlinks.
             </Trans>
           </Text>
           <Select.Root
@@ -244,9 +274,53 @@ export function RunesInfrastructureSettingsScreen() {
         </View>
       </SettingsList.Group>
 
+      <SettingsList.Divider />
+
+      <SettingsList.Group iconInset={false}>
+        <SettingsList.ItemText>
+          <Trans>{`Slingshot Instance`}</Trans>
+        </SettingsList.ItemText>
+        <View style={[a.gap_md, a.w_full]}>
+          <Text style={[a.leading_snug]}>
+            <Trans>
+              Used to resolve and cache public AT Protocol records, including
+              themes.
+            </Trans>
+          </Text>
+          <Select.Root
+            value={slingshotSelectValue}
+            onValueChange={value => {
+              if (value === 'custom') {
+                openSlingshotCustomDialog()
+                return
+              }
+              setSlingshotInstance(value)
+            }}>
+            <Select.Trigger label={l`Select slingshot instance`}>
+              <Select.ValueText />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Content
+              label={l`Slingshot Instance`}
+              renderItem={({label, value}) => (
+                <Select.Item value={value} label={label}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{label}</Select.ItemText>
+                </Select.Item>
+              )}
+              items={slingshotItems}
+            />
+          </Select.Root>
+        </View>
+      </SettingsList.Group>
+
       <ConstellationInstanceDialog
         control={setConstellationInstanceControl}
         openGeneration={constellationDialogSession}
+      />
+      <SlingshotInstanceDialog
+        control={setSlingshotInstanceControl}
+        openGeneration={slingshotDialogSession}
       />
       <ImageCdnHostDialog
         control={setImageCdnHostControl}
@@ -257,6 +331,99 @@ export function RunesInfrastructureSettingsScreen() {
         openGeneration={plcDirectoryDialogSession}
       />
     </RunesScreenLayout>
+  )
+}
+
+function SlingshotInstanceDialog({
+  control,
+  openGeneration,
+}: {
+  control: Dialog.DialogControlProps
+  openGeneration: number
+}) {
+  const pal = usePalette('default')
+  const {t: l} = useLingui()
+
+  const slingshotInstanceCustom = useSlingshotInstanceCustom()
+  const savedCustomUrl = slingshotInstanceCustom ?? ''
+  const [url, setUrl] = useState(savedCustomUrl)
+  const setSlingshotInstance = useSetSlingshotInstance()
+  const setSlingshotInstanceCustom = useSetSlingshotInstanceCustom()
+  const {submit, isTesting, testError, canSubmit, isClear, clearTestError} =
+    useInfrastructureUrlSave({
+      url,
+      isUrlValid: isValidHostnameUrl,
+      testUrl: testSlingshotUrl,
+      onSave: nextUrl => {
+        setSlingshotInstanceCustom(nextUrl)
+        setSlingshotInstance(nextUrl)
+      },
+      onClear: () => {
+        setSlingshotInstanceCustom(undefined)
+        setSlingshotInstance(persisted.defaults.slingshotInstance)
+      },
+      control,
+    })
+
+  useLayoutEffect(() => {
+    setUrl(savedCustomUrl)
+    clearTestError()
+  }, [savedCustomUrl, openGeneration, clearTestError])
+
+  return (
+    <Dialog.Outer
+      control={control}
+      nativeOptions={{preventExpansion: true}}
+      onClose={() => {
+        setUrl(savedCustomUrl)
+        clearTestError()
+      }}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner label={l`Slingshot instance URL`}>
+        <View style={[a.gap_sm, a.pb_lg]}>
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>Slingshot instance URL</Trans>
+          </Text>
+        </View>
+
+        <View style={a.gap_lg}>
+          <Dialog.Input
+            key={openGeneration}
+            label="Text input field"
+            autoFocus
+            style={[styles.textInput, pal.border, pal.text]}
+            onChangeText={text => {
+              setUrl(text)
+              clearTestError()
+            }}
+            placeholder={persisted.defaults.slingshotInstance}
+            placeholderTextColor={pal.colors.textLight}
+            onSubmitEditing={() => void submit()}
+            accessibilityHint={l`Input the URL of the Slingshot instance to use`}
+            defaultValue={savedCustomUrl}
+          />
+
+          {testError && <Admonition type="error">{testError}</Admonition>}
+
+          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
+            <Button
+              label={isClear ? l`Clear` : l`Save`}
+              size="large"
+              onPress={() => void submit()}
+              variant="solid"
+              color={isClear ? 'secondary' : 'primary'}
+              disabled={!canSubmit}>
+              {isTesting && <ButtonIcon icon={Loader} />}
+              <ButtonText>
+                {isClear ? <Trans>Clear</Trans> : <Trans>Save</Trans>}
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+
+        <Dialog.Close />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
   )
 }
 
@@ -578,6 +745,18 @@ function getConstellationSelectValue(raw: string | undefined) {
     CONSTELLATION_PRESETS.includes(
       origin as (typeof CONSTELLATION_PRESETS)[number],
     )
+  ) {
+    return origin
+  }
+
+  return 'custom'
+}
+
+function getSlingshotSelectValue(raw: string | undefined) {
+  const origin = normalizeOrigin(raw ?? persisted.defaults.slingshotInstance)
+  if (
+    origin &&
+    SLINGSHOT_PRESETS.includes(origin as (typeof SLINGSHOT_PRESETS)[number])
   ) {
     return origin
   }

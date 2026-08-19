@@ -29,6 +29,12 @@ import {type ComposerImage} from '#/state/gallery'
 import {createComposerImage} from '#/state/gallery'
 import {type ChatInvitePreview} from '#/state/queries/join-links'
 import {type Gif} from '#/features/gifPicker/types'
+import {
+  getColorSets,
+  THEME_COLLECTION,
+  type ThemeRecord,
+} from '#/features/themes/types'
+import {parseThemeUrl} from '#/features/themes/urls'
 import {createGIFDescription} from '../gif-alt-text'
 
 type ResolvedExternalLink = {
@@ -185,6 +191,15 @@ export async function resolveLink(
       view: res.data.starterPack,
     }
   }
+  const themeRoute = parseThemeUrl(resolvedUri)
+  if (themeRoute) {
+    try {
+      return await resolveThemeExternal(agent, resolvedUri, themeRoute)
+    } catch {
+      // The deployed page metadata remains a safe fallback if direct record
+      // resolution is temporarily unavailable.
+    }
+  }
   return resolveExternal(agent, resolvedUri)
 
   // Forked from useGetPost. TODO: move into RQ.
@@ -214,6 +229,74 @@ export async function resolveLink(
       identifier = res.data.did
     }
     return identifier
+  }
+}
+
+function didWebUrl(did: string) {
+  const parts = did.slice('did:web:'.length).split(':').map(decodeURIComponent)
+  const host = parts.shift()
+  return parts.length
+    ? `https://${host}/${parts.join('/')}/did.json`
+    : `https://${host}/.well-known/did.json`
+}
+
+async function resolveThemeExternal(
+  agent: AtpAgent,
+  uri: string,
+  route: {name: string; rkey: string},
+): Promise<ResolvedExternalLink> {
+  let did = route.name
+  if (!did.startsWith('did:')) {
+    const resolved = await agent.resolveHandle({handle: did})
+    did = resolved.data.did
+  }
+  const didDocumentUrl = did.startsWith('did:web:')
+    ? didWebUrl(did)
+    : `https://plc.directory/${encodeURIComponent(did)}`
+  const didDocumentResponse = await fetch(didDocumentUrl)
+  if (!didDocumentResponse.ok) throw new Error('DID document not found')
+  const didDocument = (await didDocumentResponse.json()) as {
+    service?: {id: string; serviceEndpoint: string}[]
+  }
+  const pds = didDocument.service?.find(service =>
+    service.id.endsWith('#atproto_pds'),
+  )?.serviceEndpoint
+  if (!pds) throw new Error('PDS not found')
+  const recordUrl = new URL('/xrpc/com.atproto.repo.getRecord', pds)
+  recordUrl.searchParams.set('repo', did)
+  recordUrl.searchParams.set('collection', THEME_COLLECTION)
+  recordUrl.searchParams.set('rkey', route.rkey)
+  const response = await fetch(recordUrl)
+  if (!response.ok) throw new Error('Theme not found')
+  const result = (await response.json()) as {
+    uri: string
+    cid: string
+    value: ThemeRecord
+  }
+  if (!result.value?.name || !result.value.base?.colors) {
+    throw new Error('Invalid theme')
+  }
+  let author = route.name
+  try {
+    const profile = await agent.app.bsky.actor.getProfile({actor: did})
+    author = profile.data.handle
+  } catch {}
+  const count = getColorSets(result.value).length
+  const description =
+    result.value.description ??
+    `${count} ${count === 1 ? 'variant' : 'variants'} · @${author.replace(/^@/, '')}`
+  const page = new URL(uri)
+  const thumbnail = new URL(
+    `/theme-og/${encodeURIComponent(route.name)}/${encodeURIComponent(route.rkey)}`,
+    page.origin,
+  )
+  return {
+    type: 'external',
+    uri,
+    title: result.value.name,
+    description,
+    thumb: await imageToThumb(thumbnail.toString()),
+    associatedRefs: [{uri: result.uri as AtUriString, cid: result.cid}],
   }
 }
 

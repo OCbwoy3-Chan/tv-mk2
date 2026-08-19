@@ -59,6 +59,7 @@ import {Provider as ShowLinkInHandleOnlyOnWorkingLinksProvider} from './show-lin
 import {Provider as ShowStandardLabelerProfileProvider} from './show-standard-labeler-profile'
 import {Provider as ShowViaClientProvider} from './show-via-client'
 import {Provider as SixSevenCelebrationProvider} from './six-seven-celebration'
+import {Provider as SlingshotInstanceProvider} from './slingshot-instance'
 import {Provider as SubtitlesProvider} from './subtitles'
 import {Provider as ThumbnailFormatProvider} from './thumbnail-format'
 import {Provider as TidSuffixProvider} from './tid-suffix'
@@ -221,9 +222,11 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                   <DiscoverContextEnabledProvider>
                                                                                                                                     <OmitViaFieldProvider>
                                                                                                                                       <TidSuffixProvider>
-                                                                                                                                        {
-                                                                                                                                          children
-                                                                                                                                        }
+                                                                                                                                        <SlingshotInstanceProvider>
+                                                                                                                                          {
+                                                                                                                                            children
+                                                                                                                                          }
+                                                                                                                                        </SlingshotInstanceProvider>
                                                                                                                                       </TidSuffixProvider>
                                                                                                                                     </OmitViaFieldProvider>
                                                                                                                                   </DiscoverContextEnabledProvider>

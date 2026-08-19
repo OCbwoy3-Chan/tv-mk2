@@ -1,0 +1,22 @@
+{
+  "lexicon": 1,
+  "id": "app.witchsky.theme.defs",
+  "defs": {
+    "materialYou": {
+      "type": "object",
+      "required": ["accent"],
+      "properties": {
+        "accent": {
+          "type": "string",
+          "maxLength": 7,
+          "description": "Hex accent used to generate this Material You example on clients without a system palette."
+        }
+      }
+    },
+    "hue": {
+      "type": "object",
+      "description": "Indicates that a client may offer a hue-shift control for this theme.",
+      "properties": {}
+    }
+  }
+}

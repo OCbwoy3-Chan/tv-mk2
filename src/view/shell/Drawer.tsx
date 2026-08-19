@@ -27,7 +27,6 @@ import {sanitizeHandle} from '#/lib/strings/handles'
 import {colors} from '#/lib/styles'
 import {emitSoftReset} from '#/state/events'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {useKawaiiMode} from '#/state/preferences/kawaii'
 import {
   useFollowersMetricsDisplay,
   useFollowingMetricsDisplay,
@@ -36,7 +35,7 @@ import {
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useProfileQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession} from '#/state/session'
-import {useSetDrawerOpen} from '#/state/shell'
+import {useSetDrawerOpen, useThemePrefs} from '#/state/shell'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {useLogoVariant} from '#/view/icons/useLogoVariant'
 import {NavSignupCard} from '#/view/shell/NavSignupCard'
@@ -80,6 +79,7 @@ import {useAnalytics} from '#/analytics'
 import {IS_NATIVE, IS_WEB} from '#/env'
 import {InviteFriendsDialog} from '#/features/inviteFriends'
 import {useActorStatus} from '#/features/liveNow'
+import {useActiveThemeUpdate} from '#/features/themes/api'
 
 const iconWidth = 26
 
@@ -724,10 +724,13 @@ ProfileMenuItem = memo(ProfileMenuItem)
 let SettingsMenuItem = ({onPress}: {onPress: () => void}): React.ReactNode => {
   const {_} = useLingui()
   const t = useTheme()
+  const {activeTheme} = useThemePrefs()
+  const themeUpdate = useActiveThemeUpdate(activeTheme)
   return (
     <MenuItem
       icon={<Settings style={[t.atoms.text]} width={iconWidth} />}
       label={_(msg`Settings`)}
+      hasNew={Boolean(themeUpdate)}
       onPress={onPress}
     />
   )

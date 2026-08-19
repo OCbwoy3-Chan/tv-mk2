@@ -29,6 +29,7 @@ export const THEME_PREFS_KEYS = [
   'hue',
   'material3Accent',
   'material3Style',
+  'activeTheme',
 ] as const satisfies readonly (keyof Schema)[]
 
 export const SYNCED_PREFS_KEYS = [
@@ -51,6 +52,8 @@ export const SYNCED_PREFS_KEYS = [
   'alsoLikedFeedEnabled',
   'constellationInstance',
   'constellationInstanceCustom',
+  'slingshotInstance',
+  'slingshotInstanceCustom',
   'showLinkInHandle',
   'showLinkInHandleOnlyOnWorkingLinks',
   'hideFeedsPromoTab',

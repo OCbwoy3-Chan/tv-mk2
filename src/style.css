@@ -82,6 +82,16 @@ a[role='link'][data-no-underline='1']:hover {
   text-decoration: none;
 }
 
+/* Browser-rendered image fallback text and text selections follow the active
+ * semantic theme. These variables are updated by the web shell. */
+img {
+  color: var(--text);
+}
+::selection {
+  color: var(--selectionText, var(--text));
+  background-color: var(--selectionBackground, var(--backgroundLight));
+}
+
 /* Styling hacks */
 *[data-word-wrap] {
   word-break: break-word;

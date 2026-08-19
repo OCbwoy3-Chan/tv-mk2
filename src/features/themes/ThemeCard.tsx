@@ -1,0 +1,202 @@
+import {View} from 'react-native'
+import {msg} from '@lingui/core/macro'
+import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
+import {useNavigation} from '@react-navigation/native'
+
+import {shareUrl} from '#/lib/sharing'
+import {type NavigationProp} from '#/lib/routes/types'
+import {useSession} from '#/state/session'
+import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
+import {Button, ButtonIcon} from '#/components/Button'
+import {ArrowOutOfBoxModified_Stroke2_Corner2_Rounded as ShareIcon} from '#/components/icons/ArrowOutOfBox'
+import {Bookmark, BookmarkFilled} from '#/components/icons/Bookmark'
+import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
+import {DotGrid3x1_Stroke2_Corner0_Rounded as EllipsisIcon} from '#/components/icons/DotGrid'
+import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
+import * as Menu from '#/components/Menu'
+import {Text} from '#/components/Typography'
+import {useApplyTheme, useSaveTheme, useUnsaveTheme} from './api'
+import {ThemePreview} from './ThemePreview'
+import {getColorSet, getColorSets, themeRkey, type ThemeView} from './types'
+
+export function ThemeCard({
+  theme,
+  selected,
+  selectedSetName,
+  savedRecordUri,
+}: {
+  theme: ThemeView
+  selected?: boolean
+  selectedSetName?: string
+  savedRecordUri?: string
+}) {
+  const t = useTheme()
+  const {gtMobile} = useBreakpoints()
+  const navigation = useNavigation<NavigationProp>()
+  const colorSet = getColorSet(theme.record, selectedSetName)
+  const colorSets = getColorSets(theme.record)
+  if (!colorSet) return null
+
+  return (
+    <View
+      style={[
+        a.relative,
+        a.gap_sm,
+        {
+          flexBasis: gtMobile ? '30%' : '46%',
+          flexGrow: gtMobile ? 0 : 1,
+          flexShrink: 1,
+          minWidth: gtMobile ? 150 : 0,
+          maxWidth: gtMobile ? 190 : '48%',
+        },
+        web(
+          gtMobile
+            ? {
+                flexBasis: 'calc((100% - 32px) / 3)',
+                maxWidth: 'calc((100% - 32px) / 3)',
+              }
+            : {
+                flexBasis: 'calc((100% - 16px) / 2)',
+                maxWidth: 'calc((100% - 16px) / 2)',
+              },
+        ),
+      ]}>
+      <ThemePreview
+        colorSet={colorSet}
+        colorSets={colorSets}
+        special={Boolean(theme.record.special)}
+        variantCount={colorSets.length}
+        label={theme.record.name}
+        hideLabel
+        selected={selected}
+        onPress={() =>
+          navigation.navigate('Theme', {
+            name: theme.author,
+            rkey: themeRkey(theme.uri),
+          })
+        }
+      />
+      <View style={[a.flex_row, a.align_center, a.gap_sm]}>
+        <View style={[a.flex_1]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[a.text_lg, a.font_semi_bold]}>
+            {theme.record.name}
+          </Text>
+          {theme.record.description ? (
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[a.text_sm, t.atoms.text_contrast_medium]}>
+              {theme.record.description}
+            </Text>
+          ) : null}
+        </View>
+        <ThemeCardMenu
+          theme={theme}
+          colorSetName={colorSet.name}
+          savedRecordUri={savedRecordUri}
+          selected={selected}
+        />
+      </View>
+    </View>
+  )
+}
+
+function ThemeCardMenu({
+  theme,
+  colorSetName,
+  savedRecordUri,
+  selected,
+}: {
+  theme: ThemeView
+  colorSetName: string
+  savedRecordUri?: string
+  selected?: boolean
+}) {
+  const {_} = useLingui()
+  const navigation = useNavigation<NavigationProp>()
+  const {currentAccount} = useSession()
+  const applyTheme = useApplyTheme()
+  const saveTheme = useSaveTheme()
+  const unsaveTheme = useUnsaveTheme()
+  return (
+    <Menu.Root>
+      <Menu.Trigger label={_(msg`Open theme actions`)}>
+        {({props}) => (
+          <Button
+            {...props}
+            label={_(msg`Open theme actions`)}
+            size="small"
+            variant="solid"
+            color="secondary"
+            shape="square">
+            <ButtonIcon icon={EllipsisIcon} size="sm" />
+          </Button>
+        )}
+      </Menu.Trigger>
+      <Menu.Outer style={{minWidth: 210}}>
+        <Menu.Item
+          label={_(msg`Use theme`)}
+          disabled={selected}
+          onPress={() => applyTheme(theme, colorSetName)}>
+          <Menu.ItemText>
+            <Trans>Use theme</Trans>
+          </Menu.ItemText>
+          <Menu.ItemIcon icon={CheckIcon} position="right" />
+        </Menu.Item>
+        {currentAccount && (
+          <Menu.Item
+            label={savedRecordUri ? _(msg`Unsave theme`) : _(msg`Save theme`)}
+            onPress={() => {
+              if (savedRecordUri) {
+                unsaveTheme.mutate(savedRecordUri)
+              } else {
+                saveTheme.mutate(theme)
+              }
+            }}>
+            <Menu.ItemText>
+              {savedRecordUri ? <Trans>Unsave</Trans> : <Trans>Save</Trans>}
+            </Menu.ItemText>
+            <Menu.ItemIcon
+              icon={savedRecordUri ? BookmarkFilled : Bookmark}
+              position="right"
+            />
+          </Menu.Item>
+        )}
+        {currentAccount && (
+          <Menu.Item
+            label={_(msg`Remix theme`)}
+            onPress={() =>
+              navigation.navigate('ThemeEditor', {
+                remix: {
+                  name: theme.author,
+                  rkey: themeRkey(theme.uri),
+                  colorSet: colorSetName,
+                },
+              })
+            }>
+            <Menu.ItemText>
+              <Trans>Remix</Trans>
+            </Menu.ItemText>
+            <Menu.ItemIcon icon={PencilIcon} position="right" />
+          </Menu.Item>
+        )}
+        <Menu.Item
+          label={_(msg`Share theme`)}
+          onPress={() =>
+            void shareUrl(
+              `https://witchsky.app/profile/${theme.author}/theme/${themeRkey(theme.uri)}`,
+            )
+          }>
+          <Menu.ItemText>
+            <Trans>Share</Trans>
+          </Menu.ItemText>
+          <Menu.ItemIcon icon={ShareIcon} position="right" />
+        </Menu.Item>
+      </Menu.Outer>
+    </Menu.Root>
+  )
+}

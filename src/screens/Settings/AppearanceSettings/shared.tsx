@@ -19,6 +19,7 @@ import {
 } from '#/alf/themes'
 import {getMaterial3Colors} from '#/alf/util/material3Theme'
 import {useMaterialYouPalette} from '#/alf/util/materialYou'
+import {MATERIAL_YOU_STYLES} from '#/features/themes/materialYou'
 import {
   Heart2_Filled_Stroke2_Corner0_Rounded as HeartIconFilled,
   Heart2_Stroke2_Corner0_Rounded as HeartIconOutline,
@@ -195,16 +196,7 @@ export function ColorSchemeGrid({
 export const MATERIAL3_STYLE_OPTIONS: {
   name: Schema['material3Style']
   label: string
-}[] = [
-  {name: 'TONAL_SPOT', label: 'Tonal Spot'},
-  {name: 'VIBRANT', label: 'Vibrant'},
-  {name: 'EXPRESSIVE', label: 'Expressive'},
-  {name: 'SPRITZ', label: 'Spritz'},
-  {name: 'RAINBOW', label: 'Rainbow'},
-  {name: 'FRUIT_SALAD', label: 'Fruit Salad'},
-  {name: 'CONTENT', label: 'Content'},
-  {name: 'MONOCHROMATIC', label: 'Mono'},
-]
+}[] = MATERIAL_YOU_STYLES
 
 export function hueToHex(hue: number): string {
   const h = hue / 60

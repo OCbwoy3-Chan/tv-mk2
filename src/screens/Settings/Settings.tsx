@@ -42,7 +42,7 @@ import {
   sortAccountItems,
   useAccountSwitcherSortSettings,
 } from '#/state/session/sorting'
-import {useOnboardingDispatch} from '#/state/shell'
+import {useOnboardingDispatch, useThemePrefs} from '#/state/shell'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useCloseAllActiveElements} from '#/state/util'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -91,6 +91,7 @@ import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_INTERNAL, IS_IOS, IS_NATIVE} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
+import {useActiveThemeUpdate} from '#/features/themes/api'
 import {device, useStorage} from '#/storage'
 import {useActivitySubscriptionsNudged} from '#/storage/hooks/activity-subscriptions-nudged'
 import {useDevMode} from '#/storage/hooks/dev-mode'
@@ -111,6 +112,8 @@ export function SettingsScreen({}: Props) {
   const scrollOffset = useScrollViewOffset(scrollRef)
   const {logoutEveryAccount, reorderAccounts} = useSessionApi()
   const {accounts, currentAccount} = useSession()
+  const {activeTheme} = useThemePrefs()
+  const themeUpdate = useActiveThemeUpdate(activeTheme)
   const switchAccountControl = useDialogControl()
   const signOutPromptControl = Prompt.usePromptControl()
   const {data: profile} = useProfileQuery({did: currentAccount?.did})
@@ -463,6 +466,20 @@ export function SettingsScreen({}: Props) {
             <SettingsList.ItemText>
               <Trans>Appearance</Trans>
             </SettingsList.ItemText>
+            {themeUpdate && (
+              <View
+                accessibilityLabel={
+                  themeUpdate.mode === 'light'
+                    ? l`Light theme update available`
+                    : l`Dark theme update available`
+                }
+                accessibilityHint=""
+                style={[
+                  a.rounded_full,
+                  {width: 9, height: 9, backgroundColor: t.palette.primary_500},
+                ]}
+              />
+            )}
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
             to="/settings/accessibility"

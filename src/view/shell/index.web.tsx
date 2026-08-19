@@ -29,16 +29,54 @@ import {
   usePolicyUpdateContext,
 } from '#/components/PolicyUpdateOverlay'
 import {Outlet as PortalOutlet} from '#/components/Portal'
-import {SixSevenOutlet} from '#/features/sixSeven'
 import {WelcomeModal} from '#/components/WelcomeModal'
 import {RedirectOverlay} from '#/ageAssurance/components/RedirectOverlay'
 import {PassiveAnalytics} from '#/analytics/PassiveAnalytics'
+import {SixSevenOutlet} from '#/features/sixSeven'
 import {FlatNavigator, RoutesContainer} from '#/Navigation'
 import {Composer} from './Composer'
 import {DrawerContent} from './Drawer'
 
-function createFaviconDataUrl(color: string) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEW_BOX}"><path fill="${color}" d="${LOGO_PATH}"/></svg>`
+const HEX_COLOR = /^#([0-9a-f]{6})$/i
+
+function relativeLuminance(color: string) {
+  const match = HEX_COLOR.exec(color)
+  if (!match) return
+  const channels = [0, 2, 4].map(offset => {
+    const channel =
+      Number.parseInt(match[1].slice(offset, offset + 2), 16) / 255
+    return channel <= 0.04045
+      ? channel / 12.92
+      : ((channel + 0.055) / 1.055) ** 2.4
+  })
+  return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722
+}
+
+function contrastRatio(first: string, second: string) {
+  const firstLuminance = relativeLuminance(first)
+  const secondLuminance = relativeLuminance(second)
+  if (firstLuminance === undefined || secondLuminance === undefined) return
+  const lighter = Math.max(firstLuminance, secondLuminance)
+  const darker = Math.min(firstLuminance, secondLuminance)
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
+function selectionTextColor(
+  background: string,
+  canvas: string,
+  text: string,
+  scheme: 'light' | 'dark',
+) {
+  const canvasContrast = contrastRatio(background, canvas)
+  const textContrast = contrastRatio(background, text)
+  if (canvasContrast !== undefined && textContrast !== undefined) {
+    return canvasContrast > textContrast ? canvas : text
+  }
+  return scheme === 'dark' ? canvas : text
+}
+
+function createFaviconDataUrl(color: string, outline: string) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEW_BOX}"><path fill="${color}" stroke="${outline}" stroke-width="1.5" stroke-linejoin="round" paint-order="stroke fill" d="${LOGO_PATH}"/></svg>`
   return `data:image/svg+xml,${encodeURIComponent(svg)}`
 }
 
@@ -83,7 +121,21 @@ function ShellInner() {
       `${t.atoms.bg.backgroundColor}`,
       'important',
     )
-  }, [t.atoms.bg.backgroundColor, t.name])
+    rootElement.style.setProperty('--text', t.palette.contrast_1000)
+    rootElement.style.setProperty('--background', t.palette.contrast_0)
+    rootElement.style.setProperty('--backgroundLight', t.palette.contrast_25)
+    const selectionBackground = t.palette.primary_300
+    rootElement.style.setProperty('--selectionBackground', selectionBackground)
+    rootElement.style.setProperty(
+      '--selectionText',
+      selectionTextColor(
+        selectionBackground,
+        t.palette.contrast_0,
+        t.palette.contrast_1000,
+        t.scheme,
+      ),
+    )
+  }, [t])
 
   useLayoutEffect(() => {
     const color = t.palette.primary_500
@@ -109,7 +161,10 @@ function ShellInner() {
   }, [t.palette.primary_500])
 
   useLayoutEffect(() => {
-    const faviconHref = createFaviconDataUrl(t.palette.primary_500)
+    const faviconHref = createFaviconDataUrl(
+      t.palette.primary_500,
+      t.palette.contrast_1000,
+    )
 
     upsertHeadLink({
       rel: 'icon',
@@ -122,7 +177,7 @@ function ShellInner() {
       href: faviconHref,
       type: 'image/svg+xml',
     })
-  }, [t.palette.primary_500])
+  }, [t.palette.contrast_1000, t.palette.primary_500])
 
   useEffect(() => {
     const unsubscribe = navigator.addListener('state', () => {

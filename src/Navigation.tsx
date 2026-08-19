@@ -182,6 +182,18 @@ const AppearanceColorThemeSettingsScreen = deferredNamedScreen(
   () => require('#/screens/Settings/AppearanceSettings/ColorThemeSettings'),
   'AppearanceColorThemeSettingsScreen',
 )
+const ThemeGalleryScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AppearanceSettings/ThemeGallery'),
+  'ThemeGalleryScreen',
+)
+const ThemeEditorScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AppearanceSettings/ThemeEditor'),
+  'ThemeEditorScreen',
+)
+const ThemeScreen = deferredNamedScreen(
+  () => require('#/screens/Theme'),
+  'ThemeScreen',
+)
 const AppIconSettingsScreen = deferredNamedScreen(
   () => require('#/screens/Settings/AppIconSettings'),
   'AppIconSettingsScreen',
@@ -683,6 +695,21 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
           title: title(msg`Color Theme`),
           requireAuth: true,
         }}
+      />
+      <Stack.Screen
+        name="ThemeGallery"
+        getComponent={() => ThemeGalleryScreen}
+        options={{title: title(msg`Themes`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="ThemeEditor"
+        getComponent={() => ThemeEditorScreen}
+        options={{title: title(msg`Theme editor`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="Theme"
+        getComponent={() => ThemeScreen}
+        options={{title: title(msg`Theme`)}}
       />
       <Stack.Screen
         name="AccountSettings"

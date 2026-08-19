@@ -1,0 +1,38 @@
+{
+  "lexicon": 1,
+  "id": "app.witchsky.theme.collection",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Record representing a named collection of themes.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["name", "createdAt"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "description": "Display name for the theme collection; can not be empty."
+          },
+          "description": {"type": "string", "maxGraphemes": 300, "maxLength": 3000},
+          "descriptionFacets": {
+            "type": "array",
+            "items": {"type": "ref", "ref": "app.bsky.richtext.facet"}
+          },
+          "avatar": {
+            "type": "blob",
+            "accept": ["image/png", "image/jpeg"],
+            "maxSize": 1000000
+          },
+          "labels": {
+            "type": "union",
+            "refs": ["com.atproto.label.defs#selfLabels"]
+          },
+          "createdAt": {"type": "string", "format": "datetime"}
+        }
+      }
+    }
+  }
+}

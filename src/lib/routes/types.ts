@@ -66,6 +66,13 @@ export type CommonNavigatorParams = {
   AltTextAiSettings: undefined
   AppearanceSettings: undefined
   AppearanceColorThemeSettings: undefined
+  ThemeGallery: {mode: 'light' | 'dark' | 'system'}
+  ThemeEditor: {
+    rkey?: string
+    mode?: 'light' | 'dark'
+    remix?: {name: string; rkey: string; colorSet?: string}
+  }
+  Theme: {name: string; rkey: string}
   BetaFeaturesSettings: undefined
   RunesSettings: undefined
   RunesMenusSettings: undefined

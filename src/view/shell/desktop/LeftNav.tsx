@@ -30,6 +30,7 @@ import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useProfilesQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
 import {useSortedAccountItems} from '#/state/session/sorting'
+import {useThemePrefs} from '#/state/shell'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useCloseAllActiveElements} from '#/state/util'
 import {LoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
@@ -96,6 +97,7 @@ import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {type Events} from '#/analytics/metrics/types'
 import {useActorStatus} from '#/features/liveNow'
+import {useActiveThemeUpdate} from '#/features/themes/api'
 import {router} from '#/routes'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
 import {PlatformInfo} from '../../../../modules/expo-bluesky-swiss-army'
@@ -689,6 +691,8 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
   const {hasSession, currentAccount} = useSession()
   const {t: l} = useLingui()
   const {gtMobile} = useBreakpoints()
+  const {activeTheme} = useThemePrefs()
+  const themeUpdate = useActiveThemeUpdate(activeTheme)
 
   const aa = useAgeAssurance()
   // splitview uses the minimal variant of the leftnav. unfortunately there's no easy
@@ -861,6 +865,7 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
             href="/settings"
             navItem="settings"
             minimal={leftNavMinimal}
+            hasNew={Boolean(themeUpdate)}
             icons={{
               inactive: SettingsIcon,
               active: SettingsFilledIcon,
