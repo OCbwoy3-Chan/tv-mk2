@@ -380,7 +380,7 @@ function FaviconBadgeIcon({
           width: size,
           height: size,
           borderRadius,
-          backgroundColor: t.atoms.bg_contrast_100.backgroundColor,
+          // backgroundColor: t.atoms.bg_contrast_100.backgroundColor,
         },
       ]}>
       {!imageLoaded ? (
