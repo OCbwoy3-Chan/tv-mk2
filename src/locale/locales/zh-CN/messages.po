@@ -793,15 +793,15 @@ msgstr "{memberCount}/{memberLimit}"
 msgid "{minutes, plural, one {# minute} other {# minutes}}"
 msgstr "{minutes, plural, one {# 分钟} other {# 分钟}}"
 
-#: src/view/com/composer/Composer.tsx:1090
+#: src/view/com/composer/Composer.tsx:1093
 msgid "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1082
+#: src/view/com/composer/Composer.tsx:1085
 msgid "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1098
+#: src/view/com/composer/Composer.tsx:1101
 msgid "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 msgstr ""
 
@@ -1323,7 +1323,7 @@ msgstr "将用户添加至此列表"
 msgid "Add account"
 msgstr "添加账户"
 
-#: src/view/com/composer/Composer.tsx:1787
+#: src/view/com/composer/Composer.tsx:1790
 #: src/view/com/composer/GifAltText.tsx:76
 #: src/view/com/composer/GifAltText.tsx:150
 #: src/view/com/composer/GifAltText.tsx:216
@@ -1345,11 +1345,11 @@ msgstr "添加替代文本（可选）"
 msgid "Add another account"
 msgstr "添加其他账户"
 
-#: src/view/com/composer/Composer.tsx:1848
+#: src/view/com/composer/Composer.tsx:1851
 msgid "Add another Jarona"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2738
+#: src/view/com/composer/Composer.tsx:2743
 msgid "Add another post to thread"
 msgstr "添加另一则帖文至帖文串"
 
@@ -2203,7 +2203,7 @@ msgstr "你确定要将此从你的动态源中删除吗？"
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "你确定要撤销加入 {0} 的申请吗？"
 
-#: src/view/com/composer/Composer.tsx:2056
+#: src/view/com/composer/Composer.tsx:2059
 msgid "Are you sure you'd like to discard this post?"
 msgstr "你确定要放弃发布这则帖文吗？"
 
@@ -2314,7 +2314,7 @@ msgstr ""
 msgid "Automatic alt text generation, {providerName}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2324
+#: src/view/com/composer/Composer.tsx:2327
 msgid "Automatically generate alt text for images in this post using the configured AI provider."
 msgstr ""
 
@@ -2922,8 +2922,8 @@ msgstr "需要相机权限"
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:37
-#: src/view/com/composer/Composer.tsx:2134
-#: src/view/com/composer/Composer.tsx:2144
+#: src/view/com/composer/Composer.tsx:2137
+#: src/view/com/composer/Composer.tsx:2147
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
 #: src/view/shell/desktop/LeftNav.tsx:245
@@ -3559,7 +3559,7 @@ msgstr "关闭欢迎界面"
 msgid "Closes password update alert"
 msgstr "关闭密码更新警告"
 
-#: src/view/com/composer/Composer.tsx:2142
+#: src/view/com/composer/Composer.tsx:2145
 msgid "Closes post composer and discards post draft"
 msgstr "关闭编辑器并舍弃草稿"
 
@@ -3673,7 +3673,7 @@ msgid "Compose new post"
 msgstr "撰写新帖文"
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
-#: src/view/com/composer/Composer.tsx:1979
+#: src/view/com/composer/Composer.tsx:1982
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr "撰写最多 {0, plural,other {# 个字符}} 的帖文"
 
@@ -3681,11 +3681,11 @@ msgstr "撰写最多 {0, plural,other {# 个字符}} 的帖文"
 msgid "Compose reply"
 msgstr "撰写回复"
 
-#: src/view/com/composer/Composer.tsx:3157
+#: src/view/com/composer/Composer.tsx:3162
 msgid "Compressing GIF..."
 msgstr "正在压缩 GIF……"
 
-#: src/view/com/composer/Composer.tsx:3159
+#: src/view/com/composer/Composer.tsx:3164
 msgid "Compressing video..."
 msgstr "正在压缩视频……"
 
@@ -4541,7 +4541,7 @@ msgstr "删除我的账户"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1057
-#: src/view/com/composer/Composer.tsx:2011
+#: src/view/com/composer/Composer.tsx:2014
 msgid "Delete post"
 msgstr "删除帖文"
 
@@ -4744,9 +4744,9 @@ msgstr "停用"
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:102
 #: src/screens/Profile/Header/EditProfileDialog.tsx:93
-#: src/view/com/composer/Composer.tsx:1721
-#: src/view/com/composer/Composer.tsx:1765
-#: src/view/com/composer/Composer.tsx:2063
+#: src/view/com/composer/Composer.tsx:1724
+#: src/view/com/composer/Composer.tsx:1768
+#: src/view/com/composer/Composer.tsx:2066
 #: src/view/com/composer/drafts/DraftItem.tsx:254
 #: src/view/com/composer/drafts/DraftsButton.tsx:138
 msgid "Discard"
@@ -4757,14 +4757,14 @@ msgstr "舍弃"
 msgid "Discard changes?"
 msgstr "要放弃更改吗？"
 
-#: src/view/com/composer/Composer.tsx:1719
+#: src/view/com/composer/Composer.tsx:1722
 #: src/view/com/composer/drafts/DraftItem.tsx:251
 #: src/view/com/composer/drafts/DraftsButton.tsx:105
 msgid "Discard draft?"
 msgstr "要舍弃草稿吗？"
 
-#: src/view/com/composer/Composer.tsx:1736
-#: src/view/com/composer/Composer.tsx:2055
+#: src/view/com/composer/Composer.tsx:1739
+#: src/view/com/composer/Composer.tsx:2058
 msgid "Discard post?"
 msgstr "要放弃发布吗？"
 
@@ -4802,7 +4802,7 @@ msgstr "跳过"
 msgid "Dismiss banner"
 msgstr "忽略横幅提示"
 
-#: src/view/com/composer/Composer.tsx:3078
+#: src/view/com/composer/Composer.tsx:3083
 msgid "Dismiss error"
 msgstr "忽略错误"
 
@@ -5540,7 +5540,7 @@ msgstr "进入全屏模式"
 msgid "Entertainment"
 msgstr "娱乐"
 
-#: src/view/com/composer/Composer.tsx:3177
+#: src/view/com/composer/Composer.tsx:3182
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "错误"
@@ -6033,7 +6033,7 @@ msgstr "无法撤销你的申请，请重试。"
 msgid "Failed to resolve location. Please try again."
 msgstr "无法获取位置信息，请重试。"
 
-#: src/view/com/composer/Composer.tsx:860
+#: src/view/com/composer/Composer.tsx:863
 msgid "Failed to save draft"
 msgstr "无法保存草稿"
 
@@ -6701,8 +6701,8 @@ msgstr ""
 msgid "Generate a starter pack"
 msgstr "创建一个新手包"
 
-#: src/view/com/composer/Composer.tsx:2323
-#: src/view/com/composer/Composer.tsx:2331
+#: src/view/com/composer/Composer.tsx:2326
+#: src/view/com/composer/Composer.tsx:2334
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:240
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:253
 msgid "Generate alt text"
@@ -6834,7 +6834,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3182
+#: src/view/com/composer/Composer.tsx:3187
 msgid "GIF uploaded"
 msgstr "已上传 GIF"
 
@@ -8007,7 +8007,7 @@ msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3097
+#: src/view/com/composer/Composer.tsx:3102
 msgid "Job ID: {0}"
 msgstr "作业 ID：{0}"
 
@@ -8066,8 +8066,8 @@ msgstr ""
 msgid "Kawaii logo by <0>ovvie</0>"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1769
-#: src/view/com/composer/Composer.tsx:1779
+#: src/view/com/composer/Composer.tsx:1772
+#: src/view/com/composer/Composer.tsx:1782
 #: src/view/com/composer/drafts/DraftsButton.tsx:142
 msgid "Keep editing"
 msgstr "保留编辑内容"
@@ -8960,7 +8960,7 @@ msgstr "当你屏蔽此用户时，其发送的信息将会隐藏。"
 msgid "microcosm.blue"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1849
+#: src/view/com/composer/Composer.tsx:1852
 #: src/view/com/feeds/ComposerPrompt.tsx:195
 msgid "MIKE, THE JARONA please!"
 msgstr ""
@@ -9079,11 +9079,11 @@ msgstr "下移动态源"
 msgid "Move feed up"
 msgstr "上移动态源"
 
-#: src/view/com/composer/Composer.tsx:2035
+#: src/view/com/composer/Composer.tsx:2038
 msgid "Move post down"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1993
+#: src/view/com/composer/Composer.tsx:1996
 msgid "Move post up"
 msgstr ""
 
@@ -9956,7 +9956,7 @@ msgstr "你所选中的部分文件格式不被支持。"
 msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
 msgstr "你选中的部分文件太大，最大的文件大小为 {VIDEO_MAX_SIZE_MB} MB。"
 
-#: src/view/com/composer/Composer.tsx:871
+#: src/view/com/composer/Composer.tsx:874
 msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
 msgstr "一则或多则帖文内容过长，无法保存为草稿{MAX_DRAFT_GRAPHEME_LENGTH, plural,one {最大字数限制为 # 个字符。}other {最大字数限制为 # 个字符。}}"
 
@@ -10096,7 +10096,7 @@ msgid "Open drawer menu"
 msgstr "开启抽屉菜单"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2715
+#: src/view/com/composer/Composer.tsx:2720
 msgid "Open emoji picker"
 msgstr "开启表情符号选择器"
 
@@ -10897,7 +10897,7 @@ msgid "Please sign in as @{0}"
 msgstr "请以 @{0} 身份登录"
 
 #. placeholder {0}: activeAccount.handle
-#: src/view/com/composer/Composer.tsx:1228
+#: src/view/com/composer/Composer.tsx:1231
 msgid "Please sign in as @{0} to post as them"
 msgstr ""
 
@@ -10935,7 +10935,7 @@ msgstr "政治"
 msgid "Porn"
 msgstr "色情"
 
-#: src/view/com/composer/Composer.tsx:2208
+#: src/view/com/composer/Composer.tsx:2211
 msgctxt "action"
 msgid "Post"
 msgstr "发布"
@@ -10961,13 +10961,13 @@ msgstr "发布一张图片"
 msgid "Post a video"
 msgstr "发布一段视频"
 
-#: src/view/com/composer/Composer.tsx:2206
+#: src/view/com/composer/Composer.tsx:2209
 msgctxt "action"
 msgid "Post All"
 msgstr "全部发布"
 
-#: src/view/com/composer/Composer.tsx:1778
-#: src/view/com/composer/Composer.tsx:1786
+#: src/view/com/composer/Composer.tsx:1781
+#: src/view/com/composer/Composer.tsx:1789
 msgid "Post anyway"
 msgstr "仍然发布"
 
@@ -10997,7 +10997,7 @@ msgstr "已删除帖文"
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "帖文发布失败。请检查网络连接并重试。"
 
-#: src/view/com/composer/Composer.tsx:1928
+#: src/view/com/composer/Composer.tsx:1931
 msgid "Post from account"
 msgstr ""
 
@@ -11071,7 +11071,7 @@ msgctxt "toast"
 msgid "Post unpinned"
 msgstr "已取消固定帖文"
 
-#: src/view/com/composer/Composer.tsx:1784
+#: src/view/com/composer/Composer.tsx:1787
 msgid "Post without alt text?"
 msgstr ""
 
@@ -11198,11 +11198,11 @@ msgstr "隐私政策"
 msgid "Privacy violation of a minor"
 msgstr "侵犯未成年隐私"
 
-#: src/view/com/composer/Composer.tsx:3171
+#: src/view/com/composer/Composer.tsx:3176
 msgid "Processing GIF..."
 msgstr "正在处理 GIF……"
 
-#: src/view/com/composer/Composer.tsx:3173
+#: src/view/com/composer/Composer.tsx:3178
 msgid "Processing video..."
 msgstr "正在处理视频……"
 
@@ -11278,22 +11278,22 @@ msgid "Public, sharable lists of users to mute or block in bulk."
 msgstr "公开且可对外分享的列表，可用来批量隐藏或屏蔽账户。"
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:2192
+#: src/view/com/composer/Composer.tsx:2195
 msgid "Publish post"
 msgstr "发布帖文"
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:2187
+#: src/view/com/composer/Composer.tsx:2190
 msgid "Publish posts"
 msgstr "发布帖文"
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:2176
+#: src/view/com/composer/Composer.tsx:2179
 msgid "Publish replies"
 msgstr "发布回复"
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:2181
+#: src/view/com/composer/Composer.tsx:2184
 msgid "Publish reply"
 msgstr "发布回复"
 
@@ -11899,7 +11899,7 @@ msgstr "这则帖文的回复已被停用。"
 msgid "Reply"
 msgstr "回复"
 
-#: src/view/com/composer/Composer.tsx:2204
+#: src/view/com/composer/Composer.tsx:2207
 msgctxt "action"
 msgid "Reply"
 msgstr "回复"
@@ -12430,7 +12430,7 @@ msgstr "保存出生日期"
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:273
 #: src/screens/Settings/Settings.tsx:388
 #: src/screens/Settings/Settings.tsx:395
-#: src/view/com/composer/Composer.tsx:1759
+#: src/view/com/composer/Composer.tsx:1762
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr "保存更改"
@@ -12439,17 +12439,17 @@ msgstr "保存更改"
 msgid "Save Changes"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1731
+#: src/view/com/composer/Composer.tsx:1734
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
 msgid "Save changes?"
 msgstr "保存更改？"
 
-#: src/view/com/composer/Composer.tsx:1759
+#: src/view/com/composer/Composer.tsx:1762
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save draft"
 msgstr "保存草稿"
 
-#: src/view/com/composer/Composer.tsx:1733
+#: src/view/com/composer/Composer.tsx:1736
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
 msgid "Save draft?"
 msgstr "保存草稿？"
@@ -13329,15 +13329,15 @@ msgstr "分享您的年龄范围只会透露你 Apple 账户关联的大致信�
 msgid "Sharing your age range reveals only the range associated with your Google Account – for example, that you’re at least 18. <0>Your exact age and birthday are never shared,</0> and this data never leaves this device. Therefore, it only enables access on this device. Alternatively, <1>you can use our trusted partner, KWS</1>, to complete your verification and enable access on all platforms."
 msgstr "分享您的年龄范围只会透露你 Google 账户关联的大致信息——例如，你已年满 18 岁。<0>你的确切年龄和生日信息永远不会被分享，</0>年龄范围数据也永远不会离开此设备。因此，它只能在此设备上启用访问权限。或者，<1>你可以使用我们的可信合作伙伴 KWS</1>来完成验证，从而在所有平台上启用访问权限。"
 
-#: src/view/com/composer/Composer.tsx:2036
+#: src/view/com/composer/Composer.tsx:2039
 msgid "Shortcut: Alt plus Down Arrow"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2739
+#: src/view/com/composer/Composer.tsx:2744
 msgid "Shortcut: Alt plus Enter"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1994
+#: src/view/com/composer/Composer.tsx:1997
 msgid "Shortcut: Alt plus Up Arrow"
 msgstr ""
 
@@ -13691,7 +13691,7 @@ msgstr "跳过"
 msgid "Skip contact sharing and continue to the app"
 msgstr "跳过分享通讯录并继续使用应用程序"
 
-#: src/view/com/composer/Composer.tsx:1776
+#: src/view/com/composer/Composer.tsx:1779
 msgid "Skip empty posts?"
 msgstr "跳过空白帖文？"
 
@@ -15078,7 +15078,7 @@ msgstr "这则帖文已被发布者删除"
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr "这则帖文将从动态源和讨论串中隐藏。注意：此操作无法撤消。"
 
-#: src/view/com/composer/Composer.tsx:1323
+#: src/view/com/composer/Composer.tsx:1326
 msgid "This post's author has disabled quote posts."
 msgstr "这则帖文的发布者已停用引用帖文。"
 
@@ -15803,7 +15803,7 @@ msgstr "已从列表中取消订阅"
 msgid "Unsupported clipboard content"
 msgstr "不支持的剪贴板内容"
 
-#: src/view/com/composer/Composer.tsx:1896
+#: src/view/com/composer/Composer.tsx:1899
 msgid "Unsupported video type: {mimeType}"
 msgstr "不支持的视频类型：{mimeType}"
 
@@ -15896,7 +15896,7 @@ msgstr "从文件上传"
 msgid "Upload from Library"
 msgstr "从照片图库上传"
 
-#: src/view/com/composer/Composer.tsx:3164
+#: src/view/com/composer/Composer.tsx:3169
 msgid "Uploading GIF..."
 msgstr "正在上传 GIF……"
 
@@ -15910,7 +15910,7 @@ msgstr "正在上传图片……"
 msgid "Uploading link thumbnail..."
 msgstr "正在上传链接缩略图……"
 
-#: src/view/com/composer/Composer.tsx:3166
+#: src/view/com/composer/Composer.tsx:3171
 msgid "Uploading video..."
 msgstr "正在上传视频……"
 
@@ -16252,7 +16252,7 @@ msgstr "无法找到视频。"
 msgid "Video settings"
 msgstr "视频设置"
 
-#: src/view/com/composer/Composer.tsx:3184
+#: src/view/com/composer/Composer.tsx:3189
 msgid "Video uploaded"
 msgstr "已上传视频"
 
@@ -16265,19 +16265,19 @@ msgstr "视频：{0}"
 msgid "Videos"
 msgstr "视频"
 
-#: src/view/com/composer/Composer.tsx:554
-#: src/view/com/composer/Composer.tsx:697
+#: src/view/com/composer/Composer.tsx:557
+#: src/view/com/composer/Composer.tsx:700
 #: src/view/com/composer/SelectMediaButton.tsx:453
 msgid "Videos must be 10 minutes or less."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:555
-#: src/view/com/composer/Composer.tsx:698
+#: src/view/com/composer/Composer.tsx:558
+#: src/view/com/composer/Composer.tsx:701
 #: src/view/com/composer/SelectMediaButton.tsx:454
 msgid "Videos must be less than 3 minutes long."
 msgstr "视频长度不得超过 3 分钟。"
 
-#: src/view/com/composer/Composer.tsx:1435
+#: src/view/com/composer/Composer.tsx:1438
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr "查看"
@@ -16389,7 +16389,7 @@ msgstr "浏览更多热门视频"
 msgid "View PDS information"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1430
+#: src/view/com/composer/Composer.tsx:1433
 msgid "View post"
 msgstr "查看帖文"
 
@@ -16750,7 +16750,7 @@ msgstr "很抱歉，无法完成你的搜索。请几分钟后重试。"
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr "很抱歉，你目前无法访问此页面。"
 
-#: src/view/com/composer/Composer.tsx:1321
+#: src/view/com/composer/Composer.tsx:1324
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr "很抱歉！你回复的帖文已被删除。"
 
@@ -16903,7 +16903,7 @@ msgstr "需要屏蔽该用户、离开对话，或两者一并执行吗？"
 msgid "Would you like to save this as a draft before viewing your drafts?"
 msgstr "在查看其他草稿之前，需要先保存现有内容吗？"
 
-#: src/view/com/composer/Composer.tsx:1747
+#: src/view/com/composer/Composer.tsx:1750
 msgid "Would you like to save this as a draft to edit later?"
 msgstr "需要把现有内容保存为草稿，以便日后编辑吗？"
 
@@ -16912,11 +16912,11 @@ msgstr "需要把现有内容保存为草稿，以便日后编辑吗？"
 msgid "Write a post"
 msgstr "撰写一篇帖文"
 
-#: src/view/com/composer/Composer.tsx:1978
+#: src/view/com/composer/Composer.tsx:1981
 msgid "Write post"
 msgstr "撰写帖文"
 
-#: src/view/com/composer/Composer.tsx:1847
+#: src/view/com/composer/Composer.tsx:1850
 msgid "Write your Jarona"
 msgstr ""
 
@@ -17127,7 +17127,7 @@ msgstr "你现在可以使用新密码登录。"
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "帖文最多只能添加 {MAX_GALLERY_IMAGES, plural,other {# 张图片}}"
 
-#: src/view/com/composer/Composer.tsx:1752
+#: src/view/com/composer/Composer.tsx:1755
 msgid "You can only save drafts up to 1000 characters."
 msgstr "你目前只能保存最多 1000 个字符的草稿。"
 
@@ -17279,7 +17279,7 @@ msgstr "你已成功验证电子邮箱地址，现在你可以关闭此对话框
 msgid "You have temporarily reached the limit for video uploads. Please try again later."
 msgstr "你已暂时达到视频上传的限制。请稍后再试。"
 
-#: src/view/com/composer/Composer.tsx:1742
+#: src/view/com/composer/Composer.tsx:1745
 msgid "You have unsaved changes to this draft, would you like to save them?"
 msgstr "你有未保存的更改，需要保存吗？"
 
@@ -17511,7 +17511,7 @@ msgstr "你已到达内容的结尾。"
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr "你已经浏览完动态源的所有帖文啦！寻找一些更多的账户关注吧。"
 
-#: src/view/com/composer/Composer.tsx:858
+#: src/view/com/composer/Composer.tsx:861
 msgid "You've reached the maximum number of drafts"
 msgstr "你已达到最大草稿保存数量"
 
@@ -17691,11 +17691,11 @@ msgstr "已成功更改你的密码！请你今后使用你的新密码登录 Bl
 msgid "Your password must be at least 8 characters long."
 msgstr "你输入的密码至少应包含 8 个字符。"
 
-#: src/view/com/composer/Composer.tsx:1426
+#: src/view/com/composer/Composer.tsx:1429
 msgid "Your post was sent"
 msgstr "已发布你的帖文"
 
-#: src/view/com/composer/Composer.tsx:1423
+#: src/view/com/composer/Composer.tsx:1426
 msgid "Your posts were sent"
 msgstr "已发布你的帖文"
 
@@ -17716,7 +17716,7 @@ msgstr "你的头像周围环绕着许多其他人的头像"
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr "其他 Bluesky 用户将无法看到你的个人资料、帖文、列表与其他相关个人信息。你可以随时登录以重新启用你的账户。"
 
-#: src/view/com/composer/Composer.tsx:1425
+#: src/view/com/composer/Composer.tsx:1428
 msgid "Your reply was sent"
 msgstr "已发布你的回复"
 
@@ -17729,7 +17729,7 @@ msgstr "你的举报信息将提交给 <0>{0}</0>。"
 msgid "Your selected interests help us serve you content you care about."
 msgstr "你选择的兴趣主题将帮助我们提供更多你想看到的内容。"
 
-#: src/view/com/composer/Composer.tsx:1777
+#: src/view/com/composer/Composer.tsx:1780
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "你的帖文串中包含空白帖文，继续发布将会跳过这些内容，其余帖文会重新组合成完整的帖文串发布。"
 

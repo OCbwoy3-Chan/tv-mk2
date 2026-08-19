@@ -793,15 +793,15 @@ msgstr "{memberCount}/{memberLimit}"
 msgid "{minutes, plural, one {# minute} other {# minutes}}"
 msgstr "{minutes, plural, one {# minut} other {# minutter}}"
 
-#: src/view/com/composer/Composer.tsx:1090
+#: src/view/com/composer/Composer.tsx:1093
 msgid "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1082
+#: src/view/com/composer/Composer.tsx:1085
 msgid "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1098
+#: src/view/com/composer/Composer.tsx:1101
 msgid "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 msgstr ""
 
@@ -1323,7 +1323,7 @@ msgstr "Føj en bruger til denne liste"
 msgid "Add account"
 msgstr "Tilføj konto"
 
-#: src/view/com/composer/Composer.tsx:1787
+#: src/view/com/composer/Composer.tsx:1790
 #: src/view/com/composer/GifAltText.tsx:76
 #: src/view/com/composer/GifAltText.tsx:150
 #: src/view/com/composer/GifAltText.tsx:216
@@ -1345,11 +1345,11 @@ msgstr "Tilføj alt-tekst (valgfrit)"
 msgid "Add another account"
 msgstr "Tilføj endnu en konto"
 
-#: src/view/com/composer/Composer.tsx:1848
+#: src/view/com/composer/Composer.tsx:1851
 msgid "Add another Jarona"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2738
+#: src/view/com/composer/Composer.tsx:2743
 msgid "Add another post to thread"
 msgstr "Tilføj endnu et opslag til tråd"
 
@@ -2203,7 +2203,7 @@ msgstr "Er du sikker på, du vil fjerne dette feed fra dine feeds?"
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "Er du sikker på, at du vil trække din anmodning om at deltage i {0} tilbage?"
 
-#: src/view/com/composer/Composer.tsx:2056
+#: src/view/com/composer/Composer.tsx:2059
 msgid "Are you sure you'd like to discard this post?"
 msgstr "Er du sikker på, du vil kassere dette opslag?"
 
@@ -2314,7 +2314,7 @@ msgstr ""
 msgid "Automatic alt text generation, {providerName}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2324
+#: src/view/com/composer/Composer.tsx:2327
 msgid "Automatically generate alt text for images in this post using the configured AI provider."
 msgstr ""
 
@@ -2922,8 +2922,8 @@ msgstr "Kameraadgang krævet"
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:37
-#: src/view/com/composer/Composer.tsx:2134
-#: src/view/com/composer/Composer.tsx:2144
+#: src/view/com/composer/Composer.tsx:2137
+#: src/view/com/composer/Composer.tsx:2147
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
 #: src/view/shell/desktop/LeftNav.tsx:245
@@ -3559,7 +3559,7 @@ msgstr "Luk velkomstdialog"
 msgid "Closes password update alert"
 msgstr "Lukker besked om opdatering af adganskode"
 
-#: src/view/com/composer/Composer.tsx:2142
+#: src/view/com/composer/Composer.tsx:2145
 msgid "Closes post composer and discards post draft"
 msgstr "Lukker skrivefelt og kasserer udkast til opslag"
 
@@ -3673,7 +3673,7 @@ msgid "Compose new post"
 msgstr "Skriv nyt opslag"
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
-#: src/view/com/composer/Composer.tsx:1979
+#: src/view/com/composer/Composer.tsx:1982
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr "Skriv opslag på op til {0, plural, one {}other {# tegn}}"
 
@@ -3681,11 +3681,11 @@ msgstr "Skriv opslag på op til {0, plural, one {}other {# tegn}}"
 msgid "Compose reply"
 msgstr "Skriv svar"
 
-#: src/view/com/composer/Composer.tsx:3157
+#: src/view/com/composer/Composer.tsx:3162
 msgid "Compressing GIF..."
 msgstr "Komprimerer GIF ..."
 
-#: src/view/com/composer/Composer.tsx:3159
+#: src/view/com/composer/Composer.tsx:3164
 msgid "Compressing video..."
 msgstr "Komprimerer video..."
 
@@ -4541,7 +4541,7 @@ msgstr "Slet min konto"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1057
-#: src/view/com/composer/Composer.tsx:2011
+#: src/view/com/composer/Composer.tsx:2014
 msgid "Delete post"
 msgstr "Slet opslag"
 
@@ -4744,9 +4744,9 @@ msgstr "Deaktiveret"
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:102
 #: src/screens/Profile/Header/EditProfileDialog.tsx:93
-#: src/view/com/composer/Composer.tsx:1721
-#: src/view/com/composer/Composer.tsx:1765
-#: src/view/com/composer/Composer.tsx:2063
+#: src/view/com/composer/Composer.tsx:1724
+#: src/view/com/composer/Composer.tsx:1768
+#: src/view/com/composer/Composer.tsx:2066
 #: src/view/com/composer/drafts/DraftItem.tsx:254
 #: src/view/com/composer/drafts/DraftsButton.tsx:138
 msgid "Discard"
@@ -4757,14 +4757,14 @@ msgstr "Kasser"
 msgid "Discard changes?"
 msgstr "Deaktiver ændringer?"
 
-#: src/view/com/composer/Composer.tsx:1719
+#: src/view/com/composer/Composer.tsx:1722
 #: src/view/com/composer/drafts/DraftItem.tsx:251
 #: src/view/com/composer/drafts/DraftsButton.tsx:105
 msgid "Discard draft?"
 msgstr "Kasser udkast?"
 
-#: src/view/com/composer/Composer.tsx:1736
-#: src/view/com/composer/Composer.tsx:2055
+#: src/view/com/composer/Composer.tsx:1739
+#: src/view/com/composer/Composer.tsx:2058
 msgid "Discard post?"
 msgstr "Kasser opslag?"
 
@@ -4802,7 +4802,7 @@ msgstr "Luk"
 msgid "Dismiss banner"
 msgstr "Fjern banner"
 
-#: src/view/com/composer/Composer.tsx:3078
+#: src/view/com/composer/Composer.tsx:3083
 msgid "Dismiss error"
 msgstr "Luk fejlbesked"
 
@@ -5540,7 +5540,7 @@ msgstr "Åbner i fuld skærm"
 msgid "Entertainment"
 msgstr "Underholdning"
 
-#: src/view/com/composer/Composer.tsx:3177
+#: src/view/com/composer/Composer.tsx:3182
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "Fejl"
@@ -6033,7 +6033,7 @@ msgstr "Kunne ikke trække din anmodning tilbage. Prøv igen."
 msgid "Failed to resolve location. Please try again."
 msgstr "Kunne ikke bestemme din lokalitet. Prøv igen senere."
 
-#: src/view/com/composer/Composer.tsx:860
+#: src/view/com/composer/Composer.tsx:863
 msgid "Failed to save draft"
 msgstr "Kunne ikke gemme kladde"
 
@@ -6701,8 +6701,8 @@ msgstr ""
 msgid "Generate a starter pack"
 msgstr "Generer en startpakke"
 
-#: src/view/com/composer/Composer.tsx:2323
-#: src/view/com/composer/Composer.tsx:2331
+#: src/view/com/composer/Composer.tsx:2326
+#: src/view/com/composer/Composer.tsx:2334
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:240
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:253
 msgid "Generate alt text"
@@ -6834,7 +6834,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3182
+#: src/view/com/composer/Composer.tsx:3187
 msgid "GIF uploaded"
 msgstr "GIF uploadet"
 
@@ -8007,7 +8007,7 @@ msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3097
+#: src/view/com/composer/Composer.tsx:3102
 msgid "Job ID: {0}"
 msgstr "Job-ID: {0}"
 
@@ -8066,8 +8066,8 @@ msgstr ""
 msgid "Kawaii logo by <0>ovvie</0>"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1769
-#: src/view/com/composer/Composer.tsx:1779
+#: src/view/com/composer/Composer.tsx:1772
+#: src/view/com/composer/Composer.tsx:1782
 #: src/view/com/composer/drafts/DraftsButton.tsx:142
 msgid "Keep editing"
 msgstr "Fortsæt med at redigere"
@@ -8960,7 +8960,7 @@ msgstr "Beskeder fra denne person er skjult, fordi du har blokeret vedkommende."
 msgid "microcosm.blue"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1849
+#: src/view/com/composer/Composer.tsx:1852
 #: src/view/com/feeds/ComposerPrompt.tsx:195
 msgid "MIKE, THE JARONA please!"
 msgstr ""
@@ -9079,11 +9079,11 @@ msgstr "Ryk feed ned"
 msgid "Move feed up"
 msgstr "Ryk feed op"
 
-#: src/view/com/composer/Composer.tsx:2035
+#: src/view/com/composer/Composer.tsx:2038
 msgid "Move post down"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1993
+#: src/view/com/composer/Composer.tsx:1996
 msgid "Move post up"
 msgstr ""
 
@@ -9956,7 +9956,7 @@ msgstr "En eller flere af de valgte filer er ikke understøttet."
 msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
 msgstr "En eller flere af dine valgte filer er for stor. Den maksimale størrelse er {VIDEO_MAX_SIZE_MB} MB."
 
-#: src/view/com/composer/Composer.tsx:871
+#: src/view/com/composer/Composer.tsx:874
 msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
 msgstr "Et eller flere opslag er for lange til at blive gemt som kladde. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {Kladder må være på højst # tegn.} other {Kladder må være på højst # tegn.}}"
 
@@ -10096,7 +10096,7 @@ msgid "Open drawer menu"
 msgstr "Åbn navigation"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2715
+#: src/view/com/composer/Composer.tsx:2720
 msgid "Open emoji picker"
 msgstr "Åbn emojivælger"
 
@@ -10897,7 +10897,7 @@ msgid "Please sign in as @{0}"
 msgstr "Log ind som @{0}"
 
 #. placeholder {0}: activeAccount.handle
-#: src/view/com/composer/Composer.tsx:1228
+#: src/view/com/composer/Composer.tsx:1231
 msgid "Please sign in as @{0} to post as them"
 msgstr ""
 
@@ -10935,7 +10935,7 @@ msgstr "Politik"
 msgid "Porn"
 msgstr "Porno"
 
-#: src/view/com/composer/Composer.tsx:2208
+#: src/view/com/composer/Composer.tsx:2211
 msgctxt "action"
 msgid "Post"
 msgstr "Slå op"
@@ -10961,13 +10961,13 @@ msgstr "Lav et fotoopslag"
 msgid "Post a video"
 msgstr "Lav et videoopslag"
 
-#: src/view/com/composer/Composer.tsx:2206
+#: src/view/com/composer/Composer.tsx:2209
 msgctxt "action"
 msgid "Post All"
 msgstr "Slå alle op"
 
-#: src/view/com/composer/Composer.tsx:1778
-#: src/view/com/composer/Composer.tsx:1786
+#: src/view/com/composer/Composer.tsx:1781
+#: src/view/com/composer/Composer.tsx:1789
 msgid "Post anyway"
 msgstr "Opret alligevel"
 
@@ -10997,7 +10997,7 @@ msgstr "Opslag slettet"
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "Opslag kunne ikke publiceres. Tjek din internetforbindelse og prøv igen."
 
-#: src/view/com/composer/Composer.tsx:1928
+#: src/view/com/composer/Composer.tsx:1931
 msgid "Post from account"
 msgstr ""
 
@@ -11071,7 +11071,7 @@ msgctxt "toast"
 msgid "Post unpinned"
 msgstr "Opslag blev frigjort"
 
-#: src/view/com/composer/Composer.tsx:1784
+#: src/view/com/composer/Composer.tsx:1787
 msgid "Post without alt text?"
 msgstr ""
 
@@ -11198,11 +11198,11 @@ msgstr "Privatlivspolitik"
 msgid "Privacy violation of a minor"
 msgstr "Privatlivskrænkelse af en mindreårig"
 
-#: src/view/com/composer/Composer.tsx:3171
+#: src/view/com/composer/Composer.tsx:3176
 msgid "Processing GIF..."
 msgstr "Behandler GIF ..."
 
-#: src/view/com/composer/Composer.tsx:3173
+#: src/view/com/composer/Composer.tsx:3178
 msgid "Processing video..."
 msgstr "Behandler video..."
 
@@ -11278,22 +11278,22 @@ msgid "Public, sharable lists of users to mute or block in bulk."
 msgstr "Offentlige lister over brugere, der kan skjules eller blokeres på én gang."
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:2192
+#: src/view/com/composer/Composer.tsx:2195
 msgid "Publish post"
 msgstr "Udgiv opslag"
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:2187
+#: src/view/com/composer/Composer.tsx:2190
 msgid "Publish posts"
 msgstr "Udgiv opslag"
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:2176
+#: src/view/com/composer/Composer.tsx:2179
 msgid "Publish replies"
 msgstr "Udgiv svar"
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:2181
+#: src/view/com/composer/Composer.tsx:2184
 msgid "Publish reply"
 msgstr "Udgiv svar"
 
@@ -11899,7 +11899,7 @@ msgstr "Svar til dette opslag er ikke tilladt."
 msgid "Reply"
 msgstr "Besvar"
 
-#: src/view/com/composer/Composer.tsx:2204
+#: src/view/com/composer/Composer.tsx:2207
 msgctxt "action"
 msgid "Reply"
 msgstr "Besvar"
@@ -12430,7 +12430,7 @@ msgstr "Gem fødselsdato"
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:273
 #: src/screens/Settings/Settings.tsx:388
 #: src/screens/Settings/Settings.tsx:395
-#: src/view/com/composer/Composer.tsx:1759
+#: src/view/com/composer/Composer.tsx:1762
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr "Gem ændringer"
@@ -12439,17 +12439,17 @@ msgstr "Gem ændringer"
 msgid "Save Changes"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1731
+#: src/view/com/composer/Composer.tsx:1734
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
 msgid "Save changes?"
 msgstr "Gem ændringer?"
 
-#: src/view/com/composer/Composer.tsx:1759
+#: src/view/com/composer/Composer.tsx:1762
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save draft"
 msgstr "Gem kladde"
 
-#: src/view/com/composer/Composer.tsx:1733
+#: src/view/com/composer/Composer.tsx:1736
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
 msgid "Save draft?"
 msgstr "Gem kladde?"
@@ -13329,15 +13329,15 @@ msgstr ""
 msgid "Sharing your age range reveals only the range associated with your Google Account – for example, that you’re at least 18. <0>Your exact age and birthday are never shared,</0> and this data never leaves this device. Therefore, it only enables access on this device. Alternatively, <1>you can use our trusted partner, KWS</1>, to complete your verification and enable access on all platforms."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2036
+#: src/view/com/composer/Composer.tsx:2039
 msgid "Shortcut: Alt plus Down Arrow"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2739
+#: src/view/com/composer/Composer.tsx:2744
 msgid "Shortcut: Alt plus Enter"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1994
+#: src/view/com/composer/Composer.tsx:1997
 msgid "Shortcut: Alt plus Up Arrow"
 msgstr ""
 
@@ -13691,7 +13691,7 @@ msgstr "Spring over"
 msgid "Skip contact sharing and continue to the app"
 msgstr "Spring kontaktdeling over og fortsæt til appen"
 
-#: src/view/com/composer/Composer.tsx:1776
+#: src/view/com/composer/Composer.tsx:1779
 msgid "Skip empty posts?"
 msgstr "Spring tomme opslag over?"
 
@@ -15078,7 +15078,7 @@ msgstr "Dette opslag er blevet slettet af dets forfatter"
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr "Dette opslag vil blive skjult fra feeds og tråde. Denne handling kan ikke fortrydes."
 
-#: src/view/com/composer/Composer.tsx:1323
+#: src/view/com/composer/Composer.tsx:1326
 msgid "This post's author has disabled quote posts."
 msgstr "Dette opslags forfatter har ikke tilladt citatopslag."
 
@@ -15803,7 +15803,7 @@ msgstr "Abonnement på liste afmeldt"
 msgid "Unsupported clipboard content"
 msgstr "Ikkeunderstøttet indhold i udklipsholder"
 
-#: src/view/com/composer/Composer.tsx:1896
+#: src/view/com/composer/Composer.tsx:1899
 msgid "Unsupported video type: {mimeType}"
 msgstr "Ikkeunderstøttet videotype: {mimeType}"
 
@@ -15896,7 +15896,7 @@ msgstr "Upload fra filer"
 msgid "Upload from Library"
 msgstr "Upload fra bibliotek"
 
-#: src/view/com/composer/Composer.tsx:3164
+#: src/view/com/composer/Composer.tsx:3169
 msgid "Uploading GIF..."
 msgstr "Uploader GIF ..."
 
@@ -15910,7 +15910,7 @@ msgstr "Uploader billeder..."
 msgid "Uploading link thumbnail..."
 msgstr "Uploader forhåndsvisning af link..."
 
-#: src/view/com/composer/Composer.tsx:3166
+#: src/view/com/composer/Composer.tsx:3171
 msgid "Uploading video..."
 msgstr "Uploader video..."
 
@@ -16252,7 +16252,7 @@ msgstr "Video ikke fundet."
 msgid "Video settings"
 msgstr "Videoindstillinger"
 
-#: src/view/com/composer/Composer.tsx:3184
+#: src/view/com/composer/Composer.tsx:3189
 msgid "Video uploaded"
 msgstr "Video uploadet"
 
@@ -16265,19 +16265,19 @@ msgstr "Video: {0}"
 msgid "Videos"
 msgstr "Videoer"
 
-#: src/view/com/composer/Composer.tsx:554
-#: src/view/com/composer/Composer.tsx:697
+#: src/view/com/composer/Composer.tsx:557
+#: src/view/com/composer/Composer.tsx:700
 #: src/view/com/composer/SelectMediaButton.tsx:453
 msgid "Videos must be 10 minutes or less."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:555
-#: src/view/com/composer/Composer.tsx:698
+#: src/view/com/composer/Composer.tsx:558
+#: src/view/com/composer/Composer.tsx:701
 #: src/view/com/composer/SelectMediaButton.tsx:454
 msgid "Videos must be less than 3 minutes long."
 msgstr "Videoer skal være højst 3 minutter lange."
 
-#: src/view/com/composer/Composer.tsx:1435
+#: src/view/com/composer/Composer.tsx:1438
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr "Vis"
@@ -16389,7 +16389,7 @@ msgstr "Se flere populære videoer"
 msgid "View PDS information"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1430
+#: src/view/com/composer/Composer.tsx:1433
 msgid "View post"
 msgstr "Vis opslag"
 
@@ -16750,7 +16750,7 @@ msgstr "Beklager, men din søgning kunne ikke gennemføres. Prøv igen om lidt."
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr "Beklager, men du kan ikke tilgå dette skærmbillede i øjeblikket."
 
-#: src/view/com/composer/Composer.tsx:1321
+#: src/view/com/composer/Composer.tsx:1324
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr "Beklager! Det opslag, du svarer på, er blevet slettet."
 
@@ -16903,7 +16903,7 @@ msgstr "Vil du blokere denne bruger og/eller forlade samtalen?"
 msgid "Would you like to save this as a draft before viewing your drafts?"
 msgstr "Vil du gemme dette opslag som kladde, før du ser dine kladder?"
 
-#: src/view/com/composer/Composer.tsx:1747
+#: src/view/com/composer/Composer.tsx:1750
 msgid "Would you like to save this as a draft to edit later?"
 msgstr "Vil du gemme dette opslag som kladde, du kan redigere senere?"
 
@@ -16912,11 +16912,11 @@ msgstr "Vil du gemme dette opslag som kladde, du kan redigere senere?"
 msgid "Write a post"
 msgstr "Skriv et opslag"
 
-#: src/view/com/composer/Composer.tsx:1978
+#: src/view/com/composer/Composer.tsx:1981
 msgid "Write post"
 msgstr "Skriv dit opslag"
 
-#: src/view/com/composer/Composer.tsx:1847
+#: src/view/com/composer/Composer.tsx:1850
 msgid "Write your Jarona"
 msgstr ""
 
@@ -17127,7 +17127,7 @@ msgstr "Du kan nu logge ind med din nye adgangskode."
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "Du kan tilføje maks. {MAX_GALLERY_IMAGES, plural, one {}other {# billeder}} pr. opslag"
 
-#: src/view/com/composer/Composer.tsx:1752
+#: src/view/com/composer/Composer.tsx:1755
 msgid "You can only save drafts up to 1000 characters."
 msgstr "Du kan kun gemme kladder på maks. 1000 tegn."
 
@@ -17279,7 +17279,7 @@ msgstr "Du har nu bekræftet din e-mailadresse. Du kan lukke denne dialog."
 msgid "You have temporarily reached the limit for video uploads. Please try again later."
 msgstr "Du har midlertidigt nået grænsen for videouploads. Prøv igen senere."
 
-#: src/view/com/composer/Composer.tsx:1742
+#: src/view/com/composer/Composer.tsx:1745
 msgid "You have unsaved changes to this draft, would you like to save them?"
 msgstr "Du har ikke-gemte ændringer til denne kladde. Vil du gemme dem?"
 
@@ -17511,7 +17511,7 @@ msgstr "Du er nået slutningen af det aktive indhold."
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr "Du er nået enden af dit feed! Find flere konti, du kan føge."
 
-#: src/view/com/composer/Composer.tsx:858
+#: src/view/com/composer/Composer.tsx:861
 msgid "You've reached the maximum number of drafts"
 msgstr "Du har nået det maksimale antal kladder"
 
@@ -17691,11 +17691,11 @@ msgstr "Din adgangskode er nu ændret! Fremover skal du bruge din nye adgangskod
 msgid "Your password must be at least 8 characters long."
 msgstr "Din adgangskode skal bestå af mindst 8 tegn."
 
-#: src/view/com/composer/Composer.tsx:1426
+#: src/view/com/composer/Composer.tsx:1429
 msgid "Your post was sent"
 msgstr "Dit opslag blev sendt"
 
-#: src/view/com/composer/Composer.tsx:1423
+#: src/view/com/composer/Composer.tsx:1426
 msgid "Your posts were sent"
 msgstr "Dine opslag blev sendt"
 
@@ -17716,7 +17716,7 @@ msgstr "Dit profilbillede omgivet af koncentriske cirkler af andre brugeres prof
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr "Din profil, dine opslag, feeds og lister vil ikke længere kunne ses af andre Bluesky-brugere. Du kan genaktivere din konto når som helst ved at logge ind."
 
-#: src/view/com/composer/Composer.tsx:1425
+#: src/view/com/composer/Composer.tsx:1428
 msgid "Your reply was sent"
 msgstr "Dit svar blev sendt"
 
@@ -17729,7 +17729,7 @@ msgstr "Din anmeldelse vil blive sendt til <0>{0}</0>."
 msgid "Your selected interests help us serve you content you care about."
 msgstr "Dine valgte interesser hjælper os med at vise dig relevant indhold."
 
-#: src/view/com/composer/Composer.tsx:1777
+#: src/view/com/composer/Composer.tsx:1780
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "Din tråd har tomme opslag, som vil blive sprunget over. De resterende opslag vil blive oprettet som en tråd."
 
