@@ -7,7 +7,7 @@ import {
   getPdsFallbackFaviconUrls,
   isBridgedPdsUrl,
   isBskyPdsUrl,
-  isDarkWorldPdsUrl,
+  useCustomPDSHostDescription,
 } from '#/state/queries/pds-label.util'
 import {useServiceQuery} from '#/state/queries/service'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
@@ -54,8 +54,9 @@ function formatBskyPdsDisplayName(hostname: string): string {
   if (hostname === 'castletown.darkworld.download') return 'Castle Town'
   if (hostname === 'church.darkworld.download') return 'Church'
   if (hostname === 'ant.tenna.party') return 'Tenna'
+  if (hostname === 'pushingbuddies.kralsei.stream') return 'Pushing Buddies'
 
-  if (hostname === 'protogen.at') return 'protogen.chat'
+  if (hostname === 'pds.protogen.at') return 'P(rotogen)DS'
   if (hostname === 'pds.witchcraft.systems') return 'Witchcraft Systems'
   if (hostname === 'pds.synth.download') return 'synth.download'
   if (hostname === 'pds.tokyonight.city') return 'Tokyo Night City'
@@ -84,7 +85,7 @@ export function PdsDialog({
   } catch {}
 
   const isBsky = isBskyPdsUrl(pdsUrl)
-  const isDarkworld = isDarkWorldPdsUrl(pdsUrl)
+  const customDescription = useCustomPDSHostDescription(pdsUrl)
   const isBridged = isBridgedPdsUrl(pdsUrl)
   const displayName = formatBskyPdsDisplayName(hostname)
   const descriptionUrl = isBsky ? 'https://bsky.social' : pdsUrl
@@ -128,9 +129,9 @@ export function PdsDialog({
                   <Trans>Bluesky Social</Trans>
                 </Text>
               )}
-              {isDarkworld && (
+              {customDescription && (
                 <Text style={[a.text_sm, a.leading_tight]}>
-                  <Trans>Dark World</Trans>
+                  <Trans>{customDescription}</Trans>
                 </Text>
               )}
             </View>
@@ -351,6 +352,15 @@ function DbBadgeIcon({
   )
 }
 
+const PDS_FAVICON_NOBORDER = [
+  "pds.tokyonight.city",
+  "pds.protogen.at",
+  "castletown.darkworld.download",
+  "church.darkworld.download",
+  "ant.tenna.party",
+  "pushingbuddies.kralsei.stream"
+].flatMap(a=>[`https://${a}/favicon.ico`,`https://twenty-icons.com/${a}`])
+
 function FaviconBadgeIcon({
   size,
   borderRadius,
@@ -379,9 +389,11 @@ function FaviconBadgeIcon({
         {
           width: size,
           height: size,
-          borderRadius,
-          // backgroundColor: t.atoms.bg_contrast_100.backgroundColor,
+          borderRadius
         },
+        (!imageLoaded || !PDS_FAVICON_NOBORDER.includes(currentUrl)) && {
+          backgroundColor: t.atoms.bg_contrast_100.backgroundColor
+        }
       ]}>
       {!imageLoaded ? (
         <DbBadgeIcon size={size} borderRadius={borderRadius} />

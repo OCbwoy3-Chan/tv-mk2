@@ -20,10 +20,23 @@ export function isDarkWorldPdsUrl(url: string): boolean {
     const hostname = new URL(url).hostname
     return (
       hostname.endsWith(".darkworld.download") ||
-      hostname.endsWith(".tenna.party")
+      hostname.endsWith(".tenna.party") ||
+      hostname.endsWith(".kralsei.stream")
     )
   } catch {
     return false
+  }
+}
+
+export function useCustomPDSHostDescription(url: string): string | null {
+  try {
+    const hostname = new URL(url).hostname
+    if (hostname.endsWith(".kralsei.stream")) return "Kralsei";
+    if (isDarkWorldPdsUrl(url)) return "Dark World";
+    if (hostname.endsWith(".protogen.at") || hostname.endsWith(".protogen.nexus")) return "The Protogen Nexus";
+    return null
+  } catch {
+    return null
   }
 }
 
