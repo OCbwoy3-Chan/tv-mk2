@@ -511,6 +511,10 @@ msgstr "{count, plural, one {repost} other {reposts}}"
 msgid "{count, plural, other {#+ requests to join}}"
 msgstr "{count, plural, other {#+ requests to join}}"
 
+#: src/components/PdsDialog.tsx:134
+msgid "{customDescription}"
+msgstr "{customDescription}"
+
 #: src/components/dms/DateDivider.tsx:60
 msgid "{date} at {time}"
 msgstr "{date} at {time}"
@@ -1003,7 +1007,7 @@ msgstr ""
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr "<0>{displayName}</0><1/><2> added you</2>"
 
-#: src/components/PdsDialog.tsx:243
+#: src/components/PdsDialog.tsx:244
 msgid "<0>Learn more</0> about PDSes or how to <1>self-host</1> your own."
 msgstr "<0>Learn more</0> about PDSes or how to <1>self-host</1> your own."
 
@@ -2683,7 +2687,7 @@ msgstr ""
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr "Bluesky needs camera access to scan QR codes from other profiles."
 
-#: src/components/PdsDialog.tsx:128
+#: src/components/PdsDialog.tsx:129
 msgid "Bluesky Social"
 msgstr "Bluesky Social"
 
@@ -3758,7 +3762,7 @@ msgstr "Constellation Instance"
 msgid "Constellations instance URL"
 msgstr "Constellations instance URL"
 
-#: src/components/PdsDialog.tsx:191
+#: src/components/PdsDialog.tsx:192
 msgid "Contact"
 msgstr "Contact"
 
@@ -4163,7 +4167,7 @@ msgstr ""
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 
-#: src/components/PdsDialog.tsx:236
+#: src/components/PdsDialog.tsx:237
 msgid "Couldn’t load extra details from this server."
 msgstr "Couldn’t load extra details from this server."
 
@@ -4407,10 +4411,6 @@ msgstr ""
 #: src/screens/Settings/AppearanceSettings.tsx:151
 msgid "Dark theme"
 msgstr ""
-
-#: src/components/PdsDialog.tsx:133
-msgid "Dark World"
-msgstr "Dark World"
 
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:39
 #: src/components/CrackComponents/Tenna/TennaBadge.tsx:98
@@ -6139,7 +6139,7 @@ msgstr "Favicon Service URL"
 msgid "Feature gates"
 msgstr "Feature gates"
 
-#: src/components/PdsDialog.tsx:124
+#: src/components/PdsDialog.tsx:125
 msgid "Fediverse"
 msgstr "Fediverse"
 
@@ -7105,7 +7105,7 @@ msgstr ""
 msgid "Handle, DID, or PDS address"
 msgstr "Handle, DID, or PDS address"
 
-#: src/components/PdsDialog.tsx:216
+#: src/components/PdsDialog.tsx:217
 msgid "Handles"
 msgstr "Handles"
 
@@ -7905,7 +7905,7 @@ msgstr ""
 msgid "Invite code not accepted. Check that you input it correctly and try again."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:207
+#: src/components/PdsDialog.tsx:208
 msgid "Invite code required"
 msgstr "Invite code required"
 
@@ -8185,7 +8185,7 @@ msgctxt "english-only-resource"
 msgid "Learn more about importing contacts"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:246
+#: src/components/PdsDialog.tsx:247
 msgid "Learn more about PDSes"
 msgstr "Learn more about PDSes"
 
@@ -8194,7 +8194,7 @@ msgstr "Learn more about PDSes"
 msgid "Learn more about self hosting your PDS."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:160
+#: src/components/PdsDialog.tsx:161
 msgid "Learn more about the Fediverse"
 msgstr "Learn more about the Fediverse"
 
@@ -8654,7 +8654,7 @@ msgstr "Loading models…"
 msgid "Loading post interaction settings..."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:180
+#: src/components/PdsDialog.tsx:181
 msgid "Loading server details…"
 msgstr "Loading server details…"
 
@@ -10042,7 +10042,7 @@ msgstr "Oops, this profile doesn't exist. Try scanning another one."
 msgid "Oops!"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:209
+#: src/components/PdsDialog.tsx:210
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:268
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:272
 #: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:181
@@ -10514,7 +10514,7 @@ msgstr ""
 msgid "PDS badges"
 msgstr "PDS badges"
 
-#: src/components/PdsDialog.tsx:107
+#: src/components/PdsDialog.tsx:108
 msgid "PDS Information"
 msgstr "PDS Information"
 
@@ -12993,7 +12993,7 @@ msgstr ""
 msgid "Self-harm or dangerous behaviors"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:253
+#: src/components/PdsDialog.tsx:254
 msgid "Self-hosting PDS documentation"
 msgstr "Self-hosting PDS documentation"
 
@@ -13660,7 +13660,7 @@ msgstr ""
 msgid "Signing in..."
 msgstr "Signing in..."
 
-#: src/components/PdsDialog.tsx:204
+#: src/components/PdsDialog.tsx:205
 msgid "Signup"
 msgstr "Signup"
 
@@ -14770,7 +14770,7 @@ msgstr ""
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:156
+#: src/components/PdsDialog.tsx:157
 msgid "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>."
 msgstr "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>."
 
@@ -14778,7 +14778,7 @@ msgstr "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>.
 msgid "This account is no longer available"
 msgstr "This account is no longer available"
 
-#: src/components/PdsDialog.tsx:141
+#: src/components/PdsDialog.tsx:142
 msgid "This account’s data is stored on a Personal Data Server at <0>{hostname}</0>."
 msgstr "This account’s data is stored on a Personal Data Server at <0>{hostname}</0>."
 

@@ -516,6 +516,10 @@ msgstr ""
 msgid "{count, plural, other {#+ requests to join}}"
 msgstr "{count, plural, other {#件以上の新規参加リクエスト}}"
 
+#: src/components/PdsDialog.tsx:134
+msgid "{customDescription}"
+msgstr ""
+
 #: src/components/dms/DateDivider.tsx:60
 msgid "{date} at {time}"
 msgstr "{date} {time}"
@@ -1008,7 +1012,7 @@ msgstr "<0>{0}</0>のメンバー"
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr "<0>{displayName}</0><1/><2>があなたを追加しました</2>"
 
-#: src/components/PdsDialog.tsx:243
+#: src/components/PdsDialog.tsx:244
 msgid "<0>Learn more</0> about PDSes or how to <1>self-host</1> your own."
 msgstr ""
 
@@ -2688,7 +2692,7 @@ msgstr "Blueskyは友達ともっと楽しいです。あなたの友達を招�
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr "他のプロフィールからQRコードをスキャンするには、Blueskyにカメラへのアクセス許可が必要です。"
 
-#: src/components/PdsDialog.tsx:128
+#: src/components/PdsDialog.tsx:129
 msgid "Bluesky Social"
 msgstr ""
 
@@ -3763,7 +3767,7 @@ msgstr ""
 msgid "Constellations instance URL"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:191
+#: src/components/PdsDialog.tsx:192
 msgid "Contact"
 msgstr ""
 
@@ -4168,7 +4172,7 @@ msgstr "連絡先をアップロードできませんでした。続行するに
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:236
+#: src/components/PdsDialog.tsx:237
 msgid "Couldn’t load extra details from this server."
 msgstr ""
 
@@ -4412,10 +4416,6 @@ msgstr "ダーク"
 #: src/screens/Settings/AppearanceSettings.tsx:151
 msgid "Dark theme"
 msgstr "ダークテーマ"
-
-#: src/components/PdsDialog.tsx:133
-msgid "Dark World"
-msgstr ""
 
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:39
 #: src/components/CrackComponents/Tenna/TennaBadge.tsx:98
@@ -6144,7 +6144,7 @@ msgstr ""
 msgid "Feature gates"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:124
+#: src/components/PdsDialog.tsx:125
 msgid "Fediverse"
 msgstr ""
 
@@ -7110,7 +7110,7 @@ msgstr "ハンドルが長すぎます。短いものをお試しください。
 msgid "Handle, DID, or PDS address"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:216
+#: src/components/PdsDialog.tsx:217
 msgid "Handles"
 msgstr ""
 
@@ -7910,7 +7910,7 @@ msgstr "招待コード"
 msgid "Invite code not accepted. Check that you input it correctly and try again."
 msgstr "招待コードが確認できません。正しく入力されていることを確認し、もう一度試してください。"
 
-#: src/components/PdsDialog.tsx:207
+#: src/components/PdsDialog.tsx:208
 msgid "Invite code required"
 msgstr ""
 
@@ -8190,7 +8190,7 @@ msgctxt "english-only-resource"
 msgid "Learn more about importing contacts"
 msgstr "連絡先の読み込みについて詳細を見る"
 
-#: src/components/PdsDialog.tsx:246
+#: src/components/PdsDialog.tsx:247
 msgid "Learn more about PDSes"
 msgstr ""
 
@@ -8199,7 +8199,7 @@ msgstr ""
 msgid "Learn more about self hosting your PDS."
 msgstr "自分用のPDSをホスティングする方法を学ぶ。"
 
-#: src/components/PdsDialog.tsx:160
+#: src/components/PdsDialog.tsx:161
 msgid "Learn more about the Fediverse"
 msgstr ""
 
@@ -8659,7 +8659,7 @@ msgstr ""
 msgid "Loading post interaction settings..."
 msgstr "投稿への反応の設定を読み込み中…"
 
-#: src/components/PdsDialog.tsx:180
+#: src/components/PdsDialog.tsx:181
 msgid "Loading server details…"
 msgstr ""
 
@@ -10047,7 +10047,7 @@ msgstr "このプロフィールは存在しません。別のものをスキャ
 msgid "Oops!"
 msgstr "おっと！"
 
-#: src/components/PdsDialog.tsx:209
+#: src/components/PdsDialog.tsx:210
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:268
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:272
 #: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:181
@@ -10519,7 +10519,7 @@ msgstr "ビデオを一時停止"
 msgid "PDS badges"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:107
+#: src/components/PdsDialog.tsx:108
 msgid "PDS Information"
 msgstr ""
 
@@ -12998,7 +12998,7 @@ msgstr "複数のメディアタイプの選択はサポートされていませ
 msgid "Self-harm or dangerous behaviors"
 msgstr "自傷または危険行為"
 
-#: src/components/PdsDialog.tsx:253
+#: src/components/PdsDialog.tsx:254
 msgid "Self-hosting PDS documentation"
 msgstr ""
 
@@ -13665,7 +13665,7 @@ msgstr "@{0}でサインイン"
 msgid "Signing in..."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:204
+#: src/components/PdsDialog.tsx:205
 msgid "Signup"
 msgstr ""
 
@@ -14775,7 +14775,7 @@ msgstr "このアカウントを閲覧するためにはサインインが必要
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr "このアカウントは1つ、あるいは複数のモデレーションリストでブロックされています。ブロックを解除するにはリストの画面に移動してこのユーザーをリストから外してください。"
 
-#: src/components/PdsDialog.tsx:156
+#: src/components/PdsDialog.tsx:157
 msgid "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>."
 msgstr ""
 
@@ -14783,7 +14783,7 @@ msgstr ""
 msgid "This account is no longer available"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:141
+#: src/components/PdsDialog.tsx:142
 msgid "This account’s data is stored on a Personal Data Server at <0>{hostname}</0>."
 msgstr ""
 
