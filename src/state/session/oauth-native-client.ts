@@ -14,8 +14,8 @@ const OAUTH_SCOPE =
 
 // Reverse-domain of witchsky.app → app.witchsky
 const NATIVE_REDIRECT_URI = IS_IOS
-  ? 'party.tenna://auth/callback'
-  : 'app.tennaparty://auth/callback'
+  ? 'party.tenna:/auth/callback'
+  : 'app.tennaparty:/auth/callback'
 
 const BSKY_OAUTH_CLIENT = new ExpoOAuthClient({
   identityResolver: createIdentityResolver(),

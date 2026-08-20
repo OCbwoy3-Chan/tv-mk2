@@ -2,7 +2,7 @@
   "client_id": "https://tenna.party/oauth-client-metadata-native.json",
   "client_name": "Tenna Party",
   "client_uri": "https://tenna.party",
-  "redirect_uris": ["tenna://auth/callback"],
+  "redirect_uris": ["party.tenna://auth/callback", "app.tennaparty://auth/callback"],
   "scope": "atproto transition:generic transition:email transition:chat.bsky",
   "token_endpoint_auth_method": "none",
   "response_types": ["code"],
