@@ -1,5 +1,6 @@
 import {ExpoOAuthClient} from '@atproto/oauth-client-expo'
 
+import {IS_IOS} from '#/env'
 import {createIdentityResolver} from './identity-resolver'
 
 const OAUTH_BASE_URL: string =
@@ -12,7 +13,9 @@ const OAUTH_SCOPE =
   'atproto transition:generic transition:email transition:chat.bsky'
 
 // Reverse-domain of witchsky.app → app.witchsky
-const NATIVE_REDIRECT_URI = 'tenna://auth/callback'
+const NATIVE_REDIRECT_URI = IS_IOS
+  ? 'party.tenna://auth/callback'
+  : 'app.tennaparty://auth/callback'
 
 const BSKY_OAUTH_CLIENT = new ExpoOAuthClient({
   identityResolver: createIdentityResolver(),
