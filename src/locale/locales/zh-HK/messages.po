@@ -18,6 +18,10 @@ msgstr ""
 "X-Crowdin-File: /main/src/locale/locales/en/messages.po\n"
 "X-Crowdin-File-ID: 11\n"
 
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:167
+msgid " Others will still see it on your profile."
+msgstr ""
+
 #: src/components/PostEditedIndicator.tsx:44
 msgctxt "Indicates a post has been edited"
 msgid "· Edited"
@@ -2488,18 +2492,18 @@ msgstr "測試功能"
 msgid "Beta features"
 msgstr "測試功能"
 
-#: src/components/BetaBadge.tsx:79
-#: src/components/BetaBadge.tsx:99
-#: src/components/BetaBadge.tsx:100
+#: src/components/BetaBadge.tsx:82
+#: src/components/BetaBadge.tsx:102
+#: src/components/BetaBadge.tsx:103
 msgid "Beta features enabled"
 msgstr ""
 
-#: src/screens/Settings/BetaFeaturesSettings.tsx:144
+#: src/screens/Settings/BetaFeaturesSettings.tsx:153
 msgctxt "web"
 msgid "Beta features may be unstable. Some changes may require reloading the app."
 msgstr "測試功能可能唔穩定。部分變更可能需要重新載入應用程式。"
 
-#: src/screens/Settings/BetaFeaturesSettings.tsx:149
+#: src/screens/Settings/BetaFeaturesSettings.tsx:158
 msgctxt "native"
 msgid "Beta features may be unstable. Some changes may require restarting the app."
 msgstr "測試功能可能唔穩定。部分變更可能需要重新啓動應用程式。"
@@ -3087,8 +3091,8 @@ msgstr "已儲存變更"
 msgid "Changes to the starter pack will not be reflected in the list after creation. The list will be an independent copy."
 msgstr "清單建立後會係一個獨立嘅副本，新手包有咩變更都會唔影響到份清單。"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:208
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:219
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:240
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:251
 msgid "Character"
 msgstr ""
 
@@ -3205,7 +3209,7 @@ msgstr "傾偈"
 msgid "Check <0>{currentEmail}</0> for an email with the confirmation code to enter below:"
 msgstr "喺下低輸入傳送至 <0>{currentEmail}</0> 嘅驗證碼："
 
-#: src/screens/Settings/BetaFeaturesSettings.tsx:182
+#: src/screens/Settings/BetaFeaturesSettings.tsx:191
 msgid "Check back later!"
 msgstr "遲啲至過嚟睇睇！"
 
@@ -4344,7 +4348,7 @@ msgstr ""
 msgid "Current account"
 msgstr ""
 
-#: src/screens/Settings/BetaFeaturesSettings.tsx:188
+#: src/screens/Settings/BetaFeaturesSettings.tsx:197
 msgid "Current beta features"
 msgstr "目前嘅測試功能"
 
@@ -4381,7 +4385,7 @@ msgstr ""
 msgid "Customization options"
 msgstr "自訂選項"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:165
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:172
 msgid "Customize some of the options below and tap save to apply the label!"
 msgstr ""
 
@@ -4418,7 +4422,7 @@ msgid "Dark theme"
 msgstr "深色主題"
 
 #: src/components/CrackComponents/Tenna/TennaAccountAlert.tsx:39
-#: src/components/CrackComponents/Tenna/TennaBadge.tsx:98
+#: src/components/CrackComponents/Tenna/TennaBadge.tsx:108
 msgid "Darkner"
 msgstr ""
 
@@ -4584,7 +4588,7 @@ msgid "Deleted list"
 msgstr "刪除咗嘅清單"
 
 #: src/Navigation.tsx:615
-#: src/screens/Settings/DeltaSettings/index.tsx:20
+#: src/screens/Settings/DeltaSettings/index.tsx:22
 #: src/screens/Settings/Settings.tsx:478
 #: src/screens/Settings/Settings.tsx:483
 msgid "Deltas"
@@ -5344,7 +5348,7 @@ msgstr "只啓用 {0}"
 msgid "Enable adult content"
 msgstr "啓用成人內容"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:189
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:196
 msgid "Enable Badge"
 msgstr ""
 
@@ -7246,6 +7250,10 @@ msgstr "隱藏"
 msgid "Hide \"Feeds ✨\" tab when only one feed is selected"
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/components/BetaBadgeToggle.tsx:32
+msgid "Hide beta badge"
+msgstr ""
+
 #: src/components/dialogs/Embed.tsx:124
 msgid "Hide customization options"
 msgstr "隱藏自訂選項"
@@ -7268,6 +7276,10 @@ msgstr ""
 #: src/components/dms/SystemMessageGroup.tsx:57
 msgid "Hide group chat updates"
 msgstr "隱藏羣組傾偈更新"
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:220
+msgid "Hide it"
+msgstr ""
 
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:534
 msgid "Hide lists"
@@ -8076,11 +8088,11 @@ msgstr "繼續編輯"
 msgid "Keep me posted"
 msgstr "有新動態嗰陣通知我"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:244
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:276
 msgid "Kin"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:255
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:287
 msgid "Kin Type"
 msgstr ""
 
@@ -9500,7 +9512,7 @@ msgstr "而家仲未有 App 專用密碼"
 msgid "No author filter"
 msgstr ""
 
-#: src/screens/Settings/BetaFeaturesSettings.tsx:177
+#: src/screens/Settings/BetaFeaturesSettings.tsx:186
 msgid "No beta features at the moment."
 msgstr "暫時未有測試功能。"
 
@@ -12427,7 +12439,7 @@ msgstr "儲存出世日期"
 #: src/screens/SavedFeeds.tsx:124
 #: src/screens/SavedFeeds.tsx:311
 #: src/screens/SavedFeeds.tsx:315
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:273
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:305
 #: src/screens/Settings/Settings.tsx:388
 #: src/screens/Settings/Settings.tsx:395
 #: src/view/com/composer/Composer.tsx:1762
@@ -12435,7 +12447,7 @@ msgstr "儲存出世日期"
 msgid "Save changes"
 msgstr "儲存變更"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:279
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:311
 msgid "Save Changes"
 msgstr ""
 
@@ -12510,7 +12522,7 @@ msgstr "儲存咗嘅動態源"
 msgid "Saved Posts"
 msgstr "帖文收藏"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:285
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:317
 msgid "Saved successfully!"
 msgstr ""
 
@@ -12524,7 +12536,7 @@ msgstr "已儲存到你嘅動態源度"
 msgid "Saves"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:279
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:311
 msgid "Saving..."
 msgstr ""
 
@@ -13233,8 +13245,8 @@ msgstr "點都要分享"
 msgid "Share author DID"
 msgstr "分享發布者 DID"
 
-#: src/screens/Settings/BetaFeaturesSettings.tsx:158
-#: src/screens/Settings/BetaFeaturesSettings.tsx:165
+#: src/screens/Settings/BetaFeaturesSettings.tsx:167
+#: src/screens/Settings/BetaFeaturesSettings.tsx:174
 #: src/screens/Settings/components/BetaFeaturesFeedbackDialog.tsx:93
 #: src/screens/Settings/components/BetaFeaturesFeedbackDialog.tsx:98
 msgid "Share feedback"
@@ -14438,7 +14450,7 @@ msgstr "應用程式將會重啓"
 msgid "The author of this thread has hidden this reply."
 msgstr "呢個討論串嘅作者隱藏咗呢個回覆。"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:141
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:145
 msgid "THE BADGE"
 msgstr ""
 
@@ -14891,7 +14903,7 @@ msgstr "呢個功能可以畀其他用戶喺你出新帖或回覆嗰陣收到通
 msgid "This feature is in beta. You can read more about repository exports in <0>this blogpost</0>."
 msgstr "呢個功能仲喺測試階段。你可以睇 <0>呢篇網誌</0> 知多啲匯出資料嘅資訊。"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:152
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:156
 msgid "This feature is intended for those who are a kin of or are any of the characters listed below."
 msgstr ""
 
@@ -14954,7 +14966,7 @@ msgstr "此邀請連結已停用。"
 msgid "This invite link is invalid"
 msgstr "此邀請連結無效"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:144
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:148
 msgid "this is a tenna.party exclusive, you can't get this on witchsky 👀"
 msgstr ""
 
@@ -15013,11 +15025,11 @@ msgstr "呢份清單度得個吉。"
 msgid "This looks like a hosting provider (PDS) address, not an AppView. Your PDS is detected from your handle, or set separately under Hosting provider; don’t enter it here!"
 msgstr ""
 
-#. placeholder {0}: kinType !== "s" ? (CHARACTERS_A_AN[selectedChar] ?? "a")+" " : ""
-#. placeholder {1}: CHARACTERS.find(a=>a.value===selectedChar)?.label ?? selectedChar
+#. placeholder {0}: kinType !== "s" ? (CHARACTERS_A_AN[selectedChar] ?? "a") + " " : ""
+#. placeholder {1}: CHARACTERS.find(a => a.value === selectedChar)?.label ?? selectedChar
 #. placeholder {2}: CHARACTERS_FRANCHISES[selectedChar]
-#. placeholder {3}: kinType !== "s" ? " "+kinType : ", literally"
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:159
+#. placeholder {3}: kinType !== "s" ? " " + kinType : ", literally"
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:163
 msgid "This makes you {0}{1} {2}{3}."
 msgstr ""
 
@@ -15303,8 +15315,12 @@ msgstr "今日"
 msgid "Toggle {label} label"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:187
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:194
 msgid "Toggle fictionkin badge"
+msgstr ""
+
+#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:218
+msgid "Toggle seeing your own fictionkin badge"
 msgstr ""
 
 #: src/screens/Moderation/index.tsx:392
