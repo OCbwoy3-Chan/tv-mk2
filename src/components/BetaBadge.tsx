@@ -8,6 +8,7 @@ import {atoms as a, useTheme} from '#/alf'
 import {Beaker_Stroke2_Corner2_Rounded as BeakerIcon} from '#/components/icons/Beaker'
 import * as Tooltip from '#/components/Tooltip'
 import type * as bsky from '#/types/bsky'
+import { useHideBetaBadge } from '#/state/preferences/hide-beta-badge'
 
 /**
  * Whether to show the beta badge for a given profile. Only shown on the
@@ -20,7 +21,9 @@ export function useIsBetaBadgeVisible(
   const {data: preferences} = usePreferencesQuery()
   const isBetaUser = preferences?.bskyAppState?.isBetaUser ?? false
   const isSelf = currentAccount?.did === profile.did
+  const hideBetaBadge = useHideBetaBadge();
 
+  if (hideBetaBadge === true) return false;
   return isSelf && isBetaUser
 }
 

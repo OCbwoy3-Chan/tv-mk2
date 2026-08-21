@@ -18,6 +18,7 @@ import { useSession } from '#/state/session'
 import * as bsky from '#/types/bsky'
 import { isDeltaLabel } from '#/components/CrackComponents/Tenna/TennaBadge'
 import { Admonition } from '#/components/Admonition'
+import { useHideOwnTennaBadge, useSetHideOwnTennaBadge } from '#/state/preferences/hide-own-tennabadge'
 
 export function FictionkinBadgeSettings() {
     const t = useTheme()
@@ -26,6 +27,9 @@ export function FictionkinBadgeSettings() {
     const { currentAccount } = useSession()
     const { data: profile } = useProfileQuery({ did: currentAccount?.did })
     const updateProfile = useProfileUpdateMutation()
+
+    const hideTennaBadge = useHideOwnTennaBadge()
+    const setHideTennaBadge = useSetHideOwnTennaBadge()
 
     const [selectedChar, setSelectedChar] = useState<string>('kris')
     const [kinType, setKinType] = useState<string>('s')
@@ -157,9 +161,12 @@ export function FictionkinBadgeSettings() {
 
             {isEnabled && <Text style={[a.text_md, a.font_bold, a.italic, t.atoms.text_contrast_medium, a.leading_snug]}>
                 <Trans>
-                    This makes you {kinType !== "s" ? (CHARACTERS_A_AN[selectedChar] ?? "a")+" " : ""}{CHARACTERS.find(a=>a.value===selectedChar)?.label ?? selectedChar}
-                    {" "}{CHARACTERS_FRANCHISES[selectedChar]}{kinType !== "s" ? " "+kinType : ", literally"}.
+                    This makes you {kinType !== "s" ? (CHARACTERS_A_AN[selectedChar] ?? "a") + " " : ""}{CHARACTERS.find(a => a.value === selectedChar)?.label ?? selectedChar}
+                    {" "}{CHARACTERS_FRANCHISES[selectedChar]}{kinType !== "s" ? " " + kinType : ", literally"}.
                 </Trans>
+                {hideTennaBadge && <Trans>
+                    {" "}Others will still see it on your profile.    
+                </Trans>}
             </Text>}
             {isEnabled && <Text style={[a.text_md, t.atoms.text_contrast_medium, a.leading_snug]}>
                 <Trans>
@@ -191,6 +198,31 @@ export function FictionkinBadgeSettings() {
                     <Toggle.Platform />
                 </Toggle.Item>
             </View>
+
+            {isEnabled && (
+                <View
+                    style={[
+                        a.w_full,
+                        a.p_md,
+                        a.rounded_lg,
+                        a.border,
+                        t.atoms.border_contrast_low,
+                        t.atoms.bg_contrast_50,
+                    ]}>
+                    <Toggle.Item
+                        name="hide_fictionkin_badge"
+                        value={hideTennaBadge}
+                        onChange={() => {
+                            setHideTennaBadge(!hideTennaBadge)
+                        }}
+                        label={l`Toggle seeing your own fictionkin badge`}>
+                        <Toggle.LabelText style={[a.flex_1, a.text_md, a.font_medium]}>
+                            <Trans>Hide it</Trans>
+                        </Toggle.LabelText>
+                        <Toggle.Platform />
+                    </Toggle.Item>
+                </View>
+            )}
 
             {isEnabled && (
                 <>

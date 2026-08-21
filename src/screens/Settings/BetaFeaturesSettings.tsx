@@ -139,6 +139,15 @@ export function BetaFeaturesSettingsScreen({}: Props) {
           </Toggle.Item>
 
           <View style={[a.px_xl, a.gap_md]}>
+            <Admonition type="warning">
+              <>
+                If we wanted to release this feature, we would need to own at least a MacBook, pay $99 for a developer license
+                and be forced to use Expo, GrowthBook, Sentry and everything else that Bluesky uses, it isn't cost effective.
+                A true officially supported iOS release via an "Alternative App Distribution" for sideloading would only be possible in the EU & Japan.
+                We can't and won't push to the App Store, ever.
+                Don't use the Beta features right now.
+              </>
+            </Admonition>
             <Admonition type="info">
               {IS_WEB
                 ? l({

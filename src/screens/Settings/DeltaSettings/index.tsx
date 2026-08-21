@@ -6,6 +6,8 @@ import * as Layout from '#/components/Layout'
 import { TennaQuickLinks } from './components/QuickLinks'
 import { DeltasJapanLogoToggle } from './components/JapanLogoToggle'
 import { Text } from '#/components/Typography'
+import { DeltasBetaBadgeToggle } from './components/BetaBadgeToggle'
+import { Separator } from '#/components/Select'
 
 export function DeltaSettingsScreen() {
   const t = useTheme();
@@ -37,7 +39,18 @@ export function DeltaSettingsScreen() {
               App
             </Text>
           </View>
-          <DeltasJapanLogoToggle />
+          <View
+            style={[
+              a.w_full,
+              a.rounded_md,
+              a.overflow_hidden,
+              t.atoms.bg_contrast_25
+            ]}
+          >
+            <DeltasJapanLogoToggle />
+            <Separator/>
+            <DeltasBetaBadgeToggle />
+          </View>
         </View>
       </Layout.Content>
     </Layout.Screen>

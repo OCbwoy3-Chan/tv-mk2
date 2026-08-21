@@ -269,6 +269,8 @@ const schema = z.object({
     })
     .optional(),
   faviconService: z.string().optional(),
+  hideOwnTennaBadge: z.boolean().optional(),
+  hideBetaBadge: z.boolean().optional(),
 
   postReplacement: z.object({
     enabled: z.boolean().optional(),
@@ -452,6 +454,8 @@ export const defaults: Schema = {
     hideBskyPds: true,
   },
   faviconService: 'https://twenty-icons.com/(pds)',
+  hideOwnTennaBadge: false,
+  hideBetaBadge: true,
   atprotoExplorer: {
     name: 'PDSls',
     url: 'https://pds.ls/(uri)',

@@ -67,6 +67,9 @@ import {Provider as TrendingSettingsProvider} from './trending'
 import {Provider as UseHandleInLinksProvider} from './use-handle-in-links'
 import {Provider as UsedStarterPacksProvider} from './used-starter-packs'
 import {Provider as AtprotoRkeySettingsProvider} from "./atproto-rkey-settings.tsx"
+import {Provider as HideOwnTennaBadgeProvider} from "./hide-own-tennabadge.tsx"
+import {Provider as HideBetaBadgeProvider} from "./hide-beta-badge.tsx"
+
 
 export {
   useAlsoLikedCollapseByDefault,
@@ -216,33 +219,37 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                             <AutoCompactAccountSwitcherProvider>
                                                                                                               <CompactAccountSwitcherProvider>
                                                                                                                 <ShowViaClientProvider>
-                                                                                                                  <HideDisplayNamesProvider>
-                                                                                                                    <SixSevenCelebrationProvider>
-                                                                                                                      <PostNameReplacementProvider>
-                                                                                                                        <DisableVerifyEmailReminderProvider>
-                                                                                                                          <TranslationServicePreferenceProvider>
-                                                                                                                            <OpenRouterProvider>
-                                                                                                                              <DisableComposerPromptProvider>
-                                                                                                                                <DisableTopOfFeedButtonProvider>
-                                                                                                                                  <DiscoverContextEnabledProvider>
-                                                                                                                                    <OmitViaFieldProvider>
-                                                                                                                                      <TidSuffixProvider>
-                                                                                                                                        <AtprotoRkeySettingsProvider>
-                                                                                                                                          {
-                                                                                                                                            children
-                                                                                                                                          }
-                                                                                                                                        </AtprotoRkeySettingsProvider>
-                                                                                                                                      </TidSuffixProvider>
-                                                                                                                                    </OmitViaFieldProvider>
-                                                                                                                                  </DiscoverContextEnabledProvider>
-                                                                                                                                </DisableTopOfFeedButtonProvider>
-                                                                                                                              </DisableComposerPromptProvider>
-                                                                                                                            </OpenRouterProvider>
-                                                                                                                          </TranslationServicePreferenceProvider>
-                                                                                                                        </DisableVerifyEmailReminderProvider>
-                                                                                                                      </PostNameReplacementProvider>
-                                                                                                                    </SixSevenCelebrationProvider>
-                                                                                                                  </HideDisplayNamesProvider>
+                                                                                                                  <HideOwnTennaBadgeProvider>
+                                                                                                                    <HideBetaBadgeProvider>
+                                                                                                                      <HideDisplayNamesProvider>
+                                                                                                                        <SixSevenCelebrationProvider>
+                                                                                                                          <PostNameReplacementProvider>
+                                                                                                                            <DisableVerifyEmailReminderProvider>
+                                                                                                                              <TranslationServicePreferenceProvider>
+                                                                                                                                <OpenRouterProvider>
+                                                                                                                                  <DisableComposerPromptProvider>
+                                                                                                                                    <DisableTopOfFeedButtonProvider>
+                                                                                                                                      <DiscoverContextEnabledProvider>
+                                                                                                                                        <OmitViaFieldProvider>
+                                                                                                                                          <TidSuffixProvider>
+                                                                                                                                            <AtprotoRkeySettingsProvider>
+                                                                                                                                              {
+                                                                                                                                                children
+                                                                                                                                              }
+                                                                                                                                            </AtprotoRkeySettingsProvider>
+                                                                                                                                          </TidSuffixProvider>
+                                                                                                                                        </OmitViaFieldProvider>
+                                                                                                                                      </DiscoverContextEnabledProvider>
+                                                                                                                                    </DisableTopOfFeedButtonProvider>
+                                                                                                                                  </DisableComposerPromptProvider>
+                                                                                                                                </OpenRouterProvider>
+                                                                                                                              </TranslationServicePreferenceProvider>
+                                                                                                                            </DisableVerifyEmailReminderProvider>
+                                                                                                                          </PostNameReplacementProvider>
+                                                                                                                        </SixSevenCelebrationProvider>
+                                                                                                                      </HideDisplayNamesProvider>
+                                                                                                                    </HideBetaBadgeProvider>
+                                                                                                                  </HideOwnTennaBadgeProvider>
                                                                                                                 </ShowViaClientProvider>
                                                                                                               </CompactAccountSwitcherProvider>
                                                                                                             </AutoCompactAccountSwitcherProvider>

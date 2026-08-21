@@ -8,6 +8,8 @@ import {useDialogControl} from '#/components/Dialog'
 import type * as bsky from '#/types/bsky'
 import {TennaIcon} from '../Icons'
 import { TennaAccountAlert } from './TennaAccountAlert'
+import { useHideOwnTennaBadge } from '#/state/preferences/hide-own-tennabadge'
+import { useSession } from '#/state/session'
 
 export const deltaCharNames: {[char: string]: string} = {
   kris: "Kris",
@@ -59,10 +61,14 @@ export function TennaBadge({
   width: number
 }) {
   const t = useTheme()
+  const {currentAccount} = useSession();
+  const hideOwnTennaBadge = useHideOwnTennaBadge();
 
   if (!isTennaAccount(profile) && !alwaysShow) {
     return null
   }
+
+  if (currentAccount?.did === profile.did && hideOwnTennaBadge === true) return;
 
   const l = profile.labels!.find(l => l.src === profile.did && isDeltaLabel(l.val).char!=="67")!;
   const ll = isDeltaLabel(l.val)
@@ -84,10 +90,14 @@ export function TennaBadgeButton({
   const t = useTheme()
   const {t: l} = useLingui()
   const control = useDialogControl()
+  const {currentAccount} = useSession();
+  const hideOwnTennaBadge = useHideOwnTennaBadge();
 
   if (!isTennaAccount(profile)) {
     return null
   }
+
+  if (currentAccount?.did === profile.did && hideOwnTennaBadge === true) return;
 
   const lz = profile.labels!.find(l => l.src === profile.did && isDeltaLabel(l.val).char!=="67")!;
   const ll = isDeltaLabel(lz.val)
