@@ -1,6 +1,6 @@
 {
   "client_id": "https://dev.tenna.party/oauth-client-metadata.json",
-  "client_name": "Witchsky",
+  "client_name": "tenna.party DEV",
   "client_uri": "https://dev.tenna.party",
   "redirect_uris": ["https://dev.tenna.party/auth/web/callback"],
   "scope": "atproto transition:generic transition:email transition:chat.bsky",

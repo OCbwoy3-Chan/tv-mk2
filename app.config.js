@@ -58,7 +58,7 @@ module.exports = function (_config) {
       version: VERSION,
       name: 'tenna.party',
       slug: 'tennaparty',
-      scheme: ['bluesky', 'tenna', 'party.tenna'],
+      scheme: ['bluesky', 'tenna', 'party.tenna', 'app.tennaparty'],
       // owner: 'blueskysocial',
       // owner: 'neema.brown',
       runtimeVersion: {

@@ -12,7 +12,8 @@ const OAUTH_CLIENT_NAME: string =
 const OAUTH_SCOPE =
   'atproto transition:generic transition:email transition:chat.bsky'
 
-// Reverse-domain of witchsky.app → app.witchsky
+// RFC 8252 requires private-use native redirect URIs to use one slash. Keep
+// this exact value in sync with the native client metadata.
 const NATIVE_REDIRECT_URI = IS_IOS
   ? 'party.tenna:/auth/callback'
   : 'app.tennaparty:/auth/callback'

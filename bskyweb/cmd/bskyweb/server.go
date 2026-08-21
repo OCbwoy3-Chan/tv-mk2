@@ -604,7 +604,7 @@ func (srv *Server) OAuthClientMetadataNative(c echo.Context) error {
 		"client_id":                  baseURL + "/oauth-client-metadata-native.json",
 		"client_name":                "tenna.party",
 		"client_uri":                 baseURL,
-		"redirect_uris":              []string{"app.witchsky:/auth/callback"},
+		"redirect_uris":              []string{"party.tenna:/auth/callback", "app.tennaparty:/auth/callback"},
 		"scope":                      "atproto transition:generic transition:email transition:chat.bsky",
 		"token_endpoint_auth_method": "none",
 		"response_types":             []string{"code"},

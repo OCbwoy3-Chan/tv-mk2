@@ -1,11 +1,7 @@
-# Hello Friends!
-# If you are considering bulk or automated crawling, you may want to look in
-# to our protocol (API), including a firehose of updates. See: https://atproto.com/
+# Hello Foe!
+# If you are considering bulk or automated crawling, fuck you. I'm speaking for every Bluesky user here leave us alone.
+# Do NOT consider the AT Protocol.
 
-# By default, may crawl anything on this domain. HTTP 429 ("backoff") status
-# codes are used for rate-limiting. Up to a handful concurrent requests should
-# be ok.
+# You may not crawl anything on this domain. I'm watching you Mark Zuckerberg.
 User-Agent: *
-Allow: /
-
-Sitemap: https://bsky.app/sitemap/users.xml.gz
+Disallow: /

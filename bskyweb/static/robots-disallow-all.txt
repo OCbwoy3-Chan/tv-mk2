@@ -1,3 +1,7 @@
-# This is an development or self-hosted instance of the bsky web app, and crawling has been disallowed by the operator team.
+# Hello Foe!
+# If you are considering bulk or automated crawling, fuck you. I'm speaking for every Bluesky user here leave us alone.
+# Do NOT consider the AT Protocol.
+
+# You may not crawl anything on this domain. I'm watching you Mark Zuckerberg.
 User-Agent: *
 Disallow: /
