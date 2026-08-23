@@ -2274,13 +2274,13 @@ msgstr ""
 msgid "Author"
 msgstr "投稿者"
 
-#: src/components/Post/Embed/index.tsx:257
-#: src/components/Post/Embed/index.tsx:284
+#: src/components/Post/Embed/index.tsx:265
+#: src/components/Post/Embed/index.tsx:292
 msgid "Author account suspended"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:259
-#: src/components/Post/Embed/index.tsx:286
+#: src/components/Post/Embed/index.tsx:267
+#: src/components/Post/Embed/index.tsx:294
 msgid "Author account unavailable"
 msgstr ""
 
@@ -2599,9 +2599,9 @@ msgstr "ユーザーをブロックするかこの会話を削除（あるいは
 msgid "Block user and/or leave this conversation"
 msgstr "ユーザーをブロックするかこの会話から退出（あるいは両方）"
 
-#: src/components/Post/Embed/index.tsx:247
-#: src/components/Post/Embed/index.tsx:274
-#: src/components/Post/Embed/index.tsx:290
+#: src/components/Post/Embed/index.tsx:255
+#: src/components/Post/Embed/index.tsx:282
+#: src/components/Post/Embed/index.tsx:298
 msgid "Blocked"
 msgstr "ブロックされています"
 
@@ -4566,7 +4566,7 @@ msgstr "このリストを削除しますか？"
 msgid "Delete this post?"
 msgstr "この投稿を削除しますか？"
 
-#: src/components/Post/Embed/index.tsx:261
+#: src/components/Post/Embed/index.tsx:269
 msgid "Deleted"
 msgstr "削除されています"
 
@@ -11074,7 +11074,7 @@ msgstr ""
 msgid "Post type"
 msgstr "投稿タイプ"
 
-#: src/components/Post/Embed/index.tsx:288
+#: src/components/Post/Embed/index.tsx:296
 msgid "Post unavailable"
 msgstr ""
 
@@ -11764,13 +11764,13 @@ msgstr "認証を削除"
 msgid "Remove your verification for this account?"
 msgstr "このアカウントの認証を削除しますか？"
 
-#: src/components/Post/Embed/index.tsx:302
-#: src/components/Post/Embed/index.tsx:372
+#: src/components/Post/Embed/index.tsx:310
+#: src/components/Post/Embed/index.tsx:380
 msgid "Removed by author"
 msgstr "投稿者が削除しました"
 
-#: src/components/Post/Embed/index.tsx:303
-#: src/components/Post/Embed/index.tsx:370
+#: src/components/Post/Embed/index.tsx:311
+#: src/components/Post/Embed/index.tsx:378
 msgid "Removed by you"
 msgstr "あなたが削除しました"
 

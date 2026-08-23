@@ -2274,13 +2274,13 @@ msgstr ""
 msgid "Author"
 msgstr "作者"
 
-#: src/components/Post/Embed/index.tsx:257
-#: src/components/Post/Embed/index.tsx:284
+#: src/components/Post/Embed/index.tsx:265
+#: src/components/Post/Embed/index.tsx:292
 msgid "Author account suspended"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:259
-#: src/components/Post/Embed/index.tsx:286
+#: src/components/Post/Embed/index.tsx:267
+#: src/components/Post/Embed/index.tsx:294
 msgid "Author account unavailable"
 msgstr ""
 
@@ -2599,9 +2599,9 @@ msgstr "屏蔽该用户或删除整个对话（多选）"
 msgid "Block user and/or leave this conversation"
 msgstr "屏蔽该用户或离开对话（多选）"
 
-#: src/components/Post/Embed/index.tsx:247
-#: src/components/Post/Embed/index.tsx:274
-#: src/components/Post/Embed/index.tsx:290
+#: src/components/Post/Embed/index.tsx:255
+#: src/components/Post/Embed/index.tsx:282
+#: src/components/Post/Embed/index.tsx:298
 msgid "Blocked"
 msgstr "已被屏蔽"
 
@@ -4566,7 +4566,7 @@ msgstr "要删除此列表吗？"
 msgid "Delete this post?"
 msgstr "要删除这则帖文吗？"
 
-#: src/components/Post/Embed/index.tsx:261
+#: src/components/Post/Embed/index.tsx:269
 msgid "Deleted"
 msgstr "已删除"
 
@@ -11074,7 +11074,7 @@ msgstr ""
 msgid "Post type"
 msgstr "帖文类型"
 
-#: src/components/Post/Embed/index.tsx:288
+#: src/components/Post/Embed/index.tsx:296
 msgid "Post unavailable"
 msgstr ""
 
@@ -11764,13 +11764,13 @@ msgstr "撤回认证"
 msgid "Remove your verification for this account?"
 msgstr "要撤回你对这个账户的认证吗？"
 
-#: src/components/Post/Embed/index.tsx:302
-#: src/components/Post/Embed/index.tsx:372
+#: src/components/Post/Embed/index.tsx:310
+#: src/components/Post/Embed/index.tsx:380
 msgid "Removed by author"
 msgstr "已被发布者删除"
 
-#: src/components/Post/Embed/index.tsx:303
-#: src/components/Post/Embed/index.tsx:370
+#: src/components/Post/Embed/index.tsx:311
+#: src/components/Post/Embed/index.tsx:378
 msgid "Removed by you"
 msgstr "你已删除"
 

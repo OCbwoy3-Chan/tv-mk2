@@ -2269,13 +2269,13 @@ msgstr "ATProto settings"
 msgid "Author"
 msgstr "Author"
 
-#: src/components/Post/Embed/index.tsx:257
-#: src/components/Post/Embed/index.tsx:284
+#: src/components/Post/Embed/index.tsx:265
+#: src/components/Post/Embed/index.tsx:292
 msgid "Author account suspended"
 msgstr "Author account suspended"
 
-#: src/components/Post/Embed/index.tsx:259
-#: src/components/Post/Embed/index.tsx:286
+#: src/components/Post/Embed/index.tsx:267
+#: src/components/Post/Embed/index.tsx:294
 msgid "Author account unavailable"
 msgstr "Author account unavailable"
 
@@ -2594,9 +2594,9 @@ msgstr ""
 msgid "Block user and/or leave this conversation"
 msgstr "Block user and/or leave this conversation"
 
-#: src/components/Post/Embed/index.tsx:247
-#: src/components/Post/Embed/index.tsx:274
-#: src/components/Post/Embed/index.tsx:290
+#: src/components/Post/Embed/index.tsx:255
+#: src/components/Post/Embed/index.tsx:282
+#: src/components/Post/Embed/index.tsx:298
 msgid "Blocked"
 msgstr ""
 
@@ -4561,7 +4561,7 @@ msgstr ""
 msgid "Delete this post?"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:261
+#: src/components/Post/Embed/index.tsx:269
 msgid "Deleted"
 msgstr ""
 
@@ -11069,7 +11069,7 @@ msgstr "Post translation provider"
 msgid "Post type"
 msgstr "Post type"
 
-#: src/components/Post/Embed/index.tsx:288
+#: src/components/Post/Embed/index.tsx:296
 msgid "Post unavailable"
 msgstr "Post unavailable"
 
@@ -11759,13 +11759,13 @@ msgstr ""
 msgid "Remove your verification for this account?"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:302
-#: src/components/Post/Embed/index.tsx:372
+#: src/components/Post/Embed/index.tsx:310
+#: src/components/Post/Embed/index.tsx:380
 msgid "Removed by author"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:303
-#: src/components/Post/Embed/index.tsx:370
+#: src/components/Post/Embed/index.tsx:311
+#: src/components/Post/Embed/index.tsx:378
 msgid "Removed by you"
 msgstr ""
 

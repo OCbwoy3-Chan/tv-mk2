@@ -2274,13 +2274,13 @@ msgstr ""
 msgid "Author"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:257
-#: src/components/Post/Embed/index.tsx:284
+#: src/components/Post/Embed/index.tsx:265
+#: src/components/Post/Embed/index.tsx:292
 msgid "Author account suspended"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:259
-#: src/components/Post/Embed/index.tsx:286
+#: src/components/Post/Embed/index.tsx:267
+#: src/components/Post/Embed/index.tsx:294
 msgid "Author account unavailable"
 msgstr ""
 
@@ -2599,9 +2599,9 @@ msgstr "Bloker bruger og/eller slet denne samtale"
 msgid "Block user and/or leave this conversation"
 msgstr "Bloker bruger og/eller forlad denne samtale"
 
-#: src/components/Post/Embed/index.tsx:247
-#: src/components/Post/Embed/index.tsx:274
-#: src/components/Post/Embed/index.tsx:290
+#: src/components/Post/Embed/index.tsx:255
+#: src/components/Post/Embed/index.tsx:282
+#: src/components/Post/Embed/index.tsx:298
 msgid "Blocked"
 msgstr "Blokeret"
 
@@ -4566,7 +4566,7 @@ msgstr "Slet denne liste?"
 msgid "Delete this post?"
 msgstr "Slet dette opslag?"
 
-#: src/components/Post/Embed/index.tsx:261
+#: src/components/Post/Embed/index.tsx:269
 msgid "Deleted"
 msgstr "Slettet"
 
@@ -11074,7 +11074,7 @@ msgstr ""
 msgid "Post type"
 msgstr "Opslagstype"
 
-#: src/components/Post/Embed/index.tsx:288
+#: src/components/Post/Embed/index.tsx:296
 msgid "Post unavailable"
 msgstr ""
 
@@ -11764,13 +11764,13 @@ msgstr "Fjern verifikation"
 msgid "Remove your verification for this account?"
 msgstr "Fjern verifikation fra denne konto?"
 
-#: src/components/Post/Embed/index.tsx:302
-#: src/components/Post/Embed/index.tsx:372
+#: src/components/Post/Embed/index.tsx:310
+#: src/components/Post/Embed/index.tsx:380
 msgid "Removed by author"
 msgstr "Fjernet af forfatter"
 
-#: src/components/Post/Embed/index.tsx:303
-#: src/components/Post/Embed/index.tsx:370
+#: src/components/Post/Embed/index.tsx:311
+#: src/components/Post/Embed/index.tsx:378
 msgid "Removed by you"
 msgstr "Fjernet af dig"
 
