@@ -107,7 +107,7 @@ function MediaEmbed({
     case 'link': {
       if (embed.view.external.uri.startsWith("https://private-post.tenna.party")) {
         const params = new URL(embed.view.external.uri).searchParams
-        return <PrivatePostEmbed uri={params.get("uri") ?? ""} cid={params.get("cid") ?? ""} viewContext={rest.viewContext} />
+        return <PrivatePostEmbed post={rest.post} uri={params.get("uri") ?? ""} cid={params.get("cid") ?? ""} viewContext={rest.viewContext} />
       }
 
       if (isStandardSiteEmbed(embed.view.external)) {

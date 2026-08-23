@@ -3,7 +3,7 @@ import { CircleX_Stroke2_Corner0_Rounded as CircleXIcon } from "#/components/ico
 import { RichText } from "#/components/RichText";
 import { Text } from "#/components/Typography";
 import { View } from "react-native";
-import { RichText as RichTextApi } from "@atproto/api"
+import { AppBskyFeedDefs, RichText as RichTextApi } from "@atproto/api"
 import { MAX_POST_LINES } from "#/lib/constants";
 import { useMemo, useState } from "react";
 import { countLines } from "#/lib/strings/helpers";
@@ -20,8 +20,8 @@ function InvalidEmbed({ reason }: { reason: string }) {
             a.overflow_hidden,
             a.w_full,
             a.border,
-            t.atoms.bg,
-            t.atoms.border_contrast_low
+            t.atoms.border_contrast_low,
+            {backgroundColor: "#ffffff00"}
         ]}>
         <View style={[
             a.p_md,
@@ -38,13 +38,29 @@ function InvalidEmbed({ reason }: { reason: string }) {
     </View>
 }
 
-export function PrivatePostEmbed({ uri, cid, viewContext = PostEmbedViewContext.ThreadHighlighted }: { uri: string, cid: string, viewContext: PostEmbedViewContext | undefined }) {
-    if (!uri.startsWith("at://")) return <InvalidEmbed reason="Invalid private post at-uri" />
-    if (!/^(Qm[1-9A-HJ-NP-Za-km-z]{44}|b[a-z2-7]{58})$/.test(cid)) return <InvalidEmbed reason="Invalid private post CID" />
+export function PrivatePostEmbed({
+    post,
+    uri,
+    cid,
+    viewContext = PostEmbedViewContext.ThreadHighlighted
+}: {
+    post: AppBskyFeedDefs.PostView | undefined
+    uri: string,
+    cid: string,
+    viewContext: PostEmbedViewContext | undefined
+}) {
+    if (!uri.startsWith("at://")) return <InvalidEmbed reason="Invalid private post" />
+    if (!/^(Qm[1-9A-HJ-NP-Za-km-z]{44}|b[a-z2-7]{58})$/.test(cid)) return <InvalidEmbed reason="Invalid private post" />
+
+    if (!uri.startsWith(`at://${post?.author.did}`)) return <InvalidEmbed reason="Cannot embed somebody else's private post"/>
 
     const t = useTheme();
 
-    const postText = `https://tenna.party private post stub viewcontext ${viewContext} uri ${uri} cid ${cid}`
+    const postText = `every day on https://tenna.party i see some fucking bullshit dawg
+
+viewContext ${viewContext}
+uri ${uri}
+cid ${cid}`
 
     const richText = useMemo(() => {
         // if (!description) return
