@@ -28,6 +28,7 @@ Moderation:
 App:
 - Brought back AI prefs in our settings
 - Big warning on stuff that has to do with AI (too much work to remove)
+- Private posts via embeds + atproto permissioned data
 
 Infra:
 - Native iOS via GitHub Actions (for sideloading)

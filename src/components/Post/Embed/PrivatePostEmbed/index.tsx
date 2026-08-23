@@ -2,13 +2,15 @@ import { atoms as a, useTheme } from "#/alf";
 import { CircleX_Stroke2_Corner0_Rounded as CircleXIcon } from "#/components/icons/CircleX";
 import { RichText } from "#/components/RichText";
 import { Text } from "#/components/Typography";
-import { View } from "react-native";
-import { AppBskyFeedDefs, RichText as RichTextApi } from "@atproto/api"
+import { StyleProp, TextStyle, View } from "react-native";
+import { RichText as RichTextApi } from "@atproto/api"
 import { MAX_POST_LINES } from "#/lib/constants";
 import { useMemo, useState } from "react";
 import { countLines } from "#/lib/strings/helpers";
 import { Lock_Stroke2_Corner0_Rounded as LockIcon } from "#/components/icons/Lock";
 import { PostEmbedViewContext } from "../types";
+import { IS_DEV } from "#/env";
+import { usePrivatePostsEnabled } from "#/state/preferences/private-posts-enabled";
 
 function InvalidEmbed({ reason }: { reason: string }) {
     const t = useTheme();
@@ -39,20 +41,32 @@ function InvalidEmbed({ reason }: { reason: string }) {
 }
 
 export function PrivatePostEmbed({
-    post,
+    author = undefined,
     uri,
     cid,
-    viewContext = PostEmbedViewContext.ThreadHighlighted
+    viewContext = PostEmbedViewContext.ThreadHighlighted,
+    style = [],
+    textOnly = false,
+    numberOfLines = undefined
 }: {
-    post: AppBskyFeedDefs.PostView | undefined
+    author: string | undefined,
     uri: string,
     cid: string,
-    viewContext: PostEmbedViewContext | undefined
+    viewContext: PostEmbedViewContext | undefined,
+    style: StyleProp<TextStyle> | undefined,
+    textOnly: boolean | undefined,
+    numberOfLines: number | undefined
 }) {
+    const privatePostsEnabled = usePrivatePostsEnabled();
+
+    if (!privatePostsEnabled) return <InvalidEmbed reason="Private post" />
+
     if (!uri.startsWith("at://")) return <InvalidEmbed reason="Invalid private post" />
     if (!/^(Qm[1-9A-HJ-NP-Za-km-z]{44}|b[a-z2-7]{58})$/.test(cid)) return <InvalidEmbed reason="Invalid private post" />
 
-    if (!uri.startsWith(`at://${post?.author.did}`)) return <InvalidEmbed reason="Cannot embed somebody else's private post"/>
+    if (!IS_DEV) {
+        if (author && !uri.startsWith(`at://${author}/`)) return <InvalidEmbed reason="Cannot embed somebody else's private post"/>
+    }
 
     const t = useTheme();
 
@@ -92,14 +106,19 @@ cid ${cid}`
                 </Text>
             </View>
 
-            <RichText
-                enableTags
-                testID="postText"
-                value={richText}
-                numberOfLines={limitLines ? MAX_POST_LINES : undefined}
-                style={[viewContext === PostEmbedViewContext.ThreadHighlighted ? a.text_lg : a.text_md]}
-                shouldProxyLinks={true}
-            />
+            {textOnly && (
+                <Text style={style} numberOfLines={numberOfLines} emoji>{postText}</Text>
+            )}
+            {!textOnly && (
+                <RichText
+                    enableTags
+                    testID="postText"
+                    value={richText}
+                    numberOfLines={limitLines ? MAX_POST_LINES : undefined}
+                    style={[viewContext === PostEmbedViewContext.ThreadHighlighted ? a.text_lg : a.text_md]}
+                    shouldProxyLinks={true}
+                />
+            )}
         </View>
     )
 

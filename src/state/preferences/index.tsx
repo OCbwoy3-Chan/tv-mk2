@@ -69,6 +69,7 @@ import {Provider as UsedStarterPacksProvider} from './used-starter-packs'
 import {Provider as AtprotoRkeySettingsProvider} from "./atproto-rkey-settings.tsx"
 import {Provider as HideOwnTennaBadgeProvider} from "./hide-own-tennabadge.tsx"
 import {Provider as HideBetaBadgeProvider} from "./hide-beta-badge.tsx"
+import {Provider as PrivatePostsEnabledProvider} from "./private-posts-enabled.tsx"
 
 
 export {
@@ -233,9 +234,11 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                         <OmitViaFieldProvider>
                                                                                                                                           <TidSuffixProvider>
                                                                                                                                             <AtprotoRkeySettingsProvider>
-                                                                                                                                              {
-                                                                                                                                                children
-                                                                                                                                              }
+                                                                                                                                              <PrivatePostsEnabledProvider>
+                                                                                                                                                {
+                                                                                                                                                  children
+                                                                                                                                                }
+                                                                                                                                              </PrivatePostsEnabledProvider>
                                                                                                                                             </AtprotoRkeySettingsProvider>
                                                                                                                                           </TidSuffixProvider>
                                                                                                                                         </OmitViaFieldProvider>

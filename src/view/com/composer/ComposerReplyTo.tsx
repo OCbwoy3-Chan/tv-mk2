@@ -18,10 +18,11 @@ import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {type ComposerOptsPostRef} from '#/state/shell/composer'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme, utils, web} from '#/alf'
-import {QuoteEmbed} from '#/components/Post/Embed'
+import {PostEmbedViewContext, QuoteEmbed} from '#/components/Post/Embed'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
 import {parseEmbed} from '#/types/bsky/post'
+import { PrivatePostEmbed } from '#/components/Post/Embed/PrivatePostEmbed'
 
 export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
   const t = useTheme()
@@ -86,6 +87,11 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
     return {images: [], totalNumber: 0}
   }, [embed])
 
+  const privatePostUrl = (((embed as any)?.external?.uri ?? "https://example.com?uri=0&cid=0") as string)
+  const isPrivatePostEmbed = privatePostUrl.startsWith("https://private-post.tenna.party?");
+  const privatePostUri = new URL(isPrivatePostEmbed ? privatePostUrl : "https://example.com").searchParams.get("uri") ?? "";
+  const privatePostCid = new URL(isPrivatePostEmbed ? privatePostUrl : "https://example.com").searchParams.get("cid") ?? "";
+
   return (
     <Pressable
       style={[
@@ -143,6 +149,15 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
               emoji>
               {replyTo.text}
             </Text>
+            {isPrivatePostEmbed && <PrivatePostEmbed
+                style={[a.text_md, a.leading_snug, t.atoms.text_contrast_high]}
+                textOnly
+                numberOfLines={!showFull ? 6 : undefined}
+                author={replyTo.author.did}
+                uri={privatePostUri}
+                cid={privatePostCid}
+                viewContext={PostEmbedViewContext.ChatMessage}
+              />}
           </View>
           {images && !replyTo.moderation?.ui('contentMedia').blur && (
             <ComposerReplyToImages images={images} totalNumber={totalNumber} />

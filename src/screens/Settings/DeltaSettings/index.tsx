@@ -8,6 +8,7 @@ import { DeltasJapanLogoToggle } from './components/JapanLogoToggle'
 import { Text } from '#/components/Typography'
 import { DeltasBetaBadgeToggle } from './components/BetaBadgeToggle'
 import { Separator } from '#/components/Select'
+import { DeltasPrivatePostsToggle } from './components/PrivatePostsToggle'
 
 export function DeltaSettingsScreen() {
   const t = useTheme();
@@ -50,6 +51,8 @@ export function DeltaSettingsScreen() {
             <DeltasJapanLogoToggle />
             <Separator/>
             <DeltasBetaBadgeToggle />
+            <Separator/>
+            <DeltasPrivatePostsToggle />
           </View>
         </View>
       </Layout.Content>
