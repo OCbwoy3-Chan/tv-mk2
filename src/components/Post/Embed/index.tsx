@@ -49,6 +49,7 @@ import {ModeratedListEmbed} from './ListEmbed'
 import {PostPlaceholder as PostPlaceholderText} from './PostPlaceholder'
 import {type CommonProps, type EmbedProps, PostEmbedViewContext} from './types'
 import {VideoEmbed} from './VideoEmbed'
+import { PrivatePostEmbed } from './PrivatePostEmbed'
 
 export {PostEmbedViewContext} from './types'
 
@@ -104,6 +105,13 @@ function MediaEmbed({
       )
     }
     case 'link': {
+      if (
+        (embed.view.external.uri === "https://party.tenna.private.embed")
+        || (embed.view.external.uri === "https://private-post.tenna.party")
+      ) {
+        return <PrivatePostEmbed viewContext={rest.viewContext} metadata={embed.view.external.description} />
+      }
+
       if (isStandardSiteEmbed(embed.view.external)) {
         return (
           <ContentHider
