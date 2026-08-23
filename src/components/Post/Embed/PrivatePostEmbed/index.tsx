@@ -38,19 +38,13 @@ function InvalidEmbed({ reason }: { reason: string }) {
     </View>
 }
 
-export function PrivatePostEmbed({ metadata, viewContext = PostEmbedViewContext.ThreadHighlighted }: { metadata: string, viewContext: PostEmbedViewContext | undefined }) {
-    const t = useTheme();
-
-    const [uri, cid] = metadata.split("|");
-
+export function PrivatePostEmbed({ uri, cid, viewContext = PostEmbedViewContext.ThreadHighlighted }: { uri: string, cid: string, viewContext: PostEmbedViewContext | undefined }) {
     if (!uri.startsWith("at://")) return <InvalidEmbed reason="Invalid private post at-uri" />
     if (!/^(Qm[1-9A-HJ-NP-Za-km-z]{44}|b[a-z2-7]{58})$/.test(cid)) return <InvalidEmbed reason="Invalid private post CID" />
 
-    // return <InvalidEmbed reason="stub"/>
+    const t = useTheme();
 
-    const postText = `you can't even tell a difference between a normal and a private post when it's shown
-    
-just that lil lock above the post on this stub post #testing`+viewContext
+    const postText = `https://tenna.party private post stub viewcontext ${viewContext} uri ${uri} cid ${cid}`
 
     const richText = useMemo(() => {
         // if (!description) return
@@ -64,7 +58,7 @@ just that lil lock above the post on this stub post #testing`+viewContext
     )
 
     return (
-        <View style={[a.mb_xs, a.w_full, a.flex_col]}>
+        <View style={[a.w_full, a.flex_col]}>
             <View style={[
                 a.flex_row,
                 a.align_center,
