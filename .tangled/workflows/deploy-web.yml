@@ -1,6 +1,6 @@
 when:
   - event: ["push"]
-    branch: ["main", "beta"]
+    branch: ["main", "dev"]
 
 engine: microvm
 image: alpine
@@ -50,7 +50,7 @@ steps:
 
       case "$TANGLED_REF_NAME" in
         main) cloudflare_branch="main" ;;
-        bet) cloudflare_branch="beta" ;;
+        dev) cloudflare_branch="beta" ;;
         *) echo "Refusing to deploy unexpected branch: $TANGLED_REF_NAME" >&2; exit 1 ;;
       esac
 
