@@ -165,7 +165,7 @@ export function FictionkinBadgeSettings() {
                     {" "}{CHARACTERS_FRANCHISES[selectedChar]}{kinType !== "s" ? " " + kinType : ", literally"}.
                 </Trans>
                 {hideTennaBadge && <Trans>
-                    {" "}Others will still see it on your profile.    
+                    {" "}Others will see this badge on your profile.    
                 </Trans>}
             </Text>}
             {isEnabled && <Text style={[a.text_md, t.atoms.text_contrast_medium, a.leading_snug]}>
