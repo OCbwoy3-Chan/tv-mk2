@@ -5,7 +5,7 @@ import rspack from '@rspack/core'
 import {RspackManifestPlugin} from 'rspack-manifest-plugin'
 import {sentryWebpackPlugin} from '@sentry/webpack-plugin'
 import {version} from './package.json'
-import ReactRefreshPlugin, { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
+import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
 
 dotenv.config({path: path.resolve(__dirname, '.env')})
 
@@ -221,7 +221,6 @@ module.exports = {
               // omitted: react-native-dotenv (we use DefinePlugin instead)
               // omitted: module-resolver (we use rspack's built-in aliasing instead)
               !isProduction && 'react-refresh/babel',
-              ReactRefreshPlugin,
               'react-native-reanimated/plugin', // NOTE: this plugin MUST be last
             ].filter(Boolean),
             env: {

@@ -7,8 +7,8 @@
     "verificationMethod": [],
     "service": [
         {
-            "id": "#private_posts",
-            "type": "PrivatePostsAPI",
+            "id": "#private",
+            "type": "AtprotoSpaceService",
             "serviceEndpoint": "https://privateposts-api.tenna.party"
         }
     ]
