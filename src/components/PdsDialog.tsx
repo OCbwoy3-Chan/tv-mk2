@@ -55,6 +55,7 @@ function formatBskyPdsDisplayName(hostname: string): string {
   if (hostname === 'church.darkworld.download') return 'Church'
   if (hostname === 'ant.tenna.party') return 'Tenna'
   if (hostname === 'pushingbuddies.kralsei.stream') return 'Pushing Buddies'
+  if (hostname === 'kissing.kralsei.stream') return 'Kissing'
 
   if (hostname === 'pds.protogen.at') return 'P(rotogen)DS'
   if (hostname === 'pds.witchcraft.systems') return 'Witchcraft Systems'
@@ -358,7 +359,8 @@ const PDS_FAVICON_NOBORDER = [
   "castletown.darkworld.download",
   "church.darkworld.download",
   "ant.tenna.party",
-  "pushingbuddies.kralsei.stream"
+  "pushingbuddies.kralsei.stream",
+  "kissing.kralsei.stream"
 ].flatMap(a=>[`https://${a}/favicon.ico`,`https://twenty-icons.com/${a}`])
 
 function FaviconBadgeIcon({
