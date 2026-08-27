@@ -1,11 +1,13 @@
-import path from 'node:path'
 import {existsSync, readdirSync} from 'node:fs'
-import dotenv from 'dotenv'
+import path from 'node:path'
+
 import rspack from '@rspack/core'
-import {RspackManifestPlugin} from 'rspack-manifest-plugin'
-import {sentryWebpackPlugin} from '@sentry/webpack-plugin'
-import {version} from './package.json'
 import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
+import {sentryWebpackPlugin} from '@sentry/webpack-plugin'
+import dotenv from 'dotenv'
+import {RspackManifestPlugin} from 'rspack-manifest-plugin'
+
+import {version} from './package.json'
 
 dotenv.config({path: path.resolve(__dirname, '.env')})
 

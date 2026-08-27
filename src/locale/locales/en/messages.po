@@ -14,8 +14,8 @@ msgstr ""
 "Plural-Forms: \n"
 
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:167
-msgid " Others will still see it on your profile."
-msgstr " Others will still see it on your profile."
+msgid " Others will see this badge on your profile."
+msgstr " Others will see this badge on your profile."
 
 #: src/components/PostEditedIndicator.tsx:44
 msgctxt "Indicates a post has been edited"
@@ -515,7 +515,7 @@ msgstr "{count, plural, one {repost} other {reposts}}"
 msgid "{count, plural, other {#+ requests to join}}"
 msgstr "{count, plural, other {#+ requests to join}}"
 
-#: src/components/PdsDialog.tsx:134
+#: src/components/PdsDialog.tsx:135
 msgid "{customDescription}"
 msgstr "{customDescription}"
 
@@ -898,7 +898,7 @@ msgstr "{requestCount, plural, one {# request} other {# requests}}"
 msgid "{requestCount}+ requests"
 msgstr "{requestCount}+ requests"
 
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:72
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:83
 msgid "{text}"
 msgstr "{text}"
 
@@ -923,7 +923,7 @@ msgstr "{WEBSITE_MAX_GRAPHEMES, plural, other {Website is too long. The maximum 
 #. placeholder {0}: labels.length
 #. placeholder {0}: totalNumber - 3
 #: src/components/moderation/PostAlerts.tsx:163
-#: src/view/com/composer/ComposerReplyTo.tsx:294
+#: src/view/com/composer/ComposerReplyTo.tsx:309
 msgid "+{0}"
 msgstr "+{0}"
 
@@ -1011,7 +1011,7 @@ msgstr ""
 msgid "<0>{displayName}</0><1/><2> added you</2>"
 msgstr "<0>{displayName}</0><1/><2> added you</2>"
 
-#: src/components/PdsDialog.tsx:244
+#: src/components/PdsDialog.tsx:245
 msgid "<0>Learn more</0> about PDSes or how to <1>self-host</1> your own."
 msgstr "<0>Learn more</0> about PDSes or how to <1>self-host</1> your own."
 
@@ -1130,7 +1130,7 @@ msgstr ""
 msgid "A selected recipient is not followed by the sender."
 msgstr "A selected recipient is not followed by the sender."
 
-#: src/Navigation.tsx:821
+#: src/Navigation.tsx:830
 #: src/screens/Settings/AboutSettings.tsx:86
 #: src/screens/Settings/Settings.tsx:492
 #: src/screens/Settings/Settings.tsx:495
@@ -1183,15 +1183,15 @@ msgstr "Access requested! The group owner will review your request."
 msgid "Accessibility"
 msgstr ""
 
-#: src/Navigation.tsx:599
+#: src/Navigation.tsx:600
 msgid "Accessibility Settings"
 msgstr ""
 
-#: src/Navigation.tsx:736
+#: src/Navigation.tsx:745
 #: src/screens/Login/LoginForm.tsx:255
 #: src/screens/Login/LoginForm.web.tsx:234
 #: src/screens/Settings/AccountSettings.tsx:56
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:26
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:27
 #: src/screens/Settings/Settings.tsx:408
 #: src/screens/Settings/Settings.tsx:411
 msgid "Account"
@@ -1283,7 +1283,7 @@ msgstr "Accounts with a scalloped blue check mark <0><1/></0> can verify others.
 msgid "Activity from others"
 msgstr ""
 
-#: src/Navigation.tsx:797
+#: src/Navigation.tsx:806
 msgid "Activity notifications"
 msgstr "Activity notifications"
 
@@ -1605,13 +1605,13 @@ msgstr "Age assurance only takes a few minutes."
 msgid "AI alt text provider"
 msgstr "AI alt text provider"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:53
+#: src/screens/Settings/AIPreferencesSettings.tsx:54
 msgid "AI preferences"
 msgstr "AI preferences"
 
-#: src/Navigation.tsx:607
-#: src/screens/Settings/AIPreferencesSettings.tsx:62
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:39
+#: src/Navigation.tsx:608
+#: src/screens/Settings/AIPreferencesSettings.tsx:63
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:40
 msgid "AI Preferences"
 msgstr "AI Preferences"
 
@@ -1661,7 +1661,7 @@ msgstr "All of these words"
 msgid "All the feeds you've saved, right in one place."
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:35
+#: src/screens/Settings/AIPreferencesSettings.tsx:36
 msgid "Allow"
 msgstr "Allow"
 
@@ -1735,7 +1735,7 @@ msgstr ""
 msgid "Already signed in as @{0}"
 msgstr ""
 
-#: src/Navigation.tsx:689
+#: src/Navigation.tsx:698
 #: src/screens/PostThread/components/ThreadAlsoLiked.tsx:91
 #: src/screens/Settings/RunesSettings/AlsoLikedSettings.tsx:28
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:89
@@ -2008,7 +2008,7 @@ msgstr "API base URL"
 msgid "API key"
 msgstr "API key"
 
-#: src/Navigation.tsx:829
+#: src/Navigation.tsx:838
 #: src/screens/Settings/AppIconSettings/index.tsx:65
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:19
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:24
@@ -2046,7 +2046,7 @@ msgstr ""
 msgid "App passwords"
 msgstr ""
 
-#: src/Navigation.tsx:567
+#: src/Navigation.tsx:568
 #: src/screens/Settings/AppPasswords.tsx:51
 msgid "App Passwords"
 msgstr ""
@@ -2110,7 +2110,7 @@ msgstr ""
 msgid "Appeal this label"
 msgstr "Appeal this label"
 
-#: src/Navigation.tsx:720
+#: src/Navigation.tsx:729
 #: src/screens/Settings/AppearanceSettings.tsx:118
 #: src/screens/Settings/Settings.tsx:458
 #: src/screens/Settings/Settings.tsx:461
@@ -2269,13 +2269,13 @@ msgstr "ATProto settings"
 msgid "Author"
 msgstr "Author"
 
-#: src/components/Post/Embed/index.tsx:265
-#: src/components/Post/Embed/index.tsx:292
+#: src/components/Post/Embed/index.tsx:263
+#: src/components/Post/Embed/index.tsx:290
 msgid "Author account suspended"
 msgstr "Author account suspended"
 
-#: src/components/Post/Embed/index.tsx:267
-#: src/components/Post/Embed/index.tsx:294
+#: src/components/Post/Embed/index.tsx:265
+#: src/components/Post/Embed/index.tsx:292
 msgid "Author account unavailable"
 msgstr "Author account unavailable"
 
@@ -2303,7 +2303,7 @@ msgstr "Automated account"
 msgid "Automatic"
 msgstr "Automatic"
 
-#: src/Navigation.tsx:639
+#: src/Navigation.tsx:648
 #: src/screens/Settings/AccessibilitySettings.tsx:102
 #: src/screens/Settings/AltTextAiSettings.tsx:63
 msgid "Automatic alt text generation"
@@ -2331,7 +2331,7 @@ msgstr "Automatically use compact switcher with more than 6 accounts"
 msgid "Automation label"
 msgstr "Automation label"
 
-#: src/Navigation.tsx:752
+#: src/Navigation.tsx:761
 #: src/screens/Settings/AutomationLabelSettings.tsx:103
 msgid "Automation Label"
 msgstr "Automation Label"
@@ -2397,7 +2397,7 @@ msgstr ""
 msgid "Back to Chats"
 msgstr ""
 
-#: src/Navigation.tsx:659
+#: src/Navigation.tsx:668
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:76
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:168
 #: src/screens/Settings/RunesSettings/index.tsx:30
@@ -2480,7 +2480,7 @@ msgstr ""
 msgid "Beta Feature"
 msgstr ""
 
-#: src/Navigation.tsx:744
+#: src/Navigation.tsx:753
 #: src/screens/Settings/BetaFeaturesSettings.tsx:108
 #: src/screens/Settings/RunesSettings/index.tsx:84
 #: src/screens/Settings/RunesSettings/index.tsx:87
@@ -2594,9 +2594,9 @@ msgstr ""
 msgid "Block user and/or leave this conversation"
 msgstr "Block user and/or leave this conversation"
 
-#: src/components/Post/Embed/index.tsx:255
-#: src/components/Post/Embed/index.tsx:282
-#: src/components/Post/Embed/index.tsx:298
+#: src/components/Post/Embed/index.tsx:253
+#: src/components/Post/Embed/index.tsx:280
+#: src/components/Post/Embed/index.tsx:296
 msgid "Blocked"
 msgstr ""
 
@@ -2604,7 +2604,7 @@ msgstr ""
 msgid "Blocked accounts"
 msgstr ""
 
-#: src/Navigation.tsx:403
+#: src/Navigation.tsx:404
 #: src/view/screens/ModerationBlockedAccounts.tsx:95
 msgid "Blocked Accounts"
 msgstr ""
@@ -2687,11 +2687,15 @@ msgstr ""
 msgid "Bluesky is more fun with friends. Do you want to invite some of yours? <0/>"
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:39
+msgid "Bluesky may choose to suspend or ban your account if the majority of your posts are private, as it may trip their spam filters."
+msgstr "Bluesky may choose to suspend or ban your account if the majority of your posts are private, as it may trip their spam filters."
+
 #: src/features/inviteFriends/InviteScannerScreen.tsx:105
 msgid "Bluesky needs camera access to scan QR codes from other profiles."
 msgstr "Bluesky needs camera access to scan QR codes from other profiles."
 
-#: src/components/PdsDialog.tsx:129
+#: src/components/PdsDialog.tsx:130
 msgid "Bluesky Social"
 msgstr "Bluesky Social"
 
@@ -3092,7 +3096,7 @@ msgid "Character"
 msgstr "Character"
 
 #: src/lib/hooks/useNotificationHandler.ts:133
-#: src/Navigation.tsx:847
+#: src/Navigation.tsx:856
 #: src/view/shell/bottom-bar/BottomBar.tsx:260
 #: src/view/shell/desktop/LeftNav.tsx:780
 #: src/view/shell/Drawer.tsx:578
@@ -3152,7 +3156,7 @@ msgstr "Chat owners cannot leave a group chat."
 msgid "Chat recipient is not followed by the sender."
 msgstr "Chat recipient is not followed by the sender."
 
-#: src/Navigation.tsx:867
+#: src/Navigation.tsx:876
 msgid "Chat request inbox"
 msgstr ""
 
@@ -3162,7 +3166,7 @@ msgid "Chat requests"
 msgstr ""
 
 #: src/components/dms/ConvoMenu.tsx:91
-#: src/Navigation.tsx:862
+#: src/Navigation.tsx:871
 #: src/screens/Messages/ChatList.tsx:98
 #: src/screens/Messages/ChatList.tsx:102
 #: src/screens/Messages/ChatList.tsx:674
@@ -3619,7 +3623,7 @@ msgstr ""
 msgid "Color theme"
 msgstr ""
 
-#: src/Navigation.tsx:728
+#: src/Navigation.tsx:737
 #: src/screens/Settings/AppearanceSettings.tsx:175
 #: src/screens/Settings/AppearanceSettings/ColorThemeSettings.tsx:49
 msgid "Color Theme"
@@ -3647,7 +3651,7 @@ msgid "Community"
 msgstr "Community"
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:46
-#: src/Navigation.tsx:557
+#: src/Navigation.tsx:558
 #: src/view/screens/CommunityGuidelines.tsx:28
 msgid "Community Guidelines"
 msgstr ""
@@ -3692,7 +3696,7 @@ msgstr ""
 msgid "Compressing video..."
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:159
+#: src/screens/Settings/AIPreferencesSettings.tsx:170
 msgid "Configure AI preference for: {name}"
 msgstr "Configure AI preference for: {name}"
 
@@ -3766,7 +3770,7 @@ msgstr "Constellation Instance"
 msgid "Constellations instance URL"
 msgstr "Constellations instance URL"
 
-#: src/components/PdsDialog.tsx:192
+#: src/components/PdsDialog.tsx:193
 msgid "Contact"
 msgstr "Contact"
 
@@ -3811,7 +3815,7 @@ msgstr ""
 msgid "Content and media"
 msgstr ""
 
-#: src/Navigation.tsx:805
+#: src/Navigation.tsx:814
 msgid "Content and Media"
 msgstr ""
 
@@ -4061,7 +4065,7 @@ msgstr ""
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:41
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:108
-#: src/Navigation.tsx:562
+#: src/Navigation.tsx:563
 #: src/view/screens/CopyrightPolicy.tsx:25
 msgid "Copyright Policy"
 msgstr ""
@@ -4171,7 +4175,7 @@ msgstr ""
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 
-#: src/components/PdsDialog.tsx:237
+#: src/components/PdsDialog.tsx:238
 msgid "Couldn’t load extra details from this server."
 msgstr "Couldn’t load extra details from this server."
 
@@ -4218,7 +4222,7 @@ msgstr ""
 
 #: src/components/StarterPack/ProfileStarterPacks.tsx:210
 #: src/components/StarterPack/ProfileStarterPacks.tsx:319
-#: src/Navigation.tsx:898
+#: src/Navigation.tsx:907
 msgid "Create a starter pack"
 msgstr ""
 
@@ -4561,7 +4565,7 @@ msgstr ""
 msgid "Delete this post?"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:269
+#: src/components/Post/Embed/index.tsx:267
 msgid "Deleted"
 msgstr ""
 
@@ -4582,21 +4586,21 @@ msgstr ""
 msgid "Deleted list"
 msgstr ""
 
-#: src/Navigation.tsx:615
+#: src/Navigation.tsx:616
 #: src/screens/Settings/DeltaSettings/index.tsx:22
 #: src/screens/Settings/Settings.tsx:478
 #: src/screens/Settings/Settings.tsx:483
 msgid "Deltas"
 msgstr "Deltas"
 
-#: src/Navigation.tsx:694
+#: src/Navigation.tsx:703
 #: src/screens/Settings/RunesSettings/DensitySettings.tsx:32
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:104
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:108
 msgid "Density"
 msgstr "Density"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:37
+#: src/screens/Settings/AIPreferencesSettings.tsx:38
 msgid "Deny"
 msgstr "Deny"
 
@@ -4830,7 +4834,7 @@ msgstr ""
 msgid "Dismisses the QR scanner"
 msgstr "Dismisses the QR scanner"
 
-#: src/Navigation.tsx:684
+#: src/Navigation.tsx:693
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:86
 #: src/screens/Settings/RunesSettings/index.tsx:52
 #: src/screens/Settings/RunesSettings/index.tsx:55
@@ -4869,6 +4873,10 @@ msgstr ""
 #: src/screens/Settings/RunesSettings/FeedSettings.tsx:70
 msgid "Do not fall back to discover feed"
 msgstr "Do not fall back to discover feed"
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:49
+msgid "Do not post anything that violates Bluesky's TOS."
+msgstr "Do not post anything that violates Bluesky's TOS."
 
 #: src/lib/moderation/useGlobalLabelStrings.ts:39
 msgid "Does not include nudity."
@@ -5199,7 +5207,7 @@ msgstr ""
 msgid "Edit moderation list"
 msgstr ""
 
-#: src/Navigation.tsx:572
+#: src/Navigation.tsx:573
 #: src/view/screens/Feeds.tsx:515
 msgid "Edit My Feeds"
 msgstr ""
@@ -5251,7 +5259,7 @@ msgstr ""
 msgid "Edit who can reply"
 msgstr ""
 
-#: src/Navigation.tsx:903
+#: src/Navigation.tsx:912
 msgid "Edit your starter pack"
 msgstr ""
 
@@ -5324,9 +5332,13 @@ msgstr ""
 msgid "Embedded video player"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:196
+#: src/screens/Settings/AIPreferencesSettings.tsx:207
 msgid "Embedding"
 msgstr "Embedding"
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:53
+msgid "Embeds in private posts will NOT be supported because people will use them post unlabeled porn and GTA 6 leaks."
+msgstr "Embeds in private posts will NOT be supported because people will use them post unlabeled porn and GTA 6 leaks."
 
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:101
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:108
@@ -5392,6 +5404,10 @@ msgstr ""
 #: src/view/screens/Storybook/Admonitions.tsx:76
 msgid "Enable notifications for an account by visiting their profile and pressing the <0>bell icon</0> <1/>."
 msgstr ""
+
+#: src/screens/Settings/DeltaSettings/components/PrivatePostsToggle.tsx:32
+msgid "Enable private posts"
+msgstr "Enable private posts"
 
 #: src/screens/Settings/NotificationSettings/index.tsx:135
 #: src/screens/Settings/NotificationSettings/index.tsx:139
@@ -5657,7 +5673,7 @@ msgstr ""
 msgid "Expand list of users"
 msgstr ""
 
-#: src/view/com/composer/ComposerReplyTo.tsx:105
+#: src/view/com/composer/ComposerReplyTo.tsx:111
 msgid "Expand or collapse the full post you are replying to"
 msgstr ""
 
@@ -5677,7 +5693,8 @@ msgstr ""
 msgid "Expected uri to resolve to a record"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:77
+#: src/screens/Settings/AIPreferencesSettings.tsx:78
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:47
 #: src/screens/Settings/FollowingFeedPreferences.tsx:127
 msgid "Experimental"
 msgstr ""
@@ -5713,7 +5730,7 @@ msgstr ""
 msgid "Explicit sexual images."
 msgstr ""
 
-#: src/Navigation.tsx:1108
+#: src/Navigation.tsx:1117
 #: src/screens/Search/Shell.tsx:549
 #: src/view/shell/desktop/LeftNav.tsx:751
 #: src/view/shell/Drawer.tsx:526
@@ -5750,7 +5767,7 @@ msgstr ""
 msgid "External media may allow websites to collect information about you and your device. No information is sent or requested until you press the \"play\" button."
 msgstr ""
 
-#: src/Navigation.tsx:591
+#: src/Navigation.tsx:592
 #: src/screens/Settings/ExternalMediaPreferences.tsx:36
 msgid "External Media Preferences"
 msgstr ""
@@ -5760,7 +5777,7 @@ msgstr ""
 msgid "Extra"
 msgstr "Extra"
 
-#: src/Navigation.tsx:704
+#: src/Navigation.tsx:713
 msgid "Extra settings"
 msgstr "Extra settings"
 
@@ -6136,18 +6153,18 @@ msgstr "Favicon service"
 msgid "Favicon Service URL"
 msgstr "Favicon Service URL"
 
-#: src/Navigation.tsx:709
+#: src/Navigation.tsx:718
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:194
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:197
 #: src/screens/Settings/RunesSettings/FeatureGatesSettings.tsx:20
 msgid "Feature gates"
 msgstr "Feature gates"
 
-#: src/components/PdsDialog.tsx:125
+#: src/components/PdsDialog.tsx:126
 msgid "Fediverse"
 msgstr "Fediverse"
 
-#: src/Navigation.tsx:502
+#: src/Navigation.tsx:503
 msgid "Feed"
 msgstr ""
 
@@ -6193,8 +6210,8 @@ msgctxt "toast"
 msgid "Feedback sent to feed operator"
 msgstr ""
 
-#: src/Navigation.tsx:674
-#: src/Navigation.tsx:883
+#: src/Navigation.tsx:683
+#: src/Navigation.tsx:892
 #: src/screens/SavedFeeds.tsx:112
 #: src/screens/SavedFeeds.tsx:303
 #: src/screens/Search/SearchResults.tsx:114
@@ -6302,8 +6319,8 @@ msgstr ""
 msgid "Find and invite friends"
 msgstr "Find and invite friends"
 
-#: src/Navigation.tsx:784
-#: src/Navigation.tsx:925
+#: src/Navigation.tsx:793
+#: src/Navigation.tsx:934
 msgid "Find Contacts"
 msgstr ""
 
@@ -6517,7 +6534,7 @@ msgstr "Followers can join"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:456
+#: src/Navigation.tsx:457
 #: src/screens/Profile/KnownFollowers.tsx:73
 msgid "Followers of @{0} that you know"
 msgstr ""
@@ -6584,7 +6601,7 @@ msgstr "Following {name}"
 msgid "Following feed preferences"
 msgstr ""
 
-#: src/Navigation.tsx:578
+#: src/Navigation.tsx:579
 #: src/screens/Settings/FollowingFeedPreferences.tsx:57
 msgid "Following Feed Preferences"
 msgstr ""
@@ -6713,7 +6730,7 @@ msgstr "Generate alt text"
 msgid "Generate invite link"
 msgstr "Generate invite link"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:193
+#: src/screens/Settings/AIPreferencesSettings.tsx:204
 msgid "Generate new content or interactions modeled on your data. This includes AI imitations of your writing, photos, or audio."
 msgstr "Generate new content or interactions modeled on your data. This includes AI imitations of your writing, photos, or audio."
 
@@ -7026,7 +7043,7 @@ msgctxt "toast"
 msgid "Group chat name updated"
 msgstr "Group chat name updated"
 
-#: src/Navigation.tsx:852
+#: src/Navigation.tsx:861
 #: src/screens/Messages/ConversationSettings/index.tsx:113
 msgid "Group chat settings"
 msgstr "Group chat settings"
@@ -7109,7 +7126,7 @@ msgstr ""
 msgid "Handle, DID, or PDS address"
 msgstr "Handle, DID, or PDS address"
 
-#: src/components/PdsDialog.tsx:217
+#: src/components/PdsDialog.tsx:218
 msgid "Handles"
 msgstr "Handles"
 
@@ -7139,7 +7156,7 @@ msgstr ""
 msgid "Harming or endangering minors"
 msgstr ""
 
-#: src/Navigation.tsx:836
+#: src/Navigation.tsx:845
 msgid "Hashtag"
 msgstr ""
 
@@ -7425,8 +7442,8 @@ msgstr ""
 msgid "Holy Shit!"
 msgstr "Holy Shit!"
 
-#: src/Navigation.tsx:1103
-#: src/Navigation.tsx:1124
+#: src/Navigation.tsx:1112
+#: src/Navigation.tsx:1133
 #: src/view/shell/bottom-bar/BottomBar.tsx:206
 #: src/view/shell/desktop/LeftNav.tsx:741
 #: src/view/shell/Drawer.tsx:552
@@ -7669,7 +7686,7 @@ msgstr ""
 msgid "Imported on {0}"
 msgstr ""
 
-#: src/Navigation.tsx:664
+#: src/Navigation.tsx:673
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:86
 #: src/screens/Settings/RunesSettings/index.tsx:38
 #: src/screens/Settings/RunesSettings/index.tsx:41
@@ -7765,11 +7782,11 @@ msgstr "Incorrect password"
 msgid "Incorrect username or password"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:188
+#: src/screens/Settings/AIPreferencesSettings.tsx:199
 msgid "Inference"
 msgstr "Inference"
 
-#: src/Navigation.tsx:699
+#: src/Navigation.tsx:708
 #: src/screens/Settings/RunesSettings/index.tsx:60
 #: src/screens/Settings/RunesSettings/index.tsx:63
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:126
@@ -7917,7 +7934,7 @@ msgstr ""
 msgid "Invite code not accepted. Check that you input it correctly and try again."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:208
+#: src/components/PdsDialog.tsx:209
 msgid "Invite code required"
 msgstr "Invite code required"
 
@@ -8133,7 +8150,7 @@ msgstr ""
 msgid "Language"
 msgstr "Language"
 
-#: src/Navigation.tsx:429
+#: src/Navigation.tsx:430
 msgid "Language Settings"
 msgstr ""
 
@@ -8197,7 +8214,7 @@ msgctxt "english-only-resource"
 msgid "Learn more about importing contacts"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:247
+#: src/components/PdsDialog.tsx:248
 msgid "Learn more about PDSes"
 msgstr "Learn more about PDSes"
 
@@ -8206,7 +8223,7 @@ msgstr "Learn more about PDSes"
 msgid "Learn more about self hosting your PDS."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:161
+#: src/components/PdsDialog.tsx:162
 msgid "Learn more about the Fediverse"
 msgstr "Learn more about the Fediverse"
 
@@ -8402,8 +8419,8 @@ msgstr ""
 msgid "Liked as @{0}"
 msgstr "Liked as @{0}"
 
-#: src/Navigation.tsx:507
-#: src/Navigation.tsx:512
+#: src/Navigation.tsx:508
+#: src/Navigation.tsx:513
 msgid "Liked by"
 msgstr ""
 
@@ -8479,7 +8496,7 @@ msgstr "Link"
 msgid "Link copied to clipboard"
 msgstr "Link copied to clipboard"
 
-#: src/Navigation.tsx:462
+#: src/Navigation.tsx:463
 msgid "List"
 msgstr ""
 
@@ -8565,7 +8582,7 @@ msgctxt "toast"
 msgid "List unmuted"
 msgstr ""
 
-#: src/Navigation.tsx:383
+#: src/Navigation.tsx:384
 #: src/view/screens/Lists.tsx:60
 #: src/view/screens/Profile.tsx:240
 #: src/view/screens/Profile.tsx:248
@@ -8666,7 +8683,7 @@ msgstr "Loading models…"
 msgid "Loading post interaction settings..."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:181
+#: src/components/PdsDialog.tsx:182
 msgid "Loading server details…"
 msgstr "Loading server details…"
 
@@ -8694,7 +8711,7 @@ msgstr "Lock this group chat"
 msgid "Locked"
 msgstr "Locked"
 
-#: src/Navigation.tsx:537
+#: src/Navigation.tsx:538
 msgid "Log"
 msgstr ""
 
@@ -8722,7 +8739,7 @@ msgstr "Logo by ovvie"
 msgid "Long press to open tag menu for {0}"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:189
+#: src/screens/Settings/AIPreferencesSettings.tsx:200
 msgid "Look up your data when AI is answering someone's question. The AI doesn't keep it, but it might quote or reference it in real time."
 msgstr "Look up your data when AI is answering someone's question. The AI doesn't keep it, but it might quote or reference it in real time."
 
@@ -8889,7 +8906,7 @@ msgstr "Mentions of these people"
 msgid "Menu"
 msgstr ""
 
-#: src/Navigation.tsx:654
+#: src/Navigation.tsx:663
 #: src/screens/Settings/RunesSettings/index.tsx:24
 #: src/screens/Settings/RunesSettings/index.tsx:27
 #: src/screens/Settings/RunesSettings/MenusSettings.tsx:56
@@ -8951,7 +8968,7 @@ msgstr "Message is too long ({graphemeCount}/{MAX_DM_GRAPHEME_LENGTH})"
 msgid "Message options"
 msgstr ""
 
-#: src/Navigation.tsx:1118
+#: src/Navigation.tsx:1127
 msgid "Messages"
 msgstr ""
 
@@ -8989,7 +9006,7 @@ msgstr ""
 msgid "Model ID"
 msgstr "Model ID"
 
-#: src/Navigation.tsx:388
+#: src/Navigation.tsx:389
 #: src/screens/Moderation/index.tsx:100
 #: src/screens/Settings/Settings.tsx:422
 msgid "Moderation"
@@ -9003,8 +9020,8 @@ msgstr "Moderation and content filters"
 msgid "Moderation details"
 msgstr ""
 
-#: src/Navigation.tsx:631
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:34
+#: src/Navigation.tsx:640
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:35
 #: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:19
 msgid "Moderation labels"
 msgstr "Moderation labels"
@@ -9039,7 +9056,7 @@ msgstr ""
 msgid "Moderation lists"
 msgstr ""
 
-#: src/Navigation.tsx:393
+#: src/Navigation.tsx:394
 #: src/view/screens/ModerationModlists.tsx:60
 msgid "Moderation Lists"
 msgstr ""
@@ -9048,7 +9065,7 @@ msgstr ""
 msgid "moderation settings"
 msgstr ""
 
-#: src/Navigation.tsx:522
+#: src/Navigation.tsx:523
 msgid "Moderation states"
 msgstr ""
 
@@ -9197,7 +9214,7 @@ msgstr "Muted"
 msgid "Muted accounts"
 msgstr ""
 
-#: src/Navigation.tsx:398
+#: src/Navigation.tsx:399
 #: src/view/screens/ModerationMutedAccounts.tsx:107
 msgid "Muted Accounts"
 msgstr ""
@@ -9664,7 +9681,7 @@ msgstr ""
 msgid "No posts yet"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:36
+#: src/screens/Settings/AIPreferencesSettings.tsx:37
 msgid "No preference"
 msgstr "No preference"
 
@@ -9805,7 +9822,7 @@ msgstr ""
 msgid "Not followed by anyone you’re following"
 msgstr "Not followed by anyone you’re following"
 
-#: src/Navigation.tsx:373
+#: src/Navigation.tsx:374
 #: src/view/screens/Profile.tsx:135
 msgid "Not Found"
 msgstr ""
@@ -9831,8 +9848,8 @@ msgid "Nothing saved yet"
 msgstr ""
 
 #: src/components/dialogs/NotificationSettingsDialog.tsx:72
-#: src/Navigation.tsx:791
-#: src/Navigation.tsx:878
+#: src/Navigation.tsx:800
+#: src/Navigation.tsx:887
 #: src/view/screens/Notifications.tsx:137
 msgid "Notification settings"
 msgstr ""
@@ -9842,8 +9859,8 @@ msgstr ""
 msgid "Notification sounds"
 msgstr ""
 
-#: src/Navigation.tsx:873
-#: src/Navigation.tsx:1113
+#: src/Navigation.tsx:882
+#: src/Navigation.tsx:1122
 #: src/screens/Messages/Settings.tsx:255
 #: src/screens/Notifications/ActivityList.tsx:31
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:93
@@ -10054,7 +10071,7 @@ msgstr "Oops, this profile doesn't exist. Try scanning another one."
 msgid "Oops!"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:210
+#: src/components/PdsDialog.tsx:211
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:268
 #: src/components/PostControls/ShareMenu/ShareMenuItems.tsx:272
 #: src/components/PostControls/ShareMenu/ShareMenuItems.web.tsx:181
@@ -10526,7 +10543,7 @@ msgstr ""
 msgid "PDS badges"
 msgstr "PDS badges"
 
-#: src/components/PdsDialog.tsx:108
+#: src/components/PdsDialog.tsx:109
 msgid "PDS Information"
 msgstr "PDS Information"
 
@@ -10550,14 +10567,14 @@ msgstr "People {ownerName} follows can request to join"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:449
+#: src/Navigation.tsx:450
 #: src/screens/Profile/ProfileFollows.tsx:29
 msgid "People followed by @{0}"
 msgstr ""
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:442
+#: src/Navigation.tsx:443
 #: src/screens/Profile/ProfileFollowers.tsx:28
 msgid "People following @{0}"
 msgstr ""
@@ -10620,7 +10637,7 @@ msgstr "Pet account"
 msgid "Pet label"
 msgstr "Pet label"
 
-#: src/Navigation.tsx:760
+#: src/Navigation.tsx:769
 #: src/screens/Settings/PetLabelSettings.tsx:100
 msgid "Pet Label"
 msgstr "Pet Label"
@@ -10984,10 +11001,10 @@ msgstr ""
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:475
-#: src/Navigation.tsx:482
-#: src/Navigation.tsx:489
-#: src/Navigation.tsx:496
+#: src/Navigation.tsx:476
+#: src/Navigation.tsx:483
+#: src/Navigation.tsx:490
+#: src/Navigation.tsx:497
 #: src/screens/Post/PostLikedBy.tsx:27
 #: src/screens/Post/PostQuotes.tsx:39
 #: src/screens/Post/PostRepostedBy.tsx:27
@@ -11030,7 +11047,7 @@ msgstr ""
 msgid "Post interaction settings"
 msgstr ""
 
-#: src/Navigation.tsx:409
+#: src/Navigation.tsx:410
 #: src/screens/ModerationInteractionSettings/index.tsx:35
 msgid "Post Interaction Settings"
 msgstr ""
@@ -11069,7 +11086,7 @@ msgstr "Post translation provider"
 msgid "Post type"
 msgstr "Post type"
 
-#: src/components/Post/Embed/index.tsx:296
+#: src/components/Post/Embed/index.tsx:294
 msgid "Post unavailable"
 msgstr "Post unavailable"
 
@@ -11178,8 +11195,8 @@ msgstr ""
 msgid "Privacy and security"
 msgstr ""
 
-#: src/Navigation.tsx:768
-#: src/Navigation.tsx:776
+#: src/Navigation.tsx:777
+#: src/Navigation.tsx:785
 #: src/screens/Settings/ActivityPrivacySettings.tsx:41
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:67
 msgid "Privacy and Security"
@@ -11192,7 +11209,7 @@ msgstr ""
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:36
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:103
-#: src/Navigation.tsx:547
+#: src/Navigation.tsx:548
 #: src/screens/Settings/AboutSettings.tsx:103
 #: src/screens/Settings/AboutSettings.tsx:106
 #: src/view/screens/PrivacyPolicy.tsx:25
@@ -11204,6 +11221,12 @@ msgstr ""
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:173
 msgid "Privacy violation of a minor"
 msgstr ""
+
+#: src/Navigation.tsx:632
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:50
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:21
+msgid "Private posts"
+msgstr "Private posts"
 
 #: src/view/com/composer/Composer.tsx:3176
 msgid "Processing GIF..."
@@ -11230,9 +11253,9 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: src/Navigation.tsx:623
+#: src/Navigation.tsx:624
 #: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:19
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:29
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:30
 msgid "Profile badges"
 msgstr "Profile badges"
 
@@ -11250,7 +11273,7 @@ msgctxt "toast"
 msgid "Profile updated"
 msgstr ""
 
-#: src/Navigation.tsx:679
+#: src/Navigation.tsx:688
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:120
 #: src/screens/Settings/RunesSettings/ProfileSettings.tsx:55
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:55
@@ -11759,13 +11782,13 @@ msgstr ""
 msgid "Remove your verification for this account?"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:310
-#: src/components/Post/Embed/index.tsx:380
+#: src/components/Post/Embed/index.tsx:308
+#: src/components/Post/Embed/index.tsx:378
 msgid "Removed by author"
 msgstr ""
 
-#: src/components/Post/Embed/index.tsx:311
-#: src/components/Post/Embed/index.tsx:378
+#: src/components/Post/Embed/index.tsx:309
+#: src/components/Post/Embed/index.tsx:376
 msgid "Removed by you"
 msgstr ""
 
@@ -12168,7 +12191,7 @@ msgstr "Requested"
 msgid "Requests"
 msgstr "Requests"
 
-#: src/Navigation.tsx:857
+#: src/Navigation.tsx:866
 #: src/screens/Messages/JoinRequests.tsx:59
 #: src/screens/Messages/JoinRequests.tsx:425
 msgid "Requests to join"
@@ -12367,7 +12390,7 @@ msgstr "Reveal password"
 msgid "Reverse order"
 msgstr "Reverse order"
 
-#: src/Navigation.tsx:647
+#: src/Navigation.tsx:656
 #: src/screens/Settings/RunesSettings/index.tsx:23
 #: src/screens/Settings/Settings.tsx:486
 #: src/screens/Settings/Settings.tsx:489
@@ -12512,7 +12535,7 @@ msgid "Saved Feeds"
 msgstr ""
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:145
-#: src/Navigation.tsx:917
+#: src/Navigation.tsx:926
 #: src/screens/Bookmarks.tsx:59
 msgid "Saved Posts"
 msgstr ""
@@ -12556,13 +12579,17 @@ msgstr "Scan"
 
 #: src/features/inviteFriends/InviteScannerScreen.tsx:82
 #: src/features/inviteFriends/InviteScannerScreen.web.tsx:23
-#: src/Navigation.tsx:527
+#: src/Navigation.tsx:528
 msgid "Scan QR code"
 msgstr "Scan QR code"
 
 #: src/lib/interests.ts:71
 msgid "Science"
 msgstr ""
+
+#: src/screens/Settings/AIPreferencesSettings.tsx:91
+msgid "Scrapers will not respect your choices, we know that. It's impossible to fully protect your posts from training AI Slop scrapers, Bluesky is an ATProto app, in an open ecosystem. These settings are here because there's a lexicon for them."
+msgstr "Scrapers will not respect your choices, we know that. It's impossible to fully protect your posts from training AI Slop scrapers, Bluesky is an ATProto app, in an open ecosystem. These settings are here because there's a lexicon for them."
 
 #: src/view/com/posts/PostFeedItemCarousel.tsx:175
 msgid "Scroll carousel left"
@@ -12606,7 +12633,7 @@ msgstr ""
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:468
+#: src/Navigation.tsx:469
 #: src/screens/Profile/ProfileSearch.tsx:24
 #: src/screens/Profile/ProfileSearch.tsx:40
 msgid "Search @{0}'s posts"
@@ -13005,7 +13032,7 @@ msgstr ""
 msgid "Self-harm or dangerous behaviors"
 msgstr ""
 
-#: src/components/PdsDialog.tsx:254
+#: src/components/PdsDialog.tsx:255
 msgid "Self-hosting PDS documentation"
 msgstr "Self-hosting PDS documentation"
 
@@ -13125,7 +13152,7 @@ msgstr "Set your hosting provider manually"
 msgid "Sets email for password reset"
 msgstr ""
 
-#: src/Navigation.tsx:424
+#: src/Navigation.tsx:425
 #: src/screens/Settings/Settings.tsx:189
 #: src/view/shell/desktop/LeftNav.tsx:845
 #: src/view/shell/Drawer.tsx:730
@@ -13195,7 +13222,7 @@ msgctxt "toast"
 msgid "Settings saved"
 msgstr ""
 
-#: src/Navigation.tsx:714
+#: src/Navigation.tsx:723
 #: src/screens/Settings/RunesSettings/index.tsx:71
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:83
 msgid "Settings sync"
@@ -13322,7 +13349,7 @@ msgstr ""
 msgid "Share your thoughts…"
 msgstr "Share your thoughts…"
 
-#: src/Navigation.tsx:532
+#: src/Navigation.tsx:533
 msgid "Shared Preferences Tester"
 msgstr ""
 
@@ -13668,11 +13695,11 @@ msgstr ""
 msgid "Signed in as @{0}"
 msgstr ""
 
-#: src/Navigation.tsx:378
+#: src/Navigation.tsx:379
 msgid "Signing in..."
 msgstr "Signing in..."
 
-#: src/components/PdsDialog.tsx:205
+#: src/components/PdsDialog.tsx:206
 msgid "Signup"
 msgstr "Signup"
 
@@ -13928,8 +13955,8 @@ msgstr "Start chat"
 msgid "Start chat with {displayName}"
 msgstr ""
 
-#: src/Navigation.tsx:888
-#: src/Navigation.tsx:893
+#: src/Navigation.tsx:897
+#: src/Navigation.tsx:902
 #: src/screens/StarterPack/Wizard/index.tsx:198
 msgid "Starter Pack"
 msgstr ""
@@ -13992,7 +14019,7 @@ msgstr ""
 msgid "Stored as part of a secure code for matching with others"
 msgstr ""
 
-#: src/Navigation.tsx:517
+#: src/Navigation.tsx:518
 #: src/screens/Settings/Settings.tsx:705
 msgid "Storybook"
 msgstr ""
@@ -14130,7 +14157,7 @@ msgstr ""
 msgid "Sunlight"
 msgstr "Sunlight"
 
-#: src/Navigation.tsx:542
+#: src/Navigation.tsx:543
 #: src/view/screens/Support.tsx:25
 #: src/view/screens/Support.tsx:28
 msgid "Support"
@@ -14198,7 +14225,7 @@ msgstr "Syncing @{0} ({1}/{2})"
 msgid "Syncing… ({0}/{1})"
 msgstr "Syncing… ({0}/{1})"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:192
+#: src/screens/Settings/AIPreferencesSettings.tsx:203
 msgid "Synthetic content"
 msgstr "Synthetic content"
 
@@ -14364,7 +14391,7 @@ msgstr ""
 #: src/components/dialogs/BirthDateSettings.tsx:191
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:31
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:98
-#: src/Navigation.tsx:552
+#: src/Navigation.tsx:553
 #: src/screens/Settings/AboutSettings.tsx:95
 #: src/screens/Settings/AboutSettings.tsx:98
 #: src/view/screens/TermsOfService.tsx:25
@@ -14782,7 +14809,7 @@ msgstr ""
 msgid "This account is blocked by one or more of your moderation lists. To unblock, please visit the lists directly and remove this user."
 msgstr ""
 
-#: src/components/PdsDialog.tsx:157
+#: src/components/PdsDialog.tsx:158
 msgid "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>."
 msgstr "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>."
 
@@ -14790,7 +14817,7 @@ msgstr "This account is bridged from the <0>Fediverse</0> via <1>Bridgy Fed</1>.
 msgid "This account is no longer available"
 msgstr "This account is no longer available"
 
-#: src/components/PdsDialog.tsx:142
+#: src/components/PdsDialog.tsx:143
 msgid "This account’s data is stored on a Personal Data Server at <0>{hostname}</0>."
 msgstr "This account’s data is stored on a Personal Data Server at <0>{hostname}</0>."
 
@@ -14974,6 +15001,10 @@ msgstr "This is just a one-time security check, since we haven't seen this accou
 msgid "This is not a valid link"
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:43
+msgid "This isn't actually confirmed, might need to ask someone at Bluesky about this, it's better to be safe than sorry."
+msgstr "This isn't actually confirmed, might need to ask someone at Bluesky about this, it's better to be safe than sorry."
+
 #: src/screens/Settings/PetLabelSettings.tsx:166
 msgid "This label lets the world know that the account holder is a pet. If turned on, this label appears next to the account's name on their profile and posts. It can be turned on or off at any time."
 msgstr "This label lets the world know that the account holder is a pet. If turned on, this label appears next to the account's name on their profile and posts. It can be turned on or off at any time."
@@ -15050,7 +15081,7 @@ msgstr ""
 msgid "This only gets rid of the reminder on app launch, useful if your PDS does not have email verification setup. This does NOT give access to features locked behind email verification."
 msgstr "This only gets rid of the reminder on app launch, useful if your PDS does not have email verification setup. This does NOT give access to features locked behind email verification."
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:82
+#: src/screens/Settings/AIPreferencesSettings.tsx:83
 msgid "This page was removed from Witchsky, however you may still access it here!"
 msgstr "This page was removed from Witchsky, however you may still access it here!"
 
@@ -15236,7 +15267,7 @@ msgstr ""
 msgid "Threaded"
 msgstr ""
 
-#: src/Navigation.tsx:585
+#: src/Navigation.tsx:586
 msgid "Threads Preferences"
 msgstr ""
 
@@ -15351,11 +15382,11 @@ msgstr ""
 msgid "Top replies first"
 msgstr ""
 
-#: src/Navigation.tsx:841
+#: src/Navigation.tsx:850
 msgid "Topic"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:184
+#: src/screens/Settings/AIPreferencesSettings.tsx:195
 msgid "Training"
 msgstr "Training"
 
@@ -15929,7 +15960,7 @@ msgstr ""
 msgid "URL"
 msgstr "URL"
 
-#: src/Navigation.tsx:669
+#: src/Navigation.tsx:678
 #: src/screens/Settings/RunesSettings/index.tsx:46
 #: src/screens/Settings/RunesSettings/index.tsx:49
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:44
@@ -15993,11 +16024,11 @@ msgstr ""
 msgid "Use your account email address, or another real email address you control, in case KWS or Bluesky needs to contact you."
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:197
+#: src/screens/Settings/AIPreferencesSettings.tsx:208
 msgid "Use your data in AI search and recommendation systems. This is how AI finds similar accounts, groups users by interests, and decides what to show in some personalized feeds."
 msgstr "Use your data in AI search and recommendation systems. This is how AI finds similar accounts, groups users by interests, and decides what to show in some personalized feeds."
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:185
+#: src/screens/Settings/AIPreferencesSettings.tsx:196
 msgid "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 msgstr "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 
@@ -16109,7 +16140,7 @@ msgstr ""
 msgid "Verification settings"
 msgstr ""
 
-#: src/Navigation.tsx:417
+#: src/Navigation.tsx:418
 #: src/screens/Moderation/VerificationSettings.tsx:34
 msgid "Verification Settings"
 msgstr ""
@@ -16228,7 +16259,7 @@ msgstr "Video downloaded"
 msgid "Video failed to process"
 msgstr ""
 
-#: src/Navigation.tsx:909
+#: src/Navigation.tsx:918
 msgid "Video Feed"
 msgstr ""
 
@@ -16606,8 +16637,8 @@ msgid "We delete hashes after matches are made"
 msgstr ""
 
 #: src/screens/Settings/AccessibilitySettings.tsx:140
-msgid "We do not support inclusion and the usage of AI slop / LLMs in the AT Protocol ecosystem, including Bluesky and apps such as Attie."
-msgstr "We do not support inclusion and the usage of AI slop / LLMs in the AT Protocol ecosystem, including Bluesky and apps such as Attie."
+msgid "We do not support the inclusion, training and usage of Generative AI & AI Slop. We do not condone the usage of co/core and Attie."
+msgstr "We do not support the inclusion, training and usage of Generative AI & AI Slop. We do not condone the usage of co/core and Attie."
 
 #: src/components/contacts/components/InviteInfo.tsx:67
 msgid "We don't store your friends' phone numbers or send any messages"
@@ -17665,7 +17696,7 @@ msgstr "Your hosting provider does not support videos this large. Please try aga
 msgid "Your hosting provider is detected automatically from the username you enter."
 msgstr "Your hosting provider is detected automatically from the username you enter."
 
-#: src/Navigation.tsx:813
+#: src/Navigation.tsx:822
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:65
 #: src/screens/Settings/ContentAndMediaSettings.tsx:94
 #: src/screens/Settings/ContentAndMediaSettings.tsx:97
