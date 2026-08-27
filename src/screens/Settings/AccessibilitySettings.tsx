@@ -138,7 +138,7 @@ export function AccessibilitySettingsScreen({ }: Props) {
           <SettingsList.Item>
             <Admonition type="warning" style={[a.flex_1]}>
               <Trans>
-                We do not support inclusion and the usage of AI slop / LLMs in the AT Protocol ecosystem, including Bluesky and apps such as Attie.
+                We do not support the inclusion, training and usage of Generative AI & AI Slop. We do not condone the usage of co/core and Attie.
               </Trans>
             </Admonition>
           </SettingsList.Item>

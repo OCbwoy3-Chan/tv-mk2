@@ -17,6 +17,7 @@ import * as ToggleButton from '#/components/forms/ToggleButton'
 import * as Layout from '#/components/Layout'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
+import {Admonition} from '#/components/Admonition'
 
 type Props = NativeStackScreenProps<
   CommonNavigatorParams,
@@ -84,6 +85,16 @@ export function AIPreferencesSettingsScreen({}: Props) {
             </Trans>
           </Text>
         </View>
+
+        <SettingsList.Item>
+          <Admonition type="warning" style={[a.flex_1]}>
+            <Trans>
+              Scrapers will not respect your choices, we know that.
+              It's impossible to fully protect your posts from training AI Slop scrapers, Bluesky is an ATProto app, in an open ecosystem.   
+              These settings are here because there's a lexicon for them.
+            </Trans>
+          </Admonition>
+        </SettingsList.Item>
 
         <SettingsList.Container>
           {isLoading && !record ? (

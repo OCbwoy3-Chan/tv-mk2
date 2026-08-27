@@ -1,17 +1,18 @@
-import {View} from 'react-native'
-import {Trans, useLingui} from '@lingui/react/macro'
+import { View } from 'react-native'
+import { Trans, useLingui } from '@lingui/react/macro'
 
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import {atoms as a, useTheme} from '#/alf'
+import { atoms as a, useTheme } from '#/alf'
 import { TobyIcon } from '#/components/CrackComponents/Icons'
-import {ShieldCheck_Stroke2_Corner0_Rounded} from '#/components/icons/Shield'
-import {Separator} from '#/components/Select'
-import {Text} from '#/components/Typography'
+import { ShieldCheck_Stroke2_Corner0_Rounded } from '#/components/icons/Shield'
+import { Separator } from '#/components/Select'
+import { Text } from '#/components/Typography'
 import { Sparkle_Stroke2_Corner0_Rounded } from '#/components/icons/Sparkle'
+import { Lock_Stroke2_Corner0_Rounded } from '#/components/icons/Lock'
 
 export function TennaQuickLinks() {
   const t = useTheme()
-  const {t: l} = useLingui()
+  const { t: l } = useLingui()
 
   const sections: {
     title: string
@@ -22,29 +23,39 @@ export function TennaQuickLinks() {
       icon: React.ComponentType<any>
     }[]
   }[] = [
-    {
-      title: l`Account`,
-      items: [
-        {
-          text: l`Profile badges`,
-          path: '/settings/deltas/badges',
-          icon: TobyIcon,
-        },
-        {
-          text: l`Moderation labels`,
-          path: '/settings/deltas/labels',
-          icon: ShieldCheck_Stroke2_Corner0_Rounded,
-        },
-        {
-          text: l`AI Preferences`,
-          path: '/settings/deltas/ai',
-          icon: Sparkle_Stroke2_Corner0_Rounded
-        }
-      ],
-    },
-  ]
+      {
+        title: l`Account`,
+        items: [
+          {
+            text: l`Profile badges`,
+            path: '/settings/deltas/badges',
+            icon: TobyIcon,
+          },
+          {
+            text: l`Moderation labels`,
+            path: '/settings/deltas/labels',
+            icon: ShieldCheck_Stroke2_Corner0_Rounded,
+          },
+          {
+            text: l`AI Preferences`,
+            path: '/settings/deltas/ai',
+            icon: Sparkle_Stroke2_Corner0_Rounded
+          }
+        ],
+      },
+      {
+        title: l`Experimental`,
+        items: [
+          {
+            text: l`Private posts`,
+            path: '/settings/deltas/private-posts',
+            icon: Lock_Stroke2_Corner0_Rounded,
+          }
+        ]
+      }
+    ]
 
-  return sections.map(({title, items}, idx) => (
+  return sections.map(({ title, items }, idx) => (
     <View key={idx} style={[idx != 0 && a.pt_lg]}>
       <Text
         style={[
@@ -55,7 +66,7 @@ export function TennaQuickLinks() {
         ]}>
         {title}
       </Text>
-      
+
       <View
         style={[
           a.w_full,
@@ -63,7 +74,7 @@ export function TennaQuickLinks() {
           a.overflow_hidden,
           t.atoms.bg_contrast_25,
         ]}>
-        {items.map(({text, path, icon}, idx) => (
+        {items.map(({ text, path, icon }, idx) => (
           <>
             {idx !== 0 && <Separator key={idx + 'sep'} />}
             <SettingsList.LinkItem key={idx} to={path} label={text}>

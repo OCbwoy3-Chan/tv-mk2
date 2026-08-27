@@ -65,6 +65,7 @@ export type CommonNavigatorParams = {
   AccessibilitySettings: undefined
   DeltaSettings: undefined
   DeltaBadgeSettings: undefined
+  DeltaPrivatePostSettings: undefined
   DeltaLabelSettings: undefined
   AIPreferencesSettings: undefined
   AltTextAiSettings: undefined

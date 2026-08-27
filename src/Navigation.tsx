@@ -121,6 +121,7 @@ import { DeltaSettingsScreen } from './screens/Settings/DeltaSettings'
 import { DeltaBadgeSettingsScreen } from './screens/Settings/DeltaSettings/BadgeSettings'
 import { DeltaModLabelSettingsScreen } from './screens/Settings/DeltaSettings/ModLabelSettings'
 import { AIPreferencesSettingsScreen } from './screens/Settings/AIPreferencesSettings'
+import { DeltaPrivatePostSettingsScreen } from './screens/Settings/DeltaSettings/PrivatePostSettings'
 
 function deferredNamedScreen<
   Name extends string,
@@ -621,6 +622,14 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         getComponent={() => DeltaBadgeSettingsScreen}
         options={{
           title: title(msg`Profile badges`),
+          requireAuth: true,
+        }}
+      />
+      <Stack.Screen
+        name="DeltaPrivatePostSettings"
+        getComponent={() => DeltaPrivatePostSettingsScreen}
+        options={{
+          title: title(msg`Private posts`),
           requireAuth: true,
         }}
       />

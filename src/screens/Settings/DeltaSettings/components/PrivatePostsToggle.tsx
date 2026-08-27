@@ -14,8 +14,8 @@ export function DeltasPrivatePostsToggle() {
     return (
         <Toggle.Item
             key={"enable_private_posts"}
-            name={"Enable Private Posts"}
-            label={"Enable Private Posts"}
+            name={"Enable private posts"}
+            label={"Enable private posts"}
             value={privatePostsEnabled}
             onChange={next =>
                 setPrivatePostsEnabled(next)
@@ -29,7 +29,7 @@ export function DeltasPrivatePostsToggle() {
         >
             <SettingsList.Item>
                 <SettingsList.ItemText>
-                    <Trans>Enable Private Posts</Trans>
+                    <Trans>Enable private posts</Trans>
                 </SettingsList.ItemText>
                 <Toggle.Platform />
             </SettingsList.Item>

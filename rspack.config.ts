@@ -221,6 +221,7 @@ module.exports = {
               // omitted: react-native-dotenv (we use DefinePlugin instead)
               // omitted: module-resolver (we use rspack's built-in aliasing instead)
               !isProduction && 'react-refresh/babel',
+              ReactRefreshPlugin,
               'react-native-reanimated/plugin', // NOTE: this plugin MUST be last
             ].filter(Boolean),
             env: {
