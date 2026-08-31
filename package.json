@@ -105,6 +105,7 @@
     "@assembless/react-native-material-you": "1.0.0-beta.4",
     "@atproto/api": "0.20.37",
     "@atproto/common-web": "0.5.7",
+    "@atproto/lex": "0.3.8",
     "@atproto/oauth-client-browser": "^0.3.41",
     "@atproto/oauth-client-expo": "^0.0.10",
     "@atproto/syntax": "0.7.2",

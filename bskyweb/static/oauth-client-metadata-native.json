@@ -3,7 +3,7 @@
   "client_name": "tenna.party",
   "client_uri": "https://tenna.party",
   "redirect_uris": ["party.tenna:/auth/callback", "app.tennaparty:/auth/callback"],
-  "scope": "atproto transition:generic transition:email transition:chat.bsky",
+  "scope": "atproto transition:generic transition:email transition:chat.bsky space:*?authority=*&action=read_self",
   "token_endpoint_auth_method": "none",
   "response_types": ["code"],
   "grant_types": ["authorization_code", "refresh_token"],
