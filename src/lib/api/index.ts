@@ -250,7 +250,7 @@ export async function post(
   return {uris}
 }
 
-async function resolveRT(agent: AtpAgent, richtext: RichText) {
+export async function resolveRT(agent: AtpAgent, richtext: RichText) {
   const trimmedText = richtext.text
     // Trim leading whitespace-only lines (but don't break ASCII art).
     .replace(/^(\s*\n)+/, '')
@@ -372,6 +372,17 @@ async function resolveEmbed(
     return resolvedMedia
   }
   if (draft.embed.link) {
+    if (draft.embed.link.uri.startsWith('https://private-post.tenna.party?')) {
+      return {
+        $type: 'app.bsky.embed.external',
+        external: {
+          $type: 'app.bsky.embed.external#external',
+          uri: draft.embed.link.uri,
+          title: 'Private post',
+          description: 'Private posts are unsupported on your client.',
+        },
+      }
+    }
     const resolvedLink = await fetchResolveLinkQuery(
       queryClient,
       agent,

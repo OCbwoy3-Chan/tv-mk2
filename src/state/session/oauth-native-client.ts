@@ -10,7 +10,7 @@ const OAUTH_CLIENT_NAME: string =
   process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'tenna.party'
 
 const OAUTH_SCOPE =
-  'atproto transition:generic transition:email transition:chat.bsky space:*?authority=*&action=read_self'
+  'atproto transition:generic transition:email transition:chat.bsky'
 
 // RFC 8252 requires private-use native redirect URIs to use one slash. Keep
 // this exact value in sync with the native client metadata.

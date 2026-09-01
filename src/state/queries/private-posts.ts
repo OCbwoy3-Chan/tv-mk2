@@ -10,6 +10,7 @@ import {
   usePrivatePostsAppViewDID,
   usePrivatePostsAppViewURL,
 } from '#/state/preferences/private-posts-appview'
+import {usePrivatePostsEnabled} from '#/state/preferences/private-posts-enabled'
 import {STALE} from '#/state/queries'
 import {useAgent} from '#/state/session'
 
@@ -50,11 +51,13 @@ export function usePrivatePost(
   cid: string | undefined,
 ) {
   const agent = useAgent()
+  const privatePostsEnabled = usePrivatePostsEnabled()
   const [appViewDID] = usePrivatePostsAppViewDID()
   const appViewURL = usePrivatePostsAppViewURL()
 
   return useQuery<PrivatePost>({
-    enabled: !!uri && !!cid && !!agent.session && !!appViewURL,
+    enabled:
+      privatePostsEnabled && !!uri && !!cid && !!agent.session && !!appViewURL,
     staleTime: STALE.MINUTES.FIVE,
     queryKey: RQKEY_POST(uri ?? '', cid ?? '', appViewDID, appViewURL),
     queryFn: () =>

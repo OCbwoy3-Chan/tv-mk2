@@ -59,6 +59,7 @@ import {
   ChatBskyGroupDefs,
   RichText,
 } from '@atproto/api'
+import {TID} from '@atproto/common-web'
 import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
@@ -129,6 +130,10 @@ import {ExternalEmbedRemoveBtn} from '#/view/com/composer/ExternalEmbedRemoveBtn
 import {GifAltTextDialog} from '#/view/com/composer/GifAltText'
 import {LabelsBtn} from '#/view/com/composer/labels/LabelsBtn'
 import {AtprotoBtn} from '#/view/com/composer/AtprotoBtn'
+import {
+  PrivatePostBtn,
+  type PostVisibility,
+} from '#/view/com/composer/PrivatePostBtn'
 import {useAtprotoRkeySettings} from '#/state/preferences/atproto-rkey-settings'
 import * as persisted from '#/state/persisted'
 import {Gallery} from '#/view/com/composer/photos/Gallery'
@@ -176,6 +181,16 @@ import {
   IS_WEB_SAFARI,
 } from '#/env'
 import {type Gif} from '#/features/gifPicker/types'
+import {
+  createPrivatePost,
+  forcePrivatePostsResync,
+} from '#/lib/api/private-posts'
+import {usePrivatePostsEnabled} from '#/state/preferences/private-posts-enabled'
+import {useSpacesCompatiblePDS} from '#/state/queries/spaces'
+import {
+  usePrivatePostsAppViewDID,
+  usePrivatePostsAppViewURL,
+} from '#/state/preferences/private-posts-appview'
 import {BottomSheetPortalProvider} from '../../../../modules/bottom-sheet'
 import {
   draftToComposerPosts,
@@ -311,6 +326,12 @@ export const ComposePost = ({
   const sessionApi = useSessionApi()
   const queryClient = useQueryClient()
   const currentDid = currentAccount!.did
+  const privatePostsEnabled = usePrivatePostsEnabled()
+  const spacesCompatiblePDS = useSpacesCompatiblePDS(!!privatePostsEnabled)
+  const [privatePostsAppViewDID] = usePrivatePostsAppViewDID()
+  const privatePostsAppViewURL = usePrivatePostsAppViewURL()
+  const [postVisibility, setPostVisibility] = useState<PostVisibility>('public')
+  const isPrivatePost = postVisibility === 'private'
 
   const [activeAccountDid, setActiveAccountDid] = useState<string>(
     initialActiveAccountDid ?? currentDid,
@@ -455,7 +476,11 @@ export const ComposePost = ({
   }
 
   const uInitRkeyS = useAtprotoRkeySettings()
-  const initAtprotoRkey = { generation: uInitRkeyS.generation ?? "tid", prefix: uInitRkeyS.prefix, suffix: uInitRkeyS.suffix }
+  const initAtprotoRkey = {
+    generation: uInitRkeyS.generation ?? 'tid',
+    prefix: uInitRkeyS.prefix,
+    suffix: uInitRkeyS.suffix,
+  }
 
   const [composerState, composerDispatch] = useReducer(
     composerReducer,
@@ -1177,6 +1202,23 @@ export const ComposePost = ({
       return
     }
 
+    if (isPrivatePost) {
+      const draft = composerState.thread.posts[0]
+      if (
+        composerState.thread.posts.length !== 1 ||
+        draft.embed.media ||
+        draft.embed.quote ||
+        !privatePostsEnabled
+      ) {
+        setError(l`Private posts support text only.`)
+        return
+      }
+      if (!privatePostsAppViewURL) {
+        setError(l`The private posts AppView is unavailable.`)
+        return
+      }
+    }
+
     const {type: emptyType, filteredThread} = getFilteredThread()
 
     if (emptyType === 'non-trailing' && !skipEmptyConfirmedRef.current) {
@@ -1239,16 +1281,66 @@ export const ComposePost = ({
       }
 
       logger.info(`composer: posting...`)
-      postUri = (
-        await apilib.post(currentAgent, queryClient, {
-          thread: filteredThread,
-          replyTo: replyTo?.uri,
-          onStateChange: setPublishingStage,
-          langs: currentLanguages,
+      if (isPrivatePost) {
+        const privateDraft = filteredThread.posts[0]
+        const resolved = await apilib.resolveRT(
+          currentAgent,
+          privateDraft.richtext,
+        )
+        const rkey = TID.nextStr()
+        const privateRecord = await createPrivatePost({
+          agent: currentAgent,
+          rkey,
+          text: resolved.text,
+          facets: resolved.facets,
+          createdAt: new Date().toISOString(),
+        })
+        const space = `at://${currentAgent.assertDid}/space/party.tenna.private.space/self`
+        setPublishingStage(l`Syncing private posts…`)
+        await forcePrivatePostsResync({
+          agent: currentAgent,
+          appViewURL: privatePostsAppViewURL!,
+          appViewDID: privatePostsAppViewDID,
+        })
+        const privateUri = `${space}/${currentAgent.assertDid}/party.tenna.private.post/${rkey}`
+        const link = new URL('https://private-post.tenna.party')
+        link.searchParams.set('uri', privateUri)
+        link.searchParams.set('cid', privateRecord.cid)
+        const wrapper: ThreadDraft = {
+          ...filteredThread,
+          posts: [
+            {
+              ...privateDraft,
+              richtext: new RichText({text: ''}),
+              shortenedGraphemeLength: 0,
+              embed: {
+                quote: undefined,
+                media: undefined,
+                link: {type: 'link', uri: link.toString()},
+              },
+            },
+          ],
+        }
+        postUri = (
+          await apilib.post(currentAgent, queryClient, {
+            thread: wrapper,
+            onStateChange: setPublishingStage,
             omitViaField,
             tidSuffix,
-        })
-      ).uris[0]
+          })
+        ).uris[0]
+      } else {
+        postUri = (
+          await apilib.post(currentAgent, queryClient, {
+            thread: filteredThread,
+            replyTo: replyTo?.uri,
+            onStateChange: setPublishingStage,
+            langs: currentLanguages,
+            omitViaField,
+            tidSuffix,
+          })
+        ).uris[0]
+      }
 
       // Fire published event for every video that made it into the post.
       // The status guard upstream ensures each video.telemetry is present and
@@ -1475,6 +1567,11 @@ export const ComposePost = ({
     currentAccount?.did,
     sessionApi,
     requestSwitchToAccount,
+    composerState.thread.posts,
+    isPrivatePost,
+    privatePostsEnabled,
+    privatePostsAppViewURL,
+    privatePostsAppViewDID,
   ])
 
   const handleConfirmSkipEmpty = () => {
@@ -1588,6 +1685,11 @@ export const ComposePost = ({
       />
       <ComposerPills
         isReply={!!replyTo}
+        postVisibility={postVisibility}
+        onChangePostVisibility={setPostVisibility}
+        privatePostsEnabled={privatePostsEnabled}
+        spacesCompatiblePDS={spacesCompatiblePDS}
+        isOauthSession={currentAccount?.isOauthSession === true}
         post={activePost}
         thread={composerState.thread}
         dispatch={composerDispatch}
@@ -2467,12 +2569,22 @@ function ComposerEmbeds({
 
 function ComposerPills({
   isReply,
+  postVisibility,
+  onChangePostVisibility,
+  privatePostsEnabled,
+  spacesCompatiblePDS,
+  isOauthSession,
   thread,
   post,
   dispatch,
   bottomBarAnimatedStyle,
 }: {
   isReply: boolean
+  postVisibility: PostVisibility
+  onChangePostVisibility: (value: PostVisibility) => void
+  privatePostsEnabled: boolean | undefined
+  spacesCompatiblePDS: boolean | undefined
+  isOauthSession: boolean
   thread: ThreadDraft
   post: PostDraft
   dispatch: (action: ComposerAction) => void
@@ -2487,7 +2599,7 @@ function ComposerPills({
     media?.type === 'video'
   const hasLink = !!post.embed.link
 
-  const rkeySettings = useAtprotoRkeySettings();
+  const rkeySettings = useAtprotoRkeySettings()
 
   return (
     <Animated.View
@@ -2544,9 +2656,11 @@ function ComposerPills({
         ) : null}
 
         <AtprotoBtn
-          generation={post.atprotoRkey?.generation ?? rkeySettings.generation ?? "tid"}
+          generation={
+            post.atprotoRkey?.generation ?? rkeySettings.generation ?? 'tid'
+          }
           prefix={post.atprotoRkey?.prefix ?? rkeySettings.prefix}
-          suffix={post.atprotoRkey?.suffix ?? (rkeySettings.suffix ?? '')}
+          suffix={post.atprotoRkey?.suffix ?? rkeySettings.suffix ?? ''}
           onChangeSettings={(generation, prefix, suffix) => {
             dispatch({
               type: 'update_post',
@@ -2560,6 +2674,17 @@ function ComposerPills({
             })
           }}
         />
+        {!isReply && (
+          <PrivatePostBtn
+            value={postVisibility}
+            enabled={
+              !!privatePostsEnabled &&
+              spacesCompatiblePDS === true &&
+              !isOauthSession
+            }
+            onChange={onChangePostVisibility}
+          />
+        )}
       </ScrollView>
     </Animated.View>
   )

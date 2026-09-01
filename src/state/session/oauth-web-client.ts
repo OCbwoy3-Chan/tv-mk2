@@ -13,7 +13,6 @@ const OAUTH_SCOPE = [
   'transition:generic',
   'transition:email',
   'transition:chat.bsky',
-  'space:*?authority=*&action=read_self',
 ].join(' ')
 
 function isLoopback() {
