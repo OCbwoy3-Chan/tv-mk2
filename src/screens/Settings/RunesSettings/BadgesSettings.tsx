@@ -1,7 +1,7 @@
 import {useCallback, useMemo, useState} from 'react'
 import {LayoutAnimation, View} from 'react-native'
 import {useReducedMotion} from 'react-native-reanimated'
-import {type ModerationOpts} from '@atproto/api'
+import {type ModerationOpts} from '@bsky/sdk/moderation'
 import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {usePalette} from '#/lib/hooks/usePalette'

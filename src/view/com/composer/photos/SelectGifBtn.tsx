@@ -7,7 +7,7 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import {GifSquare_Stroke2_Corner0_Rounded as GifIcon} from '#/components/icons/Gif'
+import {GifSquare_Stroke2_Corner2_Rounded as GifIcon} from '#/components/icons/Gif'
 import {useAnalytics} from '#/analytics'
 import {GifPickerDialog} from '#/features/gifPicker/GifPickerDialog'
 import {type Gif} from '#/features/gifPicker/types'
@@ -26,7 +26,7 @@ export function SelectGifBtn({onClose, onSelectGif, disabled}: Props) {
 
   const enableSquareButtons = useEnableSquareButtons()
 
-  const onPressSelectGif = useCallback(async () => {
+  const onPressSelectGif = useCallback(() => {
     ax.metric('composer:gif:open', {})
     Keyboard.dismiss()
     control.open()

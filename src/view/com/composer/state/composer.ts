@@ -1,11 +1,7 @@
 import {type ImagePickerAsset} from 'expo-image-picker'
-import {
-  type AppBskyActorDefs,
-  type AppBskyDraftDefs,
-  type AppBskyFeedPostgate,
-  AppBskyRichtextFacet,
-  RichText,
-} from '@atproto/api'
+import {type UriString} from '@atproto/lex'
+import {type AtUriString, toDatetimeString} from '@atproto/syntax'
+import {RichText} from '@bsky/sdk/richtext'
 import {nanoid} from 'nanoid/non-secure'
 
 import {MAX_TAGS} from '#/lib/constants'
@@ -29,6 +25,8 @@ import {
   suggestLinkCardUri,
 } from '#/view/com/composer/text-input/text-input-util'
 import {type Gif} from '#/features/gifPicker/types'
+import {app} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 import {moveItem} from './post-order'
 import {
   createRedraftVideoState,
@@ -61,7 +59,12 @@ type GifMedia = {
 
 type Link = {
   type: 'link'
-  uri: string
+  /*
+   * A URL the user typed or pasted, validated by the link resolver rather than
+   * at construction, so it carries lex's `uri` brand for the record and view
+   * slots it flows into.
+   */
+  uri: UriString
 }
 
 // This structure doesn't exactly correspond to the data model.
@@ -101,7 +104,7 @@ export type PostAction =
     }
   | {type: 'embed_remove_video'}
   | {type: 'embed_update_video'; videoAction: VideoAction}
-  | {type: 'embed_add_uri'; uri: string}
+  | {type: 'embed_add_uri'; uri: UriString}
   | {type: 'embed_remove_quote'}
   | {type: 'embed_remove_link'}
   | {type: 'embed_add_gif'; gif: Gif}
@@ -110,7 +113,7 @@ export type PostAction =
 
 export type ThreadDraft = {
   posts: PostDraft[]
-  postgate: AppBskyFeedPostgate.Record
+  postgate: app.bsky.feed.postgate.Main
   threadgate: ThreadgateAllowUISetting[]
 }
 
@@ -129,7 +132,7 @@ export type ComposerState = {
 }
 
 export type ComposerAction =
-  | {type: 'update_postgate'; postgate: AppBskyFeedPostgate.Record}
+  | {type: 'update_postgate'; postgate: app.bsky.feed.postgate.Main}
   | {type: 'update_threadgate'; threadgate: ThreadgateAllowUISetting[]}
   | {
       type: 'update_post'
@@ -156,8 +159,8 @@ export type ComposerAction =
       type: 'restore_from_draft'
       draftId: string
       posts: PostDraft[]
-      threadgateAllow: AppBskyDraftDefs.Draft['threadgateAllow']
-      postgateEmbeddingRules: AppBskyDraftDefs.Draft['postgateEmbeddingRules']
+      threadgateAllow: app.bsky.draft.defs.Draft['threadgateAllow']
+      postgateEmbeddingRules: app.bsky.draft.defs.Draft['postgateEmbeddingRules']
 
       /** Map of localRefPath -> loaded media path/URL */
       loadedMedia: Map<string, string>
@@ -167,8 +170,7 @@ export type ComposerAction =
   | {
       type: 'clear'
       initInteractionSettings:
-        | AppBskyActorDefs.PostInteractionSettingsPref
-        | undefined
+        app.bsky.actor.defs.PostInteractionSettingsPref | undefined
     }
   | {
       type: 'mark_saved'
@@ -265,6 +267,8 @@ export function composerReducer(
       return {
         ...state,
         isDirty: true,
+        activePostIndex: activePostIndex + 1,
+        mutableNeedsFocusActive: true,
         thread: {
           ...state.thread,
           posts: nextPosts,
@@ -358,8 +362,8 @@ export function composerReducer(
           }),
           threadgate: threadgateRecordToAllowUISetting({
             $type: 'app.bsky.feed.threadgate',
-            post: '',
-            createdAt: new Date().toString(),
+            post: '' as AtUriString,
+            createdAt: toDatetimeString(new Date()),
             allow: threadgateAllow,
           }),
         },
@@ -372,6 +376,8 @@ export function composerReducer(
         initImageUris: [],
         initQuoteUri: undefined,
         initInteractionSettings: action.initInteractionSettings,
+        initVideoUri: undefined,
+        initTags: undefined,
       })
     }
     case 'mark_saved': {
@@ -673,10 +679,9 @@ export function createComposerState({
   initImageUris: ComposerOpts['imageUris']
   initQuoteUri: string | undefined
   initInteractionSettings:
-    | AppBskyActorDefs.PostInteractionSettingsPref
-    | undefined
+    app.bsky.actor.defs.PostInteractionSettingsPref | undefined
   initVideoUri?: ComposerOpts['videoUri']
-  initTags?: string[]
+  initTags?: ComposerOpts['tags']
 }): ComposerState {
   let media: ImagesMedia | GalleryMedia | VideoMedia | undefined
   if (initImageUris?.length) {
@@ -685,7 +690,9 @@ export function createComposerState({
     media = {
       type: 'video',
       video: createRedraftVideoState({
-        blobRef: initVideoUri.blobRef,
+        blobRef: initVideoUri.blobRef as unknown as Parameters<
+          typeof createRedraftVideoState
+        >[0]['blobRef'],
         width: initVideoUri.width,
         height: initVideoUri.height,
         altText: initVideoUri.altText || '',
@@ -700,7 +707,7 @@ export function createComposerState({
     if (path) {
       quote = {
         type: 'link',
-        uri: toBskyAppUrl(path),
+        uri: toBskyAppUrl(path) as UriString,
       }
     }
   }
@@ -734,7 +741,7 @@ export function createComposerState({
     if (initRichText.facets) {
       for (const facet of initRichText.facets) {
         for (const feature of facet.features) {
-          if (AppBskyRichtextFacet.isLink(feature)) {
+          if (bsky.isType(app.bsky.richtext.facet.link, feature)) {
             if (isBskyPostUrl(feature.uri)) {
               detectedPostUris.set(feature.uri, {facet, rt: initRichText})
             } else {
@@ -754,7 +761,7 @@ export function createComposerState({
     if (suggestedExtUri) {
       link = {
         type: 'link',
-        uri: suggestedExtUri,
+        uri: suggestedExtUri as UriString,
       }
     }
     const suggestedPostUri = suggestLinkCardUri(
@@ -771,7 +778,7 @@ export function createComposerState({
       if (!quote) {
         quote = {
           type: 'link',
-          uri: suggestedPostUri,
+          uri: suggestedPostUri as UriString,
         }
       }
     }
@@ -805,8 +812,8 @@ export function createComposerState({
       }),
       threadgate: threadgateRecordToAllowUISetting({
         $type: 'app.bsky.feed.threadgate',
-        post: '',
-        createdAt: new Date().toString(),
+        post: '' as AtUriString,
+        createdAt: toDatetimeString(new Date()),
         allow: initInteractionSettings?.threadgateAllowRules,
       }),
     },

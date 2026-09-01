@@ -117,7 +117,9 @@ function DialogInner({
         error: l`You can add up to ${MAX_TAGS} tags`,
       }
     }
-    if (currentTags.some(existing => existing.toLowerCase() === tag.toLowerCase())) {
+    if (
+      currentTags.some(existing => existing.toLowerCase() === tag.toLowerCase())
+    ) {
       return {tags: currentTags, error: l`This tag is already added`}
     }
     return {tags: [...currentTags, tag]}

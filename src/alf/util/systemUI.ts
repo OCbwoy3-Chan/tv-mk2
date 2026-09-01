@@ -8,9 +8,9 @@ export function setSystemUITheme(themeType: 'theme' | 'lightbox', t: Theme) {
   if (IS_ANDROID) {
     try {
       if (themeType === 'theme') {
-        SystemUI.setBackgroundColorAsync(t.atoms.bg.backgroundColor)
+        void SystemUI.setBackgroundColorAsync(t.atoms.bg.backgroundColor)
       } else {
-        SystemUI.setBackgroundColorAsync('black')
+        void SystemUI.setBackgroundColorAsync('black')
       }
     } catch (error) {
       // Can reject with 'The current activity is no longer available' - no big deal

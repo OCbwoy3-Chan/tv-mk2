@@ -7,9 +7,9 @@ import * as EmailValidator from 'email-validator'
 
 import {cleanError, isNetworkError} from '#/lib/strings/errors'
 import {checkAndFormatResetCode} from '#/lib/strings/password'
+import {matchXrpcError} from '#/lib/xrpc-error'
 import {logger} from '#/logger'
-import {useAgent, useSession} from '#/state/session'
-import {pdsAgent} from '#/state/session/agent'
+import {usePdsClient, useSession} from '#/state/session'
 import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import {android, atoms as a, web} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
@@ -18,6 +18,7 @@ import * as TextField from '#/components/forms/TextField'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {IS_NATIVE} from '#/env'
+import {com} from '#/lexicons'
 
 enum Stages {
   RequestCode = 'RequestCode',
@@ -45,7 +46,7 @@ export function ChangePasswordDialog({
 function Inner() {
   const {_} = useLingui()
   const {currentAccount} = useSession()
-  const agent = useAgent()
+  const client = usePdsClient()
   const control = Dialog.useDialogContext()
 
   const [stage, setStage] = useState(Stages.RequestCode)
@@ -86,7 +87,7 @@ function Inner() {
     setError('')
     setIsProcessing(true)
     try {
-      await pdsAgent(agent).com.atproto.server.requestPasswordReset({
+      await client.call(com.atproto.server.requestPasswordReset, {
         email: currentAccount.email,
       })
       setStage(Stages.ChangePassword)
@@ -101,9 +102,8 @@ function Inner() {
         logger.error('Failed to request password reset', {safeMessage: e})
         setError(cleanError(e))
       }
-    } finally {
-      setIsProcessing(false)
     }
+    setIsProcessing(false)
   }
 
   const onChangePassword = async () => {
@@ -130,7 +130,7 @@ function Inner() {
     setError('')
     setIsProcessing(true)
     try {
-      await pdsAgent(agent).com.atproto.server.resetPassword({
+      await client.call(com.atproto.server.resetPassword, {
         token: formattedCode,
         password: newPassword,
       })
@@ -142,15 +142,16 @@ function Inner() {
             msg`Unable to contact your service. Please check your internet connection and try again.`,
           ),
         )
-      } else if (e?.toString().includes('Token is invalid')) {
+      } else if (
+        matchXrpcError(e, com.atproto.server.resetPassword) === 'InvalidToken'
+      ) {
         setError(_(msg`This confirmation code is not valid. Please try again.`))
       } else {
         logger.error('Failed to set new password', {safeMessage: e})
         setError(cleanError(e))
       }
-    } finally {
-      setIsProcessing(false)
     }
+    setIsProcessing(false)
   }
 
   const onBlur = () => {

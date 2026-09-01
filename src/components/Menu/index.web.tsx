@@ -13,7 +13,7 @@ import {DropdownMenu} from 'radix-ui'
 import {userStyle} from '#/lib/userstyles'
 import {useA11y} from '#/state/a11y'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {atoms as a, flatten, useTheme, web} from '#/alf'
+import {atoms as a, flatten, flattenToCSS, useTheme, web} from '#/alf'
 import type * as Dialog from '#/components/Dialog'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {
@@ -548,7 +548,7 @@ export function Divider() {
   const t = useTheme()
   return (
     <DropdownMenu.Separator
-      style={flatten([
+      style={flattenToCSS([
         a.my_xs,
         t.atoms.bg_contrast_100,
         a.flex_shrink_0,

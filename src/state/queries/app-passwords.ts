@@ -1,9 +1,8 @@
-import {type ComAtprotoServerCreateAppPassword} from '@atproto/api'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
 import {STALE} from '#/state/queries'
-import {useAgent} from '../session'
-import {pdsAgent} from '../session/agent'
+import {com} from '#/lexicons'
+import {usePdsClient} from '../session'
 
 const RQKEY_ROOT = 'app-passwords'
 export const RQKEY = () => [RQKEY_ROOT]
@@ -11,36 +10,34 @@ export const RQKEY = () => [RQKEY_ROOT]
 export function useAppPasswordsQuery({
   enabled = true,
 }: {enabled?: boolean} = {}) {
-  const agent = useAgent()
+  const client = usePdsClient()
   return useQuery({
     enabled,
     staleTime: STALE.MINUTES.FIVE,
     queryKey: RQKEY(),
     queryFn: async () => {
-      const res = await pdsAgent(agent).com.atproto.server.listAppPasswords({})
-      return res.data.passwords
+      const data = await client.call(com.atproto.server.listAppPasswords)
+      return data.passwords
     },
   })
 }
 
 export function useAppPasswordCreateMutation() {
   const queryClient = useQueryClient()
-  const agent = useAgent()
+  const client = usePdsClient()
   return useMutation<
-    ComAtprotoServerCreateAppPassword.OutputSchema,
+    com.atproto.server.createAppPassword.$OutputBody,
     Error,
     {name: string; privileged: boolean}
   >({
     mutationFn: async ({name, privileged}) => {
-      return (
-        await pdsAgent(agent).com.atproto.server.createAppPassword({
-          name,
-          privileged,
-        })
-      ).data
+      return await client.call(com.atproto.server.createAppPassword, {
+        name,
+        privileged,
+      })
     },
     onSuccess() {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: RQKEY(),
       })
     },
@@ -49,15 +46,15 @@ export function useAppPasswordCreateMutation() {
 
 export function useAppPasswordDeleteMutation() {
   const queryClient = useQueryClient()
-  const agent = useAgent()
+  const client = usePdsClient()
   return useMutation<void, Error, {name: string}>({
     mutationFn: async ({name}) => {
-      await pdsAgent(agent).com.atproto.server.revokeAppPassword({
+      await client.call(com.atproto.server.revokeAppPassword, {
         name,
       })
     },
     onSuccess() {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: RQKEY(),
       })
     },

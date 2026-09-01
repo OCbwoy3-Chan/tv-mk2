@@ -1,9 +1,5 @@
 import {useCallback} from 'react'
 import {View} from 'react-native'
-import {
-  type AppBskyGraphGetStarterPacksWithMembership,
-  AppBskyGraphStarterpack,
-} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Plural, Trans} from '@lingui/react/macro'
@@ -27,17 +23,18 @@ import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {Divider} from '#/components/Divider'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
-import {StarterPack} from '#/components/icons/StarterPack'
+import {StarterPackMultiPathLarge as StarterPackIcon} from '#/components/icons/StarterPack'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
 import {Loader} from '#/components/Loader'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB} from '#/env'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 type StarterPackWithMembership =
-  AppBskyGraphGetStarterPacksWithMembership.StarterPackWithMembership
+  app.bsky.graph.getStarterPacksWithMembership.StarterPackWithMembership
 
 export type StarterPackDialogProps = {
   control: Dialog.DialogControlProps
@@ -95,7 +92,7 @@ function Empty({onStartWizard}: {onStartWizard: () => void}) {
   return (
     <View style={[a.gap_2xl, {paddingTop: IS_WEB ? 100 : 64}]}>
       <View style={[a.gap_xs, a.align_center]}>
-        <StarterPack
+        <StarterPackIcon
           width={48}
           fill={t.atoms.border_contrast_medium.borderColor}
         />
@@ -327,12 +324,7 @@ function StarterPackItem({
 
   const {record} = starterPack
 
-  if (
-    !bsky.dangerousIsType<AppBskyGraphStarterpack.Record>(
-      record,
-      AppBskyGraphStarterpack.isRecord,
-    )
-  ) {
+  if (!bsky.isType(app.bsky.graph.starterpack, record)) {
     return null
   }
 

@@ -1,5 +1,6 @@
 import {useMemo, useState} from 'react'
 import {type TextStyle, View, type ViewStyle} from 'react-native'
+import {setInterestsPref} from '@bsky/sdk'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -24,8 +25,7 @@ import {createGetSuggestedUsersForDiscoverQueryKey} from '#/state/queries/trendi
 import {createGetSuggestedUsersForExploreQueryKey} from '#/state/queries/trending/useGetSuggestedUsersForExploreQuery'
 import {createGetSuggestedUsersForSeeMoreQueryKey} from '#/state/queries/trending/useGetSuggestedUsersForSeeMoreQuery'
 import {createSuggestedStarterPacksQueryKey} from '#/state/queries/useSuggestedStarterPacksQuery'
-import {useAgent} from '#/state/session'
-import {pdsAgent} from '#/state/session/agent'
+import {usePdsClient} from '#/state/session'
 import {atoms as a, useGutters, useTheme} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Divider} from '#/components/Divider'
@@ -90,7 +90,7 @@ function Inner({
   setIsSaving: (isSaving: boolean) => void
 }) {
   const {_} = useLingui()
-  const agent = useAgent()
+  const pdsClient = usePdsClient()
   const qc = useQueryClient()
   const interestsDisplayNames = useInterestsDisplayNames()
   const preselectedInterests = useMemo(
@@ -112,7 +112,7 @@ function Inner({
       setIsSaving(true)
 
       try {
-        await pdsAgent(agent).setInterestsPref({tags: interests})
+        await pdsClient.call(setInterestsPref, {tags: interests})
         qc.setQueriesData(
           {queryKey: preferencesQueryKey},
           (old?: UsePreferencesQueryResponse) => {
@@ -159,11 +159,11 @@ function Inner({
         setIsSaving(false)
       }
     }, 1500)
-  }, [_, agent, setIsSaving, qc, preselectedInterests])
+  }, [_, pdsClient, setIsSaving, qc, preselectedInterests])
 
-  const onChangeInterests = async (interests: string[]) => {
+  const onChangeInterests = (interests: string[]) => {
     setInterests(interests)
-    saveInterests(interests)
+    void saveInterests(interests)
   }
 
   return (

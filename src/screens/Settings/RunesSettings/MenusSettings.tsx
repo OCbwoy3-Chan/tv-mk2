@@ -60,8 +60,8 @@ export function RunesMenusSettingsScreen() {
         </SettingsList.ItemText>
         <Text style={[a.leading_snug]}>
           <Trans>
-            Choose the explorer used in Share and Open menus. Use (uri) where 
-            a post, profile, or repository AT URI should appear. Leave fields 
+            Choose the explorer used in Share and Open menus. Use (uri) where a
+            post, profile, or repository AT URI should appear. Leave fields
             empty to reset to defaults.
           </Trans>
         </Text>

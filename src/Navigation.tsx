@@ -92,6 +92,7 @@ import {MessagesJoinRequestsScreen} from '#/screens/Messages/JoinRequests'
 import {MessagesSettingsScreen} from '#/screens/Messages/Settings'
 import {ModerationScreen} from '#/screens/Moderation'
 import {Screen as ModerationVerificationSettings} from '#/screens/Moderation/VerificationSettings'
+import {ModerationInboxScreen} from '#/screens/ModerationInbox'
 import {Screen as ModerationInteractionSettings} from '#/screens/ModerationInteractionSettings'
 import {NotificationsActivityListScreen} from '#/screens/Notifications/ActivityList'
 import {PostLikedByScreen} from '#/screens/Post/PostLikedBy'
@@ -390,6 +391,11 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         name="Moderation"
         getComponent={() => ModerationScreen}
         options={{title: title(msg`Moderation`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="ModerationInbox"
+        getComponent={() => ModerationInboxScreen}
+        options={{title: title(msg`Moderation inbox`), requireAuth: true}}
       />
       <Stack.Screen
         name="ModerationModlists"
@@ -1259,7 +1265,7 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
         // chat-removed-from-group, chat-join-request-rejected: the convo is
         // no longer accessible to the recipient, so just open the list.
         // @ts-expect-error nested navigators aren't typed -sfn
-        navigate('MessagesTab', {screen: 'Messages'})
+        void navigate('MessagesTab', {screen: 'Messages'})
       }
     },
   )
@@ -1350,7 +1356,7 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
 
     ax.metric('init', {
       initMs: Math.round(
-        // @ts-ignore Emitted by Metro in the bundle prelude
+        // @ts-expect-error Emitted by Metro in the bundle prelude
         performance.now() - global.__BUNDLE_START_TIME__,
       ),
     })
@@ -1426,7 +1432,7 @@ function navigate<K extends keyof AllNavigatorParams>(
         }
         navigationRef.addListener('state', handler)
 
-        // @ts-ignore I don't know what would make typescript happy but I have a life -prf
+        // @ts-expect-error I don't know what would make typescript happy but I have a life -prf
         navigationRef.navigate(name, params)
       }),
       timeout(1e3),

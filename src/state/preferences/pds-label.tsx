@@ -24,7 +24,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (pdsLabel: persisted.Schema['pdsLabel']) => {
       setState(pdsLabel)
-      persisted.write('pdsLabel', pdsLabel)
+      void persisted.write('pdsLabel', pdsLabel)
     },
     [setState],
   )

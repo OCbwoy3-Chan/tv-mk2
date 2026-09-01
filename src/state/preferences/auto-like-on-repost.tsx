@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -27,7 +27,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (autoLikeOnRepost: persisted.Schema['autoLikeOnRepost']) => {
       setState(autoLikeOnRepost)
-      persisted.write('autoLikeOnRepost', autoLikeOnRepost)
+      void persisted.write('autoLikeOnRepost', autoLikeOnRepost)
     },
     [setState],
   )

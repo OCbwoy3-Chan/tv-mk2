@@ -1,10 +1,6 @@
 import {memo, useMemo} from 'react'
 import {View} from 'react-native'
-import {
-  type AppBskyFeedDefs,
-  type AppBskyFeedThreadgate,
-  RichText as RichTextAPI,
-} from '@atproto/api'
+import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {Trans} from '@lingui/react/macro'
 
 import {userStyle} from '#/lib/userstyles'
@@ -33,13 +29,14 @@ import {TranslatedPost} from '#/components/Post/Translated'
 import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
+import {type app} from '#/lexicons'
 
 export type ThreadItemReaderSegmentProps = {
   item: ReaderSegmentItem
   sort: string
   onToggleSeam: (uri: string) => void
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
 }
 
 /**
@@ -105,7 +102,7 @@ const ThreadItemReaderSegmentInner = memo(
     onPostSuccess,
     threadgateRecord,
   }: ThreadItemReaderSegmentProps & {
-    postShadow: Shadow<AppBskyFeedDefs.PostView>
+    postShadow: Shadow<app.bsky.feed.defs.PostView>
   }) {
     const post = postShadow
     const seam = item.seam

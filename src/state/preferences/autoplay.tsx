@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (autoplayDisabled: persisted.Schema['disableAutoplay']) => {
       setState(Boolean(autoplayDisabled))
-      persisted.write('disableAutoplay', autoplayDisabled)
+      void persisted.write('disableAutoplay', autoplayDisabled)
     },
     [setState],
   )

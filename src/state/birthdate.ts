@@ -1,14 +1,14 @@
 import {useMemo} from 'react'
+import {setPersonalDetails} from '@bsky/sdk'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 
 import {restrictChatSettings} from '#/state/queries/messages/restrictChatSettings'
 import {preferencesQueryKey} from '#/state/queries/preferences'
-import {useAgent, useSession} from '#/state/session'
+import {usePdsClient, useSession} from '#/state/session'
 import {usePatchAgeAssuranceOtherRequiredData} from '#/ageAssurance'
 import {isUnderAge} from '#/ageAssurance/util'
 import {IS_DEV} from '#/env'
 import {account} from '#/storage'
-import {pdsAgent} from './session/agent'
 
 // 6s in dev, 48h in prod
 const BIRTHDATE_DELAY_HOURS = IS_DEV ? 0.001 : 48
@@ -55,13 +55,14 @@ export function useIsBirthdateUpdateAllowed() {
 
 export function useBirthdateMutation() {
   const queryClient = useQueryClient()
-  const agent = useAgent()
+  const {currentAccount} = useSession()
+  const pdsClient = usePdsClient()
   const patchOtherRequiredData = usePatchAgeAssuranceOtherRequiredData()
 
   return useMutation<void, unknown, {birthDate: Date}>({
     mutationFn: async ({birthDate}: {birthDate: Date}) => {
       const bday = birthDate.toISOString()
-      await pdsAgent(agent).setPersonalDetails({birthDate: bday})
+      await pdsClient.call(setPersonalDetails, {birthDate})
       // triggers a refetch
       await queryClient.invalidateQueries({
         queryKey: preferencesQueryKey,
@@ -69,7 +70,7 @@ export function useBirthdateMutation() {
 
       if (isUnderAge(birthDate.toISOString(), 18)) {
         await restrictChatSettings({
-          agent,
+          client: pdsClient,
           restrictIncoming: true,
           restrictGroupInvites: true,
         })
@@ -80,7 +81,9 @@ export function useBirthdateMutation() {
        * birthdate, which may change the user's age assurance access level.
        */
       void patchOtherRequiredData({birthdate: bday})
-      snoozeBirthdateUpdateAllowedForDid(agent.sessionManager.did!)
+      if (currentAccount) {
+        snoozeBirthdateUpdateAllowedForDid(currentAccount.did)
+      }
     },
   })
 }

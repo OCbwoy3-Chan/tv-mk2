@@ -1,6 +1,6 @@
 import {type ReactNode} from 'react'
 import {View} from 'react-native'
-import {type AppBskyActorDefs, type ModerationDecision} from '@atproto/api'
+import {type ModerationDecision} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -16,13 +16,14 @@ import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationD
 import {useFollowMethods} from '#/components/hooks/useFollowMethods'
 import {PlusSmall_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import * as Prompt from '#/components/Prompt'
+import {type app} from '#/lexicons'
 
 export function AviFollowButton({
   author,
   moderation,
   children,
 }: {
-  author: AppBskyActorDefs.ProfileViewBasic
+  author: app.bsky.actor.defs.ProfileViewBasic
   moderation: ModerationDecision
   children: ReactNode
 }) {

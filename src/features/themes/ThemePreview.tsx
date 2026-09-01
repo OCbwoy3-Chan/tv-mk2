@@ -5,7 +5,7 @@ import {atoms as a} from '#/alf'
 import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
 import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
 import {Text} from '#/components/Typography'
-import type {ThemeColorSet} from './types'
+import  {type ThemeColorSet} from './types'
 
 export function ThemePreview({
   colorSet,

@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (goLinksEnabled: persisted.Schema['goLinksEnabled']) => {
       setState(goLinksEnabled)
-      persisted.write('goLinksEnabled', goLinksEnabled)
+      void persisted.write('goLinksEnabled', goLinksEnabled)
     },
     [setState],
   )

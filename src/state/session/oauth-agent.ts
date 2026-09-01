@@ -163,7 +163,9 @@ export class OauthBskyAppAgent extends Agent {
     this._serviceUrl = new URL(account.service)
     this._pdsUrl = account.pdsUrl ? new URL(account.pdsUrl) : undefined
     const proxyDid =
-      readCustomAppViewDidUri() || BLUESKY_PROXY_HEADER.get() || APPVIEW_DID_PROXY
+      readCustomAppViewDidUri() ||
+      BLUESKY_PROXY_HEADER.get() ||
+      APPVIEW_DID_PROXY
     this.configureProxy(proxyDid as ProxyHeaderValue)
 
     await Promise.all([gates, moderation])

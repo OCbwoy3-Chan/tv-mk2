@@ -27,7 +27,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['autoCompactAccountSwitcher']) => {
       setState(value)
-      persisted.write('autoCompactAccountSwitcher', value)
+      void persisted.write('autoCompactAccountSwitcher', value)
     },
     [],
   )

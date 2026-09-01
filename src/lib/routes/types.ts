@@ -24,6 +24,7 @@ export type CommonNavigatorParams = {
   AuthCallback: undefined
   Lists: undefined
   Moderation: undefined
+  ModerationInbox: undefined
   ModerationModlists: undefined
   ModerationMutedAccounts: undefined
   ModerationBlockedAccounts: undefined
@@ -193,8 +194,7 @@ export type AllNavigatorParams = CommonNavigatorParams & {
 export type NavigationProp = NativeStackNavigationProp<AllNavigatorParams>
 
 export type State =
-  | NavigationState
-  | Omit<PartialState<NavigationState>, 'stale'>
+  NavigationState | Omit<PartialState<NavigationState>, 'stale'>
 
 export type RouteParams = Record<string, string>
 export type MatchResult = {params: RouteParams}

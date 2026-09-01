@@ -1,6 +1,5 @@
 import {type RefObject, useCallback} from 'react'
-import {View} from 'react-native'
-import {type AppBskyFeedDefs} from '@atproto/api'
+import {type HostInstance,View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
@@ -20,6 +19,7 @@ import {
   ChevronTop_Stroke2_Corner0_Rounded as ChevronUpIcon,
 } from '#/components/icons/Chevron'
 import {Text} from '#/components/Typography'
+import {type app} from '#/lexicons'
 
 export function ThreadAlsoLiked({
   posts,
@@ -35,7 +35,7 @@ export function ThreadAlsoLiked({
   spacerHeight,
   isTombstoneView,
 }: {
-  posts: AppBskyFeedDefs.PostView[]
+  posts: app.bsky.feed.defs.PostView[]
   visible: boolean
   collapsed: boolean
   isLoading: boolean
@@ -43,7 +43,7 @@ export function ThreadAlsoLiked({
   isFetchingNextPage: boolean
   error: unknown
   onRetry: () => void
-  headerRef: RefObject<View | null>
+  headerRef: RefObject<HostInstance | null>
   onToggleCollapsed: () => void
   spacerHeight: number | undefined
   isTombstoneView: boolean
@@ -53,7 +53,7 @@ export function ThreadAlsoLiked({
   const queryClient = useQueryClient()
   const hasSection = visible
   const onBeforePress = useCallback(
-    (post: AppBskyFeedDefs.PostView) => {
+    (post: app.bsky.feed.defs.PostView) => {
       unstableCacheProfileView(queryClient, post.author)
       setUnstablePostSource(buildPostSourceKey(post.uri, post.author.handle), {
         post: {post},

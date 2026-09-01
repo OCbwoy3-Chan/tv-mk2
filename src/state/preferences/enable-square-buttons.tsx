@@ -28,7 +28,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['enableSquareButtons']) => {
       setState(value)
-      persisted.write('enableSquareButtons', value)
+      void persisted.write('enableSquareButtons', value)
     },
     [setState],
   )

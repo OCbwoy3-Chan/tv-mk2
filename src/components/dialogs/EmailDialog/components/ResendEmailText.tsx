@@ -38,7 +38,7 @@ export function ResendEmailText({
         <InlineLinkText
           label={l`Resend`}
           {...createStaticClick(() => {
-            handleOnPress()
+            void handleOnPress()
           })}>
           Click here to resend.
         </InlineLinkText>

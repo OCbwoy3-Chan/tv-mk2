@@ -1,17 +1,12 @@
-import {
-  type AppBskyActorDefs,
-  type AppBskyEmbedRecord,
-  type AppBskyFeedDefs,
-  AppBskyFeedPost,
-  AtUri,
-  type AtpAgent,
-} from '@atproto/api'
+import {type AtpAgent} from '@atproto/api'
+import {AtUri, type AtUriString} from '@atproto/syntax'
 import {useQuery} from '@tanstack/react-query'
 
 import {retry} from '#/lib/async/retry'
 import {useDeferredEnable} from '#/lib/hooks/useDeferredEnable'
 import {STALE} from '#/state/queries'
 import {useAgent} from '#/state/session'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {type EmbedType} from '#/types/bsky/post'
 
@@ -19,8 +14,7 @@ const RQKEY_ROOT = 'direct-fetch-record'
 export const RQKEY = (uri: string) => [RQKEY_ROOT, uri]
 
 export type DirectFetchUnavailableReason =
-  | 'repo_not_found'
-  | 'account_suspended'
+  'repo_not_found' | 'account_suspended'
 
 export type DirectFetchEmbedRecordResult =
   | {
@@ -53,7 +47,7 @@ export async function directFetchRecordAndProfile(
   uri: string,
 ): Promise<
   | {
-      profile: AppBskyActorDefs.ProfileViewDetailed
+      profile: app.bsky.actor.defs.ProfileViewDetailed
       record: unknown
     }
   | {
@@ -93,7 +87,10 @@ export async function directFetchRecordAndProfile(
         ).data.value)(),
     ])
 
-    return {profile, record}
+    return {
+      profile: profile as unknown as app.bsky.actor.defs.ProfileViewDetailed,
+      record,
+    }
   } catch (e) {
     console.error(e)
     if (isRepoNotFoundError(e)) {
@@ -114,19 +111,23 @@ export async function directFetchEmbedRecord(
   if (res === undefined) return undefined
   if ('unavailableReason' in res) return res
   const {profile, record} = res
+  const author: app.bsky.actor.defs.ProfileViewBasic = {
+    ...profile,
+    $type: 'app.bsky.actor.defs#profileViewBasic',
+  }
 
-  if (record && bsky.validate(record, AppBskyFeedPost.validateRecord)) {
+  if (bsky.isType(app.bsky.feed.post.main, record)) {
     return {
       record: {
         type: 'post',
         view: {
           $type: 'app.bsky.embed.record#viewRecord',
-          uri,
-          author: profile as AppBskyActorDefs.ProfileViewBasic,
+          uri: uri as AtUriString,
+          author,
           cid: 'directfetch',
           value: record,
           indexedAt: record.createdAt,
-        } satisfies AppBskyEmbedRecord.ViewRecord,
+        } satisfies app.bsky.embed.record.ViewRecord,
       },
     }
   } else {
@@ -156,20 +157,24 @@ export function useDirectFetchEmbedRecord({
 export async function directFetchPostRecord(
   agent: AtpAgent,
   uri: string,
-): Promise<AppBskyFeedDefs.PostView | undefined> {
+): Promise<app.bsky.feed.defs.PostView | undefined> {
   const res = await directFetchRecordAndProfile(agent, uri)
   if (res === undefined || 'unavailableReason' in res) return undefined
   const {profile, record} = res
+  const author: app.bsky.actor.defs.ProfileViewBasic = {
+    ...profile,
+    $type: 'app.bsky.actor.defs#profileViewBasic',
+  }
 
-  if (record && bsky.validate(record, AppBskyFeedPost.validateRecord)) {
+  if (bsky.isType(app.bsky.feed.post.main, record)) {
     return {
       $type: 'app.bsky.feed.defs#postView',
-      uri,
-      author: profile as AppBskyActorDefs.ProfileViewBasic,
+      uri: uri as AtUriString,
+      author,
       cid: 'directfetch',
       record,
       indexedAt: record.createdAt,
-    } satisfies AppBskyFeedDefs.PostView
+    } satisfies app.bsky.feed.defs.PostView
   } else {
     return undefined
   }

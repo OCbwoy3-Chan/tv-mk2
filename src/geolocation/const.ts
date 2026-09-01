@@ -10,6 +10,7 @@ export const GEOLOCATION_SERVICE_URL = '' // No longer needed
 // lets just force set everyone to be in the US,
 // maybe make a tweak in the future that lets ppl customize this
 export const FALLBACK_GEOLOCATION_SERVICE_RESPONSE: Geolocation = {
-  countryCode: 'US',
-  regionCode: 'CA',
+  countryCode: undefined,
+  regionCode: undefined,
+  city: undefined,
 }

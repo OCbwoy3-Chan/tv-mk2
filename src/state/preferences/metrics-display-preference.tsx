@@ -59,7 +59,7 @@ function createCountsMetricsDisplayPreference({
 
     const setStateWrapped = useCallback((value: CountsMetricsDisplay) => {
       setState(value)
-      persisted.write(displayKey, value)
+      void persisted.write(displayKey, value)
     }, [])
 
     useEffect(() => {
@@ -114,7 +114,7 @@ function createFollowedByMetricsDisplayPreference() {
 
     const setStateWrapped = useCallback((value: FollowedByMetricsDisplay) => {
       setState(value)
-      persisted.write(displayKey, value)
+      void persisted.write(displayKey, value)
     }, [])
 
     useEffect(() => {
@@ -273,7 +273,9 @@ export function MetricsDisplayPreferencesProvider({
                   <followedBy.Provider>
                     <posts.Provider>
                       <notificationsTabBadge.Provider>
-                        <chatsTabBadge.Provider>{children}</chatsTabBadge.Provider>
+                        <chatsTabBadge.Provider>
+                          {children}
+                        </chatsTabBadge.Provider>
                       </notificationsTabBadge.Provider>
                     </posts.Provider>
                   </followedBy.Provider>

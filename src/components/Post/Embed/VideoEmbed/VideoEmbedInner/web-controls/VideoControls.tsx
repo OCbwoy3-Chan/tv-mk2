@@ -35,7 +35,6 @@ import {TimeIndicator} from '../TimeIndicator'
 import {ControlButton} from './ControlButton'
 import {Scrubber} from './Scrubber'
 import {useVideoElement} from './utils'
-import {type ControlsProps} from './VideoControls.shared'
 import {VolumeControl} from './VolumeControl'
 
 export function Controls({

@@ -37,7 +37,7 @@ function reducer(state: StateContext, action: Action): StateContext {
   switch (action.type) {
     case 'set': {
       if (OnboardingStepsArray.includes(action.step)) {
-        persisted.write('onboarding', {step: action.step})
+        void persisted.write('onboarding', {step: action.step})
         return compute({...state, step: action.step})
       }
       return state
@@ -52,19 +52,19 @@ function reducer(state: StateContext, action: Action): StateContext {
       } else if (currentStep === 'RecommendedFollows') {
         nextStep = 'Home'
       }
-      persisted.write('onboarding', {step: nextStep})
+      void persisted.write('onboarding', {step: nextStep})
       return compute({...state, step: nextStep})
     }
     case 'start': {
-      persisted.write('onboarding', {step: 'Welcome'})
+      void persisted.write('onboarding', {step: 'Welcome'})
       return compute({...state, step: 'Welcome'})
     }
     case 'finish': {
-      persisted.write('onboarding', {step: 'Home'})
+      void persisted.write('onboarding', {step: 'Home'})
       return compute({...state, step: 'Home'})
     }
     case 'skip': {
-      persisted.write('onboarding', {step: 'Home'})
+      void persisted.write('onboarding', {step: 'Home'})
       return compute({...state, step: 'Home'})
     }
     default: {

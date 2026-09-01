@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 import Svg, {Circle, Path, Rect} from 'react-native-svg'
 import {Image as ExpoImage} from 'expo-image'
-import {type ModerationUI} from '@atproto/api'
+import {type ModerationUI} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -332,7 +332,7 @@ let UserAvatar = ({
   }, [size, style])
 
   return avatar &&
-    !((moderation?.blur && IS_ANDROID) /* android crashes with blur */) ? (
+    !(moderation?.blur && IS_ANDROID /* android crashes with blur */) ? (
     <View style={containerStyle}>
       {usePlainRNImage ? (
         <RNImage
@@ -495,14 +495,10 @@ let EditableUserAvatar = ({
 
   const onChangeEditImage = useCallback(
     async (image: ComposerImage) => {
-      const compressed = await compressImage(
-        image,
-        IMAGE_SIZE_CONFIG_2K_1MB,
-        {
-          ...avatarCompressOpts,
-          forceEncode: true,
-        },
-      )
+      const compressed = await compressImage(image, IMAGE_SIZE_CONFIG_2K_1MB, {
+        ...avatarCompressOpts,
+        forceEncode: true,
+      })
       onSelectNewAvatar(compressed)
     },
     [onSelectNewAvatar, avatarCompressOpts],
@@ -617,11 +613,11 @@ let PreviewableUserAvatar = ({
     unstableCacheProfileView(queryClient, profile)
   }, [profile, queryClient, onBeforePress])
 
-  const onOpenLiveStatus = useCallback(() => {
+  const onOpenLiveStatus = () => {
     playHaptic('Light')
     ax.metric('live:card:open', {subject: profile.did, from: 'post'})
     liveControl.open()
-  }, [liveControl, playHaptic, profile.did])
+  }
 
   const avatarEl = (
     <UserAvatar

@@ -28,7 +28,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (discoverContextEnabled: persisted.Schema['discoverContextEnabled']) => {
       setState(discoverContextEnabled)
-      persisted.write('discoverContextEnabled', discoverContextEnabled)
+      void persisted.write('discoverContextEnabled', discoverContextEnabled)
     },
     [setState],
   )

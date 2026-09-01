@@ -1,7 +1,6 @@
 import {Pressable, type StyleProp, View, type ViewStyle} from 'react-native'
 import {type AnimatedRef} from 'react-native-reanimated'
 import {Image, type ImageStyle} from 'expo-image'
-import {type AppBskyEmbedImages} from '@atproto/api'
 import {utils} from '@bsky.app/alf'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -19,11 +18,12 @@ import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import {ImageContextMenu} from '#/components/Post/Embed/ImageContextMenu'
 import {type PostEmbedViewContext} from '#/components/Post/Embed/types'
 import {Text} from '#/components/Typography'
+import {type app} from '#/lexicons'
 
 type EventFunction = (index: number) => void
 
 interface Props {
-  images: AppBskyEmbedImages.ViewImage[]
+  images: app.bsky.embed.images.ViewImage[]
   index: number
   onPress?: (
     index: number,
@@ -99,11 +99,11 @@ export function GalleryItem({
           accessibilityHint="">
           <Image
             source={{
-            uri: applyImageTransforms(image.thumb, {
-              imageCdnHost,
-              format: thumbnailFormat,
-            }),
-          }}
+              uri: applyImageTransforms(image.thumb, {
+                imageCdnHost,
+                format: thumbnailFormat,
+              }),
+            }}
             style={[a.flex_1]}
             accessible={true}
             accessibilityLabel={image.alt}

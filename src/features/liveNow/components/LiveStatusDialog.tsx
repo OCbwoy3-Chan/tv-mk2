@@ -1,11 +1,7 @@
 import {useCallback, useMemo} from 'react'
 import {View} from 'react-native'
 import {Image} from 'expo-image'
-import {
-  type AppBskyActorDefs,
-  type AppBskyEmbedExternal,
-  moderateStatus,
-} from '@atproto/api'
+import {moderateStatus} from '@bsky/sdk/moderation'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
@@ -23,7 +19,7 @@ import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfoIcon} from '#/components/icons/CircleInfo'
 import {Globe_Stroke2_Corner0_Rounded} from '#/components/icons/Globe'
-import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
+import {Image_Stroke2_Corner2_Rounded as ImageIcon} from '#/components/icons/Image'
 import {SquareArrowTopRight_Stroke2_Corner0_Rounded as SquareArrowTopRightIcon} from '#/components/icons/SquareArrowTopRight'
 import {createStaticClick, SimpleInlineLinkText} from '#/components/Link'
 import * as Hider from '#/components/moderation/Hider'
@@ -32,6 +28,7 @@ import * as ProfileCard from '#/components/ProfileCard'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {LiveIndicator} from '#/features/liveNow/components/LiveIndicator'
+import {type app} from '#/lexicons'
 import type * as bsky from '#/types/bsky'
 
 export function LiveStatusDialog({
@@ -43,8 +40,8 @@ export function LiveStatusDialog({
 }: {
   control: Dialog.DialogControlProps
   profile: bsky.profile.AnyProfileView
-  status: AppBskyActorDefs.StatusView
-  embed: AppBskyEmbedExternal.View
+  status: app.bsky.actor.defs.StatusView
+  embed: app.bsky.embed.external.View
   onPressViewAvatar?: () => void
 }) {
   const navigation = useNavigation<NavigationProp>()
@@ -70,9 +67,9 @@ function DialogInner({
   onPressViewAvatar,
 }: {
   profile: bsky.profile.AnyProfileView
-  embed: AppBskyEmbedExternal.View
+  embed: app.bsky.embed.external.View
   navigation: NavigationProp
-  status: AppBskyActorDefs.StatusView
+  status: app.bsky.actor.defs.StatusView
   onPressViewAvatar?: () => void
 }) {
   const {t: l} = useLingui()
@@ -117,9 +114,9 @@ export function LiveStatus({
   onPressOpenProfile,
   onPressViewAvatar,
 }: {
-  status: AppBskyActorDefs.StatusView
+  status: app.bsky.actor.defs.StatusView
   profile: bsky.profile.AnyProfileView
-  embed: AppBskyEmbedExternal.View
+  embed: app.bsky.embed.external.View
   padding?: 'lg' | 'xl'
   onPressOpenProfile: () => void
   onPressViewAvatar?: () => void

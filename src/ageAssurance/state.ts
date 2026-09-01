@@ -1,5 +1,4 @@
 import {useEffect, useMemo, useState} from 'react'
-import {type AppBskyAgeassuranceDefs} from '@atproto/api'
 
 import {getAge} from '#/lib/strings/time'
 import {useSession} from '#/state/session'
@@ -18,6 +17,7 @@ import {
   AgeAssuranceStatus,
 } from '#/ageAssurance/types'
 import {type Geolocation, useGeolocation} from '#/geolocation'
+import {type app} from '#/lexicons'
 import {device} from '#/storage'
 
 const PERMISSIVE_FLAGS: AgeAssuranceFlags = {
@@ -44,8 +44,8 @@ function computeAgeAssuranceState({
 }: {
   hasSession: boolean
   geolocation: Geolocation
-  config?: AppBskyAgeassuranceDefs.Config
-  state?: AppBskyAgeassuranceDefs.State
+  config?: app.bsky.ageassurance.defs.Config
+  state?: app.bsky.ageassurance.defs.State
   metadata?: AgeAssuranceMetadata
 }) {
   if (!hasSession)
@@ -75,7 +75,7 @@ export function unsafeGetAndComputeAgeAssurance({did}: {did: string}) {
   const requiredData = getOtherRequiredDataFromCache({did})
   const geolocation =
     device.get(['mergedGeolocation']) ||
-    ({countryCode: undefined, regionCode: undefined} as Geolocation)
+    ({countryCode: undefined, regionCode: undefined})
 
   const metadata: AgeAssuranceMetadata = {
     accountCreatedAt: state?.metadata?.accountCreatedAt,

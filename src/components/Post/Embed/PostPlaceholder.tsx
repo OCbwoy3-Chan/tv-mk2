@@ -1,5 +1,5 @@
-import {StyleSheet, View} from 'react-native'
 import React from 'react'
+import {StyleSheet, View} from 'react-native'
 
 import {usePalette} from '#/lib/hooks/usePalette'
 import {InfoCircleIcon} from '#/lib/icons'
@@ -12,8 +12,10 @@ function extractTextFromChildren(children: React.ReactNode): string {
   if (children == null) return ''
   if (typeof children === 'string') return children
   if (typeof children === 'number') return String(children)
-  if (Array.isArray(children)) return children.map(extractTextFromChildren).join(' ')
-  if (React.isValidElement(children)) return extractTextFromChildren((children as any).props?.children)
+  if (Array.isArray(children))
+    return children.map(extractTextFromChildren).join(' ')
+  if (React.isValidElement(children))
+    return extractTextFromChildren((children as any).props?.children)
   return ''
 }
 

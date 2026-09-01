@@ -74,7 +74,7 @@ export function OTAInfo() {
           if (isAvailable) {
             fetchAndLaunchUpdate()
           } else {
-            refetch()
+            void refetch()
           }
         }}>
         {isAvailable ? (

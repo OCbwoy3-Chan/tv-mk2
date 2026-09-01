@@ -1,6 +1,6 @@
 import {useCallback, useMemo, useState} from 'react'
 import {View} from 'react-native'
-import {AtUri} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
 import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {TRENDING_HANDLE} from '#/lib/constants'
@@ -450,10 +450,16 @@ function DialogInner({
   const feedRkey = useMemo(() => new AtUri(info.uri).rkey, [info.uri])
 
   const onToggleLiked = async () => {
+    /*
+     * Hoisted out of the `try`: React Compiler cannot lower a logical
+     * expression in a test position there, and the `else` below rules out
+     * splitting this into nested ifs.
+     */
+    const shouldUnlike = isLiked && likeUri
     try {
       playHaptic()
 
-      if (isLiked && likeUri) {
+      if (shouldUnlike) {
         await unlikeFeed({uri: likeUri})
         setLikeUri('')
         ax.metric('feed:unlike', {feedUrl: info.uri})

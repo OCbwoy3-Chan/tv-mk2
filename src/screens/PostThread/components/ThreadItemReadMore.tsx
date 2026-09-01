@@ -64,12 +64,7 @@ export const ThreadItemReadMore = memo(function ThreadItemReadMore({
      * not run past the read-more control.
      */
     return (
-      <View
-        style={[
-          a.flex_row,
-          a.align_center,
-          {height: READER_SEAM_HEIGHT},
-        ]}>
+      <View style={[a.flex_row, a.align_center, {height: READER_SEAM_HEIGHT}]}>
         <View
           style={{
             marginLeft: READER_LINE_INDENT,

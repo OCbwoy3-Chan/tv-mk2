@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (hideScaryFollowButtons: persisted.Schema['hideScaryFollowButtons']) => {
       setState(hideScaryFollowButtons)
-      persisted.write('hideScaryFollowButtons', hideScaryFollowButtons)
+      void persisted.write('hideScaryFollowButtons', hideScaryFollowButtons)
     },
     [setState],
   )

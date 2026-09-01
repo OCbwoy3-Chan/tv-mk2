@@ -17,26 +17,21 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import {TID} from '@atproto/common-web'
+import {AtUri} from '@atproto/syntax'
 import {
-  type AppBskyActorDefs,
-  type AppBskyFeedDefs,
-  AppBskyFeedPost,
-  type AppBskyGraphDefs,
-  AppBskyGraphFollow,
-  AppBskyGraphStarterpack,
   moderateProfile,
   type ModerationDecision,
   type ModerationOpts,
-} from '@atproto/api'
-import {AtUri} from '@atproto/api'
-import {TID} from '@atproto/common-web'
-import {msg, plural} from '@lingui/core/macro'
+} from '@bsky/sdk/moderation'
+import {plural} from '@lingui/core/macro'
+import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Plural, Trans} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
 
-import {DM_SERVICE_HEADERS, MAX_POST_LINES} from '#/lib/constants'
+import {MAX_POST_LINES} from '#/lib/constants'
 import {useAnimatedValue} from '#/lib/hooks/useAnimatedValue'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
@@ -51,7 +46,7 @@ import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {type FeedNotification} from '#/state/queries/notifications/feed'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
-import {useAgent, useSession} from '#/state/session'
+import {useChatClient, useSession} from '#/state/session'
 import {FeedSourceCard} from '#/view/com/feeds/FeedSourceCard'
 import {Post} from '#/view/com/post/Post'
 import {formatCount} from '#/view/com/util/numeric/format'
@@ -60,9 +55,9 @@ import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, native, platform, useTheme} from '#/alf'
 import {
   Button,
+  type ButtonContext,
   ButtonIcon,
   ButtonText,
-  type ButtonContext,
 } from '#/components/Button'
 import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {BellRinging_Filled_Corner0_Rounded as BellRingingIcon} from '#/components/icons/BellRinging'
@@ -81,11 +76,9 @@ import {
 } from '#/components/icons/Heart2'
 import {PersonPlus_Filled_Stroke2_Corner0_Rounded as PersonPlusIcon} from '#/components/icons/Person'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
-import {
-  Repost_Stroke2_Corner3_Rounded as RepostIcon,
-  RepostRepost_Stroke2_Corner2_Rounded as RepostRepostIcon,
-} from '#/components/icons/Repost'
-import {StarterPack} from '#/components/icons/StarterPack'
+import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
+import {RepostRepost_Stroke2_Corner2_Rounded as RepostRepostIcon} from '#/components/icons/Repost'
+import {StarterPackMultiPathLarge as StarterPackIcon} from '#/components/icons/StarterPack'
 import {VerifiedCheck} from '#/components/icons/VerifiedCheck'
 import {InlineLinkText, Link, useLink} from '#/components/Link'
 import * as MediaPreview from '#/components/MediaPreview'
@@ -102,12 +95,13 @@ import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB} from '#/env'
+import {app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 const MAX_AUTHORS = 5
 
 interface Author {
-  profile: AppBskyActorDefs.ProfileView
+  profile: app.bsky.actor.defs.ProfileView
   href: string
   moderation: ModerationDecision
 }
@@ -221,10 +215,7 @@ let NotificationFeedItem = ({
     if (item.type !== 'follow') return false
     if (
       item.notification.author.viewer?.following &&
-      bsky.dangerousIsType<AppBskyGraphFollow.Record>(
-        item.notification.record,
-        AppBskyGraphFollow.isRecord,
-      )
+      bsky.isType(app.bsky.graph.follow, item.notification.record)
     ) {
       let followingTimestamp
       try {
@@ -402,9 +393,11 @@ let NotificationFeedItem = ({
       /*
        * Follow-backs are ungrouped, grouped follow-backs not supported atm,
        * see `src/state/queries/notifications/util.ts`
-      */
+       */
       a11yLabel = starterPackName
-        ? _(msg`${firstAuthorName} followed you back via starter pack ${starterPackName}`)
+        ? _(
+            msg`${firstAuthorName} followed you back via starter pack ${starterPackName}`,
+          )
         : _(msg`${firstAuthorName} followed you back`)
       notificationContent = <Trans>{firstAuthorLink} followed you back</Trans>
     } else {
@@ -416,7 +409,9 @@ let NotificationFeedItem = ({
                 other: `${formattedAuthorsCount} others`,
               })} followed you via starter pack ${starterPackName}`,
             )
-          : _(msg`${firstAuthorName} followed you via starter pack ${starterPackName}`)
+          : _(
+              msg`${firstAuthorName} followed you via starter pack ${starterPackName}`,
+            )
         : hasMultipleAuthors
           ? _(
               msg`${firstAuthorName} and ${plural(additionalAuthorsCount, {
@@ -500,7 +495,7 @@ let NotificationFeedItem = ({
     )
     icon = (
       <View style={{height: 30, width: 30}}>
-        <StarterPack width={30} fill={t.palette.primary_500} />
+        <StarterPackIcon width={30} gradient="sky" />
       </View>
     )
   } else if (item.type === 'verified') {
@@ -689,9 +684,7 @@ let NotificationFeedItem = ({
           : [
               {
                 name: 'viewProfile',
-                label: _(
-                  msg`View ${firstAuthorName}'s profile`,
-                ),
+                label: _(msg`View ${firstAuthorName}'s profile`),
               },
             ],
         onAccessibilityAction: e => {
@@ -740,7 +733,9 @@ let NotificationFeedItem = ({
               {allFollowedViaSameStarterPack && starterPack ? (
                 <FollowedViaStarterPack starterPack={starterPack} />
               ) : null}
-              {(item.type === 'follow' && !hasMultipleAuthors && !isFollowBack) ||
+              {(item.type === 'follow' &&
+                !hasMultipleAuthors &&
+                !isFollowBack) ||
               (item.type === 'contact-match' &&
                 !item.notification.author.viewer?.following) ? (
                 <FollowBackButton profile={item.notification.author} />
@@ -830,7 +825,7 @@ function NotificationRow({
 function FollowedViaStarterPack({
   starterPack,
 }: {
-  starterPack: AppBskyGraphDefs.StarterPackViewBasic
+  starterPack: app.bsky.graph.defs.StarterPackViewBasic
 }) {
   const t = useTheme()
   const link = useStarterPackLink({view: starterPack})
@@ -844,7 +839,7 @@ function FollowedViaStarterPack({
     <Text style={[native(a.pt_xs), t.atoms.text_contrast_medium]}>
       <Trans comment="When the source of a follow is a starter pack, i.e., 'via starter pack {starterPackName}'.">
         via starter pack{' '}
-        <StarterPack
+        <StarterPackIcon
           size="sm"
           fill={t.palette.primary_500}
           style={[
@@ -872,12 +867,9 @@ function FollowedViaStarterPack({
 }
 
 function getStarterPackName(
-  starterPack: AppBskyGraphDefs.StarterPackViewBasic,
+  starterPack: app.bsky.graph.defs.StarterPackViewBasic,
 ) {
-  return bsky.dangerousIsType<AppBskyGraphStarterpack.Record>(
-    starterPack.record,
-    AppBskyGraphStarterpack.isRecord,
-  )
+  return bsky.isType(app.bsky.graph.starterpack, starterPack.record)
     ? starterPack.record.name
     : undefined
 }
@@ -1024,7 +1016,7 @@ function isSemiboldTextElement(child: React.ReactNode): boolean {
   }
   const style = StyleSheet.flatten(child.props.style)
   const semiboldStyle = StyleSheet.flatten(a.font_semi_bold)
-  return style?.fontWeight === semiboldStyle.fontWeight
+  return style?.fontWeight === semiboldStyle?.fontWeight
 }
 
 function renderInlineTransChildren(
@@ -1112,7 +1104,11 @@ function ExpandAuthorsPressable({
   )
 }
 
-function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
+function FollowBackButton({
+  profile,
+}: {
+  profile: app.bsky.actor.defs.ProfileView
+}) {
   const {_} = useLingui()
   const {currentAccount, hasSession} = useSession()
   const profileShadow = useProfileShadow(profile)
@@ -1136,11 +1132,7 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
   const executeFollow = async () => {
     try {
       await queueFollow()
-      Toast.show(
-        _(
-          msg`Following ${authorName}`,
-        ),
-      )
+      Toast.show(_(msg`Following ${authorName}`))
     } catch (err: any) {
       if (err?.name !== 'AbortError') {
         Toast.show(_(msg`An issue occurred, please try again.`), {
@@ -1153,11 +1145,7 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
   const executeUnfollow = async () => {
     try {
       await queueUnfollow()
-      Toast.show(
-        _(
-          msg`No longer following ${authorName}`,
-        ),
-      )
+      Toast.show(_(msg`No longer following ${authorName}`))
     } catch (err: any) {
       if (err?.name !== 'AbortError') {
         Toast.show(_(msg`An issue occurred, please try again.`), {
@@ -1260,11 +1248,27 @@ function FollowBackButton({profile}: {profile: AppBskyActorDefs.ProfileView}) {
   )
 }
 
-function SayHelloBtn({profile}: {profile: AppBskyActorDefs.ProfileView}) {
+function SayHelloBtn({profile}: {profile: app.bsky.actor.defs.ProfileView}) {
   const {_} = useLingui()
-  const agent = useAgent()
+  const client = useChatClient()
+  const {currentAccount} = useSession()
   const navigation = useNavigation<NavigationProp>()
   const [isLoading, setIsLoading] = useState(false)
+
+  const onPress = async () => {
+    try {
+      setIsLoading(true)
+      const data = await client.call(chat.bsky.convo.getConvoForMembers, {
+        members: [profile.did, currentAccount!.did],
+      })
+      navigation.navigate('MessagesConversation', {
+        conversation: data.convo.id,
+      })
+    } catch (e) {
+      logger.error('Failed to get conversation', {safeMessage: e})
+    }
+    setIsLoading(false)
+  }
 
   if (
     profile.associated?.chat?.allowIncoming === 'none' ||
@@ -1282,24 +1286,7 @@ function SayHelloBtn({profile}: {profile: AppBskyActorDefs.ProfileView}) {
       size="small"
       style={[a.self_center, {marginLeft: 'auto'}]}
       disabled={isLoading}
-      onPress={async () => {
-        try {
-          setIsLoading(true)
-          const res = await agent.api.chat.bsky.convo.getConvoForMembers(
-            {
-              members: [profile.did, agent.session!.did],
-            },
-            {headers: DM_SERVICE_HEADERS},
-          )
-          navigation.navigate('MessagesConversation', {
-            conversation: res.data.convo.id,
-          })
-        } catch (e) {
-          logger.error('Failed to get conversation', {safeMessage: e})
-        } finally {
-          setIsLoading(false)
-        }
-      }}>
+      onPress={onPress}>
       <ButtonText>
         <Trans>Say hello!</Trans>
       </ButtonText>
@@ -1497,15 +1484,9 @@ function ExpandedAuthorProfileCard({
   )
 }
 
-function AdditionalPostText({post}: {post?: AppBskyFeedDefs.PostView}) {
+function AdditionalPostText({post}: {post?: app.bsky.feed.defs.PostView}) {
   const t = useTheme()
-  if (
-    post &&
-    bsky.dangerousIsType<AppBskyFeedPost.Record>(
-      post?.record,
-      AppBskyFeedPost.isRecord,
-    )
-  ) {
+  if (post && bsky.isType(app.bsky.feed.post, post?.record)) {
     const text = post.record.text
 
     return (

@@ -4,10 +4,7 @@ import {device, useStorage} from '#/storage'
 import {type SessionAccount} from './types'
 
 export type AccountSortOption =
-  | 'alphabetical'
-  | 'dateModified'
-  | 'dateAdded'
-  | 'custom'
+  'alphabetical' | 'dateModified' | 'dateAdded' | 'custom'
 
 type SortableAccountItem = {
   account: Pick<SessionAccount, 'handle' | 'addedAt' | 'lastActiveAt'>
@@ -61,7 +58,7 @@ export function useAccountSwitcherSortSettings() {
   ])
 
   return {
-    sortBy: storedSortBy ?? ('dateModified' as AccountSortOption),
+    sortBy: storedSortBy ?? ('dateModified'),
     setSortBy: setStoredSortBy,
     reverse: reverseAccounts,
     setReverse: setReverseAccounts,

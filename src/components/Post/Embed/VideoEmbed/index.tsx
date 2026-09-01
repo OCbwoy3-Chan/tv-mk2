@@ -1,7 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {ActivityIndicator, View} from 'react-native'
 import {ImageBackground} from 'expo-image'
-import {type AppBskyEmbedVideo} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -18,12 +17,12 @@ import {useThrottledValue} from '#/components/hooks/useThrottledValue'
 import {ConstrainedImage} from '#/components/images/AutoSizedImage'
 import {PlayButtonIcon} from '#/components/video/PlayButtonIcon'
 import {useAnalytics} from '#/analytics'
+import {type app} from '#/lexicons'
 import {GifPresentationControls} from './GifPresentationControls'
 import {VideoEmbedInnerNative} from './VideoEmbedInner/VideoEmbedInnerNative'
 import * as VideoFallback from './VideoEmbedInner/VideoFallback'
-
 interface Props {
-  embed: AppBskyEmbedVideo.View
+  embed: app.bsky.embed.video.View
   did?: string
 }
 
@@ -71,7 +70,7 @@ export function VideoEmbed({embed}: Props) {
   )
 }
 
-function InnerWrapper({embed}: {embed: AppBskyEmbedVideo.View}) {
+function InnerWrapper({embed}: {embed: app.bsky.embed.video.View}) {
   const {_} = useLingui()
   const ax = useAnalytics()
   const ref = useRef<{togglePlayback: () => void}>(null)
@@ -123,10 +122,12 @@ function InnerWrapper({embed}: {embed: AppBskyEmbedVideo.View}) {
         setIsActive={active => {
           setIsActive(active)
           if (active) {
-            telemetryRef.current ??= createPlaybackTelemetry({
-              surface: 'feed',
-              presentation: embed.presentation === 'gif' ? 'gif' : 'video',
-            })
+            if (telemetryRef.current == null) {
+              telemetryRef.current = createPlaybackTelemetry({
+                surface: 'feed',
+                presentation: embed.presentation === 'gif' ? 'gif' : 'video',
+              })
+            }
             telemetryRef.current.activated()
           } else {
             telemetryRef.current?.deactivated()

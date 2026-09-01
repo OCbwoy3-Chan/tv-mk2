@@ -38,7 +38,7 @@ export function snoozeEmailConfirmationPrompt() {
   logger.debug('Snoozing email confirmation reminder', {
     snoozedAt: lastEmailConfirm,
   })
-  persisted.write('reminders', {
+  void persisted.write('reminders', {
     ...persisted.get('reminders'),
     lastEmailConfirm,
   })

@@ -1,22 +1,25 @@
 import {type ImagePickerAsset} from 'expo-image-picker'
-import {type AppBskyVideoDefs, type AtpAgent, type BlobRef} from '@atproto/api'
+import {type BlobRef, type Client} from '@atproto/lex'
 import {type I18n} from '@lingui/core'
 import {msg} from '@lingui/core/macro'
 
 import {AbortError} from '#/lib/async/cancelable'
 import {VIDEO_MAX_SIZE_MB} from '#/lib/constants'
 import {compressVideo} from '#/lib/media/video/compress'
-import {
-  ServerError,
-  UploadLimitError,
-  VideoTooLargeError,
-} from '#/lib/media/video/errors'
+import {UploadLimitError, VideoTooLargeError} from '#/lib/media/video/errors'
+import {MultipartUploadError} from '#/lib/media/video/multipart/api'
 import {type VideoTelemetry} from '#/lib/media/video/telemetry'
 import {type CompressedVideo} from '#/lib/media/video/types'
 import {uploadVideo} from '#/lib/media/video/upload'
-import {createVideoAgent} from '#/lib/media/video/util'
+import {createTokenlessVideoServiceClient} from '#/lib/media/video/util'
 import {isNetworkError} from '#/lib/strings/errors'
 import {logger} from '#/logger'
+import {app} from '#/lexicons'
+import {
+  advanceVideoProgress,
+  didSkipVideoCompression,
+  videoProgressForPhase,
+} from './videoProgress'
 
 type CaptionsTrack = {lang: string; file: File}
 
@@ -24,6 +27,7 @@ export type VideoAction =
   | {
       type: 'compressing_to_uploading'
       video: CompressedVideo
+      compressionSkipped: boolean
       signal: AbortSignal
     }
   | {
@@ -50,7 +54,7 @@ export type VideoAction =
     }
   | {
       type: 'update_job_status'
-      jobStatus: AppBskyVideoDefs.JobStatus
+      jobStatus: app.bsky.video.defs.JobStatus
       signal: AbortSignal
     }
 
@@ -74,7 +78,7 @@ export type NoVideoState = typeof NO_VIDEO
 
 type ErrorState = {
   status: 'error'
-  progress: 100
+  progress: number
   abortController: AbortController
   asset: ImagePickerAsset | null
   video: CompressedVideo | null
@@ -102,6 +106,7 @@ type CompressingState = {
 type UploadingState = {
   status: 'uploading'
   progress: number
+  compressionSkipped: boolean
   abortController: AbortController
   asset: ImagePickerAsset
   video: CompressedVideo
@@ -119,7 +124,7 @@ type ProcessingState = {
   asset: ImagePickerAsset
   video: CompressedVideo
   jobId: string
-  jobStatus: AppBskyVideoDefs.JobStatus | null
+  jobStatus: app.bsky.video.defs.JobStatus | null
   pendingPublish?: undefined
   telemetry: VideoTelemetry
   altText: string
@@ -128,7 +133,7 @@ type ProcessingState = {
 
 type DoneState = {
   status: 'done'
-  progress: 100
+  progress: 1
   abortController: AbortController
   asset: ImagePickerAsset
   video: CompressedVideo
@@ -147,6 +152,7 @@ export type RedraftState = {
   video?: undefined
   jobId?: undefined
   pendingPublish: {blobRef: BlobRef}
+  telemetry?: undefined
   altText: string
   captions: CaptionsTrack[]
   redraftDimensions: {width: number; height: number}
@@ -191,6 +197,7 @@ export function createRedraftVideoState(opts: {
     abortController: noopController,
     asset: null,
     pendingPublish: {blobRef: opts.blobRef},
+    telemetry: undefined,
     altText: opts.altText || '',
     captions: [],
     redraftDimensions: {width: opts.width, height: opts.height},
@@ -207,12 +214,12 @@ export function videoReducer(
     return state
   }
   if (action.type === 'to_error') {
-    if (!('telemetry' in state)) {
+    if (!state.telemetry) {
       return state
     }
     return {
       status: 'error',
-      progress: 100,
+      progress: state.progress,
       abortController: state.abortController,
       error: action.error,
       asset: state.asset ?? null,
@@ -224,9 +231,13 @@ export function videoReducer(
     }
   } else if (action.type === 'update_progress') {
     if (state.status === 'compressing' || state.status === 'uploading') {
+      const phase =
+        state.status === 'uploading' && state.compressionSkipped
+          ? 'uploadingWithoutCompression'
+          : state.status
       return {
         ...state,
-        progress: action.progress,
+        progress: advanceVideoProgress(state.progress, phase, action.progress),
       }
     }
   } else if (action.type === 'update_alt_text') {
@@ -243,7 +254,13 @@ export function videoReducer(
     if (state.status === 'compressing') {
       return {
         status: 'uploading',
-        progress: 0,
+        progress: videoProgressForPhase(
+          action.compressionSkipped
+            ? 'uploadingWithoutCompression'
+            : 'uploading',
+          0,
+        ),
+        compressionSkipped: action.compressionSkipped,
         abortController: state.abortController,
         asset: state.asset,
         video: action.video,
@@ -257,7 +274,7 @@ export function videoReducer(
     if (state.status === 'uploading') {
       return {
         status: 'processing',
-        progress: 0,
+        progress: videoProgressForPhase('processing', 0),
         abortController: state.abortController,
         asset: state.asset,
         video: state.video,
@@ -275,7 +292,11 @@ export function videoReducer(
         jobStatus: action.jobStatus,
         progress:
           action.jobStatus.progress !== undefined
-            ? action.jobStatus.progress / 100
+            ? advanceVideoProgress(
+                state.progress,
+                'processing',
+                action.jobStatus.progress / 100,
+              )
             : state.progress,
       }
     }
@@ -283,7 +304,7 @@ export function videoReducer(
     if (state.status === 'processing') {
       return {
         status: 'done',
-        progress: 100,
+        progress: 1,
         abortController: state.abortController,
         asset: state.asset,
         video: state.video,
@@ -313,8 +334,8 @@ function trunc2dp(num: number) {
 export async function processVideo(
   asset: ImagePickerAsset,
   dispatch: (action: VideoAction) => void,
-  agent: AtpAgent,
-  did: string,
+  client: Client,
+  dispatchUrl: string | URL,
   signal: AbortSignal,
   i18n: I18n,
   telemetry: VideoTelemetry,
@@ -353,19 +374,19 @@ export async function processVideo(
   dispatch({
     type: 'compressing_to_uploading',
     video,
+    compressionSkipped: didSkipVideoCompression(video.passthroughReason),
     signal,
   })
 
-  let uploadResponse: AppBskyVideoDefs.JobStatus | undefined
+  let uploadResponse: app.bsky.video.defs.JobStatus | undefined
   try {
     telemetry.uploadStarted(video.size)
     uploadResponse = await uploadVideo({
       video,
-      agent,
-      did,
+      client,
+      dispatchUrl,
       signal,
       i18n,
-      onTransport: telemetry.uploadTransport,
       setProgress: p => {
         dispatch({type: 'update_progress', progress: p, signal})
       },
@@ -398,12 +419,14 @@ export async function processVideo(
       return // Exit async loop
     }
 
-    const videoAgent = createVideoAgent()
-    let status: AppBskyVideoDefs.JobStatus | undefined
+    const videoClient = createTokenlessVideoServiceClient()
+    let status: app.bsky.video.defs.JobStatus | undefined
     let blob: BlobRef | undefined
     try {
-      const response = await videoAgent.app.bsky.video.getJobStatus({jobId})
-      status = response.data.jobStatus
+      const response = await videoClient.call(app.bsky.video.getJobStatus, {
+        jobId,
+      })
+      status = response.jobStatus
       pollFailures = 0
 
       if (status.state === 'JOB_STATE_COMPLETED') {
@@ -529,7 +552,7 @@ function getUploadErrorMessage(e: unknown, i18n: I18n): string | null {
   if (e instanceof AbortError) {
     return null
   }
-  if (e instanceof ServerError || e instanceof UploadLimitError) {
+  if (e instanceof MultipartUploadError || e instanceof UploadLimitError) {
     // https://github.com/bluesky-social/tango/blob/lumi/lumi/worker/permissions.go#L77
     switch (e.message) {
       case 'User is not allowed to upload videos':

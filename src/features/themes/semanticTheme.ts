@@ -1,11 +1,11 @@
 import {createTheme} from '@bsky.app/alf'
 
-import type {Palette} from '#/alf/themes'
-import type {
-  ActiveTheme,
-  SemanticColors,
-  ThemeColorSet,
-  ThemeMode,
+import  {type Palette} from '#/alf/themes'
+import  {
+  type ActiveTheme,
+  type SemanticColors,
+  type ThemeColorSet,
+  type ThemeMode,
 } from './types'
 import {getColorSet} from './types'
 import {resolveHueRecord} from './hue'

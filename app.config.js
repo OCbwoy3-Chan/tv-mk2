@@ -199,10 +199,6 @@ module.exports = function (_config) {
       androidStatusBar: {
         barStyle: 'light-content',
       },
-      // Dark nav bar in light mode is better than light nav bar in dark mode
-      androidNavigationBar: {
-        barStyle: 'light-content',
-      },
       android: {
         icon: './assets/app-icons/android_icon_legacy_light.png',
         adaptiveIcon: {
@@ -303,7 +299,7 @@ module.exports = function (_config) {
           'expo-build-properties',
           {
             ios: {
-              deploymentTarget: '15.1',
+              deploymentTarget: '16.4',
               buildReactNativeFromSource: true,
               ccacheEnabled: IS_DEV,
               cxxLanguageStandard: 'c++23',
@@ -317,8 +313,8 @@ module.exports = function (_config) {
             },
             android: {
               compileSdkVersion: 36,
-              targetSdkVersion: 35,
-              buildToolsVersion: '35.0.0',
+              targetSdkVersion: 36,
+              buildToolsVersion: '36.0.0',
               buildReactNativeFromSource: IS_PRODUCTION,
             },
           },
@@ -331,7 +327,6 @@ module.exports = function (_config) {
             sounds: PLATFORM === 'ios' ? ['assets/dm.aiff'] : ['assets/dm.mp3'],
           },
         ],
-        'react-native-compressor',
         [
           '@bitdrift/react-native',
           {

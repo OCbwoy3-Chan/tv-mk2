@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (ignoredAppLabelers: persisted.Schema['ignoredAppLabelers']) => {
       setState(ignoredAppLabelers)
-      persisted.write('ignoredAppLabelers', ignoredAppLabelers)
+      void persisted.write('ignoredAppLabelers', ignoredAppLabelers)
     },
     [setState],
   )
@@ -67,11 +67,11 @@ export function isIgnoredAppLabeler(did: string) {
 export function addIgnoredAppLabeler(did: string) {
   const ignored = getIgnoredAppLabelers()
   if (ignored.includes(did)) return
-  persisted.write('ignoredAppLabelers', [...ignored, did])
+  void persisted.write('ignoredAppLabelers', [...ignored, did])
 }
 
 export function removeIgnoredAppLabeler(did: string) {
-  persisted.write(
+  void persisted.write(
     'ignoredAppLabelers',
     getIgnoredAppLabelers().filter(d => d !== did),
   )

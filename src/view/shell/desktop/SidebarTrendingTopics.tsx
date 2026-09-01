@@ -17,7 +17,10 @@ import {DotGrid3x1_Stroke2_Corner0_Rounded as EllipsisIcon} from '#/components/i
 import {Trending3_Stroke2_Corner1_Rounded as TrendingIcon} from '#/components/icons/Trending'
 import {Link} from '#/components/Link'
 import * as Prompt from '#/components/Prompt'
-import {TrendingTopicLink} from '#/components/TrendingTopics'
+import {
+  TrendingTopicLink,
+  TrendingTopicsPrompt,
+} from '#/components/TrendingTopics'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 
@@ -44,7 +47,6 @@ function Inner() {
     error,
     isLoading,
   } = useGetTrendsQuery({
-    limit: DEFAULT_LIMIT,
     refetchOnWindowFocus: true,
   })
   const noTopics = !isLoading && !error && !trending?.trends?.length
@@ -169,11 +171,8 @@ function Inner() {
           )}
         </View>
       </View>
-      <Prompt.Basic
+      <TrendingTopicsPrompt
         control={trendingPrompt}
-        title={l`Hide trending topics?`}
-        description={l`You can update this later from your settings.`}
-        confirmButtonCta={l`Hide`}
         onConfirm={onConfirmHide}
       />
     </>

@@ -1,5 +1,5 @@
 import {View} from 'react-native'
-import type {AppBskyEmbedExternal} from '@atproto/api'
+import {type AppBskyEmbedExternal} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 

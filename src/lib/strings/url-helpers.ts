@@ -1,4 +1,4 @@
-import {AtUri} from '@atproto/api'
+import {type AtIdentifierString, AtUri} from '@atproto/syntax'
 import psl from 'psl'
 import TLDs from 'tlds'
 
@@ -31,6 +31,15 @@ const TRUSTED_REGEX = new RegExp(
 )
 const TLD_SET = new Set(TLDs)
 
+export function canParseUrl(url: string | URL, base?: string | URL): boolean {
+  try {
+    new URL(url, base)
+    return true
+  } catch {
+    return false
+  }
+}
+
 export function isValidDomain(str: string): boolean {
   const domain = str.toLowerCase().replace(/\.$/, '')
   const lastDot = domain.lastIndexOf('.')
@@ -47,8 +56,8 @@ export function makeRecordUri(
   rkey: string,
 ) {
   const urip = new AtUri('at://placeholder.placeholder/')
-  // @ts-expect-error TODO new-sdk-migration
-  urip.host = didOrName
+  // the helper takes the did or handle as a plain string
+  urip.host = didOrName as AtIdentifierString
   urip.collection = collection
   urip.rkey = rkey
   return urip.toString()

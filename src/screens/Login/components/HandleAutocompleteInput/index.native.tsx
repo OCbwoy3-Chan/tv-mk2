@@ -49,7 +49,9 @@ export function HandleAutocompleteInput({
   const {t: l} = useLingui()
   const [text, setText] = useState(initialValue)
   const [active, setActive] = useState(false)
-  const internalInputRef = useRef<TextInput>(null)
+  const internalInputRef = useRef<React.ComponentRef<typeof TextInput> | null>(
+    null,
+  )
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const trimmed = text.trim()

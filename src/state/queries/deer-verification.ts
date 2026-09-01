@@ -7,7 +7,6 @@ import {useQuery} from '@tanstack/react-query'
 
 import {useDeferredEnable} from '#/lib/hooks/useDeferredEnable'
 import {STALE} from '#/state/queries'
-import * as bsky from '#/types/bsky'
 import {type AnyProfileView} from '#/types/bsky/profile'
 import {useConstellationInstance} from '../preferences/constellation-instance'
 import {
@@ -99,10 +98,7 @@ async function getDeerVerificationLinkedRecords(
       ),
       // the explicit return type shouldn't be needed...
       (d: {link: ConstellationLink; record: unknown}): d is LinkedRecord =>
-        bsky.validate<AppBskyGraphVerification.Record>(
-          d.record,
-          AppBskyGraphVerification.validateRecord,
-        ),
+        AppBskyGraphVerification.isRecord(d.record),
     )
 
     // Array.fromAsync will do this but not available everywhere yet

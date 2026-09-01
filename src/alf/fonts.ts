@@ -3,6 +3,8 @@ import {type FontVariant, type TextStyle} from 'react-native'
 import {IS_ANDROID, IS_WEB} from '#/env'
 import {type Device, device} from '#/storage'
 
+export type MutableTextStyle = {-readonly [K in keyof TextStyle]: TextStyle[K]}
+
 const WEB_FONT_FAMILIES = `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"`
 
 /*
@@ -79,7 +81,7 @@ export function setFontFamily(fontFamily: Device['fontFamily']) {
  * Unused fonts are commented out, but the files are there if we need them.
  */
 export function applyFonts(
-  style: TextStyle,
+  style: MutableTextStyle,
   fontFamily: 'material' | 'system' | 'theme',
 ) {
   if (IS_ANDROID && fontFamily === 'material') {

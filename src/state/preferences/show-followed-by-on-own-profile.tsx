@@ -26,14 +26,12 @@ export function Provider({children}: PropsWithChildren<{}>) {
 
   const setStateWrapped = useCallback((showFollowedByOnOwnProfile: boolean) => {
     setState(showFollowedByOnOwnProfile)
-    persisted.write('showFollowedByOnOwnProfile', showFollowedByOnOwnProfile)
+    void persisted.write('showFollowedByOnOwnProfile', showFollowedByOnOwnProfile)
   }, [])
 
   useEffect(() => {
     return persisted.onUpdate('showFollowedByOnOwnProfile', next => {
-      setState(
-        next ?? persisted.defaults.showFollowedByOnOwnProfile ?? true,
-      )
+      setState(next ?? persisted.defaults.showFollowedByOnOwnProfile ?? true)
     })
   }, [])
 

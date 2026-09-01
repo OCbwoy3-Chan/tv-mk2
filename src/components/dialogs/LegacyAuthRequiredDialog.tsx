@@ -79,9 +79,12 @@ export function LegacyAuthRequiredDialogContent() {
       ) {
         setError(l`Incorrect password`)
       } else if (isNetworkError(err)) {
-        logger.warn('Failed to switch to password session due to network error', {
-          error: errMsg,
-        })
+        logger.warn(
+          'Failed to switch to password session due to network error',
+          {
+            error: errMsg,
+          },
+        )
         setError(
           l`Unable to contact your service. Please check your Internet connection.`,
         )

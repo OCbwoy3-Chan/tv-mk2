@@ -1,5 +1,6 @@
-import {type AppBskyActorGetProfile} from '@atproto/api'
-import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {toDatetimeString} from '@atproto/syntax'
+import {useMutation} from '@tanstack/react-query'
+import {useQueryClient} from '@tanstack/react-query'
 
 import {until} from '#/lib/async/until'
 import {useConstellationInstance} from '#/state/preferences/constellation-instance'
@@ -8,25 +9,25 @@ import {
   useDeerVerificationTrusted,
 } from '#/state/preferences/deer-verification'
 import {useUpdateProfileVerificationCache} from '#/state/queries/verification/useUpdateProfileVerificationCache'
-import {useAgent, useSession} from '#/state/session'
+import {useAppviewClient, usePdsClient, useSession} from '#/state/session'
 import {useAnalytics} from '#/analytics'
+import {app} from '#/lexicons'
 import type * as bsky from '#/types/bsky'
-import {asUri, asyncGenFind, type ConstellationLink} from '../constellation'
 import {
-  getTrustedConstellationVerifications,
   RQKEY as DEER_VERIFICATION_RQKEY,
 } from '../deer-verification'
 
 export function useVerificationCreateMutation() {
   const ax = useAnalytics()
-  const agent = useAgent()
+  const appviewClient = useAppviewClient()
+  const pdsClient = usePdsClient()
   const {currentAccount} = useSession()
   const updateProfileVerificationCache = useUpdateProfileVerificationCache()
 
   const qc = useQueryClient()
-  const deerVerificationEnabled = useDeerVerificationEnabled()
+  
   const deerVerificationTrusted = useDeerVerificationTrusted()
-  const constellationInstance = useConstellationInstance()
+  
 
   return useMutation({
     async mutationFn({profile}: {profile: bsky.profile.AnyProfileView}) {
@@ -34,52 +35,31 @@ export function useVerificationCreateMutation() {
         throw new Error('User not logged in')
       }
 
-      const {uri} = await agent.app.bsky.graph.verification.create(
-        {repo: currentAccount.did},
-        {
-          subject: profile.did,
-          createdAt: new Date().toISOString(),
-          handle: profile.handle,
-          displayName: profile.displayName || '',
+      const {uri} = await pdsClient.create(app.bsky.graph.verification, {
+        subject: profile.did,
+        createdAt: toDatetimeString(new Date()),
+        handle: profile.handle,
+        displayName: profile.displayName || '',
+      })
+
+      await until(
+        5,
+        1e3,
+        (profile: app.bsky.actor.getProfile.$OutputBody) => {
+          if (
+            profile.verification &&
+            profile.verification.verifications.find(v => v.uri === uri)
+          ) {
+            return true
+          }
+          return false
+        },
+        () => {
+          return appviewClient.call(app.bsky.actor.getProfile, {
+            actor: profile.did ?? '',
+          })
         },
       )
-
-      if (deerVerificationEnabled) {
-        await until(
-          10,
-          2e3,
-          (link: ConstellationLink | undefined) => {
-            return link !== undefined
-          },
-          () => {
-            return asyncGenFind(
-              getTrustedConstellationVerifications(
-                constellationInstance,
-                profile.did,
-                deerVerificationTrusted,
-              ),
-              link => asUri(link) === uri,
-            )
-          },
-        )
-      } else {
-        await until(
-          5,
-          1e3,
-          ({data: profile}: AppBskyActorGetProfile.Response) => {
-            if (
-              profile.verification &&
-              profile.verification.verifications.find(v => v.uri === uri)
-            ) {
-              return true
-            }
-            return false
-          },
-          () => {
-            return agent.getProfile({actor: profile.did ?? ''})
-          },
-        )
-      }
     },
     async onSuccess(_, {profile}) {
       ax.metric('verification:create', {})

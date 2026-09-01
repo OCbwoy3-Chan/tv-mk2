@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {View} from 'react-native'
-import {moderateProfile, type ModerationOpts} from '@atproto/api'
+import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
 import {useLingui} from '@lingui/react/macro'
 
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
@@ -10,7 +10,7 @@ import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {useIsWithinSplitView} from '#/screens/Messages/components/splitView/context'
-import {atoms as a, android, useTheme, web} from '#/alf'
+import {android, atoms as a, useTheme, web} from '#/alf'
 import {AvatarBubbles} from '#/components/AvatarBubbles'
 import {ButtonIcon} from '#/components/Button'
 import {ConvoMenu} from '#/components/dms/ConvoMenu'
@@ -119,7 +119,12 @@ function ProfileHeaderReady({
           />
           <View style={[a.flex_1]}>
             <View
-              style={[a.flex_row, a.align_center, web(a.flex_1), web(a.mb_2xs)]}>
+              style={[
+                a.flex_row,
+                a.align_center,
+                web(a.flex_1),
+                web(a.mb_2xs),
+              ]}>
               <Text
                 style={[
                   a.text_lg,

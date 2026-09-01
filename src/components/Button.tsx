@@ -91,8 +91,7 @@ export type ButtonState = {
 export type ButtonContext = VariantProps & ButtonState
 
 type NonTextElements =
-  | React.ReactElement
-  | Iterable<React.ReactElement | null | undefined | boolean>
+  React.ReactElement | Iterable<React.ReactElement | null | undefined | boolean>
 
 type WebLongPressPressableProps = {
   onPointerDown?: (e: PointerEvent) => void
@@ -114,6 +113,8 @@ export type ButtonProps = Pick<
   | 'onPressOut'
   | 'onFocus'
   | 'onBlur'
+  | 'onAccessibilityAction'
+  | 'onAccessibilityEscape'
 > &
   AccessibilityProps &
   VariantProps & {
@@ -146,7 +147,7 @@ export function useButtonContext() {
   return useContext(Context)
 }
 
-export const Button = forwardRef<View, ButtonProps>(
+export const Button = forwardRef<React.ComponentRef<typeof View>, ButtonProps>(
   (
     {
       children,
@@ -229,41 +230,10 @@ export const Button = forwardRef<View, ButtonProps>(
       },
       [onPressOuter],
     )
-    const onPointerDown = useCallback(
-      (e: PointerEvent) => {
-        if (onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE) {
-          const button = (e as unknown as globalThis.MouseEvent).button
-          if (button != null && button !== 0) return
-          clearLongPressTimer()
-          longPressTriggeredRef.current = false
-          longPressTimerRef.current = setTimeout(() => {
-            longPressTriggeredRef.current = true
-            onLongPressOuter(e as unknown as GestureResponderEvent)
-          }, 500)
-        }
-      },
-      [clearLongPressTimer, onLongPressOuter],
-    )
-    const onPointerUp = useCallback(() => {
-      if (longPressTriggeredRef.current) {
-        return
-      }
-      clearLongPressTimer()
-    }, [clearLongPressTimer])
-    const onPointerLeave = useCallback(() => {
-      clearLongPressTimer()
-    }, [clearLongPressTimer])
-    const onContextMenu = useCallback(
-      (e: Event) => {
-        if (!onLongPressOuter || !IS_WEB || IS_WEB_TOUCH_DEVICE) return
-
-        e.preventDefault()
-        clearLongPressTimer()
-        longPressTriggeredRef.current = true
-        onLongPressOuter(e as unknown as GestureResponderEvent)
-      },
-      [clearLongPressTimer, onLongPressOuter],
-    )
+    
+    
+    
+    
     const onHoverIn = useCallback(
       (e: MouseEvent) => {
         setState(s => ({
@@ -648,15 +618,6 @@ export const Button = forwardRef<View, ButtonProps>(
         role="button"
         accessibilityHint={undefined} // optional
         {...rest}
-        {...((onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE
-          ? {
-              onPointerDown,
-              onPointerUp,
-              onPointerLeave,
-              onContextMenu,
-            }
-          : {}) satisfies WebLongPressPressableProps)}
-        // @ts-ignore - this will always be a pressable
         ref={ref}
         aria-label={label}
         aria-pressed={state.pressed}

@@ -1,20 +1,17 @@
 import {useMemo} from 'react'
 import type * as AgeRange from 'expo-age-range'
+import {type ModerationPrefs} from '@bsky/sdk/moderation'
 import {
-  AppBskyAgeassuranceDefs,
   computeAgeAssuranceRegionAccess,
   getAgeAssuranceRegionConfig,
-  type ModerationPrefs,
-} from '@atproto/api'
+} from '@bsky/sdk/utils'
 
 import {getAge} from '#/lib/strings/time'
 import {regionName} from '#/locale/helpers'
 import {DEFAULT_LOGGED_OUT_LABEL_PREFERENCES} from '#/state/queries/preferences/const'
 import {
   AGE_ASSURANCE_PLATFORM,
-  DEVICE_SIGNALS_SUPPORTED,
   FALLBACK_REGION_CONFIG,
-  MIN_ACCESS_AGE,
 } from '#/ageAssurance/const'
 import {useAgeAssuranceServerDataContext} from '#/ageAssurance/data'
 import {
@@ -25,6 +22,8 @@ import {
 } from '#/ageAssurance/types'
 import {type Geolocation, useGeolocation} from '#/geolocation'
 import {USRegionNameToRegionCode} from '#/geolocation/util'
+import {app} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 
 /**
  * Resolves a geolocation to its matched age assurance region config, or
@@ -41,9 +40,9 @@ import {USRegionNameToRegionCode} from '#/geolocation/util'
  * risk desyncing the write and read keys and silently losing grants.
  */
 export function getAgeAssuranceRegionConfigForGeolocation(
-  config: AppBskyAgeassuranceDefs.Config,
+  config: app.bsky.ageassurance.defs.Config,
   geolocation: Geolocation,
-): AppBskyAgeassuranceDefs.ConfigRegion | undefined {
+): app.bsky.ageassurance.defs.ConfigRegion | undefined {
   return getAgeAssuranceRegionConfig(config, {
     countryCode: geolocation.countryCode ?? '',
     regionCode: geolocation.regionCode,
@@ -59,9 +58,9 @@ export function getAgeAssuranceRegionConfigForGeolocation(
  * which can return undefined if the geolocation does not match any AA region.
  */
 export function getAgeAssuranceRegionConfigWithFallback(
-  config: AppBskyAgeassuranceDefs.Config,
+  config: app.bsky.ageassurance.defs.Config,
   geolocation: Geolocation,
-): AppBskyAgeassuranceDefs.ConfigRegion {
+): app.bsky.ageassurance.defs.ConfigRegion {
   return (
     getAgeAssuranceRegionConfigForGeolocation(config, geolocation) ||
     FALLBACK_REGION_CONFIG
@@ -74,9 +73,9 @@ export function getAgeAssuranceRegionConfigWithFallback(
  * historical KWS-only behavior).
  */
 export function getRegionAdditionalVerificationMethods(
-  region: AppBskyAgeassuranceDefs.ConfigRegion,
+  region: app.bsky.ageassurance.defs.ConfigRegion,
 ): NonNullable<
-  AppBskyAgeassuranceDefs.ConfigRegion['additionalVerificationMethods']
+  app.bsky.ageassurance.defs.ConfigRegion['additionalVerificationMethods']
 > {
   return region.additionalVerificationMethods ?? []
 }
@@ -86,7 +85,7 @@ export function getRegionAdditionalVerificationMethods(
  * age APIs (Apple Declared Age Range / Google Play Age Signals).
  */
 export function regionAllowsDeviceVerification(
-  region: AppBskyAgeassuranceDefs.ConfigRegion,
+  region: app.bsky.ageassurance.defs.ConfigRegion,
 ): boolean {
   return getRegionAdditionalVerificationMethods(region).includes('device')
 }
@@ -122,7 +121,7 @@ export function createRegionKey(region: {
  * usable data.
  */
 export function getAgeAssuranceDataFromDeviceSignals(
-  region: AppBskyAgeassuranceDefs.ConfigRegion,
+  region: app.bsky.ageassurance.defs.ConfigRegion,
   deviceSignals: AgeRange.AgeRangeResponse | undefined,
 ): {
   assuredAge?: number
@@ -183,7 +182,7 @@ export function canBirthdateUpdateIncreaseAccess({
   metadata,
   deviceSignals,
 }: {
-  region: AppBskyAgeassuranceDefs.ConfigRegion
+  region: app.bsky.ageassurance.defs.ConfigRegion
   metadata?: AgeAssuranceMetadata
   deviceSignals?: AgeRange.AgeRangeResponse
 }): boolean {
@@ -212,8 +211,14 @@ export function canBirthdateUpdateIncreaseAccess({
   const thresholds = new Set<number>([region.minAccessAge])
   for (const rule of region.rules) {
     if (
-      AppBskyAgeassuranceDefs.isConfigRegionRuleIfDeclaredOverAge(rule) ||
-      AppBskyAgeassuranceDefs.isConfigRegionRuleIfDeclaredUnderAge(rule)
+      bsky.isType(
+        app.bsky.ageassurance.defs.configRegionRuleIfDeclaredOverAge,
+        rule,
+      ) ||
+      bsky.isType(
+        app.bsky.ageassurance.defs.configRegionRuleIfDeclaredUnderAge,
+        rule,
+      )
     ) {
       thresholds.add(rule.age)
     }
@@ -303,7 +308,7 @@ export function computeAgeAssuranceFlags({
   deviceSignals: _deviceSignals,
 }: {
   state: AgeAssuranceState
-  regionConfig: AppBskyAgeassuranceDefs.ConfigRegion
+  regionConfig: app.bsky.ageassurance.defs.ConfigRegion
   metadata?: AgeAssuranceMetadata
   deviceSignals?: AgeRange.AgeRangeResponse
 }): AgeAssuranceFlags {

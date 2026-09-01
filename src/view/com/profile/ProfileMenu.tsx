@@ -1,6 +1,6 @@
-import {memo, useCallback, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useMemo} from 'react'
+import {useRef, useState} from 'react'
 import * as ExpoClipboard from 'expo-clipboard'
-import {type AppBskyActorDefs} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
@@ -25,7 +25,6 @@ import {
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useShowClearskyProfileLink} from '#/state/preferences/show-clearsky-profile-link'
 import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
-import {Nux, useNux, useSaveNux} from '#/state/queries/nuxs'
 import {
   RQKEY as profileQueryKey,
   useProfileBlockMutationQueue,
@@ -35,7 +34,6 @@ import {
 } from '#/state/queries/profile'
 import {useSession} from '#/state/session'
 import {EventStopper} from '#/view/com/util/EventStopper'
-import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
 import {useDialogControl} from '#/components/Dialog'
 import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
@@ -67,7 +65,7 @@ import {BlueskyIcon} from '#/components/icons/services/Bluesky'
 import {ClearskyIcon} from '#/components/icons/services/Clearsky'
 import {PDSlsIcon} from '#/components/icons/services/PDSls'
 import {SpeakerVolumeFull_Stroke2_Corner0_Rounded as UnmuteIcon} from '#/components/icons/Speaker'
-import {StarterPack as StarterPackIcon} from '#/components/icons/StarterPack'
+import {StarterPack_Stroke2_Corner0_Rounded as StarterPackIcon} from '#/components/icons/StarterPack'
 import * as Menu from '#/components/Menu'
 import {CheckboxItemText} from '#/components/Menu/CheckboxItem'
 import {BlockDialog} from '#/components/moderation/BlockDialog'
@@ -86,16 +84,14 @@ import {useActorStatus, useLiveNowConfig} from '#/features/liveNow'
 import {EditLiveDialog} from '#/features/liveNow/components/EditLiveDialog'
 import {GoLiveDialog} from '#/features/liveNow/components/GoLiveDialog'
 import {GoLiveDisabledDialog} from '#/features/liveNow/components/GoLiveDisabledDialog'
-import {Dot} from '#/features/nuxs/components/Dot'
-import {Gradient} from '#/features/nuxs/components/Gradient'
+import {type app} from '#/lexicons'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 
 let ProfileMenu = ({
   profile,
 }: {
-  profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
+  profile: Shadow<app.bsky.actor.defs.ProfileViewDetailed>
 }): React.ReactNode => {
-  const t = useTheme()
   const ax = useAnalytics()
   const {t: l} = useLingui()
   const {currentAccount, hasSession} = useSession()
@@ -116,13 +112,6 @@ let ProfileMenu = ({
   })
   const {canGoLive} = useLiveNowConfig()
   const status = useActorStatus(profile)
-  const statusNudge = useNux(Nux.LiveNowBetaNudge)
-  const statusNudgeActive =
-    isSelf &&
-    canGoLive &&
-    statusNudge.status === 'ready' &&
-    !statusNudge.nux?.completed
-  const {mutate: saveNux} = useSaveNux()
 
   const deerVerificationEnabled = useDeerVerificationEnabled()
   const deerVerificationTrusted = useDeerVerificationTrusted().has(profile.did)
@@ -429,7 +418,7 @@ let ProfileMenu = ({
       return v.issuer === currentAccount?.did
     }) ?? []
 
-  const enableSquareButtons = useEnableSquareButtons()
+  
 
   return (
     <EventStopper onKeyDown={false}>
@@ -437,30 +426,20 @@ let ProfileMenu = ({
         <Menu.Trigger label={l`More options`}>
           {({props}) => {
             return (
-              <>
-                <Button
-                  {...props}
-                  testID="profileHeaderDropdownBtn"
-                  label={l`More options`}
-                  // hitSlop reaches outside parent views on iOS, so the
-                  // left inset must stay within half of the 4pt row gap or
-                  // it steals taps from the adjacent header button
-                  hitSlop={{top: 6, bottom: 6, left: 2, right: 12}}
-                  variant="solid"
-                  color="secondary"
-                  size="small"
-                  shape={enableSquareButtons ? 'square' : 'round'}>
-                  {statusNudgeActive && (
-                    <Gradient
-                      style={[
-                        enableSquareButtons ? a.rounded_sm : a.rounded_full,
-                      ]}
-                    />
-                  )}
-                  <ButtonIcon icon={EllipsisIcon} size="sm" />
-                </Button>
-                {statusNudgeActive && <Dot top={1} right={1} />}
-              </>
+              <Button
+                {...props}
+                testID="profileHeaderDropdownBtn"
+                label={l`More options`}
+                // hitSlop reaches outside parent views on iOS, so the
+                // left inset must stay within half of the 4pt row gap or
+                // it steals taps from the adjacent header button
+                hitSlop={{top: 6, bottom: 6, left: 2, right: 12}}
+                variant="solid"
+                color="secondary"
+                size="small"
+                shape="round">
+                <ButtonIcon icon={EllipsisIcon} size="sm" />
+              </Button>
             )
           }}
         </Menu.Trigger>
@@ -731,13 +710,7 @@ let ProfileMenu = ({
                       } else {
                         goLiveDialogControl.open()
                       }
-                      saveNux({
-                        id: Nux.LiveNowBetaNudge,
-                        data: undefined,
-                        completed: true,
-                      })
                     }}>
-                    {statusNudgeActive && <Gradient />}
                     <Menu.ItemText>
                       {status.isDisabled ? (
                         <Trans>Go live (disabled)</Trans>
@@ -747,26 +720,7 @@ let ProfileMenu = ({
                         <Trans>Go live</Trans>
                       )}
                     </Menu.ItemText>
-                    {statusNudgeActive && (
-                      <Menu.ItemText
-                        style={[
-                          a.flex_0,
-                          {
-                            color: t.palette.primary_500,
-                            right: IS_WEB ? -8 : -4,
-                          },
-                        ]}>
-                        <Trans>New</Trans>
-                      </Menu.ItemText>
-                    )}
-                    <Menu.ItemIcon
-                      icon={LiveIcon}
-                      fill={
-                        statusNudgeActive
-                          ? () => t.palette.primary_500
-                          : undefined
-                      }
-                    />
+                    <Menu.ItemIcon icon={LiveIcon} />
                   </Menu.Item>
                 )}
                 {verification.viewer.role === 'verifier' &&

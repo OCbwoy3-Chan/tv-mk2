@@ -1,12 +1,7 @@
 import {Fragment, type ReactNode, useMemo} from 'react'
 import {Text as RNText, View} from 'react-native'
-import {
-  AppBskyFeedDefs,
-  AppBskyFeedPost,
-  type AppBskyFeedThreadgate,
-  AtUri,
-  RichText as RichTextAPI,
-} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
+import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {Plural, Trans, useLingui} from '@lingui/react/macro'
 import {useQuery} from '@tanstack/react-query'
 
@@ -21,7 +16,10 @@ import {
 import {FeedFeedbackProvider, useFeedFeedback} from '#/state/feed-feedback'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {sortAndAnnotateThreadItems} from '#/state/queries/usePostThread/traversal'
-import {postThreadQueryKeyRoot} from '#/state/queries/usePostThread/types'
+import {
+  type ApiThreadItem,
+  postThreadQueryKeyRoot,
+} from '#/state/queries/usePostThread/types'
 import {useAgent, useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
@@ -49,6 +47,7 @@ import {PostEditedIndicator} from '#/components/PostEditedIndicator'
 import * as Prompt from '#/components/Prompt'
 import {Text} from '#/components/Typography'
 import {WhoCanReply} from '#/components/WhoCanReply'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 /**
@@ -109,7 +108,7 @@ export function ReaderSeamControls({
    */
   showDetails?: boolean
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
 }) {
   const postShadow = usePostShadow(postItem.value.post)
 
@@ -140,12 +139,12 @@ function ReaderSeamControlsInner({
   threadgateRecord,
 }: {
   post: ThreadPostItem
-  postShadow: Shadow<AppBskyFeedDefs.PostView>
+  postShadow: Shadow<app.bsky.feed.defs.PostView>
   postSource?: PostSource
   showComposePrompt?: boolean
   showDetails?: boolean
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
 }) {
   const t = useTheme()
   const {t: l, i18n} = useLingui()
@@ -177,7 +176,9 @@ function ReaderSeamControlsInner({
 
   const reason = postSource?.post.reason
   const viaRepost =
-    AppBskyFeedDefs.isReasonRepost(reason) && reason.uri && reason.cid
+    bsky.isType(app.bsky.feed.defs.reasonRepost, reason) &&
+    reason.uri &&
+    reason.cid
       ? {uri: reason.uri, cid: reason.cid}
       : undefined
 
@@ -347,16 +348,13 @@ function ReaderSeamControlsInner({
   )
 }
 
-function BackdatedPostIndicator({post}: {post: AppBskyFeedDefs.PostView}) {
+function BackdatedPostIndicator({post}: {post: app.bsky.feed.defs.PostView}) {
   const t = useTheme()
   const {t: l, i18n} = useLingui()
   const control = Prompt.usePromptControl()
 
   const indexedAt = new Date(post.indexedAt)
-  const createdAt = bsky.dangerousIsType<AppBskyFeedPost.Record>(
-    post.record,
-    AppBskyFeedPost.isRecord,
-  )
+  const createdAt = bsky.isType(app.bsky.feed.post.main, post.record)
     ? new Date(post.record.createdAt)
     : new Date(post.indexedAt)
 
@@ -457,7 +455,7 @@ export function ReaderSeamReplies({
   href: string
   sort: string
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
@@ -490,12 +488,15 @@ export function ReaderSeamReplies({
 
   const replyItems = useMemo(() => {
     if (!data || !moderationOpts) return []
-    const {threadItems} = sortAndAnnotateThreadItems(data.thread, {
-      view: 'linear',
-      skipModerationHandling: true,
-      threadgateHiddenReplies,
-      moderationOpts,
-    })
+    const {threadItems} = sortAndAnnotateThreadItems(
+      data.thread as unknown as ApiThreadItem[],
+      {
+        view: 'linear',
+        skipModerationHandling: true,
+        threadgateHiddenReplies,
+        moderationOpts,
+      },
+    )
     return threadItems
       .filter(reply => {
         if (reply.type === 'threadPost') {

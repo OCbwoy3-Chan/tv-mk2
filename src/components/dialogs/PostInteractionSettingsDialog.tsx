@@ -1,10 +1,6 @@
 import {useCallback, useMemo, useState} from 'react'
 import {LayoutAnimation, Text as NestedText, View} from 'react-native'
-import {
-  type AppBskyFeedDefs,
-  type AppBskyFeedPostgate,
-  AtUri,
-} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Plural, Trans} from '@lingui/react/macro'
@@ -36,7 +32,7 @@ import {
   PostThreadContextProvider,
   usePostThreadContext,
 } from '#/state/queries/usePostThread'
-import {useAgent, useSession} from '#/state/session'
+import {usePdsClient, useSession} from '#/state/session'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme, web} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
@@ -53,6 +49,7 @@ import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_IOS} from '#/env'
+import {type app} from '#/lexicons'
 
 export type PostInteractionSettingsFormProps = {
   canSave?: boolean
@@ -63,8 +60,8 @@ export type PostInteractionSettingsFormProps = {
   persist?: boolean
   onChangePersist?: (v: boolean) => void
 
-  postgate: AppBskyFeedPostgate.Record
-  onChangePostgate: (v: AppBskyFeedPostgate.Record) => void
+  postgate: app.bsky.feed.postgate.Main
+  onChangePostgate: (v: app.bsky.feed.postgate.Main) => void
 
   threadgateAllowUISettings: ThreadgateAllowUISetting[]
   onChangeThreadgateAllowUISettings: (v: ThreadgateAllowUISetting[]) => void
@@ -135,10 +132,10 @@ export type PostInteractionSettingsDialogProps = {
    */
   rootPostUri: string
   /**
-   * Optional initial {@link AppBskyFeedDefs.ThreadgateView} to use if we
+   * Optional initial {@link app.bsky.feed.defs.ThreadgateView} to use if we
    * happen to have one before opening the settings dialog.
    */
-  initialThreadgateView?: AppBskyFeedDefs.ThreadgateView
+  initialThreadgateView?: app.bsky.feed.defs.ThreadgateView
 }
 
 /**
@@ -178,7 +175,7 @@ export function PostInteractionSettingsDialogControlledInner(
   const {mutateAsync: setThreadgateAllow} = useSetThreadgateAllowMutation()
 
   const [editedPostgate, setEditedPostgate] =
-    useState<AppBskyFeedPostgate.Record>()
+    useState<app.bsky.feed.postgate.Main>()
   const [editedAllowUISettings, setEditedAllowUISettings] =
     useState<ThreadgateAllowUISetting[]>()
 
@@ -244,9 +241,8 @@ export function PostInteractionSettingsDialogControlledInner(
           type: 'error',
         },
       )
-    } finally {
-      setIsSaving(false)
     }
+    setIsSaving(false)
   }, [
     _,
     ax,
@@ -296,6 +292,37 @@ export function PostInteractionSettingsDialogControlledInner(
       <Dialog.Close />
     </Dialog.ScrollableInner>
   )
+}
+
+/**
+ * Lives outside the component because the early `return []` inside a `useMemo`
+ * is memoization React Compiler cannot preserve.
+ */
+function getToggleGroupValues(settings: ThreadgateAllowUISetting[]): string[] {
+  const values: string[] = []
+  for (const setting of settings) {
+    switch (setting.type) {
+      case 'everybody':
+      case 'nobody':
+        // no granularity, early return with nothing
+        return []
+      case 'followers':
+        values.push('followers')
+        break
+      case 'following':
+        values.push('following')
+        break
+      case 'mention':
+        values.push('mention')
+        break
+      case 'list':
+        values.push(`list:${setting.list}`)
+        break
+      default:
+        break
+    }
+  }
+  return values
 }
 
 export function PostInteractionSettingsForm({
@@ -352,33 +379,7 @@ export function PostInteractionSettingsForm({
     v => v.type === 'list',
   ).length
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- restored memoization
-  const toggleGroupValues = useMemo(() => {
-    const values: string[] = []
-    for (const setting of threadgateAllowUISettings) {
-      switch (setting.type) {
-        case 'everybody':
-        case 'nobody':
-          // no granularity, early return with nothing
-          return []
-        case 'followers':
-          values.push('followers')
-          break
-        case 'following':
-          values.push('following')
-          break
-        case 'mention':
-          values.push('mention')
-          break
-        case 'list':
-          values.push(`list:${setting.list}`)
-          break
-        default:
-          break
-      }
-    }
-    return values
-  }, [threadgateAllowUISettings])
+  const toggleGroupValues = getToggleGroupValues(threadgateAllowUISettings)
 
   const toggleGroupOnChange = (values: string[]) => {
     const settings: ThreadgateAllowUISetting[] = []
@@ -698,7 +699,7 @@ export function usePrefetchPostInteractionSettings({
 }) {
   const ax = useAnalytics()
   const queryClient = useQueryClient()
-  const agent = useAgent()
+  const pdsClient = usePdsClient()
   const getPost = useGetPost()
 
   return useCallback(async () => {
@@ -707,7 +708,7 @@ export function usePrefetchPostInteractionSettings({
         queryClient.prefetchQuery({
           queryKey: createPostgateQueryKey(postUri),
           queryFn: () =>
-            getPostgateRecord({agent, postUri}).then(res => res ?? null),
+            getPostgateRecord({pdsClient, postUri}).then(res => res ?? null),
           staleTime: STALE.SECONDS.THIRTY,
         }),
         queryClient.prefetchQuery({
@@ -724,5 +725,5 @@ export function usePrefetchPostInteractionSettings({
         safeMessage: e.message,
       })
     }
-  }, [ax, queryClient, agent, postUri, rootPostUri, getPost])
+  }, [ax, queryClient, pdsClient, postUri, rootPostUri, getPost])
 }

@@ -1,13 +1,8 @@
 import {useCallback, useMemo, useState} from 'react'
 import {type StyleProp, StyleSheet, View, type ViewStyle} from 'react-native'
-import {
-  type AppBskyFeedDefs,
-  AppBskyFeedPost,
-  AtUri,
-  moderatePost,
-  type ModerationDecision,
-  RichText as RichTextAPI,
-} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
+import {moderatePost, type ModerationDecision} from '@bsky/sdk/moderation'
+import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {useQueryClient} from '@tanstack/react-query'
 
 import {MAX_POST_LINES} from '#/lib/constants'
@@ -42,6 +37,7 @@ import {PostControls} from '#/components/PostControls'
 import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import {SubtleHover} from '#/components/SubtleHover'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {AviFollowButton} from '../posts/AviFollowButton'
 
@@ -53,7 +49,7 @@ export function Post({
   style,
   onBeforePress,
 }: {
-  post: AppBskyFeedDefs.PostView
+  post: app.bsky.feed.defs.PostView
   showReplyLine?: boolean
   hideTopBorder?: boolean
   hideQuoteEmbedUri?: string
@@ -61,11 +57,9 @@ export function Post({
   onBeforePress?: () => void
 }) {
   const moderationOpts = useModerationOpts()
-  const record = useMemo<AppBskyFeedPost.Record | undefined>(
+  const record = useMemo<app.bsky.feed.post.Main | undefined>(
     () =>
-      bsky.validate(post.record, AppBskyFeedPost.validateRecord)
-        ? post.record
-        : undefined,
+      bsky.matches(app.bsky.feed.post, post.record) ? post.record : undefined,
     [post],
   )
   const postShadowed = usePostShadow(post)
@@ -117,8 +111,8 @@ function PostInner({
   style,
   onBeforePress: outerOnBeforePress,
 }: {
-  post: Shadow<AppBskyFeedDefs.PostView>
-  record: AppBskyFeedPost.Record
+  post: Shadow<app.bsky.feed.defs.PostView>
+  record: app.bsky.feed.post.Main
   richText: RichTextAPI
   moderation: ModerationDecision
   showReplyLine?: boolean
@@ -192,10 +186,7 @@ function PostInner({
         onPointerLeave={() => {
           setHover(false)
         }}>
-        <SubtleHover
-          hover={hover}
-          style={userStyle('wsky-post__hover')}
-        />
+        <SubtleHover hover={hover} style={userStyle('wsky-post__hover')} />
         {showReplyLine && (
           <View
             style={[
@@ -241,10 +232,7 @@ function PostInner({
             )}
             <ContentHider
               modui={moderation.ui('contentView')}
-              style={[
-                styles.contentHider,
-                userStyle('wsky-post__content'),
-              ]}
+              style={[styles.contentHider, userStyle('wsky-post__content')]}
               childContainerStyle={styles.contentHiderChild}>
               <PostAlerts
                 post={post}
@@ -313,7 +301,6 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     paddingBottom: 5,
     paddingLeft: 10,
-    // @ts-ignore web only -prf
     cursor: 'pointer',
   },
   outerCompact: {

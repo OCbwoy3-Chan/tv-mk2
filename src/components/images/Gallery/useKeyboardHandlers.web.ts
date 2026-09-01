@@ -1,5 +1,4 @@
 import {useEffect} from 'react'
-import {type FlatList, type ScrollView} from 'react-native'
 
 import {tween} from '#/components/images/Gallery/tween'
 import {getOffsetForIndex} from '#/components/images/Gallery/utils'
@@ -14,7 +13,9 @@ export function useKeyboardHandlers({
   onSettle,
   imageCount,
 }: {
-  flatListRef: React.RefObject<FlatList | ScrollView | null>
+  flatListRef: React.RefObject<{
+    getScrollableNode: () => unknown
+  } | null>
   itemWidthsRef: React.RefObject<Map<number, number>>
   currentIndexRef: React.RefObject<number>
   scrollTo: (offset: number) => void
@@ -28,8 +29,7 @@ export function useKeyboardHandlers({
     let pendingIndex: number | null = null
 
     const onKeyDown = (e: KeyboardEvent) => {
-      const el =
-        flatListRef.current?.getScrollableNode() as unknown as HTMLElement | null
+      const el = flatListRef.current?.getScrollableNode() as HTMLElement | null
       if (!el || !el.contains(document.activeElement)) return
 
       const current = pendingIndex ?? currentIndexRef.current

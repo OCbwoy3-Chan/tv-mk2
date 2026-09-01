@@ -245,7 +245,9 @@ function OAuthLoginFields({
           onSubmit={() => void onPressNext()}
         />
       </View>
-      {error && <Admonition.Admonition type="error">{error}</Admonition.Admonition>}
+      {error && (
+        <Admonition.Admonition type="error">{error}</Admonition.Admonition>
+      )}
       <View style={[a.flex_row, a.align_center, a.gap_sm, a.pt_md]}>
         <Button
           label={l`Back`}
@@ -316,8 +318,10 @@ function LegacyLoginFields({
   const [identifier, setIdentifier] = useState(initialHandle || '')
   const [identifierFocused, setIdentifierFocused] = useState(false)
   const [authFactorToken, setAuthFactorToken] = useState('')
-  const identifierRef = useRef<TextInput>(null)
-  const passwordRef = useRef<TextInput>(null)
+  const identifierRef = useRef<React.ComponentRef<typeof TextInput> | null>(
+    null,
+  )
+  const passwordRef = useRef<React.ComponentRef<typeof TextInput> | null>(null)
   const [hasPassword, setHasPassword] = useState(false)
   const [revealPassword, setRevealPassword] = useState(false)
   const {t: l} = useLingui()
@@ -508,9 +512,7 @@ function LegacyLoginFields({
           initialValue={initialHandle || ''}
           label={l`Username or email address`}
           placeholder={null}
-          icon={
-            hostingProvider.state.status === 'email' ? EmailIcon : AtIcon
-          }
+          icon={hostingProvider.state.status === 'email' ? EmailIcon : AtIcon}
           isInvalid={errorField === 'identifier' || showUnresolvedError}
           autoFocus={!initialHandle}
           editable={!isProcessing}

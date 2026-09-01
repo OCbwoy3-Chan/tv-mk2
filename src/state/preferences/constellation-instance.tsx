@@ -5,14 +5,16 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = persisted.Schema['constellationInstance']
 type SetContext = (v: persisted.Schema['constellationInstance']) => void
 type CustomStateContext = persisted.Schema['constellationInstanceCustom']
-type SetCustomContext = (v: persisted.Schema['constellationInstanceCustom']) => void
+type SetCustomContext = (
+  v: persisted.Schema['constellationInstanceCustom'],
+) => void
 
 const stateContext = createContext<StateContext>(
   persisted.defaults.constellationInstance,
@@ -34,7 +36,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (constellationInstance: persisted.Schema['constellationInstance']) => {
       setState(constellationInstance)
-      persisted.write('constellationInstance', constellationInstance)
+      void persisted.write('constellationInstance', constellationInstance)
     },
     [setState],
   )
@@ -44,7 +46,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
       constellationInstanceCustom: persisted.Schema['constellationInstanceCustom'],
     ) => {
       setCustomState(constellationInstanceCustom)
-      persisted.write('constellationInstanceCustom', constellationInstanceCustom)
+      void persisted.write(
+        'constellationInstanceCustom',
+        constellationInstanceCustom,
+      )
     },
     [setCustomState],
   )

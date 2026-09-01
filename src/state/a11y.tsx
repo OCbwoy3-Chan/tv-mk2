@@ -34,7 +34,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
       },
     )
 
-    ;(async () => {
+    ;void (async () => {
       const [_reduceMotionEnabled, _screenReaderEnabled] = await Promise.all([
         AccessibilityInfo.isReduceMotionEnabled(),
         AccessibilityInfo.isScreenReaderEnabled(),

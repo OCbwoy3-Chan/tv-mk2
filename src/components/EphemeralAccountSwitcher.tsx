@@ -8,7 +8,6 @@ import {
   useState,
 } from 'react'
 import {View} from 'react-native'
-import {type AppBskyActorDefs} from '@atproto/api'
 import {useLingui} from '@lingui/react/macro'
 
 import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
@@ -19,10 +18,11 @@ import {SwitchAccountDialog} from '#/components/dialogs/SwitchAccount'
 import * as Menu from '#/components/Menu'
 import * as Prompt from '#/components/Prompt'
 import {IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
+import {type app} from '#/lexicons'
 
 type AccountListItem = {
   account: SessionAccount
-  profile?: AppBskyActorDefs.ProfileViewDetailed
+  profile?: app.bsky.actor.defs.ProfileViewDetailed
 }
 
 export type SwitcherTriggerProps = {
@@ -39,7 +39,7 @@ export type SwitcherTriggerProps = {
 
 type EphemeralAccountSwitcherContextValue = {
   hasAlternateAccounts: boolean
-  currentProfile?: AppBskyActorDefs.ProfileViewDetailed
+  currentProfile?: app.bsky.actor.defs.ProfileViewDetailed
   switcherAccounts: AccountListItem[]
   signOutPromptControl: ReturnType<typeof Prompt.usePromptControl>
 }
@@ -197,7 +197,7 @@ export function EphemeralAccountSwitcherMenu({
   accounts?: AccountListItem[]
   resolveAccounts?: () => Promise<AccountListItem[]>
   renderTrigger: (args: {
-    currentProfile?: AppBskyActorDefs.ProfileViewDetailed
+    currentProfile?: app.bsky.actor.defs.ProfileViewDetailed
     triggerProps: SwitcherTriggerProps
   }) => React.ReactNode
 }) {
@@ -288,7 +288,7 @@ export function EphemeralAccountSwitcherMenu({
     <Menu.Root control={menuControl} dismissGuardRef={dismissGuardRef}>
       <Menu.Trigger label={l`Switch accounts`}>
         {({props: menuTriggerProps}) => (
-          <View {...(menuTriggerProps)}>
+          <View {...menuTriggerProps}>
             {renderTrigger({
               currentProfile,
               triggerProps: {
@@ -327,14 +327,12 @@ type EphemeralAccountSwitcherProps = {
   accounts?: AccountListItem[]
   resolveAccounts?: () => Promise<AccountListItem[]>
   renderTrigger: (args: {
-    currentProfile?: AppBskyActorDefs.ProfileViewDetailed
+    currentProfile?: app.bsky.actor.defs.ProfileViewDetailed
     triggerProps: SwitcherTriggerProps
   }) => React.ReactNode
 }
 
-export function EphemeralAccountSwitcher(
-  props: EphemeralAccountSwitcherProps,
-) {
+export function EphemeralAccountSwitcher(props: EphemeralAccountSwitcherProps) {
   const data = useEphemeralAccountSwitcherData(props.selectedDid)
   return <EphemeralAccountSwitcherWithData {...props} data={data} />
 }
@@ -344,11 +342,7 @@ export function EphemeralAccountSwitcherFromScope(
 ) {
   const data = useEphemeralAccountSwitcher()
   return (
-    <EphemeralAccountSwitcherWithData
-      {...props}
-      data={data}
-      useExistingScope
-    />
+    <EphemeralAccountSwitcherWithData {...props} data={data} useExistingScope />
   )
 }
 
@@ -367,8 +361,7 @@ function EphemeralAccountSwitcherWithData({
   useExistingScope?: boolean
 }) {
   const {t: l} = useLingui()
-  const {switcherAccounts, hasAlternateAccounts, currentProfile} =
-    data
+  const {switcherAccounts, hasAlternateAccounts, currentProfile} = data
   const menuAccounts = accountsOverride ?? switcherAccounts
   const control = useDialogControl()
   const menuControl = Menu.useMenuControl()
@@ -388,16 +381,18 @@ function EphemeralAccountSwitcherWithData({
       setResolvedAccounts(null)
       setIsResolvingAccounts(true)
       control.open()
-      void resolveAccounts().then(accounts => {
-        setResolvedAccounts(accounts)
-        setIsResolvingAccounts(false)
-        if (accounts.length === 0) {
+      void resolveAccounts()
+        .then(accounts => {
+          setResolvedAccounts(accounts)
+          setIsResolvingAccounts(false)
+          if (accounts.length === 0) {
+            control.close()
+          }
+        })
+        .catch(() => {
+          setIsResolvingAccounts(false)
           control.close()
-        }
-      }).catch(() => {
-        setIsResolvingAccounts(false)
-        control.close()
-      })
+        })
       return
     }
     control.open()

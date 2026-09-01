@@ -1,4 +1,4 @@
-import {type ModerationUI} from '@atproto/api'
+import {type ModerationUI} from '@bsky/sdk/moderation'
 
 import {sanitizeHandle} from '#/lib/strings/handles'
 

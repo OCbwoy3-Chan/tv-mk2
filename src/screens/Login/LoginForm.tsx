@@ -1,9 +1,7 @@
 import {useRef, useState} from 'react'
-import {Keyboard, Pressable, type TextInput, View} from 'react-native'
-import {
-  ComAtprotoServerCreateSession,
-  type ComAtprotoServerDescribeServer,
-} from '@atproto/api'
+import {Keyboard, type TextInput, View} from 'react-native'
+import {Pressable} from 'react-native'
+import {LexAuthFactorError} from '@atproto/lex-password-session'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {DEFAULT_SERVICE, HITSLOP_10, HITSLOP_20} from '#/lib/constants'
@@ -36,13 +34,14 @@ import {createStaticClick, InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {IS_IOS, IS_NATIVE} from '#/env'
+import {type com} from '#/lexicons'
 import {AppServerButton} from './components/AppServerDialog'
 import {ConfirmHostingProviderDialog} from './components/ConfirmHostingProviderDialog'
 import {HandleAutocompleteInput} from './components/HandleAutocompleteInput'
 import {HostingProviderDialog} from './components/HostingProviderDialog'
 import {FormContainer} from './FormContainer'
 
-type ServiceDescription = ComAtprotoServerDescribeServer.OutputSchema
+type ServiceDescription = com.atproto.server.describeServer.$OutputBody
 
 type LoginMode = 'oauth' | 'legacy'
 
@@ -330,8 +329,8 @@ function LegacyLoginFields({
   const [identifier, setIdentifier] = useState(initialHandle || '')
   const [identifierFocused, setIdentifierFocused] = useState(false)
   const [authFactorToken, setAuthFactorToken] = useState('')
-  const identifierRef = useRef<TextInput>(null)
-  const passwordRef = useRef<TextInput>(null)
+  const identifierRef = useRef<React.ComponentRef<typeof TextInput>>(null)
+  const passwordRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const hasFocusedOnce = useRef(false)
   const [hasPassword, setHasPassword] = useState(false)
   const [revealPassword, setRevealPassword] = useState(false)
@@ -379,10 +378,11 @@ function LegacyLoginFields({
     } catch (err) {
       const errMsg = String(err)
       setIsProcessing(false)
-      if (
-        err instanceof
-        ComAtprotoServerCreateSession.AuthFactorTokenRequiredError
-      ) {
+      /*
+       * `LexAuthFactorError` is what `PasswordSession.login` throws when the
+       * server demands an email 2FA token.
+       */
+      if (err instanceof LexAuthFactorError) {
         setIsAuthFactorTokenNeeded(true)
       } else {
         onAttemptFailed()
@@ -407,7 +407,9 @@ function LegacyLoginFields({
           )
         } else {
           logger.warn('Failed to login', {error: errMsg})
-          setError(cleanError(errMsg))
+          /* the error object, not its stringification: cleanError only
+           * extracts the clean server message from a live LexError */
+          setError(cleanError(err))
         }
       }
     }
@@ -525,9 +527,7 @@ function LegacyLoginFields({
           initialValue={initialHandle || ''}
           label={l`Username or email address`}
           placeholder={null}
-          icon={
-            hostingProvider.state.status === 'email' ? EmailIcon : AtIcon
-          }
+          icon={hostingProvider.state.status === 'email' ? EmailIcon : AtIcon}
           isInvalid={errorField === 'identifier' || showUnresolvedError}
           autoFocus={!IS_IOS && !initialHandle}
           editable={!isProcessing}
@@ -807,7 +807,12 @@ function RevealPasswordButton({
   const {t: l} = useLingui()
   const context = TextField.useTextFieldContext()
 
-  const Icon = !active ? EyeSlashIcon : EyeIcon
+  /*
+   * The icon shows the action the button performs, not the current state: an
+   * open eye when the password is hidden (tap to reveal), a crossed-out eye
+   * when it is visible (tap to hide).
+   */
+  const Icon = active ? EyeSlashIcon : EyeIcon
 
   if (!hasPassword && !context.focused) return null
 

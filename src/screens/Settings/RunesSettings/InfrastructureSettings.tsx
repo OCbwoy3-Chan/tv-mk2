@@ -2,29 +2,29 @@ import {useLayoutEffect, useState} from 'react'
 import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
+import {usePalette} from '#/lib/hooks/usePalette'
 import {
   testConstellationUrl,
   testImageCdnUrl,
   testPlcDirectoryUrl,
   testSlingshotUrl,
 } from '#/lib/infrastructure/url-test'
-import {usePalette} from '#/lib/hooks/usePalette'
 import * as persisted from '#/state/persisted'
 import {
-  useConstellationInstanceSetting,
   useConstellationInstanceCustom,
+  useConstellationInstanceSetting,
   useSetConstellationInstance,
   useSetConstellationInstanceCustom,
 } from '#/state/preferences/constellation-instance'
 import {
-  useImageCdnHostSetting,
   useImageCdnHostCustom,
+  useImageCdnHostSetting,
   useSetImageCdnHost,
   useSetImageCdnHostCustom,
 } from '#/state/preferences/image-cdn-host'
 import {
-  usePlcDirectorySetting,
   usePlcDirectoryCustom,
+  usePlcDirectorySetting,
   useSetPlcDirectory,
   useSetPlcDirectoryCustom,
 } from '#/state/preferences/plc-directory'
@@ -34,13 +34,13 @@ import {
   useSlingshotInstanceCustom,
   useSlingshotInstanceSetting,
 } from '#/state/preferences/slingshot-instance'
-import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {
   isValidHostnameUrl,
   isValidPlcDirectoryUrl,
   normalizeOrigin,
   useInfrastructureUrlSave,
 } from '#/screens/Settings/components/infrastructureUrlSave'
+import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'

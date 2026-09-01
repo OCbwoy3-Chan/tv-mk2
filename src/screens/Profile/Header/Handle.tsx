@@ -1,5 +1,5 @@
-import {type GestureResponderEvent, View} from 'react-native'
-import {type AppBskyActorDefs} from '@atproto/api'
+import {View} from 'react-native'
+import {type GestureResponderEvent} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -14,6 +14,7 @@ import {InlineLinkText} from '#/components/Link.tsx'
 import {NewskieDialog} from '#/components/NewskieDialog'
 import {Text} from '#/components/Typography'
 import {IS_IOS, IS_NATIVE} from '#/env'
+import {type app} from '#/lexicons'
 import {useProfileHandleLink} from './useProfileHandleLink'
 
 export function ProfileHeaderHandle({
@@ -22,7 +23,7 @@ export function ProfileHeaderHandle({
   disableAuxiliaryTaps,
   onLinkPress,
 }: {
-  profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
+  profile: Shadow<app.bsky.actor.defs.ProfileViewDetailed>
   disableTaps?: boolean
   disableAuxiliaryTaps?: boolean
   onLinkPress?: (e: GestureResponderEvent) => void | false

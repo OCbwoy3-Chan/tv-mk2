@@ -19,12 +19,12 @@ import {
 } from '#/alf/themes'
 import {getMaterial3Colors} from '#/alf/util/material3Theme'
 import {useMaterialYouPalette} from '#/alf/util/materialYou'
-import {MATERIAL_YOU_STYLES} from '#/features/themes/materialYou'
 import {
   Heart2_Filled_Stroke2_Corner0_Rounded as HeartIconFilled,
   Heart2_Stroke2_Corner0_Rounded as HeartIconOutline,
 } from '#/components/icons/Heart2'
 import {Text} from '#/components/Typography'
+import {MATERIAL_YOU_STYLES} from '#/features/themes/materialYou'
 
 export type ColorSchemeName =
   | 'witchsky'

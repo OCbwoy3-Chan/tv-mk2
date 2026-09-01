@@ -28,7 +28,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['hideSimilarAccountsRecomm']) => {
       setState(value)
-      persisted.write('hideSimilarAccountsRecomm', value)
+      void persisted.write('hideSimilarAccountsRecomm', value)
     },
     [setState],
   )

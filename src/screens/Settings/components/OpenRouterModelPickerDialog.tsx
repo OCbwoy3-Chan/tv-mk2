@@ -131,7 +131,7 @@ function ModelPickerInner({
               style={[a.py_2xl, a.text_center, t.atoms.text_contrast_medium]}>
               <Trans>No matching image-capable models.</Trans>
             </Text>
-          ) : null
+          ) : undefined
         }
         contentContainerStyle={[
           IS_NATIVE && {paddingBottom: footerHeight + tokens.space.xl},

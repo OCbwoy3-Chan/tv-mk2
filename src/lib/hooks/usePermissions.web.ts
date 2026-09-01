@@ -1,5 +1,5 @@
 export function usePhotoLibraryPermission() {
-  const requestPhotoAccessIfNeeded = async () => {
+  const requestPhotoAccessIfNeeded = () => {
     // On the, we use <input type="file"> to produce a filepicker
     // This does not need any permission granting.
     return true
@@ -8,7 +8,7 @@ export function usePhotoLibraryPermission() {
 }
 
 export function useCameraPermission() {
-  const requestCameraAccessIfNeeded = async () => {
+  const requestCameraAccessIfNeeded = () => {
     return false
   }
 
@@ -16,7 +16,7 @@ export function useCameraPermission() {
 }
 
 export function useVideoLibraryPermission() {
-  const requestVideoAccessIfNeeded = async () => {
+  const requestVideoAccessIfNeeded = () => {
     return true
   }
 

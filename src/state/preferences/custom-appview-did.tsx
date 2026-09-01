@@ -1,10 +1,7 @@
 import {useCallback} from 'react'
 import {isDid} from '@atproto/api'
 
-import {
-  PUBLIC_APPVIEW_DID,
-  PUBLIC_BSKY_SERVICE,
-} from '#/lib/constants'
+import {PUBLIC_APPVIEW_DID, PUBLIC_BSKY_SERVICE} from '#/lib/constants'
 import {device, useStorage} from '#/storage'
 
 export type AppViewPresetId = 'bluesky' | 'blacksky' | 'custom'

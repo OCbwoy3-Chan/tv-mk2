@@ -7,7 +7,6 @@ import {
   useState,
 } from 'react'
 import {View} from 'react-native'
-import {type AppBskyEmbedVideo} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -25,6 +24,7 @@ import {
 } from '#/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerWeb'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB_FIREFOX} from '#/env'
+import {type app} from '#/lexicons'
 import {useActiveVideoWeb} from './ActiveVideoWebContext'
 import {useVideoDownload} from './useVideoDownload'
 import * as VideoFallback from './VideoEmbedInner/VideoFallback'
@@ -36,7 +36,7 @@ export function VideoEmbed({
   embed,
   did,
 }: {
-  embed: AppBskyEmbedVideo.View
+  embed: app.bsky.embed.video.View
   did?: string
 }) {
   const t = useTheme()
@@ -300,7 +300,7 @@ function VideoError({
   error,
   retry,
 }: {
-  embed: AppBskyEmbedVideo.View
+  embed: app.bsky.embed.video.View
   error: unknown
   retry: () => void
 }) {

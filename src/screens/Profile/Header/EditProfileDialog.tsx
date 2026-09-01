@@ -1,6 +1,8 @@
-import {useCallback, useEffect, useRef, useState} from 'react'
-import {Pressable, View} from 'react-native'
-import {type AppBskyActorDefs} from '@atproto/api'
+import {useCallback, useEffect, useState} from 'react'
+import {useRef} from 'react'
+import {View} from 'react-native'
+import {Pressable} from 'react-native'
+import {type UriString} from '@atproto/syntax'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Plural, Trans} from '@lingui/react/macro'
@@ -36,6 +38,7 @@ import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationStateWithDeer} from '#/components/verification'
+import {type app} from '#/lexicons'
 
 const PRONOUNS_MAX_GRAPHEMES = 20
 const WEBSITE_MAX_GRAPHEMES = 2048
@@ -45,7 +48,7 @@ export function EditProfileDialog({
   control,
   onUpdate,
 }: {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed
   control: Dialog.DialogControlProps
   onUpdate?: () => void
 }) {
@@ -103,7 +106,7 @@ function DialogInner({
   setDirty,
   onPressCancel,
 }: {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed
   onUpdate?: () => void
   setDirty: (dirty: boolean) => void
   onPressCancel: () => void
@@ -210,7 +213,7 @@ function DialogInner({
           displayName: displayName.trimEnd(),
           description: description.trimEnd(),
           pronouns: pronouns.trimEnd().toLowerCase(),
-          website: website.trimEnd(),
+          website: website.trimEnd() as UriString,
         },
         newUserAvatar,
         newUserBanner,

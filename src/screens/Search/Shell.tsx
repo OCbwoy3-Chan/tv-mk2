@@ -116,7 +116,7 @@ export function SearchScreenShell({
   const {gtMobile} = useBreakpoints()
   const navigation = useNavigation<NavigationProp>()
   const route = useRoute()
-  const textInput = useRef<TextInput>(null)
+  const textInput = useRef<React.ComponentRef<typeof TextInput>>(null)
   const {t: l} = useLingui()
   const {currentAccount} = useSession()
   const queryClient = useQueryClient()
@@ -518,9 +518,7 @@ export function SearchScreenShell({
   const showHeader = !gtMobile || navButton !== 'menu'
 
   return (
-    <Layout.Screen
-      testID={testID}
-      style={userStyle('wsky-screen--search')}>
+    <Layout.Screen testID={testID} style={userStyle('wsky-screen--search')}>
       <View
         ref={headerRef}
         onLayout={evt => {

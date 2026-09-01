@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {Platform, Text as RNText, View} from 'react-native'
-import {RichText} from '@atproto/api'
 import {parseLanguageString} from '@atproto/syntax'
+import {RichText} from '@bsky/sdk/richtext'
 import {Trans, useLingui} from '@lingui/react/macro'
 import debounce from 'lodash.debounce'
 
@@ -210,7 +210,13 @@ export function SuggestedLanguage({
         ax.logger.error('Error detecting language', {safeMessage: e})
       }
     }, 500)
-  }, [])
+  }, [
+	ax.logger,
+	detectionPropsRef.current.currentLanguages,
+	ax,
+	detectionPropsRef.current.config,
+	handleOnNudge
+])
 
   useEffect(() => {
     // show reply prompt if there's not enough text to start using the model
@@ -337,7 +343,12 @@ function GuessedLanguage({
       currentTargetLanguages: metaRef.current.currentTargetLanguages,
       textLength: sanitizeTextForDetection(metadata.rawText).length,
     })
-  }, [ax, language])
+  }, [
+	ax,
+	language,
+	metadata.rawText,
+	metaRef.current.currentTargetLanguages
+])
 
   return (
     <LanguageSuggestionButton

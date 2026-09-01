@@ -6,9 +6,9 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useWindowDimensions, View} from 'react-native'
+import {type HostInstance, useWindowDimensions, View} from 'react-native'
 import Animated, {FadeIn, useAnimatedStyle} from 'react-native-reanimated'
-import {moderatePost} from '@atproto/api'
+import {moderatePost} from '@bsky/sdk/moderation'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {HITSLOP_10} from '#/lib/constants'
@@ -77,7 +77,6 @@ import {
 import {Button} from '#/components/Button'
 import {ChevronTop_Stroke2_Corner0_Rounded as ChevronTopIcon} from '#/components/icons/Chevron'
 import * as Layout from '#/components/Layout'
-import {ListFooter} from '#/components/Lists'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_IOS, IS_NATIVE} from '#/env'
@@ -252,9 +251,9 @@ export function PostThread({
   const totalParentCount = useRef(0) // recomputed below
   const totalChildrenCount = useRef(thread.data.items.length) // recomputed below
   const listRef = useRef<ListMethods>(null)
-  const anchorRef = useRef<View | null>(null)
-  const headerRef = useRef<View | null>(null)
-  const alsoLikedHeaderRef = useRef<View | null>(null)
+  const anchorRef = useRef<HostInstance | null>(null)
+  const headerRef = useRef<HostInstance | null>(null)
+  const alsoLikedHeaderRef = useRef<HostInstance | null>(null)
   const currentScrollOffsetRef = useRef(0)
   const scrollStateRequestIdRef = useRef(0)
   const scrollStateAnimationFrameRef = useRef<number | null>(null)
@@ -266,12 +265,6 @@ export function PostThread({
       setIsAlsoLikedFocused(false)
     }
   }, [alsoLikedCollapsed, alsoLikedVisible])
-
-  useEffect(() => {
-    if (alsoLikedCollapsed) {
-      setMaxAlsoLikedCount(ALSO_LIKED_PAGE_SIZE)
-    }
-  }, [alsoLikedCollapsed])
 
   /*
    * On a cold load, parents are not prepended until the anchor post has
@@ -1130,32 +1123,10 @@ type ViewRect = {
 }
 
 function measureViewRect(
-  view: View | null,
+  view: HostInstance | null,
   cb: (rect: ViewRect | null) => void,
 ) {
-  const target = view as
-    | (View & {
-        measureInWindow?: (
-          callback: (
-            x: number,
-            y: number,
-            width: number,
-            height: number,
-          ) => void,
-        ) => void
-        getBoundingClientRect?: () => DOMRect
-        measure?: (
-          callback: (
-            x: number,
-            y: number,
-            width: number,
-            height: number,
-            pageX: number,
-            pageY: number,
-          ) => void,
-        ) => void
-      })
-    | null
+  const target = view
   if (!target) {
     cb(null)
     return

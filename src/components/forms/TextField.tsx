@@ -2,12 +2,9 @@ import {
   Children,
   type ComponentType,
   createContext,
-  type ForwardedRef,
   isValidElement,
   type PropsWithChildren,
-  type RefObject,
   useContext,
-  useCallback,
   useMemo,
   useRef,
 } from 'react'
@@ -26,6 +23,8 @@ import {mergeRefs} from '#/lib/merge-refs'
 import {
   applyFonts,
   atoms as a,
+  flatten,
+  type MutableTextStyle,
   platform,
   type TextStyleProp,
   tokens,
@@ -39,50 +38,8 @@ import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 
-function getTabbableElements(container: HTMLElement) {
-  const nodes: HTMLElement[] = []
-  const walker = document.createTreeWalker(
-    container,
-    NodeFilter.SHOW_ELEMENT,
-    {
-      acceptNode: node => {
-        if (!(node instanceof HTMLElement)) return NodeFilter.FILTER_SKIP
-        if (
-          node.tagName === 'INPUT' &&
-          (node as HTMLInputElement).type === 'hidden'
-        ) {
-          return NodeFilter.FILTER_SKIP
-        }
-        if (node.hasAttribute('disabled') || node.hidden) {
-          return NodeFilter.FILTER_SKIP
-        }
-        return node.tabIndex >= 0
-          ? NodeFilter.FILTER_ACCEPT
-          : NodeFilter.FILTER_SKIP
-      },
-    },
-  )
-  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement)
-  return nodes
-}
-
-function focusTabSibling(from: HTMLElement, reverse: boolean) {
-  const root =
-    (from.closest('[role="dialog"]') as HTMLElement | null) ??
-    document.body
-  const tabbables = getTabbableElements(root)
-  const active = document.activeElement as HTMLElement | null
-  let index = active ? tabbables.indexOf(active) : -1
-  if (index === -1) index = tabbables.indexOf(from)
-  if (index === -1) return
-  const nextIndex = reverse
-    ? (index - 1 + tabbables.length) % tabbables.length
-    : (index + 1) % tabbables.length
-  tabbables[nextIndex]?.focus()
-}
-
 const Context = createContext<{
-  inputRef: RefObject<TextInput | null> | null
+  inputRef: React.RefObject<React.ComponentRef<typeof TextInput> | null> | null
   isInvalid: boolean
   hovered: boolean
   onHoverIn: () => void
@@ -109,7 +66,7 @@ export function useTextFieldContext() {
 export type RootProps = PropsWithChildren<{isInvalid?: boolean} & TextStyleProp>
 
 export function Root({children, isInvalid = false, style}: RootProps) {
-  const inputRef = useRef<TextInput>(null)
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const {
     state: hovered,
     onIn: onHoverIn,
@@ -167,11 +124,13 @@ export function Root({children, isInvalid = false, style}: RootProps) {
           {zIndex: 0},
           style,
         ]}
-        {...web({
-          onClick: () => inputRef.current?.focus(),
-          onMouseOver: onHoverIn,
-          onMouseOut: onHoverOut,
-        })}>
+        {...(IS_WEB
+          ? {
+              onClick: () => inputRef.current?.focus(),
+              onMouseOver: onHoverIn,
+              onMouseOut: onHoverOut,
+            }
+          : {})}>
         {children}
       </View>
     </Context.Provider>
@@ -229,7 +188,9 @@ export type InputProps = Omit<
   value?: string
   onChangeText?: (value: string) => void
   isInvalid?: boolean
-  inputRef?: RefObject<TextInput | null> | ForwardedRef<TextInput>
+  inputRef?:
+    | React.RefObject<React.ComponentRef<typeof TextInput> | null>
+    | React.ForwardedRef<React.ComponentRef<typeof TextInput>>
   /**
    * Note: this currently falls back to the label if not specified. However,
    * most new designs have no placeholder. We should eventually remove this fallback
@@ -276,80 +237,41 @@ export function createInput(Component: typeof TextInput) {
 
     const refs = mergeRefs([ctx.inputRef, inputRef!].filter(Boolean))
 
-    const tabListenerRef = useRef<{
-      el: HTMLElement
-      handler: (e: KeyboardEvent) => void
-    } | null>(null)
-
-    const attachTabHandler = useCallback(
-      (node: TextInput | null) => {
-        if (tabListenerRef.current) {
-          tabListenerRef.current.el.removeEventListener(
-            'keydown',
-            tabListenerRef.current.handler,
-          )
-          tabListenerRef.current = null
-        }
-        if (!IS_WEB || !rest.multiline || !node) return
-
-        const el = node as unknown as HTMLElement
-        const handler = (e: KeyboardEvent) => {
-          if (e.key !== 'Tab') return
-          e.preventDefault()
-          focusTabSibling(el, e.shiftKey)
-        }
-        el.addEventListener('keydown', handler)
-        tabListenerRef.current = {el, handler}
-      },
-      [rest.multiline],
-    )
-
-    const inputRefs = mergeRefs([refs, attachTabHandler])
-
-    const flattened = StyleSheet.flatten<TextStyle>([
-      a.relative,
-      a.z_20,
-      a.flex_1,
-      a.text_md,
-      t.atoms.text,
-      a.px_xs,
-      {
-        // paddingVertical doesn't work w/multiline - esb
-        lineHeight: a.text_md.fontSize * 1.2,
-        textAlignVertical: rest.multiline ? 'top' : undefined,
-        minHeight: rest.multiline ? 80 : undefined,
-        minWidth: 0,
-        paddingTop: 13,
-        paddingBottom: 13,
-      },
-      /*
-       * Margins are needed here to avoid autofill background overlapping the
-       * top and bottom borders - esb
-       */
-      web({
-        paddingTop: 11,
-        paddingBottom: 11,
-        marginTop: 2,
-        marginBottom: 2,
-      }),
-      rest.multiline &&
+    const flattened: MutableTextStyle = {
+      ...flatten([
+        a.relative,
+        a.z_20,
+        a.flex_1,
+        a.text_md,
+        t.atoms.text,
+        a.px_xs,
+        {
+          // paddingVertical doesn't work w/multiline - esb
+          lineHeight: a.text_md.fontSize * 1.2,
+          textAlignVertical: rest.multiline ? 'top' : undefined,
+          minHeight: rest.multiline ? 80 : undefined,
+          minWidth: 0,
+          paddingTop: 13,
+          paddingBottom: 13,
+        },
+        /*
+         * Margins are needed here to avoid autofill background overlapping the
+         * top and bottom borders - esb
+         */
         web({
-          resize: 'vertical',
-          fieldSizing: 'content',
-          paddingLeft: 16,
-          paddingRight: 16,
+          paddingTop: 11,
+          paddingBottom: 11,
+          marginTop: 2,
+          marginBottom: 2,
         }),
-      style,
-    ])
+        style,
+      ]),
+    }
 
     applyFonts(flattened, fonts.family)
 
-    // should always be defined on `typography`
-    // @ts-ignore
     if (flattened.fontSize) {
-      // @ts-ignore
       flattened.fontSize = Math.round(
-        // @ts-ignore
         flattened.fontSize * fonts.scaleMultiplier,
       )
     }
@@ -364,7 +286,7 @@ export function createInput(Component: typeof TextInput) {
           selectionHandleColor={t.palette.primary_500}
           {...rest}
           accessibilityLabel={label}
-          ref={inputRefs}
+          ref={refs}
           value={value}
           onChangeText={onChangeText}
           onFocus={e => {

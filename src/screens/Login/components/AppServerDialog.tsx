@@ -1,12 +1,11 @@
 import {useCallback, useImperativeHandle, useRef, useState} from 'react'
 import {Keyboard, View} from 'react-native'
-import {isDid} from '@atproto/api'
 import {reloadAppAsync} from 'expo'
+import {isDid} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
-import {cleanError, isNetworkError} from '#/lib/strings/errors'
 import {useNavigationDeduped} from '#/lib/hooks/useNavigationDeduped'
+import {cleanError, isNetworkError} from '#/lib/strings/errors'
 import {logger} from '#/logger'
 import {
   APPVIEW_PRESETS,
@@ -30,14 +29,15 @@ import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import {createStaticClick, InlineLinkText} from '#/components/Link'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as TextField from '#/components/forms/TextField'
 import {TinyChevronBottom_Stroke2_Corner0_Rounded as TinyChevronIcon} from '#/components/icons/Chevron'
 import {Globe_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
+import {createStaticClick, InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {IS_NATIVE, IS_WEB} from '#/env'
+import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
 
 type AppViewSelection = {did: string | undefined; url: string | undefined}
 
@@ -136,9 +136,8 @@ export function AppServerHeaderControl() {
     // OAuth: re-run authorization so the new AppView proxy is attached.
     try {
       if (IS_WEB) {
-        const {getWebOAuthClient} = await import(
-          '#/state/session/oauth-web-client'
-        )
+        const {getWebOAuthClient} =
+          await import('#/state/session/oauth-web-client')
         saveOAuthReturnUrl()
         const client = getWebOAuthClient()
         await client.signIn(currentAccount.handle)
@@ -246,8 +245,7 @@ export function AppServerDialog({
 
   const onClose = useCallback(() => {
     const result = formRef.current?.getFormState()
-    const shouldApply =
-      applyMode === 'login' || confirmedRef.current === true
+    const shouldApply = applyMode === 'login' || confirmedRef.current === true
     confirmedRef.current = false
 
     if (!shouldApply || !result || result === 'invalid') {
@@ -264,14 +262,7 @@ export function AppServerDialog({
     if (applyMode !== 'login') {
       onApply?.()
     }
-  }, [
-    applyMode,
-    did,
-    url,
-    setAppViewSelection,
-    onApply,
-    resetLocalState,
-  ])
+  }, [applyMode, did, url, setAppViewSelection, onApply, resetLocalState])
 
   return (
     <Dialog.Outer
@@ -339,8 +330,7 @@ function AppServerDialogInner({
    * hosts (e.g. bsky.social) apart from typos / unrelated sites.
    */
   const hasPdsInDidDoc =
-    !!atprotoPdsService?.serviceEndpoint &&
-    !bskyAppViewService?.serviceEndpoint
+    !!atprotoPdsService?.serviceEndpoint && !bskyAppViewService?.serviceEndpoint
   const shouldProbePds =
     preset === 'custom' &&
     !!normalizedCustomUrl &&
@@ -458,13 +448,13 @@ function AppServerDialogInner({
             {!!normalizedCustomUrl &&
               !!derivedDid &&
               (doc.isLoading || (shouldProbePds && pdsProbe.isLoading)) && (
-              <View style={[a.flex_row, a.align_center, a.gap_sm, a.mt_sm]}>
-                <Loader size="sm" />
-                <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
-                  <Trans>Looking up AppView…</Trans>
-                </Text>
-              </View>
-            )}
+                <View style={[a.flex_row, a.align_center, a.gap_sm, a.mt_sm]}>
+                  <Loader size="sm" />
+                  <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
+                    <Trans>Looking up AppView…</Trans>
+                  </Text>
+                </View>
+              )}
             {!!normalizedCustomUrl &&
               !!derivedDid &&
               !doc.isLoading &&
@@ -475,7 +465,7 @@ function AppServerDialogInner({
                     {looksLikePds ? (
                       <Trans>
                         This looks like a hosting provider (PDS) address, not an
-                        AppView. Your PDS is detected from your handle, or set 
+                        AppView. Your PDS is detected from your handle, or set
                         separately under Hosting provider; don’t enter it here!
                       </Trans>
                     ) : (
@@ -495,8 +485,8 @@ function AppServerDialogInner({
           style={[t.atoms.text_contrast_medium, a.text_sm, a.leading_snug]}>
           <Trans>
             The app server (AppView) provides posts, feeds, profiles, search,
-            notifications, and mutes. Your account still lives with your
-            hosting provider.
+            notifications, and mutes. Your account still lives with your hosting
+            provider.
           </Trans>
         </Text>
 

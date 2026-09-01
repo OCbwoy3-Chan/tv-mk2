@@ -39,6 +39,9 @@ import {
 import {Span, Text} from '#/components/Typography'
 import {IS_IOS, IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
 
+type TextInputInstance = React.ComponentRef<typeof TextInput>
+type ViewInstance = React.ComponentRef<typeof View>
+
 export type SubmitRequest =
   | {
       platform: 'web'
@@ -60,7 +63,7 @@ export type ComposerInternalApi = {
   input?: ReturnType<typeof useTapper>['input']
   clear: () => void
   insert(text: string): void
-  setAutocompleteAnchor: (node: View | null) => void
+  setAutocompleteAnchor: (node: ViewInstance | null) => void
 }
 
 export function useComposerInternalApiRef() {
@@ -82,7 +85,7 @@ export type ComposerProps = Omit<
   | 'onSubmitEditing'
 > & {
   label: string
-  ref?: React.RefObject<TextInput>
+  ref?: React.RefObject<TextInputInstance>
   internalApiRef?: React.Ref<ComposerInternalApi>
   outerStyle?: ViewStyleProp['style']
   contentTextStyle?: TextStyleProp['style']
@@ -139,6 +142,11 @@ export function Composer({
     placement: autocompletePlacement,
     dynamicWidth: IS_WEB,
   })
+  const inputRef = mergeRefs<TextInputInstance>([
+    ref,
+    tapper.inputProps.ref as React.Ref<TextInputInstance>,
+    sift.targetProps.ref as React.Ref<TextInputInstance>,
+  ])
 
   /*
    * Active facet state for controlling the visibility of the Autocomplete.
@@ -164,7 +172,13 @@ export function Composer({
       insert: tapper.insert,
       setAutocompleteAnchor: sift.refs.setAnchor,
     }),
-    [tapper.input, tapper.insert, inputScrollSharedValue, sift.refs.setAnchor],
+    [
+	tapper.input,
+	tapper.insert,
+	inputScrollSharedValue,
+	sift.refs.setAnchor,
+	tapper.inputProps
+],
   )
 
   /*
@@ -207,7 +221,11 @@ export function Composer({
       offFacetCommitted()
       offAfterInsert()
     }
-  }, [tapper.on, tapper.input])
+  }, [
+	tapper.on,
+	tapper.input,
+	tapper
+])
 
   /*
    * Styles
@@ -237,7 +255,11 @@ export function Composer({
       delete ts.lineHeight
     }
     return ts
-  }, [contentTextStyle, fonts])
+  }, [
+	contentTextStyle,
+	fonts,
+	t.atoms.text
+])
 
   /*
    * Web keyboard handling
@@ -269,7 +291,7 @@ export function Composer({
    * Sift popover positioning
    */
   const updateAutocompletePosition = () => {
-    sift.updatePosition()
+    void sift.updatePosition()
   }
 
   const textContent = (
@@ -306,7 +328,7 @@ export function Composer({
             style={[a.absolute, a.inset_0, a.z_10, {overflow: 'hidden'}]}
             ref={node => {
               if (IS_WEB && node) {
-                // @ts-ignore web only a11y
+                // @ts-expect-error web only a11y
                 node.setAttribute('inert', '')
               }
             }}>
@@ -345,7 +367,7 @@ export function Composer({
           {...rest}
           {...tapper.inputProps}
           {...sift.targetProps}
-          ref={mergeRefs([ref, tapper.inputProps.ref, sift.targetProps.ref])}
+          ref={inputRef}
           rawValue={tapper.state.text}
           onBlur={e => {
             rest.onBlur?.(e)
@@ -354,16 +376,15 @@ export function Composer({
           onKeyPress={IS_WEB ? onKeyPressWeb : undefined}
           onScroll={e => {
             if (IS_WEB) {
-              inputScrollSharedValue.value = (e.target as any).scrollTop
+              inputScrollSharedValue.set((e.target as any).scrollTop)
             } else {
-              inputScrollSharedValue.value = e.nativeEvent.contentOffset.y
+              inputScrollSharedValue.set(e.nativeEvent.contentOffset.y)
             }
           }}
-          // @ts-ignore web only
+          // @ts-expect-error web only
           onCompositionStart={() => {
             isComposing.current = true
           }}
-          // @ts-ignore web only
           onCompositionEnd={() => {
             isComposing.current = false
           }}
@@ -415,7 +436,11 @@ function AutocompleteInner({
         onDismiss()
       }
     }
-  }, [items, activeFacet])
+  }, [
+	items,
+	activeFacet,
+	onDismiss
+])
 
   return items && items.length ? (
     <AutocompleteBase

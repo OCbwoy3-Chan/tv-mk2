@@ -2,8 +2,8 @@ import {useState} from 'react'
 import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {testLibreTranslateUrl} from '#/lib/infrastructure/url-test'
 import {usePalette} from '#/lib/hooks/usePalette'
+import {testLibreTranslateUrl} from '#/lib/infrastructure/url-test'
 import {
   useLibreTranslateInstanceSetting,
   useSetLibreTranslateInstance,
@@ -33,7 +33,9 @@ export function LibreTranslateInstanceDialog({
   const {t: l} = useLingui()
 
   const libreTranslateInstanceSetting = useLibreTranslateInstanceSetting()
-  const savedCustomUrl = getLibreTranslateDialogUrl(libreTranslateInstanceSetting)
+  const savedCustomUrl = getLibreTranslateDialogUrl(
+    libreTranslateInstanceSetting,
+  )
   const [url, setUrl] = useState(savedCustomUrl)
   const setLibreTranslateInstance = useSetLibreTranslateInstance()
   const {submit, isTesting, testError, canSubmit, isClear, clearTestError} =

@@ -495,7 +495,7 @@ export function InlineLinkText({
     onIn: onInteract,
     onOut: onInteractOut,
   } = useInteractionState()
-  const flattenedStyle = flatten(style) || {}
+  const flattenedStyle = flatten(style)
 
   return (
     <Text
@@ -587,7 +587,7 @@ export function SimpleInlineLinkText({
     onIn: onInteract,
     onOut: onInteractOut,
   } = useInteractionState()
-  const flattenedStyle = flatten(style) || {}
+  const flattenedStyle = flatten(style)
   const isExternal = isExternalUrl(to)
 
   let href = to

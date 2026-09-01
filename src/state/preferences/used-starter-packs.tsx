@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from 'react'
-import type {ReactNode} from 'react'
+import  {type ReactNode} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -18,7 +18,7 @@ export function Provider({children}: {children: ReactNode}) {
 
   const setStateWrapped = (v: boolean) => {
     setState(v)
-    persisted.write('hasCheckedForStarterPack', v)
+    void persisted.write('hasCheckedForStarterPack', v)
   }
 
   useEffect(() => {

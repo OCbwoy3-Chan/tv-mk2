@@ -23,7 +23,7 @@ import {
   useOmitViaField,
   useSetOmitViaField,
 } from '#/state/preferences/omit-via-field'
-import {useTidSuffix, useSetTidSuffix} from '#/state/preferences/tid-suffix'
+import {useSetTidSuffix,useTidSuffix} from '#/state/preferences/tid-suffix'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -34,11 +34,11 @@ import {BellRinging_Stroke2_Corner0_Rounded as BellRingingIcon} from '#/componen
 import {CodeBrackets_Stroke2_Corner2_Rounded as CodeBracketsIcon} from '#/components/icons/CodeBrackets'
 import {Explosion_Stroke2_Corner0_Rounded as ExplosionIcon} from '#/components/icons/Explosion'
 import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/Eye'
-import {LikeRepost_Stroke2_Corner2_Rounded as LikeRepostIcon} from '#/components/icons/Heart2'
 import {Hashtag_Stroke2_Corner0_Rounded as HashtagIcon} from '#/components/icons/Hashtag'
+import {LikeRepost_Stroke2_Corner2_Rounded as LikeRepostIcon} from '#/components/icons/Heart2'
+import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
-import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 

@@ -5,7 +5,6 @@ import {
   Pressable,
 } from 'react-native'
 import {Image} from 'expo-image'
-import {type AppBskyEmbedExternal} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -17,12 +16,13 @@ import {EmbedConsentDialog} from '#/components/dialogs/EmbedConsent'
 import {Fill} from '#/components/Fill'
 import {PlayButtonIcon} from '#/components/video/PlayButtonIcon'
 import {IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
+import {type app} from '#/lexicons'
 
 export function ExternalGif({
   link,
   params,
 }: {
-  link: AppBskyEmbedExternal.ViewExternal
+  link: app.bsky.embed.external.ViewExternal
   params: EmbedPlayerParams
 }) {
   const t = useTheme()
@@ -42,7 +42,7 @@ export function ExternalGif({
 
   const load = useCallback(() => {
     setIsPlayerActive(true)
-    Image.prefetch(params.playerUri).then(() => {
+    void Image.prefetch(params.playerUri).then(() => {
       // Replace the image once it's fetched
       setIsPrefetched(true)
     })
@@ -67,12 +67,12 @@ export function ExternalGif({
       setIsAnimating(prev => {
         if (prev) {
           if (IS_NATIVE) {
-            imageRef.current?.stopAnimating()
+            void imageRef.current?.stopAnimating()
           }
           return false
         } else {
           if (IS_NATIVE) {
-            imageRef.current?.startAnimating()
+            void imageRef.current?.startAnimating()
           }
           return true
         }

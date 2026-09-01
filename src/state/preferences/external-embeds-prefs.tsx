@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import {type EmbedPlayerSource} from '#/lib/strings/embed-player'
 import * as persisted from '#/state/persisted'
@@ -29,7 +29,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (source: EmbedPlayerSource, value: 'show' | 'hide' | undefined) => {
       setState(prev => {
-        persisted.write('externalEmbeds', {
+        void persisted.write('externalEmbeds', {
           ...prev,
           [source]: value,
         })

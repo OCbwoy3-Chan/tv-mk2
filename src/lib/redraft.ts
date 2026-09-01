@@ -1,7 +1,7 @@
 import {
   AppBskyEmbedGallery,
-  AppBskyEmbedImages,
-  AppBskyEmbedRecordWithMedia,
+  type AppBskyEmbedImages,
+  type AppBskyEmbedRecordWithMedia,
   type AppBskyFeedDefs,
   type AppBskyFeedPost,
   type BlobRef,

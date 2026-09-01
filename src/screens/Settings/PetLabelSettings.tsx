@@ -1,5 +1,5 @@
 import {View} from 'react-native'
-import {type $Typed, ComAtprotoLabelDefs} from '@atproto/api'
+import {type $Typed} from '@atproto/lex'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useQueryClient} from '@tanstack/react-query'
@@ -22,6 +22,7 @@ import {Text} from '#/components/Typography'
 import {useSimpleVerificationStateWithDeer} from '#/components/verification'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {useAnalytics} from '#/analytics'
+import {com} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'PetLabelSettings'>
@@ -50,15 +51,13 @@ export function PetLabelSettingsScreen({}: Props) {
       {
         profile,
         updates: existing => {
-          const labels: $Typed<ComAtprotoLabelDefs.SelfLabels> = bsky.validate(
-            existing.labels,
-            ComAtprotoLabelDefs.validateSelfLabels,
-          )
-            ? existing.labels
-            : {
-                $type: 'com.atproto.label.defs#selfLabels',
-                values: [],
-              }
+          const labels: $Typed<com.atproto.label.defs.SelfLabels> =
+            bsky.matches(com.atproto.label.defs.selfLabels, existing.labels)
+              ? existing.labels
+              : {
+                  $type: 'com.atproto.label.defs#selfLabels',
+                  values: [],
+                }
 
           const hasLabel = labels.values.some(l => l.val === 'pet')
           if (hasLabel) {
@@ -78,14 +77,14 @@ export function PetLabelSettingsScreen({}: Props) {
           return existing
         },
         checkCommitted: res => {
-          const exists = !!res.data.labels?.some(l => l.val === 'pet')
+          const exists = !!res.labels?.some(l => l.val === 'pet')
           return exists === wasAdded
         },
       },
       {
         onSuccess() {
-          queryClient.invalidateQueries({queryKey: [POST_FEED_RQKEY_ROOT]})
-          queryClient.invalidateQueries({queryKey: [postThreadQueryKeyRoot]})
+          void queryClient.invalidateQueries({queryKey: [POST_FEED_RQKEY_ROOT]})
+          void queryClient.invalidateQueries({queryKey: [postThreadQueryKeyRoot]})
         },
       },
     )

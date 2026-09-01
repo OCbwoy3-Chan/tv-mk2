@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (thumbnailFormat: persisted.Schema['thumbnailFormat']) => {
       setState(thumbnailFormat)
-      persisted.write('thumbnailFormat', thumbnailFormat)
+      void persisted.write('thumbnailFormat', thumbnailFormat)
     },
     [setState],
   )

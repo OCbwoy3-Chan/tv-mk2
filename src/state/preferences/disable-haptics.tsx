@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (hapticsEnabled: persisted.Schema['disableHaptics']) => {
       setState(Boolean(hapticsEnabled))
-      persisted.write('disableHaptics', hapticsEnabled)
+      void persisted.write('disableHaptics', hapticsEnabled)
     },
     [setState],
   )

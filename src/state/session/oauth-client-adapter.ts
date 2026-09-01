@@ -9,10 +9,7 @@ export function restoreOAuthSession(
   refresh: boolean | 'auto' = 'auto',
 ): Promise<OAuthSession> {
   const result = restoreChain.then(() =>
-    getWebOAuthClient().restore(
-      did,
-      refresh === 'auto' ? undefined : refresh,
-    ),
+    getWebOAuthClient().restore(did, refresh === 'auto' ? undefined : refresh),
   )
   restoreChain = result.catch(() => {})
   return result

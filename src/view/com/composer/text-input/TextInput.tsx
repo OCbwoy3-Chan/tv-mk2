@@ -12,7 +12,8 @@ import {
   View,
 } from 'react-native'
 import {type PasteEventPayload, TextInputWrapper} from 'expo-paste-input'
-import {AppBskyRichtextFacet, RichText, UnicodeString} from '@atproto/api'
+import {type AppBskyRichtextFacet, UnicodeString} from '@atproto/api'
+import {RichText} from '@bsky/sdk/richtext'
 import {useLingui} from '@lingui/react/macro'
 
 import {IMAGE_SIZE_CONFIG_POSTS} from '#/lib/constants'
@@ -27,6 +28,8 @@ import {
 import {atoms as a, useAlf, utils} from '#/alf'
 import {normalizeTextStyles} from '#/alf/typography'
 import {IS_ANDROID} from '#/env'
+import {app} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 import {Autocomplete} from './mobile/Autocomplete'
 import {type TextInputProps} from './TextInput.types'
 
@@ -53,7 +56,7 @@ export function TextInput({
 }: TextInputProps) {
   const {t: l} = useLingui()
   const {theme: t, fonts} = useAlf()
-  const textInput = useRef<RNTextInput>(null)
+  const textInput = useRef<React.ComponentRef<typeof RNTextInput>>(null)
   const textInputSelection = useRef<Selection>({start: 0, end: 0})
   const theme = useTheme()
   const [autocompletePrefix, setAutocompletePrefix] = useState('')
@@ -158,7 +161,7 @@ export function TextInput({
         })
         newRt.facets = [...nonOverlapping, ...markdownFacets].sort(
           (a, b) => a.index.byteStart - b.index.byteStart,
-        )
+        ) as typeof newRt.facets
       }
 
       setRichText(newRt)
@@ -178,7 +181,7 @@ export function TextInput({
       if (newRt.facets) {
         for (const facet of newRt.facets) {
           for (const feature of facet.features) {
-            if (AppBskyRichtextFacet.isLink(feature)) {
+            if (bsky.isType(app.bsky.richtext.facet.link, feature)) {
               if (isUriImage(feature.uri)) {
                 const res = await downloadAndResize({
                   uri: feature.uri,
@@ -266,21 +269,19 @@ export function TextInput({
      * Android impl of `PasteInput` doesn't support the array syntax for `fontVariant`
      */
     if (IS_ANDROID) {
-      // @ts-ignore
-      style.fontVariant = style.fontVariant
-        ? style.fontVariant.join(' ')
-        : undefined
+      style.fontVariant =
+        typeof style.fontVariant === 'string'
+          ? style.fontVariant
+          : style.fontVariant?.join(' ')
     }
     return style
   }, [t, fonts])
 
   const textDecorated = useMemo(() => {
-    let i = 0
-
-    return Array.from(richtext.segments()).map(segment => {
+    return Array.from(richtext.segments()).map((segment, i) => {
       return (
         <RNText
-          key={i++}
+          key={i}
           style={[
             inputTextStyle,
             {

@@ -1,6 +1,5 @@
 import {type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {StyleSheet, View} from 'react-native'
-import {type AppBskyActorDefs} from '@atproto/api'
 import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation, useNavigationState} from '@react-navigation/native'
@@ -98,6 +97,7 @@ import {useAnalytics} from '#/analytics'
 import {type Events} from '#/analytics/metrics/types'
 import {useActorStatus} from '#/features/liveNow'
 import {useActiveThemeUpdate} from '#/features/themes/api'
+import {type app} from '#/lexicons'
 import {router} from '#/routes'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
 import {PlatformInfo} from '../../../../modules/expo-bluesky-swiss-army'
@@ -264,7 +264,7 @@ export function SwitchMenuItems({
   accounts:
     | {
         account: SessionAccount
-        profile?: AppBskyActorDefs.ProfileViewDetailed
+        profile?: app.bsky.actor.defs.ProfileViewDetailed
       }[]
     | undefined
   isLoading?: boolean
@@ -403,7 +403,7 @@ function SwitchMenuItem({
   onSelectAccount,
 }: {
   account: SessionAccount
-  profile: AppBskyActorDefs.ProfileViewDetailed | undefined
+  profile: app.bsky.actor.defs.ProfileViewDetailed | undefined
   onSelectAccount?: (account: SessionAccount) => void
 }) {
   const {t: l} = useLingui()
@@ -631,9 +631,8 @@ function ComposeBtn({minimal}: {minimal: boolean}) {
           handle = await fetchHandle(handle)
         } catch (e) {
           handle = undefined
-        } finally {
-          setIsFetchingHandle(false)
         }
+        setIsFetchingHandle(false)
       }
 
       if (
@@ -883,8 +882,8 @@ const styles = StyleSheet.create({
   leftNav: {
     left: '50%',
     width: LEFT_NAV_STANDARD_WIDTH,
-    // @ts-expect-error web only
     maxHeight: '100vh',
+    // @ts-expect-error web only
     overflowY: 'auto',
     scrollbarWidth: 'thin',
   },

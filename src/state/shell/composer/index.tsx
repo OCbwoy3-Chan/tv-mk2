@@ -1,11 +1,8 @@
 import {createContext, useContext, useMemo, useState} from 'react'
 import {
-  type AppBskyActorDefs,
-  type AppBskyFeedDefs,
-  type AppBskyUnspeccedGetPostThreadV2,
   type BlobRef,
-  type ModerationDecision,
 } from '@atproto/api'
+import {type ModerationDecision} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {useQueryClient} from '@tanstack/react-query'
@@ -19,41 +16,34 @@ import {
   RQKEY_LINK_ROOT,
 } from '#/state/queries/resolve-link'
 import * as Toast from '#/components/Toast'
+import {type app} from '#/lexicons'
 
 export interface ComposerOptsPostRef {
   uri: string
   cid: string
   text: string
   langs?: string[]
-  // remove this after updating atproto api package
-  author: AppBskyActorDefs.ProfileViewBasic & {
-    pronouns?: string
-  }
-  embed?: AppBskyFeedDefs.PostView['embed']
+  author: app.bsky.actor.defs.ProfileViewBasic
+  embed?: app.bsky.feed.defs.PostView['embed']
   moderation?: ModerationDecision
 }
 
 export type OnPostSuccessData =
   | {
       replyToUri?: string
-      posts: AppBskyUnspeccedGetPostThreadV2.ThreadItem[]
+      posts: app.bsky.unspecced.getPostThreadV2.ThreadItem[]
     }
   | undefined
 
 export type ComposerLogContext =
-  | 'Fab'
-  | 'PostReply'
-  | 'QuotePost'
-  | 'ProfileFeed'
-  | 'Deeplink'
-  | 'Other'
+  'Fab' | 'PostReply' | 'QuotePost' | 'ProfileFeed' | 'Deeplink' | 'Other'
 
 export interface ComposerOpts {
   activeAccountDid?: string
   replyTo?: ComposerOptsPostRef
   onPost?: (postUri: string | undefined) => void
   onPostSuccess?: (data: OnPostSuccessData) => void
-  quote?: AppBskyFeedDefs.PostView
+  quote?: app.bsky.feed.defs.PostView
   mention?: string // handle of user to mention
   text?: string
   /**
@@ -141,7 +131,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     let wasOpen = !!state
     if (wasOpen) {
       setState(undefined)
-      purgeTemporaryImageFiles()
+      void purgeTemporaryImageFiles()
       // Purging deletes cached thumbnails on disk, so remove the query
       // caches that may hold references to those now-deleted file paths.
       // Without this, restoring a draft would serve stale ResolvedLink

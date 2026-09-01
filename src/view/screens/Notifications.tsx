@@ -210,11 +210,11 @@ function NotificationsTab({
     scrollToTop()
     if (hasNew) {
       // render what we have now
-      truncateAndInvalidate(queryClient, NOTIFS_RQKEY(filter))
+      void truncateAndInvalidate(queryClient, NOTIFS_RQKEY(filter))
     } else if (!isLoading) {
       // check with the server
       setIsLoadingLatest(true)
-      checkUnread({invalidate: true})
+      void checkUnread({invalidate: true})
         .catch(() => undefined)
         .then(() => setIsLoadingLatest(false))
     }
@@ -239,7 +239,7 @@ function NotificationsTab({
       // we're just going to look it up synchronously.
       currentIsScrolledDown = window.scrollY > 200
     }
-    checkUnread({invalidate: !currentIsScrolledDown})
+    void checkUnread({invalidate: !currentIsScrolledDown})
   })
 
   // on-visible setup
@@ -271,7 +271,7 @@ function NotificationsTab({
         ListHeaderComponent={
           filter === 'mentions' ? (
             <DisabledNotificationsWarning active={isFocusedAndActive} />
-          ) : null
+          ) : undefined
         }
       />
       {(isScrolledDown || hasNew) && (

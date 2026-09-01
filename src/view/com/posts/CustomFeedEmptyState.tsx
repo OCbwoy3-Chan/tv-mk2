@@ -37,7 +37,11 @@ export function CustomFeedEmptyState() {
         })
       }
     }
-  }, [feedFeedback.feedSourceInfo, currentAccount?.did])
+  }, [
+	feedFeedback.feedSourceInfo,
+	currentAccount?.did,
+	ax
+])
   const {t: l} = useLingui()
   const pal = usePalette('default')
   const navigation = useNavigation<NavigationProp>()

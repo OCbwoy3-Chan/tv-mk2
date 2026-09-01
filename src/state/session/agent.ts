@@ -25,7 +25,6 @@ import {snoozeBirthdateUpdateAllowedForDid} from '#/state/birthdate'
 import {restrictChatSettings} from '#/state/queries/messages/restrictChatSettings'
 import {snoozeEmailConfirmationPrompt} from '#/state/shell/reminders'
 import {
-  prefetchAgeAssuranceServerData,
   setBirthdateForDid,
   setCreatedAtForDid,
 } from '#/ageAssurance/data'
@@ -82,7 +81,7 @@ export async function createAgentAndResume(
   }
 
   // after session is attached
-  const aa = prefetchAgeAssuranceServerData({agent})
+  const aa = Promise.resolve()
 
   const proxyDid =
     readCustomAppViewDidUri() || BLUESKY_PROXY_HEADER.get() || APPVIEW_DID_PROXY
@@ -123,7 +122,7 @@ export async function createAgentAndLogin(
   const account = agentToSessionAccountOrThrow(agent)
   const gates = features.refresh({strategy: 'prefer-fresh-gates'})
   const moderation = configureModerationForAccount(agent, account)
-  const aa = prefetchAgeAssuranceServerData({agent})
+  const aa = Promise.resolve()
 
   const proxyDid =
     readCustomAppViewDidUri() || BLUESKY_PROXY_HEADER.get() || APPVIEW_DID_PROXY
@@ -187,7 +186,7 @@ export async function createAgentAndCreateAccount(
   setBirthdateForDid({did: account.did, birthdate})
   snoozeBirthdateUpdateAllowedForDid(account.did)
   // do this last
-  const aa = prefetchAgeAssuranceServerData({agent})
+  const aa = Promise.resolve()
 
   // Not awaited so that we can still get into onboarding.
   // This is OK because we won't let you toggle adult stuff until you set the date.
@@ -234,7 +233,7 @@ export async function createAgentAndCreateAccount(
         const {flags} = unsafeGetAndComputeAgeAssurance({did: account.did})
         if (flags?.chatDisabled || flags?.groupChatDisabled) {
           void restrictChatSettings({
-            agent: pdsAgent(agent),
+            client: pdsAgent(agent) as never,
             restrictIncoming: flags.chatDisabled,
             restrictGroupInvites: flags.groupChatDisabled,
           })
@@ -313,7 +312,7 @@ export function agentToSessionAccount(
   }
   return {
     service: agent.serviceUrl.toString(),
-    did: agent.session.did,
+    did: agent.session.did as SessionAccount['did'],
     handle: agent.session.handle,
     email: agent.session.email,
     emailConfirmed: agent.session.emailConfirmed || false,
@@ -426,7 +425,7 @@ class BskyAppAgent extends AtpAgent {
     const account = agentToSessionAccountOrThrow(this)
     this.persistSessionHandler = event => {
       onSessionChange(this, account.did, event)
-      if (event !== 'create' && event !== 'update') {
+      if (event === 'expired' || event === 'network-error') {
         addSessionErrorLog(account.did, event)
       }
     }

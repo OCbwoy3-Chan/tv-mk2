@@ -13,7 +13,7 @@ import {
   writeAsStringAsync,
 } from 'expo-file-system/legacy'
 import {manipulateAsync, SaveFormat} from 'expo-image-manipulator'
-import * as MediaLibrary from 'expo-media-library'
+import * as MediaLibrary from 'expo-media-library/legacy'
 import * as Sharing from 'expo-sharing'
 
 import {formatToFileExt} from '#/lib/media/image-formats'
@@ -192,7 +192,7 @@ export async function saveImageToMediaLibrary({
     })
     throw err
   } finally {
-    safeDeleteAsync(imagePath)
+    void safeDeleteAsync(imagePath)
   }
 }
 
@@ -328,12 +328,12 @@ async function doResize(
 
   for (const intermediateUri of intermediateUris) {
     if (newDataUri?.path !== normalizePath(intermediateUri)) {
-      safeDeleteAsync(intermediateUri)
+      void safeDeleteAsync(intermediateUri)
     }
   }
 
   if (newDataUri) {
-    safeDeleteAsync(imageRes.uri)
+    void safeDeleteAsync(imageRes.uri)
     return newDataUri
   }
 
@@ -357,7 +357,7 @@ async function moveToPermanentPath(path: string, ext: string): Promise<string> {
     from: normalizePath(path),
     to: normalizePath(destinationPath),
   })
-  safeDeleteAsync(path)
+  void safeDeleteAsync(path)
   return normalizePath(destinationPath)
 }
 
@@ -460,7 +460,7 @@ async function withTempFile<T>(
 
     return await cb(tmpFileUrl)
   } finally {
-    safeDeleteAsync(tmpDirUri)
+    void safeDeleteAsync(tmpDirUri)
   }
 }
 

@@ -55,7 +55,7 @@ export async function downloadAndResize(opts: DownloadAndResizeOpts) {
   })
 }
 
-export async function shareImageModal(_opts: {uri: string}) {
+export function shareImageModal(_opts: {uri: string}) {
   // TODO
   throw new Error('TODO')
 }
@@ -237,7 +237,7 @@ function createResizedImage(
   })
 }
 
-export async function saveBytesToDisk(
+export function saveBytesToDisk(
   filename: string,
   bytes: Uint8Array,
   type: string,

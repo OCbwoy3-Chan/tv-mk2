@@ -7,8 +7,7 @@ import {IS_WEB} from '#/env'
 const {height: SCREEN_HEIGHT} = Dimensions.get('window')
 
 const IFRAME_HOST = IS_WEB
-  ? // @ts-ignore only for web
-    window.location.host === 'localhost:8100'
+  ? window.location.host === 'localhost:8100'
     ? 'http://localhost:8100'
     : 'https://witchsky.app'
   : __DEV__ && !process.env.JEST_WORKER_ID
@@ -175,10 +174,7 @@ export function parseEmbedPlayerFromUrl(
     urlp.hostname === 'www.twitch.tv' ||
     urlp.hostname === 'm.twitch.tv'
   ) {
-    const parent = IS_WEB
-      ? // @ts-ignore only for web
-        window.location.hostname
-      : 'localhost'
+    const parent = IS_WEB ? window.location.hostname : 'localhost'
 
     const [__, channelOrVideo, clipOrId, id] = urlp.pathname.split('/')
 

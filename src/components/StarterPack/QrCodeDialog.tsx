@@ -1,9 +1,11 @@
 import {Suspense, useRef, useState} from 'react'
 import {View} from 'react-native'
-import type ViewShot from 'react-native-view-shot'
-import {requestPermissionsAsync, saveToLibraryAsync} from 'expo-media-library'
+import {type ViewShotRef} from 'react-native-view-shot'
+import {
+  requestPermissionsAsync,
+  saveToLibraryAsync,
+} from 'expo-media-library/legacy'
 import * as Sharing from 'expo-sharing'
-import {type AppBskyGraphDefs, AppBskyGraphStarterpack} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -21,6 +23,7 @@ import {QrCode} from '#/components/StarterPack/QrCode'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE, IS_WEB} from '#/env'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 export function QrCodeDialog({
@@ -28,7 +31,7 @@ export function QrCodeDialog({
   link,
   control,
 }: {
-  starterPack: AppBskyGraphDefs.StarterPackView
+  starterPack: app.bsky.graph.defs.StarterPackView
   link?: string
   control: DialogControlProps
 }) {
@@ -38,7 +41,7 @@ export function QrCodeDialog({
   const [isSaveProcessing, setIsSaveProcessing] = useState(false)
   const [isCopyProcessing, setIsCopyProcessing] = useState(false)
 
-  const ref = useRef<ViewShot>(null)
+  const ref = useRef<ViewShotRef>(null)
 
   const getCanvas = (base64: string): Promise<HTMLCanvasElement> => {
     return new Promise(resolve => {
@@ -56,8 +59,8 @@ export function QrCodeDialog({
     })
   }
 
-  const onSavePress = async () => {
-    ref.current?.capture?.().then(async (uri: string) => {
+  const onSavePress = () => {
+    void ref.current?.capture?.().then(async (uri: string) => {
       if (IS_NATIVE) {
         // Write-only permission - saving the QR image does not require read
         // access to the user's photo library.
@@ -87,12 +90,7 @@ export function QrCodeDialog({
       } else {
         setIsSaveProcessing(true)
 
-        if (
-          !bsky.validate(
-            starterPack.record,
-            AppBskyGraphStarterpack.validateRecord,
-          )
-        ) {
+        if (!bsky.matches(app.bsky.graph.starterpack, starterPack.record)) {
           return
         }
 
@@ -125,14 +123,14 @@ export function QrCodeDialog({
     })
   }
 
-  const onCopyPress = async () => {
+  const onCopyPress = () => {
     setIsCopyProcessing(true)
-    ref.current?.capture?.().then(async (uri: string) => {
+    void ref.current?.capture?.().then(async (uri: string) => {
       const canvas = await getCanvas(uri)
       // @ts-expect-error web only
       canvas.toBlob((blob: Blob) => {
         const item = new ClipboardItem({'image/png': blob})
-        navigator.clipboard.write([item])
+        void navigator.clipboard.write([item])
       })
 
       ax.metric('starterPack:share', {
@@ -146,10 +144,10 @@ export function QrCodeDialog({
     })
   }
 
-  const onSharePress = async () => {
-    ref.current?.capture?.().then(async (uri: string) => {
+  const onSharePress = () => {
+    void ref.current?.capture?.().then((uri: string) => {
       control.close(() => {
-        Sharing.shareAsync(uri, {mimeType: 'image/png', UTI: 'image/png'}).then(
+        void Sharing.shareAsync(uri, {mimeType: 'image/png', UTI: 'image/png'}).then(
           () => {
             ax.metric('starterPack:share', {
               starterPack: starterPack.uri,

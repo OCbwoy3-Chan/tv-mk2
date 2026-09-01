@@ -8,7 +8,7 @@ type Props = {
 export function Splash({isReady, children}: React.PropsWithChildren<Props>) {
   useEffect(() => {
     if (isReady) {
-      SplashScreen.hideAsync()
+      void SplashScreen.hideAsync()
     }
   }, [isReady])
   if (isReady) {

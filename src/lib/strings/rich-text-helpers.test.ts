@@ -1,4 +1,4 @@
-import {RichText} from '@atproto/api'
+import {RichText} from '@bsky/sdk/richtext'
 
 import {richTextToStringPreservingLinks} from './rich-text-helpers'
 
@@ -50,9 +50,7 @@ describe('richTextToStringPreservingLinks', () => {
       facets: [
         {
           index: {byteStart: 0, byteEnd: uri.length},
-          features: [
-            {$type: 'app.bsky.richtext.facet#link', uri},
-          ],
+          features: [{$type: 'app.bsky.richtext.facet#link', uri}],
         },
       ],
     })

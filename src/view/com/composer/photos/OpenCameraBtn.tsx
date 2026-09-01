@@ -1,5 +1,4 @@
-import {useCallback} from 'react'
-import * as MediaLibrary from 'expo-media-library'
+import * as MediaLibrary from 'expo-media-library/legacy'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -16,20 +15,29 @@ import {type OpenCameraBtnProps} from './OpenCameraBtn.shared'
 
 export function OpenCameraBtn({disabled, onAdd}: OpenCameraBtnProps) {
   const {_} = useLingui()
+  const enableSquareButtons = useEnableSquareButtons()
   const {requestCameraAccessIfNeeded} = useCameraPermission()
   const [mediaPermissionRes, requestMediaPermission] =
     MediaLibrary.usePermissions({granularPermissions: ['photo']})
   const t = useTheme()
 
-  const enableSquareButtons = useEnableSquareButtons()
+  const mediaGranted = mediaPermissionRes?.granted
+  const mediaCanAskAgain = mediaPermissionRes?.canAskAgain
 
-  const onPressTakePicture = useCallback(async () => {
+  /*
+   * No useCallback: with the diagnostics above resolved this component compiles,
+   * so React Compiler memoizes it, and the hand-written deps were what it could
+   * not preserve.
+   */
+  const onPressTakePicture = async () => {
     try {
       if (!(await requestCameraAccessIfNeeded())) {
         return
       }
-      if (!mediaPermissionRes?.granted && mediaPermissionRes?.canAskAgain) {
-        await requestMediaPermission()
+      if (!mediaGranted) {
+        if (mediaCanAskAgain) {
+          await requestMediaPermission()
+        }
       }
 
       const img = await openCamera({
@@ -52,12 +60,7 @@ export function OpenCameraBtn({disabled, onAdd}: OpenCameraBtnProps) {
       // ignore
       logger.warn('Error using camera', {error: err})
     }
-  }, [
-    onAdd,
-    requestCameraAccessIfNeeded,
-    mediaPermissionRes,
-    requestMediaPermission,
-  ])
+  }
 
   const shouldShowCameraButton = IS_NATIVE || IS_WEB_MOBILE
   if (!shouldShowCameraButton) {

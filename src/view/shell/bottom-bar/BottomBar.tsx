@@ -323,9 +323,11 @@ export function BottomBar({navigation}: BottomTabBarProps) {
                       styles.ctrlIcon,
                       isLabeler ? styles.profileIconSquare : styles.profileIcon,
                       isAtMyProfile && [
-                        isLabeler ? styles.onProfileSquare : enableSquareAvatars
+                        isLabeler
                           ? styles.onProfileSquare
-                          : styles.onProfile,
+                          : enableSquareAvatars
+                            ? styles.onProfileSquare
+                            : styles.onProfile,
                         {
                           borderColor: t.atoms.text.color,
                           borderWidth: live ? 0 : enableSquareAvatars ? 1.5 : 1,

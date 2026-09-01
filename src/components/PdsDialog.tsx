@@ -10,10 +10,9 @@ import {
 } from '#/state/queries/pds-label.util'
 import {useServiceQuery} from '#/state/queries/service'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
-import {ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {Database_Filled_Corner0_Rounded as DatabaseIcon} from '#/components/icons/Database'
-import {InlineLinkText, Link} from '#/components/Link'
+import {InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 
@@ -71,12 +70,12 @@ export function PdsDialog({
   const contactEmail = description.data?.contact?.email?.trim()
   const handleDomains = description.data?.availableUserDomains ?? []
   const inviteCodeRequired = description.data?.inviteCodeRequired
-  const formattedDomains = handleDomains.map(domain => domain.replace(/^\./, ''))
+  const formattedDomains = handleDomains.map(domain =>
+    domain.replace(/^\./, ''),
+  )
 
   return (
-    <Dialog.Outer
-      control={control}
-      nativeOptions={{preventExpansion: true}}>
+    <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
       <Dialog.Handle />
       <Dialog.ScrollableInner
         label={l`PDS Information`}
@@ -156,52 +155,50 @@ export function PdsDialog({
             description.isSuccess &&
             description.data && (
               <View style={[a.gap_md]}>
+                {contactEmail ? (
+                  <DetailItem
+                    label={l`Contact`}
+                    valueText={
+                      <InlineLinkText
+                        to={`mailto:${contactEmail}`}
+                        label={contactEmail}
+                        style={[a.text_md, a.font_semi_bold]}>
+                        {contactEmail}
+                      </InlineLinkText>
+                    }
+                  />
+                ) : null}
 
-              {contactEmail ? (
                 <DetailItem
-                  label={l`Contact`}
+                  label={l`Signup`}
                   valueText={
-                    <InlineLinkText
-                      to={`mailto:${contactEmail}`}
-                      label={contactEmail}
-                      style={[a.text_md, a.font_semi_bold]}>
-                      {contactEmail}
-                    </InlineLinkText>
+                    inviteCodeRequired ? (
+                      <Trans>Invite code required</Trans>
+                    ) : (
+                      <Trans>Open</Trans>
+                    )
                   }
                 />
-              ) : null}
 
-              <DetailItem
-                label={l`Signup`}
-                valueText={
-                  inviteCodeRequired ? (
-                    <Trans>Invite code required</Trans>
-                  ) : (
-                    <Trans>Open</Trans>
-                  )
-                }
-              />
-
-              {formattedDomains.length > 0 && (
-                <View style={[a.gap_xs]}>
-                  <DetailLabelText>{l`Handles`}</DetailLabelText>
+                {formattedDomains.length > 0 && (
                   <View style={[a.gap_xs]}>
-                    {formattedDomains.map(domain => (
-                      <View
-                        key={domain}
-                        style={[a.flex_row, a.gap_sm, a.align_start]}>
-                        <Text style={[a.text_md, a.leading_snug]}>•</Text>
-                        <Text style={[a.text_md, a.leading_snug, a.flex_1]}>
-                          {domain}
-                        </Text>
-                      </View>
-                    ))}
+                    <DetailLabelText>{l`Handles`}</DetailLabelText>
+                    <View style={[a.gap_xs]}>
+                      {formattedDomains.map(domain => (
+                        <View
+                          key={domain}
+                          style={[a.flex_row, a.gap_sm, a.align_start]}>
+                          <Text style={[a.text_md, a.leading_snug]}>•</Text>
+                          <Text style={[a.text_md, a.leading_snug, a.flex_1]}>
+                            {domain}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
                   </View>
-                </View>
-              )}
-
-            </View>
-          )}
+                )}
+              </View>
+            )}
 
           {shouldLoadDescription && description.isError && (
             <Text style={[a.text_md, t.atoms.text_contrast_medium]}>
@@ -230,7 +227,6 @@ export function PdsDialog({
               </Trans>
             </Text>
           )}
-
         </View>
 
         <Dialog.Close />
@@ -239,13 +235,7 @@ export function PdsDialog({
   )
 }
 
-function DetailItem({
-  label,
-  valueText,
-}: {
-  label: string
-  valueText: ReactNode
-}) {
+function DetailItem({label, valueText}: {label: string; valueText: ReactNode}) {
   return (
     <View style={[a.gap_xs]}>
       <DetailLabelText>{label}</DetailLabelText>

@@ -214,7 +214,6 @@ export function RunesSettingsSyncSettingsScreen() {
               </View>
             </SettingsList.Item>
           )}
-
         </>
       )}
     </RunesScreenLayout>

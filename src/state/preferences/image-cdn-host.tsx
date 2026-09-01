@@ -34,7 +34,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (imageCdnHost: persisted.Schema['imageCdnHost']) => {
       setState(imageCdnHost)
-      persisted.write('imageCdnHost', imageCdnHost)
+      void persisted.write('imageCdnHost', imageCdnHost)
     },
     [setState],
   )
@@ -42,7 +42,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setCustomStateWrapped = useCallback(
     (imageCdnHostCustom: persisted.Schema['imageCdnHostCustom']) => {
       setCustomState(imageCdnHostCustom)
-      persisted.write('imageCdnHostCustom', imageCdnHostCustom)
+      void persisted.write('imageCdnHostCustom', imageCdnHostCustom)
     },
     [setCustomState],
   )

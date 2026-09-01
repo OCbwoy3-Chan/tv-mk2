@@ -51,7 +51,7 @@ export function SwitchAccountDialog({
       }
       if (account.did !== currentAccount?.did) {
         control.close(() => {
-          onPressSwitchAccount(account, 'SwitchAccount')
+          void onPressSwitchAccount(account, 'SwitchAccount')
         })
       } else {
         control.close()

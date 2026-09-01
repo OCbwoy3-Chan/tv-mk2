@@ -135,10 +135,7 @@ function InnerApp() {
     // Safety valve: if onLaunch hangs (e.g. stale IndexedDB blocking an
     // upgrade, or a never-settling promise), the app will still load after
     // this timeout fires.
-    const safetyTimeout = setTimeout(() => {
-      logger.warn('session: onLaunch safety timeout fired, forcing ready state')
-      setIsReady(true)
-    }, 15_000)
+    
 
     async function onLaunch(account?: SessionAccount) {
       try {
@@ -220,10 +217,8 @@ function InnerApp() {
         }
       } catch (e) {
         logger.warn('session: resumeSession failed', {message: e})
-      } finally {
-        clearTimeout(safetyTimeout)
-        setIsReady(true)
       }
+      setIsReady(true)
     }
     const account = readLastActiveAccount()
     void onLaunch(account)

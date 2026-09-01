@@ -42,7 +42,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (plcDirectory: persisted.Schema['plcDirectory']) => {
       setState(plcDirectory)
-      persisted.write('plcDirectory', plcDirectory)
+      void persisted.write('plcDirectory', plcDirectory)
     },
     [setState],
   )
@@ -50,7 +50,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setCustomStateWrapped = useCallback(
     (plcDirectoryCustom: persisted.Schema['plcDirectoryCustom']) => {
       setCustomState(plcDirectoryCustom)
-      persisted.write('plcDirectoryCustom', plcDirectoryCustom)
+      void persisted.write('plcDirectoryCustom', plcDirectoryCustom)
     },
     [setCustomState],
   )

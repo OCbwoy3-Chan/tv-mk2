@@ -1,5 +1,5 @@
 import {View} from 'react-native'
-import {moderateProfile} from '@atproto/api'
+import {moderateProfile} from '@bsky/sdk/moderation'
 
 import {logger} from '#/logger'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
@@ -14,13 +14,17 @@ export function AvatarStack({
   size = 26,
   numPending,
   backgroundColor,
+  borderWidth = 1,
+  overlap,
 }: {
   profiles: bsky.profile.AnyProfileView[]
   size?: number
   numPending?: number
   backgroundColor?: string
+  borderWidth?: number
+  overlap?: number
 }) {
-  const translation = size / 3 // overlap by 1/3
+  const translation = overlap ?? size / 3
   const t = useTheme()
   const moderationOpts = useModerationOpts()
   const enableSquareAvatars = useEnableSquareAvatars()
@@ -57,7 +61,7 @@ export function AvatarStack({
               width: size,
               height: size,
               left: i * -translation,
-              borderWidth: 1,
+              borderWidth,
               borderColor: backgroundColor ?? t.atoms.bg.backgroundColor,
               borderRadius: enableSquareAvatars ? (size > 32 ? 8 : 3) : 999,
               zIndex: 3 - i,
@@ -65,7 +69,7 @@ export function AvatarStack({
           ]}>
           {item.profile && (
             <UserAvatar
-              size={size - 2}
+              size={size - borderWidth * 2}
               avatar={item.profile.avatar}
               type={item.profile.associated?.labeler ? 'labeler' : 'user'}
               moderation={item.moderation.ui('avatar')}

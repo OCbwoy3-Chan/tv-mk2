@@ -1,5 +1,4 @@
 import {LayoutAnimation, View} from 'react-native'
-import {type ChatBskyConvoDefs} from '@atproto/api'
 import {useLingui} from '@lingui/react/macro'
 
 import {HITSLOP_20} from '#/lib/constants'
@@ -12,6 +11,7 @@ import {useMessageReplies} from '#/components/dms/MessageReplies'
 import {useReplyPreviewText} from '#/components/dms/replyPreview'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
 import {Text} from '#/components/Typography'
+import {type chat} from '#/lexicons'
 
 /**
  * The reply staged in the message composer. Renders a preview of the message
@@ -30,7 +30,7 @@ export function MessageInputReply() {
 function MessageInputReplyInner({
   replyTo,
 }: {
-  replyTo: ChatBskyConvoDefs.MessageView
+  replyTo: chat.bsky.convo.defs.MessageView
 }) {
   const enableSquareButtons = useEnableSquareButtons()
   const t = useTheme()

@@ -23,7 +23,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['tidSuffix']) => {
       setState(value)
-      persisted.write('tidSuffix', value)
+      void persisted.write('tidSuffix', value)
     },
     [setState],
   )

@@ -1,10 +1,6 @@
 import {useLayoutEffect, useRef, useState} from 'react'
 import {View} from 'react-native'
-import {
-  type AppBskyActorDefs,
-  moderateProfile,
-  type ModerationOpts,
-} from '@atproto/api'
+import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
 import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {
@@ -22,6 +18,7 @@ import {atoms as a, useTheme} from '#/alf'
 import {PlusSmall_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {Link, type LinkProps} from '#/components/Link'
 import {Text} from '#/components/Typography'
+import {type app} from '#/lexicons'
 import type * as bsky from '#/types/bsky'
 
 const AVI_SIZE = 30
@@ -42,7 +39,7 @@ function avatarBorderRadius(size: number, square: boolean) {
  * `count` includes blocked users and `followers` does not.
  */
 export function shouldShowKnownFollowers(
-  knownFollowers?: AppBskyActorDefs.KnownFollowers,
+  knownFollowers?: app.bsky.actor.defs.KnownFollowers,
 ) {
   return knownFollowers && knownFollowers.followers.length > 0
 }
@@ -62,11 +59,11 @@ export function KnownFollowers({
   showIfEmpty?: boolean
   followedByDisplay?: FollowedByMetricsDisplay
 }) {
-  const cacheRef = useRef<Map<string, AppBskyActorDefs.KnownFollowers>>(
+  const cacheRef = useRef<Map<string, app.bsky.actor.defs.KnownFollowers>>(
     new Map(),
   )
   const [cachedKnownFollowers, setCachedKnownFollowers] = useState<
-    AppBskyActorDefs.KnownFollowers | undefined
+    app.bsky.actor.defs.KnownFollowers | undefined
   >()
   const knownFollowers = profile.viewer?.knownFollowers
 
@@ -112,7 +109,7 @@ function KnownFollowersInner({
 }: {
   profile: bsky.profile.AnyProfileView
   moderationOpts: ModerationOpts
-  cachedKnownFollowers: AppBskyActorDefs.KnownFollowers
+  cachedKnownFollowers: app.bsky.actor.defs.KnownFollowers
   onLinkPress?: LinkProps['onPress']
   minimal?: boolean
   showIfEmpty?: boolean
@@ -362,9 +359,8 @@ function FollowedByExactText({
 
   return (
     <Trans>
-      Followed by{' '}
-      <Plural value={serverCount} one="# person" other="# others" />,{' '}
-      including{' '}
+      Followed by <Plural value={serverCount} one="# person" other="# others" />
+      , including{' '}
       <Text emoji key={slice[0].profile.did} style={textStyle}>
         {slice[0].profile.displayName}
       </Text>

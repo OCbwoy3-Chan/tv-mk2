@@ -1,17 +1,17 @@
-import {type AppBskyActorDefs} from '@atproto/api'
 import {type QueryClient} from '@tanstack/react-query'
 
 import {STALE} from '#/state/queries'
 import {createQueryKey} from '#/state/queries/util'
-import {canAttemptSessionResume} from '#/state/session/util'
 import {type SessionAccount} from '#/state/session'
 import {type SessionApiContext} from '#/state/session/types'
+import {canAttemptSessionResume} from '#/state/session/util'
+import {type app} from '#/lexicons'
 
 const queryKeyRoot = 'alternateAccountsReplyEligibility'
 
 export type ReplyableAccountListItem = {
   account: SessionAccount
-  profile?: AppBskyActorDefs.ProfileViewDetailed
+  profile?: app.bsky.actor.defs.ProfileViewDetailed
 }
 
 export async function fetchReplyableSwitcherAccounts({

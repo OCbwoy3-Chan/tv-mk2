@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (directFetchRecords: persisted.Schema['directFetchRecords']) => {
       setState(directFetchRecords)
-      persisted.write('directFetchRecords', directFetchRecords)
+      void persisted.write('directFetchRecords', directFetchRecords)
     },
     [setState],
   )
