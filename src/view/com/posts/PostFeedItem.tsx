@@ -17,6 +17,7 @@ import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {usePalette} from '#/lib/hooks/usePalette'
 import {makeProfileLink} from '#/lib/routes/links'
 import {countLines} from '#/lib/strings/helpers'
+import {userStyle} from '#/lib/userstyles'
 import {
   POST_TOMBSTONE,
   type Shadow,
@@ -342,19 +343,28 @@ let FeedItemInner = ({
   const feedItem = (
     <Link
       testID={`feedItem-by-${post.author.handle}`}
-      style={outerStyles}
+      style={[outerStyles, userStyle('wsky-post__surface')]}
+      outerStyle={userStyle('wsky-feed-item', 'wsky-post')}
       href={href}
       noFeedback
       accessible={false}
       onBeforePress={onBeforePress}
-      dataSet={{feedContext}}
+      dataSet={{
+        feedContext,
+        wskyEmbed: post.embed ? 'true' : 'false',
+        wskyReply: record.reply ? 'true' : 'false',
+        wskyRepost: AppBskyFeedDefs.isReasonRepost(reason) ? 'true' : 'false',
+      }}
       onPointerEnter={() => {
         setHover(true)
       }}
       onPointerLeave={() => {
         setHover(false)
       }}>
-      <SubtleHover hover={hover} />
+      <SubtleHover
+        hover={hover}
+        style={userStyle('wsky-post__hover')}
+      />
       <View
         style={{
           flexDirection: 'row',
@@ -537,6 +547,7 @@ let PostContent = ({
   return (
     <ContentHider
       testID="contentHider-post"
+      style={userStyle('wsky-post__content')}
       modui={moderation.ui('contentList')}
       ignoreMute
       childContainerStyle={[
@@ -550,7 +561,7 @@ let PostContent = ({
         additionalCauses={additionalPostAlerts}
       />
       {richText.text ? (
-        <View style={[a.mb_2xs]}>
+        <View style={[a.mb_2xs, userStyle('wsky-post__text')]}>
           <RichText
             enableTags
             testID="postText"
@@ -565,11 +576,11 @@ let PostContent = ({
           )}
         </View>
       ) : undefined}
-      <PostTags post={post} style={[a.pb_2xs]} />
       {record && <TranslatedPost hideTranslateLink post={post} />}
       {postEmbed ? (
         <View
           style={[
+            userStyle('wsky-post__embed'),
             a.pb_xs,
             maybeApplyGalleryOffsetStyles('embed', {
               post,
@@ -591,6 +602,7 @@ let PostContent = ({
           />
         </View>
       ) : null}
+      <PostTags post={post} style={[a.pb_2xs]} />
     </ContentHider>
   )
 }

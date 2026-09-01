@@ -14,6 +14,7 @@ import {MAX_POST_LINES} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {makeProfileLink} from '#/lib/routes/links'
 import {countLines} from '#/lib/strings/helpers'
+import {userStyle} from '#/lib/userstyles'
 import {
   POST_TOMBSTONE,
   type Shadow,
@@ -171,7 +172,13 @@ function PostInner({
     <GalleryBleed>
       <Link
         href={itemHref}
+        dataSet={{
+          wskyEmbed: post.embed ? 'true' : 'false',
+          wskyReply: record.reply ? 'true' : 'false',
+          wskyRepost: 'false',
+        }}
         style={[
+          userStyle('wsky-post', 'wsky-post__surface'),
           styles.outer,
           t.atoms.border_contrast_low,
           !hideTopBorder && a.border_t,
@@ -185,7 +192,10 @@ function PostInner({
         onPointerLeave={() => {
           setHover(false)
         }}>
-        <SubtleHover hover={hover} />
+        <SubtleHover
+          hover={hover}
+          style={userStyle('wsky-post__hover')}
+        />
         {showReplyLine && (
           <View
             style={[
@@ -231,7 +241,10 @@ function PostInner({
             )}
             <ContentHider
               modui={moderation.ui('contentView')}
-              style={styles.contentHider}
+              style={[
+                styles.contentHider,
+                userStyle('wsky-post__content'),
+              ]}
               childContainerStyle={styles.contentHiderChild}>
               <PostAlerts
                 post={post}
@@ -239,7 +252,7 @@ function PostInner({
                 style={[a.pb_xs]}
               />
               {richText.text ? (
-                <View style={[a.mb_2xs]}>
+                <View style={[a.mb_2xs, userStyle('wsky-post__text')]}>
                   <RichText
                     enableTags
                     testID="postText"
@@ -256,16 +269,18 @@ function PostInner({
                     />
                   )}
                 </View>
-                  ) : undefined}
-                  <PostTags post={post} style={[a.pb_2xs]} />
-                  <TranslatedPost hideTranslateLink post={post} />
-                  {post.embed ? (
+              ) : undefined}
+              <TranslatedPost hideTranslateLink post={post} />
+              {post.embed ? (
                 <View
-                  style={maybeApplyGalleryOffsetStyles('embed', {
-                    post,
-                    modui: moderation.ui('contentList'),
-                    additionalCauses: [],
-                  })}>
+                  style={[
+                    userStyle('wsky-post__embed'),
+                    maybeApplyGalleryOffsetStyles('embed', {
+                      post,
+                      modui: moderation.ui('contentList'),
+                      additionalCauses: [],
+                    }),
+                  ]}>
                   <Embed
                     embed={post.embed}
                     moderation={moderation}
@@ -275,6 +290,7 @@ function PostInner({
                   />
                 </View>
               ) : null}
+              <PostTags post={post} style={[a.pb_2xs]} />
             </ContentHider>
             <PostControls
               variant={compactPosts ? 'compact' : undefined}

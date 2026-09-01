@@ -1,4 +1,4 @@
-Contact: https://bsky.app/profile/kris.darkworld.download
+Contact: https://bsky.app/profile/did:web:vessel.darkworld.download
 Preferred-Languages: en
 Canonical: https://tenna.party/.well-known/security.txt
-Acknowledgements: https://tangled.org/kris.darkworld.download/tenna-party
+Acknowledgements: https://tangled.org/did:web:vessel.darkworld.download/tenna-party

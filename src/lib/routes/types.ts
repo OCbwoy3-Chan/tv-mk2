@@ -81,7 +81,6 @@ export type CommonNavigatorParams = {
   RunesUsabilityProfileSettings: undefined
   RunesDisplaySettings: undefined
   RunesDisplayAlsoLikedSettings: undefined
-  RunesDisplayDensitySettings: undefined
   RunesInfrastructureSettings: undefined
   RunesExtraSettings: undefined
   RunesExtraFeatureGatesSettings: undefined

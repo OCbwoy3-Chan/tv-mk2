@@ -10,6 +10,7 @@ import {useLingui} from '@lingui/react'
 import {Plural, Trans} from '@lingui/react/macro'
 
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {userStyle} from '#/lib/userstyles'
 import {
   type FeedSourceInfo,
   hydrateFeedGenerator,
@@ -197,6 +198,7 @@ export function FeedSourceCardLoaded({
           params: {name: feed.creatorDid, rkey: new AtUri(feed.uri).rkey},
         }}
         style={[
+          userStyle('wsky-feed-card'),
           a.flex_1,
           a.p_lg,
           a.gap_md,
@@ -211,6 +213,7 @@ export function FeedSourceCardLoaded({
     return (
       <View
         style={[
+          userStyle('wsky-feed-card'),
           a.flex_1,
           a.p_lg,
           a.gap_md,

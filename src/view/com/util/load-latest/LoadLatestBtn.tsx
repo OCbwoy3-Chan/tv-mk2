@@ -8,6 +8,7 @@ import {PressableScale} from '#/lib/custom-animations/PressableScale'
 import {useMinimalShellFabTransform} from '#/lib/hooks/useMinimalShellTransform'
 import {useWebMediaQueries} from '#/lib/hooks/useWebMediaQueries'
 import {clamp} from '#/lib/numbers'
+import {userStyle} from '#/lib/userstyles'
 import {useDisableTopOfFeedButton} from '#/state/preferences/disable-top-of-feed-button'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useSession} from '#/state/session'
@@ -59,6 +60,7 @@ export function LoadLatestBtn({
     <Animated.View
       testID="loadLatestBtn"
       style={[
+        userStyle('wsky-fab', 'wsky-fab--load-latest'),
         a.fixed,
         a.z_20,
         {left: 18},

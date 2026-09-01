@@ -469,7 +469,7 @@ export function useSetVerificationPrefsMutation() {
 
   return useMutation<void, unknown, AppBskyActorDefs.VerificationPrefs>({
     mutationFn: async prefs => {
-      await agent.setVerificationPrefs(prefs)
+      await pdsAgent(agent).setVerificationPrefs(prefs)
       if (prefs.hideBadges) {
         ax.metric('verification:settings:hideBadges', {})
       } else {

@@ -12,6 +12,7 @@ import {MAX_POST_LINES} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {makeProfileLink} from '#/lib/routes/links'
 import {countLines} from '#/lib/strings/helpers'
+import {userStyle} from '#/lib/userstyles'
 import {
   POST_TOMBSTONE,
   type Shadow,
@@ -159,7 +160,14 @@ const ThreadItemPostOuterWrapper = memo(function ThreadItemPostOuterWrapper({
   return (
     <GalleryBleed>
       <View
+        // @ts-expect-error web only -wsky
+        dataSet={{
+          wskyEmbed: item.value.post.embed ? 'true' : 'false',
+          wskyReply: item.value.post.record.reply ? 'true' : 'false',
+          wskyRepost: 'false',
+        }}
         style={[
+          userStyle('wsky-post', 'wsky-post__surface'),
           showTopBorder && [a.border_t, t.atoms.border_contrast_low],
           {paddingHorizontal: compactPosts ? OUTER_SPACE - 2 : OUTER_SPACE},
           // If there's no next child, add a little padding to bottom
@@ -332,7 +340,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
               )}
             </View>
 
-            <View style={[a.flex_1]}>
+            <View style={[a.flex_1, userStyle('wsky-post__content')]}>
               <PostMeta
                 author={post.author}
                 moderation={moderation}
@@ -358,7 +366,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                 additionalCauses={additionalPostAlerts}
               />
               {richText?.text ? (
-                <View style={[a.mb_2xs]}>
+                <View style={[a.mb_2xs, userStyle('wsky-post__text')]}>
                   <RichText
                     enableTags
                     value={richText}
@@ -389,11 +397,11 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
               ) : (
                 <ThreadItemPostNumber inline={false} value={postNumbering} />
               )}
-              <PostTags post={post} style={[a.pb_2xs]} />
               <TranslatedPost hideTranslateLink post={post} />
               {post.embed && (
                 <View
                   style={[
+                    userStyle('wsky-post__embed'),
                     maybeApplyGalleryOffsetStyles('embed', {
                       post,
                       modui: moderation.ui('contentList'),
@@ -409,6 +417,7 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                   />
                 </View>
               )}
+              <PostTags post={post} style={[a.pb_2xs]} />
               <PostControls
                 variant={compactPosts ? 'compact' : undefined}
                 post={postShadow}
@@ -444,7 +453,10 @@ function SubtleHoverWrapper({
       onPointerEnter={onHoverIn}
       onPointerLeave={onHoverOut}
       style={a.pointer}>
-      <SubtleHover hover={hover} style={hoverStyle} />
+      <SubtleHover
+        hover={hover}
+        style={[hoverStyle, userStyle('wsky-post__hover')]}
+      />
       {children}
     </View>
   )

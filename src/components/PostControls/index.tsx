@@ -17,6 +17,7 @@ import {
   shouldShowCountsMetricLabelOnly,
   shouldShowCountsMetricRow,
 } from '#/lib/metrics-display'
+import {userStyle} from '#/lib/userstyles'
 import {type Shadow} from '#/state/cache/types'
 import {useFeedFeedbackContext} from '#/state/feed-feedback'
 import {
@@ -541,6 +542,7 @@ function PostControlsInner({
     <>
       <View
         style={[
+          userStyle('wsky-post__actions'),
           a.flex_row,
           a.justify_between,
           a.align_center,

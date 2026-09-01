@@ -21,6 +21,7 @@ import {
   type NativeStackScreenProps,
 } from '#/lib/routes/types'
 import {cleanError} from '#/lib/strings/errors'
+import {userStyle} from '#/lib/userstyles'
 import {useBookmarkMutation} from '#/state/queries/bookmarks/useBookmarkMutation'
 import {useBookmarksQuery} from '#/state/queries/bookmarks/useBookmarksQuery'
 import {Post} from '#/view/com/post/Post'
@@ -51,7 +52,9 @@ export function BookmarksScreen({}: Props) {
   )
 
   return (
-    <Layout.Screen testID="bookmarksScreen">
+    <Layout.Screen
+      testID="bookmarksScreen"
+      style={userStyle('wsky-screen--bookmarks')}>
       <Layout.Header.Outer>
         <Layout.Header.BackButton />
         <Layout.Header.Content>
@@ -165,6 +168,7 @@ function BookmarksInner() {
 
   return (
     <List
+      style={userStyle('wsky-bookmarks')}
       data={items}
       renderItem={renderItem}
       keyExtractor={keyExtractor}

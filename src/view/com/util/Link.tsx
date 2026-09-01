@@ -43,6 +43,7 @@ type Event =
 interface Props extends React.ComponentProps<typeof TouchableOpacity> {
   testID?: string
   style?: StyleProp<ViewStyle>
+  outerStyle?: StyleProp<ViewStyle>
   href?: string
   title?: string
   children?: React.ReactNode
@@ -63,6 +64,7 @@ interface Props extends React.ComponentProps<typeof TouchableOpacity> {
 export const Link = memo(function Link({
   testID,
   style,
+  outerStyle,
   href,
   title,
   children,
@@ -121,6 +123,7 @@ export const Link = memo(function Link({
       <WebAuxClickWrapper>
         <Pressable
           testID={testID}
+          style={outerStyle}
           onPress={onPress}
           accessible={accessible}
           accessibilityRole="link"
@@ -151,7 +154,7 @@ export const Link = memo(function Link({
   return (
     <Com
       testID={testID}
-      style={style}
+      style={[style, outerStyle]}
       onPress={onPress}
       accessible={accessible}
       accessibilityRole="link"

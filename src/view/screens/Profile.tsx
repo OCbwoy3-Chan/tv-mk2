@@ -26,6 +26,7 @@ import {combinedDisplayName} from '#/lib/strings/display-names'
 import {cleanError} from '#/lib/strings/errors'
 import {isInvalidHandle} from '#/lib/strings/handles'
 import {colors} from '#/lib/styles'
+import {userStyle} from '#/lib/userstyles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {listenSoftReset} from '#/state/events'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
@@ -65,7 +66,9 @@ interface SectionRef {
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Profile'>
 export function ProfileScreen(props: Props) {
   return (
-    <Layout.Screen testID="profileScreen" style={[a.pt_0]}>
+    <Layout.Screen
+      testID="profileScreen"
+      style={[a.pt_0, userStyle('wsky-screen--profile')]}>
       <ProfileScreenInner {...props} />
     </Layout.Screen>
   )
@@ -397,7 +400,7 @@ function ProfileScreenLoaded({
   return (
     <ScreenHider
       testID="profileView"
-      style={styles.container}
+      style={[styles.container, userStyle('wsky-profile')]}
       screenDescription={_(msg`user`)}
       modui={moderation.ui('profileView')}>
       <PagerWithHeader
@@ -606,6 +609,7 @@ function ProfileScreenLoaded({
       {hasSession && (
         <FAB
           testID="composeFAB"
+          userStyleVariant="compose"
           onPress={onPressCompose}
           icon={<EditBigIcon size="lg" fill={t.palette.white} />}
           accessibilityRole="button"

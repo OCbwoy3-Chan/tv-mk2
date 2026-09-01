@@ -18,6 +18,7 @@ import {
   type NavigationProp,
 } from '#/lib/routes/types'
 import {cleanError} from '#/lib/strings/errors'
+import {userStyle} from '#/lib/userstyles'
 import {logger} from '#/logger'
 import {listenSoftReset} from '#/state/events'
 import {MESSAGE_SCREEN_POLL_INTERVAL} from '#/state/messages/convo/const'
@@ -250,7 +251,9 @@ export function MessagesScreenInner({navigation, route}: Props) {
   }
 
   return (
-    <Layout.Screen testID="messagesScreen">
+    <Layout.Screen
+      testID="messagesScreen"
+      style={userStyle('wsky-screen--messages')}>
       <Header newChatControl={newChatControl} chatStatus={chatStatus} />
       <ChatList newChatControl={newChatControl} chatStatus={chatStatus} />
       <NewChat
@@ -500,15 +503,16 @@ export function ChatList({
       desktopFixedHeight
       sideBorders={false}
       disableFullWindowScroll={isWithinSplitView}
-      style={
+      style={[
+        userStyle('wsky-messages'),
         isWithinSplitView && [
           a.w_full,
           web({
             scrollbarWidth: 'thin',
             scrollbarColor: `${t.palette.contrast_100} transparent`,
           }),
-        ]
-      }
+        ],
+      ]}
       contentContainerStyle={
         isWithinSplitView && !chatStatus?.chatDisabled && a.py_sm
       }

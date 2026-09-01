@@ -25,16 +25,18 @@ Moderation:
 - Ignore blocks for viewing groupchat messages
 - Bypass Bluesky !hide label and blocks on viewing lists
 
-App:
+Misc:
 - Brought back AI prefs in our settings
 - Big warning on stuff that has to do with AI (too much work to remove)
 - Private posts via embeds + atproto permissioned data
 
-Infra:
-- Native iOS via GitHub Actions (for sideloading)
+App:
+- Native iOS via GitHub Actions (sideload)
 - Native Android APK via GitHub actions
-- Working Push Notifications on Android!
-- Own selfhosted push service at https://push.tenna.party (one computer in latvia)
+- Push Notifications on Android
+
+New features:
+- Private posts via ATProto spaces
 
 ### TODO: Kris
 
@@ -80,7 +82,7 @@ Without an overriding motivation, opinionated features *maybe* should exist behi
   - This isn't strictly necessary, but the lead developers would love to give their thoughts and scope out your willingness to maintain the feature before you write it.
 - Stay away from PRs like...
   - Adding AI Slop / LLM text generation to posts
-  - Changing "User" to "Tennaling."
+  - Changing "Post" to "Jarona." (i, kris myself, call them that, unofficially, but l10n replacements work better)
   - Refactoring the codebase, e.g., to replace React Query with Redux Toolkit, etc.
 - Include a new toggle and preference for your feature.
 
@@ -101,7 +103,7 @@ Self hosting is great! It is our intention that tenna.party is easy to self host
 
 ## Security disclosures
 
-If you discover any __security issues__ with tenna.party (NOT WITCHSKY), please privately disclose them to [kris.darkworld.download](https://bsky.app/profile/kris.darkworld.download).
+If you discover any __security issues__ with tenna.party and it's infrastructure, please privately disclose them to [kris.kralsei.stream](https://bsky.app/profile/did:web:vessel.darkworld.download).
 If the issue pertains to infastructure, code, or systems outside the scope of tenna.party and Witchsky, please refer to the [disclosure guidelines on social-app](https://github.com/bluesky-social/social-app#security-disclosures) if it is hosted by Bluesky PBC. Otherwise, reference the security policy of that system as applicable <3
 
 ## License (MIT)

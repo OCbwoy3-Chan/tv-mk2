@@ -1,5 +1,5 @@
-import {type StyleProp, View, type ViewStyle} from 'react-native'
-import {AppBskyFeedPost, type AppBskyFeedDefs} from '@atproto/api'
+import {Pressable, type StyleProp, View, type ViewStyle} from 'react-native'
+import {type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api'
 
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {RichTextTag} from '#/components/RichTextTag'
@@ -27,21 +27,34 @@ export function PostTags({
       style={[
         a.flex_row,
         a.flex_wrap,
-        a.pt_2xs,
-        {
-          columnGap: tokens.space.sm,
-          rowGap: tokens.space._2xs,
-        },
+        a.pt_xs,
+        {gap: tokens.space._2xs},
         style,
       ]}>
       {tags.map(tag => (
-        <RichTextTag
+        <Pressable
           key={tag}
-          tag={tag}
-          display={`#${tag}`}
-          authorHandle={post.author.handle}
-          textStyle={[a.text_sm, t.atoms.text_contrast_medium]}
-        />
+          role="presentation"
+          style={({hovered, pressed}) => [
+            a.rounded_full,
+            hovered || pressed
+              ? t.atoms.bg_contrast_50
+              : t.atoms.bg_contrast_25,
+            {paddingHorizontal: 6, paddingVertical: 3},
+          ]}>
+          <RichTextTag
+            tag={tag}
+            display={`#${tag}`}
+            authorHandle={post.author.handle}
+            textStyle={[
+              a.text_sm,
+              a.font_normal,
+              a.leading_tight,
+              t.atoms.text_contrast_high,
+            ]}
+            disableUnderline
+          />
+        </Pressable>
       ))}
     </View>
   )

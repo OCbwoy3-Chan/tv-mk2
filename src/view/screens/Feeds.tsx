@@ -15,6 +15,7 @@ import {
 } from '#/lib/routes/types'
 import {cleanError} from '#/lib/strings/errors'
 import {s} from '#/lib/styles'
+import {userStyle} from '#/lib/userstyles'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   type SavedFeedItem,
@@ -499,8 +500,8 @@ export function FeedsScreen(_props: Props) {
   )
 
   return (
-    <Layout.Screen testID="FeedsScreen">
-      <Layout.Center>
+    <Layout.Screen testID="FeedsScreen" style={userStyle('wsky-screen--feeds')}>
+      <Layout.Center style={userStyle('wsky-feeds')}>
         <Layout.Header.Outer>
           <Layout.Header.BackButton />
           <Layout.Header.Content>
@@ -543,6 +544,7 @@ export function FeedsScreen(_props: Props) {
       {hasSession && (
         <FAB
           testID="composeFAB"
+          userStyleVariant="compose"
           onPress={onPressCompose}
           icon={<EditBigIcon size="lg" fill={t.palette.white} />}
           accessibilityRole="button"

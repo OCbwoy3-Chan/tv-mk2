@@ -27,6 +27,7 @@ import {HITSLOP_10, HITSLOP_20} from '#/lib/constants'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {MagnifyingGlassIcon} from '#/lib/icons'
 import {type NavigationProp, type SearchParams} from '#/lib/routes/types'
+import {userStyle} from '#/lib/userstyles'
 import {listenSoftReset} from '#/state/events'
 import {
   unstableCacheProfileView,
@@ -517,7 +518,9 @@ export function SearchScreenShell({
   const showHeader = !gtMobile || navButton !== 'menu'
 
   return (
-    <Layout.Screen testID={testID}>
+    <Layout.Screen
+      testID={testID}
+      style={userStyle('wsky-screen--search')}>
       <View
         ref={headerRef}
         onLayout={evt => {
@@ -643,7 +646,7 @@ export function SearchScreenShell({
         </Layout.Center>
       </View>
 
-      <View style={[a.flex_1, a.relative]}>
+      <View style={[a.flex_1, a.relative, userStyle('wsky-search')]}>
         <View style={[a.flex_1, web(showAutocomplete && a.hidden)]}>
           <SearchScreenInner
             key={filters.lang ?? ''}

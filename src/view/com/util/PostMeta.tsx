@@ -12,6 +12,7 @@ import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {niceDate} from '#/lib/strings/time'
+import {userStyle} from '#/lib/userstyles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {unstableCacheProfileView} from '#/state/queries/profile'
@@ -72,6 +73,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
   return (
     <View
       style={[
+        userStyle('wsky-post__meta'),
         IS_ANDROID ? a.flex_1 : a.flex_shrink,
         a.flex_row,
         a.align_center,

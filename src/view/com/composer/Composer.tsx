@@ -87,6 +87,7 @@ import {useCallOnce} from '#/lib/once'
 import {type NavigationProp} from '#/lib/routes/types'
 import {cleanError} from '#/lib/strings/errors'
 import {colors} from '#/lib/styles'
+import {userStyle} from '#/lib/userstyles'
 import {logger} from '#/logger'
 import {useDialogStateControlContext} from '#/state/dialogs'
 import {emitPostCreated} from '#/state/events'
@@ -1722,7 +1723,7 @@ export const ComposePost = ({
         testID="composePostView"
         behavior={IS_IOS ? 'padding' : 'height'}
         keyboardVerticalOffset={keyboardVerticalOffset}
-        style={a.flex_1}>
+        style={[a.flex_1, userStyle('wsky-composer')]}>
         <View
           style={[a.flex_1, viewStyles]}
           aria-modal
@@ -2226,7 +2227,7 @@ function ComposerTopBar({
 
   return (
     <Animated.View
-      style={topBarAnimatedStyle}
+      style={[topBarAnimatedStyle, userStyle('wsky-composer__topbar')]}
       layout={native(LinearTransition)}>
       <View
         style={[
@@ -2535,6 +2536,7 @@ function ComposerEmbeds({
                 })
               }
               captions={video.captions}
+              // oxlint-disable-next-line typescript/no-explicit-any -- existing composer video API
               setCaptions={(updater: (captions: any[]) => any[]) => {
                 dispatch({
                   type: 'embed_update_video',

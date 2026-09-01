@@ -11,9 +11,8 @@ import {
   useAlsoLikedCollapseByDefault,
   useAlsoLikedFeedEnabled,
   useCompactPosts,
+  useSetCompactPosts,
 } from '#/state/preferences'
-import {useAutoCompactAccountSwitcher} from '#/state/preferences/auto-compact-account-switcher'
-import {useCompactAccountSwitcher} from '#/state/preferences/compact-account-switcher'
 import {
   useDownloadFormat,
   useSetDownloadFormat,
@@ -51,7 +50,7 @@ import {Celebrate_Stroke2_Corner0_Rounded as CelebrateIcon} from '#/components/i
 import {Heart2_Stroke2_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
 import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
-import {PersonGroup_Stroke2_Corner2_Rounded as PersonGroupIcon} from '#/components/icons/Person'
+import {UFO_Stroke2_Corner0_Rounded as UfoIcon} from '#/components/icons/UFO'
 import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
 import * as Select from '#/components/Select'
 import {Text} from '#/components/Typography'
@@ -64,6 +63,8 @@ export function RunesDisplaySettingsScreen() {
 
   const alsoLikedFeedEnabled = useAlsoLikedFeedEnabled()
   const alsoLikedCollapseByDefault = useAlsoLikedCollapseByDefault()
+  const compactPosts = useCompactPosts()
+  const setCompactPosts = useSetCompactPosts()
 
   const showViaClient = useShowViaClient()
   const setShowViaClient = useSetShowViaClient()
@@ -99,16 +100,19 @@ export function RunesDisplaySettingsScreen() {
           }
         />
       </SettingsList.LinkItem>
-      <SettingsList.LinkItem
-        to="/settings/runes/display/density"
-        label={l`Density`}
-        contentContainerStyle={[a.align_start]}>
-        <SettingsList.ItemIcon icon={PersonGroupIcon} />
-        <ItemTextWithSubtitle
-          titleText={<Trans>Density</Trans>}
-          subtitleText={<DensityDeclaration />}
-        />
-      </SettingsList.LinkItem>
+      <Toggle.Item
+        name="compact_posts"
+        label={l`Compact posts`}
+        value={compactPosts}
+        onChange={value => setCompactPosts(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={UfoIcon} />
+          <SettingsList.ItemText>
+            <Trans>Compact posts</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
       <Toggle.Item
         name="show_via_client"
         label={l`Show client used to post`}
@@ -254,34 +258,6 @@ function AlsoLikedDeclaration({
   }
 
   return <Trans>Shown in thread views, expanded by default</Trans>
-}
-
-function DensityDeclaration() {
-  const compactPosts = useCompactPosts()
-  const compactAccountSwitcher = useCompactAccountSwitcher()
-  const autoCompactAccountSwitcher = useAutoCompactAccountSwitcher()
-
-  if (compactAccountSwitcher && compactPosts) {
-    return <Trans>Always on compact switcher, compact posts</Trans>
-  }
-
-  if (autoCompactAccountSwitcher && compactPosts) {
-    return <Trans>Auto-compact switcher, compact posts</Trans>
-  }
-
-  if (compactPosts) {
-    return <Trans>Compact posts on</Trans>
-  }
-
-  if (compactAccountSwitcher) {
-    return <Trans>Compact always on</Trans>
-  }
-
-  if (autoCompactAccountSwitcher) {
-    return <Trans>Auto-compact switcher with 7+ accounts</Trans>
-  }
-
-  return <Trans>Default layout only</Trans>
 }
 
 function PostReplacementDialog({

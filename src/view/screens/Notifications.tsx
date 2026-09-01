@@ -12,6 +12,7 @@ import {
   type NativeStackScreenProps,
   type NotificationsTabNavigatorParams,
 } from '#/lib/routes/types'
+import {userStyle} from '#/lib/userstyles'
 import {logger} from '#/logger'
 import {emitSoftReset, listenSoftReset} from '#/state/events'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -123,7 +124,9 @@ export function NotificationsScreen({}: Props) {
   ])
 
   return (
-    <Layout.Screen testID="notificationsScreen">
+    <Layout.Screen
+      testID="notificationsScreen"
+      style={userStyle('wsky-screen--notifications')}>
       <Layout.Header.Outer noBottomBorder sticky={false}>
         <Layout.Header.MenuButton />
         <Layout.Header.Content>
@@ -157,11 +160,14 @@ export function NotificationsScreen({}: Props) {
         )}
         initialPage={initialActiveTab}>
         {sections.map((section, i) => (
-          <View key={i}>{section.component}</View>
+          <View key={i} style={userStyle('wsky-notifications')}>
+            {section.component}
+          </View>
         ))}
       </Pager>
       <FAB
         testID="composeFAB"
+        userStyleVariant="compose"
         onPress={() => openComposer({logContext: 'Fab'})}
         icon={<EditBigIcon size="lg" fill={t.palette.white} />}
         accessibilityRole="button"

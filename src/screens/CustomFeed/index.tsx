@@ -212,6 +212,7 @@ export function CustomFeedScreenInner({
       {hasSession && (
         <FAB
           testID="composeFAB"
+          userStyleVariant="compose"
           onPress={() => openComposer({logContext: 'Fab'})}
           icon={<EditBigIcon size="lg" fill={t.palette.white} />}
           accessibilityRole="button"

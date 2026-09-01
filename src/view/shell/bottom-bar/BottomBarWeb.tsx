@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState} from 'react'
-import {Pressable, View} from 'react-native'
+import {Pressable, View, type ViewStyle} from 'react-native'
 import Animated from 'react-native-reanimated'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {sanitizeUrl} from '@braintree/sanitize-url'
@@ -20,6 +20,7 @@ import {
 import {makeProfileLink} from '#/lib/routes/links'
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {convertBskyAppUrlIfNeeded} from '#/lib/strings/url-helpers'
+import {userStyle} from '#/lib/userstyles'
 import {emitSoftReset} from '#/state/events'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {
@@ -110,6 +111,7 @@ export function BottomBarWeb() {
       <Animated.View
         role="navigation"
         style={[
+          userStyle('wsky-nav', 'wsky-nav--mobile'),
           styles.bottomBar,
           styles.bottomBarWeb,
           t.atoms.bg,
@@ -356,6 +358,7 @@ const NavItem: React.FC<{
     return (
       <TouchNavItem
         href={href}
+        navItem={navItem}
         routeName={routeName}
         isActive={isActive}
         isOnDifferentProfile={isOnDifferentProfile}
@@ -370,8 +373,16 @@ const NavItem: React.FC<{
   return (
     <Link
       href={href}
-      style={[styles.ctrl, bottomInset === 0 && a.pb_lg]}
+      style={[
+        styles.ctrl,
+        bottomInset === 0 && a.pb_lg,
+        userStyle('wsky-nav__item'),
+      ]}
       navigationAction={isOnDifferentProfile ? 'push' : 'navigate'}
+      dataSet={{
+        wskyActive: isActive ? 'true' : 'false',
+        wskyNavItem: navItem,
+      }}
       aria-role="link"
       aria-label={routeName}
       accessible={true}
@@ -405,6 +416,7 @@ const NavItem: React.FC<{
 function TouchNavItem({
   children,
   href,
+  navItem,
   routeName,
   isActive,
   isOnDifferentProfile,
@@ -414,6 +426,7 @@ function TouchNavItem({
 }: {
   children: (props: {isActive: boolean}) => React.ReactNode
   href: string
+  navItem: NavItemValue
   routeName: string
   isActive: boolean
   isOnDifferentProfile: boolean
@@ -479,18 +492,24 @@ function TouchNavItem({
   return (
     <Pressable
       style={[
+        userStyle('wsky-nav__item'),
         styles.ctrl,
         bottomInset === 0 && a.pb_lg,
         {
           transition: `transform ${ANIM_MS}ms`,
           transform: [{scale: pressed ? 0.8 : 1}],
-        } as any,
+        } as ViewStyle,
       ]}
       onPress={onPress}
       onLongPress={onLongPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       unstable_pressDelay={0}
+      // @ts-expect-error web only
+      dataSet={{
+        wskyActive: isActive ? 'true' : 'false',
+        wskyNavItem: navItem,
+      }}
       accessibilityRole="link"
       accessibilityLabel={routeName}
       accessibilityHint="">

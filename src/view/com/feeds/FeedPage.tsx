@@ -17,6 +17,7 @@ import {DISCOVER_FEED_URI, VIDEO_FEED_URIS} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {getRootNavigation, getTabState, TabState} from '#/lib/routes/helpers'
 import {type AllNavigatorParams} from '#/lib/routes/types'
+import {userStyle} from '#/lib/userstyles'
 import {listenSoftReset} from '#/state/events'
 import {FeedFeedbackProvider, useFeedFeedback} from '#/state/feed-feedback'
 import {useSetHomeBadge} from '#/state/home-badge'
@@ -140,6 +141,7 @@ export function FeedPage({
   return (
     <View
       testID={testID}
+      style={userStyle('wsky-feed-page')}
       // @ts-expect-error web only -sfn
       dataSet={{nosnippet: isDiscoverFeed ? '' : undefined}}>
       <MainScrollProvider>
@@ -173,6 +175,7 @@ export function FeedPage({
       {hasSession && (
         <FAB
           testID="composeFAB"
+          userStyleVariant="compose"
           onPress={onPressCompose}
           icon={<EditBigIcon size="lg" fill={t.palette.white} />}
           accessibilityRole="button"

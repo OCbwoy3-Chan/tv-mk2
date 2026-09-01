@@ -29,11 +29,13 @@ export function RichTextTag({
   display,
   authorHandle,
   textStyle,
+  disableUnderline,
 }: {
   tag: string
   display: string
   authorHandle?: string
   textStyle: StyleProp<TextStyle>
+  disableUnderline?: boolean
 }) {
   const {_} = useLingui()
   const {isLoading: isPreferencesLoading, data: preferences} =
@@ -100,6 +102,7 @@ export function RichTextTag({
             accessibilityHint={hint}
             label={label}
             style={textStyle}
+            disableUnderline={disableUnderline}
             emoji>
             {IS_NATIVE ? (
               display

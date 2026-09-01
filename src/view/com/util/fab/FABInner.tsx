@@ -13,6 +13,7 @@ import {PressableScale} from '#/lib/custom-animations/PressableScale'
 import {useHaptics} from '#/lib/haptics'
 import {useMinimalShellFabTransform} from '#/lib/hooks/useMinimalShellTransform'
 import {clamp} from '#/lib/numbers'
+import {userStyle} from '#/lib/userstyles'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, ios, useBreakpoints, useTheme} from '#/alf'
 import {IS_WEB} from '#/env'
@@ -21,9 +22,17 @@ export interface FABProps extends ComponentProps<typeof Pressable> {
   testID?: string
   icon: JSX.Element
   style?: StyleProp<ViewStyle>
+  userStyleVariant?: 'compose'
 }
 
-export function FABInner({testID, icon, onPress, style, ...props}: FABProps) {
+export function FABInner({
+  testID,
+  icon,
+  onPress,
+  style,
+  userStyleVariant,
+  ...props
+}: FABProps) {
   const insets = useSafeAreaInsets()
   const {gtMobile} = useBreakpoints()
   const t = useTheme()
@@ -47,6 +56,10 @@ export function FABInner({testID, icon, onPress, style, ...props}: FABProps) {
   return (
     <Animated.View
       style={[
+        userStyle(
+          'wsky-fab',
+          userStyleVariant === 'compose' && 'wsky-fab--compose',
+        ),
         styles.outer,
         size,
         tabletSpacing,

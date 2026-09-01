@@ -15,6 +15,7 @@ import {
 } from '#/lib/routes/types'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
+import {userStyle} from '#/lib/userstyles'
 import {emitSoftReset} from '#/state/events'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -45,7 +46,6 @@ import {
 } from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {type DialogControlProps} from '#/components/Dialog'
-import {Loader} from '#/components/Loader'
 import {ArrowBoxLeft_Stroke2_Corner0_Rounded as LeaveIcon} from '#/components/icons/ArrowBoxLeft'
 import {
   Bell_Filled_Corner0_Rounded as BellFilledIcon,
@@ -88,6 +88,7 @@ import {
   UserCircle_Stroke2_Corner0_Rounded as UserCircleIcon,
 } from '#/components/icons/UserCircle'
 import {CENTER_COLUMN_OFFSET, CENTER_COLUMN_WIDTH} from '#/components/Layout'
+import {Loader} from '#/components/Loader'
 import * as Menu from '#/components/Menu'
 import * as Prompt from '#/components/Prompt'
 import {Text} from '#/components/Typography'
@@ -508,6 +509,7 @@ function NavItem({
   return (
     <PressableWithHover
       style={[
+        userStyle('wsky-nav__item'),
         a.flex_row,
         a.align_center,
         a.p_md,
@@ -520,7 +522,11 @@ function NavItem({
       // @ts-expect-error the function signature differs on web -prf
       onPress={onPressWrapped}
       href={href}
-      dataSet={{noUnderline: 1}}
+      dataSet={{
+        noUnderline: 1,
+        wskyActive: isCurrent || isRelated ? 'true' : 'false',
+        wskyNavItem: navItem,
+      }}
       role="link"
       accessibilityLabel={label}
       accessibilityHint="">
@@ -645,7 +651,11 @@ function ComposeBtn({minimal}: {minimal: boolean}) {
     openComposer({mention: await getProfileHandle(), logContext: 'Fab'})
 
   return (
-    <View style={minimal ? [a.px_sm, a.pt_lg] : [a.flex_row, a.pl_md, a.pt_lg]}>
+    <View
+      style={[
+        userStyle('wsky-nav__compose'),
+        minimal ? [a.px_sm, a.pt_lg] : [a.flex_row, a.pl_md, a.pt_lg],
+      ]}>
       <Button
         disabled={isFetchingHandle}
         label={l`Compose new post`}
@@ -702,6 +712,11 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
     <View
       role="navigation"
       style={[
+        userStyle(
+          'wsky-nav',
+          'wsky-nav--desktop',
+          leftNavMinimal && 'wsky-nav--compact',
+        ),
         a.fixed,
         a.top_0,
         a.p_lg,

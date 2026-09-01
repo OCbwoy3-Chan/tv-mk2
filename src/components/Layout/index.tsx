@@ -12,6 +12,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 
+import {userStyle} from '#/lib/userstyles'
 import {useEnableMinimalShellModeForScreen} from '#/state/shell'
 import {useShellLayout} from '#/state/shell/shell-layout'
 import {useIsWithinSplitView} from '#/screens/Messages/components/splitView/context'
@@ -60,6 +61,7 @@ export const Screen = memo(function Screen({
       <View
         style={[
           a.util_screen_outer,
+          userStyle('wsky-screen'),
           {paddingTop: noInsetTop ? 0 : top},
           isWithinSplitView && {maxHeight: '100%'},
           style,
@@ -108,6 +110,7 @@ export const Content = memo(function Content({
       automaticallyAdjustsScrollIndicatorInsets={false}
       indicatorStyle={t.scheme === 'dark' ? 'white' : 'black'}
       style={[
+        userStyle('wsky-center'),
         a.w_full,
         animatedStyle,
         isWithinSplitView &&
@@ -190,6 +193,7 @@ const WebCenterBorders = memo(function LayoutWebCenterBorders() {
   return gtMobile ? (
     <View
       style={[
+        userStyle('wsky-center-borders'),
         a.fixed,
         a.inset_0,
         a.border_l,
