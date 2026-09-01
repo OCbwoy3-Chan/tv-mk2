@@ -83,7 +83,7 @@ export function DeltaPrivatePostSettingsScreen() {
             </Admonition>
           }
           {
-            privatePostModFetchState && privatePostModState?.isBanned === true && <Admonition type="error">
+            (privatePostModFetchState === "success" && privatePostModState?.isBanned === true) && <Admonition type="error">
               <Trans>
                 You are banned from making private posts on tenna.party.
               </Trans>
