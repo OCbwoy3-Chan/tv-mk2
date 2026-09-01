@@ -23,11 +23,30 @@ const config = getSentryExpoConfig(import.meta.dirname, {
       throw Error('Update this override because it is conflicting now.')
     }
 
+    // Metro selects jose's Node entry because its resolver does not provide
+    // the `browser` export condition. The Node entry imports `node:crypto`,
+    // which is unavailable in React Native. Use jose's WebCrypto build for
+    // native bundles instead.
+    const joseBrowserEntry = `${import.meta.dirname}/node_modules/jose/dist/browser/index.js`
+    const resolveRequest: CustomResolver = (context, moduleName, platform) => {
+      if (platform !== 'web' && moduleName === 'jose') {
+        return {type: 'sourceFile', filePath: joseBrowserEntry}
+      }
+      return context.resolveRequest(context, moduleName, platform)
+    }
+
+    // @ts-expect-error readonly property
+    config.resolver.resolveRequest = resolveRequest
+
     if (process.env.BSKY_PROFILE) {
       // @ts-expect-error readonly property
       config.cacheVersion += ':PROFILE'
 
-      const resolver: CustomResolver = (context, moduleName, platform) => {
+      const profileResolver: CustomResolver = (
+        context,
+        moduleName,
+        platform,
+      ) => {
         if (moduleName.endsWith('ReactNativeRenderer-prod')) {
           return context.resolveRequest(
             context,
@@ -35,11 +54,11 @@ const config = getSentryExpoConfig(import.meta.dirname, {
             platform,
           )
         }
-        return context.resolveRequest(context, moduleName, platform)
+        return resolveRequest(context, moduleName, platform)
       }
 
       // @ts-expect-error readonly property
-      config.resolver.resolveRequest = resolver
+      config.resolver.resolveRequest = profileResolver
     }
 
     config.transformer.getTransformOptions = () =>
