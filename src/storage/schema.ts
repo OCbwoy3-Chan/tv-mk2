@@ -83,6 +83,8 @@ export type Device = {
    * guest browsing and for displaying the active App server on sign-in.
    */
   customAppViewUrl: string | undefined
+  /** DID whose #private AtprotoSpaceService provides the private-post AppView. */
+  privatePostsAppViewDID?: string
   hiddenAccountsElsewhere?: string[]
   settingsAccountSwitcherSortBy?:
     | 'alphabetical'

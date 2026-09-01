@@ -3,37 +3,42 @@ import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {
+  DEFAULT_PRIVATE_POSTS_APPVIEW_DID,
+  resolveAtprotoSpaceServiceEndpoint,
+} from '#/lib/atproto/space-service'
+import {usePalette} from '#/lib/hooks/usePalette'
+import {
   testConstellationUrl,
   testImageCdnUrl,
   testPlcDirectoryUrl,
 } from '#/lib/infrastructure/url-test'
-import {usePalette} from '#/lib/hooks/usePalette'
 import * as persisted from '#/state/persisted'
 import {
-  useConstellationInstanceSetting,
   useConstellationInstanceCustom,
+  useConstellationInstanceSetting,
   useSetConstellationInstance,
   useSetConstellationInstanceCustom,
 } from '#/state/preferences/constellation-instance'
 import {
-  useImageCdnHostSetting,
   useImageCdnHostCustom,
+  useImageCdnHostSetting,
   useSetImageCdnHost,
   useSetImageCdnHostCustom,
 } from '#/state/preferences/image-cdn-host'
 import {
-  usePlcDirectorySetting,
   usePlcDirectoryCustom,
+  usePlcDirectorySetting,
   useSetPlcDirectory,
   useSetPlcDirectoryCustom,
 } from '#/state/preferences/plc-directory'
-import * as SettingsList from '#/screens/Settings/components/SettingsList'
+import {usePrivatePostsAppViewDID} from '#/state/preferences/private-posts-appview'
 import {
   isValidHostnameUrl,
   isValidPlcDirectoryUrl,
   normalizeOrigin,
   useInfrastructureUrlSave,
 } from '#/screens/Settings/components/infrastructureUrlSave'
+import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
@@ -81,6 +86,14 @@ export function RunesInfrastructureSettingsScreen() {
   const [constellationDialogSession, setConstellationDialogSession] =
     useState(0)
 
+  const [privatePostsAppViewDID, setPrivatePostsAppViewDID] =
+    usePrivatePostsAppViewDID()
+  const privatePostsAppViewControl = Dialog.useDialogControl()
+  const [
+    privatePostsAppViewDialogSession,
+    setPrivatePostsAppViewDialogSession,
+  ] = useState(0)
+
   const openImageCdnCustomDialog = () => {
     setImageCdnDialogSession(session => session + 1)
     setImageCdnHostControl.open()
@@ -96,8 +109,14 @@ export function RunesInfrastructureSettingsScreen() {
     setConstellationInstanceControl.open()
   }
 
+  const openPrivatePostsAppViewDialog = () => {
+    setPrivatePostsAppViewDialogSession(session => session + 1)
+    privatePostsAppViewControl.open()
+  }
+
   const imageCdnSelectValue = getImageCdnSelectValue(imageCdnHostSetting)
-  const plcDirectorySelectValue = getPlcDirectorySelectValue(plcDirectorySetting)
+  const plcDirectorySelectValue =
+    getPlcDirectorySelectValue(plcDirectorySetting)
   const constellationSelectValue = getConstellationSelectValue(
     constellationInstanceSetting,
   )
@@ -120,6 +139,11 @@ export function RunesInfrastructureSettingsScreen() {
     {value: CONSTELLATION_PRESETS[0], label: l`microcosm.blue`},
     {value: CONSTELLATION_PRESETS[1], label: l`Wafflehouse.dev`},
     {value: 'custom', label: l`Custom`},
+  ]
+
+  const privatePostsAppViewItems = [
+    {value: DEFAULT_PRIVATE_POSTS_APPVIEW_DID, label: l`tenna.party`},
+    {value: 'custom', label: l`Custom DID service`},
   ]
 
   return (
@@ -158,6 +182,47 @@ export function RunesInfrastructureSettingsScreen() {
                 </Select.Item>
               )}
               items={imageCdnItems}
+            />
+          </Select.Root>
+        </View>
+      </SettingsList.Group>
+
+      <SettingsList.Divider />
+
+      <SettingsList.Group iconInset={false}>
+        <SettingsList.ItemText>
+          <Trans>Private Posts AppView</Trans>
+        </SettingsList.ItemText>
+        <View style={[a.gap_md, a.w_full]}>
+          <Text style={[a.leading_snug]}>
+            <Trans>The server that will be used to serve private posts.</Trans>
+          </Text>
+          <Select.Root
+            value={
+              privatePostsAppViewDID === DEFAULT_PRIVATE_POSTS_APPVIEW_DID
+                ? DEFAULT_PRIVATE_POSTS_APPVIEW_DID
+                : 'custom'
+            }
+            onValueChange={value => {
+              if (value === 'custom') {
+                openPrivatePostsAppViewDialog()
+                return
+              }
+              setPrivatePostsAppViewDID(value)
+            }}>
+            <Select.Trigger label={l`Select private posts AppView`}>
+              <Select.ValueText />
+              <Select.Icon />
+            </Select.Trigger>
+            <Select.Content
+              label={l`Private Posts AppView`}
+              renderItem={({label, value}) => (
+                <Select.Item value={value} label={label}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{label}</Select.ItemText>
+                </Select.Item>
+              )}
+              items={privatePostsAppViewItems}
             />
           </Select.Root>
         </View>
@@ -213,8 +278,8 @@ export function RunesInfrastructureSettingsScreen() {
         <View style={[a.gap_md, a.w_full]}>
           <Text style={[a.leading_snug]}>
             <Trans>
-              Used for custom verifications and fixing 
-              nuclear blocks via backlinks.
+              Used for custom verifications and fixing nuclear blocks via
+              backlinks.
             </Trans>
           </Text>
           <Select.Root
@@ -255,6 +320,10 @@ export function RunesInfrastructureSettingsScreen() {
       <PlcDirectoryDialog
         control={setPlcDirectoryControl}
         openGeneration={plcDirectoryDialogSession}
+      />
+      <PrivatePostsAppViewDialog
+        control={privatePostsAppViewControl}
+        openGeneration={privatePostsAppViewDialogSession}
       />
     </RunesScreenLayout>
   )
@@ -528,6 +597,104 @@ function PlcDirectoryDialog({
               {isTesting && <ButtonIcon icon={Loader} />}
               <ButtonText>
                 {isClear ? <Trans>Clear</Trans> : <Trans>Save</Trans>}
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+
+        <Dialog.Close />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
+  )
+}
+
+function PrivatePostsAppViewDialog({
+  control,
+  openGeneration,
+}: {
+  control: Dialog.DialogControlProps
+  openGeneration: number
+}) {
+  const pal = usePalette('default')
+  const {t: l} = useLingui()
+  const [savedServiceRef, setPrivatePostsAppViewDID] =
+    usePrivatePostsAppViewDID()
+  const setServiceRef = setPrivatePostsAppViewDID
+  const [serviceRef, setServiceRefInput] = useState(savedServiceRef)
+  const [isResolving, setIsResolving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useLayoutEffect(() => {
+    setServiceRefInput(savedServiceRef)
+    setError(null)
+  }, [savedServiceRef, openGeneration])
+
+  const submit = async () => {
+    const trimmed = serviceRef.trim()
+    if (!trimmed) {
+      control.close(() => setServiceRef(undefined))
+      return
+    }
+
+    setIsResolving(true)
+    setError(null)
+    try {
+      await resolveAtprotoSpaceServiceEndpoint(trimmed)
+      control.close(() => setServiceRef(trimmed))
+    } catch {
+      setError(
+        l`Couldn't find an AtprotoSpaceService for this DID service reference.`,
+      )
+    } finally {
+      setIsResolving(false)
+    }
+  }
+
+  return (
+    <Dialog.Outer
+      control={control}
+      nativeOptions={{preventExpansion: true}}
+      onClose={() => {
+        setServiceRefInput(savedServiceRef)
+        setError(null)
+      }}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner label={l`Private Posts AppView DID`}>
+        <View style={[a.gap_sm, a.pb_lg]}>
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>Private Posts AppView DID</Trans>
+          </Text>
+        </View>
+
+        <View style={a.gap_lg}>
+          <Dialog.Input
+            key={openGeneration}
+            label={l`Private Posts AppView DID`}
+            autoFocus
+            style={[styles.textInput, pal.border, pal.text]}
+            onChangeText={text => {
+              setServiceRefInput(text)
+              setError(null)
+            }}
+            placeholder={DEFAULT_PRIVATE_POSTS_APPVIEW_DID}
+            placeholderTextColor={pal.colors.textLight}
+            onSubmitEditing={() => void submit()}
+            accessibilityHint={l`Input DID for private posts server`}
+            defaultValue={serviceRef}
+          />
+
+          {error && <Admonition type="error">{error}</Admonition>}
+
+          <View style={IS_WEB && [a.flex_row, a.justify_end]}>
+            <Button
+              label={l`Save`}
+              size="large"
+              onPress={() => void submit()}
+              variant="solid"
+              disabled={isResolving}>
+              {isResolving && <ButtonIcon icon={Loader} />}
+              <ButtonText>
+                <Trans>Save</Trans>
               </ButtonText>
             </Button>
           </View>

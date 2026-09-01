@@ -1,0 +1,14 @@
+{
+  "$type": "com.atproto.lexicon.schema",
+  "defs": {
+    "main": {
+      "collections": ["party.tenna.private.post"],
+      "description": "A space where only your mutuals can read posts.",
+      "key": "literal:self",
+      "name": "Private Posts",
+      "type": "space"
+    }
+  },
+  "id": "party.tenna.private.space",
+  "lexicon": 1
+}

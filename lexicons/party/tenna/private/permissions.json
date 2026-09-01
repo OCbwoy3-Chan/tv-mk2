@@ -1,0 +1,32 @@
+{
+  "$type": "com.atproto.lexicon.schema",
+  "defs": {
+    "main": {
+      "detail": "Make private posts on tenna.party",
+      "detail:langs": { "ja": "tenna.partyで非公開投稿を作成する" },
+      "permissions": [
+        {
+          "action": ["read", "create", "update", "delete"],
+          "authority": "*",
+          "collection": ["party.tenna.private.post"],
+          "manage": ["create", "update", "delete"],
+          "resource": "space",
+          "skey": "self",
+          "spaceType": "party.tenna.private.space",
+          "type": "permission"
+        },
+        {
+          "inheritAud": true,
+          "lxm": ["party.tenna.private.getPost"],
+          "resource": "rpc",
+          "type": "permission"
+        }
+      ],
+      "title": "Private Posts Demo",
+      "title:langs": { "ja": "非公開投稿デモ" },
+      "type": "permission-set"
+    }
+  },
+  "id": "party.tenna.private.permissions",
+  "lexicon": 1
+}

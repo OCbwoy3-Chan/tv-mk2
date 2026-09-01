@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 
 import { usePrivatePostsEnabled } from '#/state/preferences/private-posts-enabled'
 import { useSpacesCompatiblePDS } from '#/state/queries/spaces'
@@ -8,12 +8,18 @@ import { Admonition } from '#/components/Admonition'
 import * as Layout from '#/components/Layout'
 import { Text } from '#/components/Typography'
 import { DeltasPrivatePostsToggle } from './components/PrivatePostsToggle'
+import { createStaticClick, InlineLinkText } from '#/components/Link'
+import { useNavigationDeduped } from '#/lib/hooks/useNavigationDeduped'
+import { usePrivatePostsModStatus } from '#/state/queries/private-posts'
 
 export function DeltaPrivatePostSettingsScreen() {
   const t = useTheme()
   const privatePostsEnabled = usePrivatePostsEnabled()
   const isSpacesCompatiblePDS = useSpacesCompatiblePDS(privatePostsEnabled === true)
-
+  const { status: privatePostModFetchState, data: privatePostModState } = usePrivatePostsModStatus()
+  const navigation = useNavigationDeduped()
+  const {t: l} = useLingui();
+  
   return (
     <Layout.Screen>
       <Layout.Header.Outer>
@@ -50,6 +56,14 @@ export function DeltaPrivatePostSettingsScreen() {
             </Trans>
           </Admonition>
           <DeltasPrivatePostsToggle />
+          <Text style={[t.atoms.text_contrast_medium, a.text_sm, a.leading_snug, {marginTop: -8}]}>
+            <Trans>See also:</Trans>{' '}
+            <InlineLinkText
+              label={l`Infrastructure settings`}
+              {...createStaticClick(() => navigation.navigate('RunesInfrastructureSettings'))}>
+              <Trans>Infrastructure settings</Trans>
+            </InlineLinkText>
+          </Text>
           {
             privatePostsEnabled && <Admonition type="warning">
               <Trans>
@@ -66,6 +80,16 @@ export function DeltaPrivatePostSettingsScreen() {
               <Trans>
                 You are unable to make private posts, as your PDS does not support ATProto Spaces. You can still read them.
               </Trans>
+            </Admonition>
+          }
+          {
+            privatePostModFetchState && privatePostModState?.isBanned === true && <Admonition type="error">
+              <Trans>
+                You are banned from making private posts on tenna.party.
+              </Trans>
+              { privatePostModState?.reason && <Trans>
+                {" "}Reason: {privatePostModState?.reason}
+              </Trans> }
             </Admonition>
           }
         </View>

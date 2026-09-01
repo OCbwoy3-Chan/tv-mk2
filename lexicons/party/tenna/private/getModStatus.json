@@ -1,0 +1,23 @@
+{
+  "$type": "com.atproto.lexicon.schema",
+  "defs": {
+    "main": {
+      "description": "Gets the currently authorized user's moderation status.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "isBanned": { "type": "boolean" },
+            "reason": { "type": "string" }
+          },
+          "required": ["isBanned"],
+          "type": "object"
+        }
+      },
+      "parameters": { "properties": {}, "type": "params" },
+      "type": "query"
+    }
+  },
+  "id": "party.tenna.private.getModStatus",
+  "lexicon": 1
+}
