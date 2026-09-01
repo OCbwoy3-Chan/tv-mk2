@@ -281,3 +281,29 @@ index 2b68ff7..d08b1ae 100644
      }
    }
  }
+diff --git a/lib/module/ReanimatedModule/js-reanimated/index.js b/lib/module/ReanimatedModule/js-reanimated/index.js
+index 006fafe..ee175b7 100644
+--- a/lib/module/ReanimatedModule/js-reanimated/index.js
++++ b/lib/module/ReanimatedModule/js-reanimated/index.js
+@@ -24,7 +24,7 @@ export const _updatePropsJS = (updates, viewRef, isAnimatedProps) => {
+       // React Native Web 0.19+ no longer provides setNativeProps function,
+       // so we need to update DOM nodes directly.
+       updatePropsDOM(component, rawStyles, isAnimatedProps);
+-    } else if (Object.keys(component.props).length > 0) {
++    } else if (component.props && Object.keys(component.props).length > 0) {
+       Object.keys(component.props).forEach(key => {
+         if (!rawStyles[key]) {
+           return;
+diff --git a/src/ReanimatedModule/js-reanimated/index.ts b/src/ReanimatedModule/js-reanimated/index.ts
+index 8740015..191aa39 100644
+--- a/src/ReanimatedModule/js-reanimated/index.ts
++++ b/src/ReanimatedModule/js-reanimated/index.ts
+@@ -67,7 +67,7 @@ export const _updatePropsJS = (
+       // React Native Web 0.19+ no longer provides setNativeProps function,
+       // so we need to update DOM nodes directly.
+       updatePropsDOM(component, rawStyles, isAnimatedProps);
+-    } else if (Object.keys(component.props).length > 0) {
++    } else if (component.props && Object.keys(component.props).length > 0) {
+       Object.keys(component.props).forEach((key) => {
+         if (!rawStyles[key]) {
+           return;

@@ -4,6 +4,7 @@ import {
   createContext,
   isValidElement,
   type PropsWithChildren,
+  useCallback,
   useContext,
   useMemo,
   useRef,
@@ -37,6 +38,43 @@ import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
+
+function getTabbableElements(container: HTMLElement) {
+  const nodes: HTMLElement[] = []
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+    acceptNode: node => {
+      if (!(node instanceof HTMLElement)) return NodeFilter.FILTER_SKIP
+      if (
+        node.tagName === 'INPUT' &&
+        (node as HTMLInputElement).type === 'hidden'
+      ) {
+        return NodeFilter.FILTER_SKIP
+      }
+      if (node.hasAttribute('disabled') || node.hidden) {
+        return NodeFilter.FILTER_SKIP
+      }
+      return node.tabIndex >= 0
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_SKIP
+    },
+  })
+  while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement)
+  return nodes
+}
+
+function focusTabSibling(from: HTMLElement, reverse: boolean) {
+  const root =
+    (from.closest('[role="dialog"]') as HTMLElement | null) ?? document.body
+  const tabbables = getTabbableElements(root)
+  const active = document.activeElement as HTMLElement | null
+  let index = active ? tabbables.indexOf(active) : -1
+  if (index === -1) index = tabbables.indexOf(from)
+  if (index === -1) return
+  const nextIndex = reverse
+    ? (index - 1 + tabbables.length) % tabbables.length
+    : (index + 1) % tabbables.length
+  tabbables[nextIndex]?.focus()
+}
 
 const Context = createContext<{
   inputRef: React.RefObject<React.ComponentRef<typeof TextInput> | null> | null
@@ -220,6 +258,34 @@ export function createInput(Component: typeof TextInput) {
     const {chromeHover, chromeFocus, chromeError, chromeErrorHover} =
       useSharedInputStyles()
 
+    const tabListenerRef = useRef<{
+      el: HTMLElement
+      handler: (e: KeyboardEvent) => void
+    } | null>(null)
+
+    const attachTabHandler = useCallback(
+      (node: React.ComponentRef<typeof TextInput> | null) => {
+        if (tabListenerRef.current) {
+          tabListenerRef.current.el.removeEventListener(
+            'keydown',
+            tabListenerRef.current.handler,
+          )
+          tabListenerRef.current = null
+        }
+        if (!IS_WEB || !rest.multiline || !node) return
+
+        const el = node as unknown as HTMLElement
+        const handler = (e: KeyboardEvent) => {
+          if (e.key !== 'Tab') return
+          e.preventDefault()
+          focusTabSibling(el, e.shiftKey)
+        }
+        el.addEventListener('keydown', handler)
+        tabListenerRef.current = {el, handler}
+      },
+      [rest.multiline],
+    )
+
     if (!withinRoot) {
       return (
         <Root isInvalid={isInvalid}>
@@ -236,6 +302,9 @@ export function createInput(Component: typeof TextInput) {
     }
 
     const refs = mergeRefs([ctx.inputRef, inputRef!].filter(Boolean))
+    const inputRefs = mergeRefs([refs, attachTabHandler])
+    const multilineWebProps =
+      IS_WEB && rest.multiline ? {'data-field-sizing-content': ''} : {}
 
     const flattened: MutableTextStyle = {
       ...flatten([
@@ -264,6 +333,12 @@ export function createInput(Component: typeof TextInput) {
           marginTop: 2,
           marginBottom: 2,
         }),
+        rest.multiline &&
+          web({
+            fieldSizing: 'content',
+            paddingLeft: 16,
+            paddingRight: 16,
+          }),
         style,
       ]),
     }
@@ -285,8 +360,9 @@ export function createInput(Component: typeof TextInput) {
           cursorColor={t.palette.primary_500}
           selectionHandleColor={t.palette.primary_500}
           {...rest}
+          {...multilineWebProps}
           accessibilityLabel={label}
-          ref={refs}
+          ref={inputRefs}
           value={value}
           onChangeText={onChangeText}
           onFocus={e => {

@@ -594,7 +594,6 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                           columnGap: a.gap_lg.gap,
                         },
                         a.border_t,
-                        a.border_b,
                         isCompactPosts ? a.mt_sm : a.mt_md,
                         isCompactPosts ? a.py_sm : a.py_md,
                         t.atoms.border_contrast_low,
@@ -728,7 +727,7 @@ function ExpandedPostDetails({
       ]}>
       <BackdatedPostIndicator post={post} />
       <View style={[a.flex_row, a.align_center, a.flex_wrap, a.gap_sm]}>
-        <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
+        <Text style={[a.text_xs, t.atoms.text_contrast_high]}>
           {niceDate(i18n, post.indexedAt, 'dot separated')}
           {showViaClient && via ? ` · ${truncateVia(via)}` : null}
         </Text>
@@ -850,16 +849,16 @@ function ThreadExpandedMetricText({
 
   if (labelOnly) {
     return (
-      <Text testID={testID} style={[a.text_md, t.atoms.text_contrast_medium]}>
+      <Text testID={testID} style={[a.text_sm, t.atoms.text_contrast_high]}>
         <Plural value={count} one={one} other={other} />
       </Text>
     )
   }
 
   return (
-    <Text testID={testID} style={[a.text_md, t.atoms.text_contrast_medium]}>
+    <Text testID={testID} style={[a.text_sm, t.atoms.text_contrast_high]}>
       <Trans comment="Metric count display, the <0> tags enclose the number in bold (will never be 0)">
-        <Text style={[a.text_md, a.font_semi_bold, t.atoms.text]}>
+        <Text style={[a.text_sm, a.font_semi_bold, t.atoms.text]}>
           {formatCountsMetricNumber(i18n, display, count)}
         </Text>{' '}
         <Plural value={count} one={one} other={other} />

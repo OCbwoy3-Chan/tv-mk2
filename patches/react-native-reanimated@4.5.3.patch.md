@@ -25,3 +25,8 @@ Note that upstream's own `pullTransaction` rework in 4.5.3 (the new
 contradicting a *withheld* exit removal - and does not subsume the deleted-tag
 `Update` filter here, which guards against the `LayoutAnimationDriver` final
 keyframe. That driver only runs at all once this patch frees the delegate slot.
+
+The patch also guards Reanimated's React Native Web fallback before reading
+`component.props`. Some animated post and feed refs expose neither a DOM style
+nor a React-style `props` object; calling `Object.keys(undefined)` crashed route
+transitions before Reanimated could emit its unsupported-component warning.

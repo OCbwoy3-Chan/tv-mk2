@@ -133,6 +133,20 @@ textarea:focus,
 input:focus {
   outline: 0;
 }
+
+/* Multiline TextFields size to their contents where supported. Browsers that
+ * lack field-sizing retain a vertical resize affordance as the fallback. */
+@supports (field-sizing: content) {
+  textarea[data-field-sizing-content] {
+    field-sizing: content;
+    resize: none;
+  }
+}
+@supports not (field-sizing: content) {
+  textarea[data-field-sizing-content] {
+    resize: vertical;
+  }
+}
 .tippy-content .items {
   width: fit-content;
 }
