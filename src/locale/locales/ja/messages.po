@@ -22,6 +22,11 @@ msgstr ""
 msgid " Others will see this badge on your profile."
 msgstr ""
 
+#. placeholder {0}: privatePostModState?.reason
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:139
+msgid " Reason: {0}"
+msgstr ""
+
 #: src/components/PostEditedIndicator.tsx:44
 msgctxt "Indicates a post has been edited"
 msgid "· Edited"
@@ -801,15 +806,15 @@ msgstr "{memberCount}/{memberLimit}"
 msgid "{minutes, plural, one {# minute} other {# minutes}}"
 msgstr "{minutes, plural, other {#分}}"
 
-#: src/view/com/composer/Composer.tsx:1093
+#: src/view/com/composer/Composer.tsx:1118
 msgid "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1085
+#: src/view/com/composer/Composer.tsx:1110
 msgid "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1101
+#: src/view/com/composer/Composer.tsx:1126
 msgid "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 msgstr ""
 
@@ -1331,7 +1336,7 @@ msgstr "リストにユーザーを追加"
 msgid "Add account"
 msgstr "アカウントを追加"
 
-#: src/view/com/composer/Composer.tsx:1790
+#: src/view/com/composer/Composer.tsx:1892
 #: src/view/com/composer/GifAltText.tsx:76
 #: src/view/com/composer/GifAltText.tsx:150
 #: src/view/com/composer/GifAltText.tsx:216
@@ -1353,11 +1358,11 @@ msgstr "ALTテキストを追加（オプション）"
 msgid "Add another account"
 msgstr "他のアカウントを追加"
 
-#: src/view/com/composer/Composer.tsx:1851
+#: src/view/com/composer/Composer.tsx:1953
 msgid "Add another Jarona"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2743
+#: src/view/com/composer/Composer.tsx:2868
 msgid "Add another post to thread"
 msgstr "スレッドに他の投稿を追加"
 
@@ -1984,6 +1989,10 @@ msgstr "誰でも即座に参加可能"
 msgid "Anyone can request to join"
 msgstr "誰でも参加リクエスト可能"
 
+#: src/view/com/composer/PrivatePostBtn.tsx:101
+msgid "Anyone on Bluesky can view your post."
+msgstr ""
+
 #: src/screens/Settings/ActivityPrivacySettings.tsx:112
 #: src/screens/Settings/ActivityPrivacySettings.tsx:117
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:192
@@ -2060,7 +2069,7 @@ msgstr "アプリパスワード"
 msgid "App server"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:106
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:125
 msgid "App server default"
 msgstr ""
 
@@ -2211,7 +2220,7 @@ msgstr "本当にこのフィードをあなたのフィードから削除した
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "本当に{0}に参加するリクエストを取り消しますか？"
 
-#: src/view/com/composer/Composer.tsx:2059
+#: src/view/com/composer/Composer.tsx:2161
 msgid "Are you sure you'd like to discard this post?"
 msgstr "本当にこの投稿を削除しますか？"
 
@@ -2322,7 +2331,7 @@ msgstr ""
 msgid "Automatic alt text generation, {providerName}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2327
+#: src/view/com/composer/Composer.tsx:2429
 msgid "Automatically generate alt text for images in this post using the configured AI provider."
 msgstr ""
 
@@ -2639,7 +2648,7 @@ msgstr "ブロックしてもこのラベラーがあなたのアカウントに
 msgid "bloomscrolling booksky"
 msgstr "bloomscrolling booksky"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:108
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:127
 msgid "Blueat"
 msgstr ""
 
@@ -2692,7 +2701,7 @@ msgstr "Blueskyは友達と一緒だともっと楽しくなります！連絡�
 msgid "Bluesky is more fun with friends. Do you want to invite some of yours? <0/>"
 msgstr "Blueskyは友達ともっと楽しいです。あなたの友達を招待しますか？<0/>"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:39
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:82
 msgid "Bluesky may choose to suspend or ban your account if the majority of your posts are private, as it may trip their spam filters."
 msgstr ""
 
@@ -2934,8 +2943,8 @@ msgstr "カメラへのアクセスが必要です"
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:37
-#: src/view/com/composer/Composer.tsx:2137
-#: src/view/com/composer/Composer.tsx:2147
+#: src/view/com/composer/Composer.tsx:2239
+#: src/view/com/composer/Composer.tsx:2249
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
 #: src/view/shell/desktop/LeftNav.tsx:245
@@ -3300,6 +3309,10 @@ msgstr "ユーザーの選択"
 msgid "Choose post languages"
 msgstr "投稿の言語を選択"
 
+#: src/view/com/composer/PrivatePostBtn.tsx:61
+msgid "Choose post visibility"
+msgstr ""
+
 #: src/screens/Settings/RunesSettings/MenusSettings.tsx:62
 msgid "Choose the explorer used in Share and Open menus. Use (uri) where a post, profile, or repository AT URI should appear. Leave fields empty to reset to defaults."
 msgstr ""
@@ -3307,6 +3320,10 @@ msgstr ""
 #: src/screens/Onboarding/StepProfile/AvatarCreatorItems.tsx:106
 msgid "Choose this color as your avatar"
 msgstr "この色をアバターとして選択"
+
+#: src/view/com/composer/PrivatePostBtn.tsx:44
+msgid "Choose whether this post is public or private"
+msgstr ""
 
 #: src/screens/Messages/components/InviteLinkDialog.tsx:243
 msgid "Choose who can join this group chat and how."
@@ -3344,12 +3361,12 @@ msgstr "パスワードを入力"
 #: src/screens/Settings/components/LibreTranslateInstanceDialog.tsx:95
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:252
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:258
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:336
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:344
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:429
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:437
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:522
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:530
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:405
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:413
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:498
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:506
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:591
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:599
 msgid "Clear"
 msgstr "クリア"
 
@@ -3571,7 +3588,7 @@ msgstr "ウェルカムモーダルを閉じる"
 msgid "Closes password update alert"
 msgstr "パスワード更新アラートを閉じる"
 
-#: src/view/com/composer/Composer.tsx:2145
+#: src/view/com/composer/Composer.tsx:2247
 msgid "Closes post composer and discards post draft"
 msgstr "投稿の編集画面を閉じて下書きを破棄"
 
@@ -3685,7 +3702,7 @@ msgid "Compose new post"
 msgstr "新しい投稿を作成"
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
-#: src/view/com/composer/Composer.tsx:1982
+#: src/view/com/composer/Composer.tsx:2084
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr "最大{0, plural, other {#文字}}まで投稿を編集"
 
@@ -3693,11 +3710,11 @@ msgstr "最大{0, plural, other {#文字}}まで投稿を編集"
 msgid "Compose reply"
 msgstr "返信を作成"
 
-#: src/view/com/composer/Composer.tsx:3162
+#: src/view/com/composer/Composer.tsx:3287
 msgid "Compressing GIF..."
 msgstr "GIFを圧縮中…"
 
-#: src/view/com/composer/Composer.tsx:3164
+#: src/view/com/composer/Composer.tsx:3289
 msgid "Compressing video..."
 msgstr "ビデオを圧縮中…"
 
@@ -3765,13 +3782,13 @@ msgstr ""
 msgid "Connection issue"
 msgstr "接続の問題"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:211
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:234
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:276
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:299
 msgid "Constellation Instance"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:308
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:311
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:377
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:380
 msgid "Constellations instance URL"
 msgstr ""
 
@@ -4180,6 +4197,10 @@ msgstr "連絡先をアップロードできませんでした。続行するに
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr ""
 
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:646
+msgid "Couldn't find an AtprotoSpaceService for this DID service reference."
+msgstr ""
+
 #: src/components/PdsDialog.tsx:238
 msgid "Couldn’t load extra details from this server."
 msgstr ""
@@ -4362,13 +4383,17 @@ msgstr "現在のチャット"
 
 #: src/screens/Login/components/AppServerDialog.tsx:435
 #: src/screens/Login/components/AppServerDialog.tsx:436
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:109
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:116
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:122
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:128
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:135
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:141
 #: src/screens/Settings/Settings.tsx:307
 #: src/screens/Settings/Settings.tsx:316
 msgid "Custom"
 msgstr "カスタム"
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:146
+msgid "Custom DID service"
+msgstr ""
 
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:141
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:356
@@ -4549,7 +4574,7 @@ msgstr "アカウントを削除"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1057
-#: src/view/com/composer/Composer.tsx:2014
+#: src/view/com/composer/Composer.tsx:2116
 msgid "Delete post"
 msgstr "投稿を削除"
 
@@ -4752,9 +4777,9 @@ msgstr "無効"
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:102
 #: src/screens/Profile/Header/EditProfileDialog.tsx:93
-#: src/view/com/composer/Composer.tsx:1724
-#: src/view/com/composer/Composer.tsx:1768
-#: src/view/com/composer/Composer.tsx:2066
+#: src/view/com/composer/Composer.tsx:1826
+#: src/view/com/composer/Composer.tsx:1870
+#: src/view/com/composer/Composer.tsx:2168
 #: src/view/com/composer/drafts/DraftItem.tsx:254
 #: src/view/com/composer/drafts/DraftsButton.tsx:138
 msgid "Discard"
@@ -4765,14 +4790,14 @@ msgstr "破棄"
 msgid "Discard changes?"
 msgstr "変更を破棄しますか？"
 
-#: src/view/com/composer/Composer.tsx:1722
+#: src/view/com/composer/Composer.tsx:1824
 #: src/view/com/composer/drafts/DraftItem.tsx:251
 #: src/view/com/composer/drafts/DraftsButton.tsx:105
 msgid "Discard draft?"
 msgstr "下書きを削除しますか？"
 
-#: src/view/com/composer/Composer.tsx:1739
-#: src/view/com/composer/Composer.tsx:2058
+#: src/view/com/composer/Composer.tsx:1841
+#: src/view/com/composer/Composer.tsx:2160
 msgid "Discard post?"
 msgstr "投稿を削除しますか？"
 
@@ -4810,7 +4835,7 @@ msgstr "消す"
 msgid "Dismiss banner"
 msgstr "バナーを閉じる"
 
-#: src/view/com/composer/Composer.tsx:3083
+#: src/view/com/composer/Composer.tsx:3208
 msgid "Dismiss error"
 msgstr "エラーを消す"
 
@@ -4879,7 +4904,7 @@ msgstr "このミュートワードはフォローしているユーザーには
 msgid "Do not fall back to discover feed"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:49
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:110
 msgid "Do not post anything that violates Bluesky's TOS."
 msgstr ""
 
@@ -4887,7 +4912,7 @@ msgstr ""
 msgid "Does not include nudity."
 msgstr "ヌードは含まれません。"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:107
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:126
 msgid "Dollware Porxie"
 msgstr ""
 
@@ -5341,8 +5366,8 @@ msgstr "埋め込みビデオプレーヤー"
 msgid "Embedding"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:53
-msgid "Embeds in private posts will NOT be supported because people will use them post unlabeled porn and GTA 6 leaks."
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:111
+msgid "Embeds in private posts will NOT be supported because people will use them post GTA 6 leaks."
 msgstr ""
 
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:101
@@ -5560,7 +5585,7 @@ msgstr "フルスクリーンで表示"
 msgid "Entertainment"
 msgstr "エンターテインメント"
 
-#: src/view/com/composer/Composer.tsx:3182
+#: src/view/com/composer/Composer.tsx:3307
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "エラー"
@@ -5594,7 +5619,7 @@ msgstr "CAPTCHAレスポンスの受信中にエラーが発生しました。"
 msgid "Error: {error}"
 msgstr "エラー：{error}"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:114
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:133
 #: src/screens/Signup/index.tsx:71
 msgid "Eurosky"
 msgstr ""
@@ -5694,7 +5719,7 @@ msgstr ""
 msgid "Expands or collapses post text"
 msgstr "テキストを展開または折りたたむ"
 
-#: src/lib/api/index.ts:595
+#: src/lib/api/index.ts:606
 msgid "Expected uri to resolve to a record"
 msgstr "レコードを指すURIではありません"
 
@@ -6054,7 +6079,7 @@ msgstr "リクエストを取り消すことができませんでした。もう
 msgid "Failed to resolve location. Please try again."
 msgstr "位置情報の調査に失敗しました。もう一度試してください。"
 
-#: src/view/com/composer/Composer.tsx:863
+#: src/view/com/composer/Composer.tsx:888
 msgid "Failed to save draft"
 msgstr "下書きの保存に失敗しました"
 
@@ -6722,8 +6747,8 @@ msgstr ""
 msgid "Generate a starter pack"
 msgstr "スターターパックを生成"
 
-#: src/view/com/composer/Composer.tsx:2326
-#: src/view/com/composer/Composer.tsx:2334
+#: src/view/com/composer/Composer.tsx:2428
+#: src/view/com/composer/Composer.tsx:2436
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:240
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:253
 msgid "Generate alt text"
@@ -6855,7 +6880,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3187
+#: src/view/com/composer/Composer.tsx:3312
 msgid "GIF uploaded"
 msgstr "GIFをアップロードしました"
 
@@ -7612,13 +7637,13 @@ msgstr "画像のキャッシュをクリアしました"
 msgid "Image cache cleared, freed {0}"
 msgstr "画像のキャッシュをクリアし、 {0} が解放されました"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:129
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:153
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:177
 msgid "Image CDN"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:401
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:404
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:470
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:473
 msgid "Image CDN URL"
 msgstr ""
 
@@ -7794,18 +7819,24 @@ msgstr ""
 #: src/Navigation.tsx:708
 #: src/screens/Settings/RunesSettings/index.tsx:60
 #: src/screens/Settings/RunesSettings/index.tsx:63
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:126
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:150
 msgid "Infrastructure"
 msgstr ""
 
 #: src/screens/Login/components/AppServerDialog.tsx:516
 #: src/screens/Login/components/AppServerDialog.tsx:518
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:101
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:105
 msgid "Infrastructure settings"
 msgstr ""
 
 #: src/screens/Login/SetNewPasswordForm.tsx:124
 msgid "Input code sent to your email for password reset"
 msgstr "パスワードをリセットするためにあなたのメールアドレスに送られたコードを入力"
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:682
+msgid "Input DID for private posts server"
+msgstr ""
 
 #: src/screens/Login/SetNewPasswordForm.tsx:148
 msgid "Input new password"
@@ -7824,11 +7855,11 @@ msgstr ""
 msgid "Input the singular form (e.g., \"skeet\")"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:328
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:397
 msgid "Input the url of the constellations instance to use"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:421
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:490
 msgid "Input the URL of the image CDN to use"
 msgstr ""
 
@@ -7836,7 +7867,7 @@ msgstr ""
 msgid "Input the url of the LibreTranslate instance to use"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:514
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:583
 msgid "Input the URL of the PLC directory to use"
 msgstr ""
 
@@ -8036,7 +8067,7 @@ msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3102
+#: src/view/com/composer/Composer.tsx:3227
 msgid "Job ID: {0}"
 msgstr "ジョブID：{0}"
 
@@ -8095,8 +8126,8 @@ msgstr ""
 msgid "Kawaii logo by <0>ovvie</0>"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1772
-#: src/view/com/composer/Composer.tsx:1782
+#: src/view/com/composer/Composer.tsx:1874
+#: src/view/com/composer/Composer.tsx:1884
 #: src/view/com/composer/drafts/DraftsButton.tsx:142
 msgid "Keep editing"
 msgstr "編集を続ける"
@@ -8985,11 +9016,11 @@ msgstr "このユーザーからのメッセージはあなたをブロック中
 msgid "Messages from this person are hidden while you are blocking them."
 msgstr "このユーザーからのメッセージはあなたがブロック中は非表示です。"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:120
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:139
 msgid "microcosm.blue"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1852
+#: src/view/com/composer/Composer.tsx:1954
 #: src/view/com/feeds/ComposerPrompt.tsx:195
 msgid "MIKE, THE JARONA please!"
 msgstr ""
@@ -9108,11 +9139,11 @@ msgstr "フィードを下に移動"
 msgid "Move feed up"
 msgstr "フィードを上に移動"
 
-#: src/view/com/composer/Composer.tsx:2038
+#: src/view/com/composer/Composer.tsx:2140
 msgid "Move post down"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1996
+#: src/view/com/composer/Composer.tsx:2098
 msgid "Move post up"
 msgstr ""
 
@@ -9668,7 +9699,7 @@ msgstr "誰もメッセージを送信できません"
 
 #: src/components/PostControls/index.tsx:311
 #: src/screens/PostThread/components/ReaderSeam.tsx:251
-#: src/view/com/composer/Composer.tsx:403
+#: src/view/com/composer/Composer.tsx:424
 msgid "No other accounts can reply to this post"
 msgstr ""
 
@@ -9903,6 +9934,10 @@ msgstr "電話番号は携帯の電話番号でなければなりません"
 msgid "OAuth"
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:119
+msgid "OAuth sessions are not currently supported for private posts. Please log in with a password to use this feature."
+msgstr ""
+
 #: src/lib/moderation/useLabelBehaviorDescription.ts:14
 #: src/screens/Settings/AccountSettings.tsx:164
 #: src/screens/Settings/AccountSettings.tsx:175
@@ -9985,7 +10020,7 @@ msgstr "選択したファイルの 1つ以上がサポートされていませ�
 msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
 msgstr "選択したファイルの1つ以上が大きすぎます。最大サイズは {VIDEO_MAX_SIZE_MB}MBです。"
 
-#: src/view/com/composer/Composer.tsx:874
+#: src/view/com/composer/Composer.tsx:899
 msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
 msgstr "一つ以上の投稿が下書きとしては長すぎます。{MAX_DRAFT_GRAPHEME_LENGTH, plural,other {最大で#文字です。}}"
 
@@ -9998,7 +10033,7 @@ msgstr "{0}のみ返信可能。"
 #. placeholder {0}: result.accepted.length
 #. placeholder {1}: next.length
 #. placeholder {2}: next.length
-#: src/view/com/composer/Composer.tsx:266
+#: src/view/com/composer/Composer.tsx:281
 msgid "Only {0} of {1} {2, plural, one {image} other {images}} added; limit is {MAX_GALLERY_IMAGES}"
 msgstr "{1}枚の{2, plural, other {画像}}中{0}枚のみを追加しました。最大で{MAX_GALLERY_IMAGES}枚です"
 
@@ -10058,6 +10093,10 @@ msgstr ""
 #: src/view/com/composer/videos/SubtitleFilePicker.tsx:39
 msgid "Only WebVTT (.vtt) files are supported"
 msgstr "WebVTT（.vtt）ファイルのみに対応しています"
+
+#: src/view/com/composer/PrivatePostBtn.tsx:97
+msgid "Only your mutuals on tenna.party can read this post. A fallback link will be shared."
+msgstr ""
 
 #: src/components/Lists.tsx:99
 msgid "Oops, something went wrong!"
@@ -10125,7 +10164,7 @@ msgid "Open drawer menu"
 msgstr "引き出しメニューを開く"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2720
+#: src/view/com/composer/Composer.tsx:2845
 msgid "Open emoji picker"
 msgstr "絵文字を入力"
 
@@ -10473,7 +10512,7 @@ msgstr "あなたの報告をモデレーションチームが受け付けまし
 msgid "Our moderators have reviewed reports and decided to disable your access to chats on Bluesky."
 msgstr "モデレーターが報告をレビューし、Blueskyであなたがチャットにアクセスできないようにしました。"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:133
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:157
 msgid "Override the CDN host for all images."
 msgstr ""
 
@@ -10756,17 +10795,17 @@ msgstr "GIFを再生"
 msgid "Plays the video"
 msgstr "ビデオを再生"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:170
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:194
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:235
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:259
 msgid "PLC Directory"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:494
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:497
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:563
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:566
 msgid "PLC Directory URL"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:113
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:132
 msgid "plc.directory"
 msgstr ""
 
@@ -10926,7 +10965,7 @@ msgid "Please sign in as @{0}"
 msgstr "@{0}としてサインインしてください"
 
 #. placeholder {0}: activeAccount.handle
-#: src/view/com/composer/Composer.tsx:1231
+#: src/view/com/composer/Composer.tsx:1273
 msgid "Please sign in as @{0} to post as them"
 msgstr ""
 
@@ -10964,7 +11003,7 @@ msgstr "政治"
 msgid "Porn"
 msgstr "ポルノ"
 
-#: src/view/com/composer/Composer.tsx:2211
+#: src/view/com/composer/Composer.tsx:2313
 msgctxt "action"
 msgid "Post"
 msgstr "投稿"
@@ -10990,13 +11029,13 @@ msgstr "写真を投稿"
 msgid "Post a video"
 msgstr "ビデオを投稿"
 
-#: src/view/com/composer/Composer.tsx:2209
+#: src/view/com/composer/Composer.tsx:2311
 msgctxt "action"
 msgid "Post All"
 msgstr "すべてポスト"
 
-#: src/view/com/composer/Composer.tsx:1781
-#: src/view/com/composer/Composer.tsx:1789
+#: src/view/com/composer/Composer.tsx:1883
+#: src/view/com/composer/Composer.tsx:1891
 msgid "Post anyway"
 msgstr "とにかく投稿する"
 
@@ -11026,7 +11065,7 @@ msgstr "投稿を削除しました"
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "投稿のアップロードに失敗しました。インターネット接続を確認し、再度試してください。"
 
-#: src/view/com/composer/Composer.tsx:1931
+#: src/view/com/composer/Composer.tsx:2033
 msgid "Post from account"
 msgstr ""
 
@@ -11100,7 +11139,13 @@ msgctxt "toast"
 msgid "Post unpinned"
 msgstr "投稿の固定を解除しました"
 
-#: src/view/com/composer/Composer.tsx:1787
+#: src/view/com/composer/PrivatePostBtn.tsx:42
+#: src/view/com/composer/PrivatePostBtn.tsx:54
+#: src/view/com/composer/PrivatePostBtn.tsx:58
+msgid "Post visibility"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:1889
 msgid "Post without alt text?"
 msgstr ""
 
@@ -11227,17 +11272,50 @@ msgstr "プライバシーポリシー"
 msgid "Privacy violation of a minor"
 msgstr "未成年者のプライバシー侵害"
 
+#: src/view/com/composer/PrivatePostBtn.tsx:75
+#: src/view/com/composer/PrivatePostBtn.tsx:83
+msgid "Private"
+msgstr ""
+
+#: src/view/com/composer/PrivatePostBtn.tsx:47
+msgid "Private post"
+msgstr ""
+
 #: src/Navigation.tsx:632
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:50
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:21
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:62
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:72
 msgid "Private posts"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3176
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:194
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:218
+msgid "Private Posts AppView"
+msgstr ""
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:662
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:665
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:672
+msgid "Private Posts AppView DID"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:1213
+msgid "Private posts support text only."
+msgstr ""
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:48
+msgid "Private posts sync failed"
+msgstr ""
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:45
+msgid "Private posts synced"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:3301
 msgid "Processing GIF..."
 msgstr "GIFを処理しています…"
 
-#: src/view/com/composer/Composer.tsx:3178
+#: src/view/com/composer/Composer.tsx:3303
 msgid "Processing video..."
 msgstr "ビデオを処理中…"
 
@@ -11308,27 +11386,36 @@ msgstr ""
 msgid "Psst! You can edit who can interact with this post."
 msgstr "ちょっと！この投稿に誰が反応できるか、編集できますよ。"
 
+#: src/view/com/composer/PrivatePostBtn.tsx:75
+#: src/view/com/composer/PrivatePostBtn.tsx:85
+msgid "Public"
+msgstr ""
+
+#: src/view/com/composer/PrivatePostBtn.tsx:47
+msgid "Public post"
+msgstr ""
+
 #: src/view/com/lists/MyLists.tsx:79
 msgid "Public, sharable lists of users to mute or block in bulk."
 msgstr "ユーザーを一括でミュートまたはブロックする、公開された共有可能なリスト。"
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:2195
+#: src/view/com/composer/Composer.tsx:2297
 msgid "Publish post"
 msgstr "投稿を公開"
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:2190
+#: src/view/com/composer/Composer.tsx:2292
 msgid "Publish posts"
 msgstr "投稿を公開"
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:2179
+#: src/view/com/composer/Composer.tsx:2281
 msgid "Publish replies"
 msgstr "返信を公開"
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:2184
+#: src/view/com/composer/Composer.tsx:2286
 msgid "Publish reply"
 msgstr "返信を公開"
 
@@ -11934,7 +12021,7 @@ msgstr "この投稿への返信は無効化されています。"
 msgid "Reply"
 msgstr "返信"
 
-#: src/view/com/composer/Composer.tsx:2207
+#: src/view/com/composer/Composer.tsx:2309
 msgctxt "action"
 msgid "Reply"
 msgstr "返信"
@@ -12313,6 +12400,10 @@ msgstr ""
 msgid "Resync contacts"
 msgstr "連絡先を再同期"
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:158
+msgid "Resynchronize private post records"
+msgstr ""
+
 #: src/screens/Login/LoginForm.tsx:735
 #: src/screens/Login/LoginForm.web.tsx:703
 msgid "Retries signing in"
@@ -12431,12 +12522,14 @@ msgstr "悲しいGIF"
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:415
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:252
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:258
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:336
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:344
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:429
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:437
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:522
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:530
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:405
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:413
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:498
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:506
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:591
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:599
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:690
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:697
 #: src/view/com/composer/AtprotoBtn.tsx:288
 #: src/view/com/composer/AtprotoBtn.tsx:294
 #: src/view/com/composer/GifAltText.tsx:198
@@ -12445,6 +12538,7 @@ msgstr "悲しいGIF"
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:79
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:260
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:270
+#: src/view/com/composer/PrivatePostBtn.tsx:116
 msgid "Save"
 msgstr "保存"
 
@@ -12465,7 +12559,7 @@ msgstr "生年月日を保存"
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:305
 #: src/screens/Settings/Settings.tsx:388
 #: src/screens/Settings/Settings.tsx:395
-#: src/view/com/composer/Composer.tsx:1762
+#: src/view/com/composer/Composer.tsx:1864
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr "変更を保存"
@@ -12474,17 +12568,17 @@ msgstr "変更を保存"
 msgid "Save Changes"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1734
+#: src/view/com/composer/Composer.tsx:1836
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
 msgid "Save changes?"
 msgstr "変更を保存しますか？"
 
-#: src/view/com/composer/Composer.tsx:1762
+#: src/view/com/composer/Composer.tsx:1864
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save draft"
 msgstr "下書きを保存"
 
-#: src/view/com/composer/Composer.tsx:1736
+#: src/view/com/composer/Composer.tsx:1838
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
 msgid "Save draft?"
 msgstr "下書きを保存しますか？"
@@ -12504,6 +12598,10 @@ msgstr ""
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:271
 msgid "Save new handle"
 msgstr "新しいハンドルを保存"
+
+#: src/view/com/composer/PrivatePostBtn.tsx:110
+msgid "Save post visibility"
+msgstr ""
 
 #: src/components/StarterPack/QrCodeDialog.tsx:202
 msgid "Save QR code"
@@ -12778,6 +12876,7 @@ msgid "See #{tag} posts by user"
 msgstr "#{tag} の投稿を表示（このユーザーのみ）"
 
 #: src/screens/Login/components/AppServerDialog.tsx:514
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:99
 msgid "See also:"
 msgstr ""
 
@@ -12880,7 +12979,7 @@ msgstr "キャプションファイルを選択（.vtt）"
 msgid "Select chat \"{name}\""
 msgstr "チャット\"{name}\"を選択"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:229
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:294
 msgid "Select constellation instance"
 msgstr ""
 
@@ -12937,7 +13036,7 @@ msgstr "グループチャットのメンバーを選択"
 msgid "Select how long to mute this word for."
 msgstr "このワードをどのくらいの間ミュートするのかを選択。"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:148
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:172
 msgid "Select image CDN"
 msgstr ""
 
@@ -12959,7 +13058,7 @@ msgstr "言語を選択"
 msgid "Select moderation service"
 msgstr "モデレーションサービスを選択"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:189
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:254
 msgid "Select PLC directory"
 msgstr ""
 
@@ -12974,6 +13073,10 @@ msgstr ""
 #: src/screens/Settings/LanguageSettings.tsx:169
 msgid "Select primary language"
 msgstr "第一言語を選択"
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:213
+msgid "Select private posts AppView"
+msgstr ""
 
 #: src/components/InternationalPhoneCodeSelect.tsx:68
 msgid "Select telephone code"
@@ -13368,15 +13471,15 @@ msgstr ""
 msgid "Sharing your age range reveals only the range associated with your Google Account – for example, that you’re at least 18. <0>Your exact age and birthday are never shared,</0> and this data never leaves this device. Therefore, it only enables access on this device. Alternatively, <1>you can use our trusted partner, KWS</1>, to complete your verification and enable access on all platforms."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2039
+#: src/view/com/composer/Composer.tsx:2141
 msgid "Shortcut: Alt plus Down Arrow"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2744
+#: src/view/com/composer/Composer.tsx:2869
 msgid "Shortcut: Alt plus Enter"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1997
+#: src/view/com/composer/Composer.tsx:2099
 msgid "Shortcut: Alt plus Up Arrow"
 msgstr ""
 
@@ -13713,6 +13816,10 @@ msgstr ""
 msgid "Since"
 msgstr "次の日付以降"
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:148
+msgid "Since tenna.party and the private post infrastructure is brand new and extremely unstable, some of your posts may fail to sync to our AppView. Tap the button below to sync them."
+msgstr ""
+
 #: src/components/contacts/screens/PhoneInput.tsx:163
 #: src/components/contacts/screens/VerifyNumber.tsx:205
 #: src/screens/Onboarding/StepFindContactsIntro/index.tsx:86
@@ -13730,7 +13837,7 @@ msgstr "スキップ"
 msgid "Skip contact sharing and continue to the app"
 msgstr "連絡先の共有をスキップしてアプリに進む"
 
-#: src/view/com/composer/Composer.tsx:1779
+#: src/view/com/composer/Composer.tsx:1881
 msgid "Skip empty posts?"
 msgstr "空の投稿をスキップしますか？"
 
@@ -14207,6 +14314,10 @@ msgstr "アカウントを切り替える"
 msgid "Switch to {0}"
 msgstr "{0}へ切り替える"
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:162
+msgid "Sync records"
+msgstr ""
+
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:86
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:92
 msgid "Sync settings between devices"
@@ -14222,6 +14333,14 @@ msgstr ""
 #. placeholder {2}: syncAllProgress.total
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:184
 msgid "Syncing @{0} ({1}/{2})"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:1299
+msgid "Syncing private posts…"
+msgstr ""
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:162
+msgid "Syncing..."
 msgstr ""
 
 #. placeholder {0}: syncAllProgress.completed
@@ -14380,6 +14499,10 @@ msgstr "もう少し教えて"
 msgid "Temporarily deactivate your account"
 msgstr "一時的にアカウントを無効にする"
 
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:145
+msgid "tenna.party"
+msgstr ""
+
 #: src/screens/Signup/index.tsx:167
 msgid "Tenna.party is a Bluesky client. If you already have an account, <0>sign in</0> instead of creating a new one. Otherwise, choose a provider to host your account! You can always switch to a different provider later, or even host your own."
 msgstr ""
@@ -14497,7 +14620,7 @@ msgstr "コミュニティガイドラインは<0/>に移動しました"
 msgid "The Copyright Policy has been moved to <0/>"
 msgstr "著作権ポリシーは<0/>に移動しました"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:174
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:239
 msgid "The directory used to resolve did:plc accounts."
 msgstr ""
 
@@ -14554,6 +14677,10 @@ msgstr "返信した投稿は、作成者によって {suggestedLanguageName}で
 msgid "The Privacy Policy has been moved to <0/>"
 msgstr "プライバシーポリシーは<0/>に移動しました"
 
+#: src/view/com/composer/Composer.tsx:1217
+msgid "The private posts AppView is unavailable."
+msgstr ""
+
 #: src/view/com/composer/state/video.ts:510
 msgid "The processed video is too large. Please try again with a smaller file."
 msgstr ""
@@ -14591,6 +14718,10 @@ msgstr ""
 #: src/lib/strings/errors.ts:18
 msgid "The server appears to be experiencing issues. Please try again in a few moments."
 msgstr "サーバーで問題が発生しているようです。少し間をおいて再度試してください。"
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:198
+msgid "The server that will be used to serve private posts."
+msgstr ""
 
 #: src/screens/StarterPack/StarterPackScreen.tsx:778
 msgid "The starter pack that you are trying to view is invalid. You may delete this starter pack instead."
@@ -15006,7 +15137,7 @@ msgstr ""
 msgid "This is not a valid link"
 msgstr "有効なリンクではありません"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:43
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:86
 msgid "This isn't actually confirmed, might need to ask someone at Bluesky about this, it's better to be safe than sorry."
 msgstr ""
 
@@ -15121,7 +15252,7 @@ msgstr "この投稿は投稿者によって削除されました"
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr "この投稿はフィードとスレッドから非表示になります。元に戻すことはできません。"
 
-#: src/view/com/composer/Composer.tsx:1326
+#: src/view/com/composer/Composer.tsx:1418
 msgid "This post's author has disabled quote posts."
 msgstr "この投稿の投稿者は引用投稿を無効にしています。"
 
@@ -15850,7 +15981,7 @@ msgstr "リストの登録を解除しました"
 msgid "Unsupported clipboard content"
 msgstr "サポートされていなクリップボードのコンテンツ"
 
-#: src/view/com/composer/Composer.tsx:1899
+#: src/view/com/composer/Composer.tsx:2001
 msgid "Unsupported video type: {mimeType}"
 msgstr "サポートしていないビデオ形式：{mimeType}"
 
@@ -15943,21 +16074,21 @@ msgstr "ファイルからアップロード"
 msgid "Upload from Library"
 msgstr "ライブラリーからアップロード"
 
-#: src/view/com/composer/Composer.tsx:3169
+#: src/view/com/composer/Composer.tsx:3294
 msgid "Uploading GIF..."
 msgstr "GIFをアップロード中…"
 
-#: src/lib/api/index.ts:407
-#: src/lib/api/index.ts:445
+#: src/lib/api/index.ts:418
+#: src/lib/api/index.ts:456
 msgid "Uploading images..."
 msgstr "画像をアップロード中…"
 
-#: src/lib/api/index.ts:531
-#: src/lib/api/index.ts:555
+#: src/lib/api/index.ts:542
+#: src/lib/api/index.ts:566
 msgid "Uploading link thumbnail..."
 msgstr "リンクのサムネイルをアップロード中…"
 
-#: src/view/com/composer/Composer.tsx:3171
+#: src/view/com/composer/Composer.tsx:3296
 msgid "Uploading video..."
 msgstr "ビデオをアップロード中…"
 
@@ -16037,7 +16168,7 @@ msgstr ""
 msgid "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:215
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:280
 msgid "Used for custom verifications and fixing nuclear blocks via backlinks."
 msgstr ""
 
@@ -16299,7 +16430,7 @@ msgstr "ビデオが見つかりません。"
 msgid "Video settings"
 msgstr "ビデオの設定"
 
-#: src/view/com/composer/Composer.tsx:3189
+#: src/view/com/composer/Composer.tsx:3314
 msgid "Video uploaded"
 msgstr "ビデオをアップロードしました"
 
@@ -16312,19 +16443,19 @@ msgstr "ビデオ：{0}"
 msgid "Videos"
 msgstr "ビデオ"
 
-#: src/view/com/composer/Composer.tsx:557
-#: src/view/com/composer/Composer.tsx:700
+#: src/view/com/composer/Composer.tsx:582
+#: src/view/com/composer/Composer.tsx:725
 #: src/view/com/composer/SelectMediaButton.tsx:453
 msgid "Videos must be 10 minutes or less."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:558
-#: src/view/com/composer/Composer.tsx:701
+#: src/view/com/composer/Composer.tsx:583
+#: src/view/com/composer/Composer.tsx:726
 #: src/view/com/composer/SelectMediaButton.tsx:454
 msgid "Videos must be less than 3 minutes long."
 msgstr "ビデオは3分未満でなければなりません。"
 
-#: src/view/com/composer/Composer.tsx:1438
+#: src/view/com/composer/Composer.tsx:1530
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr "表示"
@@ -16436,7 +16567,7 @@ msgstr "話題のビデオをもっと見る"
 msgid "View PDS information"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1433
+#: src/view/com/composer/Composer.tsx:1525
 msgid "View post"
 msgstr "投稿を表示"
 
@@ -16566,8 +16697,8 @@ msgstr "通知設定を開く"
 msgid "Volume"
 msgstr "音量"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:115
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:121
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:134
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:140
 msgid "Wafflehouse.dev"
 msgstr ""
 
@@ -16797,7 +16928,7 @@ msgstr "大変申し訳ありませんが、検索を完了できませんでし
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr "申し訳ありませんが、現時点ではこの画面にアクセスできません。"
 
-#: src/view/com/composer/Composer.tsx:1324
+#: src/view/com/composer/Composer.tsx:1416
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr "大変申し訳ありません！返信しようとしている投稿は削除されました。"
 
@@ -16950,7 +17081,7 @@ msgstr "ユーザーをブロックするかこの会話を削除しますか（
 msgid "Would you like to save this as a draft before viewing your drafts?"
 msgstr "保存されている下書きを表示する前にこれを下書きとして保存しますか？"
 
-#: src/view/com/composer/Composer.tsx:1750
+#: src/view/com/composer/Composer.tsx:1852
 msgid "Would you like to save this as a draft to edit later?"
 msgstr "後で編集するためにこれを下書きとして保存しますか？"
 
@@ -16959,11 +17090,11 @@ msgstr "後で編集するためにこれを下書きとして保存しますか
 msgid "Write a post"
 msgstr "投稿を書く"
 
-#: src/view/com/composer/Composer.tsx:1981
+#: src/view/com/composer/Composer.tsx:2083
 msgid "Write post"
 msgstr "投稿を書く"
 
-#: src/view/com/composer/Composer.tsx:1850
+#: src/view/com/composer/Composer.tsx:1952
 msgid "Write your Jarona"
 msgstr ""
 
@@ -17052,6 +17183,10 @@ msgstr ""
 msgid "You are accessing Bluesky from a region that legally requires us to verify your age before allowing you to access the app."
 msgstr "お客様は、アプリにアクセスする前に年齢を確認することを法的に要求する地域からBlueskyにアクセスしています。"
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:135
+msgid "You are banned from making private posts on tenna.party."
+msgstr ""
+
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
 #: src/components/dms/MessageItem.tsx:728
 msgid "You are blocking {0}"
@@ -17102,6 +17237,10 @@ msgstr "まだ誰もフォローしていません"
 #: src/features/liveNow/index.tsx:315
 msgid "You are now live!"
 msgstr "現在ライブ中です！"
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:126
+msgid "You are unable to make private posts, as your PDS does not support ATProto Spaces. You can still read them."
+msgstr ""
 
 #: src/components/verification/VerificationsDialog.tsx:67
 msgid "You are verified"
@@ -17170,11 +17309,11 @@ msgid "You can now sign in with your new password."
 msgstr "新しいパスワードでサインインできるようになりました。"
 
 #. Toast shown when the user tries to add more images but the post gallery is already at the cap
-#: src/view/com/composer/Composer.tsx:253
+#: src/view/com/composer/Composer.tsx:268
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "投稿ひとつあたり{MAX_GALLERY_IMAGES, plural, other {画像#枚}}までしか添付できません"
 
-#: src/view/com/composer/Composer.tsx:1755
+#: src/view/com/composer/Composer.tsx:1857
 msgid "You can only save drafts up to 1000 characters."
 msgstr "下書きは最大で1000文字です。"
 
@@ -17326,7 +17465,7 @@ msgstr "メールアドレスの確認に成功しました。このダイアロ
 msgid "You have temporarily reached the limit for video uploads. Please try again later."
 msgstr "ビデオのアップロードの制限に一時的に到達しました。時間をおいてもう一度お試しください。"
 
-#: src/view/com/composer/Composer.tsx:1745
+#: src/view/com/composer/Composer.tsx:1847
 msgid "You have unsaved changes to this draft, would you like to save them?"
 msgstr "この下書きに未保存の変更があります。保存しますか？"
 
@@ -17558,7 +17697,7 @@ msgstr "アクティブなコンテンツの最後に到達しました。"
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr "フィードはここまでです！もっとフォローするアカウントを見つけましょう。"
 
-#: src/view/com/composer/Composer.tsx:861
+#: src/view/com/composer/Composer.tsx:886
 msgid "You've reached the maximum number of drafts"
 msgstr "下書きの数の上限に達しました"
 
@@ -17738,11 +17877,11 @@ msgstr "パスワードが正常に変更されました！これからBluesky�
 msgid "Your password must be at least 8 characters long."
 msgstr "パスワードは 8 文字以上である必要があります。"
 
-#: src/view/com/composer/Composer.tsx:1429
+#: src/view/com/composer/Composer.tsx:1521
 msgid "Your post was sent"
 msgstr "投稿が送信されました"
 
-#: src/view/com/composer/Composer.tsx:1426
+#: src/view/com/composer/Composer.tsx:1518
 msgid "Your posts were sent"
 msgstr "投稿が送信されました"
 
@@ -17763,7 +17902,7 @@ msgstr "あなたのプロフィール写真のまわりを、他のユーザー
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr "あなたのプロフィール、投稿、フィード、そしてリストは他のBlueskyユーザーに見えなくなります。ログインすることでいつでもアカウントを再有効化できます。"
 
-#: src/view/com/composer/Composer.tsx:1428
+#: src/view/com/composer/Composer.tsx:1520
 msgid "Your reply was sent"
 msgstr "返信が送信されました"
 
@@ -17776,7 +17915,7 @@ msgstr "報告は <0>{0}</0>に送信されます。"
 msgid "Your selected interests help us serve you content you care about."
 msgstr "「気になること」は興味を引くコンテンツを提供するために役立てます。"
 
-#: src/view/com/composer/Composer.tsx:1780
+#: src/view/com/composer/Composer.tsx:1882
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "あなたのスレッドには空の投稿がありますが、それらはスキップされます。他の残りの投稿はスレッドとして公開されます。"
 

@@ -17,6 +17,11 @@ msgstr ""
 msgid " Others will see this badge on your profile."
 msgstr " Others will see this badge on your profile."
 
+#. placeholder {0}: privatePostModState?.reason
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:139
+msgid " Reason: {0}"
+msgstr " Reason: {0}"
+
 #: src/components/PostEditedIndicator.tsx:44
 msgctxt "Indicates a post has been edited"
 msgid "· Edited"
@@ -796,15 +801,15 @@ msgstr "{memberCount}/{memberLimit}"
 msgid "{minutes, plural, one {# minute} other {# minutes}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1093
+#: src/view/com/composer/Composer.tsx:1118
 msgid "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 msgstr "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 
-#: src/view/com/composer/Composer.tsx:1085
+#: src/view/com/composer/Composer.tsx:1110
 msgid "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 msgstr "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 
-#: src/view/com/composer/Composer.tsx:1101
+#: src/view/com/composer/Composer.tsx:1126
 msgid "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 msgstr "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 
@@ -1326,7 +1331,7 @@ msgstr ""
 msgid "Add account"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1790
+#: src/view/com/composer/Composer.tsx:1892
 #: src/view/com/composer/GifAltText.tsx:76
 #: src/view/com/composer/GifAltText.tsx:150
 #: src/view/com/composer/GifAltText.tsx:216
@@ -1348,11 +1353,11 @@ msgstr ""
 msgid "Add another account"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1851
+#: src/view/com/composer/Composer.tsx:1953
 msgid "Add another Jarona"
 msgstr "Add another Jarona"
 
-#: src/view/com/composer/Composer.tsx:2743
+#: src/view/com/composer/Composer.tsx:2868
 msgid "Add another post to thread"
 msgstr ""
 
@@ -1979,6 +1984,10 @@ msgstr "Anyone can join instantly"
 msgid "Anyone can request to join"
 msgstr "Anyone can request to join"
 
+#: src/view/com/composer/PrivatePostBtn.tsx:101
+msgid "Anyone on Bluesky can view your post."
+msgstr "Anyone on Bluesky can view your post."
+
 #: src/screens/Settings/ActivityPrivacySettings.tsx:112
 #: src/screens/Settings/ActivityPrivacySettings.tsx:117
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:192
@@ -2055,7 +2064,7 @@ msgstr ""
 msgid "App server"
 msgstr "App server"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:106
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:125
 msgid "App server default"
 msgstr "App server default"
 
@@ -2206,7 +2215,7 @@ msgstr ""
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "Are you sure you want to rescind your request to join {0}?"
 
-#: src/view/com/composer/Composer.tsx:2059
+#: src/view/com/composer/Composer.tsx:2161
 msgid "Are you sure you'd like to discard this post?"
 msgstr ""
 
@@ -2317,7 +2326,7 @@ msgstr "Automatic alt text generation is turned off."
 msgid "Automatic alt text generation, {providerName}"
 msgstr "Automatic alt text generation, {providerName}"
 
-#: src/view/com/composer/Composer.tsx:2327
+#: src/view/com/composer/Composer.tsx:2429
 msgid "Automatically generate alt text for images in this post using the configured AI provider."
 msgstr "Automatically generate alt text for images in this post using the configured AI provider."
 
@@ -2634,7 +2643,7 @@ msgstr ""
 msgid "bloomscrolling booksky"
 msgstr "bloomscrolling booksky"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:108
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:127
 msgid "Blueat"
 msgstr "Blueat"
 
@@ -2687,7 +2696,7 @@ msgstr ""
 msgid "Bluesky is more fun with friends. Do you want to invite some of yours? <0/>"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:39
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:82
 msgid "Bluesky may choose to suspend or ban your account if the majority of your posts are private, as it may trip their spam filters."
 msgstr "Bluesky may choose to suspend or ban your account if the majority of your posts are private, as it may trip their spam filters."
 
@@ -2929,8 +2938,8 @@ msgstr "Camera access needed"
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:37
-#: src/view/com/composer/Composer.tsx:2137
-#: src/view/com/composer/Composer.tsx:2147
+#: src/view/com/composer/Composer.tsx:2239
+#: src/view/com/composer/Composer.tsx:2249
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
 #: src/view/shell/desktop/LeftNav.tsx:245
@@ -3295,6 +3304,10 @@ msgstr ""
 msgid "Choose post languages"
 msgstr ""
 
+#: src/view/com/composer/PrivatePostBtn.tsx:61
+msgid "Choose post visibility"
+msgstr "Choose post visibility"
+
 #: src/screens/Settings/RunesSettings/MenusSettings.tsx:62
 msgid "Choose the explorer used in Share and Open menus. Use (uri) where a post, profile, or repository AT URI should appear. Leave fields empty to reset to defaults."
 msgstr "Choose the explorer used in Share and Open menus. Use (uri) where a post, profile, or repository AT URI should appear. Leave fields empty to reset to defaults."
@@ -3302,6 +3315,10 @@ msgstr "Choose the explorer used in Share and Open menus. Use (uri) where a post
 #: src/screens/Onboarding/StepProfile/AvatarCreatorItems.tsx:106
 msgid "Choose this color as your avatar"
 msgstr ""
+
+#: src/view/com/composer/PrivatePostBtn.tsx:44
+msgid "Choose whether this post is public or private"
+msgstr "Choose whether this post is public or private"
 
 #: src/screens/Messages/components/InviteLinkDialog.tsx:243
 msgid "Choose who can join this group chat and how."
@@ -3339,12 +3356,12 @@ msgstr ""
 #: src/screens/Settings/components/LibreTranslateInstanceDialog.tsx:95
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:252
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:258
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:336
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:344
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:429
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:437
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:522
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:530
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:405
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:413
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:498
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:506
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:591
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:599
 msgid "Clear"
 msgstr "Clear"
 
@@ -3566,7 +3583,7 @@ msgstr ""
 msgid "Closes password update alert"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2145
+#: src/view/com/composer/Composer.tsx:2247
 msgid "Closes post composer and discards post draft"
 msgstr ""
 
@@ -3680,7 +3697,7 @@ msgid "Compose new post"
 msgstr ""
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
-#: src/view/com/composer/Composer.tsx:1982
+#: src/view/com/composer/Composer.tsx:2084
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr ""
 
@@ -3688,11 +3705,11 @@ msgstr ""
 msgid "Compose reply"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3162
+#: src/view/com/composer/Composer.tsx:3287
 msgid "Compressing GIF..."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3164
+#: src/view/com/composer/Composer.tsx:3289
 msgid "Compressing video..."
 msgstr ""
 
@@ -3760,13 +3777,13 @@ msgstr "Connecting…"
 msgid "Connection issue"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:211
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:234
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:276
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:299
 msgid "Constellation Instance"
 msgstr "Constellation Instance"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:308
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:311
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:377
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:380
 msgid "Constellations instance URL"
 msgstr "Constellations instance URL"
 
@@ -4175,6 +4192,10 @@ msgstr ""
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:646
+msgid "Couldn't find an AtprotoSpaceService for this DID service reference."
+msgstr "Couldn't find an AtprotoSpaceService for this DID service reference."
+
 #: src/components/PdsDialog.tsx:238
 msgid "Couldn’t load extra details from this server."
 msgstr "Couldn’t load extra details from this server."
@@ -4357,13 +4378,17 @@ msgstr "Current chat"
 
 #: src/screens/Login/components/AppServerDialog.tsx:435
 #: src/screens/Login/components/AppServerDialog.tsx:436
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:109
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:116
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:122
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:128
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:135
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:141
 #: src/screens/Settings/Settings.tsx:307
 #: src/screens/Settings/Settings.tsx:316
 msgid "Custom"
 msgstr ""
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:146
+msgid "Custom DID service"
+msgstr "Custom DID service"
 
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:141
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:356
@@ -4544,7 +4569,7 @@ msgstr ""
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1057
-#: src/view/com/composer/Composer.tsx:2014
+#: src/view/com/composer/Composer.tsx:2116
 msgid "Delete post"
 msgstr ""
 
@@ -4747,9 +4772,9 @@ msgstr ""
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:102
 #: src/screens/Profile/Header/EditProfileDialog.tsx:93
-#: src/view/com/composer/Composer.tsx:1724
-#: src/view/com/composer/Composer.tsx:1768
-#: src/view/com/composer/Composer.tsx:2066
+#: src/view/com/composer/Composer.tsx:1826
+#: src/view/com/composer/Composer.tsx:1870
+#: src/view/com/composer/Composer.tsx:2168
 #: src/view/com/composer/drafts/DraftItem.tsx:254
 #: src/view/com/composer/drafts/DraftsButton.tsx:138
 msgid "Discard"
@@ -4760,14 +4785,14 @@ msgstr ""
 msgid "Discard changes?"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1722
+#: src/view/com/composer/Composer.tsx:1824
 #: src/view/com/composer/drafts/DraftItem.tsx:251
 #: src/view/com/composer/drafts/DraftsButton.tsx:105
 msgid "Discard draft?"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1739
-#: src/view/com/composer/Composer.tsx:2058
+#: src/view/com/composer/Composer.tsx:1841
+#: src/view/com/composer/Composer.tsx:2160
 msgid "Discard post?"
 msgstr ""
 
@@ -4805,7 +4830,7 @@ msgstr ""
 msgid "Dismiss banner"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3083
+#: src/view/com/composer/Composer.tsx:3208
 msgid "Dismiss error"
 msgstr ""
 
@@ -4874,7 +4899,7 @@ msgstr ""
 msgid "Do not fall back to discover feed"
 msgstr "Do not fall back to discover feed"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:49
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:110
 msgid "Do not post anything that violates Bluesky's TOS."
 msgstr "Do not post anything that violates Bluesky's TOS."
 
@@ -4882,7 +4907,7 @@ msgstr "Do not post anything that violates Bluesky's TOS."
 msgid "Does not include nudity."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:107
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:126
 msgid "Dollware Porxie"
 msgstr "Dollware Porxie"
 
@@ -5336,9 +5361,9 @@ msgstr ""
 msgid "Embedding"
 msgstr "Embedding"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:53
-msgid "Embeds in private posts will NOT be supported because people will use them post unlabeled porn and GTA 6 leaks."
-msgstr "Embeds in private posts will NOT be supported because people will use them post unlabeled porn and GTA 6 leaks."
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:111
+msgid "Embeds in private posts will NOT be supported because people will use them post GTA 6 leaks."
+msgstr "Embeds in private posts will NOT be supported because people will use them post GTA 6 leaks."
 
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:101
 #: src/components/dialogs/EmailDialog/screens/Manage2FA/Enable.tsx:108
@@ -5555,7 +5580,7 @@ msgstr ""
 msgid "Entertainment"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3182
+#: src/view/com/composer/Composer.tsx:3307
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr ""
@@ -5589,7 +5614,7 @@ msgstr ""
 msgid "Error: {error}"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:114
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:133
 #: src/screens/Signup/index.tsx:71
 msgid "Eurosky"
 msgstr "Eurosky"
@@ -5689,7 +5714,7 @@ msgstr "Expand repost carousel"
 msgid "Expands or collapses post text"
 msgstr ""
 
-#: src/lib/api/index.ts:595
+#: src/lib/api/index.ts:606
 msgid "Expected uri to resolve to a record"
 msgstr ""
 
@@ -6049,7 +6074,7 @@ msgstr "Failed to rescind your request. Please try again."
 msgid "Failed to resolve location. Please try again."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:863
+#: src/view/com/composer/Composer.tsx:888
 msgid "Failed to save draft"
 msgstr ""
 
@@ -6717,8 +6742,8 @@ msgstr "Full-size format"
 msgid "Generate a starter pack"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2326
-#: src/view/com/composer/Composer.tsx:2334
+#: src/view/com/composer/Composer.tsx:2428
+#: src/view/com/composer/Composer.tsx:2436
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:240
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:253
 msgid "Generate alt text"
@@ -6850,7 +6875,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr "GIF downloaded"
 
-#: src/view/com/composer/Composer.tsx:3187
+#: src/view/com/composer/Composer.tsx:3312
 msgid "GIF uploaded"
 msgstr ""
 
@@ -7607,13 +7632,13 @@ msgstr ""
 msgid "Image cache cleared, freed {0}"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:129
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:153
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:177
 msgid "Image CDN"
 msgstr "Image CDN"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:401
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:404
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:470
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:473
 msgid "Image CDN URL"
 msgstr "Image CDN URL"
 
@@ -7789,18 +7814,24 @@ msgstr "Inference"
 #: src/Navigation.tsx:708
 #: src/screens/Settings/RunesSettings/index.tsx:60
 #: src/screens/Settings/RunesSettings/index.tsx:63
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:126
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:150
 msgid "Infrastructure"
 msgstr "Infrastructure"
 
 #: src/screens/Login/components/AppServerDialog.tsx:516
 #: src/screens/Login/components/AppServerDialog.tsx:518
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:101
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:105
 msgid "Infrastructure settings"
 msgstr "Infrastructure settings"
 
 #: src/screens/Login/SetNewPasswordForm.tsx:124
 msgid "Input code sent to your email for password reset"
 msgstr ""
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:682
+msgid "Input DID for private posts server"
+msgstr "Input DID for private posts server"
 
 #: src/screens/Login/SetNewPasswordForm.tsx:148
 msgid "Input new password"
@@ -7819,11 +7850,11 @@ msgstr "Input the plural form (e.g., \"skeets\")"
 msgid "Input the singular form (e.g., \"skeet\")"
 msgstr "Input the singular form (e.g., \"skeet\")"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:328
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:397
 msgid "Input the url of the constellations instance to use"
 msgstr "Input the url of the constellations instance to use"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:421
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:490
 msgid "Input the URL of the image CDN to use"
 msgstr "Input the URL of the image CDN to use"
 
@@ -7831,7 +7862,7 @@ msgstr "Input the URL of the image CDN to use"
 msgid "Input the url of the LibreTranslate instance to use"
 msgstr "Input the url of the LibreTranslate instance to use"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:514
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:583
 msgid "Input the URL of the PLC directory to use"
 msgstr "Input the URL of the PLC directory to use"
 
@@ -8031,7 +8062,7 @@ msgid "Jarona! This app is now on Android! Check it out!"
 msgstr "Jarona! This app is now on Android! Check it out!"
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3102
+#: src/view/com/composer/Composer.tsx:3227
 msgid "Job ID: {0}"
 msgstr ""
 
@@ -8090,8 +8121,8 @@ msgstr "Kagi Translate"
 msgid "Kawaii logo by <0>ovvie</0>"
 msgstr "Kawaii logo by <0>ovvie</0>"
 
-#: src/view/com/composer/Composer.tsx:1772
-#: src/view/com/composer/Composer.tsx:1782
+#: src/view/com/composer/Composer.tsx:1874
+#: src/view/com/composer/Composer.tsx:1884
 #: src/view/com/composer/drafts/DraftsButton.tsx:142
 msgid "Keep editing"
 msgstr ""
@@ -8980,11 +9011,11 @@ msgstr "Messages from this person are hidden while they are blocking you."
 msgid "Messages from this person are hidden while you are blocking them."
 msgstr "Messages from this person are hidden while you are blocking them."
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:120
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:139
 msgid "microcosm.blue"
 msgstr "microcosm.blue"
 
-#: src/view/com/composer/Composer.tsx:1852
+#: src/view/com/composer/Composer.tsx:1954
 #: src/view/com/feeds/ComposerPrompt.tsx:195
 msgid "MIKE, THE JARONA please!"
 msgstr "MIKE, THE JARONA please!"
@@ -9103,11 +9134,11 @@ msgstr ""
 msgid "Move feed up"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2038
+#: src/view/com/composer/Composer.tsx:2140
 msgid "Move post down"
 msgstr "Move post down"
 
-#: src/view/com/composer/Composer.tsx:1996
+#: src/view/com/composer/Composer.tsx:2098
 msgid "Move post up"
 msgstr "Move post up"
 
@@ -9663,7 +9694,7 @@ msgstr "No one can send messages"
 
 #: src/components/PostControls/index.tsx:311
 #: src/screens/PostThread/components/ReaderSeam.tsx:251
-#: src/view/com/composer/Composer.tsx:403
+#: src/view/com/composer/Composer.tsx:424
 msgid "No other accounts can reply to this post"
 msgstr "No other accounts can reply to this post"
 
@@ -9898,6 +9929,10 @@ msgstr ""
 msgid "OAuth"
 msgstr "OAuth"
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:119
+msgid "OAuth sessions are not currently supported for private posts. Please log in with a password to use this feature."
+msgstr "OAuth sessions are not currently supported for private posts. Please log in with a password to use this feature."
+
 #: src/lib/moderation/useLabelBehaviorDescription.ts:14
 #: src/screens/Settings/AccountSettings.tsx:164
 #: src/screens/Settings/AccountSettings.tsx:175
@@ -9980,7 +10015,7 @@ msgstr ""
 msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
 msgstr "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
 
-#: src/view/com/composer/Composer.tsx:874
+#: src/view/com/composer/Composer.tsx:899
 msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
 msgstr ""
 
@@ -9993,7 +10028,7 @@ msgstr ""
 #. placeholder {0}: result.accepted.length
 #. placeholder {1}: next.length
 #. placeholder {2}: next.length
-#: src/view/com/composer/Composer.tsx:266
+#: src/view/com/composer/Composer.tsx:281
 msgid "Only {0} of {1} {2, plural, one {image} other {images}} added; limit is {MAX_GALLERY_IMAGES}"
 msgstr "Only {0} of {1} {2, plural, one {image} other {images}} added; limit is {MAX_GALLERY_IMAGES}"
 
@@ -10053,6 +10088,10 @@ msgstr "Only show URL on handles with working links"
 #: src/view/com/composer/videos/SubtitleFilePicker.tsx:39
 msgid "Only WebVTT (.vtt) files are supported"
 msgstr ""
+
+#: src/view/com/composer/PrivatePostBtn.tsx:97
+msgid "Only your mutuals on tenna.party can read this post. A fallback link will be shared."
+msgstr "Only your mutuals on tenna.party can read this post. A fallback link will be shared."
 
 #: src/components/Lists.tsx:99
 msgid "Oops, something went wrong!"
@@ -10120,7 +10159,7 @@ msgid "Open drawer menu"
 msgstr ""
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2720
+#: src/view/com/composer/Composer.tsx:2845
 msgid "Open emoji picker"
 msgstr ""
 
@@ -10468,7 +10507,7 @@ msgstr ""
 msgid "Our moderators have reviewed reports and decided to disable your access to chats on Bluesky."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:133
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:157
 msgid "Override the CDN host for all images."
 msgstr "Override the CDN host for all images."
 
@@ -10751,17 +10790,17 @@ msgstr ""
 msgid "Plays the video"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:170
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:194
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:235
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:259
 msgid "PLC Directory"
 msgstr "PLC Directory"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:494
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:497
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:563
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:566
 msgid "PLC Directory URL"
 msgstr "PLC Directory URL"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:113
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:132
 msgid "plc.directory"
 msgstr "plc.directory"
 
@@ -10921,7 +10960,7 @@ msgid "Please sign in as @{0}"
 msgstr ""
 
 #. placeholder {0}: activeAccount.handle
-#: src/view/com/composer/Composer.tsx:1231
+#: src/view/com/composer/Composer.tsx:1273
 msgid "Please sign in as @{0} to post as them"
 msgstr "Please sign in as @{0} to post as them"
 
@@ -10959,7 +10998,7 @@ msgstr ""
 msgid "Porn"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2211
+#: src/view/com/composer/Composer.tsx:2313
 msgctxt "action"
 msgid "Post"
 msgstr ""
@@ -10985,13 +11024,13 @@ msgstr ""
 msgid "Post a video"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2209
+#: src/view/com/composer/Composer.tsx:2311
 msgctxt "action"
 msgid "Post All"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1781
-#: src/view/com/composer/Composer.tsx:1789
+#: src/view/com/composer/Composer.tsx:1883
+#: src/view/com/composer/Composer.tsx:1891
 msgid "Post anyway"
 msgstr "Post anyway"
 
@@ -11021,7 +11060,7 @@ msgstr ""
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1931
+#: src/view/com/composer/Composer.tsx:2033
 msgid "Post from account"
 msgstr "Post from account"
 
@@ -11095,7 +11134,13 @@ msgctxt "toast"
 msgid "Post unpinned"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1787
+#: src/view/com/composer/PrivatePostBtn.tsx:42
+#: src/view/com/composer/PrivatePostBtn.tsx:54
+#: src/view/com/composer/PrivatePostBtn.tsx:58
+msgid "Post visibility"
+msgstr "Post visibility"
+
+#: src/view/com/composer/Composer.tsx:1889
 msgid "Post without alt text?"
 msgstr "Post without alt text?"
 
@@ -11222,17 +11267,50 @@ msgstr ""
 msgid "Privacy violation of a minor"
 msgstr ""
 
+#: src/view/com/composer/PrivatePostBtn.tsx:75
+#: src/view/com/composer/PrivatePostBtn.tsx:83
+msgid "Private"
+msgstr "Private"
+
+#: src/view/com/composer/PrivatePostBtn.tsx:47
+msgid "Private post"
+msgstr "Private post"
+
 #: src/Navigation.tsx:632
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:50
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:21
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:62
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:72
 msgid "Private posts"
 msgstr "Private posts"
 
-#: src/view/com/composer/Composer.tsx:3176
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:194
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:218
+msgid "Private Posts AppView"
+msgstr "Private Posts AppView"
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:662
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:665
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:672
+msgid "Private Posts AppView DID"
+msgstr "Private Posts AppView DID"
+
+#: src/view/com/composer/Composer.tsx:1213
+msgid "Private posts support text only."
+msgstr "Private posts support text only."
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:48
+msgid "Private posts sync failed"
+msgstr "Private posts sync failed"
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:45
+msgid "Private posts synced"
+msgstr "Private posts synced"
+
+#: src/view/com/composer/Composer.tsx:3301
 msgid "Processing GIF..."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3178
+#: src/view/com/composer/Composer.tsx:3303
 msgid "Processing video..."
 msgstr ""
 
@@ -11303,27 +11381,36 @@ msgstr "Provider"
 msgid "Psst! You can edit who can interact with this post."
 msgstr ""
 
+#: src/view/com/composer/PrivatePostBtn.tsx:75
+#: src/view/com/composer/PrivatePostBtn.tsx:85
+msgid "Public"
+msgstr "Public"
+
+#: src/view/com/composer/PrivatePostBtn.tsx:47
+msgid "Public post"
+msgstr "Public post"
+
 #: src/view/com/lists/MyLists.tsx:79
 msgid "Public, sharable lists of users to mute or block in bulk."
 msgstr ""
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:2195
+#: src/view/com/composer/Composer.tsx:2297
 msgid "Publish post"
 msgstr ""
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:2190
+#: src/view/com/composer/Composer.tsx:2292
 msgid "Publish posts"
 msgstr ""
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:2179
+#: src/view/com/composer/Composer.tsx:2281
 msgid "Publish replies"
 msgstr ""
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:2184
+#: src/view/com/composer/Composer.tsx:2286
 msgid "Publish reply"
 msgstr ""
 
@@ -11929,7 +12016,7 @@ msgstr ""
 msgid "Reply"
 msgstr "Reply"
 
-#: src/view/com/composer/Composer.tsx:2207
+#: src/view/com/composer/Composer.tsx:2309
 msgctxt "action"
 msgid "Reply"
 msgstr ""
@@ -12308,6 +12395,10 @@ msgstr "Restore the {defaultChannel} deployment"
 msgid "Resync contacts"
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:158
+msgid "Resynchronize private post records"
+msgstr "Resynchronize private post records"
+
 #: src/screens/Login/LoginForm.tsx:735
 #: src/screens/Login/LoginForm.web.tsx:703
 msgid "Retries signing in"
@@ -12426,12 +12517,14 @@ msgstr "Sad GIFs"
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:415
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:252
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:258
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:336
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:344
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:429
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:437
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:522
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:530
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:405
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:413
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:498
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:506
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:591
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:599
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:690
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:697
 #: src/view/com/composer/AtprotoBtn.tsx:288
 #: src/view/com/composer/AtprotoBtn.tsx:294
 #: src/view/com/composer/GifAltText.tsx:198
@@ -12440,6 +12533,7 @@ msgstr "Sad GIFs"
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:79
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:260
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:270
+#: src/view/com/composer/PrivatePostBtn.tsx:116
 msgid "Save"
 msgstr ""
 
@@ -12460,7 +12554,7 @@ msgstr ""
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:305
 #: src/screens/Settings/Settings.tsx:388
 #: src/screens/Settings/Settings.tsx:395
-#: src/view/com/composer/Composer.tsx:1762
+#: src/view/com/composer/Composer.tsx:1864
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr ""
@@ -12469,17 +12563,17 @@ msgstr ""
 msgid "Save Changes"
 msgstr "Save Changes"
 
-#: src/view/com/composer/Composer.tsx:1734
+#: src/view/com/composer/Composer.tsx:1836
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
 msgid "Save changes?"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1762
+#: src/view/com/composer/Composer.tsx:1864
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save draft"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1736
+#: src/view/com/composer/Composer.tsx:1838
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
 msgid "Save draft?"
 msgstr ""
@@ -12499,6 +12593,10 @@ msgstr "Save model"
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:271
 msgid "Save new handle"
 msgstr ""
+
+#: src/view/com/composer/PrivatePostBtn.tsx:110
+msgid "Save post visibility"
+msgstr "Save post visibility"
 
 #: src/components/StarterPack/QrCodeDialog.tsx:202
 msgid "Save QR code"
@@ -12773,6 +12871,7 @@ msgid "See #{tag} posts by user"
 msgstr ""
 
 #: src/screens/Login/components/AppServerDialog.tsx:514
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:99
 msgid "See also:"
 msgstr "See also:"
 
@@ -12875,7 +12974,7 @@ msgstr "Select caption file (.vtt)"
 msgid "Select chat \"{name}\""
 msgstr "Select chat \"{name}\""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:229
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:294
 msgid "Select constellation instance"
 msgstr "Select constellation instance"
 
@@ -12932,7 +13031,7 @@ msgstr "Select group chat members"
 msgid "Select how long to mute this word for."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:148
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:172
 msgid "Select image CDN"
 msgstr "Select image CDN"
 
@@ -12954,7 +13053,7 @@ msgstr ""
 msgid "Select moderation service"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:189
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:254
 msgid "Select PLC directory"
 msgstr "Select PLC directory"
 
@@ -12969,6 +13068,10 @@ msgstr "Select post translation provider"
 #: src/screens/Settings/LanguageSettings.tsx:169
 msgid "Select primary language"
 msgstr ""
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:213
+msgid "Select private posts AppView"
+msgstr "Select private posts AppView"
 
 #: src/components/InternationalPhoneCodeSelect.tsx:68
 msgid "Select telephone code"
@@ -13363,15 +13466,15 @@ msgstr "Sharing your age range reveals only the range associated with your Apple
 msgid "Sharing your age range reveals only the range associated with your Google Account – for example, that you’re at least 18. <0>Your exact age and birthday are never shared,</0> and this data never leaves this device. Therefore, it only enables access on this device. Alternatively, <1>you can use our trusted partner, KWS</1>, to complete your verification and enable access on all platforms."
 msgstr "Sharing your age range reveals only the range associated with your Google Account – for example, that you’re at least 18. <0>Your exact age and birthday are never shared,</0> and this data never leaves this device. Therefore, it only enables access on this device. Alternatively, <1>you can use our trusted partner, KWS</1>, to complete your verification and enable access on all platforms."
 
-#: src/view/com/composer/Composer.tsx:2039
+#: src/view/com/composer/Composer.tsx:2141
 msgid "Shortcut: Alt plus Down Arrow"
 msgstr "Shortcut: Alt plus Down Arrow"
 
-#: src/view/com/composer/Composer.tsx:2744
+#: src/view/com/composer/Composer.tsx:2869
 msgid "Shortcut: Alt plus Enter"
 msgstr "Shortcut: Alt plus Enter"
 
-#: src/view/com/composer/Composer.tsx:1997
+#: src/view/com/composer/Composer.tsx:2099
 msgid "Shortcut: Alt plus Up Arrow"
 msgstr "Shortcut: Alt plus Up Arrow"
 
@@ -13708,6 +13811,10 @@ msgstr "Signup"
 msgid "Since"
 msgstr "Since"
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:148
+msgid "Since tenna.party and the private post infrastructure is brand new and extremely unstable, some of your posts may fail to sync to our AppView. Tap the button below to sync them."
+msgstr "Since tenna.party and the private post infrastructure is brand new and extremely unstable, some of your posts may fail to sync to our AppView. Tap the button below to sync them."
+
 #: src/components/contacts/screens/PhoneInput.tsx:163
 #: src/components/contacts/screens/VerifyNumber.tsx:205
 #: src/screens/Onboarding/StepFindContactsIntro/index.tsx:86
@@ -13725,7 +13832,7 @@ msgstr ""
 msgid "Skip contact sharing and continue to the app"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1779
+#: src/view/com/composer/Composer.tsx:1881
 msgid "Skip empty posts?"
 msgstr "Skip empty posts?"
 
@@ -14202,6 +14309,10 @@ msgstr ""
 msgid "Switch to {0}"
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:162
+msgid "Sync records"
+msgstr "Sync records"
+
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:86
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:92
 msgid "Sync settings between devices"
@@ -14218,6 +14329,14 @@ msgstr "Sync settings to all accounts"
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:184
 msgid "Syncing @{0} ({1}/{2})"
 msgstr "Syncing @{0} ({1}/{2})"
+
+#: src/view/com/composer/Composer.tsx:1299
+msgid "Syncing private posts…"
+msgstr "Syncing private posts…"
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:162
+msgid "Syncing..."
+msgstr "Syncing..."
 
 #. placeholder {0}: syncAllProgress.completed
 #. placeholder {1}: syncAllProgress.total
@@ -14375,6 +14494,10 @@ msgstr ""
 msgid "Temporarily deactivate your account"
 msgstr "Temporarily deactivate your account"
 
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:145
+msgid "tenna.party"
+msgstr "tenna.party"
+
 #: src/screens/Signup/index.tsx:167
 msgid "Tenna.party is a Bluesky client. If you already have an account, <0>sign in</0> instead of creating a new one. Otherwise, choose a provider to host your account! You can always switch to a different provider later, or even host your own."
 msgstr "Tenna.party is a Bluesky client. If you already have an account, <0>sign in</0> instead of creating a new one. Otherwise, choose a provider to host your account! You can always switch to a different provider later, or even host your own."
@@ -14492,7 +14615,7 @@ msgstr ""
 msgid "The Copyright Policy has been moved to <0/>"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:174
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:239
 msgid "The directory used to resolve did:plc accounts."
 msgstr "The directory used to resolve did:plc accounts."
 
@@ -14549,6 +14672,10 @@ msgstr "The post you’re replying to was marked as being written in {suggestedL
 msgid "The Privacy Policy has been moved to <0/>"
 msgstr ""
 
+#: src/view/com/composer/Composer.tsx:1217
+msgid "The private posts AppView is unavailable."
+msgstr "The private posts AppView is unavailable."
+
 #: src/view/com/composer/state/video.ts:510
 msgid "The processed video is too large. Please try again with a smaller file."
 msgstr "The processed video is too large. Please try again with a smaller file."
@@ -14586,6 +14713,10 @@ msgstr "The selected video uses an unsupported format."
 #: src/lib/strings/errors.ts:18
 msgid "The server appears to be experiencing issues. Please try again in a few moments."
 msgstr ""
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:198
+msgid "The server that will be used to serve private posts."
+msgstr "The server that will be used to serve private posts."
 
 #: src/screens/StarterPack/StarterPackScreen.tsx:778
 msgid "The starter pack that you are trying to view is invalid. You may delete this starter pack instead."
@@ -15001,7 +15132,7 @@ msgstr "This is just a one-time security check, since we haven't seen this accou
 msgid "This is not a valid link"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:43
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:86
 msgid "This isn't actually confirmed, might need to ask someone at Bluesky about this, it's better to be safe than sorry."
 msgstr "This isn't actually confirmed, might need to ask someone at Bluesky about this, it's better to be safe than sorry."
 
@@ -15116,7 +15247,7 @@ msgstr ""
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1326
+#: src/view/com/composer/Composer.tsx:1418
 msgid "This post's author has disabled quote posts."
 msgstr ""
 
@@ -15845,7 +15976,7 @@ msgstr ""
 msgid "Unsupported clipboard content"
 msgstr "Unsupported clipboard content"
 
-#: src/view/com/composer/Composer.tsx:1899
+#: src/view/com/composer/Composer.tsx:2001
 msgid "Unsupported video type: {mimeType}"
 msgstr ""
 
@@ -15938,21 +16069,21 @@ msgstr ""
 msgid "Upload from Library"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3169
+#: src/view/com/composer/Composer.tsx:3294
 msgid "Uploading GIF..."
 msgstr ""
 
-#: src/lib/api/index.ts:407
-#: src/lib/api/index.ts:445
+#: src/lib/api/index.ts:418
+#: src/lib/api/index.ts:456
 msgid "Uploading images..."
 msgstr ""
 
-#: src/lib/api/index.ts:531
-#: src/lib/api/index.ts:555
+#: src/lib/api/index.ts:542
+#: src/lib/api/index.ts:566
 msgid "Uploading link thumbnail..."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3171
+#: src/view/com/composer/Composer.tsx:3296
 msgid "Uploading video..."
 msgstr ""
 
@@ -16032,7 +16163,7 @@ msgstr "Use your data in AI search and recommendation systems. This is how AI fi
 msgid "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 msgstr "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:215
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:280
 msgid "Used for custom verifications and fixing nuclear blocks via backlinks."
 msgstr "Used for custom verifications and fixing nuclear blocks via backlinks."
 
@@ -16294,7 +16425,7 @@ msgstr ""
 msgid "Video settings"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3189
+#: src/view/com/composer/Composer.tsx:3314
 msgid "Video uploaded"
 msgstr ""
 
@@ -16307,19 +16438,19 @@ msgstr ""
 msgid "Videos"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:557
-#: src/view/com/composer/Composer.tsx:700
+#: src/view/com/composer/Composer.tsx:582
+#: src/view/com/composer/Composer.tsx:725
 #: src/view/com/composer/SelectMediaButton.tsx:453
 msgid "Videos must be 10 minutes or less."
 msgstr "Videos must be 10 minutes or less."
 
-#: src/view/com/composer/Composer.tsx:558
-#: src/view/com/composer/Composer.tsx:701
+#: src/view/com/composer/Composer.tsx:583
+#: src/view/com/composer/Composer.tsx:726
 #: src/view/com/composer/SelectMediaButton.tsx:454
 msgid "Videos must be less than 3 minutes long."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1438
+#: src/view/com/composer/Composer.tsx:1530
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr ""
@@ -16431,7 +16562,7 @@ msgstr ""
 msgid "View PDS information"
 msgstr "View PDS information"
 
-#: src/view/com/composer/Composer.tsx:1433
+#: src/view/com/composer/Composer.tsx:1525
 msgid "View post"
 msgstr ""
 
@@ -16561,8 +16692,8 @@ msgstr ""
 msgid "Volume"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:115
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:121
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:134
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:140
 msgid "Wafflehouse.dev"
 msgstr "Wafflehouse.dev"
 
@@ -16792,7 +16923,7 @@ msgstr "We’re sorry, but your search could not be completed. Please try again 
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1324
+#: src/view/com/composer/Composer.tsx:1416
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr ""
 
@@ -16945,7 +17076,7 @@ msgstr "Would you like to block this user and/or leave this conversation?"
 msgid "Would you like to save this as a draft before viewing your drafts?"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1750
+#: src/view/com/composer/Composer.tsx:1852
 msgid "Would you like to save this as a draft to edit later?"
 msgstr ""
 
@@ -16954,11 +17085,11 @@ msgstr ""
 msgid "Write a post"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1981
+#: src/view/com/composer/Composer.tsx:2083
 msgid "Write post"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1850
+#: src/view/com/composer/Composer.tsx:1952
 msgid "Write your Jarona"
 msgstr "Write your Jarona"
 
@@ -17047,6 +17178,10 @@ msgstr "You are about to unfollow @{handle}."
 msgid "You are accessing Bluesky from a region that legally requires us to verify your age before allowing you to access the app."
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:135
+msgid "You are banned from making private posts on tenna.party."
+msgstr "You are banned from making private posts on tenna.party."
+
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
 #: src/components/dms/MessageItem.tsx:728
 msgid "You are blocking {0}"
@@ -17097,6 +17232,10 @@ msgstr ""
 #: src/features/liveNow/index.tsx:315
 msgid "You are now live!"
 msgstr ""
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:126
+msgid "You are unable to make private posts, as your PDS does not support ATProto Spaces. You can still read them."
+msgstr "You are unable to make private posts, as your PDS does not support ATProto Spaces. You can still read them."
 
 #: src/components/verification/VerificationsDialog.tsx:67
 msgid "You are verified"
@@ -17165,11 +17304,11 @@ msgid "You can now sign in with your new password."
 msgstr ""
 
 #. Toast shown when the user tries to add more images but the post gallery is already at the cap
-#: src/view/com/composer/Composer.tsx:253
+#: src/view/com/composer/Composer.tsx:268
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 
-#: src/view/com/composer/Composer.tsx:1755
+#: src/view/com/composer/Composer.tsx:1857
 msgid "You can only save drafts up to 1000 characters."
 msgstr ""
 
@@ -17321,7 +17460,7 @@ msgstr ""
 msgid "You have temporarily reached the limit for video uploads. Please try again later."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1745
+#: src/view/com/composer/Composer.tsx:1847
 msgid "You have unsaved changes to this draft, would you like to save them?"
 msgstr ""
 
@@ -17553,7 +17692,7 @@ msgstr ""
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:861
+#: src/view/com/composer/Composer.tsx:886
 msgid "You've reached the maximum number of drafts"
 msgstr ""
 
@@ -17733,11 +17872,11 @@ msgstr ""
 msgid "Your password must be at least 8 characters long."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1429
+#: src/view/com/composer/Composer.tsx:1521
 msgid "Your post was sent"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1426
+#: src/view/com/composer/Composer.tsx:1518
 msgid "Your posts were sent"
 msgstr ""
 
@@ -17758,7 +17897,7 @@ msgstr ""
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1428
+#: src/view/com/composer/Composer.tsx:1520
 msgid "Your reply was sent"
 msgstr ""
 
@@ -17771,7 +17910,7 @@ msgstr ""
 msgid "Your selected interests help us serve you content you care about."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1780
+#: src/view/com/composer/Composer.tsx:1882
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 
