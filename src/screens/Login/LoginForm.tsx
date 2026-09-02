@@ -1,6 +1,5 @@
 import {useRef, useState} from 'react'
-import {Keyboard, type TextInput, View} from 'react-native'
-import {Pressable} from 'react-native'
+import {Keyboard, Pressable, type TextInput, View} from 'react-native'
 import {LexAuthFactorError} from '@atproto/lex-password-session'
 import {Trans, useLingui} from '@lingui/react/macro'
 
@@ -16,7 +15,7 @@ import {
   useHostingProvider,
 } from '#/state/queries/pds-detection'
 import {useSession, useSessionApi} from '#/state/session'
-import {getNativeOAuthClient} from '#/state/session/oauth-native-client'
+import {signInNative} from '#/state/session/oauth-native-sign-in'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {atoms as a, native, tokens, useBreakpoints, useTheme} from '#/alf'
 import * as Admonition from '#/components/Admonition'
@@ -193,6 +192,7 @@ function OAuthLoginFields({
   const {setShowLoggedOut, clearRequestedAccount} = useLoggedOutViewControls()
   const setHasCheckedForStarterPack = useSetHasCheckedForStarterPack()
   const identifierValueRef = useRef<string>(initialHandle || '')
+  const oauthAbortRef = useRef<AbortController | null>(null)
 
   const onPressNext = async () => {
     if (isProcessing) return
@@ -207,10 +207,13 @@ function OAuthLoginFields({
     }
 
     setIsProcessing(true)
+    const abortController = new AbortController()
+    oauthAbortRef.current = abortController
 
     try {
-      const client = getNativeOAuthClient()
-      const session = await client.signIn(identifier)
+      const session = await signInNative(identifier, {
+        signal: abortController.signal,
+      })
       await login(
         {
           service: '',
@@ -228,7 +231,11 @@ function OAuthLoginFields({
     } catch (e: unknown) {
       const errMsg = String(e)
       setIsProcessing(false)
-      if (errMsg.includes('cancelled') || errMsg.includes('dismiss')) {
+      if (
+        errMsg.includes('OAUTH_CANCELLED') ||
+        errMsg.includes('cancelled') ||
+        errMsg.includes('dismiss')
+      ) {
         return
       }
       if (isNetworkError(e)) {
@@ -244,6 +251,8 @@ function OAuthLoginFields({
         )
         setError(cleanError(errMsg))
       }
+    } finally {
+      oauthAbortRef.current = null
     }
   }
 
@@ -271,14 +280,23 @@ function OAuthLoginFields({
       <View style={[a.pt_md]}>
         <Button
           testID="loginNextButton"
-          label={l`Login`}
-          accessibilityHint={l`Opens your authorization server to sign in`}
-          color="primary"
+          label={isProcessing ? l`Cancel` : l`Login`}
+          accessibilityHint={
+            isProcessing
+              ? l`Cancels the sign-in process`
+              : l`Opens your authorization server to sign in`
+          }
+          color={isProcessing ? 'secondary' : 'primary'}
           size="large"
-          onPress={() => void onPressNext()}>
-          {isProcessing && <ButtonIcon icon={Loader} />}
+          onPress={() => {
+            if (isProcessing) {
+              oauthAbortRef.current?.abort()
+            } else {
+              void onPressNext()
+            }
+          }}>
           <ButtonText>
-            <Trans>Login</Trans>
+            {isProcessing ? <Trans>Cancel</Trans> : <Trans>Login</Trans>}
           </ButtonText>
         </Button>
       </View>
@@ -523,31 +541,39 @@ function LegacyLoginFields({
         <TextField.LabelText>
           <Trans>Username or email</Trans>
         </TextField.LabelText>
-        <HandleAutocompleteInput
-          initialValue={initialHandle || ''}
-          label={l`Username or email address`}
-          placeholder={null}
-          icon={hostingProvider.state.status === 'email' ? EmailIcon : AtIcon}
-          isInvalid={errorField === 'identifier' || showUnresolvedError}
-          autoFocus={!IS_IOS && !initialHandle}
-          editable={!isProcessing}
-          returnKeyType="next"
-          submitOnSelect={false}
-          showAutocomplete={hostingProvider.state.status !== 'email'}
-          inputRef={identifierRef}
-          onValueChange={v => {
-            identifierValueRef.current = v
-            setIdentifier(v)
-            if (errorField) setErrorField('none')
-            if (showResolveError) setShowResolveError(false)
-          }}
-          onFocus={() => setIdentifierFocused(true)}
-          onBlur={() => setIdentifierFocused(false)}
-          onSubmitEditing={() => {
-            passwordRef.current?.focus()
-          }}
-          accessibilityHint={l`Enter the username or email address you used when you created your account`}
-        />
+        <TextField.Root
+          isInvalid={errorField === 'identifier' || showUnresolvedError}>
+          <TextField.Icon
+            icon={hostingProvider.state.status === 'email' ? EmailIcon : AtIcon}
+          />
+          <TextField.Input
+            testID="loginUsernameInput"
+            inputRef={identifierRef}
+            label={l`Username or email address`}
+            placeholder={null}
+            autoCapitalize="none"
+            autoFocus={!IS_IOS && !initialHandle}
+            autoCorrect={false}
+            autoComplete="username"
+            returnKeyType="next"
+            textContentType="username"
+            defaultValue={initialHandle || ''}
+            onChangeText={v => {
+              identifierValueRef.current = v
+              setIdentifier(v)
+              if (errorField) setErrorField('none')
+              if (showResolveError) setShowResolveError(false)
+            }}
+            onFocus={() => setIdentifierFocused(true)}
+            onBlur={() => setIdentifierFocused(false)}
+            onSubmitEditing={() => {
+              passwordRef.current?.focus()
+            }}
+            blurOnSubmit={false}
+            editable={!isProcessing}
+            accessibilityHint={l`Enter the username or email address you used when you created your account`}
+          />
+        </TextField.Root>
         {showUnresolvedError && (
           <Text
             style={[

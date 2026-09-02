@@ -54,9 +54,24 @@ jest.mock('#/state/events', () => ({
 }))
 
 const mockLogin = jest.fn<(...args: unknown[]) => Promise<unknown>>()
+const mockOAuthLogin = jest.fn<(...args: unknown[]) => Promise<unknown>>()
 jest.mock('../session-core', () => ({
   ...jest.requireActual<object>('../session-core'),
   createSessionBundleAndLogin: (...args: unknown[]) => mockLogin(...args),
+}))
+jest.mock('../oauth-session-bundle', () => ({
+  createOAuthSessionBundleAndLogin: (...args: unknown[]) =>
+    mockOAuthLogin(...args),
+  createOAuthSessionBundleAndResume: () => new Promise(() => {}),
+}))
+jest.mock('../agent', () => ({
+  Agent: class {},
+  agentToSessionAccount: () => undefined,
+  createAgentAndResume: () => new Promise(() => {}),
+  createPublicAgent: () => ({}),
+}))
+jest.mock('../oauth-agent', () => ({
+  oauthResumeSession: () => new Promise(() => {}),
 }))
 jest.mock('../create-account', () => ({
   createSessionBundleAndCreateAccount: () => new Promise(() => {}),
@@ -133,6 +148,7 @@ function renderClients(): {api: SessionApiContext; clients: () => Clients} {
 
 beforeEach(() => {
   mockLogin.mockReset()
+  mockOAuthLogin.mockReset()
 })
 
 describe('client hooks while logged out', () => {
@@ -158,6 +174,30 @@ describe('client hooks while logged out', () => {
 })
 
 describe('client hooks with a session', () => {
+  it('uses the OAuth bundle factory for an OAuth callback', async () => {
+    const account = makeAccount({isOauthSession: true})
+    const bundle = makeBundle(account)
+    const oauthSession = {} as never
+    const {api, clients} = renderClients()
+
+    mockOAuthLogin.mockResolvedValueOnce({bundle, account})
+    await act(async () => {
+      await api.login(
+        {
+          service: '',
+          identifier: '',
+          password: '',
+          oauthSession,
+        },
+        'LoginForm',
+      )
+    })
+
+    expect(mockOAuthLogin).toHaveBeenCalledWith(oauthSession)
+    expect(mockLogin).not.toHaveBeenCalled()
+    expect(clients().appview).toBe(bundle.appviewClient)
+  })
+
   it('serves every surface straight off the session bundle', async () => {
     const account = makeAccount()
     const bundle = makeBundle(account)

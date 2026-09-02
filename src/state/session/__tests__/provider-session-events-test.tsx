@@ -87,6 +87,8 @@ jest.mock('#/state/events', () => ({
  */
 const mockLogin = jest.fn<(...args: unknown[]) => Promise<unknown>>()
 const mockResume = jest.fn<(...args: unknown[]) => Promise<unknown>>()
+const mockOAuthLogin = jest.fn<(...args: unknown[]) => Promise<unknown>>()
+const mockOAuthResume = jest.fn<(...args: unknown[]) => Promise<unknown>>()
 const mockDisposeBundle = jest.fn()
 type Rebuild = {
   account: SessionAccount
@@ -117,6 +119,21 @@ jest.mock('../session-core', () => ({
     // @ts-expect-error the stub's arity is checked by its own signature
     mockRebuild(...args),
   disposeBundle: (bundle: unknown) => mockDisposeBundle(bundle),
+}))
+jest.mock('../oauth-session-bundle', () => ({
+  createOAuthSessionBundleAndLogin: (...args: unknown[]) =>
+    mockOAuthLogin(...args),
+  createOAuthSessionBundleAndResume: (...args: unknown[]) =>
+    mockOAuthResume(...args),
+}))
+jest.mock('../agent', () => ({
+  Agent: class {},
+  agentToSessionAccount: () => undefined,
+  createAgentAndResume: () => new Promise(() => {}),
+  createPublicAgent: () => ({}),
+}))
+jest.mock('../oauth-agent', () => ({
+  oauthResumeSession: () => new Promise(() => {}),
 }))
 jest.mock('../create-account', () => ({
   createSessionBundleAndCreateAccount: () => new Promise(() => {}),
@@ -279,9 +296,47 @@ beforeEach(() => {
   mockRebuilds.length = 0
   mockLogin.mockReset()
   mockResume.mockReset()
+  mockOAuthLogin.mockReset()
+  mockOAuthResume.mockReset()
   mockRebuild.mockClear()
   mockDisposeBundle.mockReset()
   mockEmitSessionDropped.mockReset()
+})
+
+describe('OAuth sessions', () => {
+  it('resumes a stored OAuth account without requiring a refresh JWT', async () => {
+    const account = makeAccount({
+      accessJwt: undefined,
+      refreshJwt: undefined,
+      isOauthSession: true,
+    })
+    mockPersisted.session = {accounts: [account], currentAccount: account}
+    mockPersisted.latest = mockPersisted.session
+    const bundle = makeBundle(account)
+    mockOAuthResume.mockResolvedValueOnce({bundle, account})
+
+    let api!: SessionApiContext
+    let session!: ReturnType<typeof useSession>
+    function Probe() {
+      api = useSessionApi()
+      session = useSession()
+      return null
+    }
+    render(
+      <Provider>
+        <Probe />
+      </Provider>,
+    )
+
+    await act(async () => {
+      await api.resumeSession(account)
+    })
+
+    expect(mockOAuthResume).toHaveBeenCalledWith(account)
+    expect(mockResume).not.toHaveBeenCalled()
+    expect(session.hasSession).toBe(true)
+    expect(session.currentAccount).toEqual(account)
+  })
 })
 
 /*

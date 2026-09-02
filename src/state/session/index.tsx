@@ -25,6 +25,7 @@ import {createSessionBundleAndCreateAccount} from './create-account'
 import {pickExpiryRescueCandidate} from './expiry-rescue'
 import {type Action, getInitialState, reducer, type State} from './reducer'
 import {
+  type ActiveSessionBundle,
   type AtpSessionEvent,
   createSessionBundleAndLogin,
   createSessionBundleAndResume,
@@ -43,6 +44,10 @@ import {
   redactSessionData,
   redactState,
 } from './logging'
+import {
+  createOAuthSessionBundleAndLogin,
+  createOAuthSessionBundleAndResume,
+} from './oauth-session-bundle'
 export type {SessionAccount} from '#/state/session/types'
 
 import {type AtpAgent} from '@atproto/api'
@@ -73,9 +78,9 @@ const StateContext = createContext<SessionStateContext>({
 StateContext.displayName = 'SessionStateContext'
 
 /** Active account bundle, or the public bundle when logged out. */
-const BundleContext = createContext<SessionBundle | PublicSessionBundle | null>(
-  null,
-)
+const BundleContext = createContext<
+  ActiveSessionBundle | PublicSessionBundle | null
+>(null)
 BundleContext.displayName = 'SessionBundleContext'
 
 const ApiContext = createContext<SessionApiContext>({
@@ -181,7 +186,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
         sessionEvent === 'update' &&
         sessionData &&
         (store.getState().currentBundleState.bundle as unknown as
-          SessionBundle | PublicSessionBundle) === bundle
+          ActiveSessionBundle | PublicSessionBundle) === bundle
       ) {
         failedExpiryTokensRef.current.get(accountDid)?.clear()
       }
@@ -213,7 +218,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       if (sessionEvent === 'expired') {
         const current = store.getState()
         const currentBundle = current.currentBundleState.bundle as unknown as
-          SessionBundle | PublicSessionBundle
+          ActiveSessionBundle | PublicSessionBundle
         const dyingRefreshJwt = sessionData?.refreshJwt
         // Stale bundle events are handled by the reducer's identity guard.
         if (
@@ -321,10 +326,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
     async (params, logContext) => {
       addSessionDebugLog({type: 'method:start', method: 'login'})
       const signal = cancelPendingTask()
-      const {bundle, account} = await createSessionBundleAndLogin(
-        params,
-        onSessionChange,
-      )
+      const {bundle, account} = params.oauthSession
+        ? await createOAuthSessionBundleAndLogin(params.oauthSession)
+        : await createSessionBundleAndLogin(params, onSessionChange)
 
       if (signal.aborted) {
         // The factory returns an armed bundle, so a superseded login must dispose it.
@@ -424,10 +428,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
         account: redactAccount(storedAccount),
       })
       const signal = cancelPendingTask()
-      const {bundle, account} = await createSessionBundleAndResume(
-        storedAccount,
-        onSessionChange,
-      )
+      const {bundle, account} = storedAccount.isOauthSession
+        ? await createOAuthSessionBundleAndResume(storedAccount)
+        : await createSessionBundleAndResume(storedAccount, onSessionChange)
 
       if (signal.aborted) {
         // The factory returns an armed bundle, so a superseded resume must dispose it.
@@ -441,7 +444,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
        */
       const latest = store.getState()
       const latestEntry = latest.accounts.find(a => a.did === account.did)
-      if (!latestEntry || !latestEntry.refreshJwt) {
+      if (
+        !latestEntry ||
+        (!latestEntry.isOauthSession && !latestEntry.refreshJwt)
+      ) {
         disposeBundle(bundle)
         return
       }
@@ -473,7 +479,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
      * fetch.
      */
     const bundle = store.getState().currentBundleState
-      .bundle as unknown as SessionBundle
+      .bundle as unknown as ActiveSessionBundle
     const signal = cancelPendingTask()
     /* getSession targets the PDS; only the persisted account fields are patched. */
     const data = await bundle.pdsClient.call(com.atproto.server.getSession, {})
@@ -521,7 +527,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
     SessionApiContext['refreshSession']
   >(async () => {
     const bundle = store.getState().currentBundleState.bundle as unknown as
-      SessionBundle | PublicSessionBundle
+      ActiveSessionBundle | PublicSessionBundle
     if (!bundle.session) return undefined // logged out: nothing to refresh
     const before = bundle.session.session
     const after = await bundle.session.refresh()
@@ -645,7 +651,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
            * the leader already refreshed, then dispose the previous bundle.
            */
           const prevBundle = state.currentBundleState.bundle as unknown as
-            SessionBundle | PublicSessionBundle
+            ActiveSessionBundle | PublicSessionBundle
           // Avoid replacing the live bundle for an unrelated account update.
           const live =
             prevBundle.session && !prevBundle.session.destroyed
@@ -738,7 +744,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   )
 
   const bundle = state.currentBundleState.bundle as unknown as
-    SessionBundle | PublicSessionBundle
+    ActiveSessionBundle | PublicSessionBundle
 
   useEffect(() => {
     if (!__DEV__ || !IS_WEB) return
@@ -819,6 +825,10 @@ export function useAgent(): AtpAgent {
   }
 
   return useMemo(() => {
+    if ('oauthAgent' in bundle) {
+      return bundle.oauthAgent as unknown as AtpAgent
+    }
+
     if (!bundle.session) {
       return createPublicAgent()
     }

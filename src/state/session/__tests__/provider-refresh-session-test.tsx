@@ -57,6 +57,19 @@ jest.mock('../session-core', () => ({
   ...jest.requireActual<object>('../session-core'),
   createSessionBundleAndLogin: (...args: unknown[]) => mockLogin(...args),
 }))
+jest.mock('../oauth-session-bundle', () => ({
+  createOAuthSessionBundleAndLogin: () => new Promise(() => {}),
+  createOAuthSessionBundleAndResume: () => new Promise(() => {}),
+}))
+jest.mock('../agent', () => ({
+  Agent: class {},
+  agentToSessionAccount: () => undefined,
+  createAgentAndResume: () => new Promise(() => {}),
+  createPublicAgent: () => ({}),
+}))
+jest.mock('../oauth-agent', () => ({
+  oauthResumeSession: () => new Promise(() => {}),
+}))
 jest.mock('../create-account', () => ({
   createSessionBundleAndCreateAccount: () => new Promise(() => {}),
 }))

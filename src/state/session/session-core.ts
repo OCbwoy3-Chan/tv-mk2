@@ -24,6 +24,7 @@ import {
   configureModerationForGuest,
 } from './moderation'
 import {networkAwareFetch} from './network'
+import {type OauthBskyAppAgent} from './oauth-agent'
 import {
   isSessionExpired,
   sessionAccountToSessionData,
@@ -54,7 +55,7 @@ function deriveServiceUrl(session: PasswordSession | null): URL {
 }
 
 /** The three clients over one `PasswordSession`, the bundle's sole auth core. */
-export type SessionBundle = {
+export type PasswordSessionBundle = {
   session: PasswordSession
   appviewClient: Client
   pdsClient: Client
@@ -62,12 +63,26 @@ export type SessionBundle = {
   readonly service: URL
 }
 
+/** The same client surface backed by an AT Protocol OAuth session. */
+export type OAuthSessionBundle = {
+  session: null
+  oauthAgent: OauthBskyAppAgent
+  appviewClient: Client
+  pdsClient: Client
+  chatClient: Client
+  readonly service: URL
+}
+
+// Keep the historical name for password-session lifecycle hooks and tests.
+export type SessionBundle = PasswordSessionBundle
+export type ActiveSessionBundle = PasswordSessionBundle | OAuthSessionBundle
+
 /**
  * `PasswordSession` exposes no local (logout-free) destroy, so disposal is
  * implemented by disabling its injected fetch and hooks. Keep that lifecycle
  * state private and tied to bundle identity.
  */
-const bundleKillSwitches = new WeakMap<SessionBundle, () => void>()
+const bundleKillSwitches = new WeakMap<PasswordSessionBundle, () => void>()
 
 /**
  * Register the lifecycle closure used by {@link disposeBundle}.
@@ -77,7 +92,7 @@ const bundleKillSwitches = new WeakMap<SessionBundle, () => void>()
  * fetch, which the kill switch disables.
  */
 export function registerBundleKillSwitch(
-  bundle: SessionBundle,
+  bundle: PasswordSessionBundle,
   kill: () => void,
 ) {
   bundleKillSwitches.set(bundle, kill)
@@ -95,7 +110,7 @@ export function registerBundleKillSwitch(
 export function buildBundle(
   session: PasswordSession,
   storedPdsUrl?: string,
-): SessionBundle {
+): PasswordSessionBundle {
   /*
    * The stored url is persisted data and may be malformed (legacy writes,
    * corruption). `routeSessionToPds` feeds it to `new URL()` on every request,
@@ -257,7 +272,7 @@ export function createPublicSessionBundle(): PublicSessionBundle {
  * indistinguishable to the caller, so both go through it.)
  */
 export async function finishPreparation<T>(
-  bundle: SessionBundle,
+  bundle: PasswordSessionBundle,
   preparation: Promise<unknown>,
   snapshot: () => T,
 ): Promise<T> {
@@ -281,7 +296,7 @@ export async function finishPreparation<T>(
 export async function createSessionBundleAndResume(
   storedAccount: SessionAccount,
   onSessionChange: OnSessionChange,
-): Promise<{account: SessionAccount; bundle: SessionBundle}> {
+): Promise<{account: SessionAccount; bundle: PasswordSessionBundle}> {
   const gates = features.refresh({strategy: 'prefer-low-latency'})
   let bundle!: SessionBundle
   const hooks = makeSessionHooks({
@@ -357,7 +372,7 @@ export async function createSessionBundleAndLogin(
     authFactorToken?: string
   },
   onSessionChange: OnSessionChange,
-): Promise<{account: SessionAccount; bundle: SessionBundle}> {
+): Promise<{account: SessionAccount; bundle: PasswordSessionBundle}> {
   let bundle!: SessionBundle
   let accountDid = ''
   const hooks = makeSessionHooks({
@@ -457,7 +472,9 @@ export function sessionDataToSessionAccountOrThrow(
  * has no local destroy operation, so the registered lifecycle closure disables
  * its fetch and hooks instead.
  */
-export function disposeBundle(bundle: SessionBundle | PublicSessionBundle) {
+export function disposeBundle(
+  bundle: ActiveSessionBundle | PublicSessionBundle,
+) {
   const session = bundle.session
   if (!session || session.destroyed) {
     return

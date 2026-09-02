@@ -31,6 +31,8 @@ allowBuilds:
   'unrs-resolver': true
   'workerd': true
 patchedDependencies:
+  '@atproto/oauth-client-expo@0.1.12': patches/@atproto__oauth-client-expo@0.1.12.patch
+  '@atproto/oauth-client@0.8.4': patches/@atproto__oauth-client@0.8.4.patch
   '@formatjs/bigdecimal@0.2.5': patches/@formatjs__bigdecimal@0.2.5.patch
   '@sentry/expo-upload-sourcemaps@8.18.0': patches/@sentry__expo-upload-sourcemaps@8.18.0.patch
   'expo-age-range@57.0.2': patches/expo-age-range@57.0.2.patch
