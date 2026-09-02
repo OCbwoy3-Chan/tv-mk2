@@ -2052,7 +2052,7 @@ msgstr ""
 msgid "App server"
 msgstr "App server"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:125
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:126
 msgid "App server default"
 msgstr "App server default"
 
@@ -2618,7 +2618,7 @@ msgstr ""
 msgid "bloomscrolling booksky"
 msgstr "bloomscrolling booksky"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:127
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:128
 msgid "Blueat"
 msgstr "Blueat"
 
@@ -3331,12 +3331,12 @@ msgstr ""
 #: src/screens/Settings/components/LibreTranslateInstanceDialog.tsx:95
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:252
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:258
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:405
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:413
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:498
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:506
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:591
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:599
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:407
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:415
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:500
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:508
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:593
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:601
 msgid "Clear"
 msgstr "Clear"
 
@@ -3744,13 +3744,13 @@ msgstr "Connecting…"
 msgid "Connection issue"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:276
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:299
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:278
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:301
 msgid "Constellation Instance"
 msgstr "Constellation Instance"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:377
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:380
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:379
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:382
 msgid "Constellations instance URL"
 msgstr "Constellations instance URL"
 
@@ -4159,7 +4159,7 @@ msgstr ""
 msgid "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 msgstr "Couldn’t find a #bsky_appview service at this URL. Check the address and try again."
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:646
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:648
 msgid "Couldn't find an AtprotoSpaceService for this DID service reference."
 msgstr "Couldn't find an AtprotoSpaceService for this DID service reference."
 
@@ -4345,15 +4345,15 @@ msgstr "Current chat"
 
 #: src/screens/Login/components/AppServerDialog.tsx:435
 #: src/screens/Login/components/AppServerDialog.tsx:436
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:128
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:135
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:141
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:130
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:137
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:143
 #: src/screens/Settings/Settings.tsx:311
 #: src/screens/Settings/Settings.tsx:320
 msgid "Custom"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:146
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:148
 msgid "Custom DID service"
 msgstr "Custom DID service"
 
@@ -4863,7 +4863,7 @@ msgstr "Do not post anything that violates Bluesky's TOS."
 msgid "Does not include nudity."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:126
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:127
 msgid "Dollware Porxie"
 msgstr "Dollware Porxie"
 
@@ -5570,7 +5570,7 @@ msgstr ""
 msgid "Error: {error}"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:133
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:135
 #: src/screens/Signup/index.tsx:71
 msgid "Eurosky"
 msgstr "Eurosky"
@@ -7588,13 +7588,13 @@ msgstr ""
 msgid "Image cache cleared, freed {0}"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:153
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:177
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:155
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:179
 msgid "Image CDN"
 msgstr "Image CDN"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:470
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:473
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:472
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:475
 msgid "Image CDN URL"
 msgstr "Image CDN URL"
 
@@ -7770,7 +7770,7 @@ msgstr "Inference"
 #: src/Navigation.tsx:699
 #: src/screens/Settings/RunesSettings/index.tsx:60
 #: src/screens/Settings/RunesSettings/index.tsx:63
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:150
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:152
 msgid "Infrastructure"
 msgstr "Infrastructure"
 
@@ -7785,7 +7785,7 @@ msgstr "Infrastructure settings"
 msgid "Input code sent to your email for password reset"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:682
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:684
 msgid "Input DID for private posts server"
 msgstr "Input DID for private posts server"
 
@@ -7806,11 +7806,11 @@ msgstr "Input the plural form (e.g., \"skeets\")"
 msgid "Input the singular form (e.g., \"skeet\")"
 msgstr "Input the singular form (e.g., \"skeet\")"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:397
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:399
 msgid "Input the url of the constellations instance to use"
 msgstr "Input the url of the constellations instance to use"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:490
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:492
 msgid "Input the URL of the image CDN to use"
 msgstr "Input the URL of the image CDN to use"
 
@@ -7818,7 +7818,7 @@ msgstr "Input the URL of the image CDN to use"
 msgid "Input the url of the LibreTranslate instance to use"
 msgstr "Input the url of the LibreTranslate instance to use"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:583
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:585
 msgid "Input the URL of the PLC directory to use"
 msgstr "Input the URL of the PLC directory to use"
 
@@ -8967,7 +8967,7 @@ msgstr "Messages from this person are hidden while they are blocking you."
 msgid "Messages from this person are hidden while you are blocking them."
 msgstr "Messages from this person are hidden while you are blocking them."
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:139
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:141
 msgid "microcosm.blue"
 msgstr "microcosm.blue"
 
@@ -10463,7 +10463,7 @@ msgstr ""
 msgid "Our moderators have reviewed reports and decided to disable your access to chats on Bluesky."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:157
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:159
 msgid "Override the CDN host for all images."
 msgstr "Override the CDN host for all images."
 
@@ -10746,17 +10746,17 @@ msgstr ""
 msgid "Plays the video"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:235
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:259
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:237
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:261
 msgid "PLC Directory"
 msgstr "PLC Directory"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:563
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:566
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:565
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:568
 msgid "PLC Directory URL"
 msgstr "PLC Directory URL"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:132
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:134
 msgid "plc.directory"
 msgstr "plc.directory"
 
@@ -11239,14 +11239,14 @@ msgstr "Private post"
 msgid "Private posts"
 msgstr "Private posts"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:194
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:218
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:196
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:220
 msgid "Private Posts AppView"
 msgstr "Private Posts AppView"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:662
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:665
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:672
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:664
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:667
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:674
 msgid "Private Posts AppView DID"
 msgstr "Private Posts AppView DID"
 
@@ -11327,6 +11327,10 @@ msgstr "Prompt"
 #: src/screens/Profile/Header/EditProfileDialog.tsx:441
 msgid "Pronouns"
 msgstr "Pronouns"
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:129
+msgid "Protogen Porxie"
+msgstr "Protogen Porxie"
 
 #: src/screens/Settings/AltTextAiSettings.tsx:72
 msgid "Provider"
@@ -12473,14 +12477,14 @@ msgstr "Sad GIFs"
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:391
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:252
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:258
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:405
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:413
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:498
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:506
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:591
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:599
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:690
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:697
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:407
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:415
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:500
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:508
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:593
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:601
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:692
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:699
 #: src/view/com/composer/AtprotoBtn.tsx:288
 #: src/view/com/composer/AtprotoBtn.tsx:294
 #: src/view/com/composer/GifAltText.tsx:198
@@ -12930,7 +12934,7 @@ msgstr "Select caption file (.vtt)"
 msgid "Select chat \"{name}\""
 msgstr "Select chat \"{name}\""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:294
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:296
 msgid "Select constellation instance"
 msgstr "Select constellation instance"
 
@@ -12987,7 +12991,7 @@ msgstr "Select group chat members"
 msgid "Select how long to mute this word for."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:172
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:174
 msgid "Select image CDN"
 msgstr "Select image CDN"
 
@@ -13009,7 +13013,7 @@ msgstr ""
 msgid "Select moderation service"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:254
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:256
 msgid "Select PLC directory"
 msgstr "Select PLC directory"
 
@@ -13025,7 +13029,7 @@ msgstr "Select post translation provider"
 msgid "Select primary language"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:213
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:215
 msgid "Select private posts AppView"
 msgstr "Select private posts AppView"
 
@@ -14450,7 +14454,7 @@ msgstr ""
 msgid "Temporarily deactivate your account"
 msgstr "Temporarily deactivate your account"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:145
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:147
 msgid "tenna.party"
 msgstr "tenna.party"
 
@@ -14571,7 +14575,7 @@ msgstr ""
 msgid "The Copyright Policy has been moved to <0/>"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:239
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:241
 msgid "The directory used to resolve did:plc accounts."
 msgstr "The directory used to resolve did:plc accounts."
 
@@ -14670,7 +14674,7 @@ msgstr "The selected video uses an unsupported format."
 msgid "The server appears to be experiencing issues. Please try again in a few moments."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:198
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:200
 msgid "The server that will be used to serve private posts."
 msgstr "The server that will be used to serve private posts."
 
@@ -16114,7 +16118,7 @@ msgstr "Use your data in AI search and recommendation systems. This is how AI fi
 msgid "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 msgstr "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:280
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:282
 msgid "Used for custom verifications and fixing nuclear blocks via backlinks."
 msgstr "Used for custom verifications and fixing nuclear blocks via backlinks."
 
@@ -16643,8 +16647,8 @@ msgstr ""
 msgid "Volume"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:134
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:140
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:136
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:142
 msgid "Wafflehouse.dev"
 msgstr "Wafflehouse.dev"
 
