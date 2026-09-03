@@ -404,14 +404,6 @@ let EditableUserAvatar = ({
 
   const circular = type !== 'algo' && type !== 'list' && !enableSquareAvatars
 
-  const avatarCompressOpts = useMemo(
-    () =>
-      type === 'list'
-        ? {outputMime: 'image/jpeg' as const}
-        : {outputMime: 'image/webp' as const, forceEncode: true},
-    [type],
-  )
-
   const aviStyle = useMemo(() => {
     if (!circular) {
       return {
@@ -467,7 +459,6 @@ let EditableUserAvatar = ({
               aspectRatio: 1,
             }),
             IMAGE_SIZE_CONFIG_2K_1MB,
-            avatarCompressOpts,
           ),
         )
       } else {
@@ -486,7 +477,6 @@ let EditableUserAvatar = ({
     sheetWrapper,
     editImageDialogControl,
     circular,
-    avatarCompressOpts,
   ])
 
   const onRemoveAvatar = useCallback(() => {
@@ -495,13 +485,10 @@ let EditableUserAvatar = ({
 
   const onChangeEditImage = useCallback(
     async (image: ComposerImage) => {
-      const compressed = await compressImage(image, IMAGE_SIZE_CONFIG_2K_1MB, {
-        ...avatarCompressOpts,
-        forceEncode: true,
-      })
+      const compressed = await compressImage(image, IMAGE_SIZE_CONFIG_2K_1MB)
       onSelectNewAvatar(compressed)
     },
-    [onSelectNewAvatar, avatarCompressOpts],
+    [onSelectNewAvatar],
   )
 
   return (

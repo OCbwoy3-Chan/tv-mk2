@@ -3,34 +3,22 @@ import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
 import {
   blobToDataUri,
-  extractDataUriMime,
   getDataUriSize,
   getDownloadImageUri,
   getResizedDimensions,
-  resolveUploadImageMime,
 } from './util'
 import {mimeToExt} from './video/util'
 
 export async function compressIfNeeded(
   img: PickerImage,
   {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
-  opts?: {outputMime?: 'image/jpeg' | 'image/webp'; forceEncode?: boolean},
 ): Promise<PickerImage> {
-  const outputMime = resolveUploadImageMime(
-    img.mime,
-    opts?.outputMime ?? 'image/jpeg',
-  )
-  const needsReencode =
-    opts?.forceEncode || img.size >= maxSize || img.mime !== outputMime
-
-  if (!needsReencode) {
+  if (img.size < maxSize) {
     return img
   }
-
   return await doResize(img.path, {
     maxDimension,
     maxSize,
-    outputMime,
   })
 }
 
@@ -111,7 +99,6 @@ export async function getImageDim(path: string): Promise<Dimensions> {
 interface DoResizeOpts {
   maxDimension: number
   maxSize: number
-  outputMime?: 'image/jpeg' | 'image/webp'
 }
 
 async function doResize(
@@ -121,14 +108,6 @@ async function doResize(
   const sourceDims = await getImageDim(dataUri)
   const newDimensions = getResizedDimensions(sourceDims, opts.maxDimension)
 
-  /*
-   * Default WebP, but Safari/iOS can't canvas-encode it — resolve to JPEG
-   * there so quality binary-search actually shrinks the file.
-   */
-  let outputMime = resolveUploadImageMime(
-    undefined,
-    opts.outputMime ?? 'image/webp',
-  )
   let newDataUri
 
   let minQualityPercentage = 0
@@ -138,28 +117,16 @@ async function doResize(
     const qualityPercentage = Math.round(
       (maxQualityPercentage + minQualityPercentage) / 2,
     )
-    const encoded = await createResizedImage(dataUri, {
+    const tempDataUri = await createResizedImage(dataUri, {
       width: newDimensions.width,
       height: newDimensions.height,
       quality: qualityPercentage / 100,
       mode: 'contain',
-      outputMime,
     })
-    /*
-     * Defense in depth: if the browser ignored WebP and returned PNG,
-     * switch to JPEG for the rest of the search (PNG ignores `quality`).
-     */
-    if (encoded.mime !== outputMime) {
-      outputMime = encoded.mime
-      minQualityPercentage = 0
-      maxQualityPercentage = 101
-      newDataUri = undefined
-      continue
-    }
 
-    if (getDataUriSize(encoded.uri) < opts.maxSize) {
+    if (getDataUriSize(tempDataUri) < opts.maxSize) {
       minQualityPercentage = qualityPercentage
-      newDataUri = encoded.uri
+      newDataUri = tempDataUri
     } else {
       maxQualityPercentage = qualityPercentage
     }
@@ -170,7 +137,7 @@ async function doResize(
   }
   return {
     path: newDataUri,
-    mime: outputMime,
+    mime: 'image/png',
     size: getDataUriSize(newDataUri),
     width: newDimensions.width,
     height: newDimensions.height,
@@ -184,15 +151,13 @@ function createResizedImage(
     height,
     quality,
     mode,
-    outputMime,
   }: {
     width: number
     height: number
     quality: number
     mode: 'contain' | 'cover' | 'stretch'
-    outputMime: 'image/jpeg' | 'image/webp'
   },
-): Promise<{uri: string; mime: 'image/jpeg' | 'image/webp'}> {
+): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = document.createElement('img')
     img.addEventListener('load', () => {
@@ -215,20 +180,7 @@ function createResizedImage(
       canvas.height = h
 
       ctx.drawImage(img, 0, 0, w, h)
-      let uri = canvas.toDataURL(outputMime, quality)
-      let mime: 'image/jpeg' | 'image/webp' = outputMime
-      /*
-       * Safari silently falls back to PNG for unsupported WebP encode.
-       * Re-encode as JPEG so lossy quality control works.
-       */
-      if (
-        outputMime === 'image/webp' &&
-        extractDataUriMime(uri) !== 'image/webp'
-      ) {
-        uri = canvas.toDataURL('image/jpeg', quality)
-        mime = 'image/jpeg'
-      }
-      resolve({uri, mime})
+      resolve(canvas.toDataURL('image/png', quality))
     })
     img.addEventListener('error', ev => {
       reject(ev.error)

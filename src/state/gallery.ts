@@ -19,7 +19,7 @@ import {nanoid} from 'nanoid/non-secure'
 import {getImageDim} from '#/lib/media/manip'
 import {openCropper} from '#/lib/media/picker'
 import {type PickerImage} from '#/lib/media/picker.shared'
-import {getDataUriSize, resolveUploadImageMime} from '#/lib/media/util'
+import {getDataUriSize} from '#/lib/media/util'
 import {isCancelledError} from '#/lib/strings/errors'
 import {logger} from '#/logger'
 import {IS_NATIVE, IS_WEB} from '#/env'
@@ -280,30 +280,13 @@ async function bypassCompression(
 export async function compressImage(
   img: ComposerImage,
   {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
-  options?: {
-    outputMime?: 'image/jpeg' | 'image/webp'
-    /** When true, always re-encode even if the source is already small enough. */
-    forceEncode?: boolean
-  },
 ): Promise<PickerImage> {
-  if (!options?.forceEncode) {
-    const res = await bypassCompression(img, {maxDimension, maxSize})
-    if (res) {
-      return res
-    }
+  const res = await bypassCompression(img, {maxDimension, maxSize})
+  if (res) {
+    return res
   }
 
   const source = img.transformed || img.source
-  /*
-   * HEIC/HEIF → WebP via expo-image-manipulator is unreliable (HDR /
-   * color-space issues). Force JPEG for those sources.
-   */
-  const outputMime = resolveUploadImageMime(
-    source.mime,
-    options?.outputMime ?? 'image/webp',
-  )
-  const outputFormat =
-    outputMime === 'image/jpeg' ? SaveFormat.JPEG : SaveFormat.WEBP
   let attempts = 0
   // Seeded from `maxDimension` but shrunk per attempt below, so keep the
   // passed-in value pristine.
@@ -347,7 +330,7 @@ export async function compressImage(
       [{resize: {width: w, height: h}}],
       {
         compress: qualityPercentage / 100,
-        format: outputFormat,
+        format: SaveFormat.PNG,
         base64: true,
       },
     )
@@ -360,7 +343,7 @@ export async function compressImage(
         path: await moveIfNecessary(res.uri),
         width: res.width,
         height: res.height,
-        mime: outputMime,
+        mime: 'image/png',
         size,
       }
     } else {

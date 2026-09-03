@@ -6,14 +6,14 @@ import {
   downloadAndResize,
   type DownloadAndResizeOpts,
 } from '../../src/lib/media/manip'
-import {getResizedDimensions, resolveUploadImageMime, setWebpEncodeSupportForTests} from '../../src/lib/media/util'
+import {getResizedDimensions} from '../../src/lib/media/util'
 
 const mockResizedImage = {
-  path: 'file://resized-image.jpg',
+  path: 'file://resized-image.png',
   size: 100,
   width: 100,
   height: 100,
-  mime: 'image/webp',
+  mime: 'image/png',
 }
 
 describe('downloadAndResize', () => {
@@ -22,7 +22,7 @@ describe('downloadAndResize', () => {
   beforeEach(() => {
     const mockedCreateResizedImage = manipulateAsync as jest.Mock
     mockedCreateResizedImage.mockResolvedValue({
-      uri: 'file://resized-image.jpg',
+      uri: 'file://resized-image.png',
       ...mockResizedImage,
     })
   })
@@ -37,7 +37,7 @@ describe('downloadAndResize', () => {
       cancelAsync: jest.fn(),
       downloadAsync: jest
         .fn()
-        .mockResolvedValue({uri: 'file://resized-image.jpg'}),
+        .mockResolvedValue({uri: 'file://resized-image.png'}),
     })
 
     const opts: DownloadAndResizeOpts = {
@@ -60,11 +60,11 @@ describe('downloadAndResize', () => {
     // First time it gets called is to get dimensions
     expect(manipulateAsync).toHaveBeenCalledWith(expect.any(String), [], {})
     // The mocked source image is 100x100, below maxDimension, so it is not
-    // downsized. Quality is binary-searched; assert format + a resize pass.
+    // downsized.
     expect(manipulateAsync).toHaveBeenCalledWith(
       expect.any(String),
       [{resize: {height: 100, width: 100}}],
-      {format: SaveFormat.WEBP, compress: expect.any(Number)},
+      {format: SaveFormat.PNG, compress: 1.0},
     )
     expect(deleteAsync).toHaveBeenCalledWith(expect.any(String), {
       idempotent: true,
@@ -134,50 +134,5 @@ describe('downloadAndResize', () => {
       width: 1000,
       height: 2000,
     })
-  })
-})
-
-describe('resolveUploadImageMime', () => {
-  afterEach(() => {
-    setWebpEncodeSupportForTests(undefined)
-  })
-
-  it('forces JPEG for HEIC/HEIF sources even when WebP is requested', () => {
-    setWebpEncodeSupportForTests(true)
-    expect(resolveUploadImageMime('image/heic', 'image/webp')).toBe(
-      'image/jpeg',
-    )
-    expect(resolveUploadImageMime('image/heif', 'image/webp')).toBe(
-      'image/jpeg',
-    )
-    expect(resolveUploadImageMime('image/HEIC', 'image/webp')).toBe(
-      'image/jpeg',
-    )
-    expect(
-      resolveUploadImageMime('image/heic-sequence', 'image/webp'),
-    ).toBe('image/jpeg')
-  })
-
-  it('keeps the requested mime for non-HEIC sources when WebP encode works', () => {
-    setWebpEncodeSupportForTests(true)
-    expect(resolveUploadImageMime('image/jpeg', 'image/webp')).toBe(
-      'image/webp',
-    )
-    expect(resolveUploadImageMime('image/png', 'image/webp')).toBe(
-      'image/webp',
-    )
-    expect(resolveUploadImageMime('image/png', 'image/jpeg')).toBe(
-      'image/jpeg',
-    )
-  })
-
-  it('falls back to JPEG when the environment cannot encode WebP', () => {
-    setWebpEncodeSupportForTests(false)
-    expect(resolveUploadImageMime('image/jpeg', 'image/webp')).toBe(
-      'image/jpeg',
-    )
-    expect(resolveUploadImageMime('image/png', 'image/webp')).toBe(
-      'image/jpeg',
-    )
   })
 })

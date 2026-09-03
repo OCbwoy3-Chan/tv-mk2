@@ -21,37 +21,23 @@ import {logger} from '#/logger'
 import {IS_ANDROID, IS_IOS} from '#/env'
 import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
-import {
-  getDownloadImageUri,
-  getResizedDimensions,
-  resolveUploadImageMime,
-} from './util'
+import {getDownloadImageUri, getResizedDimensions} from './util'
 import {mimeToExt} from './video/util'
 
 export async function compressIfNeeded(
   img: PickerImage,
   {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
-  opts?: {outputMime?: 'image/jpeg' | 'image/webp'; forceEncode?: boolean},
 ): Promise<PickerImage> {
-  const outputMime = resolveUploadImageMime(
-    img.mime,
-    opts?.outputMime ?? 'image/jpeg',
-  )
-  const needsReencode =
-    opts?.forceEncode || img.size >= maxSize || img.mime !== outputMime
-
-  if (!needsReencode) {
+  if (img.size < maxSize) {
     return img
   }
-
   const resizedImage = await doResize(normalizePath(img.path), {
     maxDimension,
     maxSize,
-    outputMime,
   })
   const finalImageMovedPath = await moveToPermanentPath(
     resizedImage.path,
-    resizedImage.mime === 'image/jpeg' ? '.jpg' : '.webp',
+    '.png',
   )
   const finalImg = {
     ...resizedImage,
@@ -261,16 +247,12 @@ export function getImageDim(path: string): Promise<Dimensions> {
 interface DoResizeOpts {
   maxDimension: number
   maxSize: number
-  outputMime?: 'image/jpeg' | 'image/webp'
 }
 
 async function doResize(
   localUri: string,
   opts: DoResizeOpts,
 ): Promise<PickerImage> {
-  const outputMime = opts.outputMime ?? 'image/webp'
-  const outputFormat =
-    outputMime === 'image/jpeg' ? SaveFormat.JPEG : SaveFormat.WEBP
   // We need to get the dimensions of the image before we resize it. Previously, the library we used allowed us to enter
   // a "max size", and it would do the "best possible size" calculation for us.
   // Now instead, we have to supply the final dimensions to the manipulation function instead.
@@ -298,7 +280,7 @@ async function doResize(
       localUri,
       [{resize: newDimensions}],
       {
-        format: outputFormat,
+        format: SaveFormat.PNG,
         compress: qualityPercentage / 100,
       },
     )
@@ -316,7 +298,7 @@ async function doResize(
       minQualityPercentage = qualityPercentage
       newDataUri = {
         path: normalizePath(resizeRes.uri),
-        mime: outputMime,
+        mime: 'image/png',
         size: fileInfo.size,
         width: resizeRes.width,
         height: resizeRes.height,

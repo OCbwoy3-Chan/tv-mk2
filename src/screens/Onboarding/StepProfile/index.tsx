@@ -124,12 +124,12 @@ export function StepProfile() {
         const context = ImageManipulator.manipulate(asset.uri)
         const rendered = await context.renderAsync()
         const result = await rendered.saveAsync({
-          format: SaveFormat.JPEG,
+          format: SaveFormat.PNG,
           compress: 1.0,
         })
         return [
           {
-            mime: 'image/jpeg',
+            mime: 'image/png',
             height: rendered.height,
             width: rendered.width,
             path: result.uri,
@@ -161,7 +161,7 @@ export function StepProfile() {
         type: 'setProfileStepResults',
         image: avatar.image,
         imageUri,
-        imageMime: avatar.image?.mime ?? 'image/jpeg',
+        imageMime: avatar.image?.mime ?? 'image/png',
         isCreatedAvatar: avatar.useCreatedAvatar,
         creatorState: {
           emoji: avatar.placeholder,
@@ -211,10 +211,7 @@ export function StepProfile() {
         }
       }
     }
-    image = await compressIfNeeded(image, IMAGE_SIZE_CONFIG_2K_1MB, {
-      outputMime: 'image/webp',
-      forceEncode: true,
-    })
+    image = await compressIfNeeded(image, IMAGE_SIZE_CONFIG_2K_1MB)
 
     // If we are on mobile, prefetching the image will load the image into memory before we try and display it,
     // stopping any brief flickers.
