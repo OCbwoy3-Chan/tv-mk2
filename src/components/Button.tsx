@@ -230,10 +230,37 @@ export const Button = forwardRef<React.ComponentRef<typeof View>, ButtonProps>(
       },
       [onPressOuter],
     )
-    
-    
-    
-    
+    const onPointerDown = useCallback(
+      (e: PointerEvent) => {
+        if (onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE) {
+          clearLongPressTimer()
+          longPressTriggeredRef.current = false
+          longPressTimerRef.current = setTimeout(() => {
+            longPressTriggeredRef.current = true
+            onLongPressOuter(e as unknown as GestureResponderEvent)
+          }, 500)
+        }
+      },
+      [clearLongPressTimer, onLongPressOuter],
+    )
+    const onPointerUp = useCallback(() => {
+      clearLongPressTimer()
+    }, [clearLongPressTimer])
+    const onPointerLeave = useCallback(() => {
+      clearLongPressTimer()
+    }, [clearLongPressTimer])
+    const onContextMenu = useCallback(
+      (e: Event) => {
+        if (onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE) {
+          e.preventDefault()
+          clearLongPressTimer()
+          if (longPressTriggeredRef.current) return
+          longPressTriggeredRef.current = true
+          onLongPressOuter(e as unknown as GestureResponderEvent)
+        }
+      },
+      [clearLongPressTimer, onLongPressOuter],
+    )
     const onHoverIn = useCallback(
       (e: MouseEvent) => {
         setState(s => ({
@@ -618,6 +645,14 @@ export const Button = forwardRef<React.ComponentRef<typeof View>, ButtonProps>(
         role="button"
         accessibilityHint={undefined} // optional
         {...rest}
+        {...(onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE
+          ? {
+              onPointerDown,
+              onPointerUp,
+              onPointerLeave,
+              onContextMenu,
+            }
+          : {})}
         ref={ref}
         aria-label={label}
         aria-pressed={state.pressed}

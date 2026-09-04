@@ -77,7 +77,7 @@ export function PetLabelSettingsScreen({}: Props) {
           return existing
         },
         checkCommitted: res => {
-          const exists = !!res.labels?.some(l => l.val === 'pet')
+          const exists = !!res?.labels?.some(l => l.val === 'pet')
           return exists === wasAdded
         },
       },

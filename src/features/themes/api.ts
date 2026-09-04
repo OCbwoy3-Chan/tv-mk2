@@ -3,10 +3,10 @@ import {AtUri} from '@atproto/api'
 import {TID} from '@atproto/common-web'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
-import {useAgent, useSession} from '#/state/session'
-import {pdsAgent} from '#/state/session/agent'
 import {useConstellationInstance} from '#/state/preferences/constellation-instance'
 import {useSlingshotInstance} from '#/state/preferences/slingshot-instance'
+import {useAgent, useSession} from '#/state/session'
+import {pdsAgent} from '#/state/session/agent'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
 import {useMaterialYouPalette} from '#/alf/util/materialYou'
 import {IS_WEB} from '#/env'
@@ -16,8 +16,8 @@ import {
   type ActiveTheme,
   FEATURED_THEME_COLLECTION_URIS,
   getColorSets,
-  isMaterialYouTheme,
   isHueTheme,
+  isMaterialYouTheme,
   isSupportedTheme,
   SAVED_THEME_COLLECTION,
   type SavedThemeRecord,
@@ -25,9 +25,9 @@ import {
   THEME_GROUP_COLLECTION,
   THEME_GROUP_ITEM_COLLECTION,
   themeAuthor,
-  type ThemeCollectionView,
   type ThemeCollectionItemRecord,
   type ThemeCollectionRecord,
+  type ThemeCollectionView,
   themeColorsChanged,
   type ThemeMode,
   type ThemeRecord,
@@ -139,7 +139,7 @@ async function getTheme(
       }
       return {
         uri: response.data.uri,
-        cid: response.data.cid!,
+        cid: response.data.cid,
         author: repo,
         record: response.data.value,
         source: 'own',
@@ -341,7 +341,7 @@ export function useThemeLibrary() {
         ? remoteCollections
         : [
             {
-              uri: FEATURED_THEME_COLLECTION_URIS.light[0]!,
+              uri: FEATURED_THEME_COLLECTION_URIS.light[0],
               name: 'Featured themes',
               themes: FEATURED_THEMES,
             },

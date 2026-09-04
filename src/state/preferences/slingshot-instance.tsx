@@ -34,7 +34,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (slingshotInstance: persisted.Schema['slingshotInstance']) => {
       setState(slingshotInstance)
-      persisted.write('slingshotInstance', slingshotInstance)
+      void persisted.write('slingshotInstance', slingshotInstance)
     },
     [],
   )
@@ -42,7 +42,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setCustomStateWrapped = useCallback(
     (slingshotInstanceCustom: persisted.Schema['slingshotInstanceCustom']) => {
       setCustomState(slingshotInstanceCustom)
-      persisted.write('slingshotInstanceCustom', slingshotInstanceCustom)
+      void persisted.write('slingshotInstanceCustom', slingshotInstanceCustom)
     },
     [],
   )

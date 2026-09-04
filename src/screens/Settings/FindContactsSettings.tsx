@@ -68,11 +68,7 @@ export function FindContactsSettingsScreen({}: Props) {
         matchCount: data.syncStatus?.matchesCount,
       })
     }
-  }, [
-	data,
-	isFocused,
-	ax
-])
+  }, [data, isFocused, ax])
 
   return (
     <Layout.Screen>

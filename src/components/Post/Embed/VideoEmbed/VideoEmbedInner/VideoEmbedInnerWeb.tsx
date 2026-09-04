@@ -4,6 +4,7 @@ import {useLingui} from '@lingui/react/macro'
 import type * as HlsTypes from 'hls.js'
 
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
+import {hasPlaybackStarted} from '#/lib/media/video/analytics'
 import {atoms as a} from '#/alf'
 import {AltBadgeWithDialog} from '#/components/AltBadgeWithDialog'
 import {useFullscreen} from '#/components/hooks/useFullscreen'
@@ -30,6 +31,7 @@ export function VideoEmbedInnerWeb({
   setActive,
   onScreen,
   lastKnownTime,
+  onPlaybackStart,
 }: VideoEmbedInnerWebProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -41,6 +43,7 @@ export function VideoEmbedInnerWeb({
   const [isFullscreen] = useFullscreen(containerRef)
   const isGif = embed.presentation === 'gif'
   const reportDialogMetadata = useReportDialogMetadataContext()
+  const playbackStartTrackedRef = useRef(false)
 
   // send error up to error boundary
   const [error, setError] = useState<Error | null>(null)
@@ -80,6 +83,13 @@ export function VideoEmbedInnerWeb({
             onTimeUpdate={e => {
               const currentTime = e.currentTarget.currentTime
               lastKnownTime.current = currentTime
+              if (
+                !playbackStartTrackedRef.current &&
+                hasPlaybackStarted(currentTime)
+              ) {
+                playbackStartTrackedRef.current = true
+                onPlaybackStart(!focused)
+              }
               if (
                 !isGif &&
                 reportDialogMetadata &&
@@ -382,14 +392,14 @@ function useHLS({
       hls.destroy()
     }
   }, [
-	playlist,
-	setError,
-	setHasSubtitleTrack,
-	videoRef,
-	handleFragChange,
-	Hls,
-	updateCuePositions
-])
+    playlist,
+    setError,
+    setHasSubtitleTrack,
+    videoRef,
+    handleFragChange,
+    Hls,
+    updateCuePositions,
+  ])
 
   const flushOnLoop = useNonReactiveCallback(() => {
     if (!Hls) return

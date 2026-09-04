@@ -13,9 +13,7 @@ import {useAppviewClient, usePdsClient, useSession} from '#/state/session'
 import {useAnalytics} from '#/analytics'
 import {app} from '#/lexicons'
 import type * as bsky from '#/types/bsky'
-import {
-  RQKEY as DEER_VERIFICATION_RQKEY,
-} from '../deer-verification'
+import {RQKEY as DEER_VERIFICATION_RQKEY} from '../deer-verification'
 
 export function useVerificationsRemoveMutation() {
   const ax = useAnalytics()
@@ -25,9 +23,8 @@ export function useVerificationsRemoveMutation() {
   const updateProfileVerificationCache = useUpdateProfileVerificationCache()
 
   const qc = useQueryClient()
-  
+
   const deerVerificationTrusted = useDeerVerificationTrusted()
-  
 
   return useMutation({
     async mutationFn({
@@ -54,7 +51,8 @@ export function useVerificationsRemoveMutation() {
       await until(
         5,
         1e3,
-        (profile: app.bsky.actor.getProfile.$OutputBody) => {
+        profile => {
+          if (!profile) return false
           if (!profile.verification?.verifications.some(v => uris.has(v.uri))) {
             return true
           }

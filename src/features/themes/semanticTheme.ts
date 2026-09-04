@@ -1,6 +1,7 @@
 import {createTheme} from '@bsky.app/alf'
 
 import  {type Palette} from '#/alf/themes'
+import {resolveHueRecord} from './hue'
 import  {
   type ActiveTheme,
   type SemanticColors,
@@ -8,7 +9,6 @@ import  {
   type ThemeMode,
 } from './types'
 import {getColorSet} from './types'
-import {resolveHueRecord} from './hue'
 
 const HEX = /^#?([0-9a-f]{6})$/i
 

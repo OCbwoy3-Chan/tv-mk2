@@ -19,6 +19,9 @@ export const router = new Router<AllNavigatableRoutes>({
   // moderation
   Moderation: '/moderation',
   ModerationInbox: '/moderation/inbox',
+  ModerationInboxSettings: '/moderation/inbox/settings',
+  ModerationInboxReportDetails: '/moderation/inbox/report/details',
+  ModerationInboxSubjectDetails: '/moderation/inbox/subject/details',
   ModerationModlists: '/moderation/modlists',
   ModerationMutedAccounts: '/moderation/muted-accounts',
   ModerationBlockedAccounts: '/moderation/blocked-accounts',
@@ -100,7 +103,7 @@ export const router = new Router<AllNavigatableRoutes>({
   MessagesConversation: '/messages/:conversation',
   MessagesConversationSettings: '/messages/:conversation/settings',
   MessagesJoinRequests: '/messages/:conversation/requests',
-  // starter packs
+  // Starter Packs
   Start: '/start/:name/:rkey',
   StarterPackEdit: '/starter-pack/edit/:rkey',
   StarterPack: '/starter-pack/:name/:rkey',

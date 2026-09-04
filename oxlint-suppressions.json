@@ -230,19 +230,6 @@
       "count": 1
     }
   },
-  "src/components/StarterPack/Main/ProfilesList.tsx": {
-    "typescript/no-misused-promises": {
-      "count": 1
-    }
-  },
-  "src/components/StarterPack/ProfileStarterPacks.tsx": {
-    "typescript/no-explicit-any": {
-      "count": 1
-    },
-    "typescript/no-misused-promises": {
-      "count": 2
-    }
-  },
   "src/components/StarterPack/Wizard/WizardEditListDialog.tsx": {
     "typescript/no-explicit-any": {
       "count": 1
@@ -278,11 +265,6 @@
     },
     "typescript/no-unsafe-member-access": {
       "count": 2
-    }
-  },
-  "src/components/dialogs/StarterPackDialog.tsx": {
-    "typescript/no-misused-promises": {
-      "count": 1
     }
   },
   "src/components/dialogs/lists/CreateOrEditListDialog.tsx": {
@@ -416,11 +398,6 @@
       "count": 2
     }
   },
-  "src/lib/async/until.ts": {
-    "typescript/no-explicit-any": {
-      "count": 2
-    }
-  },
   "src/lib/broadcast/stub.ts": {
     "typescript/no-explicit-any": {
       "count": 1
@@ -498,11 +475,6 @@
   },
   "src/lib/infrastructure/load-test-image.web.ts": {
     "typescript/prefer-promise-reject-errors": {
-      "count": 2
-    }
-  },
-  "src/lib/infrastructure/url-test.ts": {
-    "typescript/no-unsafe-member-access": {
       "count": 2
     }
   },
@@ -694,11 +666,6 @@
     },
     "typescript/no-unsafe-member-access": {
       "count": 1
-    }
-  },
-  "src/screens/ProfileList/components/MoreOptionsMenu.tsx": {
-    "typescript/no-misused-promises": {
-      "count": 5
     }
   },
   "src/screens/ProfileList/components/SubscribeMenu.tsx": {

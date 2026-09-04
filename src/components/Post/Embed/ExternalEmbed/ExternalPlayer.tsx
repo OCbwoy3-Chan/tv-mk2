@@ -22,6 +22,7 @@ import {useNavigation} from '@react-navigation/native'
 import {type NavigationProp} from '#/lib/routes/types'
 import {
   type EmbedPlayerParams,
+  getEmbedPlayerMediaType,
   getPlayerAspect,
 } from '#/lib/strings/embed-player'
 import {useExternalEmbedsPrefs} from '#/state/preferences'
@@ -37,6 +38,7 @@ import {EmbedConsentDialog} from '#/components/dialogs/EmbedConsent'
 import {Fill} from '#/components/Fill'
 import {KeepAwake} from '#/components/KeepAwake'
 import {PlayButtonIcon} from '#/components/video/PlayButtonIcon'
+import {useAnalytics} from '#/analytics'
 import {IS_NATIVE} from '#/env'
 import {type app} from '#/lexicons'
 
@@ -127,10 +129,12 @@ export function ExternalPlayer({
   link,
   params,
   preview,
+  post,
 }: {
   link: app.bsky.embed.external.ViewExternal
   params: EmbedPlayerParams
   preview?: boolean
+  post?: app.bsky.feed.defs.PostView
 }) {
   const t = useTheme()
   const navigation = useNavigation<NavigationProp>()
@@ -140,9 +144,30 @@ export function ExternalPlayer({
   const consentDialogControl = useDialogControl()
   const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
+  const ax = useAnalytics()
 
   const [isPlayerActive, setIsPlayerActive] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  const activatePlayer = useCallback(() => {
+    if (!isPlayerActive) {
+      ax.metric('externalEmbed:playerActivated', {
+        postUri: post?.uri,
+        postAuthorDid: post?.author.did,
+        source: params.source,
+        playerType: params.type,
+        mediaType: getEmbedPlayerMediaType(params.type),
+      })
+    }
+    setIsPlayerActive(true)
+  }, [
+    ax,
+    isPlayerActive,
+    params.source,
+    params.type,
+    post?.author.did,
+    post?.uri,
+  ])
 
   const aspect = useMemo(() => {
     return getPlayerAspect({
@@ -211,14 +236,14 @@ export function ExternalPlayer({
         return
       }
 
-      setIsPlayerActive(true)
+      activatePlayer()
     },
-    [externalEmbedsPrefs, consentDialogControl, params.source],
+    [externalEmbedsPrefs, consentDialogControl, params.source, activatePlayer],
   )
 
   const onAcceptConsent = useCallback(() => {
-    setIsPlayerActive(true)
-  }, [])
+    activatePlayer()
+  }, [activatePlayer])
 
   return (
     <>

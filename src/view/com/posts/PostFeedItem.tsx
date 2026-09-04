@@ -30,6 +30,11 @@ import {
 import {Link} from '#/view/com/util/Link'
 import {PostMeta} from '#/view/com/util/PostMeta'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
+import {
+  POST_NUMBER_INLINE_OFFSET,
+  ThreadItemPostNumber,
+  useHasThreadItemPostNumber,
+} from '#/screens/PostThread/components/ThreadItemPostNumber'
 import {atoms as a, select, useTheme} from '#/alf'
 import {
   GalleryBleed,
@@ -84,7 +89,7 @@ interface FeedItemProps {
 export function PostFeedItem({
   post,
   record,
-  postNumbering: _postNumbering,
+  postNumbering,
   reason,
   feedContext,
   reqId,
@@ -123,6 +128,7 @@ export function PostFeedItem({
         <FeedItemInner
           post={postShadowed}
           record={record}
+          postNumbering={postNumbering}
           reason={reason}
           feedContext={feedContext}
           reqId={reqId}
@@ -149,7 +155,7 @@ export function PostFeedItem({
 let FeedItemInner = ({
   post,
   record,
-  postNumbering: _postNumbering,
+  postNumbering,
   reason,
   feedContext,
   reqId,
@@ -471,6 +477,7 @@ let FeedItemInner = ({
             isCarouselItem={isCarouselItem}
             moderation={moderation}
             richText={richText}
+            postNumbering={postNumbering}
             postEmbed={post.embed}
             postAuthor={post.author}
             onOpenEmbed={onOpenEmbed}
@@ -510,6 +517,7 @@ let PostContent = ({
   compactPosts,
   isCarouselItem,
   post,
+  postNumbering,
   moderation,
   richText,
   postEmbed,
@@ -526,12 +534,14 @@ let PostContent = ({
   postAuthor: app.bsky.feed.defs.PostView['author']
   onOpenEmbed: () => void
   post: app.bsky.feed.defs.PostView
+  postNumbering: FeedPostNumbering | undefined
   additionalPostAlerts?: AppModerationCause[]
   feedDescriptor?: string
 }): React.ReactNode => {
   const [limitLines, setLimitLines] = useState(
     () => countLines(richText.text) >= MAX_POST_LINES,
   )
+  const showPostNumber = useHasThreadItemPostNumber(postNumbering)
 
   const record = useMemo<app.bsky.feed.post.Main | undefined>(
     () =>
@@ -571,12 +581,26 @@ let PostContent = ({
             style={[isCarouselItem ? a.text_md : [a.flex_1, a.text_md]]}
             authorHandle={postAuthor.handle}
             shouldProxyLinks={true}
+            suffixOffset={POST_NUMBER_INLINE_OFFSET}
+            suffix={
+              !limitLines && showPostNumber ? (
+                <ThreadItemPostNumber value={postNumbering} />
+              ) : undefined
+            }
           />
           {limitLines && (
-            <ShowMoreTextButton style={[a.text_md]} onPress={onPressShowMore} />
+            <View style={[a.flex_row, a.align_center, a.gap_xs]}>
+              <ShowMoreTextButton
+                style={[a.text_md]}
+                onPress={onPressShowMore}
+              />
+              <ThreadItemPostNumber inline={false} value={postNumbering} />
+            </View>
           )}
         </View>
-      ) : undefined}
+      ) : (
+        <ThreadItemPostNumber inline={false} value={postNumbering} />
+      )}
       {record && <TranslatedPost hideTranslateLink post={post} />}
       {postEmbed ? (
         <View

@@ -1,7 +1,7 @@
 import {type Client} from '@atproto/lex'
 import {
-  AtUri,
   type AtIdentifierString,
+  AtUri,
   type AtUriString,
   type HandleString,
 } from '@atproto/syntax'

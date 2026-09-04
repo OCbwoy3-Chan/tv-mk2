@@ -1903,6 +1903,8 @@ let ComposerPost = memo(function ComposerPost({
 
   return (
     <View
+      // Keep focused inputs attached while active-state opacity changes.
+      collapsable={false}
       style={[
         a.mx_lg,
         a.mb_sm,
@@ -2899,6 +2901,7 @@ async function whenAppViewReady(
   uri: string,
   fn: (
     res: app.bsky.unspecced.getPostThreadV2.$OutputBody | undefined,
+    err: unknown,
   ) => boolean,
 ) {
   await until(

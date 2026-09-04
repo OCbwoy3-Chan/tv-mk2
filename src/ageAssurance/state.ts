@@ -6,6 +6,7 @@ import {
   getConfigFromCache,
   getOtherRequiredDataFromCache,
   getServerStateFromCache,
+  type OtherRequiredDataStatus,
   useAgeAssuranceServerDataContext,
 } from '#/ageAssurance/data'
 import {logger} from '#/ageAssurance/logger'
@@ -39,7 +40,7 @@ const PERMISSIVE_FLAGS: AgeAssuranceFlags = {
  * We intentionally keep this permissive (matching the older behavior) and
  * allow full access for logged-in users.
  */
-function computeAgeAssuranceState({
+export function computeAgeAssuranceState({
   hasSession,
 }: {
   hasSession: boolean
@@ -47,6 +48,7 @@ function computeAgeAssuranceState({
   config?: app.bsky.ageassurance.defs.Config
   state?: app.bsky.ageassurance.defs.State
   metadata?: AgeAssuranceMetadata
+  otherRequiredDataStatus?: OtherRequiredDataStatus
 }) {
   if (!hasSession)
     return {
@@ -73,9 +75,10 @@ export function unsafeGetAndComputeAgeAssurance({did}: {did: string}) {
   const config = getConfigFromCache()
   const state = getServerStateFromCache({did})
   const requiredData = getOtherRequiredDataFromCache({did})
-  const geolocation =
-    device.get(['mergedGeolocation']) ||
-    ({countryCode: undefined, regionCode: undefined})
+  const geolocation = device.get(['mergedGeolocation']) || {
+    countryCode: undefined,
+    regionCode: undefined,
+  }
 
   const metadata: AgeAssuranceMetadata = {
     accountCreatedAt: state?.metadata?.accountCreatedAt,

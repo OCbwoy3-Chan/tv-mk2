@@ -1,7 +1,10 @@
 import {useCallback, useMemo} from 'react'
+import {useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 
+import {TIMELINE_SAVED_FEED} from '#/lib/constants'
 import {type NavigationProp} from '#/lib/routes/types'
+import {getLocalizedFeedName} from '#/lib/strings/feed-names'
 import {useHideFeedsPromoTab} from '#/state/preferences/hide-feeds-promo-tab'
 import {type FeedSourceInfo} from '#/state/queries/feed'
 import {useSession} from '#/state/session'
@@ -13,29 +16,30 @@ export function HomeHeader(
   props: RenderTabBarFnProps & {
     testID?: string
     onPressSelected: () => void
-    feeds: FeedSourceInfo[]
+    feeds: Pick<FeedSourceInfo, 'displayName' | 'uri'>[]
   },
 ) {
   const {feeds, onSelect: onSelectProp} = props
   const {hasSession} = useSession()
   const hideFeedsPromoTab = useHideFeedsPromoTab()
+  const {t: l, i18n} = useLingui()
   const navigation = useNavigation<NavigationProp>()
 
   const hasPinnedCustom = useMemo<boolean>(() => {
     if (!hasSession) return false
     return feeds.some(tab => {
-      const isFollowing = tab.uri === 'following'
+      const isFollowing = tab.uri === TIMELINE_SAVED_FEED.value
       return !isFollowing
     })
   }, [feeds, hasSession])
 
   const items = useMemo(() => {
-    const pinnedNames = feeds.map(f => f.displayName)
+    const pinnedNames = feeds.map(f => getLocalizedFeedName(f, i18n))
     if (!hasPinnedCustom && !hideFeedsPromoTab) {
-      return pinnedNames.concat('Feeds ✨')
+      return pinnedNames.concat(l`Feeds ✨`)
     }
     return pinnedNames
-  }, [hasPinnedCustom, hideFeedsPromoTab, feeds])
+  }, [i18n, l, hasPinnedCustom, hideFeedsPromoTab, feeds])
 
   const onPressFeedsLink = useCallback(() => {
     navigation.navigate('Feeds')

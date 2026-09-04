@@ -12,7 +12,7 @@ import {getNativeOAuthClient, NATIVE_REDIRECT_URI} from './oauth-native-client'
  */
 export async function signInNative(
   identifier: string,
-  {signal}: {signal?: AbortSignal} = {},
+  {signal: _signal}: {signal?: AbortSignal} = {},
 ): Promise<OAuthSession> {
   const client = getNativeOAuthClient()
   const authorizationUrl = await client.authorize(identifier, {
