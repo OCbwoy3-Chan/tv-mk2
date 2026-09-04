@@ -145,7 +145,7 @@ export function RunesInfrastructureSettingsScreen() {
 
   const privatePostsAppViewItems = [
     {value: DEFAULT_PRIVATE_POSTS_APPVIEW_DID, label: l`tenna.party`},
-    {value: 'custom', label: l`Custom DID service`},
+    {value: 'custom', label: l`Other Instance`},
   ]
 
   return (
@@ -193,11 +193,11 @@ export function RunesInfrastructureSettingsScreen() {
 
       <SettingsList.Group iconInset={false}>
         <SettingsList.ItemText>
-          <Trans>Private Posts AppView</Trans>
+          <Trans>Private Vessel Instance</Trans>
         </SettingsList.ItemText>
         <View style={[a.gap_md, a.w_full]}>
           <Text style={[a.leading_snug]}>
-            <Trans>The server that will be used to serve private posts.</Trans>
+            <Trans>This is the software that serves the private posts, aka the AppView.</Trans>
           </Text>
           <Select.Root
             value={
@@ -212,12 +212,12 @@ export function RunesInfrastructureSettingsScreen() {
               }
               setPrivatePostsAppViewDID(value)
             }}>
-            <Select.Trigger label={l`Select private posts AppView`}>
+            <Select.Trigger label={l`Select Private Vessel Instance`}>
               <Select.ValueText />
               <Select.Icon />
             </Select.Trigger>
             <Select.Content
-              label={l`Private Posts AppView`}
+              label={l`Private Vessel Instance`}
               renderItem={({label, value}) => (
                 <Select.Item value={value} label={label}>
                   <Select.ItemIndicator />
@@ -661,17 +661,17 @@ function PrivatePostsAppViewDialog({
         setError(null)
       }}>
       <Dialog.Handle />
-      <Dialog.ScrollableInner label={l`Private Posts AppView DID`}>
+      <Dialog.ScrollableInner label={l`Private Vessel AppView DID`}>
         <View style={[a.gap_sm, a.pb_lg]}>
           <Text style={[a.text_2xl, a.font_bold]}>
-            <Trans>Private Posts AppView DID</Trans>
+            <Trans>Private Vessel AppView DID</Trans>
           </Text>
         </View>
 
         <View style={a.gap_lg}>
           <Dialog.Input
             key={openGeneration}
-            label={l`Private Posts AppView DID`}
+            label={l`Private Vessel AppView DID`}
             autoFocus
             style={[styles.textInput, pal.border, pal.text]}
             onChangeText={text => {

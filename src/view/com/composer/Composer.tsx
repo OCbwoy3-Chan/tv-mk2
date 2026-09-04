@@ -67,6 +67,11 @@ import {useQueries, useQueryClient} from '@tanstack/react-query'
 
 import {generateAltText} from '#/lib/ai/generateAltText'
 import * as apilib from '#/lib/api/index'
+import {
+  createPrivatePost,
+  forcePrivatePostsResync,
+  getPrivatePostsModStatus,
+} from '#/lib/api/private-posts'
 import {EmbeddingDisabledError} from '#/lib/api/resolve'
 import {useAppState} from '#/lib/appState'
 import {retry} from '#/lib/async/retry'
@@ -85,6 +90,7 @@ import {createVideoTelemetry} from '#/lib/media/video/telemetry'
 import {mimeToExt} from '#/lib/media/video/util'
 import {useCallOnce} from '#/lib/once'
 import {type NavigationProp} from '#/lib/routes/types'
+import {isSpacesCompatiblePDS} from '#/lib/spaces'
 import {cleanError} from '#/lib/strings/errors'
 import {colors} from '#/lib/styles'
 import {userStyle} from '#/lib/userstyles'
@@ -97,6 +103,7 @@ import {
   pasteImage,
 } from '#/state/gallery'
 import {useRequireAltTextEnabled} from '#/state/preferences'
+import {useAtprotoRkeySettings} from '#/state/preferences/atproto-rkey-settings'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   fromPostLanguages,
@@ -109,8 +116,14 @@ import {
   useAltTextAiConfig,
   useAltTextAiConfigured,
 } from '#/state/preferences/openrouter'
+import {
+  usePrivatePostsAppViewDID,
+  usePrivatePostsAppViewURL,
+} from '#/state/preferences/private-posts-appview'
+import {usePrivatePostsEnabled} from '#/state/preferences/private-posts-enabled'
 import {useTidSuffix} from '#/state/preferences/tid-suffix'
 import {usePreferencesQuery} from '#/state/queries/preferences'
+import {usePrivatePostAvailability} from '#/state/queries/private-posts'
 import {resolveLinkQueryOptions} from '#/state/queries/resolve-link'
 import {
   threadgateViewToAllowUISetting,
@@ -120,6 +133,7 @@ import {useAgent, useSession, useSessionApi} from '#/state/session'
 import {useComposerControls} from '#/state/shell/composer'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
+import {AtprotoBtn} from '#/view/com/composer/AtprotoBtn'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
 import {DraftsButton} from '#/view/com/composer/drafts/DraftsButton'
@@ -130,16 +144,13 @@ import {
 import {ExternalEmbedRemoveBtn} from '#/view/com/composer/ExternalEmbedRemoveBtn'
 import {GifAltTextDialog} from '#/view/com/composer/GifAltText'
 import {LabelsBtn} from '#/view/com/composer/labels/LabelsBtn'
-import {AtprotoBtn} from '#/view/com/composer/AtprotoBtn'
-import {
-  PrivatePostBtn,
-  type PostVisibility,
-} from '#/view/com/composer/PrivatePostBtn'
-import {useAtprotoRkeySettings} from '#/state/preferences/atproto-rkey-settings'
-import * as persisted from '#/state/persisted'
 import {Gallery} from '#/view/com/composer/photos/Gallery'
 import {OpenCameraBtn} from '#/view/com/composer/photos/OpenCameraBtn'
 import {SelectGifBtn} from '#/view/com/composer/photos/SelectGifBtn'
+import {
+  type PostVisibility,
+  PrivatePostBtn,
+} from '#/view/com/composer/PrivatePostBtn'
 import {SuggestedLanguage} from '#/view/com/composer/select-language/SuggestedLanguage'
 import {TagsBtn} from '#/view/com/composer/tags/TagsBtn'
 // TODO: Prevent naming components that coincide with RN primitives
@@ -182,16 +193,6 @@ import {
   IS_WEB_SAFARI,
 } from '#/env'
 import {type Gif} from '#/features/gifPicker/types'
-import {
-  createPrivatePost,
-  forcePrivatePostsResync,
-} from '#/lib/api/private-posts'
-import {usePrivatePostsEnabled} from '#/state/preferences/private-posts-enabled'
-import {useSpacesCompatiblePDS} from '#/state/queries/spaces'
-import {
-  usePrivatePostsAppViewDID,
-  usePrivatePostsAppViewURL,
-} from '#/state/preferences/private-posts-appview'
 import {BottomSheetPortalProvider} from '../../../../modules/bottom-sheet'
 import {
   draftToComposerPosts,
@@ -328,7 +329,6 @@ export const ComposePost = ({
   const queryClient = useQueryClient()
   const currentDid = currentAccount!.did
   const privatePostsEnabled = usePrivatePostsEnabled()
-  const spacesCompatiblePDS = useSpacesCompatiblePDS(!!privatePostsEnabled)
   const [privatePostsAppViewDID] = usePrivatePostsAppViewDID()
   const privatePostsAppViewURL = usePrivatePostsAppViewURL()
   const [postVisibility, setPostVisibility] = useState<PostVisibility>('public')
@@ -337,6 +337,19 @@ export const ComposePost = ({
   const [activeAccountDid, setActiveAccountDid] = useState<string>(
     initialActiveAccountDid ?? currentDid,
   )
+  const activeAccount = accounts.find(
+    account => account.did === activeAccountDid,
+  )
+  const privatePostAvailability = usePrivatePostAvailability(
+    activeAccountDid,
+    !!privatePostsEnabled,
+  )
+  const canSelectPrivatePost =
+    !!privatePostsEnabled &&
+    privatePostAvailability.isSuccess &&
+    privatePostAvailability.data.pdsSupported &&
+    !privatePostAvailability.data.isBanned &&
+    activeAccount?.isOauthSession !== true
 
   useEffect(() => {
     setActiveAccountDid(initialActiveAccountDid ?? currentDid)
@@ -1211,11 +1224,17 @@ export const ComposePost = ({
         draft.embed.quote ||
         !privatePostsEnabled
       ) {
-        setError(l`Private posts support text only.`)
+        setError(l`Private posts are text-only.`)
         return
       }
       if (!privatePostsAppViewURL) {
-        setError(l`The private posts AppView is unavailable.`)
+        setError(l`Your Private Vessel instance is unavailable.`)
+        return
+      }
+      if (activeAccount?.isOauthSession === true) {
+        setError(
+          l`OAuth sessions are not currently supported for private posts. Please log in with a password to use this feature.`,
+        )
         return
       }
     }
@@ -1283,6 +1302,17 @@ export const ComposePost = ({
 
       logger.info(`composer: posting...`)
       if (isPrivatePost) {
+        if (!(await isSpacesCompatiblePDS(currentAgent))) {
+          throw new Error(l`Private posts not supported by your PDS.`)
+        }
+        const modStatus = await getPrivatePostsModStatus({
+          agent: currentAgent,
+          appViewURL: privatePostsAppViewURL!,
+          appViewDID: privatePostsAppViewDID,
+        })
+        if (modStatus.isBanned) {
+          throw new Error(l`You are banned from ${privatePostsAppViewDID}.`)
+        }
         const privateDraft = filteredThread.posts[0]
         const resolved = await apilib.resolveRT(
           currentAgent,
@@ -1573,6 +1603,9 @@ export const ComposePost = ({
     privatePostsEnabled,
     privatePostsAppViewURL,
     privatePostsAppViewDID,
+    activeAccount?.isOauthSession,
+    omitViaField,
+    tidSuffix,
   ])
 
   const handleConfirmSkipEmpty = () => {
@@ -1688,9 +1721,7 @@ export const ComposePost = ({
         isReply={!!replyTo}
         postVisibility={postVisibility}
         onChangePostVisibility={setPostVisibility}
-        privatePostsEnabled={privatePostsEnabled}
-        spacesCompatiblePDS={spacesCompatiblePDS}
-        isOauthSession={currentAccount?.isOauthSession === true}
+        canSelectPrivatePost={canSelectPrivatePost}
         post={activePost}
         thread={composerState.thread}
         dispatch={composerDispatch}
@@ -2573,9 +2604,7 @@ function ComposerPills({
   isReply,
   postVisibility,
   onChangePostVisibility,
-  privatePostsEnabled,
-  spacesCompatiblePDS,
-  isOauthSession,
+  canSelectPrivatePost,
   thread,
   post,
   dispatch,
@@ -2584,9 +2613,7 @@ function ComposerPills({
   isReply: boolean
   postVisibility: PostVisibility
   onChangePostVisibility: (value: PostVisibility) => void
-  privatePostsEnabled: boolean | undefined
-  spacesCompatiblePDS: boolean | undefined
-  isOauthSession: boolean
+  canSelectPrivatePost: boolean
   thread: ThreadDraft
   post: PostDraft
   dispatch: (action: ComposerAction) => void
@@ -2676,14 +2703,10 @@ function ComposerPills({
             })
           }}
         />
-        {!isReply && (
+        {!isReply && canSelectPrivatePost && (
           <PrivatePostBtn
             value={postVisibility}
-            enabled={
-              !!privatePostsEnabled &&
-              spacesCompatiblePDS === true &&
-              !isOauthSession
-            }
+            enabled
             onChange={onChangePostVisibility}
           />
         )}
