@@ -27,6 +27,7 @@ import {
   maybeApplyGalleryOffsetStyles,
 } from '#/components/images/Gallery'
 import {ContentHider} from '#/components/moderation/ContentHider'
+import {LabelsOnMyPost} from '#/components/moderation/LabelsOnMe'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
 import * as ReportDialogMetadataContext from '#/components/moderation/ReportDialog/ReportDialogMetadataContext'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
@@ -230,13 +231,14 @@ function PostInner({
             {replyAuthorDid !== '' && (
               <PostRepliedTo parentAuthor={replyAuthorDid} />
             )}
+            <LabelsOnMyPost post={post} />
             <ContentHider
-              modui={moderation.ui('contentView')}
+              modui={moderation.ui('contentList')}
               style={[styles.contentHider, userStyle('wsky-post__content')]}
               childContainerStyle={styles.contentHiderChild}>
               <PostAlerts
                 post={post}
-                modui={moderation.ui('contentView')}
+                modui={moderation.ui('contentList')}
                 style={[a.pb_xs]}
               />
               {richText.text ? (

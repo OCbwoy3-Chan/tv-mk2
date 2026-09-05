@@ -318,14 +318,6 @@ let NotificationFeedItem = ({
   const formattedAuthorsCount = hasMultipleAuthors
     ? formatCount(i18n, additionalAuthorsCount)
     : ''
-  /*
-   * Bundled follows/verifications link to the first author's profile. Prefer
-   * expanding the author list when tapping the sentence, so the user can see
-   * everyone involved instead of bouncing to one highlighted profile.
-   */
-  const contentPressExpandsAuthors =
-    hasMultipleAuthors && itemHref === firstAuthor.href
-
   let a11yLabel = ''
   let notificationContent: React.ReactElement<any>
   let icon = (
@@ -646,6 +638,7 @@ let NotificationFeedItem = ({
   return (
     <NotificationRow
       isSingularFollow={isSingularFollow}
+      onCollapse={isAuthorsExpanded ? onToggleAuthorsExpanded : undefined}
       linkProps={{
         label: a11yLabel,
         testID: `feedItem-by-${item.notification.author.handle}`,
@@ -698,9 +691,7 @@ let NotificationFeedItem = ({
       {({hovered}) => (
         <>
           <SubtleHover hover={hovered} />
-          <ExpandAuthorsPressable
-            enabled={contentPressExpandsAuthors}
-            onToggleAuthorsExpanded={onToggleAuthorsExpanded}>
+          <View style={[a.flex_1, a.flex_row, a.align_start]}>
             <View style={[styles.layoutIcon, a.pr_sm]}>
               {/* TODO: Prevent conditional rendering and move toward composable
             notifications for clearer accessibility labeling */}
@@ -775,7 +766,7 @@ let NotificationFeedItem = ({
                 </View>
               ) : null}
             </View>
-          </ExpandAuthorsPressable>
+          </View>
         </>
       )}
     </NotificationRow>
@@ -786,10 +777,12 @@ export {NotificationFeedItem}
 
 function NotificationRow({
   isSingularFollow,
+  onCollapse,
   linkProps,
   children,
 }: {
   isSingularFollow: boolean
+  onCollapse?: (e: GestureResponderEvent) => void
   linkProps: Omit<React.ComponentProps<typeof Link>, 'children'>
   children: (context: ButtonContext) => React.ReactElement
 }) {
@@ -800,11 +793,12 @@ function NotificationRow({
     onPress: linkProps.onPress,
   })
 
-  if (isSingularFollow) {
+  if (isSingularFollow || onCollapse) {
     /*
      * A Link renders as an anchor on web. Wrapping this row in one would nest
      * the author's InlineLinkText inside that anchor, which browsers do not
-     * support. Let the profile link be the sole interactive target instead.
+     * support. Expanded rows also use a Pressable so the surrounding area
+     * collapses the list while nested links and controls keep their actions.
      */
     return (
       <Pressable
@@ -812,7 +806,7 @@ function NotificationRow({
         onHoverIn={() => setHovered(true)}
         onHoverOut={() => setHovered(false)}
         style={linkProps.style}
-        onPress={onPress}
+        onPress={onCollapse ?? onPress}
         accessible={false}>
         {children({hovered} as ButtonContext)}
       </Pressable>
@@ -883,13 +877,25 @@ function NotificationContent({
   timestamp: string
   niceTimestamp: string
 }) {
-  function Wrapper({children}: {children: React.ReactNode}) {
-    return (
-      <NotificationSentence timestamp={timestamp} niceTimestamp={niceTimestamp}>
-        {children}
-      </NotificationSentence>
-    )
-  }
+  // Keep the translated sentence mounted through row hover/press updates so
+  // its links don't disappear between pointer down and click.
+  const Wrapper = useMemo(
+    () =>
+      function NotificationSentenceWrapper({
+        children,
+      }: {
+        children: React.ReactNode
+      }) {
+        return (
+          <NotificationSentence
+            timestamp={timestamp}
+            niceTimestamp={niceTimestamp}>
+            {children}
+          </NotificationSentence>
+        )
+      },
+    [timestamp, niceTimestamp],
+  )
   return cloneElement(content, {component: Wrapper})
 }
 
@@ -1055,40 +1061,6 @@ function renderInlineTransChildren(
     }
     return child
   })
-}
-
-function ExpandAuthorsPressable({
-  enabled,
-  children,
-  onToggleAuthorsExpanded,
-}: {
-  enabled: boolean
-  children: React.ReactNode
-  onToggleAuthorsExpanded: (e: GestureResponderEvent) => void
-}) {
-  const layoutStyle = [a.flex_1, a.flex_row, a.align_start]
-
-  /*
-   * When enabled (bundled follows/verifications), presses expand/collapse the
-   * author list and stopPropagation so the outer Link does not navigate to the
-   * first profile. Nested InlineLinkText / ProfileCard links still win for
-   * taps on names, matching the previous ExpandListPressable behavior.
-   *
-   * When disabled (e.g. likes), presses fall through to the outer Link so
-   * sentence taps open the subject post.
-   */
-  if (enabled) {
-    return (
-      <Pressable
-        onPress={onToggleAuthorsExpanded}
-        style={[layoutStyle, styles.expandedAuthorsTrigger]}
-        accessible={false}>
-        {children}
-      </Pressable>
-    )
-  }
-
-  return <View style={layoutStyle}>{children}</View>
 }
 
 function FollowBackButton({
@@ -1513,9 +1485,6 @@ const styles = StyleSheet.create({
   addedContainer: {
     paddingTop: 4,
     paddingLeft: 36,
-  },
-  expandedAuthorsTrigger: {
-    zIndex: 1,
   },
   expandedAuthorsCloseBtn: {
     flexDirection: 'row',
