@@ -10,6 +10,11 @@
             "id": "#private",
             "type": "AtprotoSpaceService",
             "serviceEndpoint": "https://privateposts-api.tenna.party"
+        },
+        {
+            "id": "#privatebeta",
+            "type": "AtprotoSpaceService",
+            "serviceEndpoint": "http://localhost:3000"    
         }
     ]
 }
