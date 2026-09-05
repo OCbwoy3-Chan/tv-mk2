@@ -38,6 +38,7 @@ import * as Layout from '#/components/Layout'
 import {Loader} from '#/components/Loader'
 import * as Hider from '#/components/moderation/Hider'
 import {IS_WEB} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {app} from '#/lexicons'
 import {AboutSection} from './AboutSection'
 import {ErrorScreen} from './components/ErrorScreen'
@@ -230,7 +231,12 @@ function ProfileListScreenLoaded({
               testID="composeFAB"
               userStyleVariant="compose"
               onPress={() => openComposer({logContext: 'Fab'})}
-              icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+              icon={
+                <EditBigIcon
+                  size="lg"
+                  fill={accentForeground(t, t.palette.primary_500)}
+                />
+              }
               accessibilityRole="button"
               accessibilityLabel={_(msg`New post`)}
               accessibilityHint=""
@@ -274,7 +280,12 @@ function ProfileListScreenLoaded({
             testID="composeFAB"
             userStyleVariant="compose"
             onPress={() => openComposer({logContext: 'Fab'})}
-            icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+            icon={
+              <EditBigIcon
+                size="lg"
+                fill={accentForeground(t, t.palette.primary_500)}
+              />
+            }
             accessibilityRole="button"
             accessibilityLabel={_(msg`New post`)}
             accessibilityHint=""

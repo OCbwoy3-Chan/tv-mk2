@@ -23,6 +23,7 @@ import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {CheckThick_Stroke2_Corner0_Rounded as Checkmark} from '#/components/icons/Check'
 import {Text} from '#/components/Typography'
 import {IS_NATIVE} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 
 export * from './Panel'
 
@@ -403,7 +404,19 @@ export function Checkbox() {
         baseStyles,
         hovered ? baseHoverStyles : {},
       ]}>
-      {selected && <Checkmark width={14} fill={t.palette.white} />}
+      {selected && (
+        <Checkmark
+          width={14}
+          fill={
+            isInvalid || disabled
+              ? t.palette.white
+              : accentForeground(
+                  t,
+                  hovered ? t.palette.primary_400 : t.palette.primary_500,
+                )
+          }
+        />
+      )}
     </View>
   )
 }
@@ -507,7 +520,10 @@ export function Switch() {
         style={[
           enableSquareButtons ? a.rounded_sm : a.rounded_full,
           {
-            backgroundColor: t.palette.white,
+            backgroundColor:
+              selected && !isInvalid && !disabled
+                ? accentForeground(t, t.palette.primary_500)
+                : t.palette.white,
             height: 22,
             width: 22,
           },
@@ -569,7 +585,15 @@ export function BaseRadio({
             a.absolute,
             a.rounded_full,
             {height: 12, width: 12},
-            {backgroundColor: t.palette.white},
+            {
+              backgroundColor:
+                isInvalid || disabled
+                  ? t.palette.white
+                  : accentForeground(
+                      t,
+                      hovered ? t.palette.primary_400 : t.palette.primary_500,
+                    ),
+            },
             indicatorStyles,
           ]}
         />

@@ -96,6 +96,7 @@ import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {type Events} from '#/analytics/metrics/types'
 import {useActorStatus} from '#/features/liveNow'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {useActiveThemeUpdate} from '#/features/themes/api'
 import {type app} from '#/lexicons'
 import {router} from '#/routes'
@@ -570,7 +571,7 @@ function NavItem({
                   top: '-10%',
                   left: count.length === 1 ? 12 : 8,
                   backgroundColor: t.palette.primary_500,
-                  color: t.palette.white,
+                  color: accentForeground(t, t.palette.primary_500),
                   lineHeight: a.text_sm.fontSize,
                   paddingHorizontal: 4,
                   paddingVertical: 1,

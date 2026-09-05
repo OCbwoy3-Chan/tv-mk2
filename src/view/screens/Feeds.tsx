@@ -46,6 +46,7 @@ import * as Layout from '#/components/Layout'
 import {Link} from '#/components/Link'
 import * as ListCard from '#/components/ListCard'
 import {IS_NATIVE, IS_WEB} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {type app} from '#/lexicons'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Feeds'>
@@ -546,7 +547,12 @@ export function FeedsScreen(_props: Props) {
           testID="composeFAB"
           userStyleVariant="compose"
           onPress={onPressCompose}
-          icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+          icon={
+            <EditBigIcon
+              size="lg"
+              fill={accentForeground(t, t.palette.primary_500)}
+            />
+          }
           accessibilityRole="button"
           accessibilityLabel={_(msg`New post`)}
           accessibilityHint=""
@@ -595,7 +601,7 @@ function FollowingFeed() {
                 height: 18,
               },
             ]}
-            fill={t.palette.white}
+            fill={accentForeground(t, t.palette.primary_500)}
           />
         </View>
         <FeedCard.TitleAndByline

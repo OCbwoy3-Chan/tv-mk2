@@ -4,6 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import {decode} from '#/lib/storage-manifest/codec'
 import {isNetworkError} from '#/lib/strings/errors'
 import {matchXrpcError} from '#/lib/xrpc-error'
 import {useAppviewClient, useChatClient} from '#/state/session'
@@ -35,12 +36,24 @@ export function useDraftsQuery() {
       })
       return {
         cursor: data.cursor,
-        drafts: data.drafts.map(view =>
-          draftViewToSummary({
-            view,
-            analytics: ax,
-          }),
-        ),
+        drafts: data.drafts
+          .filter(view => {
+            const firstText = view.draft.posts[0]?.text ?? ''
+            if (!firstText.startsWith('witchsky:storage')) return true
+            try {
+              decode(view.draft.posts.map(post => post.text ?? ''))
+              return false
+            } catch {
+              // Keep corrupt or partial manifests visible for cleanup.
+              return true
+            }
+          })
+          .map(view =>
+            draftViewToSummary({
+              view,
+              analytics: ax,
+            }),
+          ),
       }
     },
     initialPageParam: undefined as string | undefined,

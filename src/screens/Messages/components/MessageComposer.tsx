@@ -39,6 +39,7 @@ import {PaperPlaneVertical_Filled_Stroke2_Corner1_Rounded as PaperPlaneIcon} fro
 import {Loader} from '#/components/Loader'
 import * as Toast from '#/components/Toast'
 import {IS_ANDROID, IS_IOS, IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {type chat} from '#/lexicons'
 import {type MessageEmbedState} from './MessageInputEmbed'
 
@@ -344,9 +345,25 @@ function SubmitButton({
         onPress={onPress}
         disabled={disabled}>
         {loading ? (
-          <Loader size="md" fill={t.palette.white} style={[a.mb_2xs]} />
+          <Loader
+            size="md"
+            fill={
+              disabled
+                ? t.atoms.text_contrast_medium.color
+                : accentForeground(t, t.palette.primary_500)
+            }
+            style={[a.mb_2xs]}
+          />
         ) : (
-          <PaperPlaneIcon size="md" fill={t.palette.white} style={[a.mb_2xs]} />
+          <PaperPlaneIcon
+            size="md"
+            fill={
+              disabled
+                ? t.atoms.text_contrast_medium.color
+                : accentForeground(t, t.palette.primary_500)
+            }
+            style={[a.mb_2xs]}
+          />
         )}
       </Pressable>
     </GlassView>

@@ -122,7 +122,6 @@ let NotificationFeedItem = ({
   const {_, i18n} = useLingui()
   const ax = useAnalytics()
   const [isAuthorsExpanded, setIsAuthorsExpanded] = useState<boolean>(false)
-  const [isHoveringAuthorsList, setIsHoveringAuthorsList] = useState(false)
   const itemHref = useMemo(() => {
     switch (item.type) {
       case 'post-like':
@@ -698,12 +697,10 @@ let NotificationFeedItem = ({
       }}>
       {({hovered}) => (
         <>
-          <SubtleHover hover={hovered && !isHoveringAuthorsList} />
+          <SubtleHover hover={hovered} />
           <ExpandAuthorsPressable
             enabled={contentPressExpandsAuthors}
-            onToggleAuthorsExpanded={onToggleAuthorsExpanded}
-            onHoverIn={() => setIsHoveringAuthorsList(true)}
-            onHoverOut={() => setIsHoveringAuthorsList(false)}>
+            onToggleAuthorsExpanded={onToggleAuthorsExpanded}>
             <View style={[styles.layoutIcon, a.pr_sm]}>
               {/* TODO: Prevent conditional rendering and move toward composable
             notifications for clearer accessibility labeling */}
@@ -796,6 +793,7 @@ function NotificationRow({
   linkProps: Omit<React.ComponentProps<typeof Link>, 'children'>
   children: (context: ButtonContext) => React.ReactElement
 }) {
+  const [hovered, setHovered] = useState(false)
   const {onPress} = useLink({
     to: linkProps.to,
     displayText: '',
@@ -811,10 +809,12 @@ function NotificationRow({
     return (
       <Pressable
         testID={linkProps.testID}
+        onHoverIn={() => setHovered(true)}
+        onHoverOut={() => setHovered(false)}
         style={linkProps.style}
         onPress={onPress}
         accessible={false}>
-        {children({hovered: false} as ButtonContext)}
+        {children({hovered} as ButtonContext)}
       </Pressable>
     )
   }
@@ -1061,14 +1061,10 @@ function ExpandAuthorsPressable({
   enabled,
   children,
   onToggleAuthorsExpanded,
-  onHoverIn,
-  onHoverOut,
 }: {
   enabled: boolean
   children: React.ReactNode
   onToggleAuthorsExpanded: (e: GestureResponderEvent) => void
-  onHoverIn?: () => void
-  onHoverOut?: () => void
 }) {
   const layoutStyle = [a.flex_1, a.flex_row, a.align_start]
 
@@ -1085,8 +1081,6 @@ function ExpandAuthorsPressable({
     return (
       <Pressable
         onPress={onToggleAuthorsExpanded}
-        onHoverIn={onHoverIn}
-        onHoverOut={onHoverOut}
         style={[layoutStyle, styles.expandedAuthorsTrigger]}
         accessible={false}>
         {children}
@@ -1094,14 +1088,7 @@ function ExpandAuthorsPressable({
     )
   }
 
-  return (
-    <View
-      onPointerEnter={onHoverIn}
-      onPointerLeave={onHoverOut}
-      style={layoutStyle}>
-      {children}
-    </View>
-  )
+  return <View style={layoutStyle}>{children}</View>
 }
 
 function FollowBackButton({

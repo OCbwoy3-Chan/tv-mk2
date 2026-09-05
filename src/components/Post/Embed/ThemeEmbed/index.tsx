@@ -4,7 +4,7 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
 import {atoms as a, useTheme} from '#/alf'
-import {Link} from '#/components/Link'
+import {InlineLinkText, Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
 import {useThemeRecord} from '#/features/themes/api'
 import {ThemePreview} from '#/features/themes/ThemePreview'
@@ -27,10 +27,13 @@ export function ThemeEmbed({
   const colorSet = colorSets[0]
   const title = theme?.record.name || view.title || _(msg`Theme`)
   const description = theme?.record.description || view.description
+  const authorSummary = description?.match(/^(\d+ variants? · )(@\S+)$/)
   return (
     <View
       style={[
         a.mt_sm,
+        a.flex_col,
+        a.align_stretch,
         a.rounded_md,
         a.overflow_hidden,
         a.border,
@@ -39,42 +42,60 @@ export function ThemeEmbed({
       ]}>
       <Link
         label={_(msg`Preview theme ${title}`)}
-        accessibilityHint=""
         to={{screen: 'Theme', params: route}}
         onPress={onOpen}
-        style={[a.w_full]}>
-        {() => (
-          <View style={[a.w_full, a.overflow_hidden]}>
-            {colorSet ? (
-              <ThemePreview
-                colorSet={colorSet}
-                colorSets={colorSets}
-                special={Boolean(theme?.record.special)}
-                variantCount={colorSets.length}
-                aspectRatio={3.82}
-                hideLabel
-                style={{minWidth: 0}}
-              />
-            ) : (
-              <View
-                style={[a.w_full, t.atoms.bg_contrast_25, {aspectRatio: 3.82}]}
-              />
-            )}
-          </View>
-        )}
-      </Link>
-      <View style={[a.p_md, a.gap_xs, t.atoms.bg]}>
-        <Text numberOfLines={2} style={[a.text_lg, a.font_semi_bold]}>
-          {title}
-        </Text>
-        {description ? (
-          <Text
-            numberOfLines={2}
-            style={[a.text_sm, t.atoms.text_contrast_medium]}>
-            {description}
+        style={[a.w_full, a.flex_col, a.align_stretch]}>
+        <View pointerEvents="none" style={[a.w_full, a.overflow_hidden]}>
+          {colorSet ? (
+            <ThemePreview
+              colorSet={colorSet}
+              colorSets={colorSets}
+              special={Boolean(theme?.record.special)}
+              variantCount={colorSets.length}
+              aspectRatio={3.82}
+              hideLabel
+              style={{minWidth: 0}}
+            />
+          ) : (
+            <View
+              style={[a.w_full, t.atoms.bg_contrast_25, {aspectRatio: 3.82}]}
+            />
+          )}
+        </View>
+        <View style={[a.p_md, description ? a.pb_xs : undefined, t.atoms.bg]}>
+          <Text numberOfLines={2} style={[a.text_lg, a.font_semi_bold]}>
+            {title}
           </Text>
-        ) : null}
-      </View>
+        </View>
+      </Link>
+      {description ? (
+        <Text
+          numberOfLines={2}
+          style={[
+            a.px_md,
+            a.pb_md,
+            a.text_sm,
+            t.atoms.bg,
+            t.atoms.text_contrast_medium,
+          ]}>
+          <InlineLinkText
+            label={_(msg`Preview theme ${title}`)}
+            to={{screen: 'Theme', params: route}}
+            onPress={onOpen}
+            style={[a.text_sm, t.atoms.text_contrast_medium]}>
+            {authorSummary ? authorSummary[1] : description}
+          </InlineLinkText>
+          {authorSummary && (
+            <InlineLinkText
+              label={authorSummary[2]}
+              to={{screen: 'Profile', params: {name: route.name}}}
+              onPress={onOpen}
+              style={[a.text_sm, t.atoms.text_contrast_medium]}>
+              {authorSummary[2]}
+            </InlineLinkText>
+          )}
+        </Text>
+      ) : null}
     </View>
   )
 }

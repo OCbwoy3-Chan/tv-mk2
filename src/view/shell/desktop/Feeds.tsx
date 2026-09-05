@@ -19,6 +19,7 @@ import {PlusSmall_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus
 import {Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {accentForeground} from '#/features/themes/accentForeground'
 
 export function DesktopFeeds() {
   const t = useTheme()
@@ -213,7 +214,7 @@ function FeedItem({
           ]}>
           <FilterTimeline
             style={{width: 14, height: 14}}
-            fill={t.palette.white}
+            fill={accentForeground(t, t.palette.primary_500)}
           />
         </View>
       ) : (

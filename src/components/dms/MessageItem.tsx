@@ -53,6 +53,7 @@ import * as ProfileCard from '#/components/ProfileCard'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {DateDivider} from './DateDivider'
@@ -590,7 +591,9 @@ let MessageItem = ({
                         value={rt}
                         style={[
                           a.text_md,
-                          isFromSelf && {color: t.palette.white},
+                          isFromSelf && {
+                            color: accentForeground(t, t.palette.primary_500),
+                          },
                           // Emoji-only: add top leading to avoid clipping the
                           // glyph, then pull the bottom up by the same amount so
                           // the glyph bottom-aligns with the avatar instead of
@@ -910,12 +913,14 @@ function ReplyQuote({
       ? createSanitizedDisplayName(senderProfile)
       : null
 
-  const tintColor = isFromSelf ? t.palette.white : t.atoms.text.color
+  const tintColor = isFromSelf
+    ? accentForeground(t, t.palette.primary_500)
+    : t.atoms.text.color
   const subtleColor = isFromSelf
-    ? t.palette.white
+    ? accentForeground(t, t.palette.primary_500)
     : t.atoms.text_contrast_high.color
   const borderColor = isFromSelf
-    ? utils.alpha(t.palette.white, 0.5)
+    ? utils.alpha(accentForeground(t, t.palette.primary_500), 0.5)
     : t.atoms.border_contrast_high.borderColor
 
   let text: string

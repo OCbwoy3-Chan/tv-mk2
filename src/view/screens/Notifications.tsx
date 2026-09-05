@@ -38,6 +38,7 @@ import * as Layout from '#/components/Layout'
 import {InlineLinkText, Link} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {IS_NATIVE} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 
 // We don't currently persist this across reloads since
 // you gotta visit All to clear the badge anyway.
@@ -169,7 +170,12 @@ export function NotificationsScreen({}: Props) {
         testID="composeFAB"
         userStyleVariant="compose"
         onPress={() => openComposer({logContext: 'Fab'})}
-        icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+        icon={
+          <EditBigIcon
+            size="lg"
+            fill={accentForeground(t, t.palette.primary_500)}
+          />
+        }
         accessibilityRole="button"
         accessibilityLabel={_(msg`New post`)}
         accessibilityHint=""

@@ -38,6 +38,7 @@ import {EditBig_Stroke2_Corner2_Rounded as EditBigIcon} from '#/components/icons
 import {HashtagWide_Stroke1_Corner0_Rounded as HashtagWideIcon} from '#/components/icons/Hashtag'
 import * as Layout from '#/components/Layout'
 import {IS_NATIVE} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {app} from '#/lexicons'
 import {
   CustomFeedHeader,
@@ -214,7 +215,12 @@ export function CustomFeedScreenInner({
           testID="composeFAB"
           userStyleVariant="compose"
           onPress={() => openComposer({logContext: 'Fab'})}
-          icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+          icon={
+            <EditBigIcon
+              size="lg"
+              fill={accentForeground(t, t.palette.primary_500)}
+            />
+          }
           accessibilityRole="button"
           accessibilityLabel={l`New post`}
           accessibilityHint=""

@@ -16,6 +16,7 @@ import {DotGrid3x1_Stroke2_Corner0_Rounded as EllipsisIcon} from '#/components/i
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import * as Menu from '#/components/Menu'
 import {Text} from '#/components/Typography'
+import {themeShareUrl} from '#/features/themes/urls'
 import {useApplyTheme, useSaveTheme, useUnsaveTheme} from './api'
 import {ThemePreview} from './ThemePreview'
 import {getColorSet, getColorSets, themeRkey, type ThemeView} from './types'
@@ -187,9 +188,7 @@ function ThemeCardMenu({
         <Menu.Item
           label={_(msg`Share theme`)}
           onPress={() =>
-            void shareUrl(
-              `https://witchsky.app/profile/${theme.author}/theme/${themeRkey(theme.uri)}`,
-            )
+            void shareUrl(themeShareUrl(theme.author, themeRkey(theme.uri)))
           }>
           <Menu.ItemText>
             <Trans>Share</Trans>

@@ -49,8 +49,10 @@ import {
   getColorSets,
   isHueTheme,
   isMaterialYouTheme,
+  THEME_COLLECTION,
   type ThemeView,
 } from '#/features/themes/types'
+import {themeShareUrl} from '#/features/themes/urls'
 import {hexToHue, hueToHex} from './Settings/AppearanceSettings/shared'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Theme'>
@@ -128,7 +130,31 @@ export function ThemeScreen({route, navigation}: Props) {
     companion = theme?.record.recommendedPair
       ? new AtUri(theme.record.recommendedPair)
       : undefined
+    if (
+      companion &&
+      (!theme?.record.recommendedPair?.startsWith('at://') ||
+        companion.collection !== THEME_COLLECTION ||
+        !companion.rkey ||
+        companion.search ||
+        companion.hash ||
+        companion.toString() === theme?.uri)
+    ) {
+      companion = undefined
+    }
   } catch {}
+  const localCompanion = FEATURED_THEMES.find(
+    item => item.uri === companion?.toString(),
+  )
+  const companionQuery = useThemeRecord(
+    localCompanion ? undefined : companion?.hostname,
+    localCompanion ? undefined : companion?.rkey,
+  )
+  const companionTheme = localCompanion ?? companionQuery.data
+  const validCompanion = Boolean(
+    companionTheme &&
+    companionTheme.uri !== theme?.uri &&
+    companionTheme.record.mode !== theme?.record.mode,
+  )
   const companionMode = theme?.record.mode === 'dark' ? 'light' : 'dark'
   const creatorHandle = creator.data?.handle ?? theme?.author
   const isOwn = Boolean(
@@ -227,7 +253,7 @@ export function ThemeScreen({route, navigation}: Props) {
                 {theme.record.description && (
                   <Text style={[a.text_md]}>{theme.record.description}</Text>
                 )}
-                {companion && (
+                {companion && validCompanion && (
                   <Button
                     label={_(msg`View companion ${companionMode} theme`)}
                     size="small"
@@ -448,11 +474,7 @@ function ThemePageMenu({
         )}
         <Menu.Item
           label={_(msg`Share theme`)}
-          onPress={() =>
-            void shareUrl(
-              `https://witchsky.app/profile/${shareName}/theme/${rkey}`,
-            )
-          }>
+          onPress={() => void shareUrl(themeShareUrl(shareName, rkey))}>
           <Menu.ItemText>
             <Trans>Share</Trans>
           </Menu.ItemText>

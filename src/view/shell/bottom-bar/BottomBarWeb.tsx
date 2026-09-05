@@ -62,6 +62,7 @@ import {Text} from '#/components/Typography'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB_TOUCH_DEVICE} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {router} from '#/routes'
 import {styles} from './BottomBarStyles'
 
@@ -402,7 +403,13 @@ const NavItem: React.FC<{
               other: '# unread items',
             })}`,
           )}>
-          <Text style={styles.notificationCountLabel}>{notificationCount}</Text>
+          <Text
+            style={[
+              styles.notificationCountLabel,
+              {color: accentForeground(t, t.palette.primary_500)},
+            ]}>
+            {notificationCount}
+          </Text>
         </View>
       ) : hasNew ? (
         <View
@@ -527,7 +534,13 @@ function TouchNavItem({
               other: '# unread items',
             })}`,
           )}>
-          <Text style={styles.notificationCountLabel}>{notificationCount}</Text>
+          <Text
+            style={[
+              styles.notificationCountLabel,
+              {color: accentForeground(t, t.palette.primary_500)},
+            ]}>
+            {notificationCount}
+          </Text>
         </View>
       ) : hasNew ? (
         <View

@@ -13,7 +13,6 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {RQKEY, usePostFeedQuery} from '#/state/queries/post-feed'
 import {BlockDrawerGesture} from '#/view/shell/BlockDrawerGesture'
 import {atoms as a, tokens, useGutters, useTheme} from '#/alf'
-import {ButtonIcon} from '#/components/Button'
 import {ChevronRight_Stroke2_Corner0_Rounded as ChevronRight} from '#/components/icons/Chevron'
 import {Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
@@ -22,6 +21,7 @@ import {
   CompactVideoPostCardPlaceholder,
 } from '#/components/VideoPostCard'
 import {useAnalytics} from '#/analytics'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
@@ -224,7 +224,10 @@ function VideoCards({
                     backgroundColor: t.palette.primary_500,
                   },
                 ]}>
-                <ButtonIcon icon={ChevronRight} />
+                <ChevronRight
+                  size="md"
+                  style={{color: accentForeground(t, t.palette.primary_500)}}
+                />
               </View>
             </View>
           )}

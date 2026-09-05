@@ -1,8 +1,8 @@
 import {createTheme} from '@bsky.app/alf'
 
-import  {type Palette} from '#/alf/themes'
+import {type Palette} from '#/alf/themes'
 import {resolveHueRecord} from './hue'
-import  {
+import {
   type ActiveTheme,
   type SemanticColors,
   type ThemeColorSet,
@@ -128,12 +128,13 @@ function themeFor(
   mode: ThemeMode,
   name: 'light' | 'dark' | 'dim',
 ) {
-  return createTheme({
+  const theme = createTheme({
     scheme: mode,
     name,
     palette: palette(set.colors, mode),
     options: mode === 'dark' ? {shadowOpacity: 0.4} : undefined,
   })
+  return {...theme, onAccent: set.colors.onAccent}
 }
 
 export function activeThemeToScheme(activeTheme: ActiveTheme) {

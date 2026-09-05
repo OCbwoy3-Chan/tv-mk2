@@ -63,6 +63,7 @@ import {Text} from '#/components/Typography'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {useDemoMode} from '#/storage/hooks/demo-mode'
 import {styles} from './BottomBarStyles'
 
@@ -453,7 +454,10 @@ function Btn({
             {backgroundColor: t.palette.primary_500},
           ]}>
           <Text
-            style={styles.notificationCountLabel}
+            style={[
+              styles.notificationCountLabel,
+              {color: accentForeground(t, t.palette.primary_500)},
+            ]}
             maxFontSizeMultiplier={1.5}>
             {notificationCount}
           </Text>

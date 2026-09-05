@@ -25,10 +25,11 @@ import {
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useThemePrefs} from '#/state/shell'
-import {atoms as a, flatten, select, useTheme} from '#/alf'
+import {atoms as a, flatten, useTheme} from '#/alf'
 import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Text} from '#/components/Typography'
 import {IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 
 /**
  * The `Button` component, and some extensions of it like `Link` are intended
@@ -693,7 +694,7 @@ Button.displayName = 'Button'
 
 export function useSharedButtonTextStyles() {
   const t = useTheme()
-  const {color, variant, disabled, size} = useButtonContext()
+  const {color, variant, disabled, size, interacting} = useButtonContext()
   const {colorScheme} = useThemePrefs()
 
   return useMemo(() => {
@@ -706,17 +707,16 @@ export function useSharedButtonTextStyles() {
      */
     if (variant === 'solid') {
       if (color === 'primary') {
-        if (!disabled) {
-          baseStyles.push({color: t.palette.white})
-        } else {
-          baseStyles.push({
-            color: select(t.name, {
-              light: t.palette.white,
-              dim: t.atoms.text_inverted.color,
-              dark: t.atoms.text_inverted.color,
-            }),
-          })
-        }
+        baseStyles.push({
+          color: accentForeground(
+            t,
+            disabled
+              ? t.palette.primary_200
+              : interacting
+                ? t.palette.primary_600
+                : t.palette.primary_500,
+          ),
+        })
       } else if (color === 'secondary') {
         if (!disabled) {
           baseStyles.push(t.atoms.text_contrast_medium)
@@ -876,7 +876,7 @@ export function useSharedButtonTextStyles() {
     }
 
     return flatten(baseStyles)
-  }, [t, variant, color, size, disabled, colorScheme])
+  }, [t, variant, color, size, disabled, colorScheme, interacting])
 }
 
 export function ButtonText({children, style, ...rest}: ButtonTextProps) {

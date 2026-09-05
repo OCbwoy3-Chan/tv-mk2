@@ -16,6 +16,7 @@ import {InitiateChatFlow} from '#/components/dms/InitiateChatFlow'
 import {MessagePlus_Stroke2_Corner0_Rounded as NewChatIcon} from '#/components/icons/Message'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {chat} from '#/lexicons'
 
 export function NewChat({
@@ -157,7 +158,12 @@ export function NewChat({
         <FAB
           testID="newChatFAB"
           onPress={wrappedOnPress}
-          icon={<NewChatIcon size="lg" fill={t.palette.white} />}
+          icon={
+            <NewChatIcon
+              size="lg"
+              fill={accentForeground(t, t.palette.primary_500)}
+            />
+          }
           accessibilityRole="button"
           accessibilityLabel={l`New chat`}
           accessibilityHint=""

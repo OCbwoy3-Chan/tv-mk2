@@ -53,6 +53,7 @@ import {VideoClip_Stroke1_Corner0_Rounded as VideoIcon} from '#/components/icons
 import * as Layout from '#/components/Layout'
 import {ScreenHider} from '#/components/moderation/ScreenHider'
 import {ProfileStarterPacks} from '#/components/StarterPack/ProfileStarterPacks'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {type app} from '#/lexicons'
 import {navigate} from '#/Navigation'
 
@@ -610,7 +611,12 @@ function ProfileScreenLoaded({
           testID="composeFAB"
           userStyleVariant="compose"
           onPress={onPressCompose}
-          icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+          icon={
+            <EditBigIcon
+              size="lg"
+              fill={accentForeground(t, t.palette.primary_500)}
+            />
+          }
           accessibilityRole="button"
           accessibilityLabel={_(msg`New post`)}
           accessibilityHint=""

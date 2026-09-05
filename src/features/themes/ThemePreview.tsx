@@ -5,7 +5,7 @@ import {atoms as a} from '#/alf'
 import {Check_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icons/Check'
 import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
 import {Text} from '#/components/Typography'
-import  {type ThemeColorSet} from './types'
+import {type ThemeColorSet} from './types'
 
 export function ThemePreview({
   colorSet,
@@ -43,14 +43,19 @@ export function ThemePreview({
     ...(secondaryColorSet ? [secondaryColorSet] : []),
   ].slice(0, 4)
   const lastColors = previewSets.at(-1)?.colors ?? c
+  // Embedded previews are artwork inside a link, not nested disabled buttons.
+  const Container = onPress ? Pressable : View
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{selected}}
-      accessibilityLabel={label ?? colorSet.name}
-      accessibilityHint=""
-      disabled={!onPress}
-      onPress={onPress}
+    <Container
+      {...(onPress
+        ? {
+            accessibilityRole: 'button' as const,
+            accessibilityState: {selected},
+            accessibilityLabel: label ?? colorSet.name,
+            accessibilityHint: '',
+            onPress,
+          }
+        : {})}
       style={[a.flex_1, {minWidth: 126}, style]}>
       <View
         style={[
@@ -152,7 +157,7 @@ export function ThemePreview({
           {label ?? colorSet.name}
         </Text>
       )}
-    </Pressable>
+    </Container>
   )
 }
 

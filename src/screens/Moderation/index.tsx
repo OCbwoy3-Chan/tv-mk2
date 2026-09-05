@@ -47,6 +47,7 @@ import {Text} from '#/components/Typography'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {IS_IOS} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 
 const UNREAD_NOTIFICATION_CAP = 100
 
@@ -168,7 +169,10 @@ function SubItem({
               style={[
                 a.text_xs,
                 a.font_semi_bold,
-                {color: t.palette.white, fontVariant: ['tabular-nums']},
+                {
+                  color: accentForeground(t, t.palette.primary_500),
+                  fontVariant: ['tabular-nums'],
+                },
               ]}>
               {badge >= UNREAD_NOTIFICATION_CAP
                 ? l({
