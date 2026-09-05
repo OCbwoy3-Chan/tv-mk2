@@ -30,15 +30,18 @@ export function VerificationsDialog({
   control,
   profile,
   verificationState,
+  issuer,
 }: {
   control: Dialog.DialogControlProps
   profile: bsky.profile.AnyProfileView
   verificationState: FullVerificationState
+  issuer?: string
 }) {
   return (
     <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
       <Dialog.Handle />
       <Inner
+        issuer={issuer}
         control={control}
         profile={profile}
         verificationState={verificationState}
@@ -51,22 +54,29 @@ function Inner({
   profile,
   control,
   verificationState: state,
+  issuer,
 }: {
   control: Dialog.DialogControlProps
   profile: bsky.profile.AnyProfileView
   verificationState: FullVerificationState
+  issuer?: string
 }) {
   const t = useTheme()
   const ax = useAnalytics()
   const {_} = useLingui()
   const {gtMobile} = useBreakpoints()
 
+  const isVerified = profile.verification?.verifiedStatus === 'valid'
+  const verifications =
+    profile.verification?.verifications.filter(
+      v => !issuer || v.issuer === issuer,
+    ) ?? []
   const userName = getUserDisplayName(profile)
   const label = state.profile.isViewer
-    ? state.profile.isVerified
+    ? isVerified
       ? _(msg`You are verified`)
       : _(msg`Your verifications`)
-    : state.profile.isVerified
+    : isVerified
       ? _(msg`${userName} is verified`)
       : _(
           msg({
@@ -87,7 +97,7 @@ function Inner({
           {label}
         </Text>
         <Text style={[a.text_md, a.leading_snug]}>
-          {state.profile.isVerified ? (
+          {isVerified ? (
             <Trans>
               This account has a checkmark because it's been verified by trusted
               sources.
@@ -108,7 +118,7 @@ function Inner({
           </Text>
 
           <View style={[a.gap_lg]}>
-            {profile.verification.verifications.map(v => (
+            {verifications.map(v => (
               <VerifierCard
                 key={v.uri}
                 verification={v}
@@ -118,12 +128,11 @@ function Inner({
             ))}
           </View>
 
-          {profile.verification.verifications.some(v => !v.isValid) &&
-            state.profile.isViewer && (
-              <Admonition type="warning" style={[a.mt_xs]}>
-                <Trans>Some of your verifications are invalid.</Trans>
-              </Admonition>
-            )}
+          {verifications.some(v => !v.isValid) && state.profile.isViewer && (
+            <Admonition type="warning" style={[a.mt_xs]}>
+              <Trans>Some of your verifications are invalid.</Trans>
+            </Admonition>
+          )}
         </View>
       ) : null}
 

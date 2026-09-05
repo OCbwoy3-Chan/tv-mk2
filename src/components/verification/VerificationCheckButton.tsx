@@ -2,6 +2,7 @@ import {type Insets, View} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
 import {type Shadow} from '#/state/cache/types'
+import {useDeerVerification} from '#/state/preferences/deer-verification'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {useDialogControl} from '#/components/Dialog'
@@ -12,6 +13,8 @@ import {VerificationsDialog} from '#/components/verification/VerificationsDialog
 import {VerifierDialog} from '#/components/verification/VerifierDialog'
 import {useAnalytics} from '#/analytics'
 import type * as bsky from '#/types/bsky'
+import {type VerificationBadge, verificationBadges} from './badges'
+import {verifierColor} from './verifier-color'
 
 export function shouldShowVerificationCheckButton(
   state: FullVerificationState,
@@ -61,52 +64,78 @@ export function VerificationCheckButton({
     profile,
   })
 
-  if (shouldShowVerificationCheckButton(state)) {
-    return (
-      <Badge
-        profile={profile}
-        verificationState={state}
-        width={width}
-        hitSlop={hitSlop}
-      />
-    )
-  }
-
-  return null
+  const {perVerifierBadges} = useDeerVerification()
+  if (!shouldShowVerificationCheckButton(state)) return null
+  const badges = state.profile.showBadge
+    ? verificationBadges(profile, !!perVerifierBadges)
+    : []
+  // Keep the existing access to invalid/hidden verifications for their owner.
+  if (!badges.length) badges.push({kind: 'verification'})
+  return (
+    <View style={[a.flex_row, a.align_center, a.gap_2xs]}>
+      {badges.map((badge, index) => (
+        <Badge
+          key={
+            badge.kind === 'verifier'
+              ? 'verifier'
+              : (badge.issuer ?? 'verification')
+          }
+          badge={badge}
+          profile={profile}
+          verificationState={state}
+          width={width}
+          hitSlop={{
+            ...hitSlop,
+            left: index === 0 ? hitSlop.left : 1,
+            right: index === badges.length - 1 ? hitSlop.right : 1,
+          }}
+        />
+      ))}
+    </View>
+  )
 }
 
 function Badge({
+  badge,
   profile,
   verificationState: state,
   width,
   hitSlop,
 }: {
   profile: Shadow<bsky.profile.AnyProfileView>
+  badge: VerificationBadge
   verificationState: FullVerificationState
   width: number
   hitSlop: Insets
 }) {
   const t = useTheme()
+  const {perVerifierBadges} = useDeerVerification()
   const ax = useAnalytics()
   const {t: l} = useLingui()
   const verificationsDialogControl = useDialogControl()
   const verifierDialogControl = useDialogControl()
 
+  const isVerifier = badge.kind === 'verifier'
+  const issuer = badge.kind === 'verification' ? badge.issuer : undefined
   const verifiedByHidden = !state.profile.showBadge && state.profile.isViewer
 
   return (
     <>
       <Button
         label={
-          state.profile.isViewer
-            ? l`View your verifications`
-            : l`View this user's verifications`
+          isVerifier
+            ? l`View trusted verifier status`
+            : issuer
+              ? l`View verification from ${issuer}`
+              : state.profile.isViewer
+                ? l`View your verifications`
+                : l`View this user's verifications`
         }
         hitSlop={hitSlop}
         onPress={evt => {
           evt.preventDefault()
           ax.metric('verification:badge:click', {})
-          if (state.profile.role === 'verifier') {
+          if (isVerifier) {
             verifierDialogControl.open()
           } else {
             verificationsDialogControl.open()
@@ -131,27 +160,37 @@ function Badge({
             <VerificationCheck
               width={width}
               fill={
-                verifiedByHidden
-                  ? t.atoms.bg_contrast_100.backgroundColor
-                  : state.profile.isVerified
-                    ? t.palette.primary_500
-                    : t.atoms.bg_contrast_100.backgroundColor
+                isVerifier
+                  ? perVerifierBadges
+                    ? verifierColor(badge.did)
+                    : t.palette.primary_500
+                  : verifiedByHidden
+                    ? t.atoms.bg_contrast_100.backgroundColor
+                    : state.profile.isVerified
+                      ? issuer
+                        ? verifierColor(issuer)
+                        : t.palette.primary_500
+                      : t.atoms.bg_contrast_100.backgroundColor
               }
-              verifier={state.profile.role === 'verifier'}
+              verifier={isVerifier}
             />
           </View>
         )}
       </Button>
-      <VerificationsDialog
-        control={verificationsDialogControl}
-        profile={profile}
-        verificationState={state}
-      />
-      <VerifierDialog
-        control={verifierDialogControl}
-        profile={profile}
-        verificationState={state}
-      />
+      {isVerifier ? (
+        <VerifierDialog
+          control={verifierDialogControl}
+          profile={profile}
+          verificationState={state}
+        />
+      ) : (
+        <VerificationsDialog
+          issuer={issuer}
+          control={verificationsDialogControl}
+          profile={profile}
+          verificationState={state}
+        />
+      )}
     </>
   )
 }

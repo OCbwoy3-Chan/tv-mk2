@@ -316,6 +316,7 @@ const schema = z.object({
   deerVerification: z
     .object({
       enabled: z.boolean(),
+      perVerifierBadges: z.boolean().optional(),
       trustAppView: z.boolean().optional(),
       trustedSelf: z.boolean().optional(),
       trusted: z.array(z.string()),

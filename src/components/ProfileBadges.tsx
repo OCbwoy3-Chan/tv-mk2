@@ -6,6 +6,7 @@ import {HITSLOP_20} from '#/lib/constants'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {type Shadow} from '#/state/cache/types'
 import {usePdsProfilePriority} from '#/state/pds-viewability'
+import {useDeerVerification} from '#/state/preferences/deer-verification'
 import {
   usePdsLabelEnabled,
   usePdsLabelHideBskyPds,
@@ -20,8 +21,10 @@ import * as Dialog from '#/components/Dialog'
 import {PdsBadgeIcon, PdsDialog} from '#/components/PdsDialog'
 import {isPetAccount, PetBadge, PetBadgeButton} from '#/components/PetBadge'
 import {useSimpleVerificationState} from '#/components/verification'
+import {verificationBadges} from '#/components/verification/badges'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {VerificationCheckButton} from '#/components/verification/VerificationCheckButton'
+import {verifierColor} from '#/components/verification/verifier-color'
 import {IS_WEB} from '#/env'
 import type * as bsky from '#/types/bsky'
 import {BetaBadge, BetaBadgeButton, useIsBetaBadgeVisible} from './BetaBadge'
@@ -91,6 +94,7 @@ export function ProfileBadgesFromProfileShadow({
   profile: Shadow<bsky.profile.AnyProfileView>
 }) {
   const shadowed = useDeerVerificationProfileOverlay(profile)
+  const {perVerifierBadges} = useDeerVerification()
   const verification = useSimpleVerificationState({profile: shadowed})
   const pdsLabelEnabled = usePdsLabelEnabled()
   const hideBskyPds = usePdsLabelHideBskyPds()
@@ -199,12 +203,25 @@ export function ProfileBadgesFromProfileShadow({
         </>
       ) : (
         <>
-          {verification.showBadge ? (
-            <VerificationCheck
-              verifier={verification.role === 'verifier'}
-              width={verificationIconWidth}
-            />
-          ) : null}
+          {verification.showBadge &&
+            verificationBadges(shadowed, !!perVerifierBadges).map(badge => (
+              <VerificationCheck
+                key={
+                  badge.kind === 'verifier'
+                    ? 'verifier'
+                    : (badge.issuer ?? 'verification')
+                }
+                verifier={badge.kind === 'verifier'}
+                fill={
+                  badge.kind === 'verifier' && perVerifierBadges
+                    ? verifierColor(badge.did)
+                    : badge.kind === 'verification' && badge.issuer
+                      ? verifierColor(badge.issuer)
+                      : undefined
+                }
+                width={verificationIconWidth}
+              />
+            ))}
           {showBetaBadge ? (
             <BetaBadge
               profile={shadowed}

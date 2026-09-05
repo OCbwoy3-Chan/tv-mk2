@@ -6,7 +6,10 @@ import {Trans} from '@lingui/react/macro'
 
 import {urls} from '#/lib/constants'
 import {getUserDisplayName} from '#/lib/getUserDisplayName'
-import {useDeerVerificationEnabled} from '#/state/preferences/deer-verification'
+import {
+  useDeerVerification,
+  useDeerVerificationEnabled,
+} from '#/state/preferences/deer-verification'
 import {useSession} from '#/state/session'
 import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
@@ -17,6 +20,7 @@ import {Text} from '#/components/Typography'
 import {type FullVerificationState} from '#/components/verification'
 import {useAnalytics} from '#/analytics'
 import type * as bsky from '#/types/bsky'
+import {verifierColor} from './verifier-color'
 
 export {useDialogControl} from '#/components/Dialog'
 
@@ -62,6 +66,7 @@ function Inner({
     ? _(msg`You are a trusted verifier`)
     : _(msg`${userName} is a trusted verifier`)
 
+  const {perVerifierBadges} = useDeerVerification()
   const deerVerificationEnabled = useDeerVerificationEnabled()
 
   return (
@@ -104,9 +109,16 @@ function Inner({
           </Text>
           <Text style={[a.text_md, a.leading_snug]}>
             <Trans>
-              Accounts with a scalloped blue check mark{' '}
+              Accounts with a scalloped check mark{' '}
               <RNText>
-                <VerifierCheck width={14} />
+                <VerifierCheck
+                  width={14}
+                  fill={
+                    perVerifierBadges
+                      ? verifierColor(profile.did)
+                      : t.palette.primary_500
+                  }
+                />
               </RNText>{' '}
               can verify others. These trusted verifiers are selected by{' '}
               {deerVerificationEnabled ? 'you' : 'Bluesky'}.

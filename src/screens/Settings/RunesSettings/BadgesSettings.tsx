@@ -90,6 +90,19 @@ export function RunesBadgesSettingsScreen() {
           </Toggle.LabelText>
           <Toggle.Platform />
         </Toggle.Item>
+        <Toggle.Item
+          name="per_verifier_badges"
+          label={l`Show one badge per verifier`}
+          value={deerVerification.perVerifierBadges ?? false}
+          onChange={value =>
+            setDeerVerification({...deerVerification, perVerifierBadges: value})
+          }
+          style={[a.w_full]}>
+          <Toggle.LabelText style={[a.flex_1]}>
+            <Trans>Show one badge per verifier</Trans>
+          </Toggle.LabelText>
+          <Toggle.Platform />
+        </Toggle.Item>
         {deerVerificationEnabled && (
           <Toggle.Item
             name="trust_verifiers_from_appview"
