@@ -17,6 +17,7 @@ import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {Loader} from '#/components/Loader'
+import * as Toast from '#/components/Toast'
 import {type EditImageDialogProps} from './EditImageDialog.shared'
 
 export function EditImageDialog(props: EditImageDialogProps) {
@@ -66,8 +67,15 @@ function DialogInner({
         label={_(msg`Save`)}
         onPress={async () => {
           setPending(true)
-          await ref.current?.save()
-          setPending(false)
+          try {
+            await ref.current?.save()
+          } catch {
+            Toast.show(_(msg`Unable to edit image. Please try again.`), {
+              type: 'error',
+            })
+          } finally {
+            setPending(false)
+          }
         }}
         disabled={pending}
         size="small"

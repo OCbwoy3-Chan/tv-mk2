@@ -152,6 +152,10 @@ export type ComposerAction =
       direction: 'up' | 'down'
     }
   | {
+      type: 'focus_adjacent_post'
+      direction: 'up' | 'down'
+    }
+  | {
       type: 'focus_post'
       postId: string
     }
@@ -324,6 +328,11 @@ export function composerReducer(
           posts: nextPosts,
         },
       }
+    }
+    case 'focus_adjacent_post': {
+      const index = state.activePostIndex + (action.direction === 'up' ? -1 : 1)
+      if (index < 0 || index >= state.thread.posts.length) return state
+      return {...state, activePostIndex: index, mutableNeedsFocusActive: true}
     }
     case 'focus_post': {
       const nextActivePostIndex = state.thread.posts.findIndex(

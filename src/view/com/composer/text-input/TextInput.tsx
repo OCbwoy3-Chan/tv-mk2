@@ -52,6 +52,7 @@ export function TextInput({
   canMovePostDown: _canMovePostDown,
   onAddPost: _onAddPost,
   onMovePost: _onMovePost,
+  onFocusPost: _onFocusPost,
   ...props
 }: TextInputProps) {
   const {t: l} = useLingui()

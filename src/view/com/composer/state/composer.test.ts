@@ -58,3 +58,19 @@ describe('composerReducer', () => {
     })
   })
 })
+
+it('focuses adjacent posts without moving or dirtying the thread', () => {
+  let state = composerReducer(createState(), {type: 'add_post'})
+  state = {...state, isDirty: false}
+  const focused = composerReducer(state, {
+    type: 'focus_adjacent_post',
+    direction: 'up',
+  })
+  expect(focused.activePostIndex).toBe(0)
+  expect(focused.thread).toBe(state.thread)
+  expect(focused.isDirty).toBe(false)
+  expect(focused.mutableNeedsFocusActive).toBe(true)
+  expect(
+    composerReducer(focused, {type: 'focus_adjacent_post', direction: 'up'}),
+  ).toBe(focused)
+})

@@ -48,9 +48,7 @@ import {scheduleOnUI} from 'react-native-worklets'
 import * as FileSystem from 'expo-file-system'
 import {EncodingType, readAsStringAsync} from 'expo-file-system/legacy'
 import {type ImagePickerAsset} from 'expo-image-picker'
-import {
-  type AtpAgent,
-} from '@atproto/api'
+import {type AtpAgent} from '@atproto/api'
 import {type Client, type UriString} from '@atproto/lex'
 import {AtUri, type AtUriString} from '@atproto/syntax'
 import {type RichText} from '@bsky/sdk/richtext'
@@ -117,6 +115,12 @@ import {
   useSession,
 } from '#/state/session'
 import {useAgent, useSessionApi} from '#/state/session'
+import {pdsAgent} from '#/state/session/agent'
+import {
+  buildAppviewClient,
+  buildChatClient,
+  buildPdsClient,
+} from '#/state/session/clients'
 import {useComposerControls} from '#/state/shell/composer'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
@@ -176,7 +180,7 @@ import {
   IS_WEB_SAFARI,
 } from '#/env'
 import {type Gif} from '#/features/gifPicker/types'
-import {app, chat} from '#/lexicons'
+import {app, chat, com} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {BottomSheetPortalProvider} from '../../../../modules/bottom-sheet'
 import {
@@ -307,7 +311,6 @@ export const ComposePost = ({
   const client = useAppviewClient()
   const chatClient = useChatClient()
   const pdsClient = usePdsClient()
-  const agent = useAgent()
   const sessionApi = useSessionApi()
   const queryClient = useQueryClient()
   const currentDid = currentAccount!.did
@@ -328,8 +331,7 @@ export const ComposePost = ({
   const {requestSwitchToAccount} = useLoggedOutViewControls()
   const {t: l, i18n} = useLingui()
   const requireAltTextEnabled = useRequireAltTextEnabled()
-  
-  
+
   const langPrefs = useLanguagePrefs()
   const setLangPrefs = useLanguagePrefsApi()
   const textInputRef = useRef<TextInputRef>(null)
@@ -1186,18 +1188,18 @@ export const ComposePost = ({
     setError('')
     setIsPublishing(true)
 
-    let currentAgent = agent
     let ephemeralAgent: AtpAgent | undefined
     let postUri: string | undefined
     let postSuccessData: OnPostSuccessData
     try {
       if (activeAccountDid && activeAccountDid !== currentAccount?.did) {
         const activeAccount = accounts.find(a => a.did === activeAccountDid)
+        if (!activeAccount)
+          throw new Error('The selected posting account is no longer signed in')
         if (activeAccount) {
           try {
             ephemeralAgent =
               await sessionApi.createEphemeralAgent(activeAccount)
-            currentAgent = ephemeralAgent
           } catch (e) {
             logger.error(
               'Composer: failed to create ephemeral agent for account switch',
@@ -1218,16 +1220,66 @@ export const ComposePost = ({
         }
       }
 
+      const postingAgent = ephemeralAgent ? pdsAgent(ephemeralAgent) : undefined
+      const postingPdsClient = postingAgent
+        ? buildPdsClient(postingAgent)
+        : pdsClient
+      if (postingPdsClient.assertDid !== activeAccountDid) {
+        throw new Error(
+          'The posting session does not match the selected account',
+        )
+      }
+      const postingThread = postingAgent
+        ? {
+            ...filteredThread,
+            posts: await Promise.all(
+              filteredThread.posts.map(async post => {
+                const media = post.embed.media
+                if (media?.type !== 'video' || media.video.status !== 'done')
+                  return post
+                const blob = media.video.pendingPublish.blobRef
+                const original = await pdsClient.call(
+                  com.atproto.sync.getBlob,
+                  {
+                    did: pdsClient.assertDid,
+                    cid: 'ref' in blob ? blob.ref.toString() : blob.cid,
+                  },
+                )
+                const uploaded = await postingPdsClient.uploadBlob(original, {
+                  encoding: blob.mimeType as `${string}/${string}`,
+                })
+                return {
+                  ...post,
+                  embed: {
+                    ...post.embed,
+                    media: {
+                      ...media,
+                      video: {
+                        ...media.video,
+                        pendingPublish: {
+                          ...media.video.pendingPublish,
+                          blobRef: uploaded.body.blob,
+                        },
+                      },
+                    },
+                  },
+                }
+              }),
+            ),
+          }
+        : filteredThread
       logger.info(`composer: posting...`)
       postUri = (
         await apilib.post(queryClient, {
-          thread: filteredThread,
+          thread: postingThread,
           replyTo: replyTo?.uri,
           onStateChange: setPublishingStage,
           langs: currentLanguages,
-          appviewClient: client,
-          chatClient,
-          pdsClient,
+          appviewClient: postingAgent
+            ? buildAppviewClient(postingAgent)
+            : client,
+          chatClient: postingAgent ? buildChatClient(postingAgent) : chatClient,
+          pdsClient: postingPdsClient,
         })
       ).uris[0]
 
@@ -1427,40 +1479,39 @@ export const ComposePost = ({
       )
     }, 500)
   }, [
-	l,
-	ax,
-	client,
-	chatClient,
-	pdsClient,
-	canPost,
-	isPublishing,
-	currentLanguages,
-	onClose,
-	onPost,
-	onPostSuccess,
-	initQuote,
-	replyTo,
-	setPublishOnUpload,
-	queryClient,
-	navigation,
-	composerState.draftId,
-	composerState.originalLocalRefs,
-	composerState.isDirty,
-	cleanupPublishedDraft,
-	loadedDraftCreatedAt,
-	emptyPostsPromptControl,
-	missingAltError,
-	missingAltTextPromptControl,
-	getFilteredThread,
-	linkQueries,
-	setLangPrefs,
-	accounts,
-	activeAccountDid,
-	currentAccount?.did,
-	sessionApi,
-	requestSwitchToAccount,
-	agent
-])
+    l,
+    ax,
+    client,
+    chatClient,
+    pdsClient,
+    canPost,
+    isPublishing,
+    currentLanguages,
+    onClose,
+    onPost,
+    onPostSuccess,
+    initQuote,
+    replyTo,
+    setPublishOnUpload,
+    queryClient,
+    navigation,
+    composerState.draftId,
+    composerState.originalLocalRefs,
+    composerState.isDirty,
+    cleanupPublishedDraft,
+    loadedDraftCreatedAt,
+    emptyPostsPromptControl,
+    missingAltError,
+    missingAltTextPromptControl,
+    getFilteredThread,
+    linkQueries,
+    setLangPrefs,
+    accounts,
+    activeAccountDid,
+    currentAccount?.did,
+    sessionApi,
+    requestSwitchToAccount,
+  ])
 
   const handleConfirmSkipEmpty = () => {
     skipEmptyConfirmedRef.current = true
@@ -1964,6 +2015,9 @@ let ComposerPost = memo(function ComposerPost({
           canMovePostDown={canMovePostDown}
           onAddPost={onAddPost}
           onMovePost={onMovePost}
+          onFocusPost={direction =>
+            dispatch({type: 'focus_adjacent_post', direction})
+          }
           accessible={true}
           accessibilityLabel={l`Write post`}
           accessibilityHint={l`Compose posts up to ${plural(
@@ -1981,7 +2035,7 @@ let ComposerPost = memo(function ComposerPost({
             {canMovePostUp && (
               <Button
                 label={l`Move post up`}
-                accessibilityHint={l`Shortcut: Alt plus Up Arrow`}
+                accessibilityHint={l`Shortcut: Alt plus Shift plus Up Arrow`}
                 size="small"
                 color="secondary"
                 variant="ghost"
@@ -2023,7 +2077,7 @@ let ComposerPost = memo(function ComposerPost({
             {canMovePostDown && (
               <Button
                 label={l`Move post down`}
-                accessibilityHint={l`Shortcut: Alt plus Down Arrow`}
+                accessibilityHint={l`Shortcut: Alt plus Shift plus Down Arrow`}
                 size="small"
                 color="secondary"
                 variant="ghost"
@@ -2487,8 +2541,9 @@ function ComposerPills({
         bounces={false}
         keyboardShouldPersistTaps="always"
         showsHorizontalScrollIndicator={false}>
-        {isReply ? null : (
+        {
           <ThreadgateBtn
+            isReply={isReply}
             postgate={thread.postgate}
             onChangePostgate={nextPostgate => {
               dispatch({type: 'update_postgate', postgate: nextPostgate})
@@ -2502,7 +2557,7 @@ function ComposerPills({
             }}
             style={bottomBarAnimatedStyle}
           />
-        )}
+        }
         <TagsBtn
           tags={post.tags}
           onChange={nextTags => {

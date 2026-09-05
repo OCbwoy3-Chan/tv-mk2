@@ -1159,12 +1159,7 @@ function FollowBackButton({
     e.preventDefault()
     e.stopPropagation()
 
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('follow')
-      promptControl.open()
-    } else {
-      void executeFollow()
-    }
+    void executeFollow()
   }
 
   const onPressUnfollow = (e: GestureResponderEvent) => {

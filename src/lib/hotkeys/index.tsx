@@ -8,6 +8,7 @@ import {
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {emitFocusSearch} from '#/state/events'
 import {useSession} from '#/state/session'
+import {KeyboardShortcuts as ExtendedKeyboardShortcuts} from '#/features/keyboardShortcuts'
 
 enum Hotkeys {
   OPEN_COMPOSER = 'n',
@@ -18,6 +19,7 @@ export function Provider({children}: React.PropsWithChildren<unknown>) {
   return (
     <HotkeysProvider initiallyActiveScopes={['global']}>
       <KeyboardShortcuts>{children}</KeyboardShortcuts>
+      <ExtendedKeyboardShortcuts />
     </HotkeysProvider>
   )
 }
@@ -63,8 +65,12 @@ function useKeyboardShortcuts() {
           requiresSession: true,
         },
       ),
-    {scopes: ['global'], description: l`Compose new post`},
-    [openComposer],
+    {
+      scopes: ['global'],
+      preventDefault: true,
+      description: l`Compose new post`,
+    },
+    [openComposer, hasSession],
   )
 
   useHotkeys(Hotkeys.FOCUS_SEARCH, () => handleKey(emitFocusSearch), {

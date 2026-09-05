@@ -2,7 +2,7 @@ import {type RichText} from '@bsky/sdk/richtext'
 
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
-import {linkRequiresWarning} from './url-helpers'
+import {linkRequiresWarning, toShortUrl} from './url-helpers'
 
 export function richTextToString(rt: RichText, loose: boolean): string {
   const {text, facets} = rt
@@ -47,8 +47,8 @@ export function richTextToStringPreservingLinks(rt: RichText): string {
     const link = segment.link
     if (link && bsky.matches(app.bsky.richtext.facet.link, link)) {
       result +=
-        segment.text === link.uri
-          ? segment.text
+        segment.text === link.uri || segment.text === toShortUrl(link.uri)
+          ? link.uri
           : `[${segment.text}](${link.uri})`
     } else {
       result += segment.text

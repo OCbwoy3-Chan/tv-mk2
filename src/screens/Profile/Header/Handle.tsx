@@ -5,13 +5,13 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
-import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {type Shadow} from '#/state/cache/types'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
 import {atoms as a, useTheme, web} from '#/alf'
 import {InlineLinkText} from '#/components/Link.tsx'
 import {NewskieDialog} from '#/components/NewskieDialog'
+import {PronounPill} from '#/components/PronounPill'
 import {Text} from '#/components/Typography'
 import {IS_IOS, IS_NATIVE} from '#/env'
 import {type app} from '#/lexicons'
@@ -72,7 +72,7 @@ export function ProfileHeaderHandle({
           </Text>
         </View>
       ) : undefined}
-      <View style={[a.flex_row, a.flex_wrap, {gap: 6}]}>
+      <View style={[a.flex_row, a.flex_wrap, a.align_center, {gap: 6}]}>
         {!hideDisplayNames &&
           (invalidHandle ? (
             <Text emoji numberOfLines={1} style={handleTextStyle}>
@@ -93,11 +93,7 @@ export function ProfileHeaderHandle({
               {sanitized}
             </Text>
           ))}
-        {pronouns && (
-          <Text style={[t.atoms.text_contrast_low, a.text_md, a.leading_tight]}>
-            {sanitizePronouns(pronouns, IS_NATIVE)}
-          </Text>
-        )}
+        <PronounPill pronouns={pronouns} />
       </View>
     </View>
   )

@@ -23,7 +23,6 @@ import {
   useSetDeerVerificationTrust,
 } from '#/state/preferences/deer-verification'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {useShowClearskyProfileLink} from '#/state/preferences/show-clearsky-profile-link'
 import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
 import {
   RQKEY as profileQueryKey,
@@ -62,8 +61,8 @@ import {
   RepostStrike_Stroke2_Corner0_Rounded as RepostStrikeIcon,
 } from '#/components/icons/Repost'
 import {BlueskyIcon} from '#/components/icons/services/Bluesky'
-import {ClearskyIcon} from '#/components/icons/services/Clearsky'
 import {PDSlsIcon} from '#/components/icons/services/PDSls'
+import {SkyTraceIcon} from '#/components/icons/services/SkyTrace'
 import {SpeakerVolumeFull_Stroke2_Corner0_Rounded as UnmuteIcon} from '#/components/icons/Speaker'
 import {StarterPack_Stroke2_Corner0_Rounded as StarterPackIcon} from '#/components/icons/StarterPack'
 import * as Menu from '#/components/Menu'
@@ -135,7 +134,6 @@ let ProfileMenu = ({
   const pendingShareAction = useRef<() => void>(() => {})
 
   const atprotoExplorer = useAtprotoExplorer()
-  const showClearskyProfileLink = useShowClearskyProfileLink()
   const openLink = useOpenLink()
 
   const atprotoExplorerRepositoryUrl = toAtprotoExplorerUrl(
@@ -352,12 +350,7 @@ let ProfileMenu = ({
   }, [l, ax, queueUnfollow])
 
   const onPressFollowAccount = useCallback(() => {
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('follow')
-      followPromptControl.open()
-    } else {
-      void executeFollow()
-    }
+    void executeFollow()
   }, [confirmFollowUnfollow, executeFollow, followPromptControl])
 
   const onPressUnfollowAccount = useCallback(() => {
@@ -407,8 +400,8 @@ let ProfileMenu = ({
     openLink(toAtprotoExplorerUrl(atprotoExplorer, `at://${profile.did}`), true)
   }
 
-  const onOpenProfileInClearsky = () => {
-    openLink(`https://clearsky.app/${profile.did}/profile`, true)
+  const onOpenProfileInSkyTrace = () => {
+    openLink(`https://skytrace.aly.town/profile/${profile.did}`, true)
   }
 
   const verificationCreatePromptControl = Prompt.usePromptControl()
@@ -417,8 +410,6 @@ let ProfileMenu = ({
     profile.verification?.verifications?.filter(v => {
       return v.issuer === currentAccount?.did
     }) ?? []
-
-  
 
   return (
     <EventStopper onKeyDown={false}>
@@ -588,17 +579,15 @@ let ProfileMenu = ({
                     position="right"
                   />
                 </Menu.Item>
-                {showClearskyProfileLink && (
-                  <Menu.Item
-                    testID="profileDropdownOpenInClearsky"
-                    label={l`Clearsky`}
-                    onPress={onOpenProfileInClearsky}>
-                    <Menu.ItemText>
-                      <Trans>Clearsky</Trans>
-                    </Menu.ItemText>
-                    <Menu.ItemIcon icon={ClearskyIcon} position="right" />
-                  </Menu.Item>
-                )}
+                <Menu.Item
+                  testID="profileDropdownOpenInSkyTrace"
+                  label={l`SkyTrace`}
+                  onPress={onOpenProfileInSkyTrace}>
+                  <Menu.ItemText>
+                    <Trans>SkyTrace</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={SkyTraceIcon} position="right" />
+                </Menu.Item>
               </Menu.Group>
             </Menu.Submenu>
             <Menu.Item

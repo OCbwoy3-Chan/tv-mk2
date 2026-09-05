@@ -496,9 +496,6 @@
   "src/lib/media/manip.web.ts": {
     "typescript/prefer-promise-reject-errors": {
       "count": 1
-    },
-    "typescript/require-await": {
-      "count": 1
     }
   },
   "src/lib/media/save-image.ios.ts": {
@@ -933,7 +930,7 @@
   },
   "src/view/com/composer/Composer.tsx": {
     "no-unused-vars": {
-      "count": 3
+      "count": 2
     }
   },
   "src/view/com/composer/drafts/DraftItem.tsx": {

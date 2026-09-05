@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
 import {Client} from '@atproto/lex'
 import {type DidString} from '@atproto/syntax'
+import {api} from '@bsky/sdk'
 import {
   type InterpretedLabelValueDefinition,
   LABELS,
@@ -110,9 +111,15 @@ export function isAppLabeler(
     | app.bsky.labeler.defs.LabelerViewDetailed,
 ): boolean {
   if (typeof labeler === 'string') {
-    return Client.appLabelers.includes(labeler as DidString)
+    return (
+      labeler === api.moderation.did ||
+      Client.appLabelers.includes(labeler as DidString)
+    )
   }
-  return Client.appLabelers.includes(labeler.creator.did)
+  return (
+    labeler.creator.did === api.moderation.did ||
+    Client.appLabelers.includes(labeler.creator.did)
+  )
 }
 
 export function getActiveAppLabelers() {

@@ -45,12 +45,13 @@ export function Provider({children}: PropsWithChildren<{}>) {
       userDid,
       prefs: {
         ...moderationPrefs,
-        labelers: moderationPrefs.labelers.length
+        labelers: (moderationPrefs.labelers.length
           ? moderationPrefs.labelers
           : Client.appLabelers.map(did => ({
               did,
               labels: DEFAULT_LOGGED_OUT_LABEL_PREFERENCES,
-            })),
+            }))
+        ).filter(labeler => !ignoredAppLabelers.includes(labeler.did)),
         /*
          * `hiddenPosts` comes from persisted storage typed as plain `string`,
          * so brand it to the SDK's `AtUriString` slot.

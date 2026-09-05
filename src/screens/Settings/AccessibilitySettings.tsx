@@ -23,6 +23,7 @@ import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
 import {IS_NATIVE} from '#/env'
+import {KeyboardShortcutsSettings} from '#/features/keyboardShortcuts/SettingsSection'
 
 type Props = NativeStackScreenProps<
   CommonNavigatorParams,
@@ -110,6 +111,8 @@ export function AccessibilitySettingsScreen({}: Props) {
               </Text>
             </View>
           </SettingsList.LinkItem>
+
+          <KeyboardShortcutsSettings />
 
           {IS_NATIVE && (
             <>

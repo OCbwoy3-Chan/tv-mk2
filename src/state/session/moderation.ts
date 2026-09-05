@@ -3,6 +3,7 @@ import {type DidString} from '@atproto/syntax'
 import {api} from '@bsky/sdk'
 
 import {IS_TEST_USER} from '#/lib/constants'
+import {isIgnoredAppLabeler} from '#/state/preferences/ignored-app-labelers'
 import {com} from '#/lexicons'
 import {account as accountStorage} from '#/storage'
 import {
@@ -57,7 +58,9 @@ export function applyLabelersToClient(
   subscribedDids: string[],
 ) {
   client.setLabelers(
-    subscribedDids.filter(did => did !== api.moderation.did) as DidString[],
+    subscribedDids.filter(
+      did => did !== api.moderation.did && !isIgnoredAppLabeler(did),
+    ) as DidString[],
   )
 }
 

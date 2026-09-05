@@ -29,7 +29,11 @@ import {RichText} from '@bsky/sdk/richtext'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {mergeRefs} from '#/lib/merge-refs'
 import {ScrollProvider} from '#/lib/ScrollContext'
-import {shortenLinks, stripInvalidMentions} from '#/lib/strings/rich-text-manip'
+import {
+  parseMarkdownLinks,
+  shortenLinks,
+  stripInvalidMentions,
+} from '#/lib/strings/rich-text-manip'
 import {
   convertBskyAppUrlIfNeeded,
   getChatInviteCodeFromUrl,
@@ -614,7 +618,22 @@ export function MessagesList({
         replyTo = {messageId: reply.id}
       }
 
+      const parsed = parseMarkdownLinks(rt.text)
+      rt = new RichText({text: parsed.text})
       await rt.detectFacets(appviewClient)
+      rt.facets = [
+        ...(rt.facets ?? []).filter(
+          facet =>
+            !parsed.facets.some(
+              masked =>
+                facet.index.byteStart < masked.index.byteEnd &&
+                facet.index.byteEnd > masked.index.byteStart,
+            ),
+        ),
+        ...parsed.facets,
+      ].sort(
+        (a, b) => a.index.byteStart - b.index.byteStart,
+      ) as typeof rt.facets
 
       rt = shortenLinks(rt)
       rt = stripInvalidMentions(rt)

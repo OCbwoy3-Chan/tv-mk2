@@ -1,4 +1,4 @@
-import {formatToFileExt} from '#/lib/media/image-formats'
+import {formatToFileExt, imageMimeToExtension} from '#/lib/media/image-formats'
 import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
 import {
@@ -49,21 +49,29 @@ export function shareImageModal(_opts: {uri: string}) {
 }
 
 /**
- * Saves an image to the user's device. Uses the CDN's `download` preset with the
- * chosen format suffix. On web this triggers a browser download via a temporary
- * anchor — no fetch needed.
+ * Downloads source bytes for Original, or the chosen CDN conversion. A local
+ * blob URL makes the download attribute work across origins and preserves MIME.
  */
 export async function saveImageToMediaLibrary({
   uri,
-  format = 'jpeg',
+  format = 'original',
 }: {
   uri: string
   format?: string
 }) {
   const downloadUri = getDownloadImageUri(uri, format)
-  const segments = downloadUri.split('/')
-  const filename = `bluesky-${segments.at(-1) ?? 'image'}.${formatToFileExt(format)}`
-  downloadUrl(downloadUri, filename)
+  const response = await fetch(downloadUri)
+  if (!response.ok) throw new Error(`Image download failed: ${response.status}`)
+  const blob = await response.blob()
+  const extension =
+    imageMimeToExtension(blob.type) ??
+    (format === 'original' ? 'bin' : formatToFileExt(format))
+  const localUrl = URL.createObjectURL(blob)
+  try {
+    downloadUrl(localUrl, `witchsky-image.${extension}`)
+  } finally {
+    setTimeout(() => URL.revokeObjectURL(localUrl), 1000)
+  }
 }
 
 export async function downloadVideoWeb({uri}: {uri: string}) {

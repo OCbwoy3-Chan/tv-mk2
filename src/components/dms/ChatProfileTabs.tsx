@@ -7,6 +7,7 @@ import {useLingui} from '@lingui/react/macro'
 import {HITSLOP_10} from '#/lib/constants'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {DraggableScrollView} from '#/view/com/pager/DraggableScrollView'
 import {atoms as a, useTheme} from '#/alf'
@@ -88,6 +89,7 @@ function Tab({
   const t = useTheme()
   const {t: l} = useLingui()
   const moderationOpts = useModerationOpts()
+  const enableSquareButtons = useEnableSquareButtons()
 
   const moderation = moderateProfile(profile, moderationOpts!)
   const displayName = sanitizeDisplayName(
@@ -112,7 +114,7 @@ function Tab({
         a.align_center,
         a.border,
         a.justify_center,
-        a.rounded_lg,
+        enableSquareButtons ? a.rounded_sm : a.rounded_lg,
         isLabeler ? a.pl_sm : a.pl_xs,
         a.pr_sm,
         a.py_xs,

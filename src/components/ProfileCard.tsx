@@ -565,12 +565,7 @@ export function FollowButtonInner({
   const onPressFollow = (e: GestureResponderEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('follow')
-      promptControl.open()
-    } else {
-      void executeFollow(e)
-    }
+    void executeFollow(e)
   }
 
   const onPressUnfollow = (e: GestureResponderEvent) => {

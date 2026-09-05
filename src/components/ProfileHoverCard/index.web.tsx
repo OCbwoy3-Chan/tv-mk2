@@ -540,24 +540,7 @@ function Inner({
 
   const enableSquareButtons = useEnableSquareButtons()
 
-  const handleFollow = useCallback(() => {
-    if (confirmFollowUnfollow && onRequestFollowConfirmation) {
-      onRequestFollowConfirmation({
-        actionType: 'follow',
-        onConfirm: follow,
-        displayName: authorPrimaryName,
-        handle: profile.handle,
-      })
-    } else {
-      follow()
-    }
-  }, [
-    confirmFollowUnfollow,
-    follow,
-    onRequestFollowConfirmation,
-    authorPrimaryName,
-    profile.handle,
-  ])
+  const handleFollow = useCallback(() => follow(), [follow])
 
   const handleUnfollow = useCallback(() => {
     if (confirmFollowUnfollow && onRequestFollowConfirmation) {

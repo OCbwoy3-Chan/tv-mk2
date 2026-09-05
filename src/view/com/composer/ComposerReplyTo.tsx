@@ -6,13 +6,13 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
-import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {type ComposerOptsPostRef} from '#/state/shell/composer'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme, utils, web} from '#/alf'
 import {QuoteEmbed} from '#/components/Post/Embed'
 import {ProfileBadges} from '#/components/ProfileBadges'
+import {PronounPill} from '#/components/PronounPill'
 import {Text} from '#/components/Typography'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -116,19 +116,7 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
             {getAuthorPrimaryName(replyTo.author, {hideDisplayNames})}
           </Text>
           <ProfileBadges profile={replyTo.author} size="sm" style={[a.pl_xs]} />
-          {replyTo.author?.pronouns && (
-            <Text
-              style={[
-                t.atoms.text_contrast_low,
-                a.text_md,
-                a.leading_snug,
-                a.pl_sm,
-              ]}
-              numberOfLines={1}
-              emoji>
-              {sanitizePronouns(replyTo.author.pronouns, true)}
-            </Text>
-          )}
+          <PronounPill pronouns={replyTo.author.pronouns} style={a.ml_xs} />
         </View>
         <View style={[a.flex_row, a.gap_md]}>
           <View style={[a.flex_1, a.flex_grow]}>

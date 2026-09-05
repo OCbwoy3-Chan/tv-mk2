@@ -1,3 +1,4 @@
+import {Client} from '@atproto/lex'
 import {type DidString} from '@atproto/syntax'
 import {addLabeler, removeLabeler} from '@bsky/sdk'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
@@ -6,6 +7,7 @@ import {z} from 'zod'
 import {MAX_LABELERS} from '#/lib/constants'
 import {isAppLabeler} from '#/lib/moderation'
 import {
+  addIgnoredAppLabeler,
   removeIgnoredAppLabeler,
 } from '#/state/preferences/ignored-app-labelers'
 import {GCTIME, STALE} from '#/state/queries'
@@ -15,6 +17,7 @@ import {
 } from '#/state/queries/preferences'
 import {createQueryKey} from '#/state/queries/util'
 import {useAppviewClient, usePdsClient} from '#/state/session'
+import {configureGlobalAppLabelers} from '#/state/session/additional-moderation-authorities'
 import {app} from '#/lexicons'
 
 const labelerInfoQueryKeyRoot = 'labeler-info'
@@ -157,17 +160,23 @@ export function useLabelerSubscriptionMutation() {
       }
 
       if (subscribe) {
-        if (isAppLabeler(did)) {
-          removeIgnoredAppLabeler(did)
-        } else {
+        if (!isAppLabeler(did)) {
           const labelerCount = labelerDids.length - invalidLabelers.length
-          if (labelerCount >= MAX_LABELERS) {
-            throw new Error('MAX_LABELERS')
-          }
+          if (labelerCount >= MAX_LABELERS) throw new Error('MAX_LABELERS')
         }
         await pdsClient.call(addLabeler, did as DidString)
+        if (isAppLabeler(did)) {
+          removeIgnoredAppLabeler(did)
+          configureGlobalAppLabelers([...Client.appLabelers, did])
+        }
       } else {
         await pdsClient.call(removeLabeler, did as DidString)
+        if (isAppLabeler(did)) {
+          addIgnoredAppLabeler(did)
+          configureGlobalAppLabelers(
+            Client.appLabelers.filter(labeler => labeler !== did),
+          )
+        }
       }
     },
     async onSuccess() {

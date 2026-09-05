@@ -52,6 +52,7 @@ export function TagsBtn({
   const control = Dialog.useDialogControl()
   const {t: l} = useLingui()
   const hasTags = tags.length > 0
+  const [field, setField] = useState('')
 
   return (
     <>
@@ -79,9 +80,27 @@ export function TagsBtn({
         <ButtonIcon icon={TinyChevronIcon} size="2xs" />
       </Button>
 
-      <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
+      <Dialog.Outer
+        control={control}
+        nativeOptions={{preventExpansion: true}}
+        onClose={() => {
+          const tag = normalizeOutlineTag(field)
+          if (
+            tag &&
+            tags.length < MAX_TAGS &&
+            !tags.some(existing => existing.toLowerCase() === tag.toLowerCase())
+          ) {
+            onChange([...tags, tag])
+          }
+          setField('')
+        }}>
         <Dialog.Handle />
-        <DialogInner tags={tags} onChange={onChange} />
+        <DialogInner
+          tags={tags}
+          onChange={onChange}
+          field={field}
+          setField={setField}
+        />
       </Dialog.Outer>
     </>
   )
@@ -90,14 +109,17 @@ export function TagsBtn({
 function DialogInner({
   tags,
   onChange,
+  field,
+  setField,
 }: {
   tags: string[]
   onChange: (v: string[]) => void
+  field: string
+  setField: (value: string) => void
 }) {
   const {t: l} = useLingui()
   const control = Dialog.useDialogContext()
   const t = useTheme()
-  const [field, setField] = useState('')
   const [error, setError] = useState<string | undefined>()
 
   const atLimit = tags.length >= MAX_TAGS

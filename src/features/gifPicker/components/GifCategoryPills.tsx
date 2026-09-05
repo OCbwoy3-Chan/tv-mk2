@@ -134,7 +134,7 @@ export function GifCategoryPills({
             onPress={() => onSelect(category)}
             size="small"
             color={isActive ? 'secondary_inverted' : 'secondary'}
-            shape="round">
+            style={[a.flex_1, {minWidth: 0}]}>
             <ButtonIcon icon={category.icon} size="md" />
           </Button>
         )

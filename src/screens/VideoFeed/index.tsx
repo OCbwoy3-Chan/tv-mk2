@@ -902,12 +902,7 @@ function Overlay({
   }, [queueUnfollow])
 
   const handleFollow = useCallback(() => {
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('follow')
-      promptControl.open()
-    } else {
-      void executeFollow()
-    }
+    void executeFollow()
   }, [confirmFollowUnfollow, executeFollow, promptControl])
 
   const handleUnfollow = useCallback(() => {

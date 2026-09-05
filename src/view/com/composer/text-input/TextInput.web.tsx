@@ -67,6 +67,7 @@ export function TextInput({
   canMovePostDown,
   onAddPost,
   onMovePost,
+  onFocusPost,
   autoFocus,
 }: TextInputProps) {
   const {theme: t, fonts} = useAlf()
@@ -125,11 +126,13 @@ export function TextInput({
     }
     textInputWebEmitter.addListener('add-post', onAddPost)
     textInputWebEmitter.addListener('move-post', onMovePost)
+    textInputWebEmitter.addListener('focus-post', onFocusPost)
     return () => {
       textInputWebEmitter.removeListener('add-post', onAddPost)
       textInputWebEmitter.removeListener('move-post', onMovePost)
+      textInputWebEmitter.removeListener('focus-post', onFocusPost)
     }
-  }, [isActive, onAddPost, onMovePost])
+  }, [isActive, onAddPost, onMovePost, onFocusPost])
 
   useEffect(() => {
     if (!isActive) {
@@ -285,6 +288,12 @@ export function TextInput({
           switch (threadShortcut) {
             case 'add-post':
               textInputWebEmitter.emit('add-post')
+              return true
+            case 'focus-post-up':
+              textInputWebEmitter.emit('focus-post', 'up')
+              return true
+            case 'focus-post-down':
+              textInputWebEmitter.emit('focus-post', 'down')
               return true
             case 'move-post-up':
               textInputWebEmitter.emit('move-post', 'up')

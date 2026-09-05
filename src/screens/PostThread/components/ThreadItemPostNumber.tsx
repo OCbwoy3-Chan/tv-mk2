@@ -1,6 +1,7 @@
 import {Text, View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, ios, platform, useTheme} from '#/alf'
 import {type app} from '#/lexicons'
 
@@ -38,6 +39,7 @@ export function ThreadItemPostNumber({
   inline?: boolean
 }) {
   const t = useTheme()
+  const square = useEnableSquareButtons()
   const {t: l} = useLingui()
   const shouldRender = useHasThreadItemPostNumber(value)
   const index = value?.opThreadPostIndex
@@ -51,7 +53,7 @@ export function ThreadItemPostNumber({
     <View
       style={[
         a.flex_shrink_0,
-        a.rounded_full,
+        square ? a.rounded_xs : a.rounded_full,
         t.atoms.bg_contrast_50,
         !inline && a.self_start,
         ios(a.py_2xs),

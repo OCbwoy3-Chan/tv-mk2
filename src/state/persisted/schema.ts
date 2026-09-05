@@ -511,7 +511,7 @@ export const defaults: Schema = {
   highQualityImages: false,
   thumbnailFormat: 'webp',
   fullsizeFormat: 'webp',
-  downloadFormat: 'jpeg',
+  downloadFormat: 'original',
   loadAsPngs: true,
   plcDirectory: 'https://plc.directory',
   hideUnreplyablePosts: false,

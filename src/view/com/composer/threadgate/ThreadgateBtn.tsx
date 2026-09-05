@@ -28,11 +28,13 @@ import {type app} from '#/lexicons'
 import {useThreadgateNudged} from '#/storage/hooks/threadgate-nudged'
 
 export function ThreadgateBtn({
+  isReply = false,
   postgate,
   onChangePostgate,
   threadgateAllowUISettings,
   onChangeThreadgateAllowUISettings,
 }: {
+  isReply?: boolean
   postgate: app.bsky.feed.postgate.Main
   onChangePostgate: (v: app.bsky.feed.postgate.Main) => void
 
@@ -164,6 +166,7 @@ export function ThreadgateBtn({
       </Tooltip.Outer>
       <PostInteractionSettingsControlledDialog
         control={control}
+        replySettingsDisabled={isReply}
         onSave={() => {
           if (persist) {
             persistChanges({
@@ -182,8 +185,8 @@ export function ThreadgateBtn({
         threadgateAllowUISettings={threadgateAllowUISettings}
         onChangeThreadgateAllowUISettings={onChangeThreadgateAllowUISettings}
         isDirty={isDirty}
-        persist={persist}
-        onChangePersist={setPersist}
+        persist={isReply ? undefined : persist}
+        onChangePersist={isReply ? undefined : setPersist}
       />
     </>
   )

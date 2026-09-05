@@ -1,4 +1,4 @@
-import {memo, useMemo} from 'react'
+import {memo, useMemo, useState} from 'react'
 import {Text as RNText, View} from 'react-native'
 import {AtUri} from '@atproto/syntax'
 import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
@@ -76,6 +76,7 @@ import {PostTags} from '#/components/PostTags'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import * as Prompt from '#/components/Prompt'
+import {PronounPill} from '#/components/PronounPill'
 import {RichText} from '#/components/RichText'
 import * as Skele from '#/components/Skeleton'
 import {Text} from '#/components/Typography'
@@ -231,6 +232,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 }) {
   const inReader = !!readerSeam
   const t = useTheme()
+  const [nameRowHeight, setNameRowHeight] = useState<number>()
   const ax = useAnalytics()
   const {t: l} = useLingui()
   const {openComposer} = useOpenComposer()
@@ -395,6 +397,17 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
       <GalleryBleed>
         <View
           testID={`postThreadItem-by-${post.author.handle}`}
+          {...{
+            dataSet: {
+              keyboardNavigationPost: post.uri,
+              keyboardNavigationHref: makeProfileLink(
+                post.author,
+                'post',
+                new AtUri(post.uri).rkey,
+              ),
+              keyboardNavigationClickable: 'false',
+            },
+          }}
           style={[
             {
               paddingHorizontal: sidePadding,
@@ -436,11 +449,22 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   hideDisplayNames && a.justify_center,
                 ]}>
                 <ProfileHoverCard did={post.author.did} style={[a.w_full]}>
-                  <View style={[a.flex_row, a.align_center]}>
+                  <View
+                    style={[
+                      a.flex_row,
+                      a.flex_wrap,
+                      a.align_center,
+                      a.overflow_hidden,
+                      {maxHeight: nameRowHeight},
+                    ]}>
                     <Text
+                      onLayout={event =>
+                        setNameRowHeight(event.nativeEvent.layout.height)
+                      }
                       emoji
                       style={[
-                        a.flex_shrink,
+                        a.flex_shrink_0,
+                        {maxWidth: '100%'},
                         isCompactPosts ? a.text_md : a.text_lg,
                         a.font_semi_bold,
                         a.leading_snug,
@@ -449,20 +473,17 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       {displayName}
                     </Text>
 
-                    <View
-                      style={[
-                        a.pl_xs,
-                        a.flex_row,
-                        a.gap_2xs,
-                        a.align_center,
-                        isCompactPosts && {marginTop: 1},
-                      ]}>
-                      <ProfileBadges
-                        profile={authorShadow}
-                        size="md"
-                        interactive
-                      />
-                    </View>
+                    <ProfileBadges
+                      profile={authorShadow}
+                      size="md"
+                      interactive
+                      style={[a.pl_xs, isCompactPosts && {marginTop: 1}]}
+                    />
+                    {post.author.pronouns && (
+                      <View style={[a.pl_xs, a.flex_shrink_0]}>
+                        <PronounPill pronouns={post.author.pronouns} />
+                      </View>
+                    )}
                   </View>
                   {!hideDisplayNames && (
                     <Text

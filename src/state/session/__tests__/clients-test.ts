@@ -1,3 +1,5 @@
+jest.unmock('multiformats/cid')
+import {AtpAgent} from '@atproto/api'
 import {Client} from '@atproto/lex'
 import {PasswordSession} from '@atproto/lex-password-session'
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
@@ -388,4 +390,50 @@ describe('getUnauthenticatedThrowingClient', () => {
     )
     expect(fetchMock).not.toHaveBeenCalled()
   })
+})
+
+it('posts through a selected legacy account without its appview proxy', async () => {
+  const fetchMock = makeMockFetch({
+    'com.atproto.repo.applyWrites': () => json({}),
+  })
+  const selected = new AtpAgent({
+    service: PDS_HOST,
+    fetch: async (input, init) => {
+      const request = new Request(input, init)
+      return fetchMock(request.url, {
+        method: request.method,
+        headers: request.headers,
+        body: await request.text(),
+      })
+    },
+  })
+  selected.sessionManager.session = {
+    did: 'did:plc:selected',
+    handle: 'selected.test',
+    accessJwt: 'selected-token',
+    refreshJwt: 'selected-refresh',
+    active: true,
+  }
+  selected.configureProxy('did:web:api.bsky.app#bsky_appview')
+  const accountHostAgent = selected.clone()
+  accountHostAgent.configureProxy(null)
+  const client = buildPdsClient(accountHostAgent)
+  await client.call(com.atproto.repo.applyWrites, {
+    repo: client.assertDid,
+    writes: [],
+  })
+  const init = initFor(fetchMock, 'com.atproto.repo.applyWrites')
+  if (typeof init?.body !== 'string')
+    throw new Error('Expected JSON request body')
+  const payload: unknown = JSON.parse(init.body)
+  expect(payload).toEqual(expect.objectContaining({repo: 'did:plc:selected'}))
+  expect(
+    headersFor(fetchMock, 'com.atproto.repo.applyWrites').get('authorization'),
+  ).toBe('Bearer selected-token')
+  expect(
+    headersFor(fetchMock, 'com.atproto.repo.applyWrites').get('atproto-proxy'),
+  ).toBeNull()
+  expect(urlsOf(fetchMock)).toContain(
+    `${PDS_HOST}/xrpc/com.atproto.repo.applyWrites`,
+  )
 })

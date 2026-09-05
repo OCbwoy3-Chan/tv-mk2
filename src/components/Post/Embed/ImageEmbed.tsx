@@ -1,5 +1,5 @@
 import {useRef} from 'react'
-import {InteractionManager, View} from 'react-native'
+import {View} from 'react-native'
 import {type AnimatedRef} from 'react-native-reanimated'
 import {Image} from 'expo-image'
 
@@ -118,13 +118,10 @@ export function ImageEmbed({
         metricsContext,
       })
     }
-    const onPressIn = (_: number) => {
-      InteractionManager.runAfterInteractions(() => {
-        void Image.prefetch(
-          items.map(i => i.uri),
-          'memory',
-        )
-      })
+    const onPressIn = (index: number) => {
+      // Start the selected full-size image immediately; other gallery images
+      // must not compete with it before the lightbox opens.
+      void Image.prefetch(items[index].uri, 'memory').catch(() => {})
     }
 
     if (images.length === 1) {

@@ -52,12 +52,7 @@ export function AviFollowButton({
   }
 
   function onPress() {
-    if (confirmFollowUnfollow) {
-      promptControl.open()
-    } else {
-      follow()
-      Toast.show(_(msg`Following ${name}`))
-    }
+    onConfirm()
   }
 
   if (!hasSession || !showAvatarFollowButton) {

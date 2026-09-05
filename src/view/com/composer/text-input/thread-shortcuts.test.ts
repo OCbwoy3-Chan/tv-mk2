@@ -9,8 +9,8 @@ const allAvailable = {
 describe('getThreadShortcut', () => {
   it.each([
     ['Enter', 'add-post'],
-    ['ArrowUp', 'move-post-up'],
-    ['ArrowDown', 'move-post-down'],
+    ['ArrowUp', 'focus-post-up'],
+    ['ArrowDown', 'focus-post-down'],
   ] as const)('maps Alt+%s to %s', (code, shortcut) => {
     expect(getThreadShortcut({altKey: true, code}, allAvailable)).toBe(shortcut)
   })
@@ -35,4 +35,13 @@ describe('getThreadShortcut', () => {
       getThreadShortcut({altKey: false, code: 'Enter'}, allAvailable),
     ).toBeUndefined()
   })
+})
+
+it.each([
+  ['ArrowUp', 'move-post-up'],
+  ['ArrowDown', 'move-post-down'],
+])('reorders with Alt+Shift+%s', (code, action) => {
+  expect(
+    getThreadShortcut({altKey: true, shiftKey: true, code}, allAvailable),
+  ).toBe(action)
 })

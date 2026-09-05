@@ -147,6 +147,8 @@ export function applyImageTransforms(
     format?: string
   },
 ) {
-  const withFormat = modifyImageFormat(src, options.format ?? 'webp')
+  const withFormat = options.format
+    ? modifyImageFormat(src, options.format)
+    : src
   return maybeModifyImageCdnHost(withFormat, options.imageCdnHost)
 }

@@ -21,6 +21,7 @@ import {countGraphemes} from 'unicode-segmenter/grapheme'
 import {HITSLOP_10, MAX_DM_GRAPHEME_LENGTH} from '#/lib/constants'
 import {useHaptics} from '#/lib/haptics'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
+import {parseMarkdownLinks} from '#/lib/strings/rich-text-manip'
 import {isBskyChatInviteUrl, isBskyPostUrl} from '#/lib/strings/url-helpers'
 import {useEmail} from '#/state/email-verification'
 import {
@@ -113,7 +114,7 @@ export function MessageComposer({
   ) => {
     if (!editable) return
     if (!embed && message.trim() === '') return
-    const graphemeCount = countGraphemes(message)
+    const graphemeCount = countGraphemes(parseMarkdownLinks(message).text)
     if (graphemeCount > MAX_DM_GRAPHEME_LENGTH) {
       Toast.show(
         l`Message is too long (${graphemeCount}/${MAX_DM_GRAPHEME_LENGTH})`,

@@ -9,6 +9,7 @@ import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {ChevronRight_Stroke2_Corner0_Rounded as ChevronIcon} from '#/components/icons/Chevron'
 import {Text} from '#/components/Typography'
 import {DEFAULT_ACTIVE_THEME} from '#/features/themes/catalog'
+import {resolveHueRecord} from '#/features/themes/hue'
 import {ThemePreview} from '#/features/themes/ThemePreview'
 import {
   getColorSet,
@@ -31,10 +32,13 @@ export function ThemeQuickSelector() {
       : undefined
   const activeTheme = supportedStoredTheme ?? DEFAULT_ACTIVE_THEME
   const light = getColorSet(
-    activeTheme.light.record,
+    resolveHueRecord(activeTheme.light.record, activeTheme.light.hue ?? 0),
     activeTheme.light.colorSet,
   )
-  const dark = getColorSet(activeTheme.dark.record, activeTheme.dark.colorSet)
+  const dark = getColorSet(
+    resolveHueRecord(activeTheme.dark.record, activeTheme.dark.hue ?? 0),
+    activeTheme.dark.colorSet,
+  )
   const previewHeight = 92
   const items: {
     id: ThemeSelectionMode

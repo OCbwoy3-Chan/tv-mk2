@@ -80,13 +80,7 @@ export function Member({
     })
   }
 
-  const handleFollow = () => {
-    if (confirmFollowUnfollow) {
-      promptControl.open()
-    } else {
-      executeFollow()
-    }
-  }
+  const handleFollow = () => executeFollow()
 
   const onConfirmFollow = () => {
     executeFollow()

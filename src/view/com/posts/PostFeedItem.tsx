@@ -358,6 +358,9 @@ let FeedItemInner = ({
       accessible={false}
       onBeforePress={onBeforePress}
       dataSet={{
+        keyboardNavigationPost: post.uri,
+        keyboardNavigationHref: href,
+        keyboardNavigationClickable: 'true',
         feedContext,
         wskyEmbed: post.embed ? 'true' : 'false',
         wskyReply: record.reply ? 'true' : 'false',

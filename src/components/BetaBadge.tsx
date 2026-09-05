@@ -45,7 +45,7 @@ export function BetaBadge({
         a.rounded_full,
         {backgroundColor: t.palette.primary_50, padding},
       ]}>
-      <BeakerIcon width={width} fill={t.palette.primary_500} />
+      <BeakerIcon width={width} height={width} fill={t.palette.primary_500} />
     </View>
   )
 }
@@ -94,7 +94,11 @@ export function BetaBadgeButton({
             },
           ]}
           onPress={() => setTooltipVisible(v => !v)}>
-          <BeakerIcon width={width} fill={t.palette.primary_500} />
+          <BeakerIcon
+            width={width}
+            height={width}
+            fill={t.palette.primary_500}
+          />
         </Pressable>
       </Tooltip.Target>
       <Tooltip.BubbleText label={l`Beta features enabled`}>

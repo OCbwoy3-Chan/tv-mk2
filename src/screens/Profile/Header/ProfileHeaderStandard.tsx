@@ -483,32 +483,8 @@ export function HeaderStandardButtons({
 
   const onPressUnfollow = () => {
     playHaptic()
-    const displayNameOrHandle = profile.displayName || profile.handle
-    requireAuth(async () => {
-      try {
-        await queueUnfollow()
-        if (onUnfollow) {
-          onUnfollow()
-        }
-        Toast.show(
-          _(
-            msg`No longer following ${sanitizeDisplayName(
-              displayNameOrHandle,
-              moderation.ui('displayName'),
-            )}`,
-          ),
-          {type: 'default'},
-        )
-      } catch (err) {
-        const e = err as Error
-        if (e?.name !== 'AbortError') {
-          logger.error('Failed to unfollow', {message: String(e)})
-          Toast.show(_(msg`There was an issue! ${e.toString()}`), {
-            type: 'error',
-          })
-        }
-      }
-    })
+    setConfirmationAction('unfollow')
+    followPromptControl.open()
   }
 
   const onConfirmFollowAction = () => {

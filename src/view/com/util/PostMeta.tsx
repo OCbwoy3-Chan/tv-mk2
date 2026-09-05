@@ -1,4 +1,4 @@
-import {memo, useCallback} from 'react'
+import {Fragment, memo, useCallback, useState} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {type ModerationDecision} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
@@ -10,7 +10,6 @@ import {forceLTR} from '#/lib/strings/bidi'
 import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
-import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {niceDate} from '#/lib/strings/time'
 import {userStyle} from '#/lib/userstyles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
@@ -20,8 +19,9 @@ import {atoms as a, platform, useTheme, web} from '#/alf'
 import {WebOnlyInlineLinkText} from '#/components/Link'
 import {ProfileBadgesFromProfileShadow} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
+import {PronounPill} from '#/components/PronounPill'
 import {Text} from '#/components/Typography'
-import {IS_ANDROID} from '#/env'
+import {IS_ANDROID, IS_WEB} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import {type app} from '#/lexicons'
 import {TimeElapsed} from './TimeElapsed'
@@ -44,6 +44,7 @@ interface PostMetaOpts {
 
 let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
   const t = useTheme()
+  const [authorRowHeight, setAuthorRowHeight] = useState<number>()
   const {i18n, _} = useLingui()
 
   const author = useProfileShadow(opts.author)
@@ -69,13 +70,16 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
   const timestampLabel = niceDate(i18n, opts.timestamp)
   const {isActive: live} = useActorStatus(author)
 
+  // Native hover cards have no wrapper. Keep ordinary author rows as flat as
+  // upstream rather than introducing another flex-basis calculation in Yoga.
+  const AuthorGroup = !IS_WEB && !opts.showPronouns ? Fragment : View
   const MaybeLinkText = opts.linkDisabled ? Text : WebOnlyInlineLinkText
 
   return (
     <View
       style={[
         userStyle('wsky-post__meta'),
-        IS_ANDROID ? a.flex_1 : a.flex_shrink,
+        IS_WEB ? a.flex_shrink : a.flex_1,
         a.flex_row,
         a.align_center,
         a.pb_xs,
@@ -101,85 +105,95 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
           a.flex_row,
           a.align_end,
           a.flex_shrink,
-          opts.constrainWidth && {flex: 1, minWidth: 0},
+          web({flex: 1, minWidth: 0}),
         ]}>
-        <ProfileHoverCard did={author.did}>
+        <ProfileHoverCard
+          did={author.did}
+          style={[a.flex_shrink, {minWidth: 0}, opts.showPronouns && a.flex_1]}>
           <View
             style={[
               a.flex_row,
               a.align_end,
               a.flex_shrink,
-              opts.constrainWidth && {flex: 1, minWidth: 0},
+              web({flex: 1, minWidth: 0}),
+              opts.showPronouns && [
+                a.flex_wrap,
+                a.overflow_hidden,
+                {maxHeight: authorRowHeight},
+              ],
             ]}>
-            <MaybeLinkText
-              emoji
-              numberOfLines={1}
-              to={profileLink}
-              label={_(msg`View profile`)}
-              disableMismatchWarning
-              onPress={opts.linkDisabled ? undefined : onBeforePressAuthor}
-              style={[
-                a.text_md,
-                a.font_semi_bold,
-                t.atoms.text,
-                a.leading_tight,
-                a.flex_shrink_0,
-                {maxWidth: hideDisplayNames ? '100%' : '70%'},
-                web({direction: 'ltr', unicodeBidi: 'isolate'}),
-              ]}>
-              {forceLTR(displayName)}
-            </MaybeLinkText>
-            <ProfileBadgesFromProfileShadow
-              profile={author}
-              size="sm"
-              pdsInteractive={false}
-              style={[
-                a.pl_2xs,
-                a.self_center,
-                {
-                  marginTop: platform({web: 1, ios: 0, android: -1}),
-                },
-              ]}
-            />
-            {!hideDisplayNames && (
+            <AuthorGroup
+              {...(AuthorGroup === View
+                ? {
+                    onLayout: opts.showPronouns
+                      ? event =>
+                          setAuthorRowHeight(event.nativeEvent.layout.height)
+                      : undefined,
+                    style: [
+                      a.flex_row,
+                      a.align_end,
+                      a.flex_shrink,
+                      web({minWidth: 0, maxWidth: '100%'}),
+                    ],
+                  }
+                : {})}>
               <MaybeLinkText
                 emoji
                 numberOfLines={1}
                 to={profileLink}
                 label={_(msg`View profile`)}
                 disableMismatchWarning
-                disableUnderline
                 onPress={opts.linkDisabled ? undefined : onBeforePressAuthor}
                 style={[
                   a.text_md,
-                  t.atoms.text_contrast_medium,
-                  {lineHeight: 1.17},
-                  opts.narrowLayout
-                    ? a.flex_shrink
-                    : [{flexBasis: '30%'}, a.flex_grow, a.flex_shrink_0],
-                  web({maxWidth: 'max-content'}),
+                  a.font_semi_bold,
+                  t.atoms.text,
+                  a.leading_tight,
+                  // Let the handle shrink first, keeping badges directly after
+                  // the display name instead of prematurely truncating it.
+                  a.flex_shrink_0,
+                  {minWidth: 0, maxWidth: hideDisplayNames ? '100%' : '70%'},
+                  web({direction: 'ltr', unicodeBidi: 'isolate'}),
                 ]}>
-                {NON_BREAKING_SPACE + sanitizeHandle(handle, '@')}
+                {forceLTR(displayName)}
               </MaybeLinkText>
-            )}
-            {opts.showPronouns && pronouns && (
-              <WebOnlyInlineLinkText
-                emoji
-                numberOfLines={1}
-                to={profileLink}
-                label={_(msg`View Profile`)}
-                disableMismatchWarning
-                disableUnderline
-                onPress={onBeforePressAuthor}
+              <ProfileBadgesFromProfileShadow
+                profile={author}
+                size="sm"
+                pdsInteractive={false}
                 style={[
-                  t.atoms.text_contrast_low,
                   a.pl_2xs,
-                  a.text_md,
-                  {lineHeight: 1.17},
-                  {flexShrink: 5},
-                ]}>
-                {NON_BREAKING_SPACE + sanitizePronouns(pronouns)}
-              </WebOnlyInlineLinkText>
+                  a.self_center,
+                  {
+                    marginTop: platform({web: 1, ios: 0, android: -1}),
+                  },
+                ]}
+              />
+              {!hideDisplayNames && (
+                <MaybeLinkText
+                  emoji
+                  numberOfLines={1}
+                  to={profileLink}
+                  label={_(msg`View profile`)}
+                  disableMismatchWarning
+                  disableUnderline
+                  onPress={opts.linkDisabled ? undefined : onBeforePressAuthor}
+                  style={[
+                    a.text_md,
+                    t.atoms.text_contrast_medium,
+                    {lineHeight: 1.17},
+                    {flexShrink: 10, minWidth: 0},
+                    web({maxWidth: 'max-content'}),
+                  ]}>
+                  {NON_BREAKING_SPACE + sanitizeHandle(handle, '@')}
+                </MaybeLinkText>
+              )}
+            </AuthorGroup>
+            {opts.showPronouns && (
+              <PronounPill
+                pronouns={pronouns}
+                style={[a.ml_xs, a.self_center, a.flex_shrink_0]}
+              />
             )}
           </View>
         </ProfileHoverCard>
@@ -195,6 +209,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
               onPress={opts.linkDisabled ? undefined : onBeforePressPost}
               style={[
                 a.pl_xs,
+                a.flex_shrink_0,
                 a.text_md,
                 a.leading_tight,
                 IS_ANDROID && !opts.narrowLayout && a.flex_grow,

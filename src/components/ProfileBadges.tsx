@@ -99,10 +99,8 @@ export function ProfileBadgesFromProfileShadow({
   const shouldShowPdsCandidate =
     pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
   const pdsProfilePriority = usePdsProfilePriority(shadowed.did)
-  const shouldResolvePds =
-    shouldShowPdsCandidate && pdsProfilePriority !== 'off'
   const {data: pdsData, isLoading: isPdsLoading} = usePdsLabelQuery(
-    shouldResolvePds ? shadowed.did : undefined,
+    shouldShowPdsCandidate ? shadowed.did : undefined,
     pdsProfilePriority,
   )
   const pdsFaviconUrl = usePdsFaviconUrl(

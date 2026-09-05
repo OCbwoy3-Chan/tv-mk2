@@ -25,7 +25,7 @@ export function useSaveImageToMediaLibrary() {
       try {
         await saveImageToMediaLibrary({
           uri,
-          format: downloadFormat ?? 'jpeg',
+          format: downloadFormat ?? 'original',
         })
         Toast.show(_(msg`Image saved`))
       } catch (e: any) {

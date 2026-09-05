@@ -298,6 +298,11 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
       <ThreadItemPostOuterWrapper item={item} overrides={overrides}>
         <PostHider
           testID={`postThreadItem-by-${post.author.handle}`}
+          dataSet={{
+            keyboardNavigationPost: post.uri,
+            keyboardNavigationHref: postHref,
+            keyboardNavigationClickable: 'true',
+          }}
           href={postHref}
           disabled={overrides?.moderation === true}
           modui={moderation.ui('contentList')}

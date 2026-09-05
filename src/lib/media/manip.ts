@@ -16,7 +16,7 @@ import {SaveFormat} from 'expo-image-manipulator'
 import * as MediaLibrary from 'expo-media-library/legacy'
 import * as Sharing from 'expo-sharing'
 
-import {formatToFileExt} from '#/lib/media/image-formats'
+import {formatToFileExt, imageMimeToExtension} from '#/lib/media/image-formats'
 import {logger} from '#/logger'
 import {IS_ANDROID, IS_IOS} from '#/env'
 import {renderImage} from './image-manipulator'
@@ -111,7 +111,7 @@ const ALBUM_NAME = 'Bluesky'
  */
 export async function saveImageToMediaLibrary({
   uri,
-  format = 'jpeg',
+  format = 'original',
 }: {
   uri: string
   format?: string
@@ -506,13 +506,6 @@ async function downloadImage(uri: string, destName: string, timeout: number) {
   }
 }
 
-const MIME_TO_EXT: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/webp': 'webp',
-  'image/png': 'png',
-  'image/gif': 'gif',
-}
-
 function extFromMime(mimeType?: string | null): string {
-  return (mimeType && MIME_TO_EXT[mimeType]) || 'jpg'
+  return imageMimeToExtension(mimeType) ?? 'jpg'
 }

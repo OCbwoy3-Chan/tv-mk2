@@ -34,6 +34,7 @@ export type TextInputProps = {
   canMovePostUp: boolean
   canMovePostDown: boolean
   onAddPost: () => void
+  onFocusPost: (direction: 'up' | 'down') => void
   onMovePost: (direction: 'up' | 'down') => void
 } & Pick<
   React.ComponentProps<typeof TextInput>,

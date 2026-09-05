@@ -317,7 +317,7 @@ function LightboxGallery({
               onPress={() => {
                 saveImageToMediaLibrary({
                   uri: img.uri,
-                  format: downloadFormat ?? 'jpeg',
+                  format: downloadFormat ?? 'original',
                 }).then(
                   () => {
                     Toast.show(l`Image saved`)

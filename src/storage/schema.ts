@@ -60,6 +60,7 @@ export type Device = {
   featureGateOverrides?: Record<string, boolean>
 
   trendingBetaEnabled: boolean
+  keyboardShortcutsEnabled?: boolean
   devMode: boolean
   demoMode: boolean
 

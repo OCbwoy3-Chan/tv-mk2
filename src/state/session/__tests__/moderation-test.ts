@@ -1,6 +1,8 @@
-import {type Client} from '@atproto/lex'
+import {Client} from '@atproto/lex'
 import {api} from '@bsky/sdk'
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
+
+import * as ignoredLabelers from '#/state/preferences/ignored-app-labelers'
 
 jest.mock('#/storage', () => ({
   account: {
@@ -13,7 +15,12 @@ jest.mock('#/storage', () => ({
 }))
 
 import {account} from '#/storage'
-import {configureGlobalAppLabelers} from '../additional-moderation-authorities'
+import {
+  BR_LABELER,
+  configureAdditionalModerationAuthorities,
+  configureGlobalAppLabelers,
+  EU_LABELER,
+} from '../additional-moderation-authorities'
 import {configureModerationForAccount} from '../moderation'
 import {makeAccount} from './mock-fetch'
 
@@ -42,4 +49,29 @@ describe('configureModerationForAccount', () => {
       'did:plc:account-labeler',
     ])
   })
+})
+
+it('removes automatically installed regional authorities', () => {
+  configureGlobalAppLabelers([api.moderation.did, BR_LABELER, EU_LABELER])
+  configureAdditionalModerationAuthorities()
+  expect(Client.appLabelers).toEqual([api.moderation.did])
+})
+
+it('does not reinstall an unsubscribed primary app labeler during session setup', () => {
+  const ignored = jest
+    .spyOn(ignoredLabelers, 'getIgnoredAppLabelers')
+    .mockReturnValue([api.moderation.did])
+  try {
+    void configureModerationForAccount(
+      {
+        appviewClient: {setLabelers: jest.fn()} as unknown as Client,
+        chatClient: {setLabelers: jest.fn()} as unknown as Client,
+      },
+      makeAccount({handle: 'alice.example.com'}),
+    )
+    expect(Client.appLabelers).not.toContain(api.moderation.did)
+  } finally {
+    ignored.mockRestore()
+    configureGlobalAppLabelers([])
+  }
 })

@@ -46,7 +46,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
 }
 
 export function useConfirmFollowUnfollow() {
-  return useContext(stateContext) ?? persisted.defaults.confirmFollowUnfollow
+  return true
 }
 
 export function useSetConfirmFollowUnfollow() {

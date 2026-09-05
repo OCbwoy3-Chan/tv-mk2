@@ -76,7 +76,7 @@ export function RunesDisplaySettingsScreen() {
   const setThumbnailFormat = useSetThumbnailFormat()
   const fullsizeFormat = useFullsizeFormat() ?? 'webp'
   const setFullsizeFormat = useSetFullsizeFormat()
-  const downloadFormat = useDownloadFormat() ?? 'jpeg'
+  const downloadFormat = useDownloadFormat() ?? 'original'
   const setDownloadFormat = useSetDownloadFormat()
   const loadAsPngs = useLoadAsPngs()
   const setLoadAsPngs = useSetLoadAsPngs()

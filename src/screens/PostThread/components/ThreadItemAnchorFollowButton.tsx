@@ -183,12 +183,7 @@ function PostThreadFollowBtnLoaded({
   const onPress = useCallback(() => {
     if (!isFollowing) {
       requireAuth(() => {
-        if (confirmFollowUnfollow) {
-          setConfirmationAction('follow')
-          promptControl.open()
-        } else {
-          void executeFollow()
-        }
+        void executeFollow()
       })
     } else {
       requireAuth(() => {

@@ -73,11 +73,28 @@ export function convertCdnPreset(uri: string, preset: ImgproxyPreset): string {
   return uri.replace(IMGPROXY_PRESET_RE, `$1${preset}$3`)
 }
 
+/** Preserve non-CDN URLs, including blobs and already-resolved originals. */
 export function modifyImageFormat(uri: string, format: string) {
-  const atPosition = uri.lastIndexOf('@')
-  return atPosition === -1
-    ? `${uri}@${format}`
-    : uri.slice(0, atPosition + 1) + format
+  let url: URL
+  try {
+    url = new URL(uri)
+  } catch {
+    return uri
+  }
+  const match = url.pathname.match(
+    /^\/img\/[^/]+\/plain\/(did:[^/]+)\/([^/@]+)(?:@[^/]+)?$/,
+  )
+  if (!match) return uri
+  if (format === 'original') {
+    const original = new URL(
+      'https://bsky.social/xrpc/com.atproto.sync.getBlob',
+    )
+    original.searchParams.set('did', decodeURIComponent(match[1]))
+    original.searchParams.set('cid', match[2])
+    return original.toString()
+  }
+  url.pathname = url.pathname.replace(/(?:@[^/]*)?$/, `@${format}`)
+  return url.toString()
 }
 
 export function getDownloadImageUri(uri: string, format: string) {
