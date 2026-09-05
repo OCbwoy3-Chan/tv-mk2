@@ -1,34 +1,52 @@
 {
-  "$type": "com.atproto.lexicon.schema",
-  "defs": {
-    "main": {
-      "description": "Gets a private post's contents. The AppView must ensure this is an authenticated query and that the users are mutuals.",
-      "output": {
-        "encoding": "application/json",
-        "schema": {
-          "properties": {
-            "createdAt": { "format": "datetime", "type": "string" },
-            "descriptionFacets": {
-              "items": { "ref": "app.bsky.richtext.facet", "type": "ref" },
-              "type": "array"
-            },
-            "error": { "maxLength": 3000, "type": "string" },
-            "text": { "maxGraphemes": 300, "maxLength": 3000, "type": "string" }
-          },
-          "required": [],
-          "type": "object"
-        }
-      },
-      "parameters": {
-        "properties": {
-          "cid": { "maxLength": 3000, "type": "string" },
-          "uri": { "maxLength": 3000, "type": "string" }
-        },
-        "type": "params"
-      },
-      "type": "query"
-    }
-  },
-  "id": "party.tenna.private.getPost",
-  "lexicon": 1
+	"defs": {
+		"main": {
+			"description": "Gets a private post's contents. The AppView must ensure this is an authenticated query and that the users are mutuals.",
+			"output": {
+				"encoding": "application/json",
+				"schema": {
+					"properties": {
+						"error": {
+							"type": "string",
+							"maxLength": 3000
+						},
+						"createdAt": {
+							"format": "datetime",
+							"type": "string"
+						},
+						"text": {
+							"maxGraphemes": 300,
+							"maxLength": 3000,
+							"type": "string"
+						},
+						"descriptionFacets": {
+							"items": {
+								"ref": "app.bsky.richtext.facet",
+								"type": "ref"
+							},
+							"type": "array"
+						}
+					},
+					"required": [],
+					"type": "object"
+				}
+			},
+			"parameters": {
+				"properties": {
+					"uri": {
+						"type": "string",
+						"maxLength": 3000
+					},
+					"cid": {
+						"type": "string",
+						"maxLength": 3000
+					}
+				},
+				"type": "params"
+			},
+			"type": "query"
+		}
+	},
+	"id": "party.tenna.private.getPost",
+	"lexicon": 1
 }

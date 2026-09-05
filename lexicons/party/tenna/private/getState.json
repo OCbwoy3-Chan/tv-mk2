@@ -1,0 +1,43 @@
+{
+	"lexicon": 1,
+	"id": "party.tenna.private.getState",
+	"defs": {
+		"main": {
+			"type": "query",
+			"description": "Gets the currently authorized user's debug info.",
+			"parameters": {
+				"type": "params",
+				"properties": {}
+			},
+			"output": {
+				"encoding": "application/json",
+				"schema": {
+					"type": "object",
+					"required": [
+						"numPrivatePosts",
+						"pds"
+					],
+					"properties": {
+						"numPrivatePosts": {
+							"type": "integer"
+						},
+						"pds": {
+							"type": "string",
+							"format": "uri"
+						},
+						"lastResyncAt": {
+							"type": "string",
+							"format": "datetime"
+						}
+					}
+				}
+			},
+			"errors": [
+				{
+					"name": "NoAuth",
+					"description": "No service auth token was given"
+				}
+			]
+		}
+	}
+}

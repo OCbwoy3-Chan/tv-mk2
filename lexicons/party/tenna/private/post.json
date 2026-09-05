@@ -1,0 +1,36 @@
+{
+	"defs": {
+		"main": {
+			"description": "A gated private post",
+			"key": "tid",
+			"record": {
+				"properties": {
+					"createdAt": {
+						"format": "datetime",
+						"type": "string"
+					},
+					"text": {
+						"maxGraphemes": 300,
+						"maxLength": 3000,
+						"type": "string"
+					},
+					"descriptionFacets": {
+						"items": {
+							"ref": "app.bsky.richtext.facet",
+							"type": "ref"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"text",
+					"createdAt"
+				],
+				"type": "object"
+			},
+			"type": "record"
+		}
+	},
+	"id": "party.tenna.private.post",
+	"lexicon": 1
+}

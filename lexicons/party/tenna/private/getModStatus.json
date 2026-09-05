@@ -1,23 +1,60 @@
 {
-  "$type": "com.atproto.lexicon.schema",
-  "defs": {
-    "main": {
-      "description": "Gets the currently authorized user's moderation status.",
-      "output": {
-        "encoding": "application/json",
-        "schema": {
-          "properties": {
-            "isBanned": { "type": "boolean" },
-            "reason": { "type": "string" }
-          },
-          "required": ["isBanned"],
-          "type": "object"
-        }
-      },
-      "parameters": { "properties": {}, "type": "params" },
-      "type": "query"
-    }
-  },
-  "id": "party.tenna.private.getModStatus",
-  "lexicon": 1
+	"lexicon": 1,
+	"id": "party.tenna.private.getModStatus",
+	"defs": {
+		"main": {
+			"type": "query",
+			"description": "Gets the currently authorized user's moderation status.",
+			"parameters": {
+				"type": "params",
+				"properties": {}
+			},
+			"output": {
+				"encoding": "application/json",
+				"schema": {
+					"type": "object",
+					"required": [
+						"isBanned"
+					],
+					"properties": {
+						"isBanned": {
+							"type": "boolean"
+						},
+						"reason": {
+							"type": "string"
+						},
+						"offendingContent": {
+							"type": "array",
+							"description": "Array referencing offending content.",
+							"items": {
+								"type": "ref",
+								"ref": "#offensivecontent"
+							}
+						}
+					}
+				}
+			},
+			"errors": [
+				{
+					"name": "NoAuth",
+					"description": "No service auth token was given"
+				}
+			]
+		},
+		"offensivecontent": {
+			"type": "object",
+			"required": [
+				"name",
+				"reason"
+			],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"reason": {
+					"type": "string"
+				}
+			}
+		}
+	}
 }

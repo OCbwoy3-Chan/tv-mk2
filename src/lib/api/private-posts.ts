@@ -2,6 +2,7 @@ import {
   type AppBskyRichtextFacet,
   type AtpAgent as AtpAgentType,
 } from '@atproto/api'
+import {xrpc} from '@atproto/lex'
 import {
   base64url,
   exportJWK,
@@ -11,9 +12,7 @@ import {
   SignJWT,
 } from 'jose'
 import {sha256} from 'js-sha256'
-import {xrpc} from '@atproto/lex'
 
-import {pdsAgent} from '#/state/session/agent'
 import {
   createPrivateRecord,
   getDelegationToken,
@@ -21,15 +20,25 @@ import {
   listSpaces,
   putPrivateRecord,
 } from '#/lib/spaces/lexicons'
+import {pdsAgent} from '#/state/session/agent'
 
 export const PRIVATE_POSTS_MOD_STATUS_METHOD =
   'party.tenna.private.getModStatus'
 export const PRIVATE_POSTS_GET_POST_METHOD = 'party.tenna.private.getPost'
+export const PRIVATE_POSTS_GET_STATE_METHOD = 'party.tenna.private.getState'
+
+export type PrivatePostsOffendingContent = {
+  name: string
+  reason: string
+}
 
 export type PrivatePostsModStatus = {
   isBanned: boolean
   reason?: string
+  offendingContent?: PrivatePostsOffendingContent[]
 }
+
+export type PrivatePostsState = Record<string, unknown>
 
 export type PrivatePost = {
   createdAt?: string
@@ -326,6 +335,24 @@ export async function getPrivatePostsModStatus({
     lxm: PRIVATE_POSTS_MOD_STATUS_METHOD,
   })
   return response as PrivatePostsModStatus
+}
+
+export async function getPrivatePostsState({
+  agent,
+  appViewURL,
+  appViewDID,
+}: {
+  agent: AtpAgentType
+  appViewURL: string
+  appViewDID: string
+}): Promise<PrivatePostsState> {
+  const response = await callPrivatePostsAppView({
+    agent,
+    appViewURL,
+    appViewDID,
+    lxm: PRIVATE_POSTS_GET_STATE_METHOD,
+  })
+  return response as PrivatePostsState
 }
 
 export async function getPrivatePost({

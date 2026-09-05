@@ -3,8 +3,10 @@ import {useQuery} from '@tanstack/react-query'
 import {
   getPrivatePost,
   getPrivatePostsModStatus,
+  getPrivatePostsState,
   type PrivatePost,
   type PrivatePostsModStatus,
+  type PrivatePostsState,
 } from '#/lib/api/private-posts'
 import {isSpacesCompatiblePDS} from '#/lib/spaces'
 import {
@@ -21,6 +23,11 @@ export const RQKEY_MOD_STATUS = (
   appViewDID: string,
   appViewURL?: string,
 ) => [RQKEY_ROOT, 'mod-status', did, appViewDID, appViewURL]
+export const RQKEY_STATE = (
+  did: string,
+  appViewDID: string,
+  appViewURL?: string,
+) => [RQKEY_ROOT, 'state', did, appViewDID, appViewURL]
 export const RQKEY_AVAILABILITY = (
   did: string,
   appViewDID: string,
@@ -48,6 +55,24 @@ export function usePrivatePostsModStatus() {
     ),
     queryFn: () =>
       getPrivatePostsModStatus({
+        agent,
+        appViewDID,
+        appViewURL: appViewURL!,
+      }),
+  })
+}
+
+export function usePrivatePostsState() {
+  const agent = useAgent()
+  const [appViewDID] = usePrivatePostsAppViewDID()
+  const appViewURL = usePrivatePostsAppViewURL()
+
+  return useQuery<PrivatePostsState>({
+    enabled: !!agent.session && !!appViewURL,
+    staleTime: STALE.MINUTES.FIVE,
+    queryKey: RQKEY_STATE(agent.session?.did ?? '', appViewDID, appViewURL),
+    queryFn: () =>
+      getPrivatePostsState({
         agent,
         appViewDID,
         appViewURL: appViewURL!,
