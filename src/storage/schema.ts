@@ -96,6 +96,7 @@ export type Device = {
   [PolicyUpdate202508]?: boolean
 
   videoVolume: number
+  videoPlaybackSpeed: number
 }
 
 export type Account = {
