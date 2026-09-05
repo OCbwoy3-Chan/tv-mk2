@@ -7,8 +7,6 @@ import {
 } from 'expo-file-system/legacy'
 import {type ImageManipulatorContext, SaveFormat} from 'expo-image-manipulator'
 import {type BlobRef} from '@atproto/api'
-import {transformExif} from '@uwx/exif-be-gone-web'
-import {fromByteArray, toByteArray} from 'base64-js'
 import {nanoid} from 'nanoid/non-secure'
 
 import {renderImage} from '#/lib/media/image-manipulator'
@@ -199,130 +197,30 @@ export function resetImageManipulation(
   return img
 }
 
-async function bypassCompression(
-  img: ComposerImage,
-  {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
-): Promise<PickerImage | undefined> {
-  // TODO: use expo-file-system instead of working directly in memory
-
-  function dataUriToUint8Array(uri: string) {
-    const base64 = uri.split(',')[1]
-    return toByteArray(base64)
-  }
-
-  const source = img.transformed || img.source
-  if (source.width > maxDimension || source.height > maxDimension) {
-    return undefined
-  }
-
-  if (
-    ![
-      'image/jpeg',
-      'image/png',
-      'image/webp',
-      'image/avif',
-      'image/gif',
-    ].includes(source.mime)
-  ) {
-    return undefined
-  }
-
-  let data: Uint8Array
-
-  const path = source.path
-  // convert path to data URI if it is not already
-  if (!path.startsWith('data:')) {
-    try {
-      await fetch(path)
-      const response = await fetch(path)
-      data = new Uint8Array(await response.arrayBuffer())
-      if (data.byteLength > maxSize) {
-        return undefined
-      }
-    } catch (e) {
-      // Fetch failed, likely due to CORS. Return undefined to trigger normal compression flow and error handling.
-      return undefined
-    }
-  } else {
-    if (getDataUriSize(path) > maxSize) {
-      return undefined
-    }
-    data = new Uint8Array(dataUriToUint8Array(path).buffer)
-  }
-
-  try {
-    data = await transformExif(data)
-  } catch (err) {
-    console.error(
-      'Failed to transform EXIF data, proceeding with original image',
-      err,
-    )
-    return undefined
-  }
-
-  const dataUri = arrayBufferToDataUri(data, source.mime)
-  return {
-    path: dataUri,
-    width: source.width,
-    height: source.height,
-    mime: source.mime,
-    size: getDataUriSize(dataUri),
-  }
-}
-
 export async function compressImage(
   img: ComposerImage,
   {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
 ): Promise<PickerImage> {
-  const res = await bypassCompression(img, {maxDimension, maxSize})
-  if (res) {
-    return res
-  }
-
   const source = img.transformed || img.source
-  let attempts = 0
-  // Seeded from `maxDimension` but shrunk per attempt below, so keep the
-  // passed-in value pristine.
-  let currentDimension = maxDimension
-  const maxBytes = maxSize
+  let currentDimension = Math.min(
+    maxDimension,
+    Math.max(source.width, source.height),
+  )
 
-  let minQualityPercentage = 0
-  let maxQualityPercentage = 101 // exclusive
-  let newDataUri
-
-  while (maxQualityPercentage - minQualityPercentage > 1) {
-    if (attempts >= 4) break
-
+  // PNG is lossless: changing JPEG quality does not reduce its size. Keep
+  // upstream's resize/render flow, reducing dimensions until the PNG fits.
+  while (currentDimension >= 1) {
     const [w, h] = containImageRes(
       source.width,
       source.height,
       currentDimension,
-    )
-    const qualityPercentage = Math.round(
-      (maxQualityPercentage + minQualityPercentage) / 2,
-    )
-
-    /*
-     * In the event the image doesn't compress well, we want to avoid
-     * unecessary iterations. In this case, binary search will check 51, 26,
-     * 13(rounded). We don't want to go below 25, so if we've halved to 13,
-     * reset the loop and reduce the image dimensions instead.
-     */
-    if (qualityPercentage <= 13) {
-      minQualityPercentage = 0
-      maxQualityPercentage = 101
-      attempts++
-      // max.width → 0.8× → 0.64× → 0.512× → ~0.41×
-      // e.g. 4000px → 3200px → 2560px → 2048px → ~1638px
-      currentDimension = Math.floor(currentDimension * 0.8)
-      continue
-    }
+    ).map(dimension => Math.max(1, dimension))
 
     const res = await renderImage(
       source.path,
       context => context.resize({width: w, height: h}),
       {
-        compress: qualityPercentage / 100,
+        compress: 1,
         format: SaveFormat.PNG,
         base64: true,
       },
@@ -330,22 +228,18 @@ export async function compressImage(
 
     const base64 = res.base64
     const size = base64 ? getDataUriSize(base64) : 0
-    if (base64 && size <= maxBytes) {
-      minQualityPercentage = qualityPercentage
-      newDataUri = {
+    if (base64 && size <= maxSize) {
+      return {
         path: await moveIfNecessary(res.uri),
         width: res.width,
         height: res.height,
         mime: 'image/png',
         size,
       }
-    } else {
-      maxQualityPercentage = qualityPercentage
     }
-  }
 
-  if (newDataUri) {
-    return newDataUri
+    if (!base64 || (w === 1 && h === 1)) break
+    currentDimension = Math.max(1, Math.floor(Math.max(w, h) * 0.8))
   }
 
   throw new Error(`Unable to compress image`)
@@ -429,16 +323,6 @@ function blobToDataUri(blob: Blob): Promise<string> {
     reader.onerror = () => reject(reader.error)
     reader.readAsDataURL(blob)
   })
-}
-
-function arrayBufferToDataUri(
-  buffer: Uint8Array | ArrayBufferLike,
-  mime: string,
-): string {
-  const base64 = fromByteArray(
-    buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer),
-  )
-  return `data:${mime};base64,${base64}`
 }
 
 /**
