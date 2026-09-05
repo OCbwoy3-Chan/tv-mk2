@@ -806,15 +806,15 @@ msgstr "{memberCount}/{memberLimit}"
 msgid "{minutes, plural, one {# minute} other {# minutes}}"
 msgstr "{minutes, plural, one {# minuta} few {# minuty} many {# minuty} other {# minut}}"
 
-#: src/view/com/composer/Composer.tsx:1119
+#: src/view/com/composer/Composer.tsx:1132
 msgid "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1111
+#: src/view/com/composer/Composer.tsx:1124
 msgid "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1127
+#: src/view/com/composer/Composer.tsx:1140
 msgid "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 msgstr ""
 
@@ -1332,7 +1332,7 @@ msgstr "Přidat uživatele do tohoto seznamu"
 msgid "Add account"
 msgstr "Přidat účet"
 
-#: src/view/com/composer/Composer.tsx:1893
+#: src/view/com/composer/Composer.tsx:1924
 #: src/view/com/composer/GifAltText.tsx:76
 #: src/view/com/composer/GifAltText.tsx:150
 #: src/view/com/composer/GifAltText.tsx:216
@@ -1354,11 +1354,11 @@ msgstr "Přidat alternativní text (volitelně)"
 msgid "Add another account"
 msgstr "Přidat jiný účet"
 
-#: src/view/com/composer/Composer.tsx:1954
+#: src/view/com/composer/Composer.tsx:1985
 msgid "Add another Jarona"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2870
+#: src/view/com/composer/Composer.tsx:2893
 msgid "Add another post to thread"
 msgstr "Přidat další příspěvek do vlákna"
 
@@ -2208,7 +2208,7 @@ msgstr "Opravdu chcete odstranit tuto položku z vašich kanálů?"
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "Opravdu chcete odvolat svou žádost o připojení k {0}?"
 
-#: src/view/com/composer/Composer.tsx:2162
+#: src/view/com/composer/Composer.tsx:2193
 msgid "Are you sure you'd like to discard this post?"
 msgstr "Opravdu chcete zrušit tento příspěvek?"
 
@@ -2311,7 +2311,7 @@ msgstr ""
 msgid "Automatic alt text generation, {providerName}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2430
+#: src/view/com/composer/Composer.tsx:2461
 msgid "Automatically generate alt text for images in this post using the configured AI provider."
 msgstr ""
 
@@ -2918,8 +2918,8 @@ msgstr "Je vyžadován přístup ke kameře"
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:37
-#: src/view/com/composer/Composer.tsx:2240
-#: src/view/com/composer/Composer.tsx:2250
+#: src/view/com/composer/Composer.tsx:2271
+#: src/view/com/composer/Composer.tsx:2281
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
 #: src/view/shell/desktop/LeftNav.tsx:246
@@ -3563,7 +3563,7 @@ msgstr "Zavřít uvítací okno"
 msgid "Closes password update alert"
 msgstr "Zavře upozornění o aktualizaci hesla"
 
-#: src/view/com/composer/Composer.tsx:2248
+#: src/view/com/composer/Composer.tsx:2279
 msgid "Closes post composer and discards post draft"
 msgstr "Zavře editor příspěvku a zahodí koncept příspěvku"
 
@@ -3669,7 +3669,7 @@ msgid "Compose new post"
 msgstr "Vytvořit nový příspěvek"
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
-#: src/view/com/composer/Composer.tsx:2085
+#: src/view/com/composer/Composer.tsx:2116
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr "Napiš příspěvky dlouhé až {0, plural, one {# znak} few {# znaky} many {# znaků}other {# znaků}}"
 
@@ -3677,11 +3677,11 @@ msgstr "Napiš příspěvky dlouhé až {0, plural, one {# znak} few {# znaky} m
 msgid "Compose reply"
 msgstr "Napište odpověď"
 
-#: src/view/com/composer/Composer.tsx:3289
+#: src/view/com/composer/Composer.tsx:3312
 msgid "Compressing GIF..."
 msgstr "Komprese GIF..."
 
-#: src/view/com/composer/Composer.tsx:3291
+#: src/view/com/composer/Composer.tsx:3314
 msgid "Compressing video..."
 msgstr "Komprese videa..."
 
@@ -4358,10 +4358,6 @@ msgstr "Aktuální konverzace"
 msgid "Custom"
 msgstr "Volitelné"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:148
-msgid "Custom DID service"
-msgstr ""
-
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:145
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:332
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:334
@@ -4537,7 +4533,7 @@ msgstr "Smazat můj účet"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1057
-#: src/view/com/composer/Composer.tsx:2117
+#: src/view/com/composer/Composer.tsx:2148
 msgid "Delete post"
 msgstr "Smazat příspěvek"
 
@@ -4733,9 +4729,9 @@ msgstr "Neaktivní"
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:102
 #: src/screens/Profile/Header/EditProfileDialog.tsx:93
-#: src/view/com/composer/Composer.tsx:1827
-#: src/view/com/composer/Composer.tsx:1871
-#: src/view/com/composer/Composer.tsx:2169
+#: src/view/com/composer/Composer.tsx:1858
+#: src/view/com/composer/Composer.tsx:1902
+#: src/view/com/composer/Composer.tsx:2200
 #: src/view/com/composer/drafts/DraftItem.tsx:254
 #: src/view/com/composer/drafts/DraftsButton.tsx:138
 msgid "Discard"
@@ -4746,14 +4742,14 @@ msgstr "Zahodit"
 msgid "Discard changes?"
 msgstr "Zahodit změny?"
 
-#: src/view/com/composer/Composer.tsx:1825
+#: src/view/com/composer/Composer.tsx:1856
 #: src/view/com/composer/drafts/DraftItem.tsx:251
 #: src/view/com/composer/drafts/DraftsButton.tsx:105
 msgid "Discard draft?"
 msgstr "Zahodit koncept?"
 
-#: src/view/com/composer/Composer.tsx:1842
-#: src/view/com/composer/Composer.tsx:2161
+#: src/view/com/composer/Composer.tsx:1873
+#: src/view/com/composer/Composer.tsx:2192
 msgid "Discard post?"
 msgstr "Zahodit příspěvek?"
 
@@ -4791,7 +4787,7 @@ msgstr "Odmítnout"
 msgid "Dismiss banner"
 msgstr "Odmítnout banner"
 
-#: src/view/com/composer/Composer.tsx:3210
+#: src/view/com/composer/Composer.tsx:3233
 msgid "Dismiss error"
 msgstr "Odmítnout chybu"
 
@@ -5541,7 +5537,7 @@ msgstr "Přejde do režimu celé obrazovky"
 msgid "Entertainment"
 msgstr "Zábava"
 
-#: src/view/com/composer/Composer.tsx:3309
+#: src/view/com/composer/Composer.tsx:3332
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "Chyba"
@@ -6035,7 +6031,7 @@ msgstr "Nepodařilo se zrušit váš požadavek. Zkuste to prosím znovu."
 msgid "Failed to resolve location. Please try again."
 msgstr "Nepodařilo se zjistit polohu. Zkuste to prosím znovu."
 
-#: src/view/com/composer/Composer.tsx:889
+#: src/view/com/composer/Composer.tsx:902
 msgid "Failed to save draft"
 msgstr "Nepodařilo se uložit koncept"
 
@@ -6703,8 +6699,8 @@ msgstr ""
 msgid "Generate a starter pack"
 msgstr "Vygenerovat startovací balíček"
 
-#: src/view/com/composer/Composer.tsx:2429
-#: src/view/com/composer/Composer.tsx:2437
+#: src/view/com/composer/Composer.tsx:2460
+#: src/view/com/composer/Composer.tsx:2468
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:240
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:253
 msgid "Generate alt text"
@@ -6836,7 +6832,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3314
+#: src/view/com/composer/Composer.tsx:3337
 msgid "GIF uploaded"
 msgstr "GIF nahrán"
 
@@ -8023,7 +8019,7 @@ msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3229
+#: src/view/com/composer/Composer.tsx:3252
 msgid "Job ID: {0}"
 msgstr "ID úlohy: {0}"
 
@@ -8082,8 +8078,8 @@ msgstr ""
 msgid "Kawaii logo by <0>ovvie</0>"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1875
-#: src/view/com/composer/Composer.tsx:1885
+#: src/view/com/composer/Composer.tsx:1906
+#: src/view/com/composer/Composer.tsx:1916
 #: src/view/com/composer/drafts/DraftsButton.tsx:142
 msgid "Keep editing"
 msgstr "Pokračovat v úpravách"
@@ -8976,7 +8972,7 @@ msgstr "Zprávy od této osoby jsou skryté, dokud ji blokujete."
 msgid "microcosm.blue"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1955
+#: src/view/com/composer/Composer.tsx:1986
 #: src/view/com/feeds/ComposerPrompt.tsx:195
 msgid "MIKE, THE JARONA please!"
 msgstr ""
@@ -9095,11 +9091,11 @@ msgstr "Posunout kanál dolů"
 msgid "Move feed up"
 msgstr "Posunout kanál nahoru"
 
-#: src/view/com/composer/Composer.tsx:2141
+#: src/view/com/composer/Composer.tsx:2172
 msgid "Move post down"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2099
+#: src/view/com/composer/Composer.tsx:2130
 msgid "Move post up"
 msgstr ""
 
@@ -9655,7 +9651,7 @@ msgstr "Nikdo nemůže posílat zprávy"
 
 #: src/components/PostControls/index.tsx:312
 #: src/screens/PostThread/components/ReaderSeam.tsx:251
-#: src/view/com/composer/Composer.tsx:425
+#: src/view/com/composer/Composer.tsx:438
 msgid "No other accounts can reply to this post"
 msgstr ""
 
@@ -9891,6 +9887,7 @@ msgid "OAuth"
 msgstr ""
 
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:119
+#: src/view/com/composer/Composer.tsx:1236
 msgid "OAuth sessions are not currently supported for private posts. Please log in with a password to use this feature."
 msgstr ""
 
@@ -9976,7 +9973,7 @@ msgstr "Jeden nebo více vybraných souborů není podporován."
 msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
 msgstr "Jeden nebo více vybraných souborů je příliš velký. Maximální velikost je {VIDEO_MAX_SIZE_MB} MB."
 
-#: src/view/com/composer/Composer.tsx:900
+#: src/view/com/composer/Composer.tsx:913
 msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
 msgstr "Jeden nebo více příspěvků je příliš dlouhých na uložení jako koncept. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {Maximální počet znaků je # znak.} few {Maximální počet znaků jsou # znaky.} many {Maximální počet znaků je # znaků.} other {Maximální počet znaků je # znaků.}}"
 
@@ -9989,7 +9986,7 @@ msgstr "Odpovídat mohou pouze {0}."
 #. placeholder {0}: result.accepted.length
 #. placeholder {1}: next.length
 #. placeholder {2}: next.length
-#: src/view/com/composer/Composer.tsx:282
+#: src/view/com/composer/Composer.tsx:283
 msgid "Only {0} of {1} {2, plural, one {image} other {images}} added; limit is {MAX_GALLERY_IMAGES}"
 msgstr "Přidáno pouze {0} z {1} {2, plural, one {obrázku} few {obrázků} many {obrázků} other {obrázků}}; limit je {MAX_GALLERY_IMAGES}"
 
@@ -10120,7 +10117,7 @@ msgid "Open drawer menu"
 msgstr "Otevřít nabídku"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2847
+#: src/view/com/composer/Composer.tsx:2870
 msgid "Open emoji picker"
 msgstr "Otevřít výběr emoji"
 
@@ -10436,6 +10433,10 @@ msgstr "Jiný nebezpečný obsah"
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:119
 msgid "Other harassing or hateful content"
 msgstr "Jiný obtěžující nebo nenávistný obsah"
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:148
+msgid "Other Instance"
+msgstr ""
 
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:59
 msgid "Other misleading content"
@@ -10921,7 +10922,7 @@ msgid "Please sign in as @{0}"
 msgstr "Přihlaste se prosím jako @{0}"
 
 #. placeholder {0}: activeAccount.handle
-#: src/view/com/composer/Composer.tsx:1274
+#: src/view/com/composer/Composer.tsx:1293
 msgid "Please sign in as @{0} to post as them"
 msgstr ""
 
@@ -10959,7 +10960,7 @@ msgstr "Politika"
 msgid "Porn"
 msgstr "Porno"
 
-#: src/view/com/composer/Composer.tsx:2314
+#: src/view/com/composer/Composer.tsx:2345
 msgctxt "action"
 msgid "Post"
 msgstr "Příspěvek"
@@ -10985,13 +10986,13 @@ msgstr "Přidat fotku"
 msgid "Post a video"
 msgstr "Přidat video"
 
-#: src/view/com/composer/Composer.tsx:2312
+#: src/view/com/composer/Composer.tsx:2343
 msgctxt "action"
 msgid "Post All"
 msgstr "Zveřejnit vše"
 
-#: src/view/com/composer/Composer.tsx:1884
-#: src/view/com/composer/Composer.tsx:1892
+#: src/view/com/composer/Composer.tsx:1915
+#: src/view/com/composer/Composer.tsx:1923
 msgid "Post anyway"
 msgstr "Přesto odeslat"
 
@@ -11021,7 +11022,7 @@ msgstr "Příspěvek smazán"
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "Příspěvek se nepodařilo nahrát. Zkontrolujte prosím připojení k internetu a zkuste to znovu."
 
-#: src/view/com/composer/Composer.tsx:2034
+#: src/view/com/composer/Composer.tsx:2065
 msgid "Post from account"
 msgstr ""
 
@@ -11101,7 +11102,7 @@ msgstr "Příspěvek odepnut"
 msgid "Post visibility"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1890
+#: src/view/com/composer/Composer.tsx:1921
 msgid "Post without alt text?"
 msgstr ""
 
@@ -11244,19 +11245,12 @@ msgstr ""
 msgid "Private posts"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:196
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:220
-msgid "Private Posts AppView"
+#: src/view/com/composer/Composer.tsx:1227
+msgid "Private posts are text-only."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:664
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:667
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:674
-msgid "Private Posts AppView DID"
-msgstr ""
-
-#: src/view/com/composer/Composer.tsx:1214
-msgid "Private posts support text only."
+#: src/view/com/composer/Composer.tsx:1306
+msgid "Private posts not supported by your PDS."
 msgstr ""
 
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:48
@@ -11267,11 +11261,22 @@ msgstr ""
 msgid "Private posts synced"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3303
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:664
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:667
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:674
+msgid "Private Vessel AppView DID"
+msgstr ""
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:196
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:220
+msgid "Private Vessel Instance"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:3326
 msgid "Processing GIF..."
 msgstr "Zpracovávání GIF..."
 
-#: src/view/com/composer/Composer.tsx:3305
+#: src/view/com/composer/Composer.tsx:3328
 msgid "Processing video..."
 msgstr "Zpracovávání videa..."
 
@@ -11360,22 +11365,22 @@ msgid "Public, sharable lists of users to mute or block in bulk."
 msgstr "Veřejné, sdílitelné seznamy uživatelů pro hromadné ztlumení nebo blokování."
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:2298
+#: src/view/com/composer/Composer.tsx:2329
 msgid "Publish post"
 msgstr "Publikovat příspěvek"
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:2293
+#: src/view/com/composer/Composer.tsx:2324
 msgid "Publish posts"
 msgstr "Publikovat příspěvky"
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:2282
+#: src/view/com/composer/Composer.tsx:2313
 msgid "Publish replies"
 msgstr "Publikovat odpovědi"
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:2287
+#: src/view/com/composer/Composer.tsx:2318
 msgid "Publish reply"
 msgstr "Publikovat odpověď"
 
@@ -11981,7 +11986,7 @@ msgstr "Odpovědi na tento příspěvek jsou zakázány."
 msgid "Reply"
 msgstr "Odpovědět"
 
-#: src/view/com/composer/Composer.tsx:2310
+#: src/view/com/composer/Composer.tsx:2341
 msgctxt "action"
 msgid "Reply"
 msgstr "Odpovědět"
@@ -12519,7 +12524,7 @@ msgstr "Uložit datum narození"
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:305
 #: src/screens/Settings/Settings.tsx:392
 #: src/screens/Settings/Settings.tsx:399
-#: src/view/com/composer/Composer.tsx:1865
+#: src/view/com/composer/Composer.tsx:1896
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr "Uložit změny"
@@ -12528,17 +12533,17 @@ msgstr "Uložit změny"
 msgid "Save Changes"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1837
+#: src/view/com/composer/Composer.tsx:1868
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
 msgid "Save changes?"
 msgstr "Uložit změny?"
 
-#: src/view/com/composer/Composer.tsx:1865
+#: src/view/com/composer/Composer.tsx:1896
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save draft"
 msgstr "Uložit koncept"
 
-#: src/view/com/composer/Composer.tsx:1839
+#: src/view/com/composer/Composer.tsx:1870
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
 msgid "Save draft?"
 msgstr "Uložit koncept?"
@@ -13035,7 +13040,7 @@ msgid "Select primary language"
 msgstr "Vyberte primární jazyk"
 
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:215
-msgid "Select private posts AppView"
+msgid "Select Private Vessel Instance"
 msgstr ""
 
 #: src/components/InternationalPhoneCodeSelect.tsx:68
@@ -13431,15 +13436,15 @@ msgstr "Sdílením vašeho věkového rozmezí odhalíte pouze rozmezí spojené
 msgid "Sharing your age range reveals only the range associated with your Google Account – for example, that you’re at least 18. <0>Your exact age and birthday are never shared,</0> and this data never leaves this device. Therefore, it only enables access on this device. Alternatively, <1>you can use our trusted partner, KWS</1>, to complete your verification and enable access on all platforms."
 msgstr "Sdílení věkového rozmezí odhalí pouze rozmezí spojené s vaším účtem Google – například že je vám alespoň 18 let. <0>Vaše přesné datum narození ani věk nejsou nikdy sdíleny</0> a tato data nikdy neopouštějí toto zařízení. Umožňují tedy přístup pouze na tomto zařízení. Případně <1>můžete využít našeho důvěryhodného partnera KWS</1> a dokončit ověření, které vám umožní přístup na všech platformách."
 
-#: src/view/com/composer/Composer.tsx:2142
+#: src/view/com/composer/Composer.tsx:2173
 msgid "Shortcut: Alt plus Down Arrow"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2871
+#: src/view/com/composer/Composer.tsx:2894
 msgid "Shortcut: Alt plus Enter"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2100
+#: src/view/com/composer/Composer.tsx:2131
 msgid "Shortcut: Alt plus Up Arrow"
 msgstr ""
 
@@ -13797,7 +13802,7 @@ msgstr "Přeskočit"
 msgid "Skip contact sharing and continue to the app"
 msgstr "Přeskočit sdílení kontaktů a pokračovat do aplikace"
 
-#: src/view/com/composer/Composer.tsx:1882
+#: src/view/com/composer/Composer.tsx:1913
 msgid "Skip empty posts?"
 msgstr "Přeskočit prázdné příspěvky?"
 
@@ -14295,7 +14300,7 @@ msgstr ""
 msgid "Syncing @{0} ({1}/{2})"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1300
+#: src/view/com/composer/Composer.tsx:1330
 msgid "Syncing private posts…"
 msgstr ""
 
@@ -14637,10 +14642,6 @@ msgstr "Příspěvek, na který odpovídáte, byl jeho autorem označen jako nap
 msgid "The Privacy Policy has been moved to <0/>"
 msgstr "Zásady ochrany osobních údajů byly přesunuty na <0/>"
 
-#: src/view/com/composer/Composer.tsx:1218
-msgid "The private posts AppView is unavailable."
-msgstr ""
-
 #: src/view/com/composer/state/video.ts:510
 msgid "The processed video is too large. Please try again with a smaller file."
 msgstr ""
@@ -14678,10 +14679,6 @@ msgstr ""
 #: src/lib/strings/errors.ts:18
 msgid "The server appears to be experiencing issues. Please try again in a few moments."
 msgstr "Zdá se, že server má problémy. Zkuste to prosím za chvíli znovu."
-
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:200
-msgid "The server that will be used to serve private posts."
-msgstr ""
 
 #: src/screens/StarterPack/StarterPackScreen.tsx:778
 msgid "The starter pack that you are trying to view is invalid. You may delete this starter pack instead."
@@ -15097,6 +15094,10 @@ msgstr ""
 msgid "This is not a valid link"
 msgstr "Toto není platný odkaz"
 
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:200
+msgid "This is the software that serves the private posts, aka the AppView."
+msgstr ""
+
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:86
 msgid "This isn't actually confirmed, might need to ask someone at Bluesky about this, it's better to be safe than sorry."
 msgstr ""
@@ -15212,7 +15213,7 @@ msgstr "Tento příspěvek byl odstraněn jeho autorem"
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr "Tento příspěvek bude skryt z kanálů a vláken. Tuto akci nelze vrátit zpět."
 
-#: src/view/com/composer/Composer.tsx:1419
+#: src/view/com/composer/Composer.tsx:1449
 msgid "This post's author has disabled quote posts."
 msgstr "Autor tohoto příspěvku zakázal citování příspěvků."
 
@@ -15941,7 +15942,7 @@ msgstr "Odhlášeno ze seznamu"
 msgid "Unsupported clipboard content"
 msgstr "Nepodporovaný obsah schránky"
 
-#: src/view/com/composer/Composer.tsx:2002
+#: src/view/com/composer/Composer.tsx:2033
 msgid "Unsupported video type: {mimeType}"
 msgstr "Nepodporovaný typ videa: {mimeType}"
 
@@ -16034,7 +16035,7 @@ msgstr "Nahrát ze souboru"
 msgid "Upload from Library"
 msgstr "Nahrát z knihovny"
 
-#: src/view/com/composer/Composer.tsx:3296
+#: src/view/com/composer/Composer.tsx:3319
 msgid "Uploading GIF..."
 msgstr "Nahrávání GIF..."
 
@@ -16048,7 +16049,7 @@ msgstr "Nahrávání obrázků..."
 msgid "Uploading link thumbnail..."
 msgstr "Nahrávání náhledu odkazu..."
 
-#: src/view/com/composer/Composer.tsx:3298
+#: src/view/com/composer/Composer.tsx:3321
 msgid "Uploading video..."
 msgstr "Nahrávání videa..."
 
@@ -16385,7 +16386,7 @@ msgstr "Video nenalezeno."
 msgid "Video settings"
 msgstr "Nastavení videa"
 
-#: src/view/com/composer/Composer.tsx:3316
+#: src/view/com/composer/Composer.tsx:3339
 msgid "Video uploaded"
 msgstr "Video nahráno"
 
@@ -16398,19 +16399,19 @@ msgstr "Video: {0}"
 msgid "Videos"
 msgstr "Videa"
 
-#: src/view/com/composer/Composer.tsx:583
-#: src/view/com/composer/Composer.tsx:726
+#: src/view/com/composer/Composer.tsx:596
+#: src/view/com/composer/Composer.tsx:739
 #: src/view/com/composer/SelectMediaButton.tsx:453
 msgid "Videos must be 10 minutes or less."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:584
-#: src/view/com/composer/Composer.tsx:727
+#: src/view/com/composer/Composer.tsx:597
+#: src/view/com/composer/Composer.tsx:740
 #: src/view/com/composer/SelectMediaButton.tsx:454
 msgid "Videos must be less than 3 minutes long."
 msgstr "Videa musí být kratší než 3 minuty."
 
-#: src/view/com/composer/Composer.tsx:1531
+#: src/view/com/composer/Composer.tsx:1561
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr "Zobrazit"
@@ -16522,7 +16523,7 @@ msgstr "Zobrazit další populární videa"
 msgid "View PDS information"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1526
+#: src/view/com/composer/Composer.tsx:1556
 msgid "View post"
 msgstr "Zobrazit příspěvek"
 
@@ -16883,7 +16884,7 @@ msgstr "Omlouváme se, ale vaše vyhledávání nemohlo být dokončeno. Zkuste 
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr "Omlouváme se, k této obrazovce nyní nemáte přístup."
 
-#: src/view/com/composer/Composer.tsx:1417
+#: src/view/com/composer/Composer.tsx:1447
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr "Omlouváme se! Příspěvek, na který odpovídáte, byl smazán."
 
@@ -17036,7 +17037,7 @@ msgstr "Chcete tohoto uživatele zablokovat a/nebo opustit tuto konverzaci?"
 msgid "Would you like to save this as a draft before viewing your drafts?"
 msgstr "Chcete tento příspěvek uložit jako koncept před zobrazením vašich konceptů?"
 
-#: src/view/com/composer/Composer.tsx:1853
+#: src/view/com/composer/Composer.tsx:1884
 msgid "Would you like to save this as a draft to edit later?"
 msgstr "Chcete tento příspěvek uložit jako koncept a upravit ho později?"
 
@@ -17045,11 +17046,11 @@ msgstr "Chcete tento příspěvek uložit jako koncept a upravit ho později?"
 msgid "Write a post"
 msgstr "Napsat příspěvek"
 
-#: src/view/com/composer/Composer.tsx:2084
+#: src/view/com/composer/Composer.tsx:2115
 msgid "Write post"
 msgstr "Napsat příspěvek"
 
-#: src/view/com/composer/Composer.tsx:1953
+#: src/view/com/composer/Composer.tsx:1984
 msgid "Write your Jarona"
 msgstr ""
 
@@ -17138,8 +17139,12 @@ msgstr ""
 msgid "You are accessing Bluesky from a region that legally requires us to verify your age before allowing you to access the app."
 msgstr "Přistupujete k Bluesky z regionu, který nám zákonně ukládá ověřit váš věk, než vám umožníme aplikaci používat."
 
+#: src/view/com/composer/Composer.tsx:1314
+msgid "You are banned from {privatePostsAppViewDID}."
+msgstr ""
+
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:135
-msgid "You are banned from making private posts on tenna.party."
+msgid "You are banned from publishing private posts to your current Private Vessel instance."
 msgstr ""
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
@@ -17264,11 +17269,11 @@ msgid "You can now sign in with your new password."
 msgstr "Nyní se můžete přihlásit pomocí svého nového hesla."
 
 #. Toast shown when the user tries to add more images but the post gallery is already at the cap
-#: src/view/com/composer/Composer.tsx:269
+#: src/view/com/composer/Composer.tsx:270
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "K jednomu příspěvku můžete přidat maximálně {MAX_GALLERY_IMAGES, plural, one {# obrázek} few {# obrázky} many {# obrázků} other {# obrázků}}"
 
-#: src/view/com/composer/Composer.tsx:1858
+#: src/view/com/composer/Composer.tsx:1889
 msgid "You can only save drafts up to 1000 characters."
 msgstr "Koncepty můžete ukládat pouze do délky 1000 znaků."
 
@@ -17420,7 +17425,7 @@ msgstr "Vaše e-mailová adresa byla úspěšně ověřena. Toto dialogové okno
 msgid "You have temporarily reached the limit for video uploads. Please try again later."
 msgstr "Dočasně jste dosáhli limitu pro nahrávání videí. Zkuste to prosím později."
 
-#: src/view/com/composer/Composer.tsx:1848
+#: src/view/com/composer/Composer.tsx:1879
 msgid "You have unsaved changes to this draft, would you like to save them?"
 msgstr "V tomto konceptu máte neuložené změny, chcete je uložit?"
 
@@ -17652,7 +17657,7 @@ msgstr "Dosáhli jste konce aktivního obsahu."
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr "Dostali jste se na konec svého kanálu! Najděte si další účty, které můžete sledovat."
 
-#: src/view/com/composer/Composer.tsx:887
+#: src/view/com/composer/Composer.tsx:900
 msgid "You've reached the maximum number of drafts"
 msgstr "Dosáhli jste maximálního počtu konceptů"
 
@@ -17832,17 +17837,21 @@ msgstr "Vaše heslo bylo úspěšně změněno! Od této chvíle při přihlašo
 msgid "Your password must be at least 8 characters long."
 msgstr "Vaše heslo musí mít alespoň 8 znaků."
 
-#: src/view/com/composer/Composer.tsx:1522
+#: src/view/com/composer/Composer.tsx:1552
 msgid "Your post was sent"
 msgstr "Váš příspěvek byl odeslán"
 
-#: src/view/com/composer/Composer.tsx:1519
+#: src/view/com/composer/Composer.tsx:1549
 msgid "Your posts were sent"
 msgstr "Vaše příspěvky byly odeslány"
 
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:289
 msgid "Your preferred language"
 msgstr "Váš preferovaný jazyk"
+
+#: src/view/com/composer/Composer.tsx:1231
+msgid "Your Private Vessel instance is unavailable."
+msgstr ""
 
 #: src/screens/Onboarding/StepFinished/ValuePropositionPager.tsx:102
 #: src/screens/Onboarding/StepFinished/ValuePropositionPager.web.tsx:54
@@ -17857,7 +17866,7 @@ msgstr "Vaše profilová fotka obklopená soustřednými kruhy profilových fote
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr "Váš profil, příspěvky, kanály a seznamy už nebudou viditelné pro ostatní uživatele Bluesky. Účet můžete kdykoli znovu aktivovat přihlášením."
 
-#: src/view/com/composer/Composer.tsx:1521
+#: src/view/com/composer/Composer.tsx:1551
 msgid "Your reply was sent"
 msgstr "Vaše odpověď byla odeslána"
 
@@ -17870,7 +17879,7 @@ msgstr "Vaše hlášení bude odesláno na <0>{0}</0>."
 msgid "Your selected interests help us serve you content you care about."
 msgstr "Vámi vybrané zájmy nám pomáhají poskytovat vám obsah, který vás zajímá."
 
-#: src/view/com/composer/Composer.tsx:1883
+#: src/view/com/composer/Composer.tsx:1914
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "Vaše vlákno obsahuje prázdné příspěvky, které budou přeskočeny. Zbývající příspěvky budou zveřejněny jako vlákno."
 

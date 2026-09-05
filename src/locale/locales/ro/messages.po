@@ -806,15 +806,15 @@ msgstr "{memberCount}/{memberLimit}"
 msgid "{minutes, plural, one {# minute} other {# minutes}}"
 msgstr "{minutes, plural, one {# minut} few {# minute} other {# de minute}}"
 
-#: src/view/com/composer/Composer.tsx:1119
+#: src/view/com/composer/Composer.tsx:1132
 msgid "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1111
+#: src/view/com/composer/Composer.tsx:1124
 msgid "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1127
+#: src/view/com/composer/Composer.tsx:1140
 msgid "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 msgstr ""
 
@@ -1332,7 +1332,7 @@ msgstr "Adăugați un utilizator la această listă"
 msgid "Add account"
 msgstr "Adăugați un cont"
 
-#: src/view/com/composer/Composer.tsx:1893
+#: src/view/com/composer/Composer.tsx:1924
 #: src/view/com/composer/GifAltText.tsx:76
 #: src/view/com/composer/GifAltText.tsx:150
 #: src/view/com/composer/GifAltText.tsx:216
@@ -1354,11 +1354,11 @@ msgstr "Adăugați text alternativ (opțional)"
 msgid "Add another account"
 msgstr "Adăugați un alt cont"
 
-#: src/view/com/composer/Composer.tsx:1954
+#: src/view/com/composer/Composer.tsx:1985
 msgid "Add another Jarona"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2870
+#: src/view/com/composer/Composer.tsx:2893
 msgid "Add another post to thread"
 msgstr "Adăugați o altă postare firului"
 
@@ -2208,7 +2208,7 @@ msgstr "Sunteți sigur că doriți să eliminați asta din fluxurile dvs.?"
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "Sunteți sigur că doriți să anulați cererea dvs. de a vă alătura la {0}?"
 
-#: src/view/com/composer/Composer.tsx:2162
+#: src/view/com/composer/Composer.tsx:2193
 msgid "Are you sure you'd like to discard this post?"
 msgstr "Sunteți sigur că doriți să renunțați la această postare?"
 
@@ -2311,7 +2311,7 @@ msgstr ""
 msgid "Automatic alt text generation, {providerName}"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2430
+#: src/view/com/composer/Composer.tsx:2461
 msgid "Automatically generate alt text for images in this post using the configured AI provider."
 msgstr ""
 
@@ -2918,8 +2918,8 @@ msgstr "Este necesar accesul la cameră"
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:37
-#: src/view/com/composer/Composer.tsx:2240
-#: src/view/com/composer/Composer.tsx:2250
+#: src/view/com/composer/Composer.tsx:2271
+#: src/view/com/composer/Composer.tsx:2281
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:47
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:56
 #: src/view/shell/desktop/LeftNav.tsx:246
@@ -3563,7 +3563,7 @@ msgstr "Închideți fereastra de bun venit"
 msgid "Closes password update alert"
 msgstr "Închideți alerta pentru actualizarea parolei"
 
-#: src/view/com/composer/Composer.tsx:2248
+#: src/view/com/composer/Composer.tsx:2279
 msgid "Closes post composer and discards post draft"
 msgstr "Închide compozitorul de postări și elimină ciorna"
 
@@ -3669,7 +3669,7 @@ msgid "Compose new post"
 msgstr "Compuneți o nouă postare"
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
-#: src/view/com/composer/Composer.tsx:2085
+#: src/view/com/composer/Composer.tsx:2116
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr "Compuneți postări de până la {0, plural, one {} few {# caractere}other {# de caractere}} lungime"
 
@@ -3677,11 +3677,11 @@ msgstr "Compuneți postări de până la {0, plural, one {} few {# caractere}oth
 msgid "Compose reply"
 msgstr "Compunere răspuns"
 
-#: src/view/com/composer/Composer.tsx:3289
+#: src/view/com/composer/Composer.tsx:3312
 msgid "Compressing GIF..."
 msgstr "Se comprimă GIF-ul..."
 
-#: src/view/com/composer/Composer.tsx:3291
+#: src/view/com/composer/Composer.tsx:3314
 msgid "Compressing video..."
 msgstr "Se comprimă videoclipul..."
 
@@ -4358,10 +4358,6 @@ msgstr "Conversația curentă"
 msgid "Custom"
 msgstr "Particularizat"
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:148
-msgid "Custom DID service"
-msgstr ""
-
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:145
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:332
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:334
@@ -4537,7 +4533,7 @@ msgstr "Șterge-mi contul"
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1055
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:1057
-#: src/view/com/composer/Composer.tsx:2117
+#: src/view/com/composer/Composer.tsx:2148
 msgid "Delete post"
 msgstr "Ștergere postare"
 
@@ -4733,9 +4729,9 @@ msgstr "Dezactivat"
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:102
 #: src/screens/Profile/Header/EditProfileDialog.tsx:93
-#: src/view/com/composer/Composer.tsx:1827
-#: src/view/com/composer/Composer.tsx:1871
-#: src/view/com/composer/Composer.tsx:2169
+#: src/view/com/composer/Composer.tsx:1858
+#: src/view/com/composer/Composer.tsx:1902
+#: src/view/com/composer/Composer.tsx:2200
 #: src/view/com/composer/drafts/DraftItem.tsx:254
 #: src/view/com/composer/drafts/DraftsButton.tsx:138
 msgid "Discard"
@@ -4746,14 +4742,14 @@ msgstr "Renunțare"
 msgid "Discard changes?"
 msgstr "Renunțați la modificări?"
 
-#: src/view/com/composer/Composer.tsx:1825
+#: src/view/com/composer/Composer.tsx:1856
 #: src/view/com/composer/drafts/DraftItem.tsx:251
 #: src/view/com/composer/drafts/DraftsButton.tsx:105
 msgid "Discard draft?"
 msgstr "Renunțați la schiță?"
 
-#: src/view/com/composer/Composer.tsx:1842
-#: src/view/com/composer/Composer.tsx:2161
+#: src/view/com/composer/Composer.tsx:1873
+#: src/view/com/composer/Composer.tsx:2192
 msgid "Discard post?"
 msgstr "Renunțați la postare?"
 
@@ -4791,7 +4787,7 @@ msgstr "Închidere"
 msgid "Dismiss banner"
 msgstr "Închideți bannerul"
 
-#: src/view/com/composer/Composer.tsx:3210
+#: src/view/com/composer/Composer.tsx:3233
 msgid "Dismiss error"
 msgstr "Închidere eroare"
 
@@ -5541,7 +5537,7 @@ msgstr "Intrați în modul Ecran complet"
 msgid "Entertainment"
 msgstr "Divertisment"
 
-#: src/view/com/composer/Composer.tsx:3309
+#: src/view/com/composer/Composer.tsx:3332
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr "Eroare"
@@ -6035,7 +6031,7 @@ msgstr "Nu s-a putut anula solicitarea. Vă rugăm să încercați din nou."
 msgid "Failed to resolve location. Please try again."
 msgstr "Nu s-a putut determina locația. Vă rugăm să încercați din nou."
 
-#: src/view/com/composer/Composer.tsx:889
+#: src/view/com/composer/Composer.tsx:902
 msgid "Failed to save draft"
 msgstr "Nu s-a putut salva schița"
 
@@ -6703,8 +6699,8 @@ msgstr ""
 msgid "Generate a starter pack"
 msgstr "Generați un pachet de pornire"
 
-#: src/view/com/composer/Composer.tsx:2429
-#: src/view/com/composer/Composer.tsx:2437
+#: src/view/com/composer/Composer.tsx:2460
+#: src/view/com/composer/Composer.tsx:2468
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:240
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:253
 msgid "Generate alt text"
@@ -6836,7 +6832,7 @@ msgctxt "toast"
 msgid "GIF downloaded"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3314
+#: src/view/com/composer/Composer.tsx:3337
 msgid "GIF uploaded"
 msgstr "GIF încărcat"
 
@@ -8023,7 +8019,7 @@ msgid "Jarona! This app is now on Android! Check it out!"
 msgstr ""
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3229
+#: src/view/com/composer/Composer.tsx:3252
 msgid "Job ID: {0}"
 msgstr "ID loc de muncă: {0}"
 
@@ -8082,8 +8078,8 @@ msgstr ""
 msgid "Kawaii logo by <0>ovvie</0>"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1875
-#: src/view/com/composer/Composer.tsx:1885
+#: src/view/com/composer/Composer.tsx:1906
+#: src/view/com/composer/Composer.tsx:1916
 #: src/view/com/composer/drafts/DraftsButton.tsx:142
 msgid "Keep editing"
 msgstr "Continuați editarea"
@@ -8976,7 +8972,7 @@ msgstr "Mesajele de la această persoană sunt ascunse cât timp o blocați."
 msgid "microcosm.blue"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1955
+#: src/view/com/composer/Composer.tsx:1986
 #: src/view/com/feeds/ComposerPrompt.tsx:195
 msgid "MIKE, THE JARONA please!"
 msgstr ""
@@ -9095,11 +9091,11 @@ msgstr "Mutați fluxul în jos"
 msgid "Move feed up"
 msgstr "Mutați fluxul în sus"
 
-#: src/view/com/composer/Composer.tsx:2141
+#: src/view/com/composer/Composer.tsx:2172
 msgid "Move post down"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2099
+#: src/view/com/composer/Composer.tsx:2130
 msgid "Move post up"
 msgstr ""
 
@@ -9655,7 +9651,7 @@ msgstr "Nimeni nu poate trimite mesaje"
 
 #: src/components/PostControls/index.tsx:312
 #: src/screens/PostThread/components/ReaderSeam.tsx:251
-#: src/view/com/composer/Composer.tsx:425
+#: src/view/com/composer/Composer.tsx:438
 msgid "No other accounts can reply to this post"
 msgstr ""
 
@@ -9891,6 +9887,7 @@ msgid "OAuth"
 msgstr ""
 
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:119
+#: src/view/com/composer/Composer.tsx:1236
 msgid "OAuth sessions are not currently supported for private posts. Please log in with a password to use this feature."
 msgstr ""
 
@@ -9976,7 +9973,7 @@ msgstr "Unul sau mai multe dintre fișierele selectate nu sunt acceptate."
 msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
 msgstr "Unul sau mai multe dintre fișierele selectate sunt prea mari. Dimensiunea maximă este de {VIDEO_MAX_SIZE_MB} MB."
 
-#: src/view/com/composer/Composer.tsx:900
+#: src/view/com/composer/Composer.tsx:913
 msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
 msgstr "Una sau mai multe postări sunt prea lungi pentru a fi salvate ca o schiță. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {Numărul maxim de caractere este de un caracter.} few {Numărul maxim de caractere este de # caractere.} other {Numărul maxim de caractere este de # de caractere.}}"
 
@@ -9989,7 +9986,7 @@ msgstr "Doar {0} poate răspunde."
 #. placeholder {0}: result.accepted.length
 #. placeholder {1}: next.length
 #. placeholder {2}: next.length
-#: src/view/com/composer/Composer.tsx:282
+#: src/view/com/composer/Composer.tsx:283
 msgid "Only {0} of {1} {2, plural, one {image} other {images}} added; limit is {MAX_GALLERY_IMAGES}"
 msgstr "Doar {0} din {1} {2, plural, one {imagine a fost adăugată} few {imagini au fost adăugate} other {de imagini au fost adăugate}}; limita este {MAX_GALLERY_IMAGES}"
 
@@ -10120,7 +10117,7 @@ msgid "Open drawer menu"
 msgstr "Deschideți meniul sertar"
 
 #: src/screens/Messages/components/MessageComposer.tsx:219
-#: src/view/com/composer/Composer.tsx:2847
+#: src/view/com/composer/Composer.tsx:2870
 msgid "Open emoji picker"
 msgstr "Deschideți selectorul de emoji"
 
@@ -10436,6 +10433,10 @@ msgstr "Alt conținut periculos"
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:119
 msgid "Other harassing or hateful content"
 msgstr "Alte forme de hărțuire sau de ură"
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:148
+msgid "Other Instance"
+msgstr ""
 
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:59
 msgid "Other misleading content"
@@ -10921,7 +10922,7 @@ msgid "Please sign in as @{0}"
 msgstr "Vă rugăm conectați-vă ca @{0}"
 
 #. placeholder {0}: activeAccount.handle
-#: src/view/com/composer/Composer.tsx:1274
+#: src/view/com/composer/Composer.tsx:1293
 msgid "Please sign in as @{0} to post as them"
 msgstr ""
 
@@ -10959,7 +10960,7 @@ msgstr "Politică"
 msgid "Porn"
 msgstr "Pornografie"
 
-#: src/view/com/composer/Composer.tsx:2314
+#: src/view/com/composer/Composer.tsx:2345
 msgctxt "action"
 msgid "Post"
 msgstr "Postare"
@@ -10985,13 +10986,13 @@ msgstr "Postați o fotografie"
 msgid "Post a video"
 msgstr "Postați un videoclip"
 
-#: src/view/com/composer/Composer.tsx:2312
+#: src/view/com/composer/Composer.tsx:2343
 msgctxt "action"
 msgid "Post All"
 msgstr "Postați-le pe toate"
 
-#: src/view/com/composer/Composer.tsx:1884
-#: src/view/com/composer/Composer.tsx:1892
+#: src/view/com/composer/Composer.tsx:1915
+#: src/view/com/composer/Composer.tsx:1923
 msgid "Post anyway"
 msgstr "Postați oricum"
 
@@ -11021,7 +11022,7 @@ msgstr "Postare ștearsă"
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "Postarea nu a putut fi încărcată. Vă rugăm să vă verificați conexiunea la internet și să încercați din nou."
 
-#: src/view/com/composer/Composer.tsx:2034
+#: src/view/com/composer/Composer.tsx:2065
 msgid "Post from account"
 msgstr ""
 
@@ -11101,7 +11102,7 @@ msgstr "Fixarea postării a fost anulată"
 msgid "Post visibility"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1890
+#: src/view/com/composer/Composer.tsx:1921
 msgid "Post without alt text?"
 msgstr ""
 
@@ -11244,19 +11245,12 @@ msgstr ""
 msgid "Private posts"
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:196
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:220
-msgid "Private Posts AppView"
+#: src/view/com/composer/Composer.tsx:1227
+msgid "Private posts are text-only."
 msgstr ""
 
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:664
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:667
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:674
-msgid "Private Posts AppView DID"
-msgstr ""
-
-#: src/view/com/composer/Composer.tsx:1214
-msgid "Private posts support text only."
+#: src/view/com/composer/Composer.tsx:1306
+msgid "Private posts not supported by your PDS."
 msgstr ""
 
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:48
@@ -11267,11 +11261,22 @@ msgstr ""
 msgid "Private posts synced"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:3303
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:664
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:667
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:674
+msgid "Private Vessel AppView DID"
+msgstr ""
+
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:196
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:220
+msgid "Private Vessel Instance"
+msgstr ""
+
+#: src/view/com/composer/Composer.tsx:3326
 msgid "Processing GIF..."
 msgstr "Se procesează GIF-ul..."
 
-#: src/view/com/composer/Composer.tsx:3305
+#: src/view/com/composer/Composer.tsx:3328
 msgid "Processing video..."
 msgstr "Se procesează videoclipul..."
 
@@ -11360,22 +11365,22 @@ msgid "Public, sharable lists of users to mute or block in bulk."
 msgstr "Liste publice, care pot fi partajate, cu utilizatori de amuțit sau blocat în bloc."
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:2298
+#: src/view/com/composer/Composer.tsx:2329
 msgid "Publish post"
 msgstr "Publicați postarea"
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:2293
+#: src/view/com/composer/Composer.tsx:2324
 msgid "Publish posts"
 msgstr "Publicați postările"
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:2282
+#: src/view/com/composer/Composer.tsx:2313
 msgid "Publish replies"
 msgstr "Publicați răspunsurile"
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:2287
+#: src/view/com/composer/Composer.tsx:2318
 msgid "Publish reply"
 msgstr "Publicați răspunsul"
 
@@ -11981,7 +11986,7 @@ msgstr "Răspunsurile la această postare sunt dezactivate."
 msgid "Reply"
 msgstr "Răspundeți"
 
-#: src/view/com/composer/Composer.tsx:2310
+#: src/view/com/composer/Composer.tsx:2341
 msgctxt "action"
 msgid "Reply"
 msgstr "Răspundeți"
@@ -12519,7 +12524,7 @@ msgstr "Salvați ziua de naștere"
 #: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:305
 #: src/screens/Settings/Settings.tsx:392
 #: src/screens/Settings/Settings.tsx:399
-#: src/view/com/composer/Composer.tsx:1865
+#: src/view/com/composer/Composer.tsx:1896
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
 msgstr "Salvare modificări"
@@ -12528,17 +12533,17 @@ msgstr "Salvare modificări"
 msgid "Save Changes"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1837
+#: src/view/com/composer/Composer.tsx:1868
 #: src/view/com/composer/drafts/DraftsButton.tsx:100
 msgid "Save changes?"
 msgstr "Salvați modificările?"
 
-#: src/view/com/composer/Composer.tsx:1865
+#: src/view/com/composer/Composer.tsx:1896
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save draft"
 msgstr "Salvare schiță"
 
-#: src/view/com/composer/Composer.tsx:1839
+#: src/view/com/composer/Composer.tsx:1870
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
 msgid "Save draft?"
 msgstr "Salvați schița?"
@@ -13035,7 +13040,7 @@ msgid "Select primary language"
 msgstr "Selectați limba principală"
 
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:215
-msgid "Select private posts AppView"
+msgid "Select Private Vessel Instance"
 msgstr ""
 
 #: src/components/InternationalPhoneCodeSelect.tsx:68
@@ -13431,15 +13436,15 @@ msgstr ""
 msgid "Sharing your age range reveals only the range associated with your Google Account – for example, that you’re at least 18. <0>Your exact age and birthday are never shared,</0> and this data never leaves this device. Therefore, it only enables access on this device. Alternatively, <1>you can use our trusted partner, KWS</1>, to complete your verification and enable access on all platforms."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2142
+#: src/view/com/composer/Composer.tsx:2173
 msgid "Shortcut: Alt plus Down Arrow"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2871
+#: src/view/com/composer/Composer.tsx:2894
 msgid "Shortcut: Alt plus Enter"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:2100
+#: src/view/com/composer/Composer.tsx:2131
 msgid "Shortcut: Alt plus Up Arrow"
 msgstr ""
 
@@ -13797,7 +13802,7 @@ msgstr "Omitere"
 msgid "Skip contact sharing and continue to the app"
 msgstr "Omiteți partajarea contactelor și continuați spre aplicație"
 
-#: src/view/com/composer/Composer.tsx:1882
+#: src/view/com/composer/Composer.tsx:1913
 msgid "Skip empty posts?"
 msgstr "Omiteți postările goale?"
 
@@ -14295,7 +14300,7 @@ msgstr ""
 msgid "Syncing @{0} ({1}/{2})"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1300
+#: src/view/com/composer/Composer.tsx:1330
 msgid "Syncing private posts…"
 msgstr ""
 
@@ -14637,10 +14642,6 @@ msgstr "Postarea la care răspundeți a fost marcată ca fiind scrisă în {sugg
 msgid "The Privacy Policy has been moved to <0/>"
 msgstr "Politica de Confidențialitate a fost mutată la <0/>"
 
-#: src/view/com/composer/Composer.tsx:1218
-msgid "The private posts AppView is unavailable."
-msgstr ""
-
 #: src/view/com/composer/state/video.ts:510
 msgid "The processed video is too large. Please try again with a smaller file."
 msgstr ""
@@ -14678,10 +14679,6 @@ msgstr ""
 #: src/lib/strings/errors.ts:18
 msgid "The server appears to be experiencing issues. Please try again in a few moments."
 msgstr "Serverul pare să întâmpine probleme. Vă rugăm să încercați din nou în câteva momente."
-
-#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:200
-msgid "The server that will be used to serve private posts."
-msgstr ""
 
 #: src/screens/StarterPack/StarterPackScreen.tsx:778
 msgid "The starter pack that you are trying to view is invalid. You may delete this starter pack instead."
@@ -15097,6 +15094,10 @@ msgstr ""
 msgid "This is not a valid link"
 msgstr "Acesta nu este un link valid"
 
+#: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:200
+msgid "This is the software that serves the private posts, aka the AppView."
+msgstr ""
+
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:86
 msgid "This isn't actually confirmed, might need to ask someone at Bluesky about this, it's better to be safe than sorry."
 msgstr ""
@@ -15212,7 +15213,7 @@ msgstr "Această postare a fost ștearsă de autorul său"
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr "Această postare va fi ascunsă de fluxuri și fire. Acest lucru nu poate fi anulat."
 
-#: src/view/com/composer/Composer.tsx:1419
+#: src/view/com/composer/Composer.tsx:1449
 msgid "This post's author has disabled quote posts."
 msgstr "Autorul acestei postări a dezactivat postările citate."
 
@@ -15941,7 +15942,7 @@ msgstr "Dezabonat de la listă"
 msgid "Unsupported clipboard content"
 msgstr "Conținut clipboard neacceptat"
 
-#: src/view/com/composer/Composer.tsx:2002
+#: src/view/com/composer/Composer.tsx:2033
 msgid "Unsupported video type: {mimeType}"
 msgstr "Tip videoclip neacceptat: {mimeType}"
 
@@ -16034,7 +16035,7 @@ msgstr "Încărcați din fișiere"
 msgid "Upload from Library"
 msgstr "Încărcați din bibliotecă"
 
-#: src/view/com/composer/Composer.tsx:3296
+#: src/view/com/composer/Composer.tsx:3319
 msgid "Uploading GIF..."
 msgstr "Se încarcă GIF-ul..."
 
@@ -16048,7 +16049,7 @@ msgstr "Se încarcă imaginile..."
 msgid "Uploading link thumbnail..."
 msgstr "Se încarcă miniatura link-ului..."
 
-#: src/view/com/composer/Composer.tsx:3298
+#: src/view/com/composer/Composer.tsx:3321
 msgid "Uploading video..."
 msgstr "Se încarcă videoclipul..."
 
@@ -16385,7 +16386,7 @@ msgstr "Videoclipul nu a fost găsit."
 msgid "Video settings"
 msgstr "Setări videoclip"
 
-#: src/view/com/composer/Composer.tsx:3316
+#: src/view/com/composer/Composer.tsx:3339
 msgid "Video uploaded"
 msgstr "Videoclip încărcat"
 
@@ -16398,19 +16399,19 @@ msgstr "Videoclip: {0}"
 msgid "Videos"
 msgstr "Videoclipuri"
 
-#: src/view/com/composer/Composer.tsx:583
-#: src/view/com/composer/Composer.tsx:726
+#: src/view/com/composer/Composer.tsx:596
+#: src/view/com/composer/Composer.tsx:739
 #: src/view/com/composer/SelectMediaButton.tsx:453
 msgid "Videos must be 10 minutes or less."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:584
-#: src/view/com/composer/Composer.tsx:727
+#: src/view/com/composer/Composer.tsx:597
+#: src/view/com/composer/Composer.tsx:740
 #: src/view/com/composer/SelectMediaButton.tsx:454
 msgid "Videos must be less than 3 minutes long."
 msgstr "Videoclipurile trebuie să aibă o lungime de mai puțin de 3 minute."
 
-#: src/view/com/composer/Composer.tsx:1531
+#: src/view/com/composer/Composer.tsx:1561
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr "Vizualizare"
@@ -16522,7 +16523,7 @@ msgstr "Vizualizați mai multe videoclipuri în tendințe"
 msgid "View PDS information"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1526
+#: src/view/com/composer/Composer.tsx:1556
 msgid "View post"
 msgstr "Vizualizare postare"
 
@@ -16883,7 +16884,7 @@ msgstr "Ne pare rău, dar căutarea dvs. nu a putut fi finalizată. Vă rugăm s
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr "Ne pare rău, nu puteți accesa acest ecran în acest moment."
 
-#: src/view/com/composer/Composer.tsx:1417
+#: src/view/com/composer/Composer.tsx:1447
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr "Ne pare rău! Postare la care răspundeți a fost șters."
 
@@ -17036,7 +17037,7 @@ msgstr "Doriți să blocați acest utilizator și/sau să părăsiți această c
 msgid "Would you like to save this as a draft before viewing your drafts?"
 msgstr "Doriți să salvați acest lucru ca schiță înainte de a vă vizualiza schițele?"
 
-#: src/view/com/composer/Composer.tsx:1853
+#: src/view/com/composer/Composer.tsx:1884
 msgid "Would you like to save this as a draft to edit later?"
 msgstr "Doriți să salvați acest lucru ca schiță pentru a o edita mai târziu?"
 
@@ -17045,11 +17046,11 @@ msgstr "Doriți să salvați acest lucru ca schiță pentru a o edita mai târzi
 msgid "Write a post"
 msgstr "Scrieți o postare"
 
-#: src/view/com/composer/Composer.tsx:2084
+#: src/view/com/composer/Composer.tsx:2115
 msgid "Write post"
 msgstr "Scrieți o postare"
 
-#: src/view/com/composer/Composer.tsx:1953
+#: src/view/com/composer/Composer.tsx:1984
 msgid "Write your Jarona"
 msgstr ""
 
@@ -17138,8 +17139,12 @@ msgstr ""
 msgid "You are accessing Bluesky from a region that legally requires us to verify your age before allowing you to access the app."
 msgstr "Accesați Bluesky dintr-o regiune care, în mod legal, ne cere să vă verificăm vârsta înainte de a vă permite să accesați aplicația."
 
+#: src/view/com/composer/Composer.tsx:1314
+msgid "You are banned from {privatePostsAppViewDID}."
+msgstr ""
+
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:135
-msgid "You are banned from making private posts on tenna.party."
+msgid "You are banned from publishing private posts to your current Private Vessel instance."
 msgstr ""
 
 #. placeholder {0}: sanitizeHandle(profile.handle, '@')
@@ -17264,11 +17269,11 @@ msgid "You can now sign in with your new password."
 msgstr "Acum vă puteți conecta cu noua parolă."
 
 #. Toast shown when the user tries to add more images but the post gallery is already at the cap
-#: src/view/com/composer/Composer.tsx:269
+#: src/view/com/composer/Composer.tsx:270
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "Puteți adăuga până la {MAX_GALLERY_IMAGES, plural, one {} few {# imagini}other {# de imagini}} per postare"
 
-#: src/view/com/composer/Composer.tsx:1858
+#: src/view/com/composer/Composer.tsx:1889
 msgid "You can only save drafts up to 1000 characters."
 msgstr "Puteți salva doar schițe până la 1000 de caractere."
 
@@ -17420,7 +17425,7 @@ msgstr "Ați verificat cu succes adresa dvs. de e-mail. Puteți închide acest d
 msgid "You have temporarily reached the limit for video uploads. Please try again later."
 msgstr "Ați atins temporar limita pentru încărcări de videoclipuri. Vă rugăm să încercați din nou mai târziu."
 
-#: src/view/com/composer/Composer.tsx:1848
+#: src/view/com/composer/Composer.tsx:1879
 msgid "You have unsaved changes to this draft, would you like to save them?"
 msgstr "Aveți modificări nesalvate la această schiță, doriți să le salvați?"
 
@@ -17652,7 +17657,7 @@ msgstr "Ați ajuns la sfârșitul conținutului activ."
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr "Ați ajuns la sfârșitul fluxului dvs.! Găsiți mai multe conturi de urmărit."
 
-#: src/view/com/composer/Composer.tsx:887
+#: src/view/com/composer/Composer.tsx:900
 msgid "You've reached the maximum number of drafts"
 msgstr "Ați atins numărul maxim de schițe"
 
@@ -17832,17 +17837,21 @@ msgstr "Parola dvs. a fost modificată cu succes! Vă rugăm să folosiți noua 
 msgid "Your password must be at least 8 characters long."
 msgstr "Parola dvs. trebuie să aibă cel puțin 8 caractere."
 
-#: src/view/com/composer/Composer.tsx:1522
+#: src/view/com/composer/Composer.tsx:1552
 msgid "Your post was sent"
 msgstr "Postarea dvs. a fost trimisă"
 
-#: src/view/com/composer/Composer.tsx:1519
+#: src/view/com/composer/Composer.tsx:1549
 msgid "Your posts were sent"
 msgstr "Postările dvs. au fost trimise"
 
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:289
 msgid "Your preferred language"
 msgstr "Limba dvs. preferată"
+
+#: src/view/com/composer/Composer.tsx:1231
+msgid "Your Private Vessel instance is unavailable."
+msgstr ""
 
 #: src/screens/Onboarding/StepFinished/ValuePropositionPager.tsx:102
 #: src/screens/Onboarding/StepFinished/ValuePropositionPager.web.tsx:54
@@ -17857,7 +17866,7 @@ msgstr "Imaginea dvs. de profil înconjurată de cercuri concentrice cu imagini 
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr "Profilul, postările, fluxurile și listele dvs. nu vor mai fi vizibile pentru alți utilizatori Bluesky. Vă puteți reactiva contul în orice moment, conectându-vă."
 
-#: src/view/com/composer/Composer.tsx:1521
+#: src/view/com/composer/Composer.tsx:1551
 msgid "Your reply was sent"
 msgstr "Răspunsul dvs. a fost trimis"
 
@@ -17870,7 +17879,7 @@ msgstr "Raportul dvs. va fi trimis la <0>{0}</0>."
 msgid "Your selected interests help us serve you content you care about."
 msgstr "Interesele dvs. selectate ne ajută să vă oferim conținut care vă interesează."
 
-#: src/view/com/composer/Composer.tsx:1883
+#: src/view/com/composer/Composer.tsx:1914
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "Firul dvs. conține postări goale care vor fi omise. Postările rămase vor fi publicate ca un fir."
 
