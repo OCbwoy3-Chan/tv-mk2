@@ -81,8 +81,13 @@ export function useMessageEmbed() {
         if (isBskyPostUrl(embedUrl)) {
           const url = convertBskyAppUrlIfNeeded(embedUrl)
           const [_0, user, _1, rkey] = url.split('/').filter(Boolean)
-          const uri = makeRecordUri(user, 'app.bsky.feed.post', rkey)
-          setEmbed({type: 'post', uri})
+          try {
+            const uri = makeRecordUri(user, 'app.bsky.feed.post', rkey)
+            setEmbed({type: 'post', uri})
+          } catch {
+            // Incomplete or malformed URLs are ordinary editor input.
+            return
+          }
         }
       },
       [embedFromParams, navigation],

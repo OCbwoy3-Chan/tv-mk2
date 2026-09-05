@@ -635,7 +635,7 @@ export function MessagesList({
         (a, b) => a.index.byteStart - b.index.byteStart,
       ) as typeof rt.facets
 
-      rt = shortenLinks(rt)
+      rt = shortenLinks(rt, true)
       rt = stripInvalidMentions(rt)
 
       if (!hasScrolled) {

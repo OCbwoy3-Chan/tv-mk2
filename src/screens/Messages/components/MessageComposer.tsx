@@ -258,6 +258,7 @@ export function MessageComposer({
               ) : null}
 
               <Composer
+                enableMaskedLinks
                 nativeID={textInputId}
                 label={l`Message input field`}
                 placeholder={

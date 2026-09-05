@@ -37,7 +37,7 @@ export function restoreLinks(
   return parts.join('')
 }
 
-export function shortenLinks(rt: RichText): RichText {
+export function shortenLinks(rt: RichText, preserveLabels = false): RichText {
   if (!rt.facets?.length) {
     return rt
   }
@@ -55,6 +55,16 @@ export function shortenLinks(rt: RichText): RichText {
       // extract and shorten the URL
       const {byteStart, byteEnd} = facet.index
       const url = rt.unicodeText.slice(byteStart, byteEnd)
+      if (
+        preserveLabels &&
+        !facet.features.some(
+          feature =>
+            bsky.isType(app.bsky.richtext.facet.link, feature) &&
+            feature.uri === url,
+        )
+      ) {
+        continue
+      }
       const shortened = new UnicodeString(toShortUrl(url))
 
       // insert the shorten URL
