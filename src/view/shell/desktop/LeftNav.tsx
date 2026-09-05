@@ -1,6 +1,5 @@
 import {type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {StyleSheet, View} from 'react-native'
-import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation, useNavigationState} from '@react-navigation/native'
 
@@ -16,6 +15,7 @@ import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
 import {userStyle} from '#/lib/userstyles'
 import {emitSoftReset} from '#/state/events'
+import {badgeText, useBadgePreference} from '#/state/preferences/badge-text'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
@@ -552,10 +552,7 @@ function NavItem({
               {right: -20}, // more breathing room
             ]}>
             <Text
-              accessibilityLabel={l`${plural(count, {
-                one: '# unread item',
-                other: '# unread items',
-              })}`}
+              accessibilityLabel={l`Unread activity: ${count}`}
               accessibilityHint=""
               accessible={true}
               numberOfLines={1}
@@ -703,8 +700,16 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
     useLayoutBreakpoints()
   const numUnreadNotifications = useUnreadNotifications()
   const numUnreadMessages = useUnreadMessageCount()
+  const [notificationsCustomText] = useBadgePreference('notificationsBadgeText')
   const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const notificationsText =
+    notificationsTabBadgeDisplay === 'text'
+      ? notificationsCustomText
+      : undefined
+  const [chatsCustomText] = useBadgePreference('chatsBadgeText')
   const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
+  const chatsText =
+    chatsTabBadgeDisplay === 'text' ? chatsCustomText : undefined
 
   const leftNavMinimal = isMessagesRelatedScreen || leftNavMinimalBreakpoint
 
@@ -782,8 +787,9 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
             navItem="notifications"
             minimal={leftNavMinimal}
             count={
-              notificationsTabBadgeDisplay === 'exact'
-                ? numUnreadNotifications
+              notificationsTabBadgeDisplay === 'exact' ||
+              notificationsTabBadgeDisplay === 'text'
+                ? badgeText(numUnreadNotifications, notificationsText)
                 : undefined
             }
             hasNew={
@@ -801,8 +807,16 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
             navItem="chat"
             minimal={leftNavMinimal}
             count={
-              !aa.flags.chatDisabled && chatsTabBadgeDisplay === 'exact'
-                ? numUnreadMessages.numUnread
+              !aa.flags.chatDisabled &&
+              (chatsTabBadgeDisplay === 'exact' ||
+                chatsTabBadgeDisplay === 'text')
+                ? badgeText(
+                    numUnreadMessages.numUnread ||
+                      (numUnreadMessages.hasNew && chatsText?.trim()
+                        ? '•'
+                        : undefined),
+                    chatsText,
+                  )
                 : undefined
             }
             hasNew={

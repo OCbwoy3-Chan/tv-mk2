@@ -14,7 +14,12 @@ export const countsMetricsDisplaySchema = z.preprocess(
 )
 export type CountsMetricsDisplay = z.infer<typeof countsMetricsDisplaySchema>
 
-const notificationDotDisplayValues = ['hidden', 'visible', 'exact'] as const
+const notificationDotDisplayValues = [
+  'hidden',
+  'visible',
+  'exact',
+  'text',
+] as const
 
 export const notificationDotDisplaySchema = z.enum(notificationDotDisplayValues)
 export type NotificationDotDisplay = z.infer<

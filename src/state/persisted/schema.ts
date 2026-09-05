@@ -293,6 +293,9 @@ const schema = z.object({
   postsMetricsDisplay: countsMetricsDisplaySchema.optional(),
   /** @deprecated Migrated to notificationsTabBadgeDisplay and chatsTabBadgeDisplay */
   notificationDotDisplay: notificationDotDisplaySchema.optional(),
+  tabTitleSource: z.enum(['notifications', 'chats', 'none']).optional(),
+  notificationsBadgeText: z.string().max(16).optional(),
+  chatsBadgeText: z.string().max(16).optional(),
   notificationsTabBadgeDisplay: notificationDotDisplaySchema.optional(),
   chatsTabBadgeDisplay: notificationDotDisplaySchema.optional(),
   showFollowsYouBadge: z.boolean().optional(),

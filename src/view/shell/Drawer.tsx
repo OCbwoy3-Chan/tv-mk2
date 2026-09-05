@@ -25,6 +25,7 @@ import {type SharedNavTab, TAB_TO_NAV_ITEM} from '#/lib/routes/tab-to-nav-item'
 import {type NavigationProp} from '#/lib/routes/types'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {emitSoftReset} from '#/state/events'
+import {badgeText, useBadgePreference} from '#/state/preferences/badge-text'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   useFollowersMetricsDisplay,
@@ -593,7 +594,12 @@ let NotificationsMenuItem = ({
   const {_} = useLingui()
   const t = useTheme()
   const numUnreadNotifications = useUnreadNotifications()
+  const [notificationsCustomText] = useBadgePreference('notificationsBadgeText')
   const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const notificationsText =
+    notificationsTabBadgeDisplay === 'text'
+      ? notificationsCustomText
+      : undefined
   return (
     <MenuItem
       icon={
@@ -615,8 +621,9 @@ let NotificationsMenuItem = ({
             )
       }
       count={
-        notificationsTabBadgeDisplay === 'exact'
-          ? numUnreadNotifications
+        notificationsTabBadgeDisplay === 'exact' ||
+        notificationsTabBadgeDisplay === 'text'
+          ? badgeText(numUnreadNotifications, notificationsText)
           : undefined
       }
       hasNew={

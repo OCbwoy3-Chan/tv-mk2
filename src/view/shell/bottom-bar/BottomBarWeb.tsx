@@ -22,6 +22,7 @@ import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {convertBskyAppUrlIfNeeded} from '#/lib/strings/url-helpers'
 import {userStyle} from '#/lib/userstyles'
 import {emitSoftReset} from '#/state/events'
+import {badgeText, useBadgePreference} from '#/state/preferences/badge-text'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {
   useChatsTabBadgeDisplay,
@@ -85,8 +86,16 @@ export function BottomBarWeb() {
 
   const unreadMessageCount = useUnreadMessageCount()
   const notificationCountStr = useUnreadNotifications()
+  const [notificationsCustomText] = useBadgePreference('notificationsBadgeText')
   const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const notificationsText =
+    notificationsTabBadgeDisplay === 'text'
+      ? notificationsCustomText
+      : undefined
+  const [chatsCustomText] = useBadgePreference('chatsBadgeText')
   const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
+  const chatsText =
+    chatsTabBadgeDisplay === 'text' ? chatsCustomText : undefined
   const aa = useAgeAssurance()
   const isLabeler = profile?.associated?.labeler
 
@@ -159,9 +168,17 @@ export function BottomBarWeb() {
                   href="/messages"
                   navItem="chat"
                   notificationCount={
-                    aa.flags.chatDisabled || chatsTabBadgeDisplay !== 'exact'
+                    aa.flags.chatDisabled ||
+                    (chatsTabBadgeDisplay !== 'exact' &&
+                      chatsTabBadgeDisplay !== 'text')
                       ? undefined
-                      : unreadMessageCount.numUnread
+                      : badgeText(
+                          unreadMessageCount.numUnread ||
+                            (unreadMessageCount.hasNew && chatsText?.trim()
+                              ? '•'
+                              : undefined),
+                          chatsText,
+                        )
                   }
                   hasNew={
                     aa.flags.chatDisabled || chatsTabBadgeDisplay === 'hidden'
@@ -191,8 +208,9 @@ export function BottomBarWeb() {
                   href="/notifications"
                   navItem="notifications"
                   notificationCount={
-                    notificationsTabBadgeDisplay === 'exact'
-                      ? notificationCountStr
+                    notificationsTabBadgeDisplay === 'exact' ||
+                    notificationsTabBadgeDisplay === 'text'
+                      ? badgeText(notificationCountStr, notificationsText)
                       : undefined
                   }
                   hasNew={
