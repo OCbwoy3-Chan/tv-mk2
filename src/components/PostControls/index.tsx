@@ -140,6 +140,7 @@ function PostControlsInner({
   const autoLikeOnRepost = useAutoLikeOnRepost()
 
   const shouldAutoLikeOnRepost = async () => {
+    if (post.author.did === currentAccount?.did) return false
     if (post.viewer?.like) return false
 
     if (userActionHistory.getActionHistory().likes.includes(post.uri)) {
@@ -203,8 +204,8 @@ function PostControlsInner({
           reqId,
         })
         await queueRepost()
-        setHasLikeIconBeenToggled(true)
         if (autoLikeOnRepost && (await shouldAutoLikeOnRepost())) {
+          setHasLikeIconBeenToggled(true)
           sendInteraction({
             item: post.uri,
             event: 'app.bsky.feed.defs#interactionLike',
@@ -355,6 +356,14 @@ function PostControlsInner({
         }
 
         await agent.repost(post.uri, post.cid)
+        if (
+          autoLikeOnRepost &&
+          target &&
+          target.author.did !== account.did &&
+          !target.viewer?.like
+        ) {
+          await agent.like(post.uri, post.cid)
+        }
         return false
       })
 
