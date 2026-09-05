@@ -50,7 +50,8 @@ export function shareImageModal(_opts: {uri: string}) {
 
 /**
  * Downloads source bytes for Original, or the chosen CDN conversion. A local
- * blob URL makes the download attribute work across origins and preserves MIME.
+ * blob URL preserves MIME when CORS is available. Bluesky CDN attachments must
+ * use browser navigation: their download preset intentionally omits CORS headers.
  */
 export async function saveImageToMediaLibrary({
   uri,
@@ -60,6 +61,14 @@ export async function saveImageToMediaLibrary({
   format?: string
 }) {
   const downloadUri = getDownloadImageUri(uri, format)
+  const url = new URL(downloadUri, window.location.href)
+  if (
+    url.origin === 'https://cdn.bsky.app' &&
+    url.pathname.startsWith('/img/download/')
+  ) {
+    downloadUrl(downloadUri, `witchsky-image.${formatToFileExt(format)}`, true)
+    return
+  }
   const response = await fetch(downloadUri)
   if (!response.ok) throw new Error(`Image download failed: ${response.status}`)
   const blob = await response.blob()
@@ -214,10 +223,14 @@ export function saveBytesToDisk(
   return true
 }
 
-function downloadUrl(href: string, filename: string) {
+function downloadUrl(href: string, filename: string, external = false) {
   const a = document.createElement('a')
   a.href = href
   a.download = filename
+  if (external) {
+    a.target = '_blank'
+    a.rel = 'noopener noreferrer'
+  }
   a.style.display = 'none'
   document.body.appendChild(a)
   a.click()

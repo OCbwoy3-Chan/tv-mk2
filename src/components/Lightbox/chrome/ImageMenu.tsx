@@ -1,5 +1,5 @@
 import {useRef, useState} from 'react'
-import {Modal, Pressable, StyleSheet, View} from 'react-native'
+import {Modal, Pressable, ScrollView, StyleSheet, View} from 'react-native'
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -10,8 +10,14 @@ import Animated, {
 import {scheduleOnRN} from 'react-native-worklets'
 import {useLingui} from '@lingui/react/macro'
 
+import {IMAGE_FORMATS} from '#/lib/media/image-formats'
+import {useDownloadFormat} from '#/state/preferences/download-format'
 import {atoms as a} from '#/alf'
 import {ArrowShareRight_Stroke2_Corner2_Rounded as ShareIcon} from '#/components/icons/ArrowShareRight'
+import {
+  ChevronLeft_Stroke2_Corner0_Rounded as ChevronLeftIcon,
+  ChevronRight_Stroke2_Corner0_Rounded as ChevronRightIcon,
+} from '#/components/icons/Chevron'
 import {type Props as IconProps} from '#/components/icons/common'
 import {DotGrid3x1_Stroke2_Corner0_Rounded as DotsIcon} from '#/components/icons/DotGrid'
 import {Download_Stroke2_Corner0_Rounded as DownloadIcon} from '#/components/icons/Download'
@@ -20,7 +26,7 @@ import {CircleChromeButton} from './CircleChromeButton'
 
 type Props = {
   onPressShare: () => void
-  onPressSave: () => void
+  onPressSave: (format: string) => void
 }
 
 type Anchor = {x: number; y: number; width: number; height: number}
@@ -35,12 +41,15 @@ const TIMING_OUT = {duration: 150}
 
 export function ImageMenu({onPressShare, onPressSave}: Props) {
   const {t: l} = useLingui()
+  const downloadFormat = useDownloadFormat() ?? 'original'
   const triggerRef = useRef<React.ComponentRef<typeof View>>(null)
   const [isMounted, setIsMounted] = useState(false)
   const [anchor, setAnchor] = useState<Anchor | null>(null)
+  const [showFormats, setShowFormats] = useState(false)
   const progress = useSharedValue(0)
 
   const open = () => {
+    setShowFormats(false)
     triggerRef.current?.measureInWindow((x, y, width, height) => {
       setAnchor({x, y, width, height})
       setIsMounted(true)
@@ -89,16 +98,45 @@ export function ImageMenu({onPressShare, onPressSave}: Props) {
         />
         {anchor && (
           <MenuCard anchor={anchor} progress={progress}>
-            <MenuItem
-              icon={ShareIcon}
-              label={l`Share image`}
-              onPress={() => runAction(onPressShare)}
-            />
-            <MenuItem
-              icon={DownloadIcon}
-              label={l`Save image`}
-              onPress={() => runAction(onPressSave)}
-            />
+            {showFormats ? (
+              <>
+                <MenuItem
+                  icon={ChevronLeftIcon}
+                  label={l`Back`}
+                  onPress={() => setShowFormats(false)}
+                />
+                <ScrollView style={{maxHeight: 260}}>
+                  {IMAGE_FORMATS.filter(
+                    ({value}) => value !== downloadFormat,
+                  ).map(({label, value}) => (
+                    <MenuItem
+                      key={value}
+                      icon={DownloadIcon}
+                      label={label}
+                      onPress={() => runAction(() => onPressSave(value))}
+                    />
+                  ))}
+                </ScrollView>
+              </>
+            ) : (
+              <>
+                <MenuItem
+                  icon={ShareIcon}
+                  label={l`Share image`}
+                  onPress={() => runAction(onPressShare)}
+                />
+                <MenuItem
+                  icon={DownloadIcon}
+                  label={l`Save image`}
+                  onPress={() => runAction(() => onPressSave(downloadFormat))}
+                />
+                <MenuItem
+                  icon={ChevronRightIcon}
+                  label={l`Download formats`}
+                  onPress={() => setShowFormats(true)}
+                />
+              </>
+            )}
           </MenuCard>
         )}
       </Modal>

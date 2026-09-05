@@ -5,6 +5,7 @@ import {Trans, useLingui} from '@lingui/react/macro'
 import {FocusGuards, FocusScope} from 'radix-ui/internal'
 import {RemoveScrollBar} from 'react-remove-scroll-bar'
 
+import {IMAGE_FORMATS} from '#/lib/media/image-formats'
 import {saveImageToMediaLibrary} from '#/lib/media/manip'
 import {useA11y} from '#/state/a11y'
 import {useDownloadFormat} from '#/state/preferences/download-format'
@@ -101,6 +102,7 @@ function LightboxGallery({
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
+  const downloadFormat = useDownloadFormat() ?? 'original'
   const {reduceMotionEnabled} = useA11y()
   const [index, setIndex] = useState(initialIndex)
   const [hasAnyLoaded, setAnyHasLoaded] = useState(false)
@@ -108,7 +110,6 @@ function LightboxGallery({
 
   const {gtPhone} = useBreakpoints()
   const enableSquareButtons = useEnableSquareButtons()
-  const downloadFormat = useDownloadFormat()
 
   const canGoLeft = index >= 1
   const canGoRight = index < imgs.length - 1
@@ -317,14 +318,10 @@ function LightboxGallery({
               onPress={() => {
                 saveImageToMediaLibrary({
                   uri: img.uri,
-                  format: downloadFormat ?? 'original',
+                  format: downloadFormat,
                 }).then(
-                  () => {
-                    Toast.show(l`Image saved`)
-                  },
-                  () => {
-                    Toast.show(l`Failed to save image`, {type: 'error'})
-                  },
+                  () => Toast.show(l`Download started`),
+                  () => Toast.show(l`Failed to save image`, {type: 'error'}),
                 )
               }}>
               <Menu.ItemText>
@@ -332,6 +329,39 @@ function LightboxGallery({
               </Menu.ItemText>
               <Menu.ItemIcon icon={DownloadIcon} position="right" />
             </Menu.Item>
+            <Menu.Submenu
+              label={l`Download formats`}
+              trigger={
+                <>
+                  <Menu.ItemText>
+                    <Trans>Download formats</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
+                </>
+              }>
+              <Menu.Group>
+                {IMAGE_FORMATS.filter(
+                  ({value}) => value !== downloadFormat,
+                ).map(({label, value}) => (
+                  <Menu.Item
+                    key={value}
+                    label={label}
+                    onPress={() => {
+                      saveImageToMediaLibrary({
+                        uri: img.uri,
+                        format: value,
+                      }).then(
+                        () => Toast.show(l`Download started`),
+                        () =>
+                          Toast.show(l`Failed to save image`, {type: 'error'}),
+                      )
+                    }}>
+                    <Menu.ItemText>{label}</Menu.ItemText>
+                    <Menu.ItemIcon icon={DownloadIcon} position="right" />
+                  </Menu.Item>
+                ))}
+              </Menu.Group>
+            </Menu.Submenu>
           </Menu.Group>
         </Menu.Outer>
       </Menu.Root>
