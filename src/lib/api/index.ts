@@ -470,6 +470,10 @@ async function resolveMedia(
         }),
     )
 
+    if ('originalCaptions' in videoDraft) {
+      captions.push(...(videoDraft.originalCaptions ?? []))
+    }
+
     const width = Math.round(
       videoDraft.asset?.width ||
         ('redraftDimensions' in videoDraft

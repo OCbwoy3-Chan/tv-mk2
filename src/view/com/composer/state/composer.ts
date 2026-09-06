@@ -706,6 +706,9 @@ export function createComposerState({
         height: initVideoUri.height,
         altText: initVideoUri.altText || '',
         playlistUri: initVideoUri.uri,
+        ownerDid: initVideoUri.ownerDid,
+        captions: initVideoUri.captions,
+        originalCaptions: initVideoUri.originalCaptions,
       }),
     }
   }

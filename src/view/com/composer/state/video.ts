@@ -38,6 +38,7 @@ export type VideoAction =
   | {type: 'to_error'; error: string; signal: AbortSignal}
   | {
       type: 'to_done'
+      ownerDid?: string
       blobRef: BlobRef
       signal: AbortSignal
     }
@@ -138,7 +139,7 @@ type DoneState = {
   asset: ImagePickerAsset
   video: CompressedVideo
   jobId?: undefined
-  pendingPublish: {blobRef: BlobRef}
+  pendingPublish: {blobRef: BlobRef; ownerDid?: string}
   telemetry: VideoTelemetry
   altText: string
   captions: CaptionsTrack[]
@@ -151,12 +152,13 @@ export type RedraftState = {
   asset: null
   video?: undefined
   jobId?: undefined
-  pendingPublish: {blobRef: BlobRef}
+  pendingPublish: {blobRef: BlobRef; ownerDid?: string}
   telemetry?: undefined
   altText: string
   captions: CaptionsTrack[]
   redraftDimensions: {width: number; height: number}
   playlistUri: string
+  originalCaptions?: app.bsky.embed.video.Caption[]
 }
 
 export type VideoState =
@@ -184,11 +186,14 @@ export function createVideoState(
 }
 
 export function createRedraftVideoState(opts: {
+  ownerDid?: string
+  captions?: CaptionsTrack[]
   blobRef: BlobRef
   width: number
   height: number
   altText?: string
   playlistUri: string
+  originalCaptions?: app.bsky.embed.video.Caption[]
 }): RedraftState {
   const noopController = new AbortController()
   return {
@@ -196,10 +201,11 @@ export function createRedraftVideoState(opts: {
     progress: 100,
     abortController: noopController,
     asset: null,
-    pendingPublish: {blobRef: opts.blobRef},
+    pendingPublish: {blobRef: opts.blobRef, ownerDid: opts.ownerDid},
     telemetry: undefined,
     altText: opts.altText || '',
-    captions: [],
+    captions: opts.captions ?? [],
+    originalCaptions: opts.originalCaptions,
     redraftDimensions: {width: opts.width, height: opts.height},
     playlistUri: opts.playlistUri,
   }
@@ -310,6 +316,7 @@ export function videoReducer(
         video: state.video,
         pendingPublish: {
           blobRef: action.blobRef,
+          ownerDid: action.ownerDid,
         },
         telemetry: state.telemetry,
         altText: state.altText,
@@ -464,6 +471,7 @@ export async function processVideo(
       telemetry.processingCompleted()
       dispatch({
         type: 'to_done',
+        ownerDid: client.assertDid,
         blobRef: blob,
         signal,
       })

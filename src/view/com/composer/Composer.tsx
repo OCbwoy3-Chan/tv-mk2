@@ -180,7 +180,7 @@ import {
   IS_WEB_SAFARI,
 } from '#/env'
 import {type Gif} from '#/features/gifPicker/types'
-import {app, chat, com} from '#/lexicons'
+import {app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {BottomSheetPortalProvider} from '../../../../modules/bottom-sheet'
 import {
@@ -211,6 +211,7 @@ import {
   type PostDraft,
   type ThreadDraft,
 } from './state/composer'
+import {prepareVideoForAccount} from './state/prepareVideoForAccount'
 import {
   NO_VIDEO,
   type NoVideoState,
@@ -321,12 +322,6 @@ export const ComposePost = ({
   useEffect(() => {
     setActiveAccountDid(initialActiveAccountDid ?? currentDid)
   }, [initialActiveAccountDid, currentDid])
-  /*
-   * The host the video service-auth token is minted for. This is the same value
-   * that seeds the session's PDS routing, so the audience always matches the host
-   * the upload actually reaches; a mismatch would 401 the upload.
-   */
-  const currentDispatchUrl = currentAccount!.pdsUrl ?? currentAccount!.service
   const {closeComposer} = useComposerControls()
   const {requestSwitchToAccount} = useLoggedOutViewControls()
   const {t: l, i18n} = useLingui()
@@ -497,6 +492,61 @@ export const ComposePost = ({
     [activePost.id],
   )
 
+  const processSelectedAccountVideo = useCallback(
+    async (
+      asset: Parameters<typeof processVideo>[0],
+      dispatchVideo: Parameters<typeof processVideo>[1],
+      signal: AbortSignal,
+      telemetry: Parameters<typeof processVideo>[6],
+    ) => {
+      let ephemeral: AtpAgent | undefined
+      try {
+        const account = accounts.find(
+          account => account.did === activeAccountDid,
+        )
+        if (!account)
+          throw new Error('The selected posting account is no longer signed in')
+        const uploadClient =
+          account.did === currentDid
+            ? pdsClient
+            : buildPdsClient(
+                pdsAgent(
+                  (ephemeral = await sessionApi.createEphemeralAgent(account)),
+                ),
+              )
+        if (signal.aborted) return
+        if (uploadClient.assertDid !== account.did) {
+          throw new Error(
+            'The video upload session does not match the selected account',
+          )
+        }
+        await processVideo(
+          asset,
+          dispatchVideo,
+          uploadClient,
+          account.pdsUrl ?? account.service,
+          signal,
+          i18n,
+          telemetry,
+        )
+      } catch (error) {
+        dispatchVideo({
+          type: 'to_error',
+          error: error instanceof Error ? error.message : String(error),
+          signal,
+        })
+      } finally {
+        if (
+          ephemeral &&
+          'dispose' in ephemeral &&
+          typeof ephemeral.dispose === 'function'
+        )
+          (ephemeral.dispose as () => void)()
+      }
+    },
+    [accounts, activeAccountDid, currentDid, pdsClient, sessionApi, i18n],
+  )
+
   const selectVideo = useCallback(
     async (postId: string, asset: ImagePickerAsset) => {
       /*
@@ -563,7 +613,7 @@ export const ComposePost = ({
         return
       }
 
-      void processVideo(
+      void processSelectedAccountVideo(
         asset,
         videoAction => {
           composerDispatch({
@@ -575,14 +625,11 @@ export const ComposePost = ({
             },
           })
         },
-        pdsClient,
-        currentDispatchUrl,
         abortController.signal,
-        i18n,
         telemetry,
       )
     },
-    [l, i18n, pdsClient, currentDispatchUrl, composerDispatch, ax.metric],
+    [l, processSelectedAccountVideo, composerDispatch, ax.metric],
   )
 
   const onInitVideo = useNonReactiveCallback(() => {
@@ -734,7 +781,7 @@ export const ComposePost = ({
         }
 
         // Start video compression and upload
-        void processVideo(
+        void processSelectedAccountVideo(
           asset,
           videoAction => {
             composerDispatch({
@@ -746,10 +793,7 @@ export const ComposePost = ({
               },
             })
           },
-          pdsClient,
-          currentDispatchUrl,
           abortController.signal,
-          i18n,
           telemetry,
         )
       } catch (e) {
@@ -759,7 +803,7 @@ export const ComposePost = ({
         })
       }
     },
-    [l, i18n, pdsClient, currentDispatchUrl, composerDispatch, ax.metric],
+    [l, processSelectedAccountVideo, composerDispatch, ax.metric],
   )
 
   const handleSelectDraft = useCallback(
@@ -1229,45 +1273,40 @@ export const ComposePost = ({
           'The posting session does not match the selected account',
         )
       }
-      const postingThread = postingAgent
-        ? {
-            ...filteredThread,
-            posts: await Promise.all(
-              filteredThread.posts.map(async post => {
-                const media = post.embed.media
-                if (media?.type !== 'video' || media.video.status !== 'done')
-                  return post
-                const blob = media.video.pendingPublish.blobRef
-                const original = await pdsClient.call(
-                  com.atproto.sync.getBlob,
-                  {
-                    did: pdsClient.assertDid,
-                    cid: 'ref' in blob ? blob.ref.toString() : blob.cid,
-                  },
-                )
-                const uploaded = await postingPdsClient.uploadBlob(original, {
-                  encoding: blob.mimeType as `${string}/${string}`,
-                })
-                return {
-                  ...post,
-                  embed: {
-                    ...post.embed,
-                    media: {
-                      ...media,
-                      video: {
-                        ...media.video,
-                        pendingPublish: {
-                          ...media.video.pendingPublish,
-                          blobRef: uploaded.body.blob,
-                        },
-                      },
-                    },
-                  },
-                }
-              }),
-            ),
-          }
-        : filteredThread
+      const postingThread = {
+        ...filteredThread,
+        posts: await Promise.all(
+          filteredThread.posts.map(async post => {
+            const media = post.embed.media
+            if (media?.type !== 'video' || media.video.status !== 'done')
+              return post
+            const account = accounts.find(
+              account => account.did === activeAccountDid,
+            )
+            if (!account)
+              throw new Error(
+                'The selected posting account is no longer signed in',
+              )
+            const video = await prepareVideoForAccount(
+              media.video,
+              postingPdsClient,
+              account.pdsUrl ?? account.service,
+              currentDid,
+              i18n,
+            )
+            return {
+              ...post,
+              embed: {
+                ...post.embed,
+                media: {
+                  ...media,
+                  video,
+                },
+              },
+            }
+          }),
+        ),
+      }
       logger.info(`composer: posting...`)
       postUri = (
         await apilib.post(queryClient, {
@@ -1504,6 +1543,8 @@ export const ComposePost = ({
     missingAltError,
     missingAltTextPromptControl,
     getFilteredThread,
+    currentDid,
+    i18n,
     linkQueries,
     setLangPrefs,
     accounts,

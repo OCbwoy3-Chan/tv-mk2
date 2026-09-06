@@ -74,3 +74,40 @@ it('focuses adjacent posts without moving or dirtying the thread', () => {
     composerReducer(focused, {type: 'focus_adjacent_post', direction: 'up'}),
   ).toBe(focused)
 })
+
+it('restores video ownership, alt text and caption tracks when redrafting', () => {
+  const captions = [
+    {lang: 'en', file: {name: 'en.vtt'} as File},
+    {lang: 'fr', file: {name: 'fr.vtt'} as File},
+  ]
+  const state = createComposerState({
+    initText: 'Redrafted post',
+    initMention: undefined,
+    initImageUris: undefined,
+    initQuoteUri: undefined,
+    initInteractionSettings: undefined,
+    initVideoUri: {
+      uri: 'https://video.test/playlist.m3u8',
+      width: 1920,
+      height: 1080,
+      blobRef: {cid: 'original', mimeType: 'video/mp4'} as never,
+      ownerDid: 'did:plc:source',
+      altText: 'Video description',
+      captions,
+      originalCaptions: [
+        {lang: 'de', file: {cid: 'caption', mimeType: 'text/vtt'}},
+      ],
+    },
+  })
+  const media = state.thread.posts[0].embed.media
+  expect(media?.type).toBe('video')
+  if (media?.type !== 'video') throw new Error('Missing video')
+  expect(media.video.status).toBe('done')
+  expect(media.video.captions).toEqual(captions)
+  expect(media.video.altText).toBe('Video description')
+  if (media.video.status !== 'done') throw new Error('Video not ready')
+  expect(media.video.pendingPublish.ownerDid).toBe('did:plc:source')
+  expect(
+    'originalCaptions' in media.video && media.video.originalCaptions?.[0].lang,
+  ).toBe('de')
+})

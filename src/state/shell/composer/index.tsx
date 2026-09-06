@@ -1,7 +1,5 @@
 import {createContext, useContext, useMemo, useState} from 'react'
-import {
-  type BlobRef,
-} from '@atproto/api'
+import {type BlobRef} from '@atproto/api'
 import {type ModerationDecision} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -58,6 +56,9 @@ export interface ComposerOpts {
     blobRef?: BlobRef
   }[]
   videoUri?: {
+    ownerDid?: string
+    captions?: {lang: string; file: File}[]
+    originalCaptions?: app.bsky.embed.video.Caption[]
     uri: string
     width: number
     height: number

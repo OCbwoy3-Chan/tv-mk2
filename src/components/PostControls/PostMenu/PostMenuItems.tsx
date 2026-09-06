@@ -12,7 +12,6 @@ import {
   type AppBskyEmbedRecordWithMedia,
   type AppBskyEmbedVideo,
   AppBskyFeedPost,
-  type BlobRef,
   isDid,
 } from '@atproto/api'
 import {AtUri} from '@atproto/syntax'
@@ -65,7 +64,10 @@ import {
   useToggleReplyVisibilityMutation,
 } from '#/state/queries/threadgate'
 import {useRequireAuth, useSession} from '#/state/session'
-import {type ComposerOptsPostRef} from '#/state/shell/composer'
+import {
+  type ComposerOpts,
+  type ComposerOptsPostRef,
+} from '#/state/shell/composer'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
 import {useDialogControl} from '#/components/Dialog'
 import {useGlobalDialogsControlContext} from '#/components/dialogs/Context'
@@ -307,15 +309,7 @@ let PostMenuItems = ({
       }
     }
 
-    let videoUri:
-      | {
-          uri: string
-          width: number
-          height: number
-          blobRef?: BlobRef
-          altText?: string
-        }
-      | undefined
+    let videoUri: ComposerOpts['videoUri']
     let recordVideo: AppBskyEmbedVideo.Main | undefined
 
     if (recordEmbed?.$type === 'app.bsky.embed.video') {
@@ -348,6 +342,42 @@ let PostMenuItems = ({
           height: video.aspectRatio?.height ?? 1000,
           blobRef: recordVideo.video,
           altText: video.alt || '',
+        }
+      }
+    }
+
+    if (videoUri && recordVideo) {
+      videoUri.ownerDid = post.author.did
+      if (IS_NATIVE) {
+        videoUri.originalCaptions =
+          recordVideo.captions as unknown as app.bsky.embed.video.Caption[]
+      } else if (recordVideo.captions?.length) {
+        try {
+          const pdsUrl = await resolvePdsServiceUrl(post.author.did)
+          videoUri.captions = await Promise.all(
+            (recordVideo.captions ?? []).map(async caption => {
+              const uri = new URL('/xrpc/com.atproto.sync.getBlob', pdsUrl)
+              uri.searchParams.set('did', post.author.did)
+              uri.searchParams.set('cid', caption.file.ref.toString())
+              const response = await fetch(uri)
+              if (!response.ok) throw new Error('Could not load caption file')
+              return {
+                lang: caption.lang,
+                file: new File(
+                  [await response.blob()],
+                  `caption-${caption.lang}.vtt`,
+                  {type: 'text/vtt'},
+                ),
+              }
+            }),
+          )
+        } catch (error) {
+          logger.error('Failed to restore video captions', {safeMessage: error})
+          Toast.show(
+            l`Could not load video captions. Please try redrafting again.`,
+            {type: 'error'},
+          )
+          return
         }
       }
     }
