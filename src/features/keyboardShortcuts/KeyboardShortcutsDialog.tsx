@@ -62,6 +62,10 @@ function KeyboardShortcutsDialogInner() {
           <ShortcutRow shortcut="Esc" label={l`Clear post selection`} />
         </ShortcutGroup>
 
+        <ShortcutGroup title={l`Focused video`}>
+          <ShortcutRow shortcut="F" label={l`Toggle fullscreen`} />
+        </ShortcutGroup>
+
         <ShortcutGroup title={l`Composer`}>
           <ShortcutRow
             shortcut="Cmd/Ctrl Enter"

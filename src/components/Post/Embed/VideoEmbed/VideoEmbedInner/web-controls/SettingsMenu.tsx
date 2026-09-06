@@ -1,4 +1,4 @@
-import {useCallback, useId, useState} from 'react'
+import {useCallback, useId, useRef, useState} from 'react'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import type Hls from 'hls.js'
@@ -35,6 +35,7 @@ export function SettingsMenu({
   const {_, i18n} = useLingui()
   const t = useTheme()
   const id = useId()
+  const openAtPointerDown = useRef<boolean | null>(null)
   const subtitlesEnabled = useSubtitlesEnabled()
   const setSubtitlesEnabled = useSetSubtitlesEnabled()
   const [speed, selectSpeed] = useVideoPlaybackSpeed()
@@ -104,25 +105,42 @@ export function SettingsMenu({
 
   return (
     <Menu.Root control={control} modal={false}>
-      <Menu.Trigger label={_(msg`Video settings`)}>
-        {({props}) => (
-          <Button
-            {...props}
-            testID="videoSettingsBtn"
-            label={_(msg`Video settings`)}
-            variant="ghost"
-            color="secondary"
-            shape="round"
-            style={[
-              a.p_xs,
-              {backgroundColor: 'transparent'},
-              web({transition: 'background-color 0.1s'}),
-            ]}
-            hoverStyle={{backgroundColor: 'rgba(255, 255, 255, 0.2)'}}>
-            <SettingsIcon width={20} fill={t.palette.white} aria-hidden />
-          </Button>
-        )}
-      </Menu.Trigger>
+      <div
+        onKeyDownCapture={() => {
+          openAtPointerDown.current = null
+        }}
+        onPointerDownCapture={() => {
+          openAtPointerDown.current = open
+        }}
+        onPointerCancel={() => {
+          openAtPointerDown.current = null
+        }}>
+        <Menu.Trigger label={_(msg`Video settings`)}>
+          {({props}) => (
+            <Button
+              {...props}
+              onPress={() => {
+                const wasOpen = openAtPointerDown.current
+                openAtPointerDown.current = null
+                if (wasOpen) control.close()
+                else props.onPress?.()
+              }}
+              testID="videoSettingsBtn"
+              label={_(msg`Video settings`)}
+              variant="ghost"
+              color="secondary"
+              shape="round"
+              style={[
+                a.p_xs,
+                {backgroundColor: 'transparent'},
+                web({transition: 'background-color 0.1s'}),
+              ]}
+              hoverStyle={{backgroundColor: 'rgba(255, 255, 255, 0.2)'}}>
+              <SettingsIcon width={20} fill={t.palette.white} aria-hidden />
+            </Button>
+          )}
+        </Menu.Trigger>
+      </div>
       <Menu.Outer side="top" align="end" label={_(msg`Video settings`)}>
         {tracks.length > 0 &&
           options(

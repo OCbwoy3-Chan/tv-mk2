@@ -234,6 +234,39 @@ export function Controls({
     toggleFullscreen()
   }, [drawFocus, toggleFullscreen])
 
+  useEffect(() => {
+    const onFullscreenKey = (event: KeyboardEvent) => {
+      const container = fullscreenRef.current
+      const target = event.target
+      if (
+        isGif ||
+        event.defaultPrevented ||
+        event.repeat ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        event.key.toLowerCase() !== 'f' ||
+        (target instanceof Element &&
+          target.closest(
+            'input, textarea, select, [contenteditable="true"]',
+          )) ||
+        !container
+      )
+        return
+      const fullscreenElement = document.fullscreenElement
+      const ownsKeyboard = fullscreenElement
+        ? fullscreenElement === container
+        : container.contains(document.activeElement) ||
+          (active && focused && document.activeElement === document.body)
+      if (!ownsKeyboard) return
+      event.preventDefault()
+      event.stopPropagation()
+      onPressFullscreen()
+    }
+    document.addEventListener('keydown', onFullscreenKey)
+    return () => document.removeEventListener('keydown', onFullscreenKey)
+  }, [active, focused, fullscreenRef, isGif, onPressFullscreen])
+
   const onSeek = useCallback(
     (time: number) => {
       if (!videoRef.current) return
