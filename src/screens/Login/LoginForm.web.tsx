@@ -17,6 +17,7 @@ import {
   useHostingProvider,
 } from '#/state/queries/pds-detection'
 import {useSession, useSessionApi} from '#/state/session'
+import {getOAuthScope} from '#/state/session/oauth-scopes'
 import {getWebOAuthClient} from '#/state/session/oauth-web-client'
 import {saveOAuthReturnUrl} from '#/state/session/oauth-web-return-url'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
@@ -39,6 +40,7 @@ import {AppServerButton} from './components/AppServerDialog'
 import {ConfirmHostingProviderDialog} from './components/ConfirmHostingProviderDialog'
 import {HandleAutocompleteInput} from './components/HandleAutocompleteInput'
 import {HostingProviderDialog} from './components/HostingProviderDialog'
+import {useEphemeralLogin} from './EphemeralLoginContext'
 import {FormContainer} from './FormContainer'
 
 type ServiceDescription = ComAtprotoServerDescribeServer.OutputSchema
@@ -189,6 +191,7 @@ function OAuthLoginFields({
   onPressBack: () => void
 }) {
   const {t: l} = useLingui()
+  const ephemeralLogin = useEphemeralLogin()
   const identifierValueRef = useRef<string>(initialHandle || '')
 
   const onPressNext = async () => {
@@ -206,9 +209,13 @@ function OAuthLoginFields({
     setIsProcessing(true)
 
     try {
+      if (ephemeralLogin) {
+        await ephemeralLogin.authorize(identifier)
+        return
+      }
       saveOAuthReturnUrl()
       const client = getWebOAuthClient()
-      await client.signIn(identifier)
+      await client.signIn(identifier, {scope: getOAuthScope()})
       // Browser will redirect to authorization server
     } catch (e: unknown) {
       const errMsg = String(e)
@@ -259,7 +266,7 @@ function OAuthLoginFields({
             <Trans>Back</Trans>
           </ButtonText>
         </Button>
-        <AppServerButton inline />
+        {!ephemeralLogin && <AppServerButton inline />}
         <View style={a.flex_1} />
         <Button
           testID="loginNextButton"
@@ -325,7 +332,9 @@ function LegacyLoginFields({
   const [hasPassword, setHasPassword] = useState(false)
   const [revealPassword, setRevealPassword] = useState(false)
   const {t: l} = useLingui()
-  const {login} = useSessionApi()
+  const {login: normalLogin} = useSessionApi()
+  const ephemeralLogin = useEphemeralLogin()
+  const login = ephemeralLogin?.submit ?? normalLogin
   const {accounts} = useSession()
   const {setShowLoggedOut, clearRequestedAccount} = useLoggedOutViewControls()
   const setHasCheckedForStarterPack = useSetHasCheckedForStarterPack()
@@ -359,6 +368,7 @@ function LegacyLoginFields({
         },
         'LoginForm',
       )
+      if (ephemeralLogin) return
       onAttemptSuccess()
       setShowLoggedOut(false)
       clearRequestedAccount()
@@ -688,7 +698,7 @@ function LegacyLoginFields({
               </ButtonText>
             </Button>
             <View style={[a.flex_shrink, a.justify_center]}>
-              <AppServerButton inline />
+              {!ephemeralLogin && <AppServerButton inline />}
             </View>
             <View style={[a.flex_shrink, a.justify_center, a.ml_auto]}>
               <HostingProviderIndicator
@@ -739,7 +749,7 @@ function LegacyLoginFields({
 
       {!gtMobile && (
         <>
-          <AppServerButton />
+          {!ephemeralLogin && <AppServerButton />}
           <HostingProviderIndicator
             state={hostingProvider.state}
             onPress={() => serverInputControl.open()}

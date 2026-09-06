@@ -1,18 +1,18 @@
 import {type Agent, type Client} from '@atproto/lex'
 import {type PasswordSession} from '@atproto/lex-password-session'
 
-import {
-  BLUESKY_PROXY_HEADER,
-  CHAT_PROXY_SERVICE,
-  PUBLIC_BSKY_SERVICE,
-} from '#/lib/constants'
+import {CHAT_PROXY_SERVICE, PUBLIC_BSKY_SERVICE} from '#/lib/constants'
 import {createLexClient} from '#/lib/lexClient'
+import {
+  readAppViewProxy,
+  readCustomAppViewUrl,
+} from '#/state/preferences/custom-appview-did'
 import {networkAwareFetch} from './network'
 
 /**
  * Build the signed-in appview {@link Client}.
  *
- * {@link BLUESKY_PROXY_HEADER} is passed as the client's `service`, so lex sets
+ * {@link readAppViewProxy} is passed as the client's `service`, so lex sets
  * `atproto-proxy: <that value>` on every request and raw calls are proxied to
  * the appview. Record helpers force `service: null`, so they still target the
  * account host.
@@ -28,7 +28,7 @@ import {networkAwareFetch} from './network'
  * fetch, which is `networkAwareFetch` wrapped in the disposal kill switch.
  */
 export function buildAppviewClient(agent: Agent): Client {
-  return createLexClient(agent, {service: BLUESKY_PROXY_HEADER.get()})
+  return createLexClient(agent, {service: readAppViewProxy()})
 }
 
 /**
@@ -129,7 +129,7 @@ export function getUnauthenticatedThrowingClient(): Client {
   }))
 }
 
-let publicLexClient: Client | undefined
+const publicLexClients = new Map<string, Client>()
 
 /**
  * The unauthenticated {@link Client} for public reads, pointed at the public
@@ -148,8 +148,11 @@ let publicLexClient: Client | undefined
  * building the bundle.
  */
 export function getPublicAppviewClient(): Client {
-  return (publicLexClient ??= createLexClient({
-    service: PUBLIC_BSKY_SERVICE,
-    fetch: networkAwareFetch,
-  }))
+  const service = readCustomAppViewUrl() || PUBLIC_BSKY_SERVICE
+  let client = publicLexClients.get(service)
+  if (!client) {
+    client = createLexClient({service, fetch: networkAwareFetch})
+    publicLexClients.set(service, client)
+  }
+  return client
 }

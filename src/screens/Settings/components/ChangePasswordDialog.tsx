@@ -5,11 +5,13 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 import * as EmailValidator from 'email-validator'
 
+import {BSKY_SERVICE} from '#/lib/constants'
+import {createServiceClient} from '#/lib/lexClient'
 import {cleanError, isNetworkError} from '#/lib/strings/errors'
 import {checkAndFormatResetCode} from '#/lib/strings/password'
 import {matchXrpcError} from '#/lib/xrpc-error'
 import {logger} from '#/logger'
-import {usePdsClient, useSession} from '#/state/session'
+import {useSession} from '#/state/session'
 import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import {android, atoms as a, web} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
@@ -46,7 +48,9 @@ export function ChangePasswordDialog({
 function Inner() {
   const {_} = useLingui()
   const {currentAccount} = useSession()
-  const client = usePdsClient()
+  // Password reset endpoints are public; an entryway cannot forward DPoP.
+  const client = createServiceClient(currentAccount?.service || BSKY_SERVICE)
+  const [email, setEmail] = useState(currentAccount?.email ?? '')
   const control = Dialog.useDialogContext()
 
   const [stage, setStage] = useState(Stages.RequestCode)
@@ -77,10 +81,7 @@ function Inner() {
   }
 
   const onRequestCode = async () => {
-    if (
-      !currentAccount?.email ||
-      !EmailValidator.validate(currentAccount.email)
-    ) {
+    if (!EmailValidator.validate(email.trim())) {
       return setError(_(msg`Your email appears to be invalid.`))
     }
 
@@ -88,7 +89,7 @@ function Inner() {
     setIsProcessing(true)
     try {
       await client.call(com.atproto.server.requestPasswordReset, {
-        email: currentAccount.email,
+        email: email.trim(),
       })
       setStage(Stages.ChangePassword)
     } catch (e: any) {
@@ -181,6 +182,27 @@ function Inner() {
             {uiStrings[stage].message}
           </Text>
         </View>
+
+        {stage === Stages.RequestCode && (
+          <View>
+            <TextField.LabelText>
+              <Trans>Email address</Trans>
+            </TextField.LabelText>
+            <TextField.Root>
+              <Dialog.Input
+                label={_(msg`Email address`)}
+                placeholder={null}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="email"
+                keyboardType="email-address"
+                editable={!isProcessing}
+              />
+            </TextField.Root>
+          </View>
+        )}
 
         {stage === Stages.ChangePassword && (
           <View style={[a.gap_md]}>

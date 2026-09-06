@@ -86,7 +86,7 @@ function PostThreadFollowBtnLoaded({
     profile,
     logContext: 'PostThreadItem',
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const promptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] = useState<
@@ -255,6 +255,10 @@ function PostThreadFollowBtnLoaded({
               setPendingEphemeralAccount(account)
               void (async () => {
                 const action = await getEphemeralFollowAction(account)
+                if (!action) {
+                  setPendingEphemeralAccount(null)
+                  return
+                }
                 setConfirmationAction(action)
                 promptControl.open()
               })()

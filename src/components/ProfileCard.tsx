@@ -514,7 +514,7 @@ export function FollowButtonInner({
     logContext,
     onFollow,
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )
@@ -662,6 +662,10 @@ export function FollowButtonInner({
               setPendingEphemeralAccount(account)
               void (async () => {
                 const action = await getEphemeralFollowAction(account)
+                if (!action) {
+                  setPendingEphemeralAccount(null)
+                  return
+                }
                 setConfirmationAction(action)
                 promptControl.open()
               })()

@@ -20,6 +20,7 @@ import {useAnalytics} from '#/analytics'
 import {ChooseAccountForm} from './ChooseAccountForm'
 import * as AuthLayout from './components/AuthLayout'
 import {AuthLayoutNavigationContext} from './components/AuthLayout/context'
+import {useEphemeralLogin} from './EphemeralLoginContext'
 
 enum Forms {
   Login,
@@ -49,8 +50,9 @@ export const Login = ({
   const [startTime] = useState(() => Date.now())
 
   const {accounts} = useSession()
+  const ephemeralLogin = useEphemeralLogin()
   const {requestedAccountSwitchTo} = useLoggedOutView()
-  const requestedAccount = accounts.find(
+  const requestedAccount = ephemeralLogin?.account ?? accounts.find(
     acc => acc.did === requestedAccountSwitchTo,
   )
 

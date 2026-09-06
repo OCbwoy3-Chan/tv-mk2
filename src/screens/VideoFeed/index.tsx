@@ -876,7 +876,7 @@ function Overlay({
     profile,
     logContext: 'ImmersiveVideo',
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
   const hasAlternateAccounts = useMemo(
     () => accounts.some(account => account.did !== currentAccount?.did),
     [accounts, currentAccount?.did],
@@ -1044,6 +1044,10 @@ function Overlay({
                             void (async () => {
                               const action =
                                 await getEphemeralFollowAction(account)
+                              if (!action) {
+                                setPendingEphemeralAccount(null)
+                                return
+                              }
                               setConfirmationAction(action)
                               promptControl.open()
                             })()

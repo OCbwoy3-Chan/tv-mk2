@@ -3,7 +3,9 @@
   "include": [
     "/__embed/profile/*",
     "/profile/*/theme/*",
-    "/theme-og/*"
+    "/theme-og/*",
+    "/oauth-client-metadata.json",
+    "/oauth-client-metadata-native.json"
   ],
   "exclude": []
 }

@@ -59,15 +59,11 @@ fs.writeFileSync(
 // Copy the static files that are not emitted by the web bundler.
 copyPath('bskyweb/static/iframe', 'web-build/iframe')
 copyPath('bskyweb/static/.well-known', 'web-build/.well-known')
-const oauthMetadataSource =
-  process.env.EXPO_PUBLIC_OAUTH_BASE_URL === 'https://canary.witchsky.app'
-    ? 'bskyweb/static/oauth-client-metadata-canary.json'
-    : 'bskyweb/static/oauth-client-metadata.json'
-copyPath(oauthMetadataSource, 'web-build/oauth-client-metadata.json')
-copyPath(
-  'bskyweb/static/oauth-client-metadata-native.json',
-  'web-build/oauth-client-metadata-native.json',
-)
+for (const directory of ['web-build', 'bskyweb/static']) {
+  require('./generate-oauth-metadata').generateOAuthMetadata(
+    path.join(projectRoot, directory),
+  )
+}
 copyPath('witchsky-static-about', 'web-build/about')
 copyPath('src/style.css', 'web-build/style.css')
 copyPath('src/style.css', 'web-build/static/style.css')

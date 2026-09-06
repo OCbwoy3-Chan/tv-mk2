@@ -5,10 +5,11 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {logger} from '#/logger'
-import {usePdsClient, useSessionApi} from '#/state/session'
+import {usePdsClient, useSession, useSessionApi} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {type DialogOuterProps} from '#/components/Dialog'
+import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
 import {Divider} from '#/components/Divider'
 import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfo} from '#/components/icons/CircleInfo'
 import {Loader} from '#/components/Loader'
@@ -21,9 +22,14 @@ export function DeactivateAccountDialog({
 }: {
   control: DialogOuterProps['control']
 }) {
+  const {currentAccount} = useSession()
   return (
     <Prompt.Outer control={control}>
-      <DeactivateAccountDialogInner control={control} />
+      {currentAccount?.isOauthSession ? (
+        <LegacyAuthRequiredDialogContent />
+      ) : (
+        <DeactivateAccountDialogInner control={control} />
+      )}
     </Prompt.Outer>
   )
 }

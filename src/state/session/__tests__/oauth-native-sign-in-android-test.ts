@@ -1,5 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 
+import {getOAuthScope} from '../oauth-scopes'
+
 const mockAuthorize = jest.fn<(...args: unknown[]) => Promise<URL>>()
 const mockCallback = jest.fn<(...args: unknown[]) => Promise<unknown>>()
 const mockOpenAuthSession = jest.fn<(...args: unknown[]) => Promise<unknown>>()
@@ -55,6 +57,7 @@ describe('Android native OAuth', () => {
     await expect(result).resolves.toBe(session)
     expect(mockAuthorize).toHaveBeenCalledWith('alice.test', {
       display: 'touch',
+      scope: getOAuthScope(),
       redirect_uri: 'app.witchsky:/auth/callback',
     })
     expect(mockCallback).toHaveBeenCalledWith(

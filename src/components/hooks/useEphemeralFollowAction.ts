@@ -9,6 +9,7 @@ import {type FollowActionType} from '#/components/dialogs/FollowConfirmationDial
 import * as Toast from '#/components/Toast'
 import {type Metrics} from '#/analytics/metrics'
 import type * as bsky from '#/types/bsky'
+import {useEphemeralAccountError} from './useEphemeralAccountError'
 import {useRunWithEphemeralAgent} from './useRunWithEphemeralAgent'
 
 export function useEphemeralFollowAction({
@@ -25,9 +26,10 @@ export function useEphemeralFollowAction({
 }) {
   const {t: l} = useLingui()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
+  const showEphemeralError = useEphemeralAccountError()
 
   return useCallback(
-    async (account: SessionAccount) => {
+    async function perform(account: SessionAccount) {
       try {
         const result = await runWithEphemeralAgent(account, async agent => {
           const res = await agent.getProfile({actor: profile.did})
@@ -63,25 +65,25 @@ export function useEphemeralFollowAction({
           targetDid: profile.did,
           accountDid: account.did,
         })
-        Toast.show(l`An issue occurred, please try again.`, {
-          type: 'error',
-        })
+        showEphemeralError(e, account, perform)
       }
     },
-    [l, onFollow, onUnfollow, profile, runWithEphemeralAgent],
+    [l, onFollow, onUnfollow, profile, runWithEphemeralAgent, showEphemeralError],
   )
 }
 
 export function useEphemeralFollowIntent({
   profile,
+  onAuthenticated,
 }: {
   profile: Shadow<bsky.profile.AnyProfileView>
+  onAuthenticated: (account: SessionAccount) => Promise<unknown>
 }) {
-  const {t: l} = useLingui()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
+  const showEphemeralError = useEphemeralAccountError()
 
   return useCallback(
-    async (account: SessionAccount): Promise<FollowActionType> => {
+    async (account: SessionAccount): Promise<FollowActionType | undefined> => {
       try {
         const isFollowing = await runWithEphemeralAgent(
           account,
@@ -98,12 +100,10 @@ export function useEphemeralFollowIntent({
           targetDid: profile.did,
           accountDid: account.did,
         })
-        Toast.show(l`An issue occurred, please try again.`, {
-          type: 'error',
-        })
-        return 'follow'
+        showEphemeralError(e, account, onAuthenticated)
+        return undefined
       }
     },
-    [l, profile, runWithEphemeralAgent],
+    [profile, onAuthenticated, runWithEphemeralAgent, showEphemeralError],
   )
 }

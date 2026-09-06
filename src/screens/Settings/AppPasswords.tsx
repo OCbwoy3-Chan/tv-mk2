@@ -1,4 +1,4 @@
-import {useCallback} from 'react'
+import {useCallback, useEffect} from 'react'
 import {View} from 'react-native'
 import Animated, {
   FadeIn,
@@ -17,12 +17,15 @@ import {
   useAppPasswordDeleteMutation,
   useAppPasswordsQuery,
 } from '#/state/queries/app-passwords'
+import {useSession} from '#/state/session'
 import {EmptyState} from '#/view/com/util/EmptyState'
 import {ErrorScreen} from '#/view/com/util/error/ErrorScreen'
 import {atoms as a, useTheme} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import * as Dialog from '#/components/Dialog'
 import {useDialogControl} from '#/components/Dialog'
+import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
 import {Growth_Stroke2_Corner0_Rounded as Growth} from '#/components/icons/Growth'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {Trash_Stroke2_Corner0_Rounded as TrashIcon} from '#/components/icons/Trash'
@@ -39,8 +42,14 @@ import * as SettingsList from './components/SettingsList'
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AppPasswords'>
 export function AppPasswordsScreen({}: Props) {
   const {_} = useLingui()
-  const {data: appPasswords, error} = useAppPasswordsQuery()
+  const {currentAccount} = useSession()
+  const isOauth = !!currentAccount?.isOauthSession
+  const legacyAuthControl = useDialogControl()
+  const {data: appPasswords, error} = useAppPasswordsQuery({enabled: !isOauth})
   const createAppPasswordControl = useDialogControl()
+  useEffect(() => {
+    if (!isOauth) legacyAuthControl.close()
+  }, [isOauth, legacyAuthControl])
 
   return (
     <Layout.Screen testID="AppPasswordsScreen">
@@ -54,7 +63,17 @@ export function AppPasswordsScreen({}: Props) {
         <Layout.Header.Slot />
       </Layout.Header.Outer>
       <Layout.Content>
-        {error ? (
+        {isOauth ? (
+          <Button
+            label={_(msg`Sign in to manage app passwords`)}
+            size="large"
+            color="primary"
+            onPress={() => legacyAuthControl.open()}>
+            <ButtonText>
+              <Trans>Sign in to manage app passwords</Trans>
+            </ButtonText>
+          </Button>
+        ) : error ? (
           <ErrorScreen
             title={_(msg`Oops!`)}
             message={_(msg`There was an issue fetching your app passwords`)}
@@ -124,6 +143,9 @@ export function AppPasswordsScreen({}: Props) {
         )}
       </Layout.Content>
 
+      <Dialog.Outer control={legacyAuthControl}>
+        <LegacyAuthRequiredDialogContent />
+      </Dialog.Outer>
       <AddAppPasswordDialog
         control={createAppPasswordControl}
         passwords={appPasswords?.map(p => p.name) || []}

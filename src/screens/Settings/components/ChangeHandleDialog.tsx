@@ -33,7 +33,7 @@ import {atoms as a, native, useBreakpoints, useTheme} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
+import {OAuthPermissionGate} from '#/components/dialogs/OAuthPermissionGate'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as TextField from '#/components/forms/TextField'
 import {
@@ -55,18 +55,11 @@ export function ChangeHandleDialog({
 }: {
   control: Dialog.DialogControlProps
 }) {
-  const {currentAccount} = useSession()
-  const isOauth = !!currentAccount?.isOauthSession
-
   return (
-    <Dialog.Outer
-      control={control}
-      nativeOptions={isOauth ? {preventExpansion: true} : {fullHeight: true}}>
-      {isOauth ? (
-        <LegacyAuthRequiredDialogContent />
-      ) : (
+    <Dialog.Outer control={control} nativeOptions={{fullHeight: true}}>
+      <OAuthPermissionGate permission="handle" standalone>
         <ChangeHandleDialogInner />
-      )}
+      </OAuthPermissionGate>
     </Dialog.Outer>
   )
 }

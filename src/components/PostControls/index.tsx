@@ -38,6 +38,7 @@ import {
 import * as userActionHistory from '#/state/userActionHistory'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {EphemeralAccountSwitcherFromScope} from '#/components/EphemeralAccountSwitcher'
+import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
 import {Reply as Bubble} from '#/components/icons/Reply'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
@@ -101,6 +102,7 @@ function PostControlsInner({
   const queryClient = useQueryClient()
   const getPost = useGetPost()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
+  const showEphemeralError = useEphemeralAccountError()
   const [queueLike, queueUnlike] = usePostLikeMutationQueue(
     post,
     viaRepost,
@@ -337,9 +339,7 @@ function PostControlsInner({
           : l`Liked as @${account.handle}`,
       )
     } catch (e) {
-      Toast.show(l`An issue occurred, please try again.`, {
-        type: 'error',
-      })
+      showEphemeralError(e, account, onSelectLikeAccount)
     }
   }
 
@@ -373,9 +373,7 @@ function PostControlsInner({
           : l`Reposted as @${account.handle}`,
       )
     } catch (e) {
-      Toast.show(l`An issue occurred, please try again.`, {
-        type: 'error',
-      })
+      showEphemeralError(e, account, onSelectRepostAccount)
     }
   }
 
@@ -408,9 +406,7 @@ function PostControlsInner({
           : l`Saved as @${account.handle}`,
       )
     } catch (e) {
-      Toast.show(l`An issue occurred, please try again.`, {
-        type: 'error',
-      })
+      showEphemeralError(e, account, onSelectBookmarkAccount)
     }
   }
 

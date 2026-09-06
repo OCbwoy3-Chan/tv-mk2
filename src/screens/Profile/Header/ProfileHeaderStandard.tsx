@@ -398,7 +398,7 @@ export function HeaderStandardButtons({
     onFollow,
     onUnfollow,
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )
@@ -615,6 +615,10 @@ export function HeaderStandardButtons({
                     setPendingEphemeralAccount(account)
                     void (async () => {
                       const action = await getEphemeralFollowAction(account)
+                      if (!action) {
+                        setPendingEphemeralAccount(null)
+                        return
+                      }
                       setConfirmationAction(action)
                       followPromptControl.open()
                     })()

@@ -11,6 +11,7 @@ import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
+import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
 import * as TextField from '#/components/forms/TextField'
 import {Lock_Stroke2_Corner0_Rounded as Lock} from '#/components/icons/Lock'
 import {Loader} from '#/components/Loader'
@@ -34,7 +35,7 @@ export function DisableEmail2FADialog({
   const {gtMobile} = useBreakpoints()
   const {currentAccount} = useSession()
   const pdsClient = usePdsClient()
-  const {refreshSession} = useSessionApi()
+  const {partialRefreshSession} = useSessionApi()
 
   const [stage, setStage] = useState<Stages>(Stages.Email)
   const [confirmationCode, setConfirmationCode] = useState<string>('')
@@ -63,7 +64,7 @@ export function DisableEmail2FADialog({
           token: confirmationCode.trim(),
           emailAuthFactor: false,
         })
-        await refreshSession()
+        await partialRefreshSession()
         Toast.show(_(msg({message: 'Email 2FA disabled', context: 'toast'})))
       }
       control.close()
@@ -83,6 +84,13 @@ export function DisableEmail2FADialog({
     setIsProcessing(false)
   }
 
+  if (currentAccount?.isOauthSession) {
+    return (
+      <Dialog.Outer control={control}>
+        <LegacyAuthRequiredDialogContent />
+      </Dialog.Outer>
+    )
+  }
   return (
     <Dialog.Outer control={control}>
       <Dialog.Handle />

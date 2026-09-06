@@ -6,7 +6,7 @@ import {com} from '#/lexicons'
 export function useManageEmail2FA() {
   const pdsClient = usePdsClient()
   const {currentAccount} = useSession()
-  const {refreshSession} = useSessionApi()
+  const {partialRefreshSession} = useSessionApi()
 
   return useMutation({
     mutationFn: async ({
@@ -24,7 +24,7 @@ export function useManageEmail2FA() {
         token,
       })
       // will update session state at root of app
-      await refreshSession()
+      await partialRefreshSession()
     },
   })
 }

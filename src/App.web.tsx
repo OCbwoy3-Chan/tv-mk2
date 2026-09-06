@@ -38,7 +38,8 @@ import {
   useSession,
   useSessionApi,
 } from '#/state/session'
-import {getWebOAuthClient} from '#/state/session/oauth-web-client'
+import {completeWebOAuth} from '#/state/session/oauth-appview-switch'
+import {isOAuthPopupComplete} from '#/state/session/oauth-config'
 import {
   consumeOAuthReturnUrl,
   saveOAuthCallbackError,
@@ -63,6 +64,7 @@ import {ThemeProvider as Alf} from '#/alf'
 import {useColorModeTheme} from '#/alf/util/useColorModeTheme'
 import {Provider as ContextMenuProvider} from '#/components/ContextMenu'
 import {EphemeralAccountSwitcherRootScope} from '#/components/EphemeralAccountSwitcher'
+import {EphemeralLoginHost} from '#/components/EphemeralLoginHost'
 import {useLandingEntry} from '#/components/hooks/useLandingEntry'
 import {Provider as IntentDialogProvider} from '#/components/intents/IntentDialogs'
 import {Provider as LightboxStateProvider} from '#/components/Lightbox/state'
@@ -132,32 +134,27 @@ function InnerApp() {
 
   // init
   useEffect(() => {
-    // Safety valve: if onLaunch hangs (e.g. stale IndexedDB blocking an
-    // upgrade, or a never-settling promise), the app will still load after
-    // this timeout fires.
-    
-
     async function onLaunch(account?: SessionAccount) {
       try {
         // Check for OAuth callback params first (loopback redirects to /)
         if (hasOAuthCallbackParams()) {
           try {
-            const client = getWebOAuthClient()
-            const result = await client.init()
-            if (result?.session) {
+            const completed = await completeWebOAuth(async session => {
               await login(
                 {
                   service: '',
                   identifier: '',
                   password: '',
-                  oauthSession: result.session,
+                  oauthSession: session,
                 },
                 'LoginForm',
               )
-
+            })
+            if (completed) {
+              setShowLoggedOut(false)
               const returnUrl = consumeOAuthReturnUrl()
               if (returnUrl) {
-                window.location.replace(returnUrl)
+                window.history.replaceState(null, '', returnUrl)
                 return
               }
 
@@ -166,6 +163,7 @@ function InnerApp() {
               return
             }
           } catch (e) {
+            if (isOAuthPopupComplete(e)) return
             const error =
               e instanceof Error ? cleanError(e.message) : cleanError(String(e))
             logger.error('OAuth callback failed', {
@@ -175,7 +173,7 @@ function InnerApp() {
             const returnUrl = consumeOAuthReturnUrl()
             if (account && canAttemptSessionResume(account)) {
               try {
-                await resumeSession(account, true)
+                await resumeSession(account)
                 setShowLoggedOut(false)
                 if (returnUrl) {
                   window.history.replaceState(null, '', returnUrl)
@@ -217,8 +215,10 @@ function InnerApp() {
         }
       } catch (e) {
         logger.warn('session: resumeSession failed', {message: e})
+      } finally {
+        // OAuth success and cancellation recovery both return early.
+        setIsReady(true)
       }
-      setIsReady(true)
     }
     const account = readLastActiveAccount()
     void onLaunch(account)
@@ -271,6 +271,7 @@ function InnerApp() {
                                                                   <TranslateOnDeviceProvider>
                                                                     <HotkeysProvider>
                                                                       <EphemeralAccountSwitcherRootScope>
+                                                                        <EphemeralLoginHost />
                                                                         <Shell />
                                                                       </EphemeralAccountSwitcherRootScope>
                                                                       <ToastOutlet />

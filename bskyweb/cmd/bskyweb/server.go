@@ -569,52 +569,71 @@ func (srv *Server) webGeneric(c echo.Context, o renderOptions) error {
 	return c.Render(http.StatusOK, "base.html", data)
 }
 
-// handler for endpoint that have no specific server-side handling
+// OAuth metadata uses the same generated defaults as the app clients.
 func (srv *Server) OAuthClientMetadata(c echo.Context) error {
-	scheme := "https"
-	if c.Request().TLS == nil && strings.HasPrefix(c.Request().Host, "localhost") {
-		scheme = "http"
-	}
-	baseURL := fmt.Sprintf("%s://%s", scheme, c.Request().Host)
-
-	metadata := map[string]interface{}{
-		"client_id":                  baseURL + "/oauth-client-metadata.json",
-		"client_name":                "Witchsky",
-		"client_uri":                 baseURL,
-		"redirect_uris":              []string{baseURL + "/auth/web/callback"},
-		"scope":                      "atproto transition:generic transition:email transition:chat.bsky",
-		"token_endpoint_auth_method": "none",
-		"response_types":             []string{"code"},
-		"grant_types":                []string{"authorization_code", "refresh_token"},
-		"application_type":           "web",
-		"dpop_bound_access_tokens":   true,
-	}
-
-	return c.JSON(http.StatusOK, metadata)
+	return srv.oauthClientMetadata(c, false)
 }
 
 func (srv *Server) OAuthClientMetadataNative(c echo.Context) error {
+	return srv.oauthClientMetadata(c, true)
+}
+
+func (srv *Server) oauthClientMetadata(c echo.Context, native bool) error {
+	filename := "oauth-client-metadata.json"
+	if native {
+		filename = "oauth-client-metadata-native.json"
+	}
+	data, err := bskyweb.StaticFS.ReadFile("static/" + filename)
+	if err != nil {
+		return err
+	}
+	var metadata map[string]interface{}
+	if err := json.Unmarshal(data, &metadata); err != nil {
+		return err
+	}
 	scheme := "https"
 	if c.Request().TLS == nil && strings.HasPrefix(c.Request().Host, "localhost") {
 		scheme = "http"
 	}
 	baseURL := fmt.Sprintf("%s://%s", scheme, c.Request().Host)
-
-	metadata := map[string]interface{}{
-		"client_id":                  baseURL + "/oauth-client-metadata-native.json",
-		"client_name":                "Witchsky",
-		"client_uri":                 baseURL,
-		"redirect_uris":              []string{"app.witchsky:/auth/callback"},
-		"scope":                      "atproto transition:generic transition:email transition:chat.bsky",
-		"token_endpoint_auth_method": "none",
-		"response_types":             []string{"code"},
-		"grant_types":                []string{"authorization_code", "refresh_token"},
-		"application_type":           "native",
-		"dpop_bound_access_tokens":   true,
+	query := url.Values{}
+	scope := metadata["scope"].(string)
+	for _, entry := range []struct{ param, fallback string }{
+		{"appview", "did:web:api.bsky.app#bsky_appview"},
+		{"chat", "did:web:api.bsky.chat#bsky_chat"},
+	} {
+		audience := c.QueryParam(entry.param)
+		if audience == "" || audience == entry.fallback {
+			continue
+		}
+		if !oauthAudiencePattern.MatchString(audience) {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid OAuth service audience")
+		}
+		query.Set(entry.param, audience)
+		scope = strings.ReplaceAll(scope, url.QueryEscape(entry.fallback), url.QueryEscape(audience))
+		if entry.param == "appview" {
+			// PDS-hosted preferences retain the default Bluesky audience.
+			for _, method := range []string{"app.bsky.actor.getPreferences", "app.bsky.actor.putPreferences"} {
+				scope += " rpc:" + method + "?aud=" + url.QueryEscape(entry.fallback)
+			}
+		}
 	}
-
+	clientID := baseURL + "/" + filename
+	if len(query) > 0 {
+		clientID += "?" + query.Encode()
+	}
+	metadata["client_id"] = clientID
+	metadata["client_uri"] = baseURL
+	metadata["scope"] = scope
+	if !native {
+		metadata["redirect_uris"] = []string{baseURL + "/auth/web/callback"}
+	}
+	c.Response().Header().Set("Cache-Control", "public, max-age=300")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	return c.JSON(http.StatusOK, metadata)
 }
+
+var oauthAudiencePattern = regexp.MustCompile(`^did:(plc:[a-z2-7]{24}|web:[A-Za-z0-9._:%-]+)#[A-Za-z0-9._-]+$`)
 
 func (srv *Server) WebGeneric(c echo.Context) error {
 	return srv.webGeneric(c, renderOptions{})

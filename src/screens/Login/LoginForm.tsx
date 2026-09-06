@@ -38,6 +38,7 @@ import {AppServerButton} from './components/AppServerDialog'
 import {ConfirmHostingProviderDialog} from './components/ConfirmHostingProviderDialog'
 import {HandleAutocompleteInput} from './components/HandleAutocompleteInput'
 import {HostingProviderDialog} from './components/HostingProviderDialog'
+import {useEphemeralLogin} from './EphemeralLoginContext'
 import {FormContainer} from './FormContainer'
 
 type ServiceDescription = com.atproto.server.describeServer.$OutputBody
@@ -187,7 +188,9 @@ function OAuthLoginFields({
   onPressBack: () => void
 }) {
   const {t: l} = useLingui()
-  const {login} = useSessionApi()
+  const {login: normalLogin} = useSessionApi()
+  const ephemeralLogin = useEphemeralLogin()
+  const login = ephemeralLogin?.submit ?? normalLogin
   const requestNotificationsPermission = useRequestNotificationsPermission()
   const {setShowLoggedOut, clearRequestedAccount} = useLoggedOutViewControls()
   const setHasCheckedForStarterPack = useSetHasCheckedForStarterPack()
@@ -211,6 +214,10 @@ function OAuthLoginFields({
     oauthAbortRef.current = abortController
 
     try {
+      if (ephemeralLogin) {
+        await ephemeralLogin.authorize(identifier)
+        return
+      }
       const session = await signInNative(identifier, {
         signal: abortController.signal,
       })
@@ -223,6 +230,7 @@ function OAuthLoginFields({
         },
         'LoginForm',
       )
+      if (ephemeralLogin) return
       onAttemptSuccess()
       setShowLoggedOut(false)
       clearRequestedAccount()
@@ -300,7 +308,7 @@ function OAuthLoginFields({
           </ButtonText>
         </Button>
       </View>
-      <AppServerButton />
+      {!ephemeralLogin && <AppServerButton />}
     </>
   )
 }
@@ -353,7 +361,9 @@ function LegacyLoginFields({
   const [hasPassword, setHasPassword] = useState(false)
   const [revealPassword, setRevealPassword] = useState(false)
   const {t: l} = useLingui()
-  const {login} = useSessionApi()
+  const {login: normalLogin} = useSessionApi()
+  const ephemeralLogin = useEphemeralLogin()
+  const login = ephemeralLogin?.submit ?? normalLogin
   const {accounts} = useSession()
   const requestNotificationsPermission = useRequestNotificationsPermission()
   const {setShowLoggedOut, clearRequestedAccount} = useLoggedOutViewControls()
@@ -388,6 +398,7 @@ function LegacyLoginFields({
         },
         'LoginForm',
       )
+      if (ephemeralLogin) return
       onAttemptSuccess()
       setShowLoggedOut(false)
       clearRequestedAccount()
@@ -743,7 +754,7 @@ function LegacyLoginFields({
             </Button>
 
             <View style={[a.flex_shrink, a.justify_center]}>
-              <AppServerButton inline />
+              {!ephemeralLogin && <AppServerButton inline />}
             </View>
 
             <View style={[a.flex_shrink, a.justify_center, a.ml_auto]}>
@@ -809,7 +820,7 @@ function LegacyLoginFields({
 
       {!gtMobile && (
         <>
-          <AppServerButton />
+          {!ephemeralLogin && <AppServerButton />}
           <HostingProviderIndicator
             state={hostingProvider.state}
             onPress={() => serverInputControl.open()}

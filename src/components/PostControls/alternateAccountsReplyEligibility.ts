@@ -3,6 +3,7 @@ import {type QueryClient} from '@tanstack/react-query'
 import {STALE} from '#/state/queries'
 import {createQueryKey} from '#/state/queries/util'
 import {type SessionAccount} from '#/state/session'
+import {isEphemeralAuthError} from '#/state/session/ephemeral-auth'
 import {type SessionApiContext} from '#/state/session/types'
 import {canAttemptSessionResume} from '#/state/session/util'
 import {type app} from '#/lexicons'
@@ -36,6 +37,7 @@ export async function fetchReplyableSwitcherAccounts({
 
       for (const account of alternateAccounts) {
         if (!canAttemptSessionResume(account)) {
+          results.add(account.did)
           continue
         }
 
@@ -46,8 +48,9 @@ export async function fetchReplyableSwitcherAccounts({
           if (!target?.viewer?.replyDisabled) {
             results.add(account.did)
           }
-        } catch {
-          // Skip accounts we can't verify.
+        } catch (error) {
+          // Keep expired accounts selectable so the composer can offer login.
+          if (isEphemeralAuthError(error)) results.add(account.did)
         }
       }
 

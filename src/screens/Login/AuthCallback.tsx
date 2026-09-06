@@ -6,7 +6,8 @@ import {replaceWebLocation} from '#/lib/routes/web'
 import {cleanError} from '#/lib/strings/errors'
 import {logger} from '#/logger'
 import {useSessionApi} from '#/state/session'
-import {getWebOAuthClient} from '#/state/session/oauth-web-client'
+import {completeWebOAuth} from '#/state/session/oauth-appview-switch'
+import {isOAuthPopupComplete} from '#/state/session/oauth-config'
 import {
   consumeOAuthReturnUrl,
   saveOAuthCallbackError,
@@ -25,19 +26,18 @@ export function AuthCallback() {
   useEffect(() => {
     void (async () => {
       try {
-        const client = getWebOAuthClient()
-        const result = await client.init()
-        if (result?.session) {
+        await completeWebOAuth(async session => {
           await login(
             {
               service: '',
               identifier: '',
               password: '',
-              oauthSession: result.session,
+              oauthSession: session,
             },
             'LoginForm',
           )
-        }
+          setShowLoggedOut(false)
+        })
 
         const returnUrl = consumeOAuthReturnUrl()
         if (returnUrl) {
@@ -47,6 +47,7 @@ export function AuthCallback() {
 
         navigation.replace('Home')
       } catch (e: unknown) {
+        if (isOAuthPopupComplete(e)) return
         const error =
           e instanceof Error ? cleanError(e.message) : cleanError(String(e))
         logger.error('OAuth callback failed', {
@@ -61,7 +62,7 @@ export function AuthCallback() {
             await resumeSession(lastAccount, true)
             setShowLoggedOut(false)
             if (returnUrl) {
-              window.history.replaceState(null, '', returnUrl)
+              replaceWebLocation(returnUrl)
             } else {
               navigation.replace('Home')
             }
@@ -81,7 +82,7 @@ export function AuthCallback() {
           requestedAccount: lastAccount?.did ?? 'none',
         })
         if (returnUrl) {
-          window.history.replaceState(null, '', returnUrl)
+          replaceWebLocation(returnUrl)
         } else {
           navigation.replace('Home')
         }

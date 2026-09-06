@@ -74,6 +74,8 @@ export type SessionApiContext = {
    * this when an action is performed as an alternate account, including OAuth
    * accounts that do not have persisted JWTs.
    */
+  /** Refresh only this saved account; never switch accounts or navigate. */
+  reauthenticateAccount: (account: SessionAccount) => Promise<SessionAccount>
   createEphemeralAgent: (
     account: SessionAccount,
   ) => Promise<import('@atproto/api').AtpAgent>

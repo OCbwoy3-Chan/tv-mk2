@@ -21,7 +21,11 @@ import {Text} from '#/components/Typography'
  * auth. Submits credentials in-place and replaces the current session on
  * success so the parent dialog can continue.
  */
-export function LegacyAuthRequiredDialogContent() {
+export function LegacyAuthRequiredDialogContent({
+  inline = false,
+}: {
+  inline?: boolean
+}) {
   const t = useTheme()
   const {t: l} = useLingui()
   const {currentAccount} = useSession()
@@ -95,104 +99,109 @@ export function LegacyAuthRequiredDialogContent() {
     }
   }
 
+  const content = (
+    <>
+      <View style={[a.gap_md]}>
+        <Text
+          style={[
+            a.text_xl,
+            a.font_semi_bold,
+            a.leading_snug,
+            {paddingRight: 32},
+          ]}>
+          <Trans>Password sign-in required</Trans>
+        </Text>
+        <Text style={[a.text_md, a.leading_snug, t.atoms.text_contrast_medium]}>
+          <Trans>
+            You're signed in with OAuth. Enter your password to continue with
+            this action.
+          </Trans>
+        </Text>
+
+        {error ? <Admonition type="error">{error}</Admonition> : null}
+
+        <View>
+          <TextField.LabelText>
+            <Trans>Password</Trans>
+          </TextField.LabelText>
+          <TextField.Root isInvalid={!!error && !needs2fa}>
+            <TextField.Icon icon={LockIcon} />
+            <Dialog.Input
+              testID="legacyAuthPasswordInput"
+              label={l`Password`}
+              placeholder={null}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="current-password"
+              returnKeyType={needs2fa ? 'next' : 'done'}
+              secureTextEntry
+              editable={!isProcessing}
+              onChangeText={value => {
+                passwordRef.current = value
+                if (error) setError('')
+              }}
+              onSubmitEditing={() => {
+                if (!needs2fa) {
+                  void onSubmit()
+                }
+              }}
+            />
+          </TextField.Root>
+        </View>
+
+        {needs2fa ? (
+          <View>
+            <TextField.LabelText>
+              <Trans>2FA confirmation code</Trans>
+            </TextField.LabelText>
+            <TextField.Root>
+              <TextField.Icon icon={TicketIcon} />
+              <Dialog.Input
+                testID="legacyAuth2faInput"
+                label={l`2FA confirmation code`}
+                placeholder={null}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="one-time-code"
+                returnKeyType="done"
+                editable={!isProcessing}
+                value={authFactorToken}
+                onChangeText={value => {
+                  setAuthFactorToken(value)
+                  if (error) setError('')
+                }}
+                onSubmitEditing={() => {
+                  void onSubmit()
+                }}
+              />
+            </TextField.Root>
+          </View>
+        ) : null}
+
+        <Button
+          testID="legacyAuthSubmitButton"
+          label={l`Sign in with password`}
+          size="large"
+          color="primary"
+          disabled={isProcessing}
+          onPress={() => void onSubmit()}>
+          {isProcessing && <ButtonIcon icon={Loader} />}
+          <ButtonText>
+            <Trans>Sign in with password</Trans>
+          </ButtonText>
+        </Button>
+      </View>
+      <Dialog.Close />
+    </>
+  )
+  if (inline) return content
   return (
     <>
       <Dialog.Handle />
       <Dialog.ScrollableInner
         label={l`Password sign-in required`}
         style={web({maxWidth: 400})}>
-        <View style={[a.gap_md]}>
-          <Text
-            style={[
-              a.text_xl,
-              a.font_semi_bold,
-              a.leading_snug,
-              {paddingRight: 32},
-            ]}>
-            <Trans>Password sign-in required</Trans>
-          </Text>
-          <Text
-            style={[a.text_md, a.leading_snug, t.atoms.text_contrast_medium]}>
-            <Trans>
-              You're signed in with OAuth. Enter your password to continue with
-              this action.
-            </Trans>
-          </Text>
-
-          {error ? <Admonition type="error">{error}</Admonition> : null}
-
-          <View>
-            <TextField.LabelText>
-              <Trans>Password</Trans>
-            </TextField.LabelText>
-            <TextField.Root isInvalid={!!error && !needs2fa}>
-              <TextField.Icon icon={LockIcon} />
-              <Dialog.Input
-                testID="legacyAuthPasswordInput"
-                label={l`Password`}
-                placeholder={null}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="current-password"
-                returnKeyType={needs2fa ? 'next' : 'done'}
-                secureTextEntry
-                editable={!isProcessing}
-                onChangeText={value => {
-                  passwordRef.current = value
-                  if (error) setError('')
-                }}
-                onSubmitEditing={() => {
-                  if (!needs2fa) {
-                    void onSubmit()
-                  }
-                }}
-              />
-            </TextField.Root>
-          </View>
-
-          {needs2fa ? (
-            <View>
-              <TextField.LabelText>
-                <Trans>2FA confirmation code</Trans>
-              </TextField.LabelText>
-              <TextField.Root>
-                <TextField.Icon icon={TicketIcon} />
-                <Dialog.Input
-                  testID="legacyAuth2faInput"
-                  label={l`2FA confirmation code`}
-                  placeholder={null}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  autoComplete="one-time-code"
-                  returnKeyType="done"
-                  editable={!isProcessing}
-                  value={authFactorToken}
-                  onChangeText={value => {
-                    setAuthFactorToken(value)
-                    if (error) setError('')
-                  }}
-                  onSubmitEditing={() => {
-                    void onSubmit()
-                  }}
-                />
-              </TextField.Root>
-            </View>
-          ) : null}
-
-          <Button
-            testID="legacyAuthSubmitButton"
-            label={l`Sign in with password`}
-            size="large"
-            color="primary"
-            disabled={isProcessing}
-            onPress={() => void onSubmit()}>
-            {isProcessing && <ButtonIcon icon={Loader} />}
-            <ButtonText>
-              <Trans>Sign in with password</Trans>
-            </ButtonText>
-          </Button>
-        </View>
-        <Dialog.Close />
+        {content}
       </Dialog.ScrollableInner>
     </>
   )

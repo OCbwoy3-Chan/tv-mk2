@@ -1,0 +1,28 @@
+{
+  "lexicon": 1,
+  "id": "app.witchsky.theme.authFull",
+  "defs": {
+    "main": {
+      "type": "permission-set",
+      "title": "Witchsky themes",
+      "detail": "Use and manage interface themes",
+      "permissions": [
+        {
+          "type": "permission",
+          "resource": "repo",
+          "collection": [
+            "app.witchsky.theme.colors",
+            "app.witchsky.theme.collection",
+            "app.witchsky.theme.collectionitem",
+            "app.witchsky.theme.saved"
+          ],
+          "action": [
+            "create",
+            "update",
+            "delete"
+          ]
+        }
+      ]
+    }
+  }
+}

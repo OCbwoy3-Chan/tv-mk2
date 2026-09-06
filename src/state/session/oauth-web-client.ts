@@ -1,78 +1,37 @@
 import {BrowserOAuthClient} from '@atproto/oauth-client-browser'
 
 import {createIdentityResolver} from './identity-resolver'
+import {createOAuthMetadata} from './oauth-config'
+import {getOAuthAudiences} from './oauth-scopes'
 
-const OAUTH_BASE_URL: string =
-  process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://witchsky.app'
+const clients = new Map<string, BrowserOAuthClient>()
 
-const OAUTH_CLIENT_NAME: string =
-  process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'Witchsky'
-
-const OAUTH_SCOPE = [
-  'atproto',
-  'transition:generic',
-  'transition:email',
-  'transition:chat.bsky',
-].join(' ')
-
-function isLoopback() {
-  if (typeof window === 'undefined') return false
-  const host = window.location.hostname
-  return (
-    host === 'localhost' ||
-    host === '127.0.0.1' ||
-    host === '[::1]' ||
-    host === '::1'
-  )
-}
-
-const BSKY_OAUTH_CLIENT = createWebOAuthClient()
-
-function createWebOAuthClient() {
-  if (isLoopback()) {
-    // Loopback client: encode scope and redirect_uri in the client_id URL.
-    // The authorization server uses hardcoded metadata for http://localhost
-    // client_ids. Without explicit scope, only "atproto" is granted, which
-    // lacks the transition scopes this client needs for appview and chat APIs.
+export function getWebOAuthClient(
+  audiences: {appview: string; chat: string} = getOAuthAudiences(),
+) {
+  const metadata = createOAuthMetadata({
+    baseUrl: process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://witchsky.app',
+    clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'Witchsky',
+    ...audiences,
+  })
+  if (
+    typeof window !== 'undefined' &&
+    ['localhost', '127.0.0.1', '[::1]', '::1'].includes(
+      window.location.hostname,
+    )
+  ) {
     const port = window.location.port ? `:${window.location.port}` : ''
-    const redirectUri = `http://127.0.0.1${port}/`
-    const clientId =
-      `http://localhost` +
-      `?redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&scope=${encodeURIComponent(OAUTH_SCOPE)}`
-
-    return new BrowserOAuthClient({
-      clientMetadata: {
-        client_id: clientId,
-        redirect_uris: [redirectUri],
-        scope: OAUTH_SCOPE,
-        token_endpoint_auth_method: 'none',
-        response_types: ['code'],
-        grant_types: ['authorization_code', 'refresh_token'],
-        application_type: 'web',
-        dpop_bound_access_tokens: true,
-      },
+    const redirectUri = `http://127.0.0.1${port}/auth/web/callback`
+    metadata.client_id = `http://localhost?${new URLSearchParams({redirect_uri: redirectUri, scope: metadata.scope})}`
+    metadata.redirect_uris = [redirectUri]
+  }
+  let client = clients.get(metadata.client_id)
+  if (!client) {
+    client = new BrowserOAuthClient({
+      clientMetadata: metadata,
       identityResolver: createIdentityResolver(),
     })
+    clients.set(metadata.client_id, client)
   }
-
-  return new BrowserOAuthClient({
-    clientMetadata: {
-      client_id: `${OAUTH_BASE_URL}/oauth-client-metadata.json`,
-      client_name: OAUTH_CLIENT_NAME,
-      client_uri: OAUTH_BASE_URL,
-      redirect_uris: [`${OAUTH_BASE_URL}/auth/web/callback`],
-      scope: OAUTH_SCOPE,
-      token_endpoint_auth_method: 'none',
-      response_types: ['code'],
-      grant_types: ['authorization_code', 'refresh_token'],
-      application_type: 'web',
-      dpop_bound_access_tokens: true,
-    },
-    identityResolver: createIdentityResolver(),
-  })
-}
-
-export function getWebOAuthClient() {
-  return BSKY_OAUTH_CLIENT
+  return client
 }

@@ -1,8 +1,14 @@
-import {useCallback} from 'react'
+import {useCallback, useSyncExternalStore} from 'react'
 import {isDid} from '@atproto/api'
+import {type Service} from '@atproto/lex'
 
-import {PUBLIC_APPVIEW_DID, PUBLIC_BSKY_SERVICE} from '#/lib/constants'
-import {device, useStorage} from '#/storage'
+import {
+  APPVIEW_DID_PROXY,
+  BLUESKY_PROXY_HEADER,
+  PUBLIC_APPVIEW_DID,
+  PUBLIC_BSKY_SERVICE,
+} from '#/lib/constants'
+import {device} from '#/storage'
 
 export type AppViewPresetId = 'bluesky' | 'blacksky' | 'custom'
 
@@ -46,22 +52,31 @@ export const APPVIEW_PRESETS: Record<
   },
 }
 
-export function useCustomAppViewDid() {
-  const [customAppViewDid = undefined, setCustomAppViewDid] = useStorage(
-    device,
-    ['customAppViewDid'],
+function useAppViewStorage(key: 'customAppViewDid' | 'customAppViewUrl') {
+  const subscribe = useCallback(
+    (notify: () => void) => {
+      const listener = device.addOnValueChangedListener([key], notify)
+      return () => listener.remove()
+    },
+    [key],
   )
+  const read = useCallback(() => device.get([key]), [key])
+  const value = useSyncExternalStore(subscribe, read, read)
+  const set = useCallback(
+    (next: string | undefined) => {
+      device.set([key], next)
+    },
+    [key],
+  )
+  return [value, set] as const
+}
 
-  return [customAppViewDid, setCustomAppViewDid] as const
+export function useCustomAppViewDid() {
+  return useAppViewStorage('customAppViewDid')
 }
 
 export function useCustomAppViewUrl() {
-  const [customAppViewUrl = undefined, setCustomAppViewUrl] = useStorage(
-    device,
-    ['customAppViewUrl'],
-  )
-
-  return [customAppViewUrl, setCustomAppViewUrl] as const
+  return useAppViewStorage('customAppViewUrl')
 }
 
 export function useSetCustomAppViewDid() {
@@ -99,6 +114,13 @@ export function readCustomAppViewDidUri() {
   }
 
   return `${maybeDid}#bsky_appview`
+}
+
+/** The same selected audience must be used for OAuth grants and API routing. */
+export function readAppViewProxy(): Service {
+  return (readCustomAppViewDidUri() ||
+    BLUESKY_PROXY_HEADER.get() ||
+    APPVIEW_DID_PROXY) as Service
 }
 
 /**

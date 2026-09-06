@@ -22,6 +22,7 @@ import {com} from '#/lexicons'
 import {emitSessionDropped} from '../events'
 import {getPublicAppviewClient} from './clients'
 import {createSessionBundleAndCreateAccount} from './create-account'
+import {openEphemeralLogin} from './ephemeral-login'
 import {pickExpiryRescueCandidate} from './expiry-rescue'
 import {type Action, getInitialState, reducer, type State} from './reducer'
 import {
@@ -54,6 +55,7 @@ import {type AtpAgent} from '@atproto/api'
 
 import {clearPersistedQueryStorage} from '#/lib/persisted-query-storage'
 import {
+  type SessionAccount,
   type SessionApiContext,
   type SessionStateContext,
 } from '#/state/session/types'
@@ -68,7 +70,7 @@ import {
   createAgentAndResume,
   createPublicAgent,
 } from './agent'
-import {oauthResumeSession} from './oauth-agent'
+import {oauthAgentAndSessionToSessionAccountOrThrow, OauthBskyAppAgent, oauthResumeSession} from './oauth-agent'
 
 const StateContext = createContext<SessionStateContext>({
   accounts: [],
@@ -93,6 +95,7 @@ const ApiContext = createContext<SessionApiContext>({
   reorderAccounts: () => {},
   partialRefreshSession: async () => {},
   refreshSession: () => Promise.resolve(undefined),
+  reauthenticateAccount: () => Promise.reject(new Error('No session provider')),
   createEphemeralAgent: () => {
     throw new Error('Not implemented')
   },
@@ -427,6 +430,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
         method: 'resumeSession',
         account: redactAccount(storedAccount),
       })
+      if (IS_WEB && isSwitchingAccounts && storedAccount.isOauthSession) {
+        const {ensureAppViewAccess} = await import('./oauth-appview-switch')
+        if (!(await ensureAppViewAccess(storedAccount.did))) return
+      }
       const signal = cancelPendingTask()
       const {bundle, account} = storedAccount.isOauthSession
         ? await createOAuthSessionBundleAndResume(storedAccount)
@@ -480,10 +487,14 @@ export function Provider({children}: PropsWithChildren<{}>) {
      */
     const bundle = store.getState().currentBundleState
       .bundle as unknown as ActiveSessionBundle
-    const signal = cancelPendingTask()
     /* getSession targets the PDS; only the persisted account fields are patched. */
     const data = await bundle.pdsClient.call(com.atproto.server.getSession, {})
-    if (signal.aborted) return
+    // A background email check must not cancel an in-flight login or server switch.
+    if (
+      (store.getState().currentBundleState.bundle as unknown) !==
+      (bundle as unknown)
+    )
+      return
     store.dispatch({
       type: 'partial-refresh-session',
       /*
@@ -497,7 +508,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
         emailAuthFactor: data.emailAuthFactor,
       },
     })
-  }, [store, cancelPendingTask])
+  }, [store])
 
   /**
    * Rotate the session's tokens and hand back the resulting account snapshot.
@@ -553,10 +564,46 @@ export function Provider({children}: PropsWithChildren<{}>) {
     return sessionDataToSessionAccount(after, after.service)
   }, [store])
 
+  const reauthenticateAccount = useCallback<
+    SessionApiContext['reauthenticateAccount']
+  >(account => {
+    return openEphemeralLogin(account, async (props, signal) => {
+      let refreshed: SessionAccount
+      if (props.oauthSession) {
+        refreshed = await oauthAgentAndSessionToSessionAccountOrThrow(
+          new OauthBskyAppAgent(props.oauthSession),
+          props.oauthSession,
+        )
+      } else {
+        const result = await createSessionBundleAndLogin(props, () => {})
+        refreshed = result.account
+        disposeBundle(result.bundle)
+      }
+      if (signal.aborted) throw new Error('Authentication cancelled')
+      if (refreshed.did !== account.did) {
+        throw new Error('Please sign in to the same account to continue')
+      }
+      if (!store.getState().accounts.some(saved => saved.did === account.did)) {
+        throw new Error('This account was removed while signing in')
+      }
+      const updated = {
+        ...refreshed,
+        isOauthSession: !!props.oauthSession,
+        accessJwt: props.oauthSession ? undefined : refreshed.accessJwt,
+        refreshJwt: props.oauthSession ? undefined : refreshed.refreshJwt,
+      }
+      store.dispatch({type: 'updated-stored-account', account: updated})
+      return updated
+    })
+  }, [store])
+
   const createEphemeralAgent = useCallback<
     SessionApiContext['createEphemeralAgent']
   >(
     async storedAccount => {
+      storedAccount =
+        store.getState().accounts.find(a => a.did === storedAccount.did) ??
+        storedAccount
       if (storedAccount.isOauthSession) {
         try {
           const {agent} = await oauthResumeSession(storedAccount, false)
@@ -632,9 +679,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
        * Cancel pending work when another tab logs out the account this tab
        * considers current. Do not cancel unrelated work between logged-out tabs.
        */
-      const syncedDid = syncedAccount?.refreshJwt
-        ? syncedAccount.did
-        : undefined
+      const syncedDid =
+        syncedAccount?.refreshJwt || syncedAccount?.isOauthSession
+          ? syncedAccount.did
+          : undefined
       if (
         syncedDid === undefined &&
         state.currentBundleState.did !== undefined
@@ -728,6 +776,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       partialRefreshSession,
       refreshSession,
       createEphemeralAgent,
+      reauthenticateAccount,
     }),
     [
       createAccount,
@@ -740,6 +789,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       partialRefreshSession,
       refreshSession,
       createEphemeralAgent,
+      reauthenticateAccount,
     ],
   )
 

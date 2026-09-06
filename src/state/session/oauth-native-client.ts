@@ -1,35 +1,26 @@
 import {ExpoOAuthClient} from '@atproto/oauth-client-expo'
 
 import {createIdentityResolver} from './identity-resolver'
+import {createOAuthMetadata} from './oauth-config'
+import {getOAuthAudiences} from './oauth-scopes'
 
-const OAUTH_BASE_URL: string =
-  process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://witchsky.app'
-
-const OAUTH_CLIENT_NAME: string =
-  process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'Witchsky'
-
-const OAUTH_SCOPE =
-  'atproto transition:generic transition:email transition:chat.bsky'
-
-// Reverse-domain of witchsky.app → app.witchsky
-export const NATIVE_REDIRECT_URI = 'app.witchsky:/auth/callback'
-
-const BSKY_OAUTH_CLIENT = new ExpoOAuthClient({
-  identityResolver: createIdentityResolver(),
-  clientMetadata: {
-    client_id: `${OAUTH_BASE_URL}/oauth-client-metadata-native.json`,
-    client_name: OAUTH_CLIENT_NAME,
-    client_uri: OAUTH_BASE_URL,
-    redirect_uris: [NATIVE_REDIRECT_URI],
-    scope: OAUTH_SCOPE,
-    token_endpoint_auth_method: 'none',
-    response_types: ['code'],
-    grant_types: ['authorization_code', 'refresh_token'],
-    application_type: 'native',
-    dpop_bound_access_tokens: true,
-  },
-})
+export {NATIVE_REDIRECT_URI} from './oauth-config'
+const clients = new Map<string, ExpoOAuthClient>()
 
 export function getNativeOAuthClient() {
-  return BSKY_OAUTH_CLIENT
+  const metadata = createOAuthMetadata({
+    baseUrl: process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://witchsky.app',
+    clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'Witchsky',
+    native: true,
+    ...getOAuthAudiences(),
+  })
+  let client = clients.get(metadata.client_id)
+  if (!client) {
+    client = new ExpoOAuthClient({
+      clientMetadata: metadata,
+      identityResolver: createIdentityResolver(),
+    })
+    clients.set(metadata.client_id, client)
+  }
+  return client
 }

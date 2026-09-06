@@ -3,6 +3,7 @@ import {openAuthSessionAsync} from 'expo-web-browser'
 import {type OAuthSession} from '@atproto/oauth-client-expo'
 
 import {getNativeOAuthClient, NATIVE_REDIRECT_URI} from './oauth-native-client'
+import {getOAuthScope} from './oauth-scopes'
 
 // Android may deliver one or two slashes after the custom URI scheme.
 const OAUTH_CALLBACK_RE = /^app\.witchsky:\/\/?auth\/callback\b/
@@ -19,13 +20,17 @@ const OAUTH_CALLBACK_RE = /^app\.witchsky:\/\/?auth\/callback\b/
  */
 export async function signInNative(
   identifier: string,
-  {signal}: {signal?: AbortSignal} = {},
+  {
+    signal,
+    scope = getOAuthScope(),
+  }: {signal?: AbortSignal; scope?: string} = {},
 ): Promise<OAuthSession> {
   const client = getNativeOAuthClient()
   let authorizationUrl: URL
   try {
     authorizationUrl = await client.authorize(identifier, {
       display: 'touch',
+      scope,
       redirect_uri: NATIVE_REDIRECT_URI,
     })
   } catch (error) {

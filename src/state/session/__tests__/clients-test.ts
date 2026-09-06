@@ -2,6 +2,7 @@ jest.unmock('multiformats/cid')
 import {AtpAgent} from '@atproto/api'
 import {Client} from '@atproto/lex'
 import {PasswordSession} from '@atproto/lex-password-session'
+import {getPreferences, setAdultContentEnabled} from '@bsky/sdk'
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 
 jest.mock('#/state/events', () => ({
@@ -16,7 +17,9 @@ jest.mock('jwt-decode', () => ({
 }))
 
 import {BLUESKY_PROXY_HEADER, CHAT_PROXY_SERVICE} from '#/lib/constants'
+import {createServiceClient} from '#/lib/lexClient'
 import {app, chat, com} from '#/lexicons'
+import {device} from '#/storage'
 import {configureGlobalAppLabelers} from '../additional-moderation-authorities'
 import {
   buildAppviewClient,
@@ -26,6 +29,7 @@ import {
   NotAuthenticatedError,
   routeSessionToPds,
 } from '../clients'
+import {getOAuthScope} from '../oauth-scopes'
 import {sessionAccountToSessionData} from '../session-data'
 import {
   asFetch,
@@ -436,4 +440,80 @@ it('posts through a selected legacy account without its appview proxy', async ()
   expect(urlsOf(fetchMock)).toContain(
     `${PDS_HOST}/xrpc/com.atproto.repo.applyWrites`,
   )
+})
+
+it.each(['did:web:api.blacksky.community', 'did:web:api.eurosky.network'])(
+  'keeps %s reads on the selected AppView and SDK preferences on the PDS',
+  async did => {
+    const previous = device.get(['customAppViewDid'])
+    try {
+      device.set(['customAppViewDid'], did)
+      const audience = `${did}#bsky_appview`
+      const fetchMock = makeMockFetch({
+        'app.bsky.actor.getProfile': () => json(PROFILE_BODY),
+        'app.bsky.actor.getPreferences': () => json({preferences: []}),
+        'app.bsky.actor.putPreferences': () => json({}),
+        'app.bsky.notification.listNotifications': () =>
+          json({notifications: []}),
+      })
+      const client = buildAppviewClient(makeSession(fetchMock))
+      await client.call(app.bsky.actor.getProfile, {actor: HANDLE})
+      const pdsClient = buildPdsClient(makeSession(fetchMock))
+      await pdsClient.call(getPreferences)
+      await pdsClient.call(setAdultContentEnabled, true)
+      await client.call(app.bsky.notification.listNotifications, {})
+      for (const nsid of [
+        'app.bsky.actor.getProfile',
+        'app.bsky.notification.listNotifications',
+      ]) {
+        expect(headersFor(fetchMock, nsid).get('atproto-proxy')).toBe(audience)
+      }
+      expect(getOAuthScope()).toContain(
+        `include:app.bsky.authFullApp?aud=${encodeURIComponent(audience)}`,
+      )
+      for (const nsid of [
+        'app.bsky.actor.getPreferences',
+        'app.bsky.actor.putPreferences',
+      ]) {
+        expect(headersFor(fetchMock, nsid).has('atproto-proxy')).toBe(false)
+        expect(getOAuthScope()).toContain(
+          `rpc:${nsid}?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview`,
+        )
+      }
+    } finally {
+      device.set(['customAppViewDid'], previous)
+    }
+  },
+)
+
+it('sends password reset requests directly to the account service without OAuth credentials', async () => {
+  const fetchMock = makeMockFetch({
+    'com.atproto.server.requestPasswordReset': () => json({}),
+    'com.atproto.server.resetPassword': () => json({}),
+  })
+  const spy = jest
+    .spyOn(globalThis, 'fetch')
+    .mockImplementation(asFetch(fetchMock))
+  try {
+    const client = createServiceClient(SERVICE)
+    await client.call(com.atproto.server.requestPasswordReset, {
+      email: 'alice@example.com',
+    })
+    await client.call(com.atproto.server.resetPassword, {
+      token: 'ABCDE-FGHIJ',
+      password: 'test-new-password',
+    })
+    for (const nsid of [
+      'com.atproto.server.requestPasswordReset',
+      'com.atproto.server.resetPassword',
+    ]) {
+      expect(urlsOf(fetchMock)).toContain(`${SERVICE}/xrpc/${nsid}`)
+      const headers = headersFor(fetchMock, nsid)
+      expect(headers.has('authorization')).toBe(false)
+      expect(headers.has('dpop')).toBe(false)
+      expect(headers.has('atproto-proxy')).toBe(false)
+    }
+  } finally {
+    spy.mockRestore()
+  }
 })

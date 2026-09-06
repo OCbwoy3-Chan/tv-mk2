@@ -9,6 +9,10 @@ import {type SessionAccount} from '../types'
  * account factories. These mocks cut the tree back to the session lifecycle
  * itself, mirroring provider-clients-test.tsx.
  */
+let mockSessionUpdate: (session: {
+  accounts: SessionAccount[]
+  currentAccount: {did: string}
+}) => void
 jest.mock('#/state/persisted', () => {
   const {
     defaults,
@@ -18,7 +22,10 @@ jest.mock('#/state/persisted', () => {
     get: (key: keyof typeof defaults) => defaults[key],
     write: () => Promise.resolve(),
     readLatest: (key: keyof typeof defaults) => defaults[key],
-    onUpdate: () => () => {},
+    onUpdate: (key: string, callback: typeof mockSessionUpdate) => {
+      if (key === 'session') mockSessionUpdate = callback
+      return () => {}
+    },
   }
 })
 jest.mock('#/state/util', () => ({useCloseAllActiveElements: () => () => {}}))
@@ -67,7 +74,16 @@ jest.mock('../agent', () => ({
   createAgentAndResume: () => new Promise(() => {}),
   createPublicAgent: () => ({}),
 }))
+const mockReauthenticate = jest.fn<(...args: unknown[]) => Promise<unknown>>()
+jest.mock('../ephemeral-login', () => ({
+  readEphemeralLogin: () => undefined,
+  openEphemeralLogin: async (account: SessionAccount, authenticate: (input: unknown, signal: AbortSignal) => Promise<unknown>) =>
+    authenticate(await mockReauthenticate(account.did), new AbortController().signal),
+}))
 jest.mock('../oauth-agent', () => ({
+  OauthBskyAppAgent: class {},
+  oauthAgentAndSessionToSessionAccountOrThrow: (_agent: unknown, session: {did: string}) =>
+    Promise.resolve({did: session.did, handle: 'alternate.test', service: 'https://pds.test', isOauthSession: true}),
   oauthResumeSession: () => new Promise(() => {}),
 }))
 jest.mock('../create-account', () => ({
@@ -112,14 +128,18 @@ function makeBundle(
 type Harness = {
   api: SessionApiContext
   currentAccount: () => SessionAccount | undefined
+  accounts: () => SessionAccount[]
 }
 
 function renderProvider(): Harness {
   let api!: SessionApiContext
   let currentAccount: SessionAccount | undefined
+  let accounts: SessionAccount[] = []
   function Probe() {
     api = useSessionApi()
-    currentAccount = useSession().currentAccount
+    const state = useSession()
+    currentAccount = state.currentAccount
+    accounts = state.accounts
     return null
   }
   render(
@@ -127,7 +147,7 @@ function renderProvider(): Harness {
       <Probe />
     </Provider>,
   )
-  return {api, currentAccount: () => currentAccount}
+  return {api, currentAccount: () => currentAccount, accounts: () => accounts}
 }
 
 /** Render the provider and log `account` in through the stubbed login factory. */
@@ -212,4 +232,98 @@ describe('refreshSession', () => {
       }),
     ).rejects.toThrow('Failed to refresh session')
   })
+})
+
+it('does not cancel reauthentication when email state refreshes on window focus', async () => {
+  const fetchMock = makeMockFetch()
+  const harness = await renderLoggedIn(makeAccount(), fetchMock)
+  const replacement = makeAccount({handle: 'updated.example.com'})
+  const replacementBundle = makeBundle(replacement, fetchMock)
+  let finishLogin!: (value: unknown) => void
+  mockLogin.mockReturnValueOnce(
+    new Promise(resolve => {
+      finishLogin = resolve
+    }),
+  )
+  await act(async () => {
+    const login = harness.api.login({} as never, 'Settings')
+    await harness.api.partialRefreshSession()
+    finishLogin({bundle: replacementBundle, account: replacement})
+    await login
+  })
+  expect(harness.currentAccount()?.handle).toBe('updated.example.com')
+})
+
+it('does not cancel login when another tab broadcasts an OAuth account', async () => {
+  const fetchMock = makeMockFetch()
+  const account = makeAccount()
+  const harness = await renderLoggedIn(account, fetchMock)
+  const replacement = makeAccount({handle: 'blacksky.example.com'})
+  let finishLogin!: (value: unknown) => void
+  mockLogin.mockReturnValueOnce(
+    new Promise(resolve => {
+      finishLogin = resolve
+    }),
+  )
+  await act(async () => {
+    const login = harness.api.login({} as never, 'Settings')
+    mockSessionUpdate({
+      accounts: [
+        {
+          ...account,
+          isOauthSession: true,
+          refreshJwt: undefined,
+          accessJwt: undefined,
+        },
+      ],
+      currentAccount: {did: account.did},
+    })
+    finishLogin({
+      bundle: makeBundle(replacement, fetchMock),
+      account: replacement,
+    })
+    await login
+  })
+  expect(harness.currentAccount()?.handle).toBe('blacksky.example.com')
+})
+
+it('refreshes an alternate account without replacing the active session', async () => {
+  const active = makeAccount()
+  const alternate: SessionAccount = {...makeAccount(), did: 'did:plc:alternate', handle: 'alternate.test'}
+  const harness = await renderLoggedIn(active, makeMockFetch())
+  act(() => {
+    mockSessionUpdate({accounts: [active, alternate], currentAccount: {did: active.did}})
+  })
+  const before = harness.currentAccount()
+  mockReauthenticate.mockResolvedValueOnce({oauthSession: {did: alternate.did}})
+  await act(async () => {
+    await harness.api.reauthenticateAccount(alternate)
+  })
+  expect(harness.currentAccount()).toEqual(before)
+  expect(harness.accounts().find(a => a.did === alternate.did)?.isOauthSession).toBe(true)
+  expect(mockReauthenticate).toHaveBeenLastCalledWith(alternate.did)
+})
+
+it('keeps the active account when alternate login is cancelled or mismatched', async () => {
+  const active = makeAccount()
+  const harness = await renderLoggedIn(active, makeMockFetch())
+  const alternate: SessionAccount = {...active, did: 'did:plc:alternate'}
+  mockReauthenticate.mockRejectedValueOnce(new Error('OAUTH_CANCELLED'))
+  await expect(harness.api.reauthenticateAccount(alternate)).rejects.toThrow('OAUTH_CANCELLED')
+  mockReauthenticate.mockResolvedValueOnce({oauthSession: {did: active.did}})
+  await expect(harness.api.reauthenticateAccount(alternate)).rejects.toThrow('same account')
+  expect(harness.currentAccount()?.did).toBe(active.did)
+})
+
+it('accepts legacy login for an alternate account without switching', async () => {
+  const active = makeAccount()
+  const alternate: SessionAccount = {...active, did: 'did:plc:alternate'}
+  const harness = await renderLoggedIn(active, makeMockFetch())
+  act(() => mockSessionUpdate({accounts: [active, alternate], currentAccount: {did: active.did}}))
+  const bundle = makeBundle(alternate, makeMockFetch())
+  mockLogin.mockResolvedValueOnce({account: alternate, bundle})
+  mockReauthenticate.mockResolvedValueOnce({service: alternate.service, identifier: alternate.handle, password: 'test'})
+  await act(async () => {await harness.api.reauthenticateAccount(alternate)})
+  expect(harness.currentAccount()?.did).toBe(active.did)
+  expect(harness.accounts().find(a => a.did === alternate.did)?.isOauthSession).toBe(false)
 })

@@ -73,7 +73,12 @@ export function AccountSettingsScreen({}: Props) {
             {currentAccount && (
               <>
                 <SettingsList.BadgeText style={[a.flex_1]}>
-                  {currentAccount.email || <Trans>(no email)</Trans>}
+                  {currentAccount.email ||
+                    (currentAccount.isOauthSession ? (
+                      <Trans>Permission required</Trans>
+                    ) : (
+                      <Trans>(no email)</Trans>
+                    ))}
                 </SettingsList.BadgeText>
                 {currentAccount.emailConfirmed && (
                   <ShieldIcon fill={t.palette.primary_500} size="md" />
@@ -81,7 +86,7 @@ export function AccountSettingsScreen({}: Props) {
               </>
             )}
           </SettingsList.Item>
-          {currentAccount && !currentAccount.emailConfirmed && (
+          {currentAccount?.email && !currentAccount.emailConfirmed && (
             <SettingsList.PressableItem
               label={l`Verify your email`}
               onPress={() =>

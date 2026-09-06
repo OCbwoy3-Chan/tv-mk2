@@ -10,6 +10,7 @@ import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {type DialogControlProps} from '#/components/Dialog'
 import {useConfirmEmail} from '#/components/dialogs/EmailDialog/data/useConfirmEmail'
+import {OAuthPermissionGate} from '#/components/dialogs/OAuthPermissionGate'
 import {Divider} from '#/components/Divider'
 import {ArrowRotateCounterClockwise_Stroke2_Corner0_Rounded as Resend} from '#/components/icons/ArrowRotate'
 import {useIntentDialogs} from '#/components/intents/IntentDialogs'
@@ -24,7 +25,9 @@ export function VerifyEmailIntentDialog() {
   return (
     <Dialog.Outer control={control}>
       <Dialog.Handle />
-      <Inner control={control} />
+      <OAuthPermissionGate permission="email" standalone>
+        <Inner control={control} />
+      </OAuthPermissionGate>
     </Dialog.Outer>
   )
 }

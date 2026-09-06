@@ -121,9 +121,9 @@ import {
   buildChatClient,
   buildPdsClient,
 } from '#/state/session/clients'
+import {isEphemeralAuthError} from '#/state/session/ephemeral-auth'
 import {useComposerControls} from '#/state/shell/composer'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
-import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
 import {DraftsButton} from '#/view/com/composer/drafts/DraftsButton'
@@ -153,6 +153,7 @@ import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as EmojiPicker from '#/components/EmojiPicker'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
+import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
 import {
   ArrowBottom_Stroke2_Corner0_Rounded as ArrowDownIcon,
   ArrowTop_Stroke2_Corner0_Rounded as ArrowUpIcon,
@@ -323,7 +324,7 @@ export const ComposePost = ({
     setActiveAccountDid(initialActiveAccountDid ?? currentDid)
   }, [initialActiveAccountDid, currentDid])
   const {closeComposer} = useComposerControls()
-  const {requestSwitchToAccount} = useLoggedOutViewControls()
+  const showEphemeralError = useEphemeralAccountError()
   const {t: l, i18n} = useLingui()
   const requireAltTextEnabled = useRequireAltTextEnabled()
 
@@ -530,6 +531,10 @@ export const ComposePost = ({
           telemetry,
         )
       } catch (error) {
+        const account = accounts.find(a => a.did === activeAccountDid)
+        if (account && account.did !== currentDid && isEphemeralAuthError(error)) {
+          showEphemeralError(error, account, () => processSelectedAccountVideo(asset, dispatchVideo, signal, telemetry))
+        }
         dispatchVideo({
           type: 'to_error',
           error: error instanceof Error ? error.message : String(error),
@@ -544,7 +549,7 @@ export const ComposePost = ({
           (ephemeral.dispose as () => void)()
       }
     },
-    [accounts, activeAccountDid, currentDid, pdsClient, sessionApi, i18n],
+    [accounts, activeAccountDid, currentDid, pdsClient, sessionApi, i18n, showEphemeralError],
   )
 
   const selectVideo = useCallback(
@@ -1252,13 +1257,7 @@ export const ComposePost = ({
               },
             )
             setIsPublishing(false)
-            requestSwitchToAccount({requestedAccount: activeAccount.did})
-            Toast.show(
-              l`Please sign in as @${activeAccount.handle} to post as them`,
-              {
-                type: 'warning',
-              },
-            )
+            showEphemeralError(e, activeAccount, () => onPressPublish())
             return
           }
         }
@@ -1380,6 +1379,10 @@ export const ComposePost = ({
         })
       }
     } catch (e) {
+      const account = accounts.find(a => a.did === activeAccountDid)
+      if (account && account.did !== currentAccount?.did && isEphemeralAuthError(e)) {
+        showEphemeralError(e, account, () => onPressPublish())
+      }
       logger.error(e instanceof Error ? e : String(e), {
         message: `Composer: create post failed`,
         hasImages: filteredThread.posts.some(
@@ -1551,7 +1554,7 @@ export const ComposePost = ({
     activeAccountDid,
     currentAccount?.did,
     sessionApi,
-    requestSwitchToAccount,
+    showEphemeralError,
   ])
 
   const handleConfirmSkipEmpty = () => {

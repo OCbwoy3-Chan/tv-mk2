@@ -34,6 +34,7 @@ import {
 import {type ThreadPostItem} from '#/screens/PostThread/reader'
 import {atoms as a, useTheme} from '#/alf'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
+import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
 import {useRunWithEphemeralAgent} from '#/components/hooks/useRunWithEphemeralAgent'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {fetchReplyableSwitcherAccounts} from '#/components/PostControls/alternateAccountsReplyEligibility'
@@ -135,6 +136,7 @@ function ReaderSeamInner({
   const {createEphemeralAgent} = useSessionApi()
   const queryClient = useQueryClient()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
+  const showEphemeralError = useEphemeralAccountError()
   const [hovered, setHovered] = useState(false)
   const lineVisible = hovered || expanded
   const requireAuth = useRequireAuth()
@@ -276,8 +278,8 @@ function ReaderSeamInner({
           ? l`Removed like as @${account.handle}`
           : l`Liked as @${account.handle}`,
       )
-    } catch {
-      Toast.show(l`An issue occurred, please try again.`, {type: 'error'})
+    } catch (e) {
+      showEphemeralError(e, account, onSelectLikeAccount)
     }
   }
 
@@ -302,8 +304,8 @@ function ReaderSeamInner({
           ? l`Removed repost as @${account.handle}`
           : l`Reposted as @${account.handle}`,
       )
-    } catch {
-      Toast.show(l`An issue occurred, please try again.`, {type: 'error'})
+    } catch (e) {
+      showEphemeralError(e, account, onSelectRepostAccount)
     }
   }
 
