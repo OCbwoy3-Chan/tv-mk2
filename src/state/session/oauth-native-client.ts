@@ -7,12 +7,14 @@ import {getOAuthAudiences} from './oauth-scopes'
 export {NATIVE_REDIRECT_URI} from './oauth-config'
 const clients = new Map<string, ExpoOAuthClient>()
 
-export function getNativeOAuthClient() {
+export function getNativeOAuthClient(
+  audiences: {appview: string; chat: string} = getOAuthAudiences(),
+) {
   const metadata = createOAuthMetadata({
     baseUrl: process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://witchsky.app',
     clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'Witchsky',
     native: true,
-    ...getOAuthAudiences(),
+    ...audiences,
   })
   let client = clients.get(metadata.client_id)
   if (!client) {

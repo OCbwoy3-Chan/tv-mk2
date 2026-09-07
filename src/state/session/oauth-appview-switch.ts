@@ -89,14 +89,13 @@ export async function completeWebOAuth(
   }
 }
 
-/** Authorize a saved account before replacing the currently usable session. */
+/** Check a saved grant without navigating; the caller can offer login in place. */
 export async function ensureAppViewAccess(account: string) {
-  const session = await restoreOAuthSession(account)
-  const {scope} = await session.getTokenInfo(false)
-  if (hasOAuthAppViewScope(scope, getOAuthAudiences().appview)) return true
-  await startAppViewSwitch(account, {
-    did: device.get(['customAppViewDid']),
-    url: device.get(['customAppViewUrl']),
-  })
-  return false
+  try {
+    const session = await restoreOAuthSession(account)
+    const {scope} = await session.getTokenInfo(false)
+    return hasOAuthAppViewScope(scope, getOAuthAudiences().appview)
+  } catch {
+    return false
+  }
 }

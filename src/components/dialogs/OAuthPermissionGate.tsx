@@ -10,16 +10,13 @@ import {
   type OAuthPermission,
   OPTIONAL_OAUTH_SCOPES,
 } from '#/state/session/oauth-config'
-import {signInNative} from '#/state/session/oauth-native-sign-in'
 import {getOAuthScope} from '#/state/session/oauth-scopes'
-import {getWebOAuthClient} from '#/state/session/oauth-web-client'
 import {atoms as a, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
-import {IS_WEB} from '#/env'
 
 /** Render inside an opened action dialog, never in a background query. */
 export function OAuthPermissionGate({
@@ -33,7 +30,7 @@ export function OAuthPermissionGate({
   standalone?: boolean
 }) {
   const {currentAccount} = useSession()
-  const {login} = useSessionApi()
+  const {reauthenticateAccount, resumeSession} = useSessionApi()
   const {t: l} = useLingui()
   const [grant, setGrant] = useState<{did: string; scope: string}>()
   const [error, setError] = useState('')
@@ -69,7 +66,7 @@ export function OAuthPermissionGate({
   }
 
   const authorize = async () => {
-    if (!did || pending) return
+    if (!currentAccount || !did || pending) return
     setPending(true)
     setError('')
     try {
@@ -82,19 +79,17 @@ export function OAuthPermissionGate({
           (granted !== undefined && hasOAuthPermission(granted, key)),
       )
       const scope = getOAuthScope(permissions)
-      const session = IS_WEB
-        ? await getWebOAuthClient().signIn(did, {scope, display: 'popup'})
-        : await signInNative(did, {scope})
-      if (session.did !== did)
-        throw new Error(l`Please authorize the same account to continue.`)
+      const account = await reauthenticateAccount(currentAccount, {scope})
+      if (!account.isOauthSession) {
+        await resumeSession(account)
+        return
+      }
+      const session = await restoreOAuthSession(account.did)
       const info = await session.getTokenInfo(false)
       if (!hasOAuthPermission(info.scope, permission)) {
         throw new Error(l`The requested permission was not granted.`)
       }
-      await login(
-        {service: '', identifier: '', password: '', oauthSession: session},
-        'Settings',
-      )
+      await resumeSession(account)
       setGrant({did, scope: info.scope})
     } catch (err) {
       setError(cleanError(err))

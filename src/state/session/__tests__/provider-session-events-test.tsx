@@ -549,7 +549,7 @@ describe('cross-tab sync', () => {
     expect(currentAccount()?.refreshJwt).toBe('refresh-jwt-2')
   })
 
-  it('declines to activate a rebuild once the store has moved past the bundle it was built for', async () => {
+  it('uses the latest bundle for consecutive broadcasts before React commits', async () => {
     const account = makeAccount()
     const bundle = makeBundle(account)
     await renderLoggedIn(account, bundle)
@@ -566,8 +566,7 @@ describe('cross-tab sync', () => {
     /*
      * Two broadcasts land back to back inside one act(), so React does not
      * commit (and the effect does not re-subscribe) between them: the second
-     * runs the listener registered while the ORIGINAL bundle was current, even
-     * though the store has since advanced to the generation-2 rebuild.
+     * must read the generation-2 bundle from the store, not a stale render.
      */
     const listener = mockPersistedListeners[mockPersistedListeners.length - 1]
     act(() => {
@@ -577,9 +576,9 @@ describe('cross-tab sync', () => {
 
     expect(mockRebuilds.length).toBe(2)
     expect(mockRebuilds[0].shouldActivate).toBe(true)
-    /* the stale closure's bundle is no longer current, so the swap is refused */
+    /* Both updates are applied against the bundle current at receipt. */
     expect(mockRebuilds[1].account.refreshJwt).toBe('refresh-jwt-3')
-    expect(mockRebuilds[1].shouldActivate).toBe(false)
+    expect(mockRebuilds[1].shouldActivate).toBe(true)
   })
 
   it('cancels pending work when another tab logs the account out', async () => {

@@ -1,10 +1,15 @@
-import {type SessionAccount, type SessionApiContext} from './types'
+import {
+  type ReauthenticationOptions,
+  type SessionAccount,
+  type SessionApiContext,
+} from './types'
 
 export type LoginInput = Parameters<SessionApiContext['login']>[0]
 export type EphemeralLoginRequest = {
   account: SessionAccount
   submit: (input: LoginInput) => Promise<void>
   cancel: () => void
+  options?: ReauthenticationOptions
 }
 let current: EphemeralLoginRequest | undefined
 const listeners = new Set<() => void>()
@@ -23,6 +28,7 @@ export function openEphemeralLogin(
     input: LoginInput,
     signal: AbortSignal,
   ) => Promise<SessionAccount>,
+  options?: ReauthenticationOptions,
 ): Promise<SessionAccount> {
   current?.cancel()
   return new Promise((resolve, reject) => {
@@ -37,6 +43,7 @@ export function openEphemeralLogin(
     }
     current = {
       account,
+      options,
       async submit(input) {
         if (settled) throw new Error('Authentication cancelled')
         const result = await authenticate(input, controller.signal)

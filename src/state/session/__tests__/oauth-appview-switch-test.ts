@@ -116,7 +116,7 @@ it('rolls back routing if session construction fails', async () => {
   )
 })
 
-it('reauthorizes a saved account before allowing an incompatible switch', async () => {
+it('reports a missing grant without starting OAuth or changing routing', async () => {
   jest.mocked(restoreOAuthSession).mockResolvedValue({
     getTokenInfo: () =>
       Promise.resolve({
@@ -125,7 +125,7 @@ it('reauthorizes a saved account before allowing an incompatible switch', async 
   } as never)
   signIn.mockResolvedValue(undefined)
   expect(await ensureAppViewAccess('did:plc:account')).toBe(false)
-  expect(signIn).toHaveBeenCalled()
+  expect(signIn).not.toHaveBeenCalled()
   expect(device.set).not.toHaveBeenCalled()
 })
 

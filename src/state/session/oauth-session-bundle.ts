@@ -10,9 +10,9 @@ function buildOAuthBundle(
   oauthAgent: OAuthSessionBundle['oauthAgent'],
   account: SessionAccount,
 ): OAuthSessionBundle {
-  // The compatibility agent is appview-proxied. Build the three modern
-  // clients over an unproxied clone so each client owns its own routing.
-  const authAgent = oauthAgent.cloneWithoutProxy()
+  // Use the raw session so the compatibility agent cannot append its own
+  // proxy and moderation headers to those already produced by the client.
+  const authAgent = oauthAgent.sessionManager
   return {
     session: null,
     oauthAgent,

@@ -59,7 +59,7 @@ export function AuthCallback() {
 
         if (lastAccount && canAttemptSessionResume(lastAccount)) {
           try {
-            await resumeSession(lastAccount, true)
+            await resumeSession(lastAccount)
             setShowLoggedOut(false)
             if (returnUrl) {
               replaceWebLocation(returnUrl)

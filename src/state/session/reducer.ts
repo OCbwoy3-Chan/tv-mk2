@@ -166,7 +166,7 @@ let reducer = (state: State, action: Action): State => {
       return {
         ...state,
         currentBundleState: {
-          did: state.currentBundleState.did,
+          did: newAccount.did,
           bundle: newBundle,
         },
         accounts: state.accounts.map(a =>

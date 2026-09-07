@@ -5,23 +5,17 @@ import {fireEvent, render, screen, waitFor} from '@testing-library/react-native'
 
 const mockLogin = jest.fn()
 const mockRestore = jest.fn()
-const mockSignIn = jest.fn()
+const mockReauthenticate = jest.fn()
 const did = 'did:plc:alice'
 
 jest.mock('#/state/session', () => ({
   useSession: () => ({
     currentAccount: {did: 'did:plc:alice', isOauthSession: true},
   }),
-  useSessionApi: () => ({login: mockLogin}),
+  useSessionApi: () => ({resumeSession: mockLogin, reauthenticateAccount: mockReauthenticate}),
 }))
 jest.mock('../oauth-client-adapter', () => ({
   restoreOAuthSession: (...args: unknown[]) => mockRestore(...args),
-}))
-jest.mock('../oauth-native-sign-in', () => ({
-  signInNative: (...args: unknown[]) => mockSignIn(...args),
-}))
-jest.mock('../oauth-web-client', () => ({
-  getWebOAuthClient: () => ({signIn: mockSignIn}),
 }))
 jest.mock('../oauth-scopes', () => ({
   getOAuthScope: (permissions: string[]) =>
@@ -81,64 +75,44 @@ beforeEach(() => {
   mockLogin.mockResolvedValue(undefined)
 })
 
-it('waits for an explicit action and retains previously granted optional access', async () => {
-  mockSignIn.mockResolvedValue({
-    did,
-    getTokenInfo: () =>
-      Promise.resolve({
-        scope: 'atproto identity:handle account:email?action=manage',
-      }),
-  })
+it('opens the login chooser and retains optional access without starting OAuth', async () => {
+  let finishLogin!: (account: unknown) => void
+  mockReauthenticate.mockReturnValue(new Promise(resolve => { finishLogin = resolve }))
   showGate()
-  await screen.findByText('Continue to authorization')
-  expect(mockSignIn).not.toHaveBeenCalled()
+  fireEvent.press(await screen.findByText('Continue to authorization'))
+  expect(mockReauthenticate).toHaveBeenCalledWith(
+    {did, isOauthSession: true}, {scope: 'atproto handle email'},
+  )
+  expect(mockLogin).not.toHaveBeenCalled()
   expect(screen.queryByText('handle editor')).toBeNull()
-  fireEvent.press(screen.getByText('Continue to authorization'))
+  mockRestore.mockResolvedValue({
+    getTokenInfo: () => Promise.resolve({scope: 'atproto identity:handle'}),
+  })
+  finishLogin({did, isOauthSession: true})
   await screen.findByText('handle editor')
-  expect(mockSignIn).toHaveBeenCalledWith(did, {scope: 'atproto handle email'})
   expect(mockLogin).toHaveBeenCalledTimes(1)
 })
 
 it.each(['cancelled', 'missing permission', 'wrong account'])(
   'keeps the action blocked after %s',
   async reason => {
-    if (reason === 'cancelled')
-      mockSignIn.mockRejectedValue(new Error('cancelled'))
-    else
-      mockSignIn.mockResolvedValue({
-        did: reason === 'wrong account' ? 'did:plc:bob' : did,
-        getTokenInfo: () =>
-          Promise.resolve({
-            scope:
-              reason === 'missing permission'
-                ? 'atproto'
-                : 'atproto identity:handle',
-          }),
-      })
+    if (reason === 'missing permission')
+      mockReauthenticate.mockResolvedValue({did, isOauthSession: true})
+    else mockReauthenticate.mockRejectedValue(new Error(reason))
     showGate()
     fireEvent.press(await screen.findByText('Continue to authorization'))
-    await waitFor(() => expect(mockSignIn).toHaveBeenCalledTimes(1))
-    await waitFor(() =>
-      expect(screen.getByText('Continue to authorization')).toBeTruthy(),
-    )
+    await waitFor(() => expect(mockReauthenticate).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(screen.getByText('Continue to authorization')).toBeTruthy())
     expect(mockLogin).not.toHaveBeenCalled()
     expect(screen.queryByText('handle editor')).toBeNull()
   },
 )
 
-it('uses a popup on web so the action dialog survives authorization', async () => {
-  mockIsWeb = true
-  mockSignIn.mockResolvedValue({
-    did,
-    getTokenInfo: () => Promise.resolve({scope: 'atproto identity:handle'}),
-  })
+it('accepts a legacy session chosen from the login form', async () => {
+  mockReauthenticate.mockResolvedValue({did, isOauthSession: false})
   showGate()
   fireEvent.press(await screen.findByText('Continue to authorization'))
-  await screen.findByText('handle editor')
-  expect(mockSignIn).toHaveBeenCalledWith(did, {
-    scope: 'atproto handle email',
-    display: 'popup',
-  })
+  await waitFor(() => expect(mockLogin).toHaveBeenCalledWith({did, isOauthSession: false}))
 })
 
 it('gives standalone permission prompts a proper dialog surface', async () => {

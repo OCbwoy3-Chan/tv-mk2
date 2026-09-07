@@ -1,5 +1,5 @@
 import {useSyncExternalStore} from 'react'
-import {Modal, View} from 'react-native'
+import {View} from 'react-native'
 
 import {
   readEphemeralLogin,
@@ -11,6 +11,7 @@ import {getWebOAuthClient} from '#/state/session/oauth-web-client'
 import {Login} from '#/screens/Login'
 import {EphemeralLoginContext} from '#/screens/Login/EphemeralLoginContext'
 import {IS_WEB} from '#/env'
+import {EphemeralLoginContainer} from './EphemeralLoginContainer'
 
 export function EphemeralLoginHost() {
   const request = useSyncExternalStore(
@@ -20,17 +21,18 @@ export function EphemeralLoginHost() {
   )
   if (!request) return null
   return (
-    <Modal visible onRequestClose={request.cancel} presentationStyle="pageSheet">
+    <EphemeralLoginContainer onClose={request.cancel}>
       <EphemeralLoginContext.Provider
         value={{
           ...request,
           authorize: async identifier => {
+            const scope = request.options?.scope ?? getOAuthScope()
             const session = IS_WEB
               ? await getWebOAuthClient().signIn(identifier, {
-                  scope: getOAuthScope(),
+                  scope,
                   display: 'popup',
                 })
-              : await signInNative(identifier)
+              : await signInNative(identifier, {scope})
             await request.submit({
               service: '',
               identifier: '',
@@ -46,6 +48,6 @@ export function EphemeralLoginHost() {
           />
         </View>
       </EphemeralLoginContext.Provider>
-    </Modal>
+    </EphemeralLoginContainer>
   )
 }

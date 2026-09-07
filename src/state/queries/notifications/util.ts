@@ -12,6 +12,7 @@ import {labelIsHideableOffense} from '#/lib/moderation'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {precacheProfile} from '../profile'
+import {fetchNotificationPosts} from './fetch-posts'
 import {
   type FeedNotification,
   type FeedPage,
@@ -222,9 +223,7 @@ async function fetchSubjects(
   const postUriChunks = chunk(Array.from(postUris) as AtUriString[], 25)
   const packUriChunks = chunk(Array.from(packUris) as AtUriString[], 25)
   const postsChunks = await Promise.all(
-    postUriChunks.map(uris =>
-      client.call(app.bsky.feed.getPosts, {uris}).then(data => data.posts),
-    ),
+    postUriChunks.map(uris => fetchNotificationPosts(client, uris)),
   )
   const packsChunks = await Promise.all(
     packUriChunks.map(uris =>

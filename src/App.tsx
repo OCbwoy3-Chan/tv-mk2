@@ -59,7 +59,6 @@ import {atoms as a, ThemeProvider as Alf} from '#/alf'
 import {useColorModeTheme} from '#/alf/util/useColorModeTheme'
 import {Provider as ContextMenuProvider} from '#/components/ContextMenu'
 import {EphemeralAccountSwitcherRootScope} from '#/components/EphemeralAccountSwitcher'
-import {EphemeralLoginHost} from '#/components/EphemeralLoginHost'
 import {useLandingEntry} from '#/components/hooks/useLandingEntry'
 import {Provider as IntentDialogProvider} from '#/components/intents/IntentDialogs'
 import {Provider as LightboxStateProvider} from '#/components/Lightbox/state'
@@ -183,7 +182,6 @@ function InnerApp() {
                                                                 <TranslateOnDeviceProvider>
                                                                   <TestCtrls />
                                                                   <EphemeralAccountSwitcherRootScope>
-                                                                        <EphemeralLoginHost />
                                                                     <Shell />
                                                                   </EphemeralAccountSwitcherRootScope>
                                                                   <ToastOutlet />

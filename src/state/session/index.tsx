@@ -14,14 +14,17 @@ import {type Client} from '@atproto/lex'
 import {type SessionData} from '@atproto/lex-password-session'
 
 import * as persisted from '#/state/persisted'
+import {type Schema as PersistedSchema} from '#/state/persisted/schema'
 import {useCloseAllActiveElements} from '#/state/util'
 import {useGlobalDialogsControlContext} from '#/components/dialogs/Context'
 import {AnalyticsContext, useAnalyticsBase, utils} from '#/analytics'
 import {IS_WEB} from '#/env'
 import {com} from '#/lexicons'
+import {device} from '#/storage'
 import {emitSessionDropped} from '../events'
 import {getPublicAppviewClient} from './clients'
 import {createSessionBundleAndCreateAccount} from './create-account'
+import {isEphemeralAuthError} from './ephemeral-auth'
 import {openEphemeralLogin} from './ephemeral-login'
 import {pickExpiryRescueCandidate} from './expiry-rescue'
 import {type Action, getInitialState, reducer, type State} from './reducer'
@@ -104,6 +107,9 @@ ApiContext.displayName = 'SessionApiContext'
 
 class SessionStore {
   private state: State
+  // A synced account can be selected before its asynchronous restore finishes.
+  private selectedDid: string | undefined =
+    persisted.get('session').currentAccount?.did
   private listeners = new Set<() => void>()
 
   constructor() {
@@ -125,15 +131,30 @@ class SessionStore {
   }
 
   dispatch = (action: Action) => {
+    const previous = this.state
     const nextState = reducer(this.state, action)
     this.state = nextState
+    if (action.type === 'synced-accounts') {
+      this.selectedDid = action.syncedCurrentDid
+    } else if (
+      action.type === 'switched-to-account' ||
+      action.type === 'logged-out-current-account' ||
+      action.type === 'logged-out-every-account' ||
+      (action.type === 'removed-account' &&
+        action.accountDid === this.selectedDid) ||
+      (action.type === 'received-session-event' &&
+        action.sessionEvent === 'expired' &&
+        previous.currentBundleState.did !== nextState.currentBundleState.did)
+    ) {
+      this.selectedDid = nextState.currentBundleState.did
+    }
     // Persist synchronously without waiting for the React render cycle.
     if (nextState.needsPersist) {
       nextState.needsPersist = false
       const persistedData = {
         accounts: nextState.accounts,
         currentAccount: nextState.accounts.find(
-          a => a.did === nextState.currentBundleState.did,
+          a => a.did === this.selectedDid,
         ),
       }
       addSessionDebugLog({
@@ -423,6 +444,46 @@ export function Provider({children}: PropsWithChildren<{}>) {
     [store, cancelPendingTask, onboardingDispatch, ax],
   )
 
+  const reauthenticateAccount = useCallback<
+    SessionApiContext['reauthenticateAccount']
+  >(
+    (account, options) => {
+      return openEphemeralLogin(
+        account,
+        async (props, signal) => {
+          let refreshed: SessionAccount
+          if (props.oauthSession) {
+            refreshed = await oauthAgentAndSessionToSessionAccountOrThrow(
+              new OauthBskyAppAgent(props.oauthSession),
+              props.oauthSession,
+            )
+          } else {
+            const result = await createSessionBundleAndLogin(props, () => {})
+            refreshed = result.account
+            disposeBundle(result.bundle)
+          }
+          if (signal.aborted) throw new Error('Authentication cancelled')
+          if (refreshed.did !== account.did) {
+            throw new Error('Please sign in to the same account to continue')
+          }
+          if (!store.getState().accounts.some(saved => saved.did === account.did)) {
+            throw new Error('This account was removed while signing in')
+          }
+          const updated = {
+            ...refreshed,
+            isOauthSession: !!props.oauthSession,
+            accessJwt: props.oauthSession ? undefined : refreshed.accessJwt,
+            refreshJwt: props.oauthSession ? undefined : refreshed.refreshJwt,
+          }
+          store.dispatch({type: 'updated-stored-account', account: updated})
+          return updated
+        },
+        options,
+      )
+    },
+    [store],
+  )
+
   const resumeSession = useCallback<SessionApiContext['resumeSession']>(
     async (storedAccount, isSwitchingAccounts = false) => {
       addSessionDebugLog({
@@ -432,12 +493,38 @@ export function Provider({children}: PropsWithChildren<{}>) {
       })
       if (IS_WEB && isSwitchingAccounts && storedAccount.isOauthSession) {
         const {ensureAppViewAccess} = await import('./oauth-appview-switch')
-        if (!(await ensureAppViewAccess(storedAccount.did))) return
+        if (!(await ensureAppViewAccess(storedAccount.did))) {
+          storedAccount = await reauthenticateAccount(storedAccount)
+        }
+      }
+      if (
+        isSwitchingAccounts &&
+        !storedAccount.isOauthSession &&
+        !storedAccount.refreshJwt
+      ) {
+        storedAccount = await reauthenticateAccount(storedAccount)
       }
       const signal = cancelPendingTask()
-      const {bundle, account} = storedAccount.isOauthSession
-        ? await createOAuthSessionBundleAndResume(storedAccount)
-        : await createSessionBundleAndResume(storedAccount, onSessionChange)
+      const restore = () =>
+        storedAccount.isOauthSession
+          ? createOAuthSessionBundleAndResume(storedAccount)
+          : createSessionBundleAndResume(storedAccount, onSessionChange)
+      let restored: Awaited<ReturnType<typeof restore>>
+      try {
+        restored = await restore()
+      } catch (error) {
+        if (
+          signal.aborted ||
+          !isSwitchingAccounts ||
+          !isEphemeralAuthError(error)
+        ) {
+          throw error
+        }
+        storedAccount = await reauthenticateAccount(storedAccount)
+        if (signal.aborted) return
+        restored = await restore()
+      }
+      const {bundle, account} = restored
 
       if (signal.aborted) {
         // The factory returns an armed bundle, so a superseded resume must dispose it.
@@ -473,7 +560,13 @@ export function Provider({children}: PropsWithChildren<{}>) {
         onboardingDispatch({type: 'skip'})
       }
     },
-    [store, onSessionChange, cancelPendingTask, onboardingDispatch],
+    [
+      store,
+      onSessionChange,
+      cancelPendingTask,
+      onboardingDispatch,
+      reauthenticateAccount,
+    ],
   )
 
   const partialRefreshSession = useCallback<
@@ -564,39 +657,6 @@ export function Provider({children}: PropsWithChildren<{}>) {
     return sessionDataToSessionAccount(after, after.service)
   }, [store])
 
-  const reauthenticateAccount = useCallback<
-    SessionApiContext['reauthenticateAccount']
-  >(account => {
-    return openEphemeralLogin(account, async (props, signal) => {
-      let refreshed: SessionAccount
-      if (props.oauthSession) {
-        refreshed = await oauthAgentAndSessionToSessionAccountOrThrow(
-          new OauthBskyAppAgent(props.oauthSession),
-          props.oauthSession,
-        )
-      } else {
-        const result = await createSessionBundleAndLogin(props, () => {})
-        refreshed = result.account
-        disposeBundle(result.bundle)
-      }
-      if (signal.aborted) throw new Error('Authentication cancelled')
-      if (refreshed.did !== account.did) {
-        throw new Error('Please sign in to the same account to continue')
-      }
-      if (!store.getState().accounts.some(saved => saved.did === account.did)) {
-        throw new Error('This account was removed while signing in')
-      }
-      const updated = {
-        ...refreshed,
-        isOauthSession: !!props.oauthSession,
-        accessJwt: props.oauthSession ? undefined : refreshed.accessJwt,
-        refreshJwt: props.oauthSession ? undefined : refreshed.refreshJwt,
-      }
-      store.dispatch({type: 'updated-stored-account', account: updated})
-      return updated
-    })
-  }, [store])
-
   const createEphemeralAgent = useCallback<
     SessionApiContext['createEphemeralAgent']
   >(
@@ -661,7 +721,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
     [store],
   )
   useEffect(() => {
-    return persisted.onUpdate('session', nextSession => {
+    let syncGeneration = 0
+    const syncSession = (nextSession: PersistedSchema['session']) => {
+      const generation = ++syncGeneration
+      const before = store.getState()
       const synced = nextSession
       addSessionDebugLog({
         type: 'persisted:receive',
@@ -685,12 +748,37 @@ export function Provider({children}: PropsWithChildren<{}>) {
           : undefined
       if (
         syncedDid === undefined &&
-        state.currentBundleState.did !== undefined
+        before.currentBundleState.did !== undefined
       ) {
         cancelPendingTask()
       }
+      if (syncedAccount?.isOauthSession) {
+        const expectedBundle = store.getState().currentBundleState.bundle
+        // Restoring a follower must neither cancel an interactive login nor
+        // broadcast its temporarily empty bundle back as a logout.
+        void createOAuthSessionBundleAndResume(syncedAccount).then(
+          ({bundle, account}) => {
+            if (
+              generation !== syncGeneration ||
+              store.getState().currentBundleState.bundle !== expectedBundle
+            ) {
+              disposeBundle(bundle)
+              return
+            }
+            store.dispatch({
+              type: 'replaced-current-bundle',
+              newBundle: bundle,
+              newAccount: account,
+            })
+          },
+          () => {
+            // A failed restore must not delete the session another tab owns.
+          },
+        )
+        return
+      }
       if (syncedAccount && syncedAccount.refreshJwt) {
-        if (syncedAccount.did !== state.currentBundleState.did) {
+        if (syncedAccount.did !== before.currentBundleState.did) {
           // The leader refreshes before broadcasting, so followers receive fresh tokens.
           void resumeSession(syncedAccount)
         } else {
@@ -698,7 +786,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
            * PasswordSession cannot be patched in place. Rebuild from the tokens
            * the leader already refreshed, then dispose the previous bundle.
            */
-          const prevBundle = state.currentBundleState.bundle as unknown as
+          const prevBundle = before.currentBundleState.bundle as unknown as
             ActiveSessionBundle | PublicSessionBundle
           // Avoid replacing the live bundle for an unrelated account update.
           const live =
@@ -750,8 +838,22 @@ export function Provider({children}: PropsWithChildren<{}>) {
           })
         }
       }
+    }
+    const unsubscribe = persisted.onUpdate('session', syncSession)
+    // AppView selection can change while the saved account itself is identical.
+    // Defer until both the DID and URL have been written by the callback.
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const listener = device.addOnValueChangedListener(['customAppViewDid'], () => {
+      clearTimeout(timer)
+      timer = setTimeout(() => syncSession(persisted.get('session')), 0)
     })
-  }, [store, state, resumeSession, onSessionChange, cancelPendingTask])
+    return () => {
+      ++syncGeneration
+      clearTimeout(timer)
+      listener.remove()
+      unsubscribe()
+    }
+  }, [store, resumeSession, onSessionChange, cancelPendingTask])
 
   const stateContext = useMemo(
     () => ({

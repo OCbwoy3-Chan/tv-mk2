@@ -17,8 +17,15 @@ jest.mock('react-native-mmkv', () => ({
     delete(key: string) {
       return this._store.delete(key)
     }
+
+    addOnValueChangedListener() {
+      return {remove: jest.fn()}
+    }
   },
 }))
+
+let mockIsWeb = false
+jest.mock('#/env', () => ({get IS_WEB() { return mockIsWeb }}))
 
 type Schema = {
   boo: boolean
@@ -78,4 +85,31 @@ test(`can store objects`, () => {
   const obj = {foo: true}
   store.set([scope, 'obj'], obj)
   expect(store.get([scope, 'obj'])).toEqual(obj)
+})
+
+
+test('notifies only matching cross-tab storage updates and cleans up', () => {
+  const previous = Object.getOwnPropertyDescriptor(globalThis, 'window')
+  const addEventListener = jest.fn()
+  const removeEventListener = jest.fn()
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true, value: {addEventListener, removeEventListener},
+  })
+  mockIsWeb = true
+  try {
+    const changed = jest.fn()
+    const subscription = store.addOnValueChangedListener([scope, 'str'], changed)
+    const listener = addEventListener.mock.calls[0][1] as (event: {key: string}) => void
+    listener({key: 'other\\account:str'})
+    listener({key: 'test\\account:num'})
+    expect(changed).not.toHaveBeenCalled()
+    listener({key: 'test\\account:str'})
+    expect(changed).toHaveBeenCalledTimes(1)
+    subscription.remove()
+    expect(removeEventListener).toHaveBeenCalledWith('storage', listener)
+  } finally {
+    mockIsWeb = false
+    if (previous) Object.defineProperty(globalThis, 'window', previous)
+    else Reflect.deleteProperty(globalThis, 'window')
+  }
 })

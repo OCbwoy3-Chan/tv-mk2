@@ -24,7 +24,9 @@ import {findService, useDidDocument} from '#/state/queries/resolve-identity'
 import {useServiceQuery} from '#/state/queries/service'
 import {useSession, useSessionApi} from '#/state/session'
 import {startAppViewSwitch} from '#/state/session/oauth-appview-switch'
+import {buildOAuthScope} from '#/state/session/oauth-config'
 import {signInNative} from '#/state/session/oauth-native-sign-in'
+import {getOAuthAudiences} from '#/state/session/oauth-scopes'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -112,8 +114,7 @@ export function AppServerHeaderControl() {
   const {t: l} = useLingui()
   const {currentAccount} = useSession()
   const queryClient = useQueryClient()
-  const {login, logoutCurrentAccount} = useSessionApi()
-  const {requestSwitchToAccount} = useLoggedOutViewControls()
+  const {login} = useSessionApi()
   const prepareSettingsSyncForRestart = usePrepareSettingsSyncForRestart()
   const [did] = useCustomAppViewDid()
   const [url] = useCustomAppViewUrl()
@@ -139,39 +140,41 @@ export function AppServerHeaderControl() {
         return
       }
 
-      // Web switches commit the selection in the same-tab OAuth callback.
-      let authorized = false
+      // Changing the AppView retains this account's authentication method.
+      // Commit routing only after authorization succeeds.
+      let applied = false
       try {
         if (IS_WEB) {
           await startAppViewSwitch(currentAccount.did, selection)
           return
         }
-        setAppViewSelection(selection)
-        const session = await signInNative(currentAccount.did)
-        authorized = true
-        if (session.did !== currentAccount.did)
+        const audiences = {
+          ...getOAuthAudiences(),
+          appview: `${selection.did || 'did:web:api.bsky.app'}#bsky_appview`,
+        }
+        const session = await signInNative(currentAccount.did, {
+          audiences,
+          scope: buildOAuthScope(audiences.appview, audiences.chat),
+        })
+        if (session.did !== currentAccount.did) {
           throw new Error('Unexpected OAuth account')
+        }
+        setAppViewSelection(selection)
+        applied = true
         await login(
           {service: '', identifier: '', password: '', oauthSession: session},
           'Settings',
         )
-        // Discard cached responses and errors from the previous AppView.
         void queryClient.resetQueries().catch(error => {
           logger.warn('App server query refresh failed', {error: String(error)})
         })
       } catch (e: unknown) {
-        if (!IS_WEB && !authorized) setAppViewSelection(previousSelection)
+        if (applied) setAppViewSelection(previousSelection)
         const errMsg = String(e)
-        if (errMsg.includes('cancelled') || errMsg.includes('dismiss')) {
-          return
-        }
+        if (errMsg.includes('cancelled') || errMsg.includes('dismiss')) return
         logger.warn('App server reauth failed', {
           error: isNetworkError(e) ? errMsg : cleanError(errMsg),
         })
-        if (authorized) {
-          logoutCurrentAccount('Settings')
-          requestSwitchToAccount({requestedAccount: currentAccount.did})
-        }
       }
     },
     [
@@ -180,9 +183,7 @@ export function AppServerHeaderControl() {
       url,
       currentAccount,
       login,
-      logoutCurrentAccount,
       prepareSettingsSyncForRestart,
-      requestSwitchToAccount,
       setAppViewSelection,
       queryClient,
     ],

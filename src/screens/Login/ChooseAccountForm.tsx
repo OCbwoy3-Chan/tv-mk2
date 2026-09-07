@@ -47,29 +47,23 @@ export const ChooseAccountForm = ({
       }
       try {
         setPendingDid(account.did)
-        await Promise.race([
-          resumeSession(account, true),
-          new Promise<never>((_, reject) =>
-            setTimeout(
-              () => reject(new Error('Session resume timed out')),
-              15_000,
-            ),
-          ),
-        ])
+        await resumeSession(account, true)
         ax.metric('account:loggedIn', {
           logContext: 'ChooseAccountForm',
           withPassword: false,
         })
         Toast.show(l`Signed in as @${account.handle}`)
       } catch (err) {
+        if (/cancelled|dismiss|OAUTH_CANCELLED/i.test(String(err))) return
         logger.warn('choose account: initSession failed', {
           message: err instanceof Error ? err.message : String(err),
         })
         Toast.show(l`Sign in failed. Please try again.`)
         // Move to login form.
         onSelectAccount(account)
+      } finally {
+        setPendingDid(null)
       }
-      setPendingDid(null)
     },
     [
       currentAccount,

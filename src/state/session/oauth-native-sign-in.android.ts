@@ -5,6 +5,12 @@ import {type OAuthSession} from '@atproto/oauth-client-expo'
 import {getNativeOAuthClient, NATIVE_REDIRECT_URI} from './oauth-native-client'
 import {getOAuthScope} from './oauth-scopes'
 
+type SignInOptions = {
+  signal?: AbortSignal
+  scope?: string
+  audiences?: {appview: string; chat: string}
+}
+
 // Android may deliver one or two slashes after the custom URI scheme.
 const OAUTH_CALLBACK_RE = /^app\.witchsky:\/\/?auth\/callback\b/
 
@@ -23,9 +29,10 @@ export async function signInNative(
   {
     signal,
     scope = getOAuthScope(),
-  }: {signal?: AbortSignal; scope?: string} = {},
+    audiences,
+  }: SignInOptions = {},
 ): Promise<OAuthSession> {
-  const client = getNativeOAuthClient()
+  const client = getNativeOAuthClient(audiences)
   let authorizationUrl: URL
   try {
     authorizationUrl = await client.authorize(identifier, {

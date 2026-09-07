@@ -5,6 +5,10 @@ import {type Metrics} from '#/analytics/metrics'
 
 export type SessionAccount = PersistedAccount
 
+export type ReauthenticationOptions = {
+  scope?: string
+}
+
 /** Session-change events understood by the reducer and logging hooks. */
 export type AtpSessionEvent = 'update' | 'expired' | 'network-error'
 
@@ -75,7 +79,10 @@ export type SessionApiContext = {
    * accounts that do not have persisted JWTs.
    */
   /** Refresh only this saved account; never switch accounts or navigate. */
-  reauthenticateAccount: (account: SessionAccount) => Promise<SessionAccount>
+  reauthenticateAccount: (
+    account: SessionAccount,
+    options?: ReauthenticationOptions,
+  ) => Promise<SessionAccount>
   createEphemeralAgent: (
     account: SessionAccount,
   ) => Promise<import('@atproto/api').AtpAgent>

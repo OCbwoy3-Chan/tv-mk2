@@ -4,6 +4,12 @@ import {type OAuthSession} from '@atproto/oauth-client-expo'
 import {getNativeOAuthClient, NATIVE_REDIRECT_URI} from './oauth-native-client'
 import {getOAuthScope} from './oauth-scopes'
 
+type SignInOptions = {
+  signal?: AbortSignal
+  scope?: string
+  audiences?: {appview: string; chat: string}
+}
+
 /**
  * Run iOS OAuth with the app's Expo SDK version of `expo-web-browser`.
  *
@@ -16,9 +22,10 @@ export async function signInNative(
   {
     signal: _signal,
     scope = getOAuthScope(),
-  }: {signal?: AbortSignal; scope?: string} = {},
+    audiences,
+  }: SignInOptions = {},
 ): Promise<OAuthSession> {
-  const client = getNativeOAuthClient()
+  const client = getNativeOAuthClient(audiences)
   const authorizationUrl = await client.authorize(identifier, {
     display: 'touch',
     scope,

@@ -116,6 +116,7 @@ import {
   EmailDialogScreenID,
   useEmailDialogControl,
 } from '#/components/dialogs/EmailDialog'
+import {EphemeralLoginHost} from '#/components/EphemeralLoginHost'
 import {useAnalytics} from '#/analytics'
 import {setNavigationMetadata} from '#/analytics/metadata'
 import {IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
@@ -1420,6 +1421,8 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
       // -sfn
       navigationInChildEnabled>
       {children}
+      {/* Login links need navigation context, including inside the modal. */}
+      <EphemeralLoginHost />
     </NavigationContainer>
   )
 }

@@ -83,8 +83,9 @@ Both saved accounts remained listed. The switcher uses a current storage
 snapshot and resets its draft selection when opened.
 
 Saved OAuth accounts are checked against the active AppView before switching.
-A mismatched grant starts same-tab authorization while retaining the previous
-account, so denying consent can restore that account. PDS token scopes expand
+A mismatched grant opens the in-place OAuth/legacy login chooser while retaining
+the previous account. Only pressing OAuth Login opens an authorization popup
+on web or the auth browser on native. Cancelling keeps the existing page. PDS token scopes expand
 permission sets into RPC scopes; audience checks recognize those expanded grants.
 Callback recovery resumes without initiating another authorization.
 
@@ -108,3 +109,28 @@ Helium verified the in-screen OAuth/legacy choices and successful legacy login
 returning to the same xan.lol profile with xan.lol still active. No test action
 posted or changed social records. Unit tests cover both authentication modes,
 wrong-account/cancel handling, and the notification's deferred action retry.
+
+
+Cross-tab follow-up: browser requests restore the current OAuth session before
+sending, so a reauthorization's new tokens are signed with its new DPoP key.
+Follower tabs restore OAuth bundles without broadcasting a temporary signed-out
+state. Device storage subscriptions also observe changes from other tabs, keeping
+AppView routing and its displayed selection in sync. Helium verified both
+Bluesky/Blacksky directions with two tabs and cancellation back to the prior
+account and server.
+
+Account reauthentication and optional-permission prompts share the in-place
+login chooser. The Settings AppView changer keeps the current account's login
+method: same-tab OAuth on web, native auth browser on mobile, or the existing
+legacy restart flow. Native OAuth receives the target audience explicitly and
+does not commit device routing before consent. The native login modal supplies
+its own safe-area, keyboard, and nested-dialog providers; this layout still
+requires an on-device check.
+
+The reported Blacksky notification failure was reproduced without credentials:
+one of 19 post URIs returned HTTP 500 individually, while the other 18 succeeded.
+Blacksky's own client suppresses failed post batches. Witchsky now splits failed
+5xx batches, retaining healthy posts and notifications whose subject cannot be
+loaded. Authentication, rate-limit, and network failures still propagate. The
+affected account's notifications were verified loading in Helium. OAuth lex
+clients use the session transport directly to avoid duplicated moderation headers.
