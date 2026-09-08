@@ -17,6 +17,7 @@ import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {ArrowTop_Stroke2_Corner0_Rounded as ArrowIcon} from '#/components/icons/Arrow'
 import {CENTER_COLUMN_OFFSET} from '#/components/Layout'
 import {SubtleHover} from '#/components/SubtleHover'
+import {IS_WEB} from '#/env'
 
 export function LoadLatestBtn({
   onPress,
@@ -50,7 +51,10 @@ export function LoadLatestBtn({
 
   const bottomPosition = isTablet
     ? {bottom: 50}
-    : {bottom: clamp(insets.bottom, 15, 60) + 15}
+    : {
+        bottom:
+          IS_WEB && showBottomBar ? 18 : clamp(insets.bottom, 15, 60) + 15,
+      }
 
   if (disableTopOfFeedButton) {
     return null

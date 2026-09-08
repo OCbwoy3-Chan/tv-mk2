@@ -125,9 +125,7 @@ export function BottomBarWeb() {
           styles.bottomBar,
           styles.bottomBarWeb,
           t.atoms.bg,
-          IS_WEB_TOUCH_DEVICE
-            ? {paddingBottom: Math.max(bottomInset, 15)}
-            : {paddingBottom: bottomInset},
+          {paddingBottom: bottomInset},
           hideBorder
             ? {borderColor: t.atoms.bg.backgroundColor}
             : t.atoms.border_contrast_low,
@@ -344,7 +342,6 @@ const NavItem: React.FC<{
   const t = useTheme()
   const {_} = useLingui()
   const ax = useAnalytics()
-  const {bottom: bottomInset} = useSafeAreaInsets()
   const {currentAccount} = useSession()
   const currentRoute = useNavigationState(state => {
     if (!state) {
@@ -394,7 +391,7 @@ const NavItem: React.FC<{
       href={href}
       style={[
         styles.ctrl,
-        bottomInset === 0 && a.pb_lg,
+        {paddingBottom: 13},
         userStyle('wsky-nav__item'),
       ]}
       navigationAction={isOnDifferentProfile ? 'push' : 'navigate'}
@@ -461,7 +458,6 @@ function TouchNavItem({
 }) {
   const t = useTheme()
   const {_} = useLingui()
-  const {bottom: bottomInset} = useSafeAreaInsets()
   const navigation = useNavigationDeduped()
   const closeAllActiveElements = useCloseAllActiveElements()
 
@@ -519,7 +515,7 @@ function TouchNavItem({
       style={[
         userStyle('wsky-nav__item'),
         styles.ctrl,
-        bottomInset === 0 && a.pb_lg,
+        {paddingBottom: 13},
         {
           transition: `transform ${ANIM_MS}ms`,
           transform: [{scale: pressed ? 0.8 : 1}],

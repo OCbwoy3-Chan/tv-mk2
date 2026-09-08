@@ -825,7 +825,7 @@ export const List = memo(forwardRef(ListImpl)) as <ItemT>(
 
 const styles = StyleSheet.create({
   minHeightViewport: {
-    minHeight: '100vh',
+    minHeight: '100dvh',
   },
   parentTreeVisibilityDetector: {
     // @ts-expect-error web only

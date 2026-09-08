@@ -51,7 +51,7 @@ export function FABInner({
 
   const tabletSpacing = gtMobile
     ? {right: 50, bottom: 50}
-    : {right: 24, bottom: clamp(insets.bottom, 15, 60) + 15}
+    : {right: 24, bottom: IS_WEB ? 24 : clamp(insets.bottom, 15, 60) + 15}
 
   return (
     <Animated.View

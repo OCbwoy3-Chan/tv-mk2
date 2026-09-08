@@ -105,7 +105,7 @@ export const FlatList_INTERNAL = forwardRef(function FlatListImpl<ItemT>(
   if (desktopFixedHeight) {
     if (typeof desktopFixedHeight === 'number') {
       style = addStyle(style, {
-        height: `calc(100vh - ${desktopFixedHeight}px)`,
+        height: `calc(100dvh - ${desktopFixedHeight}px)`,
       })
     } else {
       style = addStyle(style, styles.fixedHeight)
@@ -168,7 +168,7 @@ export const ScrollView = forwardRef(function ScrollViewImpl(
 
 const styles = StyleSheet.create({
   contentContainer: {
-    minHeight: '100vh',
+    minHeight: '100dvh',
   },
   container: {
     width: '100%',
@@ -186,6 +186,6 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
   },
   fixedHeight: {
-    height: '100vh',
+    height: '100dvh',
   },
 })
