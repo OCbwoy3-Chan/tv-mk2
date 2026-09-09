@@ -25,8 +25,11 @@ import {emitSessionDropped} from '../events'
 import {getPublicAppviewClient} from './clients'
 import {createSessionBundleAndCreateAccount} from './create-account'
 import {isEphemeralAuthError} from './ephemeral-auth'
-import {openEphemeralLogin} from './ephemeral-login'
+import {type LoginInput, openEphemeralLogin} from './ephemeral-login'
 import {pickExpiryRescueCandidate} from './expiry-rescue'
+import {signInNative} from './oauth-native-sign-in'
+import {getOAuthScope} from './oauth-scopes'
+import {getWebOAuthClient} from './oauth-web-client'
 import {type Action, getInitialState, reducer, type State} from './reducer'
 import {
   type ActiveSessionBundle,
@@ -73,7 +76,11 @@ import {
   createAgentAndResume,
   createPublicAgent,
 } from './agent'
-import {oauthAgentAndSessionToSessionAccountOrThrow, OauthBskyAppAgent, oauthResumeSession} from './oauth-agent'
+import {
+  oauthAgentAndSessionToSessionAccountOrThrow,
+  OauthBskyAppAgent,
+  oauthResumeSession,
+} from './oauth-agent'
 
 const StateContext = createContext<SessionStateContext>({
   accounts: [],
@@ -448,38 +455,49 @@ export function Provider({children}: PropsWithChildren<{}>) {
     SessionApiContext['reauthenticateAccount']
   >(
     (account, options) => {
-      return openEphemeralLogin(
-        account,
-        async (props, signal) => {
-          let refreshed: SessionAccount
-          if (props.oauthSession) {
-            refreshed = await oauthAgentAndSessionToSessionAccountOrThrow(
-              new OauthBskyAppAgent(props.oauthSession),
-              props.oauthSession,
-            )
-          } else {
-            const result = await createSessionBundleAndLogin(props, () => {})
-            refreshed = result.account
-            disposeBundle(result.bundle)
-          }
-          if (signal.aborted) throw new Error('Authentication cancelled')
-          if (refreshed.did !== account.did) {
-            throw new Error('Please sign in to the same account to continue')
-          }
-          if (!store.getState().accounts.some(saved => saved.did === account.did)) {
-            throw new Error('This account was removed while signing in')
-          }
-          const updated = {
-            ...refreshed,
-            isOauthSession: !!props.oauthSession,
-            accessJwt: props.oauthSession ? undefined : refreshed.accessJwt,
-            refreshJwt: props.oauthSession ? undefined : refreshed.refreshJwt,
-          }
-          store.dispatch({type: 'updated-stored-account', account: updated})
-          return updated
-        },
-        options,
-      )
+      const authenticate = async (props: LoginInput, signal: AbortSignal) => {
+        let refreshed: SessionAccount
+        if (props.oauthSession) {
+          refreshed = await oauthAgentAndSessionToSessionAccountOrThrow(
+            new OauthBskyAppAgent(props.oauthSession),
+            props.oauthSession,
+          )
+        } else {
+          const result = await createSessionBundleAndLogin(props, () => {})
+          refreshed = result.account
+          disposeBundle(result.bundle)
+        }
+        if (signal.aborted) throw new Error('Authentication cancelled')
+        if (refreshed.did !== account.did) {
+          throw new Error('Please sign in to the same account to continue')
+        }
+        if (
+          !store.getState().accounts.some(saved => saved.did === account.did)
+        ) {
+          throw new Error('This account was removed while signing in')
+        }
+        const updated = {
+          ...refreshed,
+          isOauthSession: !!props.oauthSession,
+          accessJwt: props.oauthSession ? undefined : refreshed.accessJwt,
+          refreshJwt: props.oauthSession ? undefined : refreshed.refreshJwt,
+        }
+        store.dispatch({type: 'updated-stored-account', account: updated})
+        return updated
+      }
+      if (options?.directOAuth) {
+        const scope = options.scope ?? getOAuthScope()
+        const authorization = IS_WEB
+          ? getWebOAuthClient().signIn(account.did, {scope, display: 'popup'})
+          : signInNative(account.did, {scope})
+        return authorization.then(oauthSession =>
+          authenticate(
+            {service: '', identifier: '', password: '', oauthSession},
+            new AbortController().signal,
+          ),
+        )
+      }
+      return openEphemeralLogin(account, authenticate, options)
     },
     [store],
   )
@@ -494,7 +512,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
       if (IS_WEB && isSwitchingAccounts && storedAccount.isOauthSession) {
         const {ensureAppViewAccess} = await import('./oauth-appview-switch')
         if (!(await ensureAppViewAccess(storedAccount.did))) {
-          storedAccount = await reauthenticateAccount(storedAccount)
+          storedAccount = await reauthenticateAccount(storedAccount, {
+            allowAppServerSwitch: true,
+          })
         }
       }
       if (
@@ -502,7 +522,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
         !storedAccount.isOauthSession &&
         !storedAccount.refreshJwt
       ) {
-        storedAccount = await reauthenticateAccount(storedAccount)
+        storedAccount = await reauthenticateAccount(storedAccount, {
+          allowAppServerSwitch: true,
+        })
       }
       const signal = cancelPendingTask()
       const restore = () =>
@@ -520,7 +542,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
         ) {
           throw error
         }
-        storedAccount = await reauthenticateAccount(storedAccount)
+        storedAccount = await reauthenticateAccount(storedAccount, {
+          allowAppServerSwitch: true,
+        })
         if (signal.aborted) return
         restored = await restore()
       }
@@ -843,10 +867,13 @@ export function Provider({children}: PropsWithChildren<{}>) {
     // AppView selection can change while the saved account itself is identical.
     // Defer until both the DID and URL have been written by the callback.
     let timer: ReturnType<typeof setTimeout> | undefined
-    const listener = device.addOnValueChangedListener(['customAppViewDid'], () => {
-      clearTimeout(timer)
-      timer = setTimeout(() => syncSession(persisted.get('session')), 0)
-    })
+    const listener = device.addOnValueChangedListener(
+      ['customAppViewDid'],
+      () => {
+        clearTimeout(timer)
+        timer = setTimeout(() => syncSession(persisted.get('session')), 0)
+      },
+    )
     return () => {
       ++syncGeneration
       clearTimeout(timer)

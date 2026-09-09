@@ -16,6 +16,7 @@ import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
 import {android, atoms as a, web} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
+import {OAuthPermissionGate} from '#/components/dialogs/OAuthPermissionGate'
 import * as TextField from '#/components/forms/TextField'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
@@ -40,7 +41,9 @@ export function ChangePasswordDialog({
       control={control}
       nativeOptions={android({minHeight: height / 2})}>
       <Dialog.Handle />
-      <Inner />
+      <OAuthPermissionGate permission="email" standalone>
+        <Inner />
+      </OAuthPermissionGate>
     </Dialog.Outer>
   )
 }
@@ -183,7 +186,7 @@ function Inner() {
           </Text>
         </View>
 
-        {stage === Stages.RequestCode && (
+        {stage === Stages.RequestCode && !currentAccount?.email && (
           <View>
             <TextField.LabelText>
               <Trans>Email address</Trans>

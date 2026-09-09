@@ -814,11 +814,6 @@
       "count": 1
     }
   },
-  "src/state/preferences/label-defs.tsx": {
-    "simple-import-sort/imports": {
-      "count": 1
-    }
-  },
   "src/state/preferences/restart-required-prompt.tsx": {
     "typescript/no-misused-promises": {
       "count": 1

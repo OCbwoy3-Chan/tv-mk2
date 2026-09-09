@@ -38,7 +38,10 @@ import {
   useSession,
   useSessionApi,
 } from '#/state/session'
-import {completeWebOAuth} from '#/state/session/oauth-appview-switch'
+import {
+  completeWebOAuth,
+  readOAuthCallbackParams,
+} from '#/state/session/oauth-appview-switch'
 import {isOAuthPopupComplete} from '#/state/session/oauth-config'
 import {
   consumeOAuthReturnUrl,
@@ -105,15 +108,6 @@ if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
   window.location.replace(url.href)
 }
 
-function hasOAuthCallbackParams(): boolean {
-  // OAuth callback params come in the hash fragment (response_mode=fragment)
-  // or query string. Check both for "state" + ("code" or "error").
-  const hash = new URLSearchParams(window.location.hash.slice(1))
-  const query = new URLSearchParams(window.location.search)
-  const params = hash.has('state') ? hash : query
-  return params.has('state') && (params.has('code') || params.has('error'))
-}
-
 /**
  * Begin geolocation ASAP
  */
@@ -136,7 +130,7 @@ function InnerApp() {
     async function onLaunch(account?: SessionAccount) {
       try {
         // Check for OAuth callback params first (loopback redirects to /)
-        if (hasOAuthCallbackParams()) {
+        if (readOAuthCallbackParams()) {
           try {
             const completed = await completeWebOAuth(async session => {
               await login(

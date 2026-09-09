@@ -1,6 +1,6 @@
 import {createContext, useContext} from 'react'
-import {type InterpretedLabelValueDefinition} from '@bsky/sdk/moderation'
 import  {type PropsWithChildren} from 'react'
+import {type InterpretedLabelValueDefinition} from '@bsky/sdk/moderation'
 
 import {type app} from '#/lexicons'
 import {useLabelDefinitionsQuery} from '../queries/preferences'

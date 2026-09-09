@@ -10,6 +10,7 @@ import {STALE} from '#/state/queries'
 import {usePreferencesQuery} from '#/state/queries/preferences'
 import {useAppviewClient} from '#/state/session'
 import {app} from '#/lexicons'
+import {canFallbackToGeneralSuggestions} from './suggested-users-fallback'
 
 export type QueryProps = {
   category?: string | null
@@ -33,19 +34,29 @@ export function useGetSuggestedUsersForExploreQuery(props: QueryProps = {}) {
       const contentLangs = getContentLanguages().join(',')
       const userInterests = aggregateUserInterests(preferences)
 
-      const data = await client.call(
-        app.bsky.unspecced.getSuggestedUsersForExplore,
-        {
-          category: props.category ?? undefined,
-          limit: props.limit || 10,
-        },
-        {
-          headers: {
-            ...createBskyTopicsHeader(userInterests),
-            'Accept-Language': contentLangs,
+      const data = await client
+        .call(
+          app.bsky.unspecced.getSuggestedUsersForExplore,
+          {
+            category: props.category ?? undefined,
+            limit: props.limit || 10,
           },
-        },
-      )
+          {
+            headers: {
+              ...createBskyTopicsHeader(userInterests),
+              'Accept-Language': contentLangs,
+            },
+          },
+        )
+        .catch(async error => {
+          if (!canFallbackToGeneralSuggestions(error)) throw error
+          const suggestions = await client.call(
+            app.bsky.actor.getSuggestions,
+            {limit: props.limit || 10},
+            {headers: {'Accept-Language': contentLangs}},
+          )
+          return {actors: suggestions.actors, recIdStr: undefined}
+        })
 
       if (!data.recIdStr) {
         logger.debug('getSuggestedUsersForExplore response missing recIdStr')

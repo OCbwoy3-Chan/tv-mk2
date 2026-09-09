@@ -12,7 +12,10 @@ jest.mock('#/state/session', () => ({
   useSession: () => ({
     currentAccount: {did: 'did:plc:alice', isOauthSession: true},
   }),
-  useSessionApi: () => ({resumeSession: mockLogin, reauthenticateAccount: mockReauthenticate}),
+  useSessionApi: () => ({
+    resumeSession: mockLogin,
+    reauthenticateAccount: mockReauthenticate,
+  }),
 }))
 jest.mock('../oauth-client-adapter', () => ({
   restoreOAuthSession: (...args: unknown[]) => mockRestore(...args),
@@ -75,13 +78,18 @@ beforeEach(() => {
   mockLogin.mockResolvedValue(undefined)
 })
 
-it('opens the login chooser and retains optional access without starting OAuth', async () => {
+it('starts OAuth directly and retains previously approved optional access', async () => {
   let finishLogin!: (account: unknown) => void
-  mockReauthenticate.mockReturnValue(new Promise(resolve => { finishLogin = resolve }))
+  mockReauthenticate.mockReturnValue(
+    new Promise(resolve => {
+      finishLogin = resolve
+    }),
+  )
   showGate()
   fireEvent.press(await screen.findByText('Continue to authorization'))
   expect(mockReauthenticate).toHaveBeenCalledWith(
-    {did, isOauthSession: true}, {scope: 'atproto handle email'},
+    {did, isOauthSession: true},
+    {scope: 'atproto handle email', directOAuth: true},
   )
   expect(mockLogin).not.toHaveBeenCalled()
   expect(screen.queryByText('handle editor')).toBeNull()
@@ -102,7 +110,9 @@ it.each(['cancelled', 'missing permission', 'wrong account'])(
     showGate()
     fireEvent.press(await screen.findByText('Continue to authorization'))
     await waitFor(() => expect(mockReauthenticate).toHaveBeenCalledTimes(1))
-    await waitFor(() => expect(screen.getByText('Continue to authorization')).toBeTruthy())
+    await waitFor(() =>
+      expect(screen.getByText('Continue to authorization')).toBeTruthy(),
+    )
     expect(mockLogin).not.toHaveBeenCalled()
     expect(screen.queryByText('handle editor')).toBeNull()
   },
@@ -112,7 +122,9 @@ it('accepts a legacy session chosen from the login form', async () => {
   mockReauthenticate.mockResolvedValue({did, isOauthSession: false})
   showGate()
   fireEvent.press(await screen.findByText('Continue to authorization'))
-  await waitFor(() => expect(mockLogin).toHaveBeenCalledWith({did, isOauthSession: false}))
+  await waitFor(() =>
+    expect(mockLogin).toHaveBeenCalledWith({did, isOauthSession: false}),
+  )
 })
 
 it('gives standalone permission prompts a proper dialog surface', async () => {

@@ -1,6 +1,6 @@
 import chroma from 'chroma-js'
 
-import type {SemanticColors, ThemeRecord} from './types'
+import  {type SemanticColors, type ThemeRecord} from './types'
 import {isHueTheme} from './types'
 
 const SHIFTED_ROLES: Array<keyof SemanticColors> = [

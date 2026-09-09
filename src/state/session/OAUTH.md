@@ -24,6 +24,8 @@ The theme permission set is published under `witchsky.app` as
 `app.witchsky.theme.authFull`. Its four record collections must stay in sync with
 `lexicons/app/witchsky/theme/authFull.json`. Update the published schema when
 adding theme record types; never place account or blob permissions in the set.
+Resolution failures must be fixed at publication/discovery rather than expanding
+the permission set into separate consent entries.
 
 Preferences stay on the PDS. Bluesky's PDS checks getPreferences and
 putPreferences against its default Bluesky audience; proxying those calls to
@@ -43,13 +45,19 @@ and notification getPreferences/putPreferences. Their narrow supplemental RPC
 grants produce the PDS's additional generic “Chat” consent entry. They can be
 removed once the published set includes these methods.
 
-AppView switching on web uses a same-tab redirect. The proposed server,
-original server, account DID, and OAuth state are kept in session storage.
-The callback uses the proposed metadata, verifies the state and account, then
-applies routing before constructing the authenticated agent. Cancellation leaves
-the original selection intact; session-construction failure rolls it back.
-The callback clears the logged-out overlay and returns to the original route
-without a second page load during app startup.
+AppView switching on web opens a popup directly from the confirmation gesture.
+The source page stays active so navigating to authorization cannot freeze a
+document holding the account's OAuth Web Lock. The popup inherits the target
+metadata through session storage. After consent, the parent checks the account
+and audience, applies routing, and constructs the authenticated agent.
+Cancellation leaves routing unchanged. After a grant is replaced, loading
+failures retain the new routing so retries use the matching audience.
+Callbacks share one exchange between startup and the route; bare callback URLs
+do not restore an unrelated session. Legacy redirect callbacks remain supported.
+
+Session restores serialize per account, allowing other accounts to proceed
+independently. Browser OAuth uses the SDK's standard transport and storage.
+Do not impose a fetch deadline on a one-use refresh token exchange.
 
 OAuth account updates from other tabs must not be interpreted as
 password-session logout events.
@@ -114,7 +122,6 @@ returning to the same xan.lol profile with xan.lol still active. No test action
 posted or changed social records. Unit tests cover both authentication modes,
 wrong-account/cancel handling, and the notification's deferred action retry.
 
-
 Cross-tab follow-up: browser requests restore the current OAuth session before
 sending, so a reauthorization's new tokens are signed with its new DPoP key.
 Follower tabs restore OAuth bundles without broadcasting a temporary signed-out
@@ -123,9 +130,11 @@ AppView routing and its displayed selection in sync. Helium verified both
 Bluesky/Blacksky directions with two tabs and cancellation back to the prior
 account and server.
 
-Account reauthentication and optional-permission prompts share the in-place
-login chooser. The Settings AppView changer keeps the current account's login
-method: same-tab OAuth on web, native auth browser on mobile, or the existing
+Account reauthentication uses the in-place login chooser. Optional-permission
+prompts start OAuth directly from the authorization button. Password changes
+request email access to obtain the reset address; email reset codes are still
+required. Missing email status is unknown and does not block posts or DMs. The Settings AppView changer keeps the current account's login
+method: popup OAuth on web, native auth browser on mobile, or the existing
 legacy restart flow. Native OAuth receives the target audience explicitly and
 does not commit device routing before consent. The native login modal supplies
 its own safe-area, keyboard, and nested-dialog providers; this layout still
@@ -138,3 +147,19 @@ Blacksky's own client suppresses failed post batches. Witchsky now splits failed
 loaded. Authentication, rate-limit, and network failures still propagate. The
 affected account's notifications were verified loading in Helium. OAuth lex
 clients use the session transport directly to avoid duplicated moderation headers.
+
+Zen Canary follow-up: a document held the main account's Web Lock while the
+account chooser waited from another document. A retained Settings subframe was
+also present; its involvement is inferred from the recovery, not proven. The stored
+Blacksky grant still matched routing and was unexpired. A normal reload did
+not release the lock; unloading only the Witchsky process restored the account
+on Blacksky without reauthorization. AppView access checks now stop waiting
+after ten seconds and the account chooser shows a retry message, without
+stealing the lock or interrupting a token refresh in another document.
+
+Local browser-client binding and fetch-timeout experiments were removed after
+comparison with working Canary sign-in. The binding rejected older loopback
+records during reauthorization, while the deadline could interrupt one-use token
+rotation. The browser client now matches origin/main. The observed local
+invalid_scope resolution failure remains unverified; mocked tests do not establish
+live OAuth compatibility.

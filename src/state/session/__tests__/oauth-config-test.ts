@@ -14,6 +14,9 @@ describe('OAuth permission configuration', () => {
       `include:app.bsky.authFullApp?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
     )
     expect(scopes).toContain('include:app.witchsky.theme.authFull')
+    expect(
+      scopes.some(scope => scope.startsWith('repo:app.witchsky.theme.')),
+    ).toBe(false)
     expect(scopes.some(scope => scope.startsWith('transition:'))).toBe(false)
     for (const scope of Object.values(OPTIONAL_OAUTH_SCOPES))
       expect(scopes).not.toContain(scope)

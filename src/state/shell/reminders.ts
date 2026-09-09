@@ -7,8 +7,8 @@ import {isOnboardingActive} from './onboarding'
 export function shouldRequestEmailConfirmation(account: SessionAccount) {
   // ignore logged out
   if (!account) return false
-  // ignore confirmed accounts, this is the success state of this reminder
-  if (account.emailConfirmed) return false
+  // OAuth can omit email status; only remind known unverified accounts.
+  if (account.emailConfirmed !== false) return false
   // wait for onboarding to complete
   if (isOnboardingActive()) return false
 
