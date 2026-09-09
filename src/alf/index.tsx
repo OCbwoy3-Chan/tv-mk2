@@ -260,9 +260,11 @@ function ThemeProviderInner({
   children,
   theme: themeName,
   themesOverride,
+  syncDocument = false,
 }: React.PropsWithChildren<{
   theme: ThemeName
   themesOverride?: Partial<typeof themes>
+  syncDocument?: boolean
 }>) {
   const currentScheme = useScheme()
   const {colorMode, darkTheme} = useThemePrefs()
@@ -319,7 +321,7 @@ function ThemeProviderInner({
   ])
 
   useLayoutEffect(() => {
-    if (!IS_WEB) return
+    if (!IS_WEB || !syncDocument) return
     const t = value.theme
     const root = document.documentElement
     root.style.setProperty('--background', t.palette.contrast_0)
@@ -350,7 +352,7 @@ function ThemeProviderInner({
     } catch {
       // Storage can be unavailable in private browsing.
     }
-  }, [value.theme, value.themes, colorMode, darkTheme])
+  }, [value.theme, value.themes, colorMode, darkTheme, syncDocument])
 
   return <Context.Provider value={value}>{children}</Context.Provider>
 }
@@ -358,11 +360,18 @@ function ThemeProviderInner({
 export function ThemeProvider({
   children,
   theme: themeName,
-}: React.PropsWithChildren<{theme: ThemeName}>) {
+  syncDocument = false,
+}: React.PropsWithChildren<{
+  theme: ThemeName
+  /** Only the app's root provider should update the web document and splash cache. */
+  syncDocument?: boolean
+}>) {
   const {material3Accent, material3Style} = useThemePrefs()
   return (
     <MaterialYouPaletteProvider accent={material3Accent} style={material3Style}>
-      <ThemeProviderInner theme={themeName}>{children}</ThemeProviderInner>
+      <ThemeProviderInner theme={themeName} syncDocument={syncDocument}>
+        {children}
+      </ThemeProviderInner>
     </MaterialYouPaletteProvider>
   )
 }
