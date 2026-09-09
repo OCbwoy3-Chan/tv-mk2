@@ -195,11 +195,14 @@ export function useDeerVerificationState({
       )
     },
     enabled: deferredEnabled,
-    subscribed: deferredEnabled,
+    subscribed: Boolean(enabled && profile),
   })
 
-  if (linkedRecords.data === undefined || profile === undefined) return
-  const deerVerifications = createVerificationViews(linkedRecords.data, profile)
+  if (profile === undefined) return
+  const deerVerifications = createVerificationViews(
+    linkedRecords.data ?? [],
+    profile,
+  )
   const verificationState = createVerificationState(
     trustAppView ? (profile.verification?.verifications ?? []) : [],
     deerVerifications,

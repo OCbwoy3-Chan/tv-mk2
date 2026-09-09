@@ -458,9 +458,10 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       {maxHeight: nameRowHeight},
                     ]}>
                     <Text
-                      onLayout={event =>
-                        setNameRowHeight(event.nativeEvent.layout.height)
-                      }
+                      onLayout={event => {
+                        const {height} = event.nativeEvent.layout
+                        if (height > 0) setNameRowHeight(height)
+                      }}
                       emoji
                       style={[
                         a.flex_shrink_0,

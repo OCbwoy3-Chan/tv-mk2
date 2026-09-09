@@ -126,8 +126,10 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
               {...(AuthorGroup === View
                 ? {
                     onLayout: opts.showPronouns
-                      ? event =>
-                          setAuthorRowHeight(event.nativeEvent.layout.height)
+                      ? event => {
+                          const {height} = event.nativeEvent.layout
+                          if (height > 0) setAuthorRowHeight(height)
+                        }
                       : undefined,
                     style: [
                       a.flex_row,
