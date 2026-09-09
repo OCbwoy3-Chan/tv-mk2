@@ -8,14 +8,21 @@ import {
 } from '../oauth-config'
 
 describe('OAuth permission configuration', () => {
-  it('identifies Tenna Party and grants its push and private-reader calls', () => {
+  it('identifies Tenna Party and grants its push and private-vessel permissions', () => {
     const metadata = createOAuthMetadata({baseUrl: 'https://tenna.party'})
     expect(metadata.client_name).toBe('tenna.party')
     expect(metadata.client_id).toBe('https://tenna.party/oauth-client-metadata.json')
-    expect(metadata.scope.split(' ')).toContain('rpc:party.tenna.private.getPost?aud=*')
     expect(metadata.scope.split(' ')).toContain(
-      'rpc:party.tenna.private.privateVesselPermissions?aud=*',
+      'include:party.tenna.private.privateVesselPermissions?aud=*',
     )
+    for (const method of [
+      'party.tenna.private.getPost',
+      'party.tenna.private.getModStatus',
+      'party.tenna.private.getState',
+      'party.tenna.private.registerSpaceCredential',
+    ]) {
+      expect(metadata.scope.split(' ')).not.toContain(`rpc:${method}?aud=*`)
+    }
     expect(metadata.scope.split(' ')).toContain(`rpc:app.bsky.notification.registerPush?aud=${encodeURIComponent('did:web:push.tenna.party#bsky_notif')}`)
   })
   it('requests app permission sets without account-management access', () => {

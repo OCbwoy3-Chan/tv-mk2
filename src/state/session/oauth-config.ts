@@ -91,14 +91,7 @@ export function buildOAuthScope(
     ...['app.bsky.notification.registerPush', 'app.bsky.notification.unregisterPush'].map(
       method => `rpc:${method}?aud=${encodeURIComponent('did:web:push.tenna.party#bsky_notif')}`,
     ),
-    ...[
-      'party.tenna.private.getPost',
-      'party.tenna.private.getModStatus',
-      'party.tenna.private.getState',
-      'party.tenna.private.privateVesselPermissions',
-    ].map(
-      method => `rpc:${method}?aud=*`,
-    ),
+    'include:party.tenna.private.privateVesselPermissions?aud=*',
     ...permissions.map(permission => OPTIONAL_OAUTH_SCOPES[permission]),
   ].join(' ')
 }

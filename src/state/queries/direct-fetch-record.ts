@@ -82,6 +82,10 @@ export async function directFetchRecordAndProfile(
                 repo: urip.host,
                 collection: 'app.bsky.feed.post',
                 rkey: urip.rkey,
+              },{
+                headers: {
+                  "atproto-proxy": ""
+                }
               }),
           )
         ).data.value)(),
