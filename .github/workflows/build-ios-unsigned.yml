@@ -30,10 +30,11 @@ jobs:
         with:
           xcode-version: "latest-stable" # use whatever matches the repo's requirements
 
-      - name: ☕️ Setup Cocoapods
-        uses: maxim-lobanov/setup-cocoapods@v1
+      - name: 💎 Setup Ruby and CocoaPods
+        uses: ruby/setup-ruby@v1
         with:
-          version: latest
+          ruby-version: .ruby-version
+          bundler-cache: true
 
       - name: 🔤 Compile translations
         run: pnpm intl:build
@@ -52,25 +53,10 @@ jobs:
       - name: 🔧 Copy assets into generated iOS directory
         run: cp -R assets/. ios/tennaparty/
 
-      - name: 📦 Install Pods (bundle + verbose)
+      - name: 📦 Install Pods
         run: |
           set -o pipefail
           cd ios
-          echo "=== Podfile location ==="
-          pwd; ls -la
-          echo "=== Podfile content (first 200 lines) ==="
-          sed -n '1,200p' Podfile || true
-          echo "=== Ruby & CocoaPods versions ==="
-          ruby -v || true
-          pod --version || true
-          echo "=== Ensure node_modules exists (first 200 entries) ==="
-          ls -la ../node_modules | sed -n '1,200p' || true
-          echo "=== Using bundler to isolate cocoapods version ==="
-          gem install bundler --no-document || true
-          bundle init || true
-          # ensure Gemfile contains cocoapods version pin
-          grep -q "cocoapods" Gemfile || echo "gem 'cocoapods', '1.16.2'" >> Gemfile
-          bundle install --jobs 4 || bundle install
           bundle exec pod install --repo-update --verbose
 
       - name: 🔍 Debug - list ios directory
