@@ -1,6 +1,7 @@
 import {forwardRef} from 'react'
 import Svg, {Circle, Path} from 'react-native-svg'
 
+import {useDeerVerification} from '#/state/preferences/deer-verification'
 import {useTheme} from '#/alf'
 import {type Props, useCommonSVGProps} from '#/components/icons/common'
 import {accentForeground} from '#/features/themes/accentForeground'
@@ -8,6 +9,7 @@ import {accentForeground} from '#/features/themes/accentForeground'
 export const VerifiedCheck = forwardRef<Svg, Props>(
   function LogoImpl(props, ref) {
     const theme = useTheme()
+    const {perVerifierBadges} = useDeerVerification()
     const {fill, size, style, ...rest} = useCommonSVGProps(props)
 
     return (
@@ -22,7 +24,7 @@ export const VerifiedCheck = forwardRef<Svg, Props>(
         <Circle cx="12" cy="12" r="11.5" fill={fill} />
         <Path
           fill={accentForeground(
-            theme,
+            perVerifierBadges ? {...theme, onAccent: undefined} : theme,
             typeof fill === 'string' ? fill : theme.palette.primary_500,
           )}
           fillRule="evenodd"

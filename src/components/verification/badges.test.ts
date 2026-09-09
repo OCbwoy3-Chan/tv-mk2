@@ -1,6 +1,10 @@
+import {DEFAULT_ACTIVE_THEME} from '#/features/themes/catalog'
+import {activeThemeToScheme} from '#/features/themes/semanticTheme'
 import type * as bsky from '#/types/bsky'
 import {verificationBadges} from './badges'
 import {verifierColor} from './verifier-color'
+
+const theme = activeThemeToScheme(DEFAULT_ACTIVE_THEME)!.dark
 
 const profile: bsky.profile.AnyProfileView = {
   did: 'did:plc:subject',
@@ -90,8 +94,10 @@ it('keeps badge identities and colors independent of viewer state and record ord
   expect(verificationBadges(otherView, true)).toEqual(
     verificationBadges(profile, true),
   )
-  const original = verifierColor(profile.did)
-  verifierColor('did:plc:another-viewing-account')
-  expect(verifierColor(otherView.did)).toBe(original)
-  expect(verifierColor('did:plc:a')).not.toBe(verifierColor('did:plc:b'))
+  const original = verifierColor(profile.did, theme)
+  verifierColor('did:plc:another-viewing-account', theme)
+  expect(verifierColor(otherView.did, theme)).toBe(original)
+  expect(verifierColor('did:plc:a', theme)).not.toBe(
+    verifierColor('did:plc:b', theme),
+  )
 })

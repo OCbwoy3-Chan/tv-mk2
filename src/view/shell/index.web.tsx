@@ -115,7 +115,11 @@ function ShellInner() {
 
   useLayoutEffect(() => {
     const rootElement = document.documentElement
-    rootElement.className = `html`
+    rootElement.classList.add('html')
+    rootElement.style.colorScheme = t.scheme
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', t.palette.contrast_0)
     rootElement.style.setProperty(
       'background',
       `${t.atoms.bg.backgroundColor}`,

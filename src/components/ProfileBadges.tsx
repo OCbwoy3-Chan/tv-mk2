@@ -13,7 +13,7 @@ import {
 } from '#/state/preferences/pds-label'
 import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
 import {usePdsFaviconUrl, usePdsLabelQuery} from '#/state/queries/pds-label'
-import {atoms as a, useAlf, type ViewStyleProp} from '#/alf'
+import {atoms as a, useAlf, useTheme, type ViewStyleProp} from '#/alf'
 import {useNativeFontScale} from '#/alf/util/dimensions'
 import {BotBadge, BotBadgeButton, isBotAccount} from '#/components/BotBadge'
 import {Button} from '#/components/Button'
@@ -93,6 +93,7 @@ export function ProfileBadgesFromProfileShadow({
 }: Omit<ProfileBadgesProps, 'profile'> & {
   profile: Shadow<bsky.profile.AnyProfileView>
 }) {
+  const t = useTheme()
   const shadowed = useDeerVerificationProfileOverlay(profile)
   const {perVerifierBadges} = useDeerVerification()
   const verification = useSimpleVerificationState({profile: shadowed})
@@ -213,11 +214,13 @@ export function ProfileBadgesFromProfileShadow({
                 }
                 verifier={badge.kind === 'verifier'}
                 fill={
-                  badge.kind === 'verifier' && perVerifierBadges
-                    ? verifierColor(badge.did)
-                    : badge.kind === 'verification' && badge.issuer
-                      ? verifierColor(badge.issuer)
-                      : undefined
+                  !perVerifierBadges
+                    ? t.palette.primary_500
+                    : badge.kind === 'verifier'
+                      ? verifierColor(badge.did, t)
+                      : badge.kind === 'verification' && badge.issuer
+                        ? verifierColor(badge.issuer, t)
+                        : verifierColor(shadowed.did, t)
                 }
                 width={verificationIconWidth}
               />

@@ -6,10 +6,13 @@ import {useNavigation} from '@react-navigation/native'
 import {type NavigationProp} from '#/lib/routes/types'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
 import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
+import {useMaterialYouPalette} from '#/alf/util/materialYou'
 import {ChevronRight_Stroke2_Corner0_Rounded as ChevronIcon} from '#/components/icons/Chevron'
 import {Text} from '#/components/Typography'
+import {IS_WEB} from '#/env'
 import {DEFAULT_ACTIVE_THEME} from '#/features/themes/catalog'
 import {resolveHueRecord} from '#/features/themes/hue'
+import {resolveMaterialYouRecord} from '#/features/themes/materialYou'
 import {ThemePreview} from '#/features/themes/ThemePreview'
 import {
   getColorSet,
@@ -22,7 +25,7 @@ export function ThemeQuickSelector() {
   const t = useTheme()
   const {gtMobile} = useBreakpoints()
   const navigation = useNavigation<NavigationProp>()
-  const {activeTheme: storedTheme, colorMode} = useThemePrefs()
+  const {activeTheme: storedTheme, colorMode, material3Accent} = useThemePrefs()
   const {setActiveTheme, setColorMode} = useSetThemePrefs()
   const supportedStoredTheme =
     storedTheme &&
@@ -31,12 +34,29 @@ export function ThemeQuickSelector() {
       ? storedTheme
       : undefined
   const activeTheme = supportedStoredTheme ?? DEFAULT_ACTIVE_THEME
+  const palette = useMaterialYouPalette()
   const light = getColorSet(
-    resolveHueRecord(activeTheme.light.record, activeTheme.light.hue ?? 0),
+    resolveHueRecord(
+      resolveMaterialYouRecord(
+        activeTheme.light.record,
+        palette,
+        material3Accent,
+        IS_WEB,
+      ),
+      activeTheme.light.hue ?? 0,
+    ),
     activeTheme.light.colorSet,
   )
   const dark = getColorSet(
-    resolveHueRecord(activeTheme.dark.record, activeTheme.dark.hue ?? 0),
+    resolveHueRecord(
+      resolveMaterialYouRecord(
+        activeTheme.dark.record,
+        palette,
+        material3Accent,
+        IS_WEB,
+      ),
+      activeTheme.dark.hue ?? 0,
+    ),
     activeTheme.dark.colorSet,
   )
   const previewHeight = 92

@@ -3,8 +3,8 @@ import {type ColorSchemeName, useColorScheme} from 'react-native'
 import {type ThemeName} from '@bsky.app/alf'
 
 import {useThemePrefs} from '#/state/shell'
-import {dark, dim, light} from '#/alf/themes'
 import {IS_WEB} from '#/env'
+import {WITCHSKY_DARK_THEME,WITCHSKY_THEME} from '#/features/themes/catalog'
 
 export function useColorModeTheme(): ThemeName {
   const theme = useThemeName()
@@ -41,24 +41,23 @@ function getThemeName(
 function updateDocument(theme: ThemeName) {
   if (IS_WEB && typeof window !== 'undefined') {
     const html = window.document.documentElement
-    const meta = window.document.querySelector('meta[name="theme-color"]')
 
     // remove any other color mode classes
     html.className = html.className.replace(/(theme)--\w+/g, '')
     html.classList.add(`theme--${theme}`)
-    // set color to 'theme-color' meta tag
-    meta?.setAttribute('content', getBackgroundColor(theme))
-    window.localStorage.setItem('ALF_THEME', theme)
+    try {
+      window.localStorage.setItem('ALF_THEME', theme)
+    } catch {}
   }
 }
 
 export function getBackgroundColor(theme: ThemeName): string {
   switch (theme) {
     case 'light':
-      return light.atoms.bg.backgroundColor
+      return WITCHSKY_THEME.base.colors.canvas
     case 'dark':
-      return dark.atoms.bg.backgroundColor
+      return WITCHSKY_DARK_THEME.base.colors.canvas
     case 'dim':
-      return dim.atoms.bg.backgroundColor
+      return WITCHSKY_DARK_THEME.base.colors.canvas
   }
 }

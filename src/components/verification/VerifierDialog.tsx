@@ -55,6 +55,7 @@ function Inner({
   verificationState: FullVerificationState
 }) {
   const t = useTheme()
+  const {perVerifierBadges} = useDeerVerification()
   const ax = useAnalytics()
   const {_} = useLingui()
   const {gtMobile} = useBreakpoints()
@@ -66,7 +67,6 @@ function Inner({
     ? _(msg`You are a trusted verifier`)
     : _(msg`${userName} is a trusted verifier`)
 
-  const {perVerifierBadges} = useDeerVerification()
   const deerVerificationEnabled = useDeerVerificationEnabled()
 
   return (
@@ -115,7 +115,7 @@ function Inner({
                   width={14}
                   fill={
                     perVerifierBadges
-                      ? verifierColor(profile.did)
+                      ? verifierColor(profile.did, t)
                       : t.palette.primary_500
                   }
                 />

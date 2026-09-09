@@ -56,7 +56,7 @@ export function ThemePreview({
             onPress,
           }
         : {})}
-      style={[a.flex_1, {minWidth: 126}, style]}>
+      style={[{minWidth: 126, flexGrow: 1, flexShrink: 1}, style]}>
       <View
         style={[
           a.rounded_md,

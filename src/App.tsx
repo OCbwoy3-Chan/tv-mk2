@@ -1,6 +1,7 @@
 import '#/logger/sentry/setup'
 
 import {Fragment, useEffect, useState} from 'react'
+import {Appearance} from 'react-native'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import {KeyboardProvider as KeyboardControllerProvider} from 'react-native-keyboard-controller'
 import {
@@ -90,7 +91,9 @@ import {BackgroundNotificationPreferencesProvider} from '../modules/expo-backgro
 
 void SplashScreen.preventAutoHideAsync()
 if (IS_IOS) {
-  void SystemUI.setBackgroundColorAsync('black')
+  void SystemUI.setBackgroundColorAsync(
+    Appearance.getColorScheme() === 'dark' ? '#281c1c' : '#fefbfb',
+  )
 }
 if (IS_ANDROID) {
   // iOS is handled by the config plugin -sfn

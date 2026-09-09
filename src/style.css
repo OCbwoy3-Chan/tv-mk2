@@ -12,38 +12,39 @@
  * HTML & BODY STYLES IN `web/index.html` and `bskyweb/templates/base.html`
  */
 :root {
-  --text: black;
+  --text: #281c1c;
   --background: #fefbfb;
   --backgroundLight: #fefbfb;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --text: white;
-    --background: #222020;
-    --backgroundLight: #222020;
+    --text: #fefbfb;
+    --background: #281c1c;
+    --backgroundLight: #2f201f;
   }
 }
 
 html.theme--light {
-  --text: black;
+  color-scheme: light;
+  --text: #281c1c;
   --background: #fefbfb;
   --backgroundLight: #fefbfb;
   background-color: #fefbfb;
 }
 html.theme--dark {
   color-scheme: dark;
-  background-color: #000000;
-  --text: white;
-  --background: #000000;
-  --backgroundLight: #000000;
+  background-color: #281c1c;
+  --text: #fefbfb;
+  --background: #281c1c;
+  --backgroundLight: #2f201f;
 }
 html.theme--dim {
   color-scheme: dark;
-  background-color: #222020;
-  --text: white;
-  --background: #222020;
-  --backgroundLight: #222020;
+  background-color: #281c1c;
+  --text: #fefbfb;
+  --background: #281c1c;
+  --backgroundLight: #2f201f;
 }
 /* Buttons and inputs have a font set by UA, so we'll have to reset that */
 button,
@@ -349,7 +350,7 @@ input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   border-radius: 50%;
-  background-color: white;
+  background-color: #fefbfb;
   height: 16px;
   width: 16px;
   margin-left: -6px;
@@ -358,7 +359,7 @@ input[type='range']::-webkit-slider-thumb {
 input[type='range'][orient='vertical']::-moz-range-thumb {
   border: none;
   border-radius: 50%;
-  background-color: white;
+  background-color: #fefbfb;
   height: 16px;
   width: 16px;
   margin-left: -6px;

@@ -162,13 +162,13 @@ function Badge({
               fill={
                 isVerifier
                   ? perVerifierBadges
-                    ? verifierColor(badge.did)
+                    ? verifierColor(badge.did, t)
                     : t.palette.primary_500
                   : verifiedByHidden
                     ? t.atoms.bg_contrast_100.backgroundColor
                     : state.profile.isVerified
-                      ? issuer
-                        ? verifierColor(issuer)
+                      ? perVerifierBadges
+                        ? verifierColor(issuer ?? profile.did, t)
                         : t.palette.primary_500
                       : t.atoms.bg_contrast_100.backgroundColor
               }
