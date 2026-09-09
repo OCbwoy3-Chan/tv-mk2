@@ -3,6 +3,7 @@ import {type AppBskyFeedPost} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {getPostEditInfo} from '#/lib/edit-post'
+import {formatDateWithSystemTime} from '#/lib/strings/systemTime'
 import {atoms as a, useTheme, web} from '#/alf'
 import * as Dialog from '#/components/Dialog'
 import {Text} from '#/components/Typography'
@@ -83,20 +84,28 @@ function PostEditHistoryDialog({
             isCurrent
             label={
               updatedAt
-                ? l`Current · ${i18n.date(new Date(updatedAt), {
-                    dateStyle: 'medium',
-                    timeStyle: 'short',
-                  })}`
+                ? l`Current · ${formatDateWithSystemTime(
+                    i18n,
+                    new Date(updatedAt),
+                    {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    },
+                  )}`
                 : l`Current`
             }
             text={currentText}
           />
           <TimelineEntry
             isLast
-            label={l`Original · ${i18n.date(new Date(createdAt), {
-              dateStyle: 'medium',
-              timeStyle: 'short',
-            })}`}
+            label={l`Original · ${formatDateWithSystemTime(
+              i18n,
+              new Date(createdAt),
+              {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              },
+            )}`}
             text={originalText ?? ''}
           />
         </View>

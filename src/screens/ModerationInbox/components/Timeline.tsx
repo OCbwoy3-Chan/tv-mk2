@@ -1,6 +1,7 @@
 import {View} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
+import {formatDateWithSystemTime} from '#/lib/strings/systemTime'
 import {ContentBlock} from './ContentBlock'
 import {TimelineItem} from './TimelineItem'
 
@@ -16,7 +17,7 @@ export function Timeline({items}: {items: {title: string; date?: Date}[]}) {
             title={title}
             date={
               date
-                ? i18n.date(date, {
+                ? formatDateWithSystemTime(i18n, date, {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric',

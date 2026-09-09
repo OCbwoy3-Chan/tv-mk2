@@ -1,7 +1,9 @@
 import {useCallback, useState} from 'react'
 import {View} from 'react-native'
+import {i18n} from '@lingui/core'
 import {Trans, useLingui} from '@lingui/react/macro'
 
+import {formatDateWithSystemTime} from '#/lib/strings/systemTime'
 import * as persisted from '#/state/persisted'
 import {
   useSetSettingsSyncEnabled,
@@ -30,9 +32,9 @@ function formatStatusLine(
   if (status.type === 'pushing') return 'Saving to cloud…'
   if (status.type === 'merging') return 'Merging with cloud…'
   if (status.type === 'pushed')
-    return `Saved to cloud at ${status.at.toLocaleTimeString()}`
+    return `Saved to cloud at ${formatDateWithSystemTime(i18n, status.at, {timeStyle: 'medium'})}`
   if (status.type === 'merged')
-    return `Merged with cloud at ${status.at.toLocaleTimeString()}`
+    return `Merged with cloud at ${formatDateWithSystemTime(i18n, status.at, {timeStyle: 'medium'})}`
   if (status.type === 'error') {
     const message = status.message.replace(/^Error:\s*/i, '')
     return `Error: ${message}`

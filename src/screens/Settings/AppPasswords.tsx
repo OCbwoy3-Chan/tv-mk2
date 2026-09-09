@@ -13,6 +13,7 @@ import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {cleanError} from '#/lib/strings/errors'
+import {formatDateWithSystemTime} from '#/lib/strings/systemTime'
 import {
   useAppPasswordDeleteMutation,
   useAppPasswordsQuery,
@@ -195,7 +196,7 @@ function AppPasswordCard({
           <Text style={[t.atoms.text_contrast_medium]}>
             <Trans>
               Created{' '}
-              {i18n.date(appPassword.createdAt, {
+              {formatDateWithSystemTime(i18n, appPassword.createdAt, {
                 year: 'numeric',
                 month: 'numeric',
                 day: 'numeric',

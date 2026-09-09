@@ -1,6 +1,8 @@
 import {type I18n} from '@lingui/core'
 import {msg} from '@lingui/core/macro'
 
+import {formatDateWithSystemTime} from '#/lib/strings/systemTime'
+
 export function niceDate(
   i18n: I18n,
   date: number | string | Date,
@@ -14,12 +16,12 @@ export function niceDate(
     return i18n._(
       msg({
         context: 'date and time formatted like this: [time] · [date]',
-        message: `${i18n.date(d, {timeStyle: ts})} · ${i18n.date(d, {dateStyle: 'medium'})}`,
+        message: `${formatDateWithSystemTime(i18n, d, {timeStyle: ts})} · ${i18n.date(d, {dateStyle: 'medium'})}`,
       }),
     )
   }
 
-  return i18n.date(d, {
+  return formatDateWithSystemTime(i18n, d, {
     dateStyle,
     timeStyle: ts,
   })
