@@ -47,6 +47,7 @@ import * as ReportDialogMetadataContext from '#/components/moderation/ReportDial
 import {type AppModerationCause} from '#/components/Pills'
 import {Embed} from '#/components/Post/Embed'
 import {PostEmbedViewContext} from '#/components/Post/Embed/types'
+import {KnownLikers} from '#/components/Post/KnownLikers'
 import {PostRepliedTo} from '#/components/Post/PostRepliedTo'
 import {ShowMoreTextButton} from '#/components/Post/ShowMoreTextButton'
 import {TranslatedPost} from '#/components/Post/Translated'
@@ -55,7 +56,7 @@ import {DiscoverDebug} from '#/components/PostControls/DiscoverDebug'
 import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import {SubtleHover} from '#/components/SubtleHover'
-import {useAnalytics} from '#/analytics'
+import {Features, useAnalytics} from '#/analytics'
 import {IS_NATIVE, IS_WEB} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import {app} from '#/lexicons'
@@ -500,6 +501,11 @@ let FeedItemInner = ({
             threadgateRecord={threadgateRecord}
             onShowLess={onShowLess}
             viaRepost={viaRepost}
+          />
+          <KnownLikers
+            post={post}
+            feature={Features.PostFeedKnownLikersEnable}
+            outerStyle={[a.py_sm]}
           />
         </View>
 

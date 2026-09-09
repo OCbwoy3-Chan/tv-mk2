@@ -70,6 +70,7 @@ import {PostAlerts} from '#/components/moderation/PostAlerts'
 import * as ReportDialogMetadataContext from '#/components/moderation/ReportDialog/ReportDialogMetadataContext'
 import {type AppModerationCause} from '#/components/Pills'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
+import {KnownLikers} from '#/components/Post/KnownLikers'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls, PostControlsSkeleton} from '#/components/PostControls'
 import {PostTags} from '#/components/PostTags'
@@ -81,7 +82,7 @@ import {RichText} from '#/components/RichText'
 import * as Skele from '#/components/Skeleton'
 import {Text} from '#/components/Typography'
 import {WhoCanReply} from '#/components/WhoCanReply'
-import {useAnalytics} from '#/analytics'
+import {Features, useAnalytics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -676,6 +677,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       ) : null}
                     </View>
                   ) : null}
+                  <KnownLikers
+                    post={post}
+                    feature={Features.PostThreadKnownLikersEnable}
+                    outerStyle={[a.pt_xs, a.pb_sm]}
+                  />
                   <View
                     style={[
                       isCompactPosts ? a.pt_2xs : a.pt_sm,
@@ -749,7 +755,7 @@ function ExpandedPostDetails({
       ]}>
       <BackdatedPostIndicator post={post} />
       <View style={[a.flex_row, a.align_center, a.flex_wrap, a.gap_sm]}>
-        <Text style={[a.text_xs, t.atoms.text_contrast_high]}>
+        <Text style={[a.text_xs, t.atoms.text_contrast_medium]}>
           {niceDate(i18n, post.indexedAt, 'dot separated')}
           {showViaClient && via ? ` · ${truncateVia(via)}` : null}
         </Text>
@@ -871,14 +877,14 @@ function ThreadExpandedMetricText({
 
   if (labelOnly) {
     return (
-      <Text testID={testID} style={[a.text_sm, t.atoms.text_contrast_high]}>
+      <Text testID={testID} style={[a.text_sm, t.atoms.text_contrast_medium]}>
         <Plural value={count} one={one} other={other} />
       </Text>
     )
   }
 
   return (
-    <Text testID={testID} style={[a.text_sm, t.atoms.text_contrast_high]}>
+    <Text testID={testID} style={[a.text_sm, t.atoms.text_contrast_medium]}>
       <Trans comment="Metric count display, the <0> tags enclose the number in bold (will never be 0)">
         <Text style={[a.text_sm, a.font_semi_bold, t.atoms.text]}>
           {formatCountsMetricNumber(i18n, display, count)}

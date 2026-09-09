@@ -27,6 +27,7 @@ import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {SubtleHover} from '#/components/SubtleHover'
 import {
+  getTrendingTopicFeedUri,
   TrendingTopicsPrompt,
   useTrendingTopicSeen,
 } from '#/components/TrendingTopics'
@@ -96,6 +97,7 @@ function Inner() {
                   onPress={() => {
                     ax.metric('trendingTopic:click', {
                       context: 'explore',
+                      feedUri: getTrendingTopicFeedUri(trend),
                       rank,
                       recId: trending.recId,
                     })
@@ -135,7 +137,7 @@ export function TrendRow({
 
   const actors = useModerateTrendingActors(trend.actors)
   const formattedPostCount = formatCount(i18n, trend.postCount)
-  useTrendingTopicSeen('explore', rank, recId)
+  useTrendingTopicSeen('explore', getTrendingTopicFeedUri(trend), rank, recId)
 
   const description = useMemo(() => {
     if (!trend.description) return
