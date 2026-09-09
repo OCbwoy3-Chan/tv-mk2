@@ -275,6 +275,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const repostsMetricsDisplay = useRepostsMetricsDisplay()
   const quotesMetricsDisplay = useQuotesMetricsDisplay()
   const savesMetricsDisplay = useSavesMetricsDisplay()
+  const showExpandedMetrics =
+    shouldShowThreadExpandedMetric(repostsMetricsDisplay, post.repostCount) ||
+    shouldShowThreadExpandedMetric(likesMetricsDisplay, post.likeCount) ||
+    shouldShowThreadExpandedMetric(quotesMetricsDisplay, post.quoteCount) ||
+    shouldShowThreadExpandedMetric(savesMetricsDisplay, post.bookmarkCount)
 
   const likesHref = useMemo(() => {
     const urip = new AtUri(post.uri)
@@ -588,24 +593,8 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   <ExpandedPostDetails
                     post={item.value.post}
                     isThreadAuthor={isThreadAuthor}
-                    compactPosts={isCompactPosts}
                   />
-                  {shouldShowThreadExpandedMetric(
-                    repostsMetricsDisplay,
-                    post.repostCount,
-                  ) ||
-                  shouldShowThreadExpandedMetric(
-                    likesMetricsDisplay,
-                    post.likeCount,
-                  ) ||
-                  shouldShowThreadExpandedMetric(
-                    quotesMetricsDisplay,
-                    post.quoteCount,
-                  ) ||
-                  shouldShowThreadExpandedMetric(
-                    savesMetricsDisplay,
-                    post.bookmarkCount,
-                  ) ? (
+                  {showExpandedMetrics ? (
                     // Show this section unless we're *sure* it has no engagement.
                     <View
                       style={[
@@ -617,8 +606,8 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                           columnGap: a.gap_lg.gap,
                         },
                         a.border_t,
-                        isCompactPosts ? a.mt_sm : a.mt_md,
-                        isCompactPosts ? a.py_sm : a.py_md,
+                        a.mt_md,
+                        a.py_sm,
                         t.atoms.border_contrast_low,
                       ]}>
                       {shouldShowThreadExpandedMetric(
@@ -684,7 +673,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   />
                   <View
                     style={[
-                      isCompactPosts ? a.pt_2xs : a.pt_sm,
+                      !showExpandedMetrics && a.pt_sm,
                       a.pb_2xs,
                       !isCompactPosts && {
                         marginLeft: -5,
@@ -734,11 +723,9 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 function ExpandedPostDetails({
   post,
   isThreadAuthor,
-  compactPosts,
 }: {
   post: Extract<ThreadItem, {type: 'threadPost'}>['value']['post']
   isThreadAuthor: boolean
-  compactPosts: boolean
 }) {
   const t = useTheme()
   const {i18n} = useLingui()
@@ -747,15 +734,10 @@ function ExpandedPostDetails({
   const via = (post.record as {via?: string}).via
 
   return (
-    <View
-      style={[
-        compactPosts ? a.gap_sm : a.gap_md,
-        compactPosts ? a.pt_sm : a.pt_md,
-        a.align_start,
-      ]}>
+    <View style={[a.gap_md, a.pt_md, a.align_start]}>
       <BackdatedPostIndicator post={post} />
       <View style={[a.flex_row, a.align_center, a.flex_wrap, a.gap_sm]}>
-        <Text style={[a.text_xs, t.atoms.text_contrast_medium]}>
+        <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
           {niceDate(i18n, post.indexedAt, 'dot separated')}
           {showViaClient && via ? ` · ${truncateVia(via)}` : null}
         </Text>
@@ -877,16 +859,16 @@ function ThreadExpandedMetricText({
 
   if (labelOnly) {
     return (
-      <Text testID={testID} style={[a.text_sm, t.atoms.text_contrast_medium]}>
+      <Text testID={testID} style={[a.text_md, t.atoms.text_contrast_medium]}>
         <Plural value={count} one={one} other={other} />
       </Text>
     )
   }
 
   return (
-    <Text testID={testID} style={[a.text_sm, t.atoms.text_contrast_medium]}>
+    <Text testID={testID} style={[a.text_md, t.atoms.text_contrast_medium]}>
       <Trans comment="Metric count display, the <0> tags enclose the number in bold (will never be 0)">
-        <Text style={[a.text_sm, a.font_semi_bold, t.atoms.text]}>
+        <Text style={[a.text_md, a.font_semi_bold, t.atoms.text]}>
           {formatCountsMetricNumber(i18n, display, count)}
         </Text>{' '}
         <Plural value={count} one={one} other={other} />
