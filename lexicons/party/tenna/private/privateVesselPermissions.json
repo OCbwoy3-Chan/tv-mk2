@@ -1,0 +1,59 @@
+{
+  "defs": {
+    "main": {
+      "detail": "Make private posts on Bluesky.",
+      "detail:langs": {
+        "ja": "Blueskyで非公開の投稿作る"
+      },
+      "permissions": [
+        {
+          "action": [
+            "read",
+            "create",
+            "update",
+            "delete"
+          ],
+          "authority": "*",
+          "collection": [
+            "party.tenna.private.post"
+          ],
+          "manage": [
+            "create",
+            "update",
+            "delete"
+          ],
+          "resource": "space",
+          "skey": "self",
+          "spaceType": "party.tenna.private.space",
+          "type": "permission"
+        },
+        {
+          "inheritAud": true,
+          "lxm": [
+            "com.atproto.space.createRecord",
+            "com.atproto.space.getDelegationToken",
+            "com.atproto.space.getLatestCommit",
+            "com.atproto.space.getSpaceCredential",
+            "com.atproto.space.listSpaces",
+            "com.atproto.space.notifyWrite",
+            "com.atproto.space.putRecord",
+            "com.atproto.space.registerNotify",
+            "party.tenna.private.getModStatus",
+            "party.tenna.private.getPost",
+            "party.tenna.private.getState",
+            "party.tenna.private.registerSpaceCredential"
+          ],
+          "resource": "rpc",
+          "type": "permission"
+        }
+      ],
+      "title": "Private Posts (tenna.party)",
+      "title:langs": {
+        "ja": "非公開の投稿 (tenna.party)"
+      },
+      "type": "permission-set"
+    }
+  },
+  "id": "party.tenna.private.privateVesselPermissions",
+  "lexicon": 1
+}
