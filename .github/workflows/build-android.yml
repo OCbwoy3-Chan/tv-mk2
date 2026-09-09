@@ -117,3 +117,24 @@ jobs:
         with:
           name: tenna-party.apk
           path: ${{ steps.find_apk.outputs.apk_path }}
+
+      - name: ⬆️ Push APK to R2
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          pnpm dlx wrangler r2 object put shit/app-release.apk \
+            --file="${{ steps.find_apk.outputs.apk_path }}" \
+            --remote \
+            --jurisdiction eu
+
+      - name: 💬 Send Discord notification
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl --fail-with-body \
+            -H "Content-Type: application/json" \
+            -X POST \
+            -d '{"content":"<@&1534855421678981150> tenna.party (${{ github.ref_name }}) has been updated on Android, check it out! sha: ${{ github.sha }}"}' \
+            "$DISCORD_WEBHOOK"
