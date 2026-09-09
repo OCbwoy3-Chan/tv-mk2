@@ -6,10 +6,7 @@ import {
   useTrendingSettings,
   useTrendingSettingsApi,
 } from '#/state/preferences/trending'
-import {
-  DEFAULT_LIMIT,
-  useGetTrendsQuery,
-} from '#/state/queries/trending/useGetTrendsQuery'
+import {useGetTrendsQuery} from '#/state/queries/trending/useGetTrendsQuery'
 import {useTrendingConfig} from '#/state/service-config'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
@@ -36,10 +33,8 @@ function Inner() {
   const {t: l} = useLingui()
   const ax = useAnalytics()
 
-  const exploreTopicCount = ax.features.getValue(
-    ax.features.TrendingExploreTopicsCountValue,
-    DEFAULT_LIMIT,
-  )
+  const {trendingTopicCount: preferredTopicCount} = useTrendingSettings()
+  const trendingTopicCount = Math.min(preferredTopicCount, 10)
 
   const trendingPrompt = Prompt.usePromptControl()
   const {setTrendingDisabled} = useTrendingSettingsApi()
@@ -48,6 +43,7 @@ function Inner() {
     error,
     isLoading,
   } = useGetTrendsQuery({
+    limit: trendingTopicCount,
     refetchOnWindowFocus: true,
   })
   const noTopics = !isLoading && !error && !trending?.trends?.length
@@ -68,7 +64,7 @@ function Inner() {
           <Text style={[a.flex_1, a.text_md, a.font_semi_bold]}>
             <Trans>Trending</Trans>
           </Text>
-          {exploreTopicCount > DEFAULT_LIMIT ? (
+          {preferredTopicCount > trendingTopicCount ? (
             <Link label={l`See more trending topics`} to="/search">
               {({hovered, pressed}) => (
                 <Text
@@ -102,7 +98,7 @@ function Inner() {
 
         <View style={[a.gap_xs]}>
           {isLoading ? (
-            Array(DEFAULT_LIMIT)
+            Array(trendingTopicCount)
               .fill(0)
               .map((_n, i) => (
                 <View key={i} style={[a.flex_row, a.align_center, a.gap_sm]}>
@@ -125,7 +121,7 @@ function Inner() {
               ))
           ) : !trending?.trends ? null : (
             <>
-              {trending.trends.slice(0, DEFAULT_LIMIT).map((topic, i) => {
+              {trending.trends.map((topic, i) => {
                 const rank = i + 1
                 return (
                   <TrendingTopicLink

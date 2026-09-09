@@ -27,8 +27,12 @@ adding theme record types; never place account or blob permissions in the set.
 
 Preferences stay on the PDS. Bluesky's PDS checks getPreferences and
 putPreferences against its default Bluesky audience; proxying those calls to
-Blacksky returns 501. Custom AppView sign-ins therefore add only these two
+Blacksky returns 501. Custom AppView sign-ins therefore add these two
 Bluesky-audience RPC grants alongside the selected AppView permission set.
+Blacksky sign-ins additionally grant `app.bsky.feed.searchPosts` for the Bluesky
+audience so searches can fall back when Blacksky returns its upstream 502 error.
+Existing sessions need a new sign-in to receive this grant. Search pagination
+keeps the provider that supplied the first page; cursors never cross providers.
 
 The app permission set includes video methods with inheritAud. That grants them
 for the selected AppView, not the DID-only video-service audience used by

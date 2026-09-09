@@ -1,6 +1,4 @@
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {type CommonNavigatorParams} from '#/lib/routes/types'
@@ -25,6 +23,7 @@ import {Play_Stroke2_Corner2_Rounded as PlayIcon} from '#/components/icons/Play'
 import {Trending2_Stroke2_Corner2_Rounded as Graph} from '#/components/icons/Trending'
 import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
 import * as Layout from '#/components/Layout'
+import * as Select from '#/components/Select'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE} from '#/env'
 
@@ -33,15 +32,16 @@ type Props = NativeStackScreenProps<
   'ContentAndMediaSettings'
 >
 export function ContentAndMediaSettingsScreen({}: Props) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const ax = useAnalytics()
   const autoplayDisabledPref = useAutoplayDisabled()
   const setAutoplayDisabledPref = useSetAutoplayDisabled()
   const inAppBrowserPref = useInAppBrowser()
   const setUseInAppBrowser = useSetInAppBrowser()
   const {enabled: trendingEnabled} = useTrendingConfig()
-  const {trendingDisabled, trendingVideoDisabled} = useTrendingSettings()
-  const {setTrendingDisabled, setTrendingVideoDisabled} =
+  const {trendingDisabled, trendingVideoDisabled, trendingTopicCount} =
+    useTrendingSettings()
+  const {setTrendingDisabled, setTrendingVideoDisabled, setTrendingTopicCount} =
     useTrendingSettingsApi()
 
   return (
@@ -59,7 +59,7 @@ export function ContentAndMediaSettingsScreen({}: Props) {
         <SettingsList.Container>
           <SettingsList.LinkItem
             to="/settings/saved-feeds"
-            label={_(msg`Manage saved feeds`)}>
+            label={l`Manage saved feeds`}>
             <SettingsList.ItemIcon icon={HashtagIcon} />
             <SettingsList.ItemText>
               <Trans>Manage saved feeds</Trans>
@@ -67,7 +67,7 @@ export function ContentAndMediaSettingsScreen({}: Props) {
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
             to="/settings/threads"
-            label={_(msg`Thread preferences`)}>
+            label={l`Thread preferences`}>
             <SettingsList.ItemIcon icon={BubblesIcon} />
             <SettingsList.ItemText>
               <Trans>Thread preferences</Trans>
@@ -75,7 +75,7 @@ export function ContentAndMediaSettingsScreen({}: Props) {
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
             to="/settings/following-feed"
-            label={_(msg`Following feed preferences`)}>
+            label={l`Following feed preferences`}>
             <SettingsList.ItemIcon icon={HomeIcon} />
             <SettingsList.ItemText>
               <Trans>Following feed preferences</Trans>
@@ -83,7 +83,7 @@ export function ContentAndMediaSettingsScreen({}: Props) {
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
             to="/settings/external-embeds"
-            label={_(msg`External media`)}>
+            label={l`External media`}>
             <SettingsList.ItemIcon icon={MacintoshIcon} />
             <SettingsList.ItemText>
               <Trans>External media</Trans>
@@ -91,7 +91,7 @@ export function ContentAndMediaSettingsScreen({}: Props) {
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
             to="/settings/interests"
-            label={_(msg`Your interests`)}>
+            label={l`Your interests`}>
             <SettingsList.ItemIcon icon={CircleInfo} />
             <SettingsList.ItemText>
               <Trans>Your interests</Trans>
@@ -101,7 +101,7 @@ export function ContentAndMediaSettingsScreen({}: Props) {
           {IS_NATIVE && (
             <Toggle.Item
               name="use_in_app_browser"
-              label={_(msg`Use in-app browser to open links`)}
+              label={l`Use in-app browser to open links`}
               value={inAppBrowserPref ?? false}
               onChange={value => setUseInAppBrowser(value)}>
               <SettingsList.Item>
@@ -115,7 +115,7 @@ export function ContentAndMediaSettingsScreen({}: Props) {
           )}
           <Toggle.Item
             name="disable_autoplay"
-            label={_(msg`Autoplay videos and GIFs`)}
+            label={l`Autoplay videos and GIFs`}
             value={!autoplayDisabledPref}
             onChange={value => setAutoplayDisabledPref(!value)}>
             <SettingsList.Item>
@@ -131,7 +131,7 @@ export function ContentAndMediaSettingsScreen({}: Props) {
               <SettingsList.Divider />
               <Toggle.Item
                 name="show_trending_topics"
-                label={_(msg`Enable trending topics`)}
+                label={l`Enable trending topics`}
                 value={!trendingDisabled}
                 onChange={value => {
                   const hide = Boolean(!value)
@@ -150,9 +150,36 @@ export function ContentAndMediaSettingsScreen({}: Props) {
                   <Toggle.Platform />
                 </SettingsList.Item>
               </Toggle.Item>
+              <SettingsList.Item>
+                <SettingsList.ItemIcon icon={Graph} />
+                <SettingsList.ItemText>
+                  <Trans>Trending topic count</Trans>
+                </SettingsList.ItemText>
+                <Select.Root
+                  value={String(trendingTopicCount)}
+                  onValueChange={value => setTrendingTopicCount(Number(value))}>
+                  <Select.Trigger label={l`Trending topic count`}>
+                    <Select.ValueText />
+                    <Select.Icon />
+                  </Select.Trigger>
+                  <Select.Content
+                    label={l`Trending topic count`}
+                    items={Array.from({length: 20}, (_, i) => ({
+                      value: String(i + 1),
+                      label: String(i + 1),
+                    }))}
+                    renderItem={({value, label}) => (
+                      <Select.Item value={value} label={label}>
+                        <Select.ItemIndicator />
+                        <Select.ItemText>{label}</Select.ItemText>
+                      </Select.Item>
+                    )}
+                  />
+                </Select.Root>
+              </SettingsList.Item>
               <Toggle.Item
                 name="show_trending_videos"
-                label={_(msg`Enable trending videos in your Discover feed`)}
+                label={l`Enable trending videos in your Discover feed`}
                 value={!trendingVideoDisabled}
                 onChange={value => {
                   const hide = Boolean(!value)

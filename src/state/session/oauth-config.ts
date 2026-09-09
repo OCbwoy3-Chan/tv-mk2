@@ -69,6 +69,12 @@ export function buildOAuthScope(
           method =>
             `rpc:${method}?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
         )),
+    // Blacksky's search proxy can be unavailable independently of the AppView.
+    ...(appview === 'did:web:api.blacksky.community#bsky_appview'
+      ? [
+          `rpc:app.bsky.feed.searchPosts?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
+        ]
+      : []),
     `include:chat.bsky.authFullChatClient?aud=${encodeURIComponent(chat)}`,
     // These newer methods are not yet in the published chat permission set.
     ...[

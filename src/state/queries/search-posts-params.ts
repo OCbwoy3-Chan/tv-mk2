@@ -296,3 +296,50 @@ const parseTimestamp = (value: string | undefined): string | undefined => {
   if (isNaN(date.getTime())) return undefined
   return date.toISOString().split('.')[0] + 'Z'
 }
+
+/** Preserve v2-only filters as query operators when using a legacy AppView. */
+export function buildSearchPostsV1Params(
+  query: string,
+  filters: SearchPostsV2FilterParams,
+): app.bsky.feed.searchPosts.$Params {
+  const params: Record<string, unknown> = {
+    since: filters.since,
+    until: filters.until,
+    tag: filters.hashtags,
+  }
+  const tokens = [query]
+  const fields = [
+    ['authors', 'author', 'from'],
+    ['mentions', 'mentions', 'mentions'],
+    ['domains', 'domain', 'domain'],
+    ['urls', 'url', 'url'],
+    ['languages', 'lang', 'lang'],
+  ] as const
+  for (const [source, target, operator] of fields) {
+    const values = filters[source]
+    if (values?.length === 1) params[target] = values[0]
+    else if (values?.length)
+      tokens.push(
+        `(${values.map(value => `${operator}:${value}`).join(' OR ')})`,
+      )
+  }
+  for (const [source, operator] of [
+    ['excludeAuthors', 'from:'],
+    ['excludeMentions', 'mentions:'],
+    ['excludeDomains', 'domain:'],
+    ['excludeUrls', 'url:'],
+    ['excludeHashtags', '#'],
+  ] as const) {
+    for (const value of filters[source] ?? [])
+      tokens.push(`-${operator}${value}`)
+  }
+  if (filters.hasMedia) tokens.push('media:true')
+  if (filters.hasVideo) tokens.push('video:true')
+  if (filters.following) tokens.push('following:true')
+  if (filters.excludeReplies) tokens.push('replies:false')
+  if (filters.repliesOnly) tokens.push('replies:only')
+  return {
+    ...params,
+    q: tokens.filter(Boolean).join(' '),
+  } as app.bsky.feed.searchPosts.$Params
+}

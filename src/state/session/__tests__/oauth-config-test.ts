@@ -121,3 +121,13 @@ it('recognizes expanded PDS grants with positional or named methods', () => {
     ).toBe(false)
   }
 })
+
+it('grants only legacy Bluesky search for Blacksky outage fallback', () => {
+  const grant = `rpc:app.bsky.feed.searchPosts?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`
+  expect(
+    buildOAuthScope('did:web:api.blacksky.community#bsky_appview').split(' '),
+  ).toContain(grant)
+  expect(
+    buildOAuthScope('did:web:custom.example#bsky_appview').split(' '),
+  ).not.toContain(grant)
+})

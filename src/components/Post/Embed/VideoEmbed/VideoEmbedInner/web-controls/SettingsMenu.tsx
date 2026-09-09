@@ -141,7 +141,9 @@ export function SettingsMenu({
           )}
         </Menu.Trigger>
       </div>
-      <Menu.Outer side="top" align="end" label={_(msg`Video settings`)}>
+      <Menu.Outer
+        {...web({side: 'top' as const, align: 'end' as const})}
+        label={_(msg`Video settings`)}>
         {tracks.length > 0 &&
           options(
             _(msg`Captions`),

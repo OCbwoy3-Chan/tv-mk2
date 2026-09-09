@@ -35,8 +35,6 @@ import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {type app} from '#/lexicons'
 
-const TOPIC_COUNT = 3
-
 export function FeedTrendingTopicsInterstitial({
   feedSliceIndex,
 }: {
@@ -52,6 +50,7 @@ export function FeedTrendingTopicsInterstitial({
 }
 
 function Inner({feedSliceIndex}: {feedSliceIndex: number}) {
+  const {trendingTopicCount} = useTrendingSettings()
   const t = useTheme()
   const {t: l} = useLingui()
   const gutters = useGutters([0, 'base'])
@@ -63,7 +62,7 @@ function Inner({feedSliceIndex}: {feedSliceIndex: number}) {
     error,
     isLoading,
     isRefetching,
-  } = useGetTrendsQuery({limit: TOPIC_COUNT})
+  } = useGetTrendsQuery({limit: trendingTopicCount})
   const noTopics = !isLoading && !error && !trending?.trends?.length
 
   if (error || noTopics) {
@@ -140,7 +139,7 @@ function Inner({feedSliceIndex}: {feedSliceIndex: number}) {
               t.atoms.border_contrast_low,
             ]}>
             {isLoading || isRefetching
-              ? Array.from({length: TOPIC_COUNT}).map((_, i) => (
+              ? Array.from({length: trendingTopicCount}).map((_, i) => (
                   <TrendingTopicRowSkeleton key={i} rank={i + 1} />
                 ))
               : trending?.trends?.map((trend, index) => {
@@ -192,6 +191,7 @@ function TrendRow({
   children?: React.ReactNode
   onPress?: () => void
 }) {
+  const {trendingTopicCount} = useTrendingSettings()
   const t = useTheme()
   const {t: l, i18n} = useLingui()
 
@@ -211,7 +211,10 @@ function TrendRow({
       label={l`Browse topic ${trend.displayName}`}
       to={trend.link}
       onPress={onPress}
-      style={[rank < TOPIC_COUNT && a.border_b, t.atoms.border_contrast_low]}
+      style={[
+        rank < trendingTopicCount && a.border_b,
+        t.atoms.border_contrast_low,
+      ]}
       PressableComponent={Pressable}>
       {({hovered, pressed}) => (
         <>
@@ -269,6 +272,7 @@ function TrendRow({
   )
 }
 function TrendingTopicRowSkeleton({rank}: {rank: number}) {
+  const {trendingTopicCount} = useTrendingSettings()
   const t = useTheme()
 
   return (
@@ -279,7 +283,7 @@ function TrendingTopicRowSkeleton({rank}: {rank: number}) {
         a.px_lg,
         a.py_lg,
         a.flex_row,
-        rank < TOPIC_COUNT && a.border_b,
+        rank < trendingTopicCount && a.border_b,
         t.atoms.border_contrast_low,
         {
           gap: 6,

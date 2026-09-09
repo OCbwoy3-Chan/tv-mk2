@@ -13,7 +13,6 @@ import {
 } from '#/state/preferences/trending'
 import {
   DEFAULT_FETCH_LIMIT,
-  DEFAULT_LIMIT,
   useGetTrendsQuery,
 } from '#/state/queries/trending/useGetTrendsQuery'
 import {useTrendingConfig} from '#/state/service-config'
@@ -48,10 +47,7 @@ function Inner() {
   const ax = useAnalytics()
   const {t: l} = useLingui()
 
-  const topicCount = ax.features.getValue(
-    ax.features.TrendingExploreTopicsCountValue,
-    DEFAULT_LIMIT,
-  )
+  const {trendingTopicCount: topicCount} = useTrendingSettings()
 
   const trendingPrompt = Prompt.usePromptControl()
   const {setTrendingDisabled} = useTrendingSettingsApi()
@@ -260,8 +256,6 @@ export function useCategoryDisplayName(
 export function TrendingTopicRowSkeleton() {
   const t = useTheme()
   const gutters = useGutters([0, 'base'])
-
-  
 
   return (
     <View
