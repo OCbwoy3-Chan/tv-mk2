@@ -74,8 +74,7 @@ jobs:
             -configuration Release \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_ALLOWED=NO \
-            | xcpretty
+            CODE_SIGNING_ALLOWED=NO
 
       # - name: 📦 Upload RUNNER_TEMP for inspection
       #   if: always()
