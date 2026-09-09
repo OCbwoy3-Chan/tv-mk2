@@ -38,7 +38,8 @@ import {
   useSession,
   useSessionApi,
 } from '#/state/session'
-import {getWebOAuthClient} from '#/state/session/oauth-web-client'
+import {completeWebOAuth} from '#/state/session/oauth-appview-switch'
+import {isOAuthPopupComplete} from '#/state/session/oauth-config'
 import {
   consumeOAuthReturnUrl,
   saveOAuthCallbackError,
@@ -132,35 +133,27 @@ function InnerApp() {
 
   // init
   useEffect(() => {
-    // Safety valve: if onLaunch hangs (e.g. stale IndexedDB blocking an
-    // upgrade, or a never-settling promise), the app will still load after
-    // this timeout fires.
-    const safetyTimeout = setTimeout(() => {
-      logger.warn('session: onLaunch safety timeout fired, forcing ready state')
-      setIsReady(true)
-    }, 15_000)
-
     async function onLaunch(account?: SessionAccount) {
       try {
         // Check for OAuth callback params first (loopback redirects to /)
         if (hasOAuthCallbackParams()) {
           try {
-            const client = getWebOAuthClient()
-            const result = await client.init()
-            if (result?.session) {
+            const completed = await completeWebOAuth(async session => {
               await login(
                 {
                   service: '',
                   identifier: '',
                   password: '',
-                  oauthSession: result.session,
+                  oauthSession: session,
                 },
                 'LoginForm',
               )
-
+            })
+            if (completed) {
+              setShowLoggedOut(false)
               const returnUrl = consumeOAuthReturnUrl()
               if (returnUrl) {
-                window.location.replace(returnUrl)
+                window.history.replaceState(null, '', returnUrl)
                 return
               }
 
@@ -169,6 +162,7 @@ function InnerApp() {
               return
             }
           } catch (e) {
+            if (isOAuthPopupComplete(e)) return
             const error =
               e instanceof Error ? cleanError(e.message) : cleanError(String(e))
             logger.error('OAuth callback failed', {
@@ -178,7 +172,7 @@ function InnerApp() {
             const returnUrl = consumeOAuthReturnUrl()
             if (account && canAttemptSessionResume(account)) {
               try {
-                await resumeSession(account, true)
+                await resumeSession(account)
                 setShowLoggedOut(false)
                 if (returnUrl) {
                   window.history.replaceState(null, '', returnUrl)
@@ -221,7 +215,7 @@ function InnerApp() {
       } catch (e) {
         logger.warn('session: resumeSession failed', {message: e})
       } finally {
-        clearTimeout(safetyTimeout)
+        // OAuth success and cancellation recovery both return early.
         setIsReady(true)
       }
     }

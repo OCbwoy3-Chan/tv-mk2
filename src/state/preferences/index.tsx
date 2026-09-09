@@ -4,6 +4,7 @@ import {Provider as AlsoLikedCollapseByDefaultProvider} from './also-liked-colla
 import {Provider as AlsoLikedFeedProvider} from './also-liked-feed-enabled'
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
 import {Provider as AtprotoExplorerProvider} from './atproto-explorer'
+import {Provider as AtprotoRkeySettingsProvider} from "./atproto-rkey-settings.tsx"
 import {Provider as AutoCompactAccountSwitcherProvider} from './auto-compact-account-switcher'
 import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
 import {Provider as AutoplayProvider} from './autoplay'
@@ -28,8 +29,10 @@ import {Provider as FaviconServiceProvider} from './favicon-service'
 import {Provider as FullsizeFormatProvider} from './fullsize-format'
 import {Provider as GoLinksProvider} from './go-links-enabled'
 import {Provider as HiddenPostsProvider} from './hidden-posts'
+import {Provider as HideBetaBadgeProvider} from "./hide-beta-badge.tsx"
 import {Provider as HideDisplayNamesProvider} from './hide-display-names'
 import {Provider as HideFeedsPromoTabProvider} from './hide-feeds-promo-tab'
+import {Provider as HideOwnTennaBadgeProvider} from "./hide-own-tennabadge.tsx"
 import {Provider as HideScaryFollowButtonsProvider} from './hide-scary-follow-buttons.tsx'
 import {Provider as HideSimilarAccountsRecommProvider} from './hide-similar-accounts-recommendations'
 import {Provider as HideUnreplyablePostsProvider} from './hide-unreplyable-posts'
@@ -47,10 +50,10 @@ import {Provider as OpenRouterProvider} from './openrouter'
 import {Provider as PdsLabelProvider} from './pds-label'
 import {Provider as PlcDirectoryProvider} from './plc-directory'
 import {Provider as PostNameReplacementProvider} from './post-name-replacement.tsx'
+import {Provider as PrivatePostsEnabledProvider} from "./private-posts-enabled.tsx"
 import {Provider as RepostCarouselProvider} from './repost-carousel-enabled'
 import {Provider as SettingsSyncProvider} from './settings-sync'
 import {Provider as ShowAvatarFollowButtonProvider} from './show-avatar-follow-button'
-import {Provider as ShowClearskyProfileLinkProvider} from './show-clearsky-profile-link'
 import {Provider as ShowFollowedByOnOwnProfileProvider} from './show-followed-by-on-own-profile'
 import {Provider as ShowFollowsYouBadgeProvider} from './show-follows-you-badge'
 import {Provider as ShowGermDmButtonProvider} from './show-germ-dm-button'
@@ -59,6 +62,7 @@ import {Provider as ShowLinkInHandleOnlyOnWorkingLinksProvider} from './show-lin
 import {Provider as ShowStandardLabelerProfileProvider} from './show-standard-labeler-profile'
 import {Provider as ShowViaClientProvider} from './show-via-client'
 import {Provider as SixSevenCelebrationProvider} from './six-seven-celebration'
+import {Provider as SlingshotInstanceProvider} from './slingshot-instance'
 import {Provider as SubtitlesProvider} from './subtitles'
 import {Provider as ThumbnailFormatProvider} from './thumbnail-format'
 import {Provider as TidSuffixProvider} from './tid-suffix'
@@ -66,17 +70,12 @@ import {Provider as TranslationServicePreferenceProvider} from './translation-se
 import {Provider as TrendingSettingsProvider} from './trending'
 import {Provider as UseHandleInLinksProvider} from './use-handle-in-links'
 import {Provider as UsedStarterPacksProvider} from './used-starter-packs'
-import {Provider as AtprotoRkeySettingsProvider} from "./atproto-rkey-settings.tsx"
-import {Provider as HideOwnTennaBadgeProvider} from "./hide-own-tennabadge.tsx"
-import {Provider as HideBetaBadgeProvider} from "./hide-beta-badge.tsx"
-import {Provider as PrivatePostsEnabledProvider} from "./private-posts-enabled.tsx"
 
 
 export {
   useAlsoLikedCollapseByDefault,
   useSetAlsoLikedCollapseByDefault,
 } from './also-liked-collapse-by-default'
-export { useAtprotoRkeySettings, useSetAtprotoRkeySettings } from './atproto-rkey-settings'
 export {
   useAlsoLikedFeedEnabled,
   useSetAlsoLikedFeedEnabled,
@@ -85,6 +84,7 @@ export {
   useRequireAltTextEnabled,
   useSetRequireAltTextEnabled,
 } from './alt-text-required'
+export { useAtprotoRkeySettings, useSetAtprotoRkeySettings } from './atproto-rkey-settings'
 export { useAutoplayDisabled, useSetAutoplayDisabled } from './autoplay'
 export { useCompactPosts, useSetCompactPosts } from './compact-posts'
 export {
@@ -170,7 +170,7 @@ export function Provider({ children }: PropsWithChildren<{}>) {
         <AltTextRequiredProvider>
           <AutoLikeOnRepostProvider>
             <AtprotoExplorerProvider>
-              <ShowClearskyProfileLinkProvider>
+              <SlingshotInstanceProvider>
                 <GoLinksProvider>
                   <IgnoredAppLabelersProvider>
                     <DirectFetchRecordsProvider>
@@ -302,7 +302,7 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                     </DirectFetchRecordsProvider>
                   </IgnoredAppLabelersProvider>
                 </GoLinksProvider>
-              </ShowClearskyProfileLinkProvider>
+              </SlingshotInstanceProvider>
             </AtprotoExplorerProvider>
           </AutoLikeOnRepostProvider>
         </AltTextRequiredProvider>

@@ -1,3 +1,4 @@
+import {getOAuthScope} from '#/state/session/oauth-scopes'
 import {getWebOAuthClient} from '#/state/session/oauth-web-client'
 import {saveOAuthReturnUrl} from '#/state/session/oauth-web-return-url'
 
@@ -11,6 +12,6 @@ export function useStartOauthSignup() {
   return async (serviceUrl: string) => {
     saveOAuthReturnUrl()
     const client = getWebOAuthClient()
-    await client.signIn(serviceUrl, {prompt: 'create'})
+    await client.signIn(serviceUrl, {prompt: 'create', scope: getOAuthScope()})
   }
 }

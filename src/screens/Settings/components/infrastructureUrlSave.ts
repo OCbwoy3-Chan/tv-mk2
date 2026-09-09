@@ -1,7 +1,7 @@
 import {useCallback, useState} from 'react'
 import {useLingui} from '@lingui/react/macro'
 
-import * as Dialog from '#/components/Dialog'
+import type * as Dialog from '#/components/Dialog'
 
 export function useInfrastructureUrlSave({
   url,
@@ -55,9 +55,7 @@ export function useInfrastructureUrlSave({
         onSave(normalizedUrl)
       })
     } catch {
-      setTestError(
-        l`Couldn't reach this server. Check the URL and try again.`,
-      )
+      setTestError(l`Couldn't reach this server. Check the URL and try again.`)
     } finally {
       setIsTesting(false)
     }

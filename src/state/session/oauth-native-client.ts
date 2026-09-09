@@ -2,38 +2,28 @@ import {ExpoOAuthClient} from '@atproto/oauth-client-expo'
 
 import {IS_IOS} from '#/env'
 import {createIdentityResolver} from './identity-resolver'
+import {ANDROID_REDIRECT_URI, createOAuthMetadata, NATIVE_REDIRECT_URI as IOS_REDIRECT_URI} from './oauth-config'
+import {getOAuthAudiences} from './oauth-scopes'
 
-const OAUTH_BASE_URL: string =
-  process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://tenna.party'
+export const NATIVE_REDIRECT_URI = IS_IOS ? IOS_REDIRECT_URI : ANDROID_REDIRECT_URI
+const clients = new Map<string, ExpoOAuthClient>()
 
-const OAUTH_CLIENT_NAME: string =
-  process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'tenna.party'
-
-const OAUTH_SCOPE =
-  'atproto transition:generic transition:email transition:chat.bsky'
-
-// RFC 8252 requires private-use native redirect URIs to use one slash. Keep
-// this exact value in sync with the native client metadata.
-const NATIVE_REDIRECT_URI = IS_IOS
-  ? 'party.tenna:/auth/callback'
-  : 'app.tennaparty:/auth/callback'
-
-const BSKY_OAUTH_CLIENT = new ExpoOAuthClient({
-  identityResolver: createIdentityResolver(),
-  clientMetadata: {
-    client_id: `${OAUTH_BASE_URL}/oauth-client-metadata-native.json`,
-    client_name: OAUTH_CLIENT_NAME,
-    client_uri: OAUTH_BASE_URL,
-    redirect_uris: [NATIVE_REDIRECT_URI], // NATIVE_REDIRECT_URI fucking react native :(
-    scope: OAUTH_SCOPE,
-    token_endpoint_auth_method: 'none',
-    response_types: ['code'],
-    grant_types: ['authorization_code', 'refresh_token'],
-    application_type: 'native',
-    dpop_bound_access_tokens: true,
-  },
-})
-
-export function getNativeOAuthClient() {
-  return BSKY_OAUTH_CLIENT
+export function getNativeOAuthClient(
+  audiences: {appview: string; chat: string} = getOAuthAudiences(),
+) {
+  const metadata = createOAuthMetadata({
+    baseUrl: process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://tenna.party',
+    clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'tenna.party',
+    native: true,
+    ...audiences,
+  })
+  let client = clients.get(metadata.client_id)
+  if (!client) {
+    client = new ExpoOAuthClient({
+      clientMetadata: metadata,
+      identityResolver: createIdentityResolver(),
+    })
+    clients.set(metadata.client_id, client)
+  }
+  return client
 }

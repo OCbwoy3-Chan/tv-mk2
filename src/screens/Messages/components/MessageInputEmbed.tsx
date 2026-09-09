@@ -1,12 +1,8 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {LayoutAnimation, View} from 'react-native'
-import {
-  AppBskyFeedPost,
-  AppBskyRichtextFacet,
-  AtUri,
-  moderatePost,
-  RichText as RichTextAPI,
-} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
+import {moderatePost} from '@bsky/sdk/moderation'
+import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {type RouteProp, useNavigation, useRoute} from '@react-navigation/native'
 
@@ -36,6 +32,7 @@ import {ContentHider} from '#/components/moderation/ContentHider'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 /**
@@ -43,8 +40,7 @@ import * as bsky from '#/types/bsky'
  * embed: either a quoted post or a group chat invite link.
  */
 export type MessageEmbedState =
-  | {type: 'post'; uri: string}
-  | {type: 'invite'; code: string}
+  {type: 'post'; uri: string} | {type: 'invite'; code: string}
 
 export function useMessageEmbed() {
   const route =
@@ -85,8 +81,13 @@ export function useMessageEmbed() {
         if (isBskyPostUrl(embedUrl)) {
           const url = convertBskyAppUrlIfNeeded(embedUrl)
           const [_0, user, _1, rkey] = url.split('/').filter(Boolean)
-          const uri = makeRecordUri(user, 'app.bsky.feed.post', rkey)
-          setEmbed({type: 'post', uri})
+          try {
+            const uri = makeRecordUri(user, 'app.bsky.feed.post', rkey)
+            setEmbed({type: 'post', uri})
+          } catch {
+            // Incomplete or malformed URLs are ordinary editor input.
+            return
+          }
         }
       },
       [embedFromParams, navigation],
@@ -106,7 +107,7 @@ export function useExtractEmbedFromFacets(
   for (const facet of rt.facets ?? []) {
     for (const feature of facet.features) {
       if (
-        AppBskyRichtextFacet.isLink(feature) &&
+        bsky.isType(app.bsky.richtext.facet.link, feature) &&
         (isBskyPostUrl(feature.uri) || isBskyChatInviteUrl(feature.uri))
       ) {
         uriFromFacet = feature.uri
@@ -166,13 +167,7 @@ function MessageInputPostEmbed({
   )
 
   const {rt, record} = useMemo(() => {
-    if (
-      post &&
-      bsky.dangerousIsType<AppBskyFeedPost.Record>(
-        post.record,
-        AppBskyFeedPost.isRecord,
-      )
-    ) {
+    if (post && bsky.isType(app.bsky.feed.post, post.record)) {
       return {
         rt: new RichTextAPI({
           text: post.record.text,

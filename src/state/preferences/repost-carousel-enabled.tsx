@@ -25,7 +25,7 @@ export function Provider({children}: {children: ReactNode}) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['repostCarouselEnabled']) => {
       setState(Boolean(value))
-      persisted.write('repostCarouselEnabled', value)
+      void persisted.write('repostCarouselEnabled', value)
     },
     [setState],
   )

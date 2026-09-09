@@ -2,12 +2,10 @@ import {
   Children,
   type ComponentType,
   createContext,
-  type ForwardedRef,
   isValidElement,
   type PropsWithChildren,
-  type RefObject,
-  useContext,
   useCallback,
+  useContext,
   useMemo,
   useRef,
 } from 'react'
@@ -26,6 +24,8 @@ import {mergeRefs} from '#/lib/merge-refs'
 import {
   applyFonts,
   atoms as a,
+  flatten,
+  type MutableTextStyle,
   platform,
   type TextStyleProp,
   tokens,
@@ -41,35 +41,30 @@ import {IS_WEB} from '#/env'
 
 function getTabbableElements(container: HTMLElement) {
   const nodes: HTMLElement[] = []
-  const walker = document.createTreeWalker(
-    container,
-    NodeFilter.SHOW_ELEMENT,
-    {
-      acceptNode: node => {
-        if (!(node instanceof HTMLElement)) return NodeFilter.FILTER_SKIP
-        if (
-          node.tagName === 'INPUT' &&
-          (node as HTMLInputElement).type === 'hidden'
-        ) {
-          return NodeFilter.FILTER_SKIP
-        }
-        if (node.hasAttribute('disabled') || node.hidden) {
-          return NodeFilter.FILTER_SKIP
-        }
-        return node.tabIndex >= 0
-          ? NodeFilter.FILTER_ACCEPT
-          : NodeFilter.FILTER_SKIP
-      },
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
+    acceptNode: node => {
+      if (!(node instanceof HTMLElement)) return NodeFilter.FILTER_SKIP
+      if (
+        node.tagName === 'INPUT' &&
+        (node as HTMLInputElement).type === 'hidden'
+      ) {
+        return NodeFilter.FILTER_SKIP
+      }
+      if (node.hasAttribute('disabled') || node.hidden) {
+        return NodeFilter.FILTER_SKIP
+      }
+      return node.tabIndex >= 0
+        ? NodeFilter.FILTER_ACCEPT
+        : NodeFilter.FILTER_SKIP
     },
-  )
+  })
   while (walker.nextNode()) nodes.push(walker.currentNode as HTMLElement)
   return nodes
 }
 
 function focusTabSibling(from: HTMLElement, reverse: boolean) {
   const root =
-    (from.closest('[role="dialog"]') as HTMLElement | null) ??
-    document.body
+    (from.closest('[role="dialog"]') as HTMLElement | null) ?? document.body
   const tabbables = getTabbableElements(root)
   const active = document.activeElement as HTMLElement | null
   let index = active ? tabbables.indexOf(active) : -1
@@ -82,7 +77,7 @@ function focusTabSibling(from: HTMLElement, reverse: boolean) {
 }
 
 const Context = createContext<{
-  inputRef: RefObject<TextInput | null> | null
+  inputRef: React.RefObject<React.ComponentRef<typeof TextInput> | null> | null
   isInvalid: boolean
   hovered: boolean
   onHoverIn: () => void
@@ -109,7 +104,7 @@ export function useTextFieldContext() {
 export type RootProps = PropsWithChildren<{isInvalid?: boolean} & TextStyleProp>
 
 export function Root({children, isInvalid = false, style}: RootProps) {
-  const inputRef = useRef<TextInput>(null)
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const {
     state: hovered,
     onIn: onHoverIn,
@@ -167,11 +162,13 @@ export function Root({children, isInvalid = false, style}: RootProps) {
           {zIndex: 0},
           style,
         ]}
-        {...web({
-          onClick: () => inputRef.current?.focus(),
-          onMouseOver: onHoverIn,
-          onMouseOut: onHoverOut,
-        })}>
+        {...(IS_WEB
+          ? {
+              onClick: () => inputRef.current?.focus(),
+              onMouseOver: onHoverIn,
+              onMouseOut: onHoverOut,
+            }
+          : {})}>
         {children}
       </View>
     </Context.Provider>
@@ -229,7 +226,9 @@ export type InputProps = Omit<
   value?: string
   onChangeText?: (value: string) => void
   isInvalid?: boolean
-  inputRef?: RefObject<TextInput | null> | ForwardedRef<TextInput>
+  inputRef?:
+    | React.RefObject<React.ComponentRef<typeof TextInput> | null>
+    | React.ForwardedRef<React.ComponentRef<typeof TextInput>>
   /**
    * Note: this currently falls back to the label if not specified. However,
    * most new designs have no placeholder. We should eventually remove this fallback
@@ -259,30 +258,13 @@ export function createInput(Component: typeof TextInput) {
     const {chromeHover, chromeFocus, chromeError, chromeErrorHover} =
       useSharedInputStyles()
 
-    if (!withinRoot) {
-      return (
-        <Root isInvalid={isInvalid}>
-          <Input
-            label={label}
-            placeholder={placeholder}
-            value={value}
-            onChangeText={onChangeText}
-            isInvalid={isInvalid}
-            {...rest}
-          />
-        </Root>
-      )
-    }
-
-    const refs = mergeRefs([ctx.inputRef, inputRef!].filter(Boolean))
-
     const tabListenerRef = useRef<{
       el: HTMLElement
       handler: (e: KeyboardEvent) => void
     } | null>(null)
 
     const attachTabHandler = useCallback(
-      (node: TextInput | null) => {
+      (node: React.ComponentRef<typeof TextInput> | null) => {
         if (tabListenerRef.current) {
           tabListenerRef.current.el.removeEventListener(
             'keydown',
@@ -304,52 +286,67 @@ export function createInput(Component: typeof TextInput) {
       [rest.multiline],
     )
 
-    const inputRefs = mergeRefs([refs, attachTabHandler])
+    if (!withinRoot) {
+      return (
+        <Root isInvalid={isInvalid}>
+          <Input
+            label={label}
+            placeholder={placeholder}
+            value={value}
+            onChangeText={onChangeText}
+            isInvalid={isInvalid}
+            {...rest}
+          />
+        </Root>
+      )
+    }
 
-    const flattened = StyleSheet.flatten<TextStyle>([
-      a.relative,
-      a.z_20,
-      a.flex_1,
-      a.text_md,
-      t.atoms.text,
-      a.px_xs,
-      {
-        // paddingVertical doesn't work w/multiline - esb
-        lineHeight: a.text_md.fontSize * 1.2,
-        textAlignVertical: rest.multiline ? 'top' : undefined,
-        minHeight: rest.multiline ? 80 : undefined,
-        minWidth: 0,
-        paddingTop: 13,
-        paddingBottom: 13,
-      },
-      /*
-       * Margins are needed here to avoid autofill background overlapping the
-       * top and bottom borders - esb
-       */
-      web({
-        paddingTop: 11,
-        paddingBottom: 11,
-        marginTop: 2,
-        marginBottom: 2,
-      }),
-      rest.multiline &&
+    const refs = mergeRefs([ctx.inputRef, inputRef!].filter(Boolean))
+    const inputRefs = mergeRefs([refs, attachTabHandler])
+    const multilineWebProps =
+      IS_WEB && rest.multiline ? {'data-field-sizing-content': ''} : {}
+
+    const flattened: MutableTextStyle = {
+      ...flatten([
+        a.relative,
+        a.z_20,
+        a.flex_1,
+        a.text_md,
+        t.atoms.text,
+        a.px_xs,
+        {
+          // paddingVertical doesn't work w/multiline - esb
+          lineHeight: a.text_md.fontSize * 1.2,
+          textAlignVertical: rest.multiline ? 'top' : undefined,
+          minHeight: rest.multiline ? 80 : undefined,
+          minWidth: 0,
+          paddingTop: 13,
+          paddingBottom: 13,
+        },
+        /*
+         * Margins are needed here to avoid autofill background overlapping the
+         * top and bottom borders - esb
+         */
         web({
-          resize: 'vertical',
-          fieldSizing: 'content',
-          paddingLeft: 16,
-          paddingRight: 16,
+          paddingTop: 11,
+          paddingBottom: 11,
+          marginTop: 2,
+          marginBottom: 2,
         }),
-      style,
-    ])
+        rest.multiline &&
+          web({
+            fieldSizing: 'content',
+            paddingLeft: 16,
+            paddingRight: 16,
+          }),
+        style,
+      ]),
+    }
 
     applyFonts(flattened, fonts.family)
 
-    // should always be defined on `typography`
-    // @ts-ignore
     if (flattened.fontSize) {
-      // @ts-ignore
       flattened.fontSize = Math.round(
-        // @ts-ignore
         flattened.fontSize * fonts.scaleMultiplier,
       )
     }
@@ -363,6 +360,7 @@ export function createInput(Component: typeof TextInput) {
           cursorColor={t.palette.primary_500}
           selectionHandleColor={t.palette.primary_500}
           {...rest}
+          {...multilineWebProps}
           accessibilityLabel={label}
           ref={inputRefs}
           value={value}

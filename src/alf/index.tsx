@@ -1,5 +1,17 @@
-import {createContext, useCallback, useContext, useMemo, useState} from 'react'
-import {createTheme, type Theme, type ThemeName, utils as baseUtils} from '@bsky.app/alf'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react'
+import {
+  createTheme,
+  type Theme,
+  type ThemeName,
+  utils as baseUtils,
+} from '@bsky.app/alf'
 import chroma from 'chroma-js'
 
 import {useThemePrefs} from '#/state/shell/color-mode'
@@ -30,6 +42,11 @@ import {
   lighten,
   rgbToHex,
 } from '#/alf/util/colorGeneration'
+import {IS_WEB} from '#/env'
+import {DEFAULT_ACTIVE_THEME} from '#/features/themes/catalog'
+import {resolveMaterialYouRecord} from '#/features/themes/materialYou'
+import {activeThemeToScheme} from '#/features/themes/semanticTheme'
+import {isSupportedTheme} from '#/features/themes/types'
 import {type Device} from '#/storage'
 import {getMaterial3Colors} from './util/material3Theme'
 import {
@@ -53,7 +70,6 @@ export const utils = {
   darken,
   contrastRatio,
 }
-
 
 export type Alf = {
   themeName: ThemeName
@@ -166,14 +182,40 @@ export function hueShifter(scheme: SchemeType, hueShift: number): SchemeType {
 }
 
 export function useScheme(): SchemeType {
-  const {hue, colorScheme} = useThemePrefs()
+  const {hue, colorScheme, activeTheme, material3Accent} = useThemePrefs()
   const palette = useMaterialYouPalette()
 
   return useMemo(() => {
+    const recordScheme =
+      activeTheme &&
+      isSupportedTheme(activeTheme.light.record) &&
+      isSupportedTheme(activeTheme.dark.record) &&
+      activeThemeToScheme({
+        light: {
+          ...activeTheme.light,
+          record: resolveMaterialYouRecord(
+            activeTheme.light.record,
+            palette,
+            material3Accent,
+            IS_WEB,
+          ),
+        },
+        dark: {
+          ...activeTheme.dark,
+          record: resolveMaterialYouRecord(
+            activeTheme.dark.record,
+            palette,
+            material3Accent,
+            IS_WEB,
+          ),
+        },
+      })
+    if (recordScheme) return recordScheme
     let currentScheme = themes
     switch (colorScheme) {
       case 'witchsky':
-        currentScheme = witchskyscheme
+        currentScheme =
+          activeThemeToScheme(DEFAULT_ACTIVE_THEME) ?? witchskyscheme
         break
       case 'bluesky':
         currentScheme = blueskyscheme
@@ -211,7 +253,7 @@ export function useScheme(): SchemeType {
     }
 
     return hueShifter(currentScheme, hue)
-  }, [colorScheme, hue, palette])
+  }, [activeTheme, colorScheme, hue, palette, material3Accent])
 }
 
 function ThemeProviderInner({
@@ -223,6 +265,7 @@ function ThemeProviderInner({
   themesOverride?: Partial<typeof themes>
 }>) {
   const currentScheme = useScheme()
+  const {colorMode, darkTheme} = useThemePrefs()
   const [fontScale, setFontScale] = useState<Alf['fonts']['scale']>(() =>
     getFontScale(),
   )
@@ -250,9 +293,7 @@ function ThemeProviderInner({
 
   const value = useMemo<Alf>(() => {
     // Use currentScheme for Witchsky's custom theming, but allow themesOverride from upstream
-    const t = themesOverride
-      ? {...themes, ...themesOverride}
-      : currentScheme
+    const t = themesOverride ? {...themes, ...themesOverride} : currentScheme
     return {
       themes: t,
       themeName: themeName,
@@ -276,6 +317,40 @@ function ThemeProviderInner({
     setFontFamilyAndPersist,
     themesOverride,
   ])
+
+  useLayoutEffect(() => {
+    if (!IS_WEB) return
+    const t = value.theme
+    const root = document.documentElement
+    root.style.setProperty('--background', t.palette.contrast_0)
+    root.style.setProperty('--text', t.palette.contrast_1000)
+    root.style.setProperty('--backgroundLight', t.palette.contrast_25)
+    root.style.setProperty('--splash-logo', t.palette.primary_500)
+    root.style.backgroundColor = t.palette.contrast_0
+    root.style.colorScheme = t.scheme
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', t.palette.contrast_0)
+    try {
+      const colors = (theme: Theme) => ({
+        background: theme.palette.contrast_0,
+        text: theme.palette.contrast_1000,
+        surface: theme.palette.contrast_25,
+        accent: theme.palette.primary_500,
+        scheme: theme.scheme,
+      })
+      localStorage.setItem(
+        'WITCHSKY_SPLASH',
+        JSON.stringify({
+          mode: colorMode,
+          light: colors(value.themes.light),
+          dark: colors(value.themes[darkTheme ?? 'dim']),
+        }),
+      )
+    } catch {
+      // Storage can be unavailable in private browsing.
+    }
+  }, [value.theme, value.themes, colorMode, darkTheme])
 
   return <Context.Provider value={value}>{children}</Context.Provider>
 }

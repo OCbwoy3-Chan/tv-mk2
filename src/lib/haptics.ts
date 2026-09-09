@@ -18,7 +18,7 @@ export function useHaptics() {
       const style = IS_IOS
         ? ImpactFeedbackStyle[strength]
         : ImpactFeedbackStyle.Light
-      impactAsync(style)
+      void impactAsync(style)
 
       // DEV ONLY - show a toast when a haptic is meant to fire on simulator
       if (__DEV__ && !Device.isDevice) {

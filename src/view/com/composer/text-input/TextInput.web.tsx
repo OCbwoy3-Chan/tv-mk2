@@ -9,7 +9,8 @@ import {
 } from 'react'
 import {StyleSheet, View} from 'react-native'
 import Animated, {FadeIn, FadeOut} from 'react-native-reanimated'
-import {AppBskyRichtextFacet, RichText, UnicodeString} from '@atproto/api'
+import {type AppBskyRichtextFacet, UnicodeString} from '@atproto/api'
+import {RichText} from '@bsky/sdk/richtext'
 import {Trans} from '@lingui/react/macro'
 import {getSchema} from '@tiptap/core'
 import {Document} from '@tiptap/extension-document'
@@ -41,6 +42,8 @@ import {normalizeTextStyles} from '#/alf/typography'
 import {type Emoji} from '#/components/EmojiPicker'
 import {Portal} from '#/components/Portal'
 import {Text} from '#/components/Typography'
+import {app} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 import {type TextInputProps} from './TextInput.types'
 import {getThreadShortcut} from './thread-shortcuts'
 import {type AutocompleteRef, createSuggestion} from './web/Autocomplete'
@@ -64,6 +67,7 @@ export function TextInput({
   canMovePostDown,
   onAddPost,
   onMovePost,
+  onFocusPost,
   autoFocus,
 }: TextInputProps) {
   const {theme: t, fonts} = useAlf()
@@ -122,11 +126,13 @@ export function TextInput({
     }
     textInputWebEmitter.addListener('add-post', onAddPost)
     textInputWebEmitter.addListener('move-post', onMovePost)
+    textInputWebEmitter.addListener('focus-post', onFocusPost)
     return () => {
       textInputWebEmitter.removeListener('add-post', onAddPost)
       textInputWebEmitter.removeListener('move-post', onMovePost)
+      textInputWebEmitter.removeListener('focus-post', onFocusPost)
     }
-  }, [isActive, onAddPost, onMovePost])
+  }, [isActive, onAddPost, onMovePost, onFocusPost])
 
   useEffect(() => {
     if (!isActive) {
@@ -283,6 +289,12 @@ export function TextInput({
             case 'add-post':
               textInputWebEmitter.emit('add-post')
               return true
+            case 'focus-post-up':
+              textInputWebEmitter.emit('focus-post', 'up')
+              return true
+            case 'focus-post-down':
+              textInputWebEmitter.emit('focus-post', 'down')
+              return true
             case 'move-post-up':
               textInputWebEmitter.emit('move-post', 'up')
               return true
@@ -383,7 +395,7 @@ export function TextInput({
           })
           newRt.facets = [...nonOverlapping, ...markdownFacets].sort(
             (a, b) => a.index.byteStart - b.index.byteStart,
-          )
+          ) as typeof newRt.facets
         }
 
         /*
@@ -402,7 +414,7 @@ export function TextInput({
         if (newRt.facets) {
           for (const facet of newRt.facets) {
             for (const feature of facet.features) {
-              if (AppBskyRichtextFacet.isLink(feature)) {
+              if (bsky.isType(app.bsky.richtext.facet.link, feature)) {
                 nextDetectedUris.set(feature.uri, {facet, rt: newRt})
               }
             }
@@ -478,16 +490,8 @@ export function TextInput({
 
   return (
     <>
-      <View
-        style={[
-          styles.container,
-          hasRightPadding && styles.rightPadding,
-          {
-            // @ts-ignore
-            '--mention-color': t.palette.primary_500,
-          },
-        ]}>
-        {/* @ts-ignore inputStyle is fine */}
+      <View style={[styles.container, hasRightPadding && styles.rightPadding]}>
+        {/* @ts-expect-error inputStyle is fine */}
         <EditorContent editor={editor} style={inputStyle} />
       </View>
 
@@ -623,7 +627,7 @@ const styles = StyleSheet.create({
     pointerEvents: 'none',
     alignItems: 'center',
     justifyContent: 'center',
-    // @ts-ignore web only -prf
+    // @ts-expect-error web only -prf
     position: 'fixed',
     padding: 16,
     top: 0,
@@ -632,7 +636,6 @@ const styles = StyleSheet.create({
     right: 0,
   },
   dropModal: {
-    // @ts-ignore web only
     boxShadow: 'rgba(0, 0, 0, 0.3) 0px 5px 20px',
     padding: 8,
     borderWidth: 1,

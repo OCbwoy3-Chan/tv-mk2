@@ -1,5 +1,5 @@
-import { Image, ImageProps } from 'expo-image'
-import { Svg, Path, type PathProps, type SvgProps } from 'react-native-svg'
+import { type PathProps, type SvgProps } from 'react-native-svg'
+import { Image, type ImageProps } from 'expo-image'
 
 export function TobyIcon({
   fill,

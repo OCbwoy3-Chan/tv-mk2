@@ -347,6 +347,7 @@ module.exports = {
         // Only internal crawler routes should invoke Pages Functions. A
         // Cloudflare Transform Rule rewrites link-preview bots to /__embed.
         {from: 'web/_routes.json', to: '_routes.json'},
+        {from: 'assets/favicon.png', to: 'favicon.ico'},
         // Serve fonts at /static/fonts/ with stable names
         {from: 'web/static/fonts', to: 'static/fonts'},
         // Serve the global stylesheet

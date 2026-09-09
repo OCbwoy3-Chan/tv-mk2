@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (showFollowsYouBadge: boolean) => {
       setState(showFollowsYouBadge)
-      persisted.write('showFollowsYouBadge', showFollowsYouBadge)
+      void persisted.write('showFollowsYouBadge', showFollowsYouBadge)
     },
     [setState],
   )

@@ -1,10 +1,10 @@
-import { Trans, useLingui } from '@lingui/react/macro'
+import {Trans} from '@lingui/react/macro'
 
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
+import { atoms as a, useTheme } from '#/alf'
 import * as Toggle from '#/components/forms/Toggle'
 import { Features, features } from '#/analytics/features'
 import { device, useStorage } from '#/storage'
-import { atoms as a, useTheme } from '#/alf'
 
 export function DeltasJapanLogoToggle() {
     const t = useTheme();

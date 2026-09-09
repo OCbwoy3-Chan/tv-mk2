@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import uuid from 'react-native-uuid'
+import * as uuid from 'react-native-uuid'
 
 import {onAppStateChange} from '#/lib/appState'
 import {isSessionIdExpired} from '#/analytics/identifiers/util'
@@ -11,7 +11,8 @@ let sessionId = (() => {
   const existing = window.sessionStorage.getItem(SESSION_ID_KEY)
   const lastEventStr = window.sessionStorage.getItem(LAST_EVENT_KEY)
   const lastEvent = lastEventStr ? Number(lastEventStr) : undefined
-  const id = existing && !isSessionIdExpired(lastEvent) ? existing : uuid.v4()
+  const id =
+    existing && !isSessionIdExpired(lastEvent) ? existing : uuid.default.v4()
   window.sessionStorage.setItem(SESSION_ID_KEY, id)
   window.sessionStorage.setItem(LAST_EVENT_KEY, String(Date.now()))
   return id
@@ -40,7 +41,7 @@ export function useSessionId() {
         const lastEventStr = window.sessionStorage.getItem(LAST_EVENT_KEY)
         const lastEvent = lastEventStr ? Number(lastEventStr) : undefined
         if (isSessionIdExpired(lastEvent)) {
-          sessionId = uuid.v4()
+          sessionId = uuid.default.v4()
           window.sessionStorage.setItem(SESSION_ID_KEY, sessionId)
           setId(sessionId)
         }

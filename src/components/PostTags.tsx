@@ -1,3 +1,4 @@
+import {useState} from 'react'
 import {Pressable, type StyleProp, View, type ViewStyle} from 'react-native'
 import {type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api'
 
@@ -15,7 +16,7 @@ export function PostTags({
   post: AppBskyFeedDefs.PostView
   style?: StyleProp<ViewStyle>
 }) {
-  const t = useTheme()
+  
   const tags = getOutlineTags(post)
 
   if (!tags.length) {
@@ -32,31 +33,38 @@ export function PostTags({
         style,
       ]}>
       {tags.map(tag => (
-        <Pressable
-          key={tag}
-          role="presentation"
-          style={({hovered, pressed}) => [
-            a.rounded_full,
-            hovered || pressed
-              ? t.atoms.bg_contrast_50
-              : t.atoms.bg_contrast_25,
-            {paddingHorizontal: 6, paddingVertical: 3},
-          ]}>
-          <RichTextTag
-            tag={tag}
-            display={`#${tag}`}
-            authorHandle={post.author.handle}
-            textStyle={[
-              a.text_sm,
-              a.font_normal,
-              a.leading_tight,
-              t.atoms.text_contrast_high,
-            ]}
-            disableUnderline
-          />
-        </Pressable>
+        <PostTag key={tag} tag={tag} authorHandle={post.author.handle} />
       ))}
     </View>
+  )
+}
+
+function PostTag({tag, authorHandle}: {tag: string; authorHandle: string}) {
+  const t = useTheme()
+  const [hovered, setHovered] = useState(false)
+  return (
+    <Pressable
+      role="presentation"
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      style={({pressed}) => [
+        a.rounded_full,
+        hovered || pressed ? t.atoms.bg_contrast_50 : t.atoms.bg_contrast_25,
+        {paddingHorizontal: 6, paddingVertical: 3},
+      ]}>
+      <RichTextTag
+        tag={tag}
+        display={`#${tag}`}
+        authorHandle={authorHandle}
+        textStyle={[
+          a.text_sm,
+          a.font_normal,
+          a.leading_tight,
+          t.atoms.text_contrast_high,
+        ]}
+        disableUnderline
+      />
+    </Pressable>
   )
 }
 

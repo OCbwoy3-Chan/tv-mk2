@@ -1,7 +1,7 @@
 import {useCallback, useState} from 'react'
 import {Pressable, StyleSheet, View} from 'react-native'
 import {Image} from 'expo-image'
-import {type ModerationUI} from '@atproto/api'
+import {type ModerationUI} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -86,15 +86,22 @@ export function UserBanner({
 
     try {
       if (IS_NATIVE) {
-        onSelectNewBanner?.(
-          await compressIfNeeded(
-            await openCropper({
-              imageUri: items[0].path,
-              aspectRatio: 3 / 1,
-            }),
-            IMAGE_SIZE_CONFIG_2K_1MB,
-          ),
-        )
+        /*
+         * Nested rather than `?.()`: React Compiler cannot lower an optional
+         * call inside a `try`. Like `?.()`, this leaves the arguments
+         * unevaluated when the callback is absent.
+         */
+        if (onSelectNewBanner) {
+          onSelectNewBanner(
+            await compressIfNeeded(
+              await openCropper({
+                imageUri: items[0].path,
+                aspectRatio: 3 / 1,
+              }),
+              IMAGE_SIZE_CONFIG_2K_1MB,
+            ),
+          )
+        }
       } else {
         setRawImage(await createComposerImage(items[0]))
         editImageDialogControl.open()
@@ -118,14 +125,7 @@ export function UserBanner({
 
   const onChangeEditImage = useCallback(
     async (image: ComposerImage) => {
-      const compressed = await compressImage(
-        image,
-        IMAGE_SIZE_CONFIG_2K_1MB,
-        {
-          outputMime: 'image/jpeg',
-          forceEncode: true,
-        },
-      )
+      const compressed = await compressImage(image, IMAGE_SIZE_CONFIG_2K_1MB)
       onSelectNewBanner?.(compressed)
     },
     [onSelectNewBanner],
@@ -226,7 +226,7 @@ export function UserBanner({
       />
     </>
   ) : banner &&
-    !((moderation?.blur && IS_ANDROID) /* android crashes with blur */) ? (
+    !(moderation?.blur && IS_ANDROID /* android crashes with blur */) ? (
     <Image
       style={[styles.bannerImage, t.atoms.bg_contrast_25]}
       contentFit="cover"

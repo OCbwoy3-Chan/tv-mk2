@@ -17,23 +17,16 @@ export function resolveEmbedImageUris(
     loadAsPngs: boolean
   },
 ) {
-  const lowRes =
-    img.aspectRatio &&
-    img.aspectRatio.width <= 1000 &&
-    img.aspectRatio.height <= 1000
-
   const pngSized =
     loadAsPngs &&
     img.aspectRatio &&
     img.aspectRatio.width <= PNG_IMG_MAX_SIZE &&
     img.aspectRatio.height <= PNG_IMG_MAX_SIZE
 
-  const resolvedFullsizeFormat = pngSized ? 'png' : fullsizeFormat
+  const resolvedFullsizeFormat =
+    pngSized && fullsizeFormat === 'webp' ? 'png' : fullsizeFormat
   const fullsize = modifyImageFormat(img.fullsize, resolvedFullsizeFormat)
-  const thumb =
-    pngSized && lowRes
-      ? fullsize
-      : modifyImageFormat(img.thumb, thumbnailFormat)
+  const thumb = modifyImageFormat(img.thumb, thumbnailFormat)
 
   return {fullsize, thumb}
 }

@@ -1,5 +1,8 @@
-import {AppBskyRichtextFacet,type RichText,UnicodeString} from '@atproto/api'
+import {AppBskyRichtextFacet} from '@atproto/api'
+import {type RichText, UnicodeString} from '@bsky/sdk/richtext'
 
+import {app} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 import {toShortUrl} from './url-helpers'
 
 export function restoreLinks(
@@ -34,7 +37,7 @@ export function restoreLinks(
   return parts.join('')
 }
 
-export function shortenLinks(rt: RichText): RichText {
+export function shortenLinks(rt: RichText, preserveLabels = false): RichText {
   if (!rt.facets?.length) {
     return rt
   }
@@ -42,7 +45,9 @@ export function shortenLinks(rt: RichText): RichText {
   // enumerate the link facets
   if (rt.facets) {
     for (const facet of rt.facets) {
-      const isLink = !!facet.features.find(AppBskyRichtextFacet.isLink)
+      const isLink = !!facet.features.find(f =>
+        bsky.isType(app.bsky.richtext.facet.link, f),
+      )
       if (!isLink) {
         continue
       }
@@ -50,6 +55,16 @@ export function shortenLinks(rt: RichText): RichText {
       // extract and shorten the URL
       const {byteStart, byteEnd} = facet.index
       const url = rt.unicodeText.slice(byteStart, byteEnd)
+      if (
+        preserveLabels &&
+        !facet.features.some(
+          feature =>
+            bsky.isType(app.bsky.richtext.facet.link, feature) &&
+            feature.uri === url,
+        )
+      ) {
+        continue
+      }
       const shortened = new UnicodeString(toShortUrl(url))
 
       // insert the shorten URL
@@ -72,7 +87,9 @@ export function stripInvalidMentions(rt: RichText): RichText {
   rt = rt.clone()
   if (rt.facets) {
     rt.facets = rt.facets?.filter(facet => {
-      const mention = facet.features.find(AppBskyRichtextFacet.isMention)
+      const mention = facet.features.find(f =>
+        bsky.isType(app.bsky.richtext.facet.mention, f),
+      )
       if (mention && !mention.did) {
         return false
       }
@@ -100,7 +117,11 @@ export function parseMarkdownLinks(text: string): {
     newText += linkText
     const endByte = new UnicodeString(newText).length
     let validUrl = linkUrl
-    if (!validUrl.startsWith('http://') && !validUrl.startsWith('https://') && !validUrl.startsWith('mailto:')) {
+    if (
+      !validUrl.startsWith('http://') &&
+      !validUrl.startsWith('https://') &&
+      !validUrl.startsWith('mailto:')
+    ) {
       validUrl = `https://${validUrl}`
     }
 

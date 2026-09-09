@@ -1,0 +1,18 @@
+diff --git a/dist/fetch-dpop.js b/dist/fetch-dpop.js
+index 9e6c02f..23951a4 100644
+--- a/dist/fetch-dpop.js
++++ b/dist/fetch-dpop.js
+@@ -136,6 +136,13 @@ async function isUseDpopNonceError(response, isAuthServer) {
+     }
+     // https://datatracker.ietf.org/doc/html/rfc9449#name-authorization-server-provid
+     if (isAuthServer === undefined || isAuthServer === true) {
++        // Reaching this function means the authorization server returned a
++        // fresh DPoP-Nonce header. React Native cannot reliably clone every
++        // fetch response to inspect its JSON body, so retry that bounded
++        // protocol challenge without depending on Response.clone().
++        if (isAuthServer === true && response.status === 400) {
++            return true;
++        }
+         if (response.status === 400) {
+             try {
+                 const json = await peekJson(response, 10 * 1024);

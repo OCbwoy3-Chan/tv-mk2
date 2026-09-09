@@ -53,6 +53,33 @@ export async function testConstellationUrl(url: string): Promise<boolean> {
   }
 }
 
+export async function testSlingshotUrl(url: string): Promise<boolean> {
+  try {
+    return await withFetchTimeout(async signal => {
+      const testUrl = new URL(
+        '/xrpc/com.atproto.repo.getRecord',
+        normalizeOrigin(url),
+      )
+      testUrl.searchParams.set('repo', PLC_TEST_DID)
+      testUrl.searchParams.set('collection', 'app.bsky.actor.profile')
+      testUrl.searchParams.set('rkey', 'self')
+      const res = await fetch(testUrl, {method: 'GET', headers, signal})
+      if (!res.ok) return false
+      const json: unknown = await res.json()
+      return (
+        typeof json === 'object' &&
+        json !== null &&
+        'uri' in json &&
+        typeof json.uri === 'string' &&
+        'value' in json &&
+        typeof json.value === 'object'
+      )
+    })
+  } catch {
+    return false
+  }
+}
+
 export async function testLibreTranslateUrl(url: string): Promise<boolean> {
   try {
     return await withFetchTimeout(async signal => {
@@ -92,8 +119,13 @@ export async function testPlcDirectoryUrl(url: string): Promise<boolean> {
       if (!res.ok) {
         return false
       }
-      const json = await res.json()
-      return typeof json?.id === 'string' && json.id === PLC_TEST_DID
+      const json: unknown = await res.json()
+      return (
+        typeof json === 'object' &&
+        json !== null &&
+        'id' in json &&
+        json.id === PLC_TEST_DID
+      )
     })
   } catch {
     return false

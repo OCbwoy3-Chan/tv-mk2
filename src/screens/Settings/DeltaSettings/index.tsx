@@ -3,11 +3,11 @@ import { Trans } from '@lingui/react/macro'
 
 import { atoms as a, useBreakpoints, useTheme } from '#/alf'
 import * as Layout from '#/components/Layout'
-import { TennaQuickLinks } from './components/QuickLinks'
-import { DeltasJapanLogoToggle } from './components/JapanLogoToggle'
+import { Separator } from '#/components/Select'
 import { Text } from '#/components/Typography'
 import { DeltasBetaBadgeToggle } from './components/BetaBadgeToggle'
-import { Separator } from '#/components/Select'
+import { DeltasJapanLogoToggle } from './components/JapanLogoToggle'
+import { TennaQuickLinks } from './components/QuickLinks'
 
 export function DeltaSettingsScreen() {
   const t = useTheme();

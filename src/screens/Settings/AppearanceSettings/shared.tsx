@@ -24,6 +24,7 @@ import {
   Heart2_Stroke2_Corner0_Rounded as HeartIconOutline,
 } from '#/components/icons/Heart2'
 import {Text} from '#/components/Typography'
+import {MATERIAL_YOU_STYLES} from '#/features/themes/materialYou'
 
 export type ColorSchemeName =
   | 'witchsky'
@@ -195,16 +196,7 @@ export function ColorSchemeGrid({
 export const MATERIAL3_STYLE_OPTIONS: {
   name: Schema['material3Style']
   label: string
-}[] = [
-  {name: 'TONAL_SPOT', label: 'Tonal Spot'},
-  {name: 'VIBRANT', label: 'Vibrant'},
-  {name: 'EXPRESSIVE', label: 'Expressive'},
-  {name: 'SPRITZ', label: 'Spritz'},
-  {name: 'RAINBOW', label: 'Rainbow'},
-  {name: 'FRUIT_SALAD', label: 'Fruit Salad'},
-  {name: 'CONTENT', label: 'Content'},
-  {name: 'MONOCHROMATIC', label: 'Mono'},
-]
+}[] = MATERIAL_YOU_STYLES
 
 export function hueToHex(hue: number): string {
   const h = hue / 60

@@ -11,14 +11,11 @@ import {
   AppBskyEmbedRecord,
   type AppBskyEmbedRecordWithMedia,
   type AppBskyEmbedVideo,
-  type AppBskyFeedDefs,
   AppBskyFeedPost,
-  type AppBskyFeedThreadgate,
-  AtUri,
-  type BlobRef,
   isDid,
-  type RichText as RichTextAPI,
 } from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
+import {type RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
@@ -67,7 +64,10 @@ import {
   useToggleReplyVisibilityMutation,
 } from '#/state/queries/threadgate'
 import {useRequireAuth, useSession} from '#/state/session'
-import {type ComposerOptsPostRef} from '#/state/shell/composer'
+import {
+  type ComposerOpts,
+  type ComposerOptsPostRef,
+} from '#/state/shell/composer'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
 import {useDialogControl} from '#/components/Dialog'
 import {useGlobalDialogsControlContext} from '#/components/dialogs/Context'
@@ -110,7 +110,9 @@ import {
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
-import {IS_INTERNAL, IS_NATIVE} from '#/env'
+import {IS_INTERNAL} from '#/env'
+import {IS_NATIVE} from '#/env'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 let PostMenuItems = ({
@@ -125,17 +127,17 @@ let PostMenuItems = ({
   forceGoogleTranslate,
 }: {
   testID: string
-  post: Shadow<AppBskyFeedDefs.PostView>
+  post: Shadow<app.bsky.feed.defs.PostView>
   postFeedContext: string | undefined
   postReqId: string | undefined
-  record: AppBskyFeedPost.Record
+  record: app.bsky.feed.post.Main
   richText: RichTextAPI
   style?: StyleProp<ViewStyle>
   hitSlop?: PressableProps['hitSlop']
   size?: 'lg' | 'md' | 'sm'
   timestamp: string
-  threadgateRecord?: AppBskyFeedThreadgate.Record
-  onShowLess?: (interaction: AppBskyFeedDefs.Interaction) => void
+  threadgateRecord?: app.bsky.feed.threadgate.Main
+  onShowLess?: (interaction: app.bsky.feed.defs.Interaction) => void
   logContext: 'FeedItem' | 'PostThreadItem' | 'Post' | 'ImmersiveVideo'
   forceGoogleTranslate: boolean
 }): React.ReactNode => {
@@ -250,7 +252,7 @@ let PostMenuItems = ({
     const recordEmbed = record.embed
     const imageUris = getRedraftImages(recordEmbed, post.embed)
 
-    let quotePost: AppBskyFeedDefs.PostView | undefined
+    let quotePost: app.bsky.feed.defs.PostView | undefined
 
     if (post.embed?.$type === 'app.bsky.embed.record#view') {
       const embed = post.embed as AppBskyEmbedRecord.View
@@ -265,7 +267,7 @@ let PostMenuItems = ({
           record: embed.record.value,
           indexedAt: embed.record.indexedAt,
           embed: embed.record.embeds?.[0],
-        } as AppBskyFeedDefs.PostView
+        } as app.bsky.feed.defs.PostView
       }
     } else if (post.embed?.$type === 'app.bsky.embed.recordWithMedia#view') {
       const embed = post.embed as AppBskyEmbedRecordWithMedia.View
@@ -281,7 +283,7 @@ let PostMenuItems = ({
           record: quoted.value,
           indexedAt: quoted.indexedAt,
           embed: quoted.embeds?.[0],
-        } as AppBskyFeedDefs.PostView
+        } as app.bsky.feed.defs.PostView
       }
     }
 
@@ -291,12 +293,7 @@ let PostMenuItems = ({
       if (parentRef?.uri) {
         try {
           const parentPost = await getPost({uri: parentRef.uri})
-          if (
-            bsky.dangerousIsType<AppBskyFeedPost.Record>(
-              parentPost.record,
-              AppBskyFeedPost.isRecord,
-            )
-          ) {
+          if (bsky.isType(app.bsky.feed.post.main, parentPost.record)) {
             replyTo = {
               uri: parentPost.uri,
               cid: parentPost.cid,
@@ -312,19 +309,11 @@ let PostMenuItems = ({
       }
     }
 
-    let videoUri:
-      | {
-          uri: string
-          width: number
-          height: number
-          blobRef?: BlobRef
-          altText?: string
-        }
-      | undefined
+    let videoUri: ComposerOpts['videoUri']
     let recordVideo: AppBskyEmbedVideo.Main | undefined
 
     if (recordEmbed?.$type === 'app.bsky.embed.video') {
-      recordVideo = recordEmbed as AppBskyEmbedVideo.Main
+      recordVideo = recordEmbed as unknown as AppBskyEmbedVideo.Main
     } else if (recordEmbed?.$type === 'app.bsky.embed.recordWithMedia') {
       const media = (recordEmbed as AppBskyEmbedRecordWithMedia.Main).media
       if (media.$type === 'app.bsky.embed.video') {
@@ -353,6 +342,42 @@ let PostMenuItems = ({
           height: video.aspectRatio?.height ?? 1000,
           blobRef: recordVideo.video,
           altText: video.alt || '',
+        }
+      }
+    }
+
+    if (videoUri && recordVideo) {
+      videoUri.ownerDid = post.author.did
+      if (IS_NATIVE) {
+        videoUri.originalCaptions =
+          recordVideo.captions as unknown as app.bsky.embed.video.Caption[]
+      } else if (recordVideo.captions?.length) {
+        try {
+          const pdsUrl = await resolvePdsServiceUrl(post.author.did)
+          videoUri.captions = await Promise.all(
+            (recordVideo.captions ?? []).map(async caption => {
+              const uri = new URL('/xrpc/com.atproto.sync.getBlob', pdsUrl)
+              uri.searchParams.set('did', post.author.did)
+              uri.searchParams.set('cid', caption.file.ref.toString())
+              const response = await fetch(uri)
+              if (!response.ok) throw new Error('Could not load caption file')
+              return {
+                lang: caption.lang,
+                file: new File(
+                  [await response.blob()],
+                  `caption-${caption.lang}.vtt`,
+                  {type: 'text/vtt'},
+                ),
+              }
+            }),
+          )
+        } catch (error) {
+          logger.error('Failed to restore video captions', {safeMessage: error})
+          Toast.show(
+            l`Could not load video captions. Please try redrafting again.`,
+            {type: 'error'},
+          )
+          return
         }
       }
     }
@@ -646,14 +671,13 @@ let PostMenuItems = ({
           type: 'error',
         })
       }
-    } finally {
-      ax.metric('postMenu:blockAccount', {
-        uri: postUri,
-        authorDid: postAuthor.did,
-        logContext,
-        feedDescriptor: feedFeedback.feedDescriptor,
-      })
     }
+    ax.metric('postMenu:blockAccount', {
+      uri: postUri,
+      authorDid: postAuthor.did,
+      logContext,
+      feedDescriptor: feedFeedback.feedDescriptor,
+    })
   }
 
   const onMuteAuthor = async () => {
@@ -669,14 +693,13 @@ let PostMenuItems = ({
             type: 'error',
           })
         }
-      } finally {
-        ax.metric('postMenu:unmuteAccount', {
-          uri: postUri,
-          authorDid: postAuthor.did,
-          logContext,
-          feedDescriptor: feedFeedback.feedDescriptor,
-        })
       }
+      ax.metric('postMenu:unmuteAccount', {
+        uri: postUri,
+        authorDid: postAuthor.did,
+        logContext,
+        feedDescriptor: feedFeedback.feedDescriptor,
+      })
     } else {
       try {
         await queueMute()
@@ -689,19 +712,25 @@ let PostMenuItems = ({
             type: 'error',
           })
         }
-      } finally {
-        ax.metric('postMenu:muteAccount', {
-          uri: postUri,
-          authorDid: postAuthor.did,
-          logContext,
-          feedDescriptor: feedFeedback.feedDescriptor,
-        })
       }
+      ax.metric('postMenu:muteAccount', {
+        uri: postUri,
+        authorDid: postAuthor.did,
+        logContext,
+        feedDescriptor: feedFeedback.feedDescriptor,
+      })
     }
   }
 
   const onReportMisclassification = () => {
     const url = `https://docs.google.com/forms/d/e/1FAIpQLSd0QPqhNFksDQf1YyOos7r1ofCLvmrKAH1lU042TaS3GAZaWQ/viewform?entry.1756031717=${toShareUrl(
+      href,
+    )}`
+    void openLink(url)
+  }
+
+  const onLabelReply = () => {
+    const url = `https://docs.google.com/forms/d/e/1FAIpQLScWa03XbS_knVbSjnc4DENACN5A2YvBZjtjrpI1XdDbK7d3Ow/viewform?entry.1843100496=${toShareUrl(
       href,
     )}`
     void openLink(url)
@@ -757,21 +786,20 @@ let PostMenuItems = ({
           </>
         )}
 
-        {videoEmbed &&
-          (IS_NATIVE || videoEmbed.presentation === 'gif') && (
-            <>
-              <Menu.Group>
-                <Menu.Item
-                  testID="postDropdownDownloadVideoBtn"
-                  label={l`Download Video`}
-                  onPress={() => void onPressDownloadVideo()}>
-                  <Menu.ItemText>{l`Download Video`}</Menu.ItemText>
-                  <Menu.ItemIcon icon={Download} position="right" />
-                </Menu.Item>
-              </Menu.Group>
-              <Menu.Divider />
-            </>
-          )}
+        {videoEmbed && (IS_NATIVE || videoEmbed.presentation === 'gif') && (
+          <>
+            <Menu.Group>
+              <Menu.Item
+                testID="postDropdownDownloadVideoBtn"
+                label={l`Download Video`}
+                onPress={() => void onPressDownloadVideo()}>
+                <Menu.ItemText>{l`Download Video`}</Menu.ItemText>
+                <Menu.ItemIcon icon={Download} position="right" />
+              </Menu.Item>
+            </Menu.Group>
+            <Menu.Divider />
+          </>
+        )}
 
         {isEmbedGif() && (
           <>
@@ -877,6 +905,15 @@ let PostMenuItems = ({
               <Menu.ItemText>{l`Assign topic for algo`}</Menu.ItemText>
               <Menu.ItemIcon icon={AtomIcon} position="right" />
             </Menu.Item>
+            {isReply && (
+              <Menu.Item
+                testID="postDropdownLabelReplyBtn"
+                label={l`Label reply for algo`}
+                onPress={onLabelReply}>
+                <Menu.ItemText>{l`Label reply for algo`}</Menu.ItemText>
+                <Menu.ItemIcon icon={AtomIcon} position="right" />
+              </Menu.Item>
+            )}
           </>
         )}
 

@@ -21,7 +21,7 @@ import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {SubtitleFilePicker} from './SubtitleFilePicker'
 
-const MAX_NUM_CAPTIONS = 1
+const MAX_NUM_CAPTIONS = 20
 
 type CaptionsTrack = {lang: string; file: File}
 
@@ -34,6 +34,7 @@ interface Props {
 
 export function SubtitleDialogBtn(props: Props) {
   const control = Dialog.useDialogControl()
+  const [altText, setAltText] = useState(props.defaultAltText)
   const {_} = useLingui()
 
   return (
@@ -61,38 +62,48 @@ export function SubtitleDialogBtn(props: Props) {
           )}
         </ButtonText>
       </Button>
-      <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
+      <Dialog.Outer
+        control={control}
+        onOpen={() => setAltText(props.defaultAltText)}
+        onClose={() => props.saveAltText(altText)}
+        nativeOptions={{preventExpansion: true}}>
         <Dialog.Handle />
-        <SubtitleDialogInner {...props} />
+        <SubtitleDialogInner
+          {...props}
+          altText={altText}
+          setAltText={setAltText}
+        />
       </Dialog.Outer>
     </View>
   )
 }
 
 function SubtitleDialogInner({
-  defaultAltText,
-  saveAltText,
+  altText,
+  setAltText,
   captions,
   setCaptions,
-}: Props) {
+}: Props & {altText: string; setAltText: (text: string) => void}) {
   const control = Dialog.useDialogContext()
   const {_} = useLingui()
   const t = useTheme()
   const {primaryLanguage} = useLanguagePrefs()
 
-  const [altText, setAltText] = useState(defaultAltText)
-
   const handleSelectFile = useCallback(
     (file: File) => {
-      setCaptions(subs => [
-        ...subs,
-        {
-          lang: subs.some(s => s.lang === primaryLanguage)
-            ? ''
-            : primaryLanguage,
-          file,
-        },
-      ])
+      setCaptions(subs =>
+        subs.length >= MAX_NUM_CAPTIONS
+          ? subs
+          : [
+              ...subs,
+              {
+                lang: subs.some(s => s.lang === primaryLanguage)
+                  ? ''
+                  : primaryLanguage,
+                file,
+              },
+            ],
+      )
     },
     [setCaptions, primaryLanguage],
   )
@@ -114,7 +125,7 @@ function SubtitleDialogInner({
           <Dialog.Input
             label={_(msg`Alt text`)}
             placeholder={_(msg`Add alt text (optional)`)}
-            value={altText}
+            defaultValue={altText}
             onChangeText={setAltText}
             maxLength={MAX_ALT_TEXT * 10}
             multiline
@@ -154,18 +165,23 @@ function SubtitleDialogInner({
               ]}
             />
             <Text style={[a.text_xl, a.font_semi_bold, a.leading_tight]}>
-              <Trans>Captions (.vtt)</Trans>
+              <Trans>Captions</Trans>
+            </Text>
+            <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
+              <Trans>
+                Uploaded SRT files will be converted to WebVTT.
+              </Trans>
             </Text>
             <SubtitleFilePicker
               onSelectFile={handleSelectFile}
-              disabled={
-                subtitleMissingLanguage || captions.length >= MAX_NUM_CAPTIONS
-              }
+              remainingSlots={MAX_NUM_CAPTIONS - captions.length}
+              disabled={captions.length >= MAX_NUM_CAPTIONS}
             />
             <View>
               {captions.map((subtitle, i) => (
                 <SubtitleFileRow
-                  key={subtitle.lang}
+                  key={i}
+                  index={i}
                   language={subtitle.lang}
                   file={subtitle.file}
                   setCaptions={setCaptions}
@@ -195,7 +211,6 @@ function SubtitleDialogInner({
             color="primary"
             variant="solid"
             onPress={() => {
-              saveAltText(altText)
               control.close()
             }}
             style={a.mt_lg}
@@ -212,12 +227,14 @@ function SubtitleDialogInner({
 }
 
 function SubtitleFileRow({
+  index,
   language,
   file,
   otherLanguages,
   setCaptions,
   style,
 }: {
+  index: number
   language: string
   file: File
   otherLanguages: {code2: string; code3: string; name: string}[]
@@ -231,11 +248,11 @@ function SubtitleFileRow({
     (lang: string) => {
       if (lang) {
         setCaptions(subs =>
-          subs.map(s => (s.lang === language ? {lang, file: s.file} : s)),
+          subs.map((s, i) => (i === index ? {...s, lang} : s)),
         )
       }
     },
-    [setCaptions, language],
+    [setCaptions, index],
   )
 
   const enableSquareButtons = useEnableSquareButtons()
@@ -271,7 +288,7 @@ function SubtitleFileRow({
             value={language}
             onChange={evt => handleValueChange(evt.target.value)}
             style={{maxWidth: 200, flex: 1}}>
-            <option value="" disabled selected hidden>
+            <option value="" disabled hidden>
               {/* eslint-disable-next-line bsky-internal/avoid-unwrapped-text */}
               <Trans>Select language...</Trans>
             </option>
@@ -291,9 +308,7 @@ function SubtitleFileRow({
         shape={enableSquareButtons ? 'square' : 'round'}
         variant="outline"
         color="secondary"
-        onPress={() =>
-          setCaptions(subs => subs.filter(s => s.lang !== language))
-        }
+        onPress={() => setCaptions(subs => subs.filter((_, i) => i !== index))}
         style={[a.ml_sm]}>
         <ButtonIcon icon={X} />
       </Button>

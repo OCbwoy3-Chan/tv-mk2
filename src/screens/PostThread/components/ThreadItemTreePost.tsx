@@ -1,11 +1,7 @@
 import {memo, useCallback, useMemo, useState} from 'react'
 import {View} from 'react-native'
-import {
-  type AppBskyFeedDefs,
-  type AppBskyFeedThreadgate,
-  AtUri,
-  RichText as RichTextAPI,
-} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
+import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {Trans} from '@lingui/react/macro'
 
 import {MAX_POST_LINES} from '#/lib/constants'
@@ -53,6 +49,7 @@ import {RichText} from '#/components/RichText'
 import * as Skele from '#/components/Skeleton'
 import {SubtleHover} from '#/components/SubtleHover'
 import {Text} from '#/components/Typography'
+import {type app} from '#/lexicons'
 
 /**
  * Mimic the space in PostMeta
@@ -71,7 +68,7 @@ export function ThreadItemTreePost({
     topBorder?: boolean
   }
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
 }) {
   const postShadow = usePostShadow(item.value.post)
 
@@ -187,10 +184,17 @@ const ThreadItemTreePostInnerWrapper = memo(
     children: React.ReactNode
   }) {
     const t = useTheme()
+    /*
+     * Do not give this wrapper (or the column inside it) `flex: 1`. In a
+     * column, `flex: 1` means `flexBasis: 0`, so Yoga sizes the wrapper from
+     * its parent's measured height instead of its own content. When the
+     * lightbox rotates the device and back, that parent height can come from
+     * a stale measurement, leaving the reply text and controls laid out at the
+     * wrong size inside a correctly sized cell (APP-2687).
+     */
     return (
       <View
         style={[
-          a.flex_1, // TODO check on ios
           {
             paddingHorizontal: OUTER_SPACE,
             paddingTop: OUTER_SPACE / 2,
@@ -261,13 +265,13 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
   threadgateRecord,
 }: {
   item: Extract<ThreadItem, {type: 'threadPost'}>
-  postShadow: Shadow<AppBskyFeedDefs.PostView>
+  postShadow: Shadow<app.bsky.feed.defs.PostView>
   overrides?: {
     moderation?: boolean
     topBorder?: boolean
   }
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
 }): React.ReactNode {
   const {openComposer} = useOpenComposer()
   const {currentAccount} = useSession()
@@ -336,6 +340,11 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
       <SubtleHoverWrapper>
         <PostHider
           testID={`postThreadItem-by-${post.author.handle}`}
+          dataSet={{
+            keyboardNavigationPost: post.uri,
+            keyboardNavigationHref: postHref,
+            keyboardNavigationClickable: 'true',
+          }}
           href={postHref}
           disabled={overrides?.moderation === true}
           modui={moderation.ui('contentList')}
@@ -344,7 +353,7 @@ const ThreadItemTreePostInner = memo(function ThreadItemTreePostInner({
           profile={post.author}
           interpretFilterAsBlur>
           <ThreadItemTreePostInnerWrapper item={item}>
-            <View style={[a.flex_1, userStyle('wsky-post__content')]}>
+            <View style={[userStyle('wsky-post__content')]}>
               <PostMeta
                 author={post.author}
                 moderation={moderation}

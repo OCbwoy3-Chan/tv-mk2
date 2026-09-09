@@ -13,11 +13,11 @@ import {
 } from '#/state/queries/ai-preferences'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
+import {Admonition} from '#/components/Admonition'
 import * as ToggleButton from '#/components/forms/ToggleButton'
 import * as Layout from '#/components/Layout'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
-import {Admonition} from '#/components/Admonition'
 
 type Props = NativeStackScreenProps<
   CommonNavigatorParams,

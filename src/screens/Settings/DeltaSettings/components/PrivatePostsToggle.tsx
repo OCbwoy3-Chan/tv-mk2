@@ -1,9 +1,9 @@
 import { Trans } from '@lingui/react/macro'
 
-import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import * as Toggle from '#/components/forms/Toggle'
-import { atoms as a, useTheme } from '#/alf'
 import { usePrivatePostsEnabled, useSetPrivatePostsEnabled } from '#/state/preferences/private-posts-enabled'
+import * as SettingsList from '#/screens/Settings/components/SettingsList'
+import { atoms as a, useTheme } from '#/alf'
+import * as Toggle from '#/components/forms/Toggle'
 
 export function DeltasPrivatePostsToggle() {
     const t = useTheme();

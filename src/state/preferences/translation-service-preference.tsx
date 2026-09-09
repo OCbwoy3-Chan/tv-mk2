@@ -42,7 +42,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       translationServicePreference: persisted.Schema['translationServicePreference'],
     ) => {
       setState(translationServicePreference)
-      persisted.write(
+      void persisted.write(
         'translationServicePreference',
         translationServicePreference,
       )
@@ -53,7 +53,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setInstanceStateWrapped = useCallback(
     (libreTranslateInstance: persisted.Schema['libreTranslateInstance']) => {
       setInstanceState(libreTranslateInstance)
-      persisted.write('libreTranslateInstance', libreTranslateInstance)
+      void persisted.write('libreTranslateInstance', libreTranslateInstance)
     },
     [setInstanceState],
   )

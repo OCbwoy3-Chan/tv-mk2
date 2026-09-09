@@ -1,11 +1,10 @@
 import {useCallback} from 'react'
-
-import {useLingui} from '@lingui/react/macro'
 import {reloadAppAsync} from 'expo'
+import {useLingui} from '@lingui/react/macro'
 
-import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
-import {IS_WEB} from '#/env'
 import * as Prompt from '#/components/Prompt'
+import {IS_WEB} from '#/env'
+import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
 
 export function RestartRequiredPrompt({
   control,

@@ -1,5 +1,5 @@
 import {useCallback} from 'react'
-import * as MediaLibrary from 'expo-media-library'
+import * as MediaLibrary from 'expo-media-library/legacy'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -19,7 +19,7 @@ export function useSaveImageToMediaLibrary() {
       granularPermissions: ['photo'],
     })
   return useCallback(
-    async (uri: string) => {
+    async (uri: string, format?: string) => {
       if (!IS_NATIVE) {
         throw new Error('useSaveImageToMediaLibrary is native only')
       }
@@ -28,7 +28,7 @@ export function useSaveImageToMediaLibrary() {
         try {
           await saveImageToMediaLibrary({
             uri,
-            format: downloadFormat ?? 'jpeg',
+            format: format ?? downloadFormat ?? 'original',
           })
 
           Toast.show(_(msg`Image saved`))

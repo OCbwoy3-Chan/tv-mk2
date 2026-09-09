@@ -4,7 +4,7 @@ import {type MaterialYouPalette} from '@assembless/react-native-material-you'
 import {generatePaletteFromColor, type GenerationStyle} from './material3'
 
 export function getMaterialYouColor(
-  palette: MaterialYouPalette,
+  palette: MaterialYouPalette & {system_error?: string[]},
   color: [
     'system_accent1',
     'system_accent2',

@@ -40,9 +40,7 @@ export interface Follow10ProgressGuide extends BaseProgressGuide {
 }
 
 export type ProgressGuide =
-  | Like10AndFollow7ProgressGuide
-  | Follow10ProgressGuide
-  | undefined
+  Like10AndFollow7ProgressGuide | Follow10ProgressGuide | undefined
 
 const ProgressGuideContext = createContext<ProgressGuide>(undefined)
 ProgressGuideContext.displayName = 'ProgressGuideContext'
@@ -126,7 +124,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
             isComplete: false,
           } satisfies ProgressGuide
           setLocalGuideState(guideObj)
-          mutateAsync(guideObj)
+          void mutateAsync(guideObj)
         } else if (guide === 'follow-10') {
           const guideObj = {
             guide: 'follow-10',
@@ -134,13 +132,13 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
             isComplete: false,
           } satisfies ProgressGuide
           setLocalGuideState(guideObj)
-          mutateAsync(guideObj)
+          void mutateAsync(guideObj)
         }
       },
 
       endProgressGuide() {
         setLocalGuideState(undefined)
-        mutateAsync(undefined)
+        void mutateAsync(undefined)
         ax.metric('progressGuide:hide', {})
       },
 
@@ -200,7 +198,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
         }
 
         setLocalGuideState(guide)
-        mutateAsync(guide?.isComplete ? undefined : guide)
+        void mutateAsync(guide?.isComplete ? undefined : guide)
       },
     }
   }, [ax, activeProgressGuide, mutateAsync, setLocalGuideState])

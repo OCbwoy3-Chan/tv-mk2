@@ -1,0 +1,118 @@
+diff --git a/dist/index.js b/dist/index.js
+index 0d167cb..148b6a1 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,4 +1,4 @@
+ import './polyfill';
+ export * from '@atproto/oauth-client';
+-export { ExpoOAuthClient } from './expo-oauth-client.js';
++export { ExpoOAuthClient } from './expo-oauth-client';
+ //# sourceMappingURL=index.js.map
+\ No newline at end of file
+diff --git a/dist/polyfill.native.js b/dist/polyfill.native.js
+index 72cbd70..4510ac4 100644
+--- a/dist/polyfill.native.js
++++ b/dist/polyfill.native.js
+@@ -1,3 +1,23 @@
+-import 'core-js/proposals/explicit-resource-management';
++// Hermes supports symbols, but not the explicit resource-management symbols.
++// Defining just these avoids core-js replacing Function.prototype.toString,
++// which can recurse after a React Native runtime is recreated.
++if (!Symbol.dispose) {
++    Object.defineProperty(Symbol, 'dispose', { value: Symbol('Symbol.dispose') });
++}
++if (!Symbol.asyncDispose) {
++    Object.defineProperty(Symbol, 'asyncDispose', { value: Symbol('Symbol.asyncDispose') });
++}
++// React Native's abort-controller polyfill predates AbortSignal.throwIfAborted,
++// but @atproto/oauth-client uses it for its internal refresh timeout signals.
++if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.prototype.throwIfAborted !== 'function') {
++    Object.defineProperty(AbortSignal.prototype, 'throwIfAborted', {
++        configurable: true,
++        value: function () {
++            if (this.aborted) {
++                throw this.reason ?? new Error('This operation was aborted');
++            }
++        },
++    });
++}
+ import 'react-native-url-polyfill/auto';
+ //# sourceMappingURL=polyfill.native.js.map
+\ No newline at end of file
+diff --git a/dist/expo-oauth-client.native.js b/dist/expo-oauth-client.native.js
+index 0680923..c167e60 100644
+--- a/dist/expo-oauth-client.native.js
++++ b/dist/expo-oauth-client.native.js
+@@ -65,31 +65,35 @@ const runtimeImplementation = {
+ export class ExpoOAuthClient extends OAuthClient {
+     #disposables;
+     constructor(options) {
+-        const env_1 = { stack: [], error: void 0, hasError: false };
+-        try {
+-            const stack = __addDisposableResource(env_1, new DisposableStack(), false);
+-            super({
+-                ...options,
+-                responseMode: options.responseMode ?? 'query',
+-                keyset: undefined,
+-                runtimeImplementation,
+-                sessionStore: stack.use(new SessionStore()),
+-                stateStore: stack.use(new StateStore()),
+-                didCache: stack.use(new DidCache()),
+-                handleCache: stack.use(new HandleCache()),
+-                dpopNonceCache: stack.use(new DpopNonceCache()),
+-                authorizationServerMetadataCache: stack.use(new AuthorizationServerMetadataCache()),
+-                protectedResourceMetadataCache: stack.use(new ProtectedResourceMetadataCache()),
+-            });
+-            this.#disposables = stack.move();
+-        }
+-        catch (e_1) {
+-            env_1.error = e_1;
+-            env_1.hasError = true;
+-        }
+-        finally {
+-            __disposeResources(env_1);
+-        }
++        const sessionStore = new SessionStore();
++        const stateStore = new StateStore();
++        const didCache = new DidCache();
++        const handleCache = new HandleCache();
++        const dpopNonceCache = new DpopNonceCache();
++        const authorizationServerMetadataCache = new AuthorizationServerMetadataCache();
++        const protectedResourceMetadataCache = new ProtectedResourceMetadataCache();
++        super({
++            ...options,
++            responseMode: options.responseMode ?? 'query',
++            keyset: undefined,
++            runtimeImplementation,
++            sessionStore,
++            stateStore,
++            didCache,
++            handleCache,
++            dpopNonceCache,
++            authorizationServerMetadataCache,
++            protectedResourceMetadataCache,
++        });
++        this.#disposables = [
++            sessionStore,
++            stateStore,
++            didCache,
++            handleCache,
++            dpopNonceCache,
++            authorizationServerMetadataCache,
++            protectedResourceMetadataCache,
++        ];
+     }
+     async handleCallback() {
+         return null;
+@@ -124,7 +128,9 @@ export class ExpoOAuthClient extends OAuthClient {
+         }
+     }
+     async [Symbol.asyncDispose]() {
+-        this.#disposables.dispose();
++        for (const disposable of this.#disposables) {
++            disposable[Symbol.dispose]();
++        }
+     }
+ }
+ //# sourceMappingURL=expo-oauth-client.native.js.map
+\ No newline at end of file

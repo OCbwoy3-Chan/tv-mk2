@@ -38,7 +38,6 @@ import {BellRinging_Stroke2_Corner0_Rounded as BellRingingIcon} from '#/componen
 import {CodeBrackets_Stroke2_Corner2_Rounded as CodeBracketsIcon} from '#/components/icons/CodeBrackets'
 import {Explosion_Stroke2_Corner0_Rounded as ExplosionIcon} from '#/components/icons/Explosion'
 import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/Eye'
-import {Hashtag_Stroke2_Corner0_Rounded as HashtagIcon} from '#/components/icons/Hashtag'
 import {LikeRepost_Stroke2_Corner2_Rounded as LikeRepostIcon} from '#/components/icons/Heart2'
 import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import {Text} from '#/components/Typography'
@@ -66,7 +65,6 @@ export function RunesExtraSettingsScreen() {
 
   const omitViaField = useOmitViaField()
   const setOmitViaField = useSetOmitViaField()
-  const tidSuffix = useTidSuffix()
   const setTidSuffixControl = Dialog.useDialogControl()
   const [devMode, setDevMode] = useDevMode()
 

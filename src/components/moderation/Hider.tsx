@@ -1,5 +1,5 @@
 import {createContext, useContext, useState} from 'react'
-import {type ModerationUI} from '@atproto/api'
+import {type ModerationUI} from '@bsky/sdk/moderation'
 
 import {
   type ModerationCauseDescription,
@@ -29,7 +29,7 @@ export const useHider = () => useContext(Context)
 export function Outer({
   modui,
   isContentVisibleInitialState,
-  allowOverride,
+  allowOverride: _allowOverride,
   children,
 }: React.PropsWithChildren<{
   isContentVisibleInitialState?: boolean

@@ -1,4 +1,5 @@
 import {BSKY_LABELER_DID} from '@atproto/api'
+import {isDidString} from '@atproto/lex'
 import {z} from 'zod'
 
 import {DEFAULT_ALT_TEXT_AI_MODEL} from '#/lib/constants'
@@ -8,7 +9,7 @@ import {
   notificationDotDisplaySchema,
 } from '#/lib/metrics-display'
 import {deviceLanguageCodes, deviceLocales} from '#/locale/deviceLocales'
-import {findSupportedAppLanguage} from '#/locale/helpers'
+import {findSupportedAppLanguage} from '#/locale/languages'
 import {logger} from '#/logger'
 import {PlatformInfo} from '../../../modules/expo-bluesky-swiss-army'
 
@@ -20,7 +21,17 @@ const externalEmbedOptions = ['show', 'hide'] as const
  */
 const accountSchema = z.object({
   service: z.string(),
-  did: z.string(),
+  /**
+   * Genuinely validated, not just branded: the refinement rejects malformed
+   * values at runtime and narrows the inferred type to `DidString`.
+   *
+   * Weigh any further tightening of this field carefully. One failing field
+   * fails the whole root schema, and {@link tryParse} then discards the ENTIRE
+   * persisted state - every account and every preference - so the app boots
+   * logged out with defaults. Persisted dids come from com.atproto.server
+   * responses and are always canonical, so this particular check is safe.
+   */
+  did: z.string().refine(isDidString),
   handle: z.string(),
   addedAt: z.string().optional(),
   lastActiveAt: z.string().optional(),
@@ -55,6 +66,66 @@ const currentAccountSchema = accountSchema.extend({
   handle: z.string().optional(),
 })
 export type PersistedCurrentAccount = z.infer<typeof currentAccountSchema>
+
+const semanticColorsSchema = z.object({
+  canvas: z.string(),
+  surface: z.string(),
+  surfaceRaised: z.string(),
+  text: z.string(),
+  textMuted: z.string(),
+  border: z.string(),
+  accent: z.string(),
+  accentSoft: z.string(),
+  onAccent: z.string(),
+  positive: z.string(),
+  warning: z.string(),
+  critical: z.string(),
+  favorite: z.string(),
+})
+const semanticColorOverridesSchema = semanticColorsSchema.partial()
+
+const themeRecordSchema = z.object({
+  $type: z.literal('app.witchsky.theme.colors').optional(),
+  name: z.string(),
+  description: z.string().optional(),
+  mode: z.enum(['light', 'dark']),
+  recommendedPair: z.string().optional(),
+  base: z.object({
+    name: z.string(),
+    colors: semanticColorsSchema,
+  }),
+  variants: z
+    .array(
+      z.object({
+        name: z.string(),
+        colors: semanticColorOverridesSchema.optional(),
+      }),
+    )
+    .optional(),
+  special: z
+    .object({
+      $type: z.string(),
+      accent: z.string().optional(),
+    })
+    .passthrough()
+    .optional(),
+  createdAt: z.string(),
+  updatedAt: z.string().optional(),
+})
+
+const activeThemeSelectionSchema = z.object({
+  uri: z.string(),
+  cid: z.string(),
+  author: z.string(),
+  record: themeRecordSchema,
+  colorSet: z.string(),
+  hue: z.number().optional(),
+})
+
+const activeThemeSchema = z.object({
+  light: activeThemeSelectionSchema,
+  dark: activeThemeSelectionSchema,
+})
 
 const schema = z.object({
   colorMode: z.enum(['system', 'light', 'dark']),
@@ -92,6 +163,7 @@ const schema = z.object({
       'MONOCHROMATIC',
     ])
     .default('TONAL_SPOT'),
+  activeTheme: activeThemeSchema.optional(),
   session: z.object({
     accounts: z.array(accountSchema),
     currentAccount: currentAccountSchema.optional(),
@@ -187,6 +259,8 @@ const schema = z.object({
   alsoLikedCollapseByDefault: z.boolean().optional(),
   constellationInstance: z.string().optional(),
   constellationInstanceCustom: z.string().optional(),
+  slingshotInstance: z.string().optional(),
+  slingshotInstanceCustom: z.string().optional(),
   showLinkInHandle: z.boolean().optional(),
   showLinkInHandleOnlyOnWorkingLinks: z.boolean().optional(),
   hideFeedsPromoTab: z.boolean().optional(),
@@ -223,6 +297,9 @@ const schema = z.object({
   postsMetricsDisplay: countsMetricsDisplaySchema.optional(),
   /** @deprecated Migrated to notificationsTabBadgeDisplay and chatsTabBadgeDisplay */
   notificationDotDisplay: notificationDotDisplaySchema.optional(),
+  tabTitleSource: z.enum(['notifications', 'chats', 'none']).optional(),
+  notificationsBadgeText: z.string().max(16).optional(),
+  chatsBadgeText: z.string().max(16).optional(),
   notificationsTabBadgeDisplay: notificationDotDisplaySchema.optional(),
   chatsTabBadgeDisplay: notificationDotDisplaySchema.optional(),
   showFollowsYouBadge: z.boolean().optional(),
@@ -246,6 +323,7 @@ const schema = z.object({
   deerVerification: z
     .object({
       enabled: z.boolean(),
+      perVerifierBadges: z.boolean().optional(),
       trustAppView: z.boolean().optional(),
       trustedSelf: z.boolean().optional(),
       trusted: z.array(z.string()),
@@ -344,6 +422,7 @@ export const defaults: Schema = {
   hue: 0,
   material3Accent: '#ee6300',
   material3Style: 'TONAL_SPOT',
+  activeTheme: undefined,
   session: {
     accounts: [],
     currentAccount: undefined,
@@ -400,6 +479,7 @@ export const defaults: Schema = {
   alsoLikedFeedEnabled: true,
   alsoLikedCollapseByDefault: true,
   constellationInstance: 'https://constellation.microcosm.blue/',
+  slingshotInstance: 'https://slingshot.microcosm.blue/',
   showLinkInHandle: true,
   showLinkInHandleOnlyOnWorkingLinks: true,
   hideFeedsPromoTab: false,
@@ -446,7 +526,7 @@ export const defaults: Schema = {
   highQualityImages: false,
   thumbnailFormat: 'webp',
   fullsizeFormat: 'webp',
-  downloadFormat: 'jpeg',
+  downloadFormat: 'original',
   loadAsPngs: true,
   plcDirectory: 'https://plc.directory',
   hideUnreplyablePosts: false,
@@ -531,7 +611,7 @@ export function tryParse(rawData: string): Schema | undefined {
     const errors =
       parsed.error?.errors?.map(e => ({
         code: e.code,
-        // @ts-ignore exists on some types
+        // @ts-expect-error exists on some types
         expected: e?.expected,
         path: e.path?.join('.'),
       })) || []

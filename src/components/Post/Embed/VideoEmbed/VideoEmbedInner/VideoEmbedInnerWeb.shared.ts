@@ -1,12 +1,13 @@
-import {type AppBskyEmbedVideo} from '@atproto/api'
+import {type app} from '#/lexicons'
 
 export type VideoEmbedInnerWebProps = {
-  embed: AppBskyEmbedVideo.View
+  embed: app.bsky.embed.video.View
   onDownload?: () => void
   active: boolean
   setActive: () => void
   onScreen: boolean
   lastKnownTime: React.RefObject<number | undefined>
+  onPlaybackStart: (autoplay: boolean) => void
 }
 
 export class HLSUnsupportedError extends Error {

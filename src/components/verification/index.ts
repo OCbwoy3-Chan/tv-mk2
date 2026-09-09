@@ -34,8 +34,9 @@ export function useFullVerificationState({
   const {currentAccount} = useSession()
   const currentAccountProfile = useCurrentAccountProfile()
   const profileState = useSimpleVerificationState({profile})
-  const currentAccountProfileWithDeer =
-    useMaybeDeerVerificationProfileOverlay(currentAccountProfile)
+  const currentAccountProfileWithDeer = useMaybeDeerVerificationProfileOverlay(
+    currentAccountProfile,
+  )
   const viewerState = useSimpleVerificationState({
     profile: currentAccountProfileWithDeer,
   })

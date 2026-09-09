@@ -26,11 +26,11 @@ export const Fields = {
   Image: 'image',
 } as const
 
-export async function isAvailableAsync() {
+export function isAvailableAsync() {
   return false
 }
 
-export async function getPermissionsAsync(): Promise<PermissionResponse> {
+export function getPermissionsAsync(): PermissionResponse {
   return {
     granted: false,
     canAskAgain: false,
@@ -39,9 +39,9 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
 }
 
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
-  return await getPermissionsAsync()
+  return  getPermissionsAsync()
 }
 
-export async function getContactsAsync() {
+export function getContactsAsync() {
   return {data: [] as ExistingContact[]}
 }

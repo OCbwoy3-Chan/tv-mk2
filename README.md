@@ -108,7 +108,11 @@ If the issue pertains to infastructure, code, or systems outside the scope of te
 
 ## License (MIT)
 
-See [./LICENSE](./LICENSE) for the full license.
+See [./LICENSE](./LICENSE) for the full license, which covers the source code in this repository.
+
+It does not cover every file. Certain images, icons, fonts, and brand assets are licensed to us
+by third parties, or are trademarks, and are carved out — see [./ASSETS.md](./ASSETS.md). Required
+third-party attribution notices are collected in [./NOTICE.md](./NOTICE.md).
 
 Bluesky Social PBC has committed to a software patent non-aggression pledge. For details see [their original announcement](https://bsky.social/about/blog/10-01-2025-patent-pledge).
 

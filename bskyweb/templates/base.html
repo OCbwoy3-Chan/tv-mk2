@@ -52,16 +52,16 @@
       font-synthesis-weight: none;
     }
     :root {
-      --text: black;
-      --background: white;
-      --backgroundLight: #e2e7ee;
+      --text: #281c1c;
+      --background: #fefbfb;
+      --backgroundLight: #f5f2f1;
     }
     @media (prefers-color-scheme: dark) {
       :root {
         color-scheme: dark;
-        --text: white;
-        --background: black;
-        --backgroundLight: #222020;
+        --text: #fefbfb;
+        --background: #281c1c;
+        --backgroundLight: #2f201f;
       }
     }
     html,
@@ -69,34 +69,29 @@
     #root {
       display: flex;
       flex: 1 0 auto;
-      min-height: 100%;
+      min-height: 100dvh;
       width: 100%;
     }
-    html.theme--light,
-    html.theme--light body,
-    html.theme--light #root {
-      background-color: white;
-      --text: black;
-      --background: white;
-      --backgroundLight: #DCE2EA;
+    html.theme--light {
+        color-scheme: light;
+      background-color: #fefbfb;
+      --text: #281c1c;
+      --background: #fefbfb;
+      --backgroundLight: #f5f2f1;
     }
-    html.theme--dark,
-    html.theme--dark body,
-    html.theme--dark #root {
+    html.theme--dark {
       color-scheme: dark;
-      background-color: black;
-      --text: white;
-      --background: black;
-      --backgroundLight: #222020;
+      background-color: #281c1c;
+      --text: #fefbfb;
+      --background: #281c1c;
+      --backgroundLight: #2f201f;
     }
-    html.theme--dim,
-    html.theme--dim body,
-    html.theme--dim #root {
+    html.theme--dim {
       color-scheme: dark;
-      background-color: #222020;
-      --text: white;
-      --background: #222020;
-      --backgroundLight: #2C3A4E;
+      background-color: #281c1c;
+      --text: #fefbfb;
+      --background: #281c1c;
+      --backgroundLight: #2f201f;
     }
     #splash {
       display: flex;
@@ -124,11 +119,29 @@
       overflow-y: scroll;
     }
   </style>
+  <style>html, body, #root { background-color: var(--background); }</style>
+  <meta name="theme-color" content="#fefbfb">
   <script>
-    const theme = localStorage.getItem('ALF_THEME')
-    if (theme) {
-      document.documentElement.classList.add(`theme--${theme}`)
-    }
+    try {
+      const theme = localStorage.getItem('ALF_THEME')
+      if (['light', 'dark', 'dim'].includes(theme)) document.documentElement.classList.add(`theme--${theme}`)
+      const cached = JSON.parse(localStorage.getItem('WITCHSKY_SPLASH') || 'null')
+      const mode = cached?.mode === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : cached?.mode
+      const saved = cached?.[mode]
+      if (saved && ['light', 'dark'].includes(saved.scheme) &&
+          [saved.background, saved.text, saved.surface].every(color => typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color))) {
+        const style = document.documentElement.style
+        style.setProperty('--background', saved.background)
+        style.setProperty('--text', saved.text)
+        style.setProperty('--backgroundLight', saved.surface)
+        if (typeof saved.accent === 'string' && /^#[0-9a-f]{6}$/i.test(saved.accent)) {
+          style.setProperty('--splash-logo', saved.accent)
+        }
+        style.colorScheme = saved.scheme
+        style.backgroundColor = saved.background
+      }
+    } catch {}
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--background').trim())
   </script>
 
   {% include "scripts.html" %}

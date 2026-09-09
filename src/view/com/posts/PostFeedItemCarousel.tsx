@@ -1,5 +1,11 @@
 import {useCallback, useRef, useState} from 'react'
-import {ScrollView, useWindowDimensions, View} from 'react-native'
+import {
+  type HostInstance,
+  ScrollView,
+  type ScrollViewImperativeMethods,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import {Plural, useLingui} from '@lingui/react/macro'
 
@@ -82,7 +88,7 @@ function RepostCard({
   itemRef,
 }: {
   slice: FeedPostSlice
-  itemRef?: (node: View | null) => void
+  itemRef?: (node: HostInstance | null) => void
 }) {
   const t = useTheme()
   const item = slice.items[0]
@@ -203,7 +209,9 @@ function RepostCarouselNative({
   expanded: boolean
   onToggleExpanded: () => void
 }) {
-  const scrollRef = useRef<ScrollView>(null)
+  const scrollRef = useRef<(HostInstance & ScrollViewImperativeMethods) | null>(
+    null,
+  )
   const currentIndexRef = useRef(0)
 
   const scrollToIndex = useCallback((index: number) => {
@@ -273,9 +281,11 @@ function RepostCarouselWeb({
   onToggleExpanded: () => void
 }) {
   const {t: l} = useLingui()
-  const scrollRef = useRef<ScrollView>(null)
+  const scrollRef = useRef<(HostInstance & ScrollViewImperativeMethods) | null>(
+    null,
+  )
   const itemWidthsRef = useRef<Map<number, number>>(new Map())
-  const itemRefsRef = useRef<Map<number, View>>(new Map())
+  const itemRefsRef = useRef<Map<number, HostInstance>>(new Map())
   const currentIndexRef = useRef(0)
   const stopTweenRef = useRef<(() => void) | null>(null)
 

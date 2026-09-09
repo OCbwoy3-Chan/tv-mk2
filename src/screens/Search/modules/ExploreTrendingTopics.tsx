@@ -1,11 +1,8 @@
 import {useMemo} from 'react'
 import {Pressable, View} from 'react-native'
 import {Image} from 'expo-image'
-import {
-  type AppBskyUnspeccedDefs,
-  moderateProfile,
-  RichText as RichTextApi,
-} from '@atproto/api'
+import {moderateProfile} from '@bsky/sdk/moderation'
+import {RichText as RichTextApi} from '@bsky/sdk/richtext'
 import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -15,6 +12,7 @@ import {
   useTrendingSettingsApi,
 } from '#/state/preferences/trending'
 import {
+  DEFAULT_FETCH_LIMIT,
   DEFAULT_LIMIT,
   useGetTrendsQuery,
 } from '#/state/queries/trending/useGetTrendsQuery'
@@ -28,9 +26,14 @@ import {Link} from '#/components/Link'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {SubtleHover} from '#/components/SubtleHover'
-import {useTrendingTopicSeen} from '#/components/TrendingTopics'
+import {
+  getTrendingTopicFeedUri,
+  TrendingTopicsPrompt,
+  useTrendingTopicSeen,
+} from '#/components/TrendingTopics'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {type app} from '#/lexicons'
 import * as ModuleHeader from '../components/ModuleHeader'
 
 const IMAGE_SIZE = 56
@@ -57,7 +60,10 @@ function Inner() {
     error,
     isLoading,
     isRefetching,
-  } = useGetTrendsQuery({limit: topicCount})
+  } = useGetTrendsQuery({
+    fetchLimit: Math.min(topicCount * 2, DEFAULT_FETCH_LIMIT),
+    limit: topicCount,
+  })
   const noTopics = !isLoading && !error && !trending?.trends?.length
   const showLoading = isLoading || isRefetching
 
@@ -91,6 +97,7 @@ function Inner() {
                   onPress={() => {
                     ax.metric('trendingTopic:click', {
                       context: 'explore',
+                      feedUri: getTrendingTopicFeedUri(trend),
                       rank,
                       recId: trending.recId,
                     })
@@ -100,11 +107,8 @@ function Inner() {
             })}
       </View>
 
-      <Prompt.Basic
+      <TrendingTopicsPrompt
         control={trendingPrompt}
-        title={l`Hide trending topics?`}
-        description={l`You can update this later from your settings.`}
-        confirmButtonCta={l`Hide`}
         onConfirm={() => {
           ax.metric('trendingTopics:hide', {context: 'explore:trending'})
           setTrendingDisabled(true)
@@ -121,7 +125,7 @@ export function TrendRow({
   children,
   onPress,
 }: ViewStyleProp & {
-  trend: AppBskyUnspeccedDefs.TrendView
+  trend: app.bsky.unspecced.defs.TrendView
   rank: number
   recId?: string
   children?: React.ReactNode
@@ -133,7 +137,7 @@ export function TrendRow({
 
   const actors = useModerateTrendingActors(trend.actors)
   const formattedPostCount = formatCount(i18n, trend.postCount)
-  useTrendingTopicSeen('explore', rank, recId)
+  useTrendingTopicSeen('explore', getTrendingTopicFeedUri(trend), rank, recId)
 
   const description = useMemo(() => {
     if (!trend.description) return
@@ -232,7 +236,7 @@ export function TrendRow({
 
 // Unused atm, but leaving here so we don't lose localization. -dsb
 export function useCategoryDisplayName(
-  category: AppBskyUnspeccedDefs.TrendView['category'],
+  category: app.bsky.unspecced.defs.TrendView['category'],
 ) {
   const {t: l} = useLingui()
 
@@ -257,7 +261,7 @@ export function TrendingTopicRowSkeleton() {
   const t = useTheme()
   const gutters = useGutters([0, 'base'])
 
-  const enableSquareButtons = useEnableSquareButtons()
+  
 
   return (
     <View
@@ -302,7 +306,7 @@ export function TrendingTopicRowSkeleton() {
 }
 
 function useModerateTrendingActors(
-  actors: AppBskyUnspeccedDefs.TrendView['actors'],
+  actors: app.bsky.unspecced.defs.TrendView['actors'],
 ) {
   const moderationOpts = useModerationOpts()
 

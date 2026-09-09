@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
-import {interpretLabelValueDefinitions} from '@atproto/api'
+import {Client} from '@atproto/lex'
+import {interpretLabelValueDefinitions} from '@bsky/sdk/moderation'
 
-import {getActiveAppLabelers} from '#/lib/moderation'
 import {useIgnoredAppLabelers} from '#/state/preferences/ignored-app-labelers'
 import {isNonConfigurableModerationAuthority} from '#/state/session/additional-moderation-authorities'
 import {useLabelersDetailedInfoQuery} from '../labeler'
@@ -16,7 +16,7 @@ export function useMyLabelersQuery({
   const ignoredAppLabelers = useIgnoredAppLabelers()
   let dids = Array.from(
     new Set(
-      getActiveAppLabelers().concat(
+      (Client.appLabelers as readonly string[]).concat(
         prefs.data?.moderationPrefs.labelers.map(l => l.did) || [],
       ),
     ),

@@ -1,8 +1,7 @@
 import {useRef} from 'react'
-import {InteractionManager, View} from 'react-native'
+import {View} from 'react-native'
 import {type AnimatedRef} from 'react-native-reanimated'
 import {Image} from 'expo-image'
-import {AppBskyEmbedGallery, type AppBskyEmbedImages} from '@atproto/api'
 
 import {resolveEmbedImageUris} from '#/lib/media/embed-image-formats'
 import {userStyle} from '#/lib/userstyles'
@@ -25,6 +24,8 @@ import {type Dimensions} from '#/components/Lightbox/types'
 import {ImageContextMenu} from '#/components/Post/Embed/ImageContextMenu'
 import {PostEmbedViewContext} from '#/components/Post/Embed/types'
 import {useAnalytics} from '#/analytics'
+import {app} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 import {type EmbedType} from '#/types/bsky/post'
 import {type CommonProps} from './types'
 
@@ -42,14 +43,16 @@ export function ImageEmbed({
   const thumbnailFormat = useThumbnailFormat()
   const loadAsPngs = useLoadAsPngs()
   const imageCdnHost = useImageCdnHost()
-  const images: AppBskyEmbedImages.ViewImage[] =
+  const images: app.bsky.embed.images.ViewImage[] =
     embed.type === 'gallery'
-      ? embed.view.items.filter(AppBskyEmbedGallery.isViewImage).map(item => ({
-          thumb: item.thumbnail,
-          fullsize: item.fullsize,
-          alt: item.alt,
-          aspectRatio: item.aspectRatio,
-        }))
+      ? embed.view.items
+          .filter(item => bsky.isType(app.bsky.embed.gallery.viewImage, item))
+          .map(item => ({
+            thumb: item.thumbnail,
+            fullsize: item.fullsize,
+            alt: item.alt,
+            aspectRatio: item.aspectRatio,
+          }))
       : embed.view.images
   const useExpandedLayout =
     embed.type === 'gallery'
@@ -115,13 +118,10 @@ export function ImageEmbed({
         metricsContext,
       })
     }
-    const onPressIn = (_: number) => {
-      InteractionManager.runAfterInteractions(() => {
-        void Image.prefetch(
-          items.map(i => i.uri),
-          'memory',
-        )
-      })
+    const onPressIn = (index: number) => {
+      // Start the selected full-size image immediately; other gallery images
+      // must not compete with it before the lightbox opens.
+      void Image.prefetch(items[index].uri, 'memory').catch(() => {})
     }
 
     if (images.length === 1) {

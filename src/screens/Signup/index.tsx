@@ -151,9 +151,9 @@ export function Signup({
                       t.atoms.text_contrast_medium,
                     ]}>
                     <Trans>
-                      Enter the address of the Personal Data Server 
-                      that will host your account. You’ll finish 
-                      creating your account through that provider.
+                      Enter the address of the Personal Data Server that will
+                      host your account. You’ll finish creating your account
+                      through that provider.
                     </Trans>
                   </Text>
                 )}
@@ -176,8 +176,8 @@ export function Signup({
                         sign in
                       </InlineLinkText>{' '}
                       instead of creating a new one. Otherwise, choose a
-                      provider to host your account! You can always switch 
-                      to a different provider later, or even host your own.
+                      provider to host your account! You can always switch to a
+                      different provider later, or even host your own.
                     </Trans>
                   </Text>
                 )}
@@ -220,14 +220,14 @@ export function Signup({
                           accessibilityRole="button"
                           accessibilityLabel={name}
                           onPress={() => onSelectProvider(provider)}
-                          style={({pressed, hovered}) => [
+                          style={({pressed}) => [
                             a.flex_row,
                             a.align_center,
                             a.gap_md,
                             a.p_md,
                             a.rounded_md,
                             t.atoms.bg_contrast_25,
-                            (pressed || hovered) && t.atoms.bg_contrast_50,
+                            pressed && t.atoms.bg_contrast_50,
                             web({cursor: 'pointer'}),
                           ]}>
                           <View

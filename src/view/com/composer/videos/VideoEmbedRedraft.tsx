@@ -1,6 +1,7 @@
 import {type ComponentType} from 'react'
 import {Platform, View} from 'react-native'
-import {type BlobRef} from '@atproto/api'
+import {type BlobRef, getBlobCidString} from '@atproto/lex'
+import {type UriString} from '@atproto/syntax'
 import {BlueskyVideoView, type BlueskyVideoViewProps} from '@bsky.app/video'
 
 import {atoms as a} from '#/alf'
@@ -23,15 +24,15 @@ export function VideoEmbedRedraft({
   aspectRatio,
   onRemove,
 }: Props) {
-  const cidString = blobRef.ref.toString()
+  const cidString = getBlobCidString(blobRef)
   const aspectRatioValue = aspectRatio.width / aspectRatio.height || 16 / 9
   const thumbnailUrl = playlistUri.replace('playlist.m3u8', 'thumbnail.jpg')
 
   const mockEmbed = {
     $type: 'app.bsky.embed.video#view' as const,
     video: blobRef,
-    playlist: playlistUri,
-    thumbnail: thumbnailUrl,
+    playlist: playlistUri as UriString,
+    thumbnail: thumbnailUrl as UriString,
     aspectRatio,
     alt: '',
     captions: [],
@@ -46,6 +47,7 @@ export function VideoEmbedRedraft({
           active={false}
           setActive={() => {}}
           onScreen={true}
+          onPlaybackStart={() => {}}
           lastKnownTime={{current: undefined}}
         />
       ) : (

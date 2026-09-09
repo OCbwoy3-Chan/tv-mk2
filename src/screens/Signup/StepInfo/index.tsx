@@ -28,9 +28,7 @@ import {usePreemptivelyCompleteActivePolicyUpdate} from '#/components/PolicyUpda
 import {ScreenTransition} from '#/components/ScreenTransition'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
-import {
-  useAgeAssuranceRegionConfigWithFallback,
-} from '#/ageAssurance/util'
+import {useAgeAssuranceRegionConfigWithFallback} from '#/ageAssurance/util'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE, IS_WEB} from '#/env'
 import {useDeviceGeolocationApi} from '#/geolocation'
@@ -44,6 +42,19 @@ function sanitizeDate(date: Date): Date {
     return new Date()
   }
   return date
+}
+
+/*
+ * Module scope because React Compiler cannot lower an `import()` expression
+ * inside a component or hook body.
+ */
+function loadTLDs(): Promise<typeof tldts> {
+  // @ts-expect-error - valid path
+  return import('tldts/dist/index.cjs.min.js')
+}
+
+function preloadViewShot() {
+  return import('react-native-view-shot')
 }
 
 export function StepInfo({
@@ -70,8 +81,8 @@ export function StepInfo({
   const prevEmailValueRef = useRef<string>(state.email)
   const passwordValueRef = useRef<string>(state.password)
 
-  const emailInputRef = useRef<TextInput>(null)
-  const passwordInputRef = useRef<TextInput>(null)
+  const emailInputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
+  const passwordInputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const birthdateInputRef = useRef<DateFieldRef>(null)
 
   const aaRegionConfig = useAgeAssuranceRegionConfigWithFallback()
@@ -86,13 +97,11 @@ export function StepInfo({
 
   const tldtsRef = useRef<typeof tldts>(undefined)
   useEffect(() => {
-    // @ts-expect-error - valid path
-    void import('tldts/dist/index.cjs.min.js').then(tldts => {
+    void loadTLDs().then(tldts => {
       tldtsRef.current = tldts
     })
     // This will get used in the avatar creator a few steps later, so lets preload it now
-    // @ts-expect-error - valid path
-    void import('react-native-view-shot/src/index')
+    void preloadViewShot()
   }, [])
 
   const onNextPress = () => {

@@ -63,7 +63,7 @@ function LinkWarningDialogInner({
     control.close(() => {
       if (!link) return
       if (link.share) {
-        shareUrl(link.href)
+        void shareUrl(link.href)
       } else {
         openLink(link.href, undefined, true)
       }

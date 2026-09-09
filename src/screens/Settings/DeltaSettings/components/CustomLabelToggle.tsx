@@ -1,4 +1,3 @@
-import {type $Typed, ComAtprotoLabelDefs} from '@atproto/api'
 import {useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
@@ -12,6 +11,7 @@ import {useSession} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import * as Toggle from '#/components/forms/Toggle'
 import {Text} from '#/components/Typography'
+import {com} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 export function CustomLabelToggle({
@@ -44,9 +44,9 @@ export function CustomLabelToggle({
       {
         profile,
         updates: existing => {
-          const labels: $Typed<ComAtprotoLabelDefs.SelfLabels> = bsky.validate(
+          const labels: com.atproto.label.defs.SelfLabels = bsky.isType(
+            com.atproto.label.defs.selfLabels,
             existing.labels,
-            ComAtprotoLabelDefs.validateSelfLabels,
           )
             ? existing.labels
             : {
@@ -66,20 +66,21 @@ export function CustomLabelToggle({
           if (labels.values.length === 0) {
             delete existing.labels
           } else {
-            existing.labels = labels
+            existing.labels = {...labels, $type: 'com.atproto.label.defs#selfLabels'}
           }
 
           return existing
         },
         checkCommitted: res => {
-          const exists = !!res.data.labels?.some(l => l.val === value)
+          if (!res) return false
+          const exists = !!res.labels?.some(l => l.val === value && l.src === res.did)
           return exists === wasAdded
         },
       },
       {
         onSuccess() {
-          queryClient.invalidateQueries({queryKey: [POST_FEED_RQKEY_ROOT]})
-          queryClient.invalidateQueries({queryKey: [postThreadQueryKeyRoot]})
+          void queryClient.invalidateQueries({queryKey: [POST_FEED_RQKEY_ROOT]})
+          void queryClient.invalidateQueries({queryKey: [postThreadQueryKeyRoot]})
         },
       },
     )

@@ -1,6 +1,7 @@
-import {RichText} from '@atproto/api'
+import {RichText} from '@bsky/sdk/richtext'
 
 import {richTextToStringPreservingLinks} from './rich-text-helpers'
+import {toShortUrl} from './url-helpers'
 
 describe('richTextToStringPreservingLinks', () => {
   it('preserves the visible labels of multiple masked links', () => {
@@ -50,13 +51,26 @@ describe('richTextToStringPreservingLinks', () => {
       facets: [
         {
           index: {byteStart: 0, byteEnd: uri.length},
-          features: [
-            {$type: 'app.bsky.richtext.facet#link', uri},
-          ],
+          features: [{$type: 'app.bsky.richtext.facet#link', uri}],
         },
       ],
     })
 
     expect(richTextToStringPreservingLinks(richText)).toBe(uri)
   })
+})
+
+it('restores an ordinary truncated URL without masked-link syntax', () => {
+  const uri = 'https://example.com/a/long/path/to/a/page'
+  const text = toShortUrl(uri)
+  const rt = new RichText({
+    text,
+    facets: [
+      {
+        index: {byteStart: 0, byteEnd: text.length},
+        features: [{$type: 'app.bsky.richtext.facet#link', uri}],
+      },
+    ],
+  })
+  expect(richTextToStringPreservingLinks(rt)).toBe(uri)
 })

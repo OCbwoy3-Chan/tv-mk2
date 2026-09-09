@@ -34,7 +34,7 @@ export function CopyButton({
 
   const onPress = useCallback(
     (evt: GestureResponderEvent) => {
-      Clipboard.setStringAsync(value)
+      void Clipboard.setStringAsync(value)
       setHasBeenCopied(true)
       onPressProp?.(evt)
     },

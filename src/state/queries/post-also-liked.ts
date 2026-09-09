@@ -1,4 +1,4 @@
-import {type AppBskyFeedDefs, AtUri} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
 import {
   type InfiniteData,
   type QueryClient,
@@ -10,6 +10,7 @@ import {useDeferredEnable} from '#/lib/hooks/useDeferredEnable'
 import {STALE} from '#/state/queries'
 import {precachePost} from '#/state/queries/post'
 import {useAgent} from '#/state/session'
+import {type app} from '#/lexicons'
 import {embedViewRecordToPostView, getEmbeddedPost} from './util'
 
 const ALSO_LIKED_URL = 'https://foryou.club/also-liked'
@@ -22,7 +23,7 @@ type AlsoLikedSkeletonResponse = {
 
 type AlsoLikedPage = {
   cursor?: string
-  posts: AppBskyFeedDefs.PostView[]
+  posts: app.bsky.feed.defs.PostView[]
 }
 
 async function fetchAlsoLikedSkeleton(
@@ -115,14 +116,19 @@ export function usePostAlsoLikedQuery(
       )
 
       for (const post of postsRes.data.posts) {
-        precachePost(queryClient, post.uri, post)
+        precachePost(
+          queryClient,
+          post.uri,
+          post as unknown as app.bsky.feed.defs.PostView,
+        )
       }
 
       return {
         cursor: data.cursor,
         posts: uris
           .map(postUri => postsByUri.get(postUri))
-          .filter((post): post is AppBskyFeedDefs.PostView => Boolean(post)),
+          .filter(Boolean)
+          .map(post => post as unknown as app.bsky.feed.defs.PostView),
       }
     },
   })
@@ -131,7 +137,7 @@ export function usePostAlsoLikedQuery(
 export function* findAllPostsInQueryData(
   queryClient: QueryClient,
   uri: string,
-): Generator<AppBskyFeedDefs.PostView, void> {
+): Generator<app.bsky.feed.defs.PostView, void> {
   const atUri = new AtUri(uri)
   const queryDatas = queryClient.getQueriesData<InfiniteData<AlsoLikedPage>>({
     queryKey: [RQKEY_ROOT],
@@ -159,7 +165,7 @@ export function* findAllPostsInQueryData(
 
 function uriMatches(
   atUri: AtUri,
-  record: {uri: string; author: AppBskyFeedDefs.PostView['author']},
+  record: {uri: string; author: app.bsky.feed.defs.PostView['author']},
 ) {
   if (atUri.host.startsWith('did:')) {
     return atUri.href === record.uri

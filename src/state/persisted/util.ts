@@ -119,6 +119,10 @@ export function normalizeData(data: Schema) {
     'https://constellation.microcosm.blue',
     'https://constellation.wafflehouse.dev',
   ]
+  const slingshotPresets = [
+    'https://slingshot.microcosm.blue',
+    'https://slingshot.wafflehouse.dev',
+  ]
 
   if (!next.imageCdnHostCustom && next.imageCdnHost) {
     try {
@@ -146,6 +150,15 @@ export function normalizeData(data: Schema) {
       const origin = new URL(next.constellationInstance).origin
       if (!constellationPresets.includes(origin)) {
         next.constellationInstanceCustom = origin
+      }
+    } catch {}
+  }
+
+  if (!next.slingshotInstanceCustom && next.slingshotInstance) {
+    try {
+      const origin = new URL(next.slingshotInstance).origin
+      if (!slingshotPresets.includes(origin)) {
+        next.slingshotInstanceCustom = origin
       }
     } catch {}
   }

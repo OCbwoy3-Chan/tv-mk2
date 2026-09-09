@@ -21,6 +21,7 @@ import {
   getAndMigrateDeviceId,
   getDeviceId,
   getInitialSessionId,
+  useDeviceId,
   useSessionId,
 } from '#/analytics/identifiers'
 import {
@@ -117,6 +118,7 @@ const Context = createContext<AnalyticsBaseContextType>({
     geolocation: device.get(['geolocationServiceResponse']) || {
       countryCode: '',
       regionCode: '',
+      city: '',
     },
   },
 })
@@ -179,7 +181,9 @@ export function AnalyticsContext({
       )
     }
   }
+  const deviceId = useDeviceId() ?? 'unknown'
   const sessionId = useSessionId()
+  // only IP based, never GPS
   const geolocation = useGeolocationServiceResponse()
   const parentContext = useContext(Context)
   /*
@@ -198,6 +202,7 @@ export function AnalyticsContext({
       ...metadata,
       base: {
         ...parentContext.metadata.base,
+        deviceId,
         sessionId,
         isBetaUser,
       },
@@ -218,7 +223,7 @@ export function AnalyticsContext({
       },
     }
     return context
-  }, [parentContext, metadata, sessionId, isBetaUser, geolocation])
+  }, [parentContext, metadata, deviceId, sessionId, isBetaUser, geolocation])
   return <Context.Provider value={childContext}>{children}</Context.Provider>
 }
 

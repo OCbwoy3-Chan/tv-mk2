@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useState} from 'react'
 import {MMKV} from 'react-native-mmkv'
 
+import {IS_WEB} from '#/env'
 import {type Account, type Device} from '#/storage/schema'
 
 export * from '#/storage/schema'
@@ -12,8 +13,10 @@ export * from '#/storage/schema'
 export class Storage<Scopes extends unknown[], Schema> {
   protected sep = ':'
   protected store: MMKV
+  private id: string
 
   constructor({id}: {id: string}) {
+    this.id = id
     this.store = new MMKV({id})
   }
 
@@ -82,11 +85,22 @@ export class Storage<Scopes extends unknown[], Schema> {
     scopes: [...Scopes, Key],
     callback: () => void,
   ) {
-    return this.store.addOnValueChangedListener(key => {
+    const subscription = this.store.addOnValueChangedListener(key => {
       if (key === scopes.join(this.sep)) {
         callback()
       }
     })
+    // MMKV's web adapter only notifies writes made in this document.
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === `${this.id}\\${scopes.join(this.sep)}`) callback()
+    }
+    if (IS_WEB) window.addEventListener('storage', onStorage)
+    return {
+      remove: () => {
+        subscription.remove()
+        if (IS_WEB) window.removeEventListener('storage', onStorage)
+      },
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 import {useCallback, useMemo} from 'react'
-import {moderateProfile, type ModerationOpts} from '@atproto/api'
+import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
 import {keepPreviousData, useQuery} from '@tanstack/react-query'
 
 import {isJustAMute, moduiContainsHideableOffense} from '#/lib/moderation'
@@ -10,14 +10,16 @@ import {
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {STALE} from '#/state/queries'
 import {DEFAULT_LOGGED_OUT_PREFERENCES} from '#/state/queries/preferences'
-import {createPublicAgent} from '#/state/session/agent'
+import {useAppviewClient} from '#/state/session'
 import {useAgent, useSession} from '#/state/session'
+import {createPublicAgent} from '#/state/session/agent'
 import {
   type AutocompleteApi,
   type AutocompleteItem,
   type AutocompleteItemType,
   type AutocompleteProfile,
 } from '#/components/Autocomplete/types'
+import {app} from '#/lexicons'
 import {useEmojiSearch} from './useEmojiSearch'
 
 const DEFAULT_MOD_OPTS = {
@@ -36,6 +38,7 @@ export function useAutocomplete({
   limit?: number
   showSearchFallback?: boolean
 }): AutocompleteApi {
+  const client = useAppviewClient()
   const {hasSession} = useSession()
   const sessionAgent = useAgent()
   const [appViewDid] = useCustomAppViewDid()
@@ -48,12 +51,7 @@ export function useAutocomplete({
    * pick up App server changes from the login dialog. Rebuild a guest agent
    * from persisted AppView settings whenever that selection changes.
    */
-  const typeaheadAgent = useMemo(() => {
-    if (hasSession) {
-      return sessionAgent
-    }
-    return createPublicAgent()
-  }, [hasSession, sessionAgent, appViewDid, appViewUrl])
+  
 
   const query = useQuery({
     staleTime: STALE.MINUTES.ONE,
@@ -74,12 +72,12 @@ export function useAutocomplete({
         // Going from "foo" to "foo." should not clear matches.
         q = q.toLowerCase().trim().replace(/\.$/, '')
 
-        const res = await typeaheadAgent.searchActorsTypeahead({
+        const data = await client.call(app.bsky.actor.searchActorsTypeahead, {
           q,
           limit: limit || 8,
         })
 
-        return (res?.data.actors || []).map(profile => ({
+        return (data?.actors || []).map(profile => ({
           key: profile.did,
           type: 'profile' as const,
           value: '@' + profile.handle,

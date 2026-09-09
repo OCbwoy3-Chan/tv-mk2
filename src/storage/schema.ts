@@ -60,6 +60,7 @@ export type Device = {
   featureGateOverrides?: Record<string, boolean>
 
   trendingBetaEnabled: boolean
+  keyboardShortcutsEnabled?: boolean
   devMode: boolean
   demoMode: boolean
 
@@ -87,10 +88,7 @@ export type Device = {
   privatePostsAppViewDID?: string
   hiddenAccountsElsewhere?: string[]
   settingsAccountSwitcherSortBy?:
-    | 'alphabetical'
-    | 'dateModified'
-    | 'dateAdded'
-    | 'custom'
+    'alphabetical' | 'dateModified' | 'dateAdded' | 'custom'
   settingsAccountSwitcherReverse?: boolean
 
   /**
@@ -100,6 +98,7 @@ export type Device = {
   [PolicyUpdate202508]?: boolean
 
   videoVolume: number
+  videoPlaybackSpeed: number
 }
 
 export type Account = {
@@ -130,4 +129,15 @@ export type Account = {
    * account after a switch, until that account's preferences loaded.
    */
   isBetaUser?: boolean
+
+  /**
+   * The account's subscribed labeler DIDs, cached from preferences so the
+   * `atproto-accept-labelers` header can be configured synchronously at
+   * session start, before preferences load. Eventually consistent: rewritten
+   * on every preferences fetch (see `saveLabelers` in
+   * `#/state/session/moderation`). Until the first fetch lands there is
+   * simply no cache entry and initial requests go out without per-account
+   * labeler headers.
+   */
+  labelers?: string[]
 }

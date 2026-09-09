@@ -1,9 +1,6 @@
-import {
-  type AppBskyActorDefs,
-  type AppBskyActorGetProfile,
-  AtUri,
-} from '@atproto/api'
-import {useMutation, useQueryClient} from '@tanstack/react-query'
+import {AtUri} from '@atproto/syntax'
+import {useMutation} from '@tanstack/react-query'
+import {useQueryClient} from '@tanstack/react-query'
 
 import {until} from '#/lib/async/until'
 import {useConstellationInstance} from '#/state/preferences/constellation-instance'
@@ -12,30 +9,22 @@ import {
   useDeerVerificationTrusted,
 } from '#/state/preferences/deer-verification'
 import {useUpdateProfileVerificationCache} from '#/state/queries/verification/useUpdateProfileVerificationCache'
-import {useAgent, useSession} from '#/state/session'
+import {useAppviewClient, usePdsClient, useSession} from '#/state/session'
 import {useAnalytics} from '#/analytics'
+import {app} from '#/lexicons'
 import type * as bsky from '#/types/bsky'
-import {
-  asUri,
-  asyncGenCollect,
-  asyncGenFilter,
-  type ConstellationLink,
-} from '../constellation'
-import {
-  getTrustedConstellationVerifications,
-  RQKEY as DEER_VERIFICATION_RQKEY,
-} from '../deer-verification'
+import {RQKEY as DEER_VERIFICATION_RQKEY} from '../deer-verification'
 
 export function useVerificationsRemoveMutation() {
   const ax = useAnalytics()
-  const agent = useAgent()
+  const appviewClient = useAppviewClient()
+  const pdsClient = usePdsClient()
   const {currentAccount} = useSession()
   const updateProfileVerificationCache = useUpdateProfileVerificationCache()
 
   const qc = useQueryClient()
-  const deerVerificationEnabled = useDeerVerificationEnabled()
+
   const deerVerificationTrusted = useDeerVerificationTrusted()
-  const constellationInstance = useConstellationInstance()
 
   return useMutation({
     async mutationFn({
@@ -43,7 +32,7 @@ export function useVerificationsRemoveMutation() {
       verifications,
     }: {
       profile: bsky.profile.AnyProfileView
-      verifications: AppBskyActorDefs.VerificationView[]
+      verifications: app.bsky.actor.defs.VerificationView[]
     }) {
       if (!currentAccount) {
         throw new Error('User not logged in')
@@ -52,50 +41,29 @@ export function useVerificationsRemoveMutation() {
       const uris = new Set(verifications.map(v => v.uri))
 
       await Promise.all(
-        Array.from(uris).map(uri => {
-          return agent.app.bsky.graph.verification.delete({
-            repo: currentAccount.did,
-            rkey: new AtUri(uri).rkey,
+        [...uris].map(uri => {
+          return pdsClient.delete(app.bsky.graph.verification, {
+            rkey: new AtUri(uri).rkeySafe,
           })
         }),
       )
 
-      if (deerVerificationEnabled) {
-        await until(
-          10,
-          2e3,
-          (link: ConstellationLink[]) => {
-            return link.length === 0
-          },
-          () =>
-            asyncGenCollect(
-              asyncGenFilter(
-                getTrustedConstellationVerifications(
-                  constellationInstance,
-                  profile.did,
-                  deerVerificationTrusted,
-                ),
-                link => uris.has(asUri(link)),
-              ),
-            ),
-        )
-      } else {
-        await until(
-          5,
-          1e3,
-          ({data: profile}: AppBskyActorGetProfile.Response) => {
-            if (
-              !profile.verification?.verifications.some(v => uris.has(v.uri))
-            ) {
-              return true
-            }
-            return false
-          },
-          () => {
-            return agent.getProfile({actor: profile.did ?? ''})
-          },
-        )
-      }
+      await until(
+        5,
+        1e3,
+        profile => {
+          if (!profile) return false
+          if (!profile.verification?.verifications.some(v => uris.has(v.uri))) {
+            return true
+          }
+          return false
+        },
+        () => {
+          return appviewClient.call(app.bsky.actor.getProfile, {
+            actor: profile.did ?? '',
+          })
+        },
+      )
     },
     async onSuccess(_, {profile}) {
       ax.metric('verification:revoke', {})

@@ -1,6 +1,8 @@
-import {useCallback, useEffect, useRef, useState} from 'react'
-import {Pressable, View} from 'react-native'
-import {type AppBskyActorDefs} from '@atproto/api'
+import {useCallback, useEffect, useState} from 'react'
+import {useRef} from 'react'
+import {View} from 'react-native'
+import {Pressable} from 'react-native'
+import {type UriString} from '@atproto/syntax'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Plural, Trans} from '@lingui/react/macro'
@@ -20,7 +22,10 @@ import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useProfileUpdateMutation} from '#/state/queries/profile'
 import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
-import {EditableUserAvatar} from '#/view/com/util/UserAvatar'
+import {
+  EditableUserAvatar,
+  getSquareAvatarRadius,
+} from '#/view/com/util/UserAvatar'
 import {UserBanner} from '#/view/com/util/UserBanner'
 import {atoms as a, useTheme} from '#/alf'
 import * as tokens from '#/alf/tokens'
@@ -36,6 +41,7 @@ import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationStateWithDeer} from '#/components/verification'
+import {type app} from '#/lexicons'
 
 const PRONOUNS_MAX_GRAPHEMES = 20
 const WEBSITE_MAX_GRAPHEMES = 2048
@@ -45,7 +51,7 @@ export function EditProfileDialog({
   control,
   onUpdate,
 }: {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed
   control: Dialog.DialogControlProps
   onUpdate?: () => void
 }) {
@@ -103,7 +109,7 @@ function DialogInner({
   setDirty,
   onPressCancel,
 }: {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed
   onUpdate?: () => void
   setDirty: (dirty: boolean) => void
   onPressCancel: () => void
@@ -210,7 +216,7 @@ function DialogInner({
           displayName: displayName.trimEnd(),
           description: description.trimEnd(),
           pronouns: pronouns.trimEnd().toLowerCase(),
-          website: website.trimEnd(),
+          website: website.trimEnd() as UriString,
         },
         newUserAvatar,
         newUserBanner,
@@ -328,7 +334,9 @@ function DialogInner({
               width: 84,
               height: 84,
               borderWidth: 2,
-              borderRadius: enableSquareAvatars ? 11 : 42,
+              borderRadius: enableSquareAvatars
+                ? getSquareAvatarRadius(80) + 2
+                : 42,
               borderColor: t.atoms.bg.backgroundColor,
             },
           ]}>

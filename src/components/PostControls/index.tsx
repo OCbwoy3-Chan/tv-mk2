@@ -1,11 +1,6 @@
 import {memo, useCallback, useMemo, useState} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
-import {
-  type AppBskyFeedDefs,
-  type AppBskyFeedPost,
-  type AppBskyFeedThreadgate,
-  type RichText as RichTextAPI,
-} from '@atproto/api'
+import {type RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
@@ -43,11 +38,13 @@ import {
 import * as userActionHistory from '#/state/userActionHistory'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {EphemeralAccountSwitcherFromScope} from '#/components/EphemeralAccountSwitcher'
+import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
 import {Reply as Bubble} from '#/components/icons/Reply'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
+import {type app} from '#/lexicons'
 import {useAutoLikeOnRepost} from '../../state/preferences/auto-like-on-repost.tsx'
 import {useRunWithEphemeralAgent} from '../hooks/useRunWithEphemeralAgent'
 import {fetchReplyableSwitcherAccounts} from './alternateAccountsReplyEligibility'
@@ -80,8 +77,8 @@ function PostControlsInner({
   forceGoogleTranslate = false,
 }: {
   big?: boolean
-  post: Shadow<AppBskyFeedDefs.PostView>
-  record: AppBskyFeedPost.Record
+  post: Shadow<app.bsky.feed.defs.PostView>
+  record: app.bsky.feed.post.Main
   richText: RichTextAPI
   feedContext?: string | undefined
   reqId?: string | undefined
@@ -89,8 +86,8 @@ function PostControlsInner({
   onPressReply: () => void
   onPostReply?: (postUri: string | undefined) => void
   logContext: 'FeedItem' | 'PostThreadItem' | 'Post' | 'ImmersiveVideo'
-  threadgateRecord?: AppBskyFeedThreadgate.Record
-  onShowLess?: (interaction: AppBskyFeedDefs.Interaction) => void
+  threadgateRecord?: app.bsky.feed.threadgate.Main
+  onShowLess?: (interaction: app.bsky.feed.defs.Interaction) => void
   viaRepost?: {uri: string; cid: string}
   variant?: 'compact' | 'normal' | 'large'
   forceGoogleTranslate?: boolean
@@ -105,6 +102,7 @@ function PostControlsInner({
   const queryClient = useQueryClient()
   const getPost = useGetPost()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
+  const showEphemeralError = useEphemeralAccountError()
   const [queueLike, queueUnlike] = usePostLikeMutationQueue(
     post,
     viaRepost,
@@ -144,6 +142,7 @@ function PostControlsInner({
   const autoLikeOnRepost = useAutoLikeOnRepost()
 
   const shouldAutoLikeOnRepost = async () => {
+    if (post.author.did === currentAccount?.did) return false
     if (post.viewer?.like) return false
 
     if (userActionHistory.getActionHistory().likes.includes(post.uri)) {
@@ -166,9 +165,10 @@ function PostControlsInner({
       return
     }
 
+    const existingLike = post.viewer?.like
     try {
       setHasLikeIconBeenToggled(true)
-      if (!post.viewer?.like) {
+      if (!existingLike) {
         sendInteraction({
           item: post.uri,
           event: 'app.bsky.feed.defs#interactionLike',
@@ -196,8 +196,9 @@ function PostControlsInner({
       return
     }
 
+    const existingRepost = post.viewer?.repost
     try {
-      if (!post.viewer?.repost) {
+      if (!existingRepost) {
         sendInteraction({
           item: post.uri,
           event: 'app.bsky.feed.defs#interactionRepost',
@@ -205,8 +206,8 @@ function PostControlsInner({
           reqId,
         })
         await queueRepost()
-        setHasLikeIconBeenToggled(true)
         if (autoLikeOnRepost && (await shouldAutoLikeOnRepost())) {
+          setHasLikeIconBeenToggled(true)
           sendInteraction({
             item: post.uri,
             event: 'app.bsky.feed.defs#interactionLike',
@@ -314,13 +315,7 @@ function PostControlsInner({
       })
     }
     return replyableAccounts
-  }, [
-    createEphemeralAgent,
-    l,
-    post.uri,
-    queryClient,
-    switcherAccounts,
-  ])
+  }, [createEphemeralAgent, l, post.uri, queryClient, switcherAccounts])
 
   const onSelectLikeAccount = async (account: (typeof accounts)[number]) => {
     try {
@@ -344,9 +339,7 @@ function PostControlsInner({
           : l`Liked as @${account.handle}`,
       )
     } catch (e) {
-      Toast.show(l`An issue occurred, please try again.`, {
-        type: 'error',
-      })
+      showEphemeralError(e, account, onSelectLikeAccount)
     }
   }
 
@@ -363,6 +356,14 @@ function PostControlsInner({
         }
 
         await agent.repost(post.uri, post.cid)
+        if (
+          autoLikeOnRepost &&
+          target &&
+          target.author.did !== account.did &&
+          !target.viewer?.like
+        ) {
+          await agent.like(post.uri, post.cid)
+        }
         return false
       })
 
@@ -372,9 +373,7 @@ function PostControlsInner({
           : l`Reposted as @${account.handle}`,
       )
     } catch (e) {
-      Toast.show(l`An issue occurred, please try again.`, {
-        type: 'error',
-      })
+      showEphemeralError(e, account, onSelectRepostAccount)
     }
   }
 
@@ -407,9 +406,7 @@ function PostControlsInner({
           : l`Saved as @${account.handle}`,
       )
     } catch (e) {
-      Toast.show(l`An issue occurred, please try again.`, {
-        type: 'error',
-      })
+      showEphemeralError(e, account, onSelectBookmarkAccount)
     }
   }
 

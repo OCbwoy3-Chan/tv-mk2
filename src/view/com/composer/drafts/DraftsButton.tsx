@@ -1,6 +1,4 @@
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a} from '#/alf'
@@ -31,12 +29,12 @@ export function DraftsButton({
   canSaveDraft: boolean
   textLength: number
 }) {
-  const {_} = useLingui()
-  const enableSquareButtons = useEnableSquareButtons()
+  const {t: l} = useLingui()
   const ax = useAnalytics()
   const draftsDialogControl = Dialog.useDialogControl()
   const savePromptControl = Prompt.usePromptControl()
   const {isPending: isSaving} = useSaveDraftMutation()
+  const enableSquareButtons = useEnableSquareButtons()
 
   const handlePress = () => {
     if (isEmpty || !isDirty) {
@@ -69,7 +67,7 @@ export function DraftsButton({
   return (
     <>
       <Button
-        label={_(msg`Drafts`)}
+        label={l`Drafts`}
         variant="ghost"
         color="primary"
         shape="default"
@@ -86,12 +84,10 @@ export function DraftsButton({
           <Trans>Drafts</Trans>
         </ButtonText>
       </Button>
-
       <DraftsListDialog
         control={draftsDialogControl}
         onSelectDraft={onSelectDraft}
       />
-
       <Prompt.Outer control={savePromptControl}>
         <Prompt.Content>
           <Prompt.TitleText>
@@ -129,17 +125,17 @@ export function DraftsButton({
         <Prompt.Actions>
           {canSaveDraft && (
             <Prompt.Action
-              cta={isEditingDraft ? _(msg`Save changes`) : _(msg`Save draft`)}
-              onPress={handleSaveAndOpen}
+              cta={isEditingDraft ? l`Save changes` : l`Save draft`}
+              onPress={() => void handleSaveAndOpen()}
               color="primary"
             />
           )}
+          <Prompt.Cancel cta={l`Keep editing`} />
           <Prompt.Action
-            cta={_(msg`Discard`)}
+            cta={l`Discard`}
             onPress={handleDiscardAndOpen}
             color="negative_subtle"
           />
-          <Prompt.Cancel cta={_(msg`Keep editing`)} />
         </Prompt.Actions>
       </Prompt.Outer>
     </>

@@ -1,4 +1,4 @@
-import {type ComponentType, type RefObject} from 'react'
+import {type ComponentRef, type ComponentType, type RefObject} from 'react'
 import {type TextInput} from 'react-native'
 
 import {type Props as SVGIconProps} from '#/components/icons/common'
@@ -19,7 +19,7 @@ export type HandleAutocompleteInputProps = {
   icon?: ComponentType<SVGIconProps>
   isInvalid?: boolean
   returnKeyType?: 'next' | 'done'
-  inputRef?: RefObject<TextInput | null>
+  inputRef?: RefObject<ComponentRef<typeof TextInput> | null>
   /** When false, suppresses the typeahead dropdown (e.g. when input looks like email). */
   showAutocomplete?: boolean
   onFocus?: () => void

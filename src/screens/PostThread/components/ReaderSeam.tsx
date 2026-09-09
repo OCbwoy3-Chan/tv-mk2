@@ -1,7 +1,6 @@
 import {useCallback, useMemo, useState} from 'react'
 import {View} from 'react-native'
 import Animated, {FadeIn} from 'react-native-reanimated'
-import {type AppBskyFeedDefs, type AppBskyFeedThreadgate} from '@atproto/api'
 import {plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
@@ -35,6 +34,7 @@ import {
 import {type ThreadPostItem} from '#/screens/PostThread/reader'
 import {atoms as a, useTheme} from '#/alf'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
+import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
 import {useRunWithEphemeralAgent} from '#/components/hooks/useRunWithEphemeralAgent'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {fetchReplyableSwitcherAccounts} from '#/components/PostControls/alternateAccountsReplyEligibility'
@@ -46,6 +46,7 @@ import {
 import {RepostButton} from '#/components/PostControls/RepostButton'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Toast from '#/components/Toast'
+import {type app} from '#/lexicons'
 
 /**
  * The toggle rendered after a reader post, inside its bracket. Collapsed it
@@ -79,7 +80,7 @@ export function ReaderSeam({
   isThreadEnd?: boolean
   onToggle: () => void
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
 }) {
   const postShadow = usePostShadow(post.value.post)
 
@@ -118,7 +119,7 @@ function ReaderSeamInner({
   threadgateRecord,
 }: {
   post: ThreadPostItem
-  postShadow: Shadow<AppBskyFeedDefs.PostView>
+  postShadow: Shadow<app.bsky.feed.defs.PostView>
   expanded: boolean
   hiddenReplyCount: number
   continuationUri: string
@@ -127,7 +128,7 @@ function ReaderSeamInner({
   isThreadEnd: boolean
   onToggle: () => void
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
@@ -135,6 +136,7 @@ function ReaderSeamInner({
   const {createEphemeralAgent} = useSessionApi()
   const queryClient = useQueryClient()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
+  const showEphemeralError = useEphemeralAccountError()
   const [hovered, setHovered] = useState(false)
   const lineVisible = hovered || expanded
   const requireAuth = useRequireAuth()
@@ -276,8 +278,8 @@ function ReaderSeamInner({
           ? l`Removed like as @${account.handle}`
           : l`Liked as @${account.handle}`,
       )
-    } catch {
-      Toast.show(l`An issue occurred, please try again.`, {type: 'error'})
+    } catch (e) {
+      showEphemeralError(e, account, onSelectLikeAccount)
     }
   }
 
@@ -302,8 +304,8 @@ function ReaderSeamInner({
           ? l`Removed repost as @${account.handle}`
           : l`Reposted as @${account.handle}`,
       )
-    } catch {
-      Toast.show(l`An issue occurred, please try again.`, {type: 'error'})
+    } catch (e) {
+      showEphemeralError(e, account, onSelectRepostAccount)
     }
   }
 

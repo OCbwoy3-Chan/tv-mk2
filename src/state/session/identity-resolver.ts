@@ -193,7 +193,7 @@ async function resolveDidDocument(
     const agent = createPublicAgent()
     try {
       const res = await agent.com.atproto.identity.resolveDid({did}, {signal})
-      return res.data.didDoc as DidDocument
+      return res.data.didDoc
     } finally {
       agent.dispose()
     }
@@ -268,7 +268,7 @@ export function getPdsServiceUrlFromIdentityInfo(
   identity: Pick<ComAtprotoIdentityDefs.IdentityInfo, 'didDoc'>,
 ) {
   return findService(
-    identity.didDoc as DidDocument,
+    identity.didDoc,
     '#atproto_pds',
     'AtprotoPersonalDataServer',
   )?.serviceEndpoint

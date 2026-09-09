@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -46,7 +46,7 @@ function usePersistedBooleanValue<T extends keyof persisted.Schema>(key: T) {
   >(
     hidden => {
       _set(Boolean(hidden))
-      persisted.write(key, hidden)
+      void persisted.write(key, hidden)
     },
     [key, _set],
   )

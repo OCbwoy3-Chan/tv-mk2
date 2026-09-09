@@ -6,11 +6,8 @@ import {
   View,
   type ViewStyle,
 } from 'react-native'
-import {
-  moderateProfile,
-  type ModerationOpts,
-  RichText as RichTextApi,
-} from '@atproto/api'
+import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
+import {RichText as RichTextApi} from '@bsky/sdk/richtext'
 import {useLingui} from '@lingui/react/macro'
 
 import {getModerationCauseKey} from '#/lib/moderation'
@@ -517,7 +514,7 @@ export function FollowButtonInner({
     logContext,
     onFollow,
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )
@@ -568,12 +565,7 @@ export function FollowButtonInner({
   const onPressFollow = (e: GestureResponderEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('follow')
-      promptControl.open()
-    } else {
-      void executeFollow(e)
-    }
+    void executeFollow(e)
   }
 
   const onPressUnfollow = (e: GestureResponderEvent) => {
@@ -670,6 +662,10 @@ export function FollowButtonInner({
               setPendingEphemeralAccount(account)
               void (async () => {
                 const action = await getEphemeralFollowAction(account)
+                if (!action) {
+                  setPendingEphemeralAccount(null)
+                  return
+                }
                 setConfirmationAction(action)
                 promptControl.open()
               })()

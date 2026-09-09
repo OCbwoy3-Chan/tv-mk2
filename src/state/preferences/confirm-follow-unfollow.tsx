@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (confirmFollowUnfollow: persisted.Schema['confirmFollowUnfollow']) => {
       setState(confirmFollowUnfollow)
-      persisted.write('confirmFollowUnfollow', confirmFollowUnfollow)
+      void persisted.write('confirmFollowUnfollow', confirmFollowUnfollow)
     },
     [setState],
   )
@@ -46,7 +46,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
 }
 
 export function useConfirmFollowUnfollow() {
-  return useContext(stateContext) ?? persisted.defaults.confirmFollowUnfollow
+  return true
 }
 
 export function useSetConfirmFollowUnfollow() {

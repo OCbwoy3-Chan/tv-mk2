@@ -5,11 +5,12 @@ import Animated, {
   type SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated'
-import {type $Typed, type AppBskyEmbedRecord} from '@atproto/api'
+import {type $Typed} from '@atproto/lex'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, native, useTheme, web} from '#/alf'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
+import {type app} from '#/lexicons'
 import {MessageContextProvider} from './MessageContext'
 
 const SQUARED_BORDER_RADIUS = 4
@@ -22,7 +23,7 @@ let MessageItemEmbed = ({
   squaredBottomCorner,
   highlightSV,
 }: {
-  embed: $Typed<AppBskyEmbedRecord.View>
+  embed: $Typed<app.bsky.embed.record.View>
   isFromSelf: boolean
   isGroupChat: boolean
   squaredTopCorner: boolean

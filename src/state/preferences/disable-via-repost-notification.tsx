@@ -30,7 +30,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['disableViaRepostNotification']) => {
       setState(value)
-      persisted.write('disableViaRepostNotification', value)
+      void persisted.write('disableViaRepostNotification', value)
     },
     [setState],
   )

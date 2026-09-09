@@ -25,10 +25,11 @@ import {
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useThemePrefs} from '#/state/shell'
-import {atoms as a, flatten, select, useTheme} from '#/alf'
+import {atoms as a, flatten, useTheme} from '#/alf'
 import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Text} from '#/components/Typography'
 import {IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 
 /**
  * The `Button` component, and some extensions of it like `Link` are intended
@@ -91,8 +92,7 @@ export type ButtonState = {
 export type ButtonContext = VariantProps & ButtonState
 
 type NonTextElements =
-  | React.ReactElement
-  | Iterable<React.ReactElement | null | undefined | boolean>
+  React.ReactElement | Iterable<React.ReactElement | null | undefined | boolean>
 
 type WebLongPressPressableProps = {
   onPointerDown?: (e: PointerEvent) => void
@@ -114,6 +114,8 @@ export type ButtonProps = Pick<
   | 'onPressOut'
   | 'onFocus'
   | 'onBlur'
+  | 'onAccessibilityAction'
+  | 'onAccessibilityEscape'
 > &
   AccessibilityProps &
   VariantProps & {
@@ -146,7 +148,7 @@ export function useButtonContext() {
   return useContext(Context)
 }
 
-export const Button = forwardRef<View, ButtonProps>(
+export const Button = forwardRef<React.ComponentRef<typeof View>, ButtonProps>(
   (
     {
       children,
@@ -232,8 +234,6 @@ export const Button = forwardRef<View, ButtonProps>(
     const onPointerDown = useCallback(
       (e: PointerEvent) => {
         if (onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE) {
-          const button = (e as unknown as globalThis.MouseEvent).button
-          if (button != null && button !== 0) return
           clearLongPressTimer()
           longPressTriggeredRef.current = false
           longPressTimerRef.current = setTimeout(() => {
@@ -245,9 +245,6 @@ export const Button = forwardRef<View, ButtonProps>(
       [clearLongPressTimer, onLongPressOuter],
     )
     const onPointerUp = useCallback(() => {
-      if (longPressTriggeredRef.current) {
-        return
-      }
       clearLongPressTimer()
     }, [clearLongPressTimer])
     const onPointerLeave = useCallback(() => {
@@ -255,12 +252,13 @@ export const Button = forwardRef<View, ButtonProps>(
     }, [clearLongPressTimer])
     const onContextMenu = useCallback(
       (e: Event) => {
-        if (!onLongPressOuter || !IS_WEB || IS_WEB_TOUCH_DEVICE) return
-
-        e.preventDefault()
-        clearLongPressTimer()
-        longPressTriggeredRef.current = true
-        onLongPressOuter(e as unknown as GestureResponderEvent)
+        if (onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE) {
+          e.preventDefault()
+          clearLongPressTimer()
+          if (longPressTriggeredRef.current) return
+          longPressTriggeredRef.current = true
+          onLongPressOuter(e as unknown as GestureResponderEvent)
+        }
       },
       [clearLongPressTimer, onLongPressOuter],
     )
@@ -648,15 +646,14 @@ export const Button = forwardRef<View, ButtonProps>(
         role="button"
         accessibilityHint={undefined} // optional
         {...rest}
-        {...((onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE
+        {...(onLongPressOuter && IS_WEB && !IS_WEB_TOUCH_DEVICE
           ? {
               onPointerDown,
               onPointerUp,
               onPointerLeave,
               onContextMenu,
             }
-          : {}) satisfies WebLongPressPressableProps)}
-        // @ts-ignore - this will always be a pressable
+          : {})}
         ref={ref}
         aria-label={label}
         aria-pressed={state.pressed}
@@ -697,7 +694,7 @@ Button.displayName = 'Button'
 
 export function useSharedButtonTextStyles() {
   const t = useTheme()
-  const {color, variant, disabled, size} = useButtonContext()
+  const {color, variant, disabled, size, interacting} = useButtonContext()
   const {colorScheme} = useThemePrefs()
 
   return useMemo(() => {
@@ -710,17 +707,16 @@ export function useSharedButtonTextStyles() {
      */
     if (variant === 'solid') {
       if (color === 'primary') {
-        if (!disabled) {
-          baseStyles.push({color: t.palette.white})
-        } else {
-          baseStyles.push({
-            color: select(t.name, {
-              light: t.palette.white,
-              dim: t.atoms.text_inverted.color,
-              dark: t.atoms.text_inverted.color,
-            }),
-          })
-        }
+        baseStyles.push({
+          color: accentForeground(
+            t,
+            disabled
+              ? t.palette.primary_200
+              : interacting
+                ? t.palette.primary_600
+                : t.palette.primary_500,
+          ),
+        })
       } else if (color === 'secondary') {
         if (!disabled) {
           baseStyles.push(t.atoms.text_contrast_medium)
@@ -880,7 +876,7 @@ export function useSharedButtonTextStyles() {
     }
 
     return flatten(baseStyles)
-  }, [t, variant, color, size, disabled, colorScheme])
+  }, [t, variant, color, size, disabled, colorScheme, interacting])
 }
 
 export function ButtonText({children, style, ...rest}: ButtonTextProps) {

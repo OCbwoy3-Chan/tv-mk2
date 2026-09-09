@@ -1,14 +1,15 @@
 import {useState} from 'react'
-import {type Insets, Pressable, View} from 'react-native'
+import {type Insets, View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
+import { useHideBetaBadge } from '#/state/preferences/hide-beta-badge'
 import {usePreferencesQuery} from '#/state/queries/preferences'
 import {useSession} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {Beaker_Stroke2_Corner2_Rounded as BeakerIcon} from '#/components/icons/Beaker'
+import {Pressable} from '#/components/Pressable'
 import * as Tooltip from '#/components/Tooltip'
 import type * as bsky from '#/types/bsky'
-import { useHideBetaBadge } from '#/state/preferences/hide-beta-badge'
 
 /**
  * Whether to show the beta badge for a given profile. Only shown on the
@@ -47,7 +48,7 @@ export function BetaBadge({
         a.rounded_full,
         {backgroundColor: t.palette.primary_50, padding},
       ]}>
-      <BeakerIcon width={width} fill={t.palette.primary_500} />
+      <BeakerIcon width={width} height={width} fill={t.palette.primary_500} />
     </View>
   )
 }
@@ -96,7 +97,11 @@ export function BetaBadgeButton({
             },
           ]}
           onPress={() => setTooltipVisible(v => !v)}>
-          <BeakerIcon width={width} fill={t.palette.primary_500} />
+          <BeakerIcon
+            width={width}
+            height={width}
+            fill={t.palette.primary_500}
+          />
         </Pressable>
       </Tooltip.Target>
       <Tooltip.BubbleText label={l`Beta features enabled`}>

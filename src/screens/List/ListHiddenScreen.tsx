@@ -1,10 +1,9 @@
-import { useState } from 'react'
-import { View } from 'react-native'
-import { AppBskyGraphDefs } from '@atproto/api'
-import { msg } from '@lingui/core/macro'
-import { useLingui } from '@lingui/react'
-import { Trans } from '@lingui/react/macro'
-import { useQueryClient } from '@tanstack/react-query'
+import {useState} from 'react'
+import {View} from 'react-native'
+import {msg} from '@lingui/core/macro'
+import {useLingui} from '@lingui/react'
+import {Trans} from '@lingui/react/macro'
+import {useQueryClient} from '@tanstack/react-query'
 
 import { useGoBack } from '#/lib/hooks/useGoBack'
 import { sanitizeHandle } from '#/lib/strings/handles'
@@ -26,13 +25,14 @@ import { EyeSlash_Stroke2_Corner0_Rounded as EyeSlash } from '#/components/icons
 import { Loader } from '#/components/Loader'
 import { useHider } from '#/components/moderation/Hider'
 import * as Toast from '#/components/Toast'
-import { Text } from '#/components/Typography'
+import {Text} from '#/components/Typography'
+import {app} from '#/lexicons'
 
 export function ListHiddenScreen({
   list,
   preferences,
 }: {
-  list: AppBskyGraphDefs.ListView
+  list: app.bsky.graph.defs.ListView
   preferences: UsePreferencesQueryResponse
 }) {
   const { _ } = useLingui()
@@ -43,7 +43,7 @@ export function ListHiddenScreen({
   const goBack = useGoBack()
   const queryClient = useQueryClient()
 
-  const isModList = list.purpose === AppBskyGraphDefs.MODLIST
+  const isModList = list.purpose === app.bsky.graph.defs.modlist.value
 
   const [isProcessing, setIsProcessing] = useState(false)
   const listBlockMutation = useListBlockMutation()
@@ -84,7 +84,7 @@ export function ListHiddenScreen({
         return
       }
     }
-    queryClient.invalidateQueries({
+    void queryClient.invalidateQueries({
       queryKey: [listQueryRoot],
     })
     Toast.show(_(msg`Unsubscribed from list`))
@@ -103,9 +103,8 @@ export function ListHiddenScreen({
           msg`There was an issue. Please check your internet connection and try again.`,
         ),
       )
-    } finally {
-      setIsProcessing(false)
     }
+    setIsProcessing(false)
   }
 
   return (
@@ -201,9 +200,9 @@ export function ListHiddenScreen({
               label={_(msg`Unsubscribe from list`)}
               onPress={() => {
                 if (isModList) {
-                  onUnsubscribe()
+                  void onUnsubscribe()
                 } else {
-                  onRemoveList()
+                  void onRemoveList()
                 }
               }}
               disabled={isProcessing}>

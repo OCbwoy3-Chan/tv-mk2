@@ -11,7 +11,7 @@ import {PagerDots} from './PagerDots'
 type Props = {
   onRequestClose: () => void
   onPressShare: () => void
-  onPressSave: () => void
+  onPressSave: (format: string) => void
   imageCount: number
   activeIndex: number
 }

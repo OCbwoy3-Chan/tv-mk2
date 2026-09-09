@@ -1,10 +1,10 @@
 import {useCallback, useMemo} from 'react'
 import {View} from 'react-native'
-import {type ModerationDecision} from '@atproto/api'
+import {type ModerationDecision} from '@bsky/sdk/moderation'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useProfileBlockMutationQueue} from '#/state/queries/profile'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'

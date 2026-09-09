@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (showGermDmButton: persisted.Schema['showGermDmButton']) => {
       setState(showGermDmButton)
-      persisted.write('showGermDmButton', showGermDmButton)
+      void persisted.write('showGermDmButton', showGermDmButton)
     },
     [setState],
   )

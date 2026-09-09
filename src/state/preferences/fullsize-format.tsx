@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (fullsizeFormat: persisted.Schema['fullsizeFormat']) => {
       setState(fullsizeFormat)
-      persisted.write('fullsizeFormat', fullsizeFormat)
+      void persisted.write('fullsizeFormat', fullsizeFormat)
     },
     [setState],
   )

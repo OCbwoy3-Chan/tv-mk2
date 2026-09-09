@@ -1,8 +1,7 @@
 import {type LanguageResult} from '@bsky.app/expo-guess-language'
 
 type WorkerResponse =
-  | {id: number; results: LanguageResult[]}
-  | {id: number; error: string}
+  {id: number; results: LanguageResult[]} | {id: number; error: string}
 
 type PendingRequest = {
   resolve: (results: LanguageResult[]) => void

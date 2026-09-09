@@ -13,7 +13,7 @@ import {DropdownMenu} from 'radix-ui'
 import {userStyle} from '#/lib/userstyles'
 import {useA11y} from '#/state/a11y'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {atoms as a, flatten, useTheme, web} from '#/alf'
+import {atoms as a, flatten, flattenToCSS, useTheme, web} from '#/alf'
 import type * as Dialog from '#/components/Dialog'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {
@@ -198,8 +198,14 @@ export function Outer({
   children,
   style,
   onCloseAutoFocus,
+  side,
+  align,
+  label,
 }: React.PropsWithChildren<{
   showCancel?: boolean
+  side?: React.ComponentProps<typeof DropdownMenu.Content>['side']
+  align?: React.ComponentProps<typeof DropdownMenu.Content>['align']
+  label?: string
   style?: StyleProp<ViewStyle>
   onCloseAutoFocus?: React.ComponentProps<
     typeof DropdownMenu.Content
@@ -209,12 +215,14 @@ export function Outer({
   const {reduceMotionEnabled} = useA11y()
 
   return (
-    <DropdownMenu.Portal>
+    <DropdownMenu.Portal container={document.fullscreenElement}>
       <DropdownMenu.Content
+        side={side}
+        align={align}
         sideOffset={5}
         collisionPadding={{left: 5, right: 5, bottom: 5}}
         loop
-        aria-label="Test"
+        aria-label={label}
         onCloseAutoFocus={onCloseAutoFocus}
         className="dropdown-menu-transform-origin dropdown-menu-constrain-size">
         <View
@@ -392,7 +400,7 @@ export function Submenu({children, label, trigger, style}: SubmenuProps) {
           </ItemContext.Provider>
         </Pressable>
       </DropdownMenu.SubTrigger>
-      <DropdownMenu.Portal>
+      <DropdownMenu.Portal container={document.fullscreenElement}>
         <DropdownMenu.SubContent
           sideOffset={4}
           collisionPadding={5}
@@ -548,7 +556,7 @@ export function Divider() {
   const t = useTheme()
   return (
     <DropdownMenu.Separator
-      style={flatten([
+      style={flattenToCSS([
         a.my_xs,
         t.atoms.bg_contrast_100,
         a.flex_shrink_0,

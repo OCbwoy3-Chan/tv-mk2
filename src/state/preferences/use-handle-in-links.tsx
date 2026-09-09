@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (useHandleInLinks: persisted.Schema['useHandleInLinks']) => {
       setState(useHandleInLinks)
-      persisted.write('useHandleInLinks', useHandleInLinks)
+      void persisted.write('useHandleInLinks', useHandleInLinks)
     },
     [setState],
   )

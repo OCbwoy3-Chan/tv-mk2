@@ -85,6 +85,7 @@ import {CustomFeedLikedByScreen} from '#/screens/CustomFeed/CustomFeedLikedBy'
 import HashtagScreen from '#/screens/Hashtag'
 import {AuthCallback} from '#/screens/Login/AuthCallback'
 import {MessagesScreen} from '#/screens/Messages/ChatList'
+import {renderMessagesSplitViewLayout} from '#/screens/Messages/components/splitView/MessagesSplitViewLayout'
 import {MessagesConversationScreen} from '#/screens/Messages/Conversation'
 import {MessagesConversationSettingsScreen} from '#/screens/Messages/ConversationSettings'
 import {MessagesInboxScreen} from '#/screens/Messages/Inbox'
@@ -92,6 +93,10 @@ import {MessagesJoinRequestsScreen} from '#/screens/Messages/JoinRequests'
 import {MessagesSettingsScreen} from '#/screens/Messages/Settings'
 import {ModerationScreen} from '#/screens/Moderation'
 import {Screen as ModerationVerificationSettings} from '#/screens/Moderation/VerificationSettings'
+import {ModerationInboxScreen} from '#/screens/ModerationInbox'
+import {ModerationInboxReportDetailsScreen} from '#/screens/ModerationInbox/Report'
+import {ModerationInboxSettingsScreen} from '#/screens/ModerationInbox/Settings'
+import {ModerationInboxSubjectDetailsScreen} from '#/screens/ModerationInbox/Subject'
 import {Screen as ModerationInteractionSettings} from '#/screens/ModerationInteractionSettings'
 import {NotificationsActivityListScreen} from '#/screens/Notifications/ActivityList'
 import {PostLikedByScreen} from '#/screens/Post/PostLikedBy'
@@ -111,16 +116,16 @@ import {
   EmailDialogScreenID,
   useEmailDialogControl,
 } from '#/components/dialogs/EmailDialog'
+import {EphemeralLoginHost} from '#/components/EphemeralLoginHost'
 import {useAnalytics} from '#/analytics'
 import {setNavigationMetadata} from '#/analytics/metadata'
 import {IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
 import {router} from '#/routes'
 import {Referrer} from '../modules/expo-bluesky-swiss-army'
-import {renderMessagesSplitViewLayout} from './screens/Messages/components/splitView/MessagesSplitViewLayout'
+import { AIPreferencesSettingsScreen } from './screens/Settings/AIPreferencesSettings'
 import { DeltaSettingsScreen } from './screens/Settings/DeltaSettings'
 import { DeltaBadgeSettingsScreen } from './screens/Settings/DeltaSettings/BadgeSettings'
 import { DeltaModLabelSettingsScreen } from './screens/Settings/DeltaSettings/ModLabelSettings'
-import { AIPreferencesSettingsScreen } from './screens/Settings/AIPreferencesSettings'
 import { DeltaPrivatePostSettingsScreen } from './screens/Settings/DeltaSettings/PrivatePostSettings'
 
 function deferredNamedScreen<
@@ -186,6 +191,18 @@ const AppearanceSettingsScreen = deferredNamedScreen(
 const AppearanceColorThemeSettingsScreen = deferredNamedScreen(
   () => require('#/screens/Settings/AppearanceSettings/ColorThemeSettings'),
   'AppearanceColorThemeSettingsScreen',
+)
+const ThemeGalleryScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AppearanceSettings/ThemeGallery'),
+  'ThemeGalleryScreen',
+)
+const ThemeEditorScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/AppearanceSettings/ThemeEditor'),
+  'ThemeEditorScreen',
+)
+const ThemeScreen = deferredNamedScreen(
+  () => require('#/screens/Theme'),
+  'ThemeScreen',
 )
 const AppIconSettingsScreen = deferredNamedScreen(
   () => require('#/screens/Settings/AppIconSettings'),
@@ -383,6 +400,26 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         name="Moderation"
         getComponent={() => ModerationScreen}
         options={{title: title(msg`Moderation`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="ModerationInbox"
+        getComponent={() => ModerationInboxScreen}
+        options={{title: title(msg`Moderation inbox`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="ModerationInboxSettings"
+        getComponent={() => ModerationInboxSettingsScreen}
+        options={{title: title(msg`Mod inbox settings`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="ModerationInboxReportDetails"
+        getComponent={() => ModerationInboxReportDetailsScreen}
+        options={{title: title(msg`Your report`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="ModerationInboxSubjectDetails"
+        getComponent={() => ModerationInboxSubjectDetailsScreen}
+        options={{title: title(msg`Notice`), requireAuth: true}}
       />
       <Stack.Screen
         name="ModerationModlists"
@@ -730,6 +767,21 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         }}
       />
       <Stack.Screen
+        name="ThemeGallery"
+        getComponent={() => ThemeGalleryScreen}
+        options={{title: title(msg`Themes`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="ThemeEditor"
+        getComponent={() => ThemeEditorScreen}
+        options={{title: title(msg`Theme editor`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="Theme"
+        getComponent={() => ThemeScreen}
+        options={{title: title(msg`Theme`)}}
+      />
+      <Stack.Screen
         name="AccountSettings"
         getComponent={() => AccountSettingsScreen}
         options={{
@@ -895,12 +947,12 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
       <Stack.Screen
         name="StarterPackWizard"
         getComponent={() => Wizard}
-        options={{title: title(msg`Create a starter pack`), requireAuth: true}}
+        options={{title: title(msg`Create a Starter Pack`), requireAuth: true}}
       />
       <Stack.Screen
         name="StarterPackEdit"
         getComponent={() => Wizard}
-        options={{title: title(msg`Edit your starter pack`), requireAuth: true}}
+        options={{title: title(msg`Edit your Starter Pack`), requireAuth: true}}
       />
       <Stack.Screen
         name="VideoFeed"
@@ -1279,7 +1331,7 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
         // chat-removed-from-group, chat-join-request-rejected: the convo is
         // no longer accessible to the recipient, so just open the list.
         // @ts-expect-error nested navigators aren't typed -sfn
-        navigate('MessagesTab', {screen: 'Messages'})
+        void navigate('MessagesTab', {screen: 'Messages'})
       }
     },
   )
@@ -1370,7 +1422,7 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
 
     ax.metric('init', {
       initMs: Math.round(
-        // @ts-ignore Emitted by Metro in the bundle prelude
+        // @ts-expect-error Emitted by Metro in the bundle prelude
         performance.now() - global.__BUNDLE_START_TIME__,
       ),
     })
@@ -1416,6 +1468,8 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
       // -sfn
       navigationInChildEnabled>
       {children}
+      {/* Login links need navigation context, including inside the modal. */}
+      <EphemeralLoginHost />
     </NavigationContainer>
   )
 }
@@ -1446,7 +1500,7 @@ function navigate<K extends keyof AllNavigatorParams>(
         }
         navigationRef.addListener('state', handler)
 
-        // @ts-ignore I don't know what would make typescript happy but I have a life -prf
+        // @ts-expect-error I don't know what would make typescript happy but I have a life -prf
         navigationRef.navigate(name, params)
       }),
       timeout(1e3),

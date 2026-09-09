@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (faviconService: persisted.Schema['faviconService']) => {
       setState(faviconService)
-      persisted.write('faviconService', faviconService)
+      void persisted.write('faviconService', faviconService)
     },
     [setState],
   )

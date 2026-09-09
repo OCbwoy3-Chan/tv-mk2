@@ -1,5 +1,5 @@
 import {l} from '@atproto/lex'
-import type {LexValue, Validator} from '@atproto/lex-schema'
+import  {type LexValue, type Validator} from '@atproto/lex-schema'
 
 const spaceView = l.object({
   uri: l.string(),

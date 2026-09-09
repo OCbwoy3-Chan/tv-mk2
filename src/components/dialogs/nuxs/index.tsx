@@ -6,7 +6,6 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {type AppBskyActorDefs} from '@atproto/api'
 
 import {logger} from '#/logger'
 import {STALE} from '#/state/queries'
@@ -30,8 +29,8 @@ import {isSnoozed, snooze, unsnooze} from '#/components/dialogs/nuxs/snoozing'
 import {type EnabledCheckProps} from '#/components/dialogs/nuxs/utils'
 import { TennaPartyNativeAppNux } from '#/components/tenna/NativeAppNux'
 import {useAnalytics} from '#/analytics'
-import { IS_WEB } from '#/env'
 import {useGeolocation} from '#/geolocation'
+import {type app} from '#/lexicons'
 
 type Context = {
   activeNux: Nux | undefined
@@ -99,7 +98,7 @@ function Inner({
   preferences,
 }: {
   currentAccount: SessionAccount
-  currentProfile: AppBskyActorDefs.ProfileViewDetailed
+  currentProfile: app.bsky.actor.defs.ProfileViewDetailed
   preferences: UsePreferencesQueryResponse
 }) {
   const ax = useAnalytics()
@@ -122,14 +121,15 @@ function Inner({
     setActiveNux(undefined)
   }, [activeNux, setActiveNux])
 
-  if (__DEV__ && typeof window !== 'undefined') {
-    // @ts-ignore
+  useEffect(() => {
+    if (!__DEV__ || typeof window === 'undefined') return
+    // @ts-expect-error debug only
     window.clearNuxDialog = (id: Nux) => {
-      if (!__DEV__ || !id) return
+      if (!id) return
       resetNuxs([id])
       unsnooze()
     }
-  }
+  }, [resetNuxs])
 
   useEffect(() => {
     if (snoozed) return // comment this out to test

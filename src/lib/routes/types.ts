@@ -24,6 +24,10 @@ export type CommonNavigatorParams = {
   AuthCallback: undefined
   Lists: undefined
   Moderation: undefined
+  ModerationInbox: undefined
+  ModerationInboxSettings: undefined
+  ModerationInboxReportDetails: undefined
+  ModerationInboxSubjectDetails: undefined
   ModerationModlists: undefined
   ModerationMutedAccounts: undefined
   ModerationBlockedAccounts: undefined
@@ -71,6 +75,13 @@ export type CommonNavigatorParams = {
   AltTextAiSettings: undefined
   AppearanceSettings: undefined
   AppearanceColorThemeSettings: undefined
+  ThemeGallery: {mode: 'light' | 'dark' | 'system'}
+  ThemeEditor: {
+    rkey?: string
+    mode?: 'light' | 'dark'
+    remix?: {name: string; rkey: string; colorSet?: string}
+  }
+  Theme: {name: string; rkey: string}
   BetaFeaturesSettings: undefined
   RunesSettings: undefined
   RunesMenusSettings: undefined
@@ -191,8 +202,7 @@ export type AllNavigatorParams = CommonNavigatorParams & {
 export type NavigationProp = NativeStackNavigationProp<AllNavigatorParams>
 
 export type State =
-  | NavigationState
-  | Omit<PartialState<NavigationState>, 'stale'>
+  NavigationState | Omit<PartialState<NavigationState>, 'stale'>
 
 export type RouteParams = Record<string, string>
 export type MatchResult = {params: RouteParams}

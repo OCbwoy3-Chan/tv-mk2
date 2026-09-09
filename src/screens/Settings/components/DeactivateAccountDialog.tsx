@@ -5,25 +5,31 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {logger} from '#/logger'
-import {useAgent, useSessionApi} from '#/state/session'
-import {pdsAgent} from '#/state/session/agent'
+import {usePdsClient, useSession, useSessionApi} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {type DialogOuterProps} from '#/components/Dialog'
+import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
 import {Divider} from '#/components/Divider'
 import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfo} from '#/components/icons/CircleInfo'
 import {Loader} from '#/components/Loader'
 import * as Prompt from '#/components/Prompt'
 import {Text} from '#/components/Typography'
+import {com} from '#/lexicons'
 
 export function DeactivateAccountDialog({
   control,
 }: {
   control: DialogOuterProps['control']
 }) {
+  const {currentAccount} = useSession()
   return (
     <Prompt.Outer control={control}>
-      <DeactivateAccountDialogInner control={control} />
+      {currentAccount?.isOauthSession ? (
+        <LegacyAuthRequiredDialogContent />
+      ) : (
+        <DeactivateAccountDialogInner control={control} />
+      )}
     </Prompt.Outer>
   )
 }
@@ -35,7 +41,7 @@ function DeactivateAccountDialogInner({
 }) {
   const t = useTheme()
   const {_} = useLingui()
-  const agent = useAgent()
+  const client = usePdsClient()
   const {logoutCurrentAccount} = useSessionApi()
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | undefined>()
@@ -43,7 +49,7 @@ function DeactivateAccountDialogInner({
   const handleDeactivate = useCallback(async () => {
     try {
       setPending(true)
-      await pdsAgent(agent).com.atproto.server.deactivateAccount({})
+      await client.call(com.atproto.server.deactivateAccount, {})
       control.close(() => {
         logoutCurrentAccount('Deactivated')
       })
@@ -64,10 +70,9 @@ function DeactivateAccountDialogInner({
       logger.error(e, {
         message: 'Failed to deactivate account',
       })
-    } finally {
-      setPending(false)
     }
-  }, [agent, control, logoutCurrentAccount, _, setPending])
+    setPending(false)
+  }, [client, control, logoutCurrentAccount, _, setPending])
 
   return (
     <>

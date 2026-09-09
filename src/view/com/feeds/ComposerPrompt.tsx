@@ -18,7 +18,7 @@ import {atoms as a, native, useTheme, web} from '#/alf'
 import {Button} from '#/components/Button'
 import {useSheetWrapper} from '#/components/Dialog/sheet-wrapper'
 import {Camera_Stroke2_Corner0_Rounded as CameraIcon} from '#/components/icons/Camera'
-import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
+import {Image_Stroke2_Corner2_Rounded as ImageIcon} from '#/components/icons/Image'
 import {SubtleHover} from '#/components/SubtleHover'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
@@ -56,8 +56,10 @@ export function ComposerPrompt() {
         requestVideoAccessIfNeeded(),
       ])
 
-      if (!photoAccess && !videoAccess) {
-        return
+      if (!photoAccess) {
+        if (!videoAccess) {
+          return
+        }
       }
 
       if (Keyboard.isVisible()) {
@@ -108,8 +110,10 @@ export function ComposerPrompt() {
         return
       }
 
-      if (IS_NATIVE && Keyboard.isVisible()) {
-        Keyboard.dismiss()
+      if (IS_NATIVE) {
+        if (Keyboard.isVisible()) {
+          Keyboard.dismiss()
+        }
       }
 
       const image = await openCamera({
@@ -127,8 +131,16 @@ export function ComposerPrompt() {
         },
       ]
 
+      /*
+       * Statement form rather than a ternary: React Compiler cannot lower a
+       * conditional expression inside a `try`, and `imageUris` is built here.
+       */
+      let nativeImageUris
+      if (IS_NATIVE) {
+        nativeImageUris = imageUris
+      }
       openComposer({
-        imageUris: IS_NATIVE ? imageUris : undefined,
+        imageUris: nativeImageUris,
         logContext: 'Fab',
       })
     } catch (err: any) {
@@ -145,7 +157,6 @@ export function ComposerPrompt() {
   return (
     <Pressable
       onPress={onPress}
-      android_ripple={null}
       accessibilityRole="button"
       accessibilityLabel={_(msg`Compose new post`)}
       accessibilityHint={_(msg`Opens the post composer`)}
@@ -199,7 +210,7 @@ export function ComposerPrompt() {
             <Button
               onPress={e => {
                 e.stopPropagation()
-                onPressCamera()
+                void onPressCamera()
               }}
               label={_(msg`Open camera`)}
               accessibilityHint={_(msg`Opens device camera`)}
@@ -221,7 +232,7 @@ export function ComposerPrompt() {
           <Button
             onPress={e => {
               e.stopPropagation()
-              onPressImage()
+              void onPressImage()
             }}
             label={_(msg`Add image`)}
             accessibilityHint={_(msg`Opens image picker`)}

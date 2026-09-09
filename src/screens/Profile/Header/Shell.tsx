@@ -5,8 +5,8 @@ import Animated, {
   useAnimatedRef,
 } from 'react-native-reanimated'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
-import {type AppBskyActorDefs, type ModerationDecision} from '@atproto/api'
 import {utils} from '@bsky.app/alf'
+import {type ModerationDecision} from '@bsky/sdk/moderation'
 import {useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 
@@ -25,7 +25,7 @@ import {
 import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {useSession} from '#/state/session'
 import {LoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
-import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {getSquareAvatarRadius, UserAvatar} from '#/view/com/util/UserAvatar'
 import {UserBanner} from '#/view/com/util/UserBanner'
 import {atoms as a, platform, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
@@ -40,12 +40,13 @@ import {useActorStatus} from '#/features/liveNow'
 import {EditLiveDialog} from '#/features/liveNow/components/EditLiveDialog'
 import {LiveIndicator} from '#/features/liveNow/components/LiveIndicator'
 import {LiveStatusDialog} from '#/features/liveNow/components/LiveStatusDialog'
+import {type app} from '#/lexicons'
 import {GrowableAvatar} from './GrowableAvatar'
 import {GrowableBanner} from './GrowableBanner'
 import {StatusBarShadow} from './StatusBarShadow'
 
 interface Props {
-  profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
+  profile: Shadow<app.bsky.actor.defs.ProfileViewDetailed>
   moderation: ModerationDecision
   hideBackButton?: boolean
   isPlaceholderProfile?: boolean
@@ -292,7 +293,7 @@ let ProfileHeaderShell = ({
           <View
             style={[
               t.atoms.bg,
-              enableSquareAvatars ? a.rounded_md : a.rounded_full,
+              a.rounded_full,
               {
                 width: 94,
                 height: 94,
@@ -301,7 +302,11 @@ let ProfileHeaderShell = ({
                   ? t.palette.negative_500
                   : t.atoms.bg.backgroundColor,
               },
-              profile.associated?.labeler && a.rounded_md,
+              (enableSquareAvatars || profile.associated?.labeler) && {
+                borderRadius:
+                  getSquareAvatarRadius(live.isActive ? 88 : 90) +
+                  (live.isActive ? 3 : 2),
+              },
             ]}>
             <Animated.View ref={aviRef} collapsable={false}>
               <UserAvatar

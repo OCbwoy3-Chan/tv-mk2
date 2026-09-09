@@ -29,7 +29,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       showStandardLabelerProfile: persisted.Schema['showStandardLabelerProfile'],
     ) => {
       setState(showStandardLabelerProfile)
-      persisted.write('showStandardLabelerProfile', showStandardLabelerProfile)
+      void persisted.write('showStandardLabelerProfile', showStandardLabelerProfile)
     },
     [setState],
   )

@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -27,7 +27,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (largeAltBadgeEnabled: persisted.Schema['largeAltBadgeEnabled']) => {
       setState(largeAltBadgeEnabled)
-      persisted.write('largeAltBadgeEnabled', largeAltBadgeEnabled)
+      void persisted.write('largeAltBadgeEnabled', largeAltBadgeEnabled)
     },
     [setState],
   )

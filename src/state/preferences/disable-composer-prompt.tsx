@@ -28,7 +28,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (disableComposerPrompt: persisted.Schema['disableComposerPrompt']) => {
       setState(disableComposerPrompt)
-      persisted.write('disableComposerPrompt', disableComposerPrompt)
+      void persisted.write('disableComposerPrompt', disableComposerPrompt)
     },
     [setState],
   )

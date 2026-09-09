@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
+import {type UriString} from '@atproto/lex'
 
 import {cleanError} from '#/lib/strings/errors'
 import {
@@ -15,6 +16,8 @@ import {JoinRequestEmbed} from '#/components/Post/Embed/JoinRequestEmbed'
 import {ModeratedListEmbed} from '#/components/Post/Embed/ListEmbed'
 import {StandardSiteEmbed} from '#/components/Post/Embed/StandardSiteEmbed'
 import {isStandardSiteEmbed} from '#/components/Post/Embed/StandardSiteEmbed/utils'
+import {ThemeEmbed} from '#/components/Post/Embed/ThemeEmbed'
+import {isThemeEmbed} from '#/components/Post/Embed/ThemeEmbed/utils'
 import {Embed as StarterPackEmbed} from '#/components/StarterPack/StarterPackCard'
 import {Text} from '#/components/Typography'
 import {type Gif} from '#/features/gifPicker/types'
@@ -32,9 +35,9 @@ export const ExternalEmbedGif = ({
     () =>
       data && {
         title: data.title ?? data.uri,
-        uri: data.uri,
+        uri: data.uri as UriString,
         description: data.description ?? '',
-        thumb: data.thumb?.source.path,
+        thumb: data.thumb?.source.path as UriString | undefined,
       },
     [data],
   )
@@ -80,7 +83,7 @@ export const ExternalEmbedLink = ({
   hasQuote,
   onRemove,
 }: {
-  uri: string
+  uri: UriString
   hasQuote: boolean
   onRemove: () => void
 }) => {
@@ -89,6 +92,20 @@ export const ExternalEmbedLink = ({
   const linkComponent = useMemo(() => {
     if (data) {
       if (data.type === 'external') {
+        const externalView = {
+          ...data.view?.external,
+          uri,
+          title: data.view?.external?.title || data.title || uri,
+          description:
+            data.view?.external?.description || data.description || '',
+          // Prefer Open Graph data because it contains the generated theme card.
+          thumb: data.thumb?.source.path || data.view?.external?.thumb,
+          associatedRefs:
+            data.view?.external?.associatedRefs || data.associatedRefs,
+        }
+        if (isThemeEmbed(externalView)) {
+          return <ThemeEmbed view={externalView} />
+        }
         if (data.view && isStandardSiteEmbed(data.view.external)) {
           return (
             <StandardSiteEmbed
@@ -100,7 +117,8 @@ export const ExternalEmbedLink = ({
                 description:
                   data.view?.external?.description || data.description,
                 // prefer opengraph data to atproto record-derived image
-                thumb: data.thumb?.source.path || data.view?.external?.thumb,
+                thumb: (data.thumb?.source.path ||
+                  data.view?.external?.thumb) as UriString | undefined,
               }}
             />
           )
@@ -111,7 +129,7 @@ export const ExternalEmbedLink = ({
               title: data.title || uri,
               uri,
               description: data.description,
-              thumb: data.thumb?.source.path,
+              thumb: data.thumb?.source.path as UriString | undefined,
             }}
             hideAlt
             preview

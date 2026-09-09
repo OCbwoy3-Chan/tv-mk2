@@ -12,6 +12,7 @@ export interface TabBarProps {
   testID?: string
   selectedPage: number
   items: string[]
+  align?: 'center' | 'left'
   indicatorColor?: string
   backgroundColor?: string
 
@@ -35,11 +36,12 @@ export function TabBar({
   testID,
   selectedPage,
   items,
+  align = 'center',
   onSelect,
   onPressSelected,
 }: TabBarProps) {
   const t = useTheme()
-  const scrollElRef = useRef<ScrollView>(null)
+  const scrollElRef = useRef<React.ComponentRef<typeof ScrollView>>(null)
   const itemRefs = useRef<Array<Element>>([])
   const {gtMobile} = useBreakpoints()
   const styles = gtMobile ? desktopStyles : mobileStyles
@@ -48,7 +50,8 @@ export function TabBar({
     // On the web, the primary interaction is tapping.
     // Scrolling under tap feels disorienting so only adjust the scroll offset
     // when tapping on an item out of view--and we adjust by almost an entire page.
-    const parent = scrollElRef?.current?.getScrollableNode?.()
+    const parent = scrollElRef.current?.getScrollableNode?.() as unknown as
+      HTMLElement | undefined
     if (!parent) {
       return
     }
@@ -87,7 +90,7 @@ export function TabBar({
         behavior: 'smooth',
       })
     }
-  }, [scrollElRef, selectedPage, styles])
+  }, [scrollElRef, selectedPage, styles, align])
 
   const onPressItem = useCallback(
     (index: number) => {
@@ -119,7 +122,11 @@ export function TabBar({
               ref={node => {
                 itemRefs.current[i] = node as any
               }}
-              style={[styles.item, a.rounded_sm]}
+              style={[
+                styles.item,
+                a.rounded_sm,
+                align === 'left' && leftAlignedStyles.item,
+              ]}
               hoverStyle={t.atoms.bg_contrast_25}
               onPress={() => onPressItem(i)}
               accessibilityRole="tab">
@@ -237,5 +244,12 @@ const mobileStyles = StyleSheet.create({
     right: 0,
     top: '100%',
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+})
+
+const leftAlignedStyles = StyleSheet.create({
+  item: {
+    flexGrow: 0,
+    flexShrink: 0,
   },
 })

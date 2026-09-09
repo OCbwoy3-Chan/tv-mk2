@@ -60,7 +60,7 @@ export function GrowthHack({
           {children}
         </View>
       </PrivacySensitive>
-      <Logo size={ICON_SIZE} />
+      <Logo width={iconSizes[ICON_SIZE]} />
     </View>
   )
 }

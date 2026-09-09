@@ -25,7 +25,7 @@ export function Provider({children}: {children: ReactNode}) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['alsoLikedCollapseByDefault']) => {
       setState(Boolean(value))
-      persisted.write('alsoLikedCollapseByDefault', value)
+      void persisted.write('alsoLikedCollapseByDefault', value)
     },
     [setState],
   )

@@ -1,4 +1,6 @@
-import {type AppBskyLabelerDefs} from '@atproto/api'
+import {Client} from '@atproto/lex'
+import {type DidString} from '@atproto/syntax'
+import {addLabeler, removeLabeler} from '@bsky/sdk'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {z} from 'zod'
 
@@ -14,8 +16,9 @@ import {
   usePreferencesQuery,
 } from '#/state/queries/preferences'
 import {createQueryKey} from '#/state/queries/util'
-import {useAgent} from '#/state/session'
-import {pdsAgent} from '../session/agent'
+import {useAppviewClient, usePdsClient} from '#/state/session'
+import {configureGlobalAppLabelers} from '#/state/session/additional-moderation-authorities'
+import {app} from '#/lexicons'
 
 const labelerInfoQueryKeyRoot = 'labeler-info'
 export const labelerInfoQueryKey = (did: string) => [
@@ -39,57 +42,60 @@ export function useLabelerInfoQuery({
   did?: string
   enabled?: boolean
 }) {
-  const agent = useAgent()
+  const client = useAppviewClient()
   return useQuery({
     enabled: !!did && enabled !== false,
     queryKey: labelerInfoQueryKey(did as string),
     queryFn: async () => {
-      const res = await agent.app.bsky.labeler.getServices({
-        dids: [did!],
+      const res = await client.call(app.bsky.labeler.getServices, {
+        dids: [did! as DidString],
         detailed: true,
       })
-      return res.data.views[0] as AppBskyLabelerDefs.LabelerViewDetailed
+      return res.views[0] as app.bsky.labeler.defs.LabelerViewDetailed
     },
   })
 }
 
 export function useLabelersInfoQuery({dids}: {dids: string[]}) {
-  const agent = useAgent()
+  const client = useAppviewClient()
   return useQuery({
     enabled: !!dids.length,
     queryKey: labelersInfoQueryKey(dids),
     queryFn: async () => {
-      const res = await agent.app.bsky.labeler.getServices({dids})
-      return res.data.views as AppBskyLabelerDefs.LabelerView[]
+      const res = await client.call(app.bsky.labeler.getServices, {
+        dids: dids as DidString[],
+      })
+      return res.views as app.bsky.labeler.defs.LabelerView[]
     },
   })
 }
 
 export function useLabelersDetailedInfoQuery({dids}: {dids: string[]}) {
-  const agent = useAgent()
+  const client = useAppviewClient()
   return useQuery({
     enabled: !!dids.length,
     queryKey: createLabelersDetailedInfoQueryKey(dids),
     gcTime: GCTIME.INFINITY,
     staleTime: STALE.MINUTES.ONE,
     queryFn: async () => {
-      const res = await agent.app.bsky.labeler.getServices({
-        dids,
+      const res = await client.call(app.bsky.labeler.getServices, {
+        dids: dids as DidString[],
         detailed: true,
       })
-      return res.data.views as AppBskyLabelerDefs.LabelerViewDetailed[]
+      return res.views as app.bsky.labeler.defs.LabelerViewDetailed[]
     },
   })
 }
 
 export function useRemoveLabelersMutation() {
   const queryClient = useQueryClient()
-  const agent = useAgent()
+  const client = usePdsClient()
 
   return useMutation({
     async mutationFn({dids}: {dids: string[]}) {
-      const directAgent = pdsAgent(agent)
-      await Promise.all(dids.map(did => directAgent.removeLabeler(did)))
+      await Promise.all(
+        dids.map(did => client.call(removeLabeler, did as DidString)),
+      )
     },
     async onSuccess() {
       await queryClient.invalidateQueries({
@@ -101,7 +107,8 @@ export function useRemoveLabelersMutation() {
 
 export function useLabelerSubscriptionMutation() {
   const queryClient = useQueryClient()
-  const agent = useAgent()
+  const appviewClient = useAppviewClient()
+  const pdsClient = usePdsClient()
   const preferences = usePreferencesQuery()
 
   return useMutation({
@@ -124,47 +131,51 @@ export function useLabelerSubscriptionMutation() {
       const labelerDids = (
         preferences.data?.moderationPrefs?.labelers ?? []
       ).map(l => l.did)
-      const directAgent = pdsAgent(agent)
-      const invalidLabelers: string[] = []
+      const invalidLabelers: DidString[] = []
       if (labelerDids.length) {
-        const profiles = await agent.getProfiles({actors: labelerDids})
-        if (profiles.data) {
-          for (const did of labelerDids) {
-            const exists = profiles.data.profiles.find(p => p.did === did)
+        const profiles = await appviewClient.call(app.bsky.actor.getProfiles, {
+          actors: labelerDids,
+        })
+        if (profiles) {
+          for (const labelerDid of labelerDids) {
+            const exists = profiles.profiles.find(p => p.did === labelerDid)
             if (exists) {
               // profile came back but it's not a valid labeler
               if (exists.associated && !exists.associated.labeler) {
-                invalidLabelers.push(did)
+                invalidLabelers.push(labelerDid)
               }
             } else {
               // no response came back, might be deactivated or takendown
-              invalidLabelers.push(did)
+              invalidLabelers.push(labelerDid)
             }
           }
         }
       }
       if (invalidLabelers.length) {
         await Promise.all(
-          invalidLabelers.map(did => directAgent.removeLabeler(did)),
+          invalidLabelers.map(labelerDid =>
+            pdsClient.call(removeLabeler, labelerDid),
+          ),
         )
       }
 
       if (subscribe) {
+        if (!isAppLabeler(did)) {
+          const labelerCount = labelerDids.length - invalidLabelers.length
+          if (labelerCount >= MAX_LABELERS) throw new Error('MAX_LABELERS')
+        }
+        await pdsClient.call(addLabeler, did as DidString)
         if (isAppLabeler(did)) {
           removeIgnoredAppLabeler(did)
-        } else {
-          const labelerCount = labelerDids.length - invalidLabelers.length
-          if (labelerCount >= MAX_LABELERS) {
-            throw new Error('MAX_LABELERS')
-          }
-          await directAgent.addLabeler(did)
+          configureGlobalAppLabelers([...Client.appLabelers, did])
         }
       } else {
+        await pdsClient.call(removeLabeler, did as DidString)
         if (isAppLabeler(did)) {
           addIgnoredAppLabeler(did)
-          await directAgent.removeLabeler(did).catch(() => {})
-        } else {
-          await directAgent.removeLabeler(did)
+          configureGlobalAppLabelers(
+            Client.appLabelers.filter(labeler => labeler !== did),
+          )
         }
       }
     },

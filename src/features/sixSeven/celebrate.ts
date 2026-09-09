@@ -1,7 +1,7 @@
 import {AccessibilityInfo} from 'react-native'
 
-import * as Toast from '#/components/Toast'
 import * as persisted from '#/state/persisted'
+import * as Toast from '#/components/Toast'
 
 type SixSevenControls = {
   burst: () => void
@@ -22,12 +22,10 @@ export function maybeCelebrateSixSevenLike({
 }) {
   if (wasLiked) return
   if ((likeCount ?? 0) + 1 !== 67) return
-  if (
-    !(
-      persisted.get('sixSevenCelebration') ??
-      persisted.defaults.sixSevenCelebration
-    )
-  ) {
+  if (!(
+    persisted.get('sixSevenCelebration') ??
+    persisted.defaults.sixSevenCelebration
+  )) {
     return
   }
   void celebrateSixSeven()

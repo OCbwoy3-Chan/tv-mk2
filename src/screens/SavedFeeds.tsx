@@ -2,7 +2,6 @@ import {useState} from 'react'
 import {View} from 'react-native'
 import type Animated from 'react-native-reanimated'
 import {useAnimatedRef, useScrollOffset} from 'react-native-reanimated'
-import {type AppBskyActorDefs} from '@atproto/api'
 import {TID} from '@atproto/common-web'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
@@ -44,6 +43,8 @@ import {InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
+import {accentForeground} from '#/features/themes/accentForeground'
+import {type app} from '#/lexicons'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'SavedFeeds'>
 export function SavedFeeds({}: Props) {
@@ -428,10 +429,10 @@ function PinnedFeedItem({
   onMoveUp,
   onMoveDown,
 }: {
-  feed: AppBskyActorDefs.SavedFeed
-  currentFeeds: AppBskyActorDefs.SavedFeed[]
+  feed: app.bsky.actor.defs.SavedFeed
+  currentFeeds: app.bsky.actor.defs.SavedFeed[]
   setCurrentFeeds: React.Dispatch<
-    React.SetStateAction<AppBskyActorDefs.SavedFeed[]>
+    React.SetStateAction<app.bsky.actor.defs.SavedFeed[]>
   >
   dragHandle?: React.ReactNode
   index?: number
@@ -516,10 +517,10 @@ function UnpinnedFeedItem({
   currentFeeds,
   setCurrentFeeds,
 }: {
-  feed: AppBskyActorDefs.SavedFeed
-  currentFeeds: AppBskyActorDefs.SavedFeed[]
+  feed: app.bsky.actor.defs.SavedFeed
+  currentFeeds: app.bsky.actor.defs.SavedFeed[]
   setCurrentFeeds: React.Dispatch<
-    React.SetStateAction<AppBskyActorDefs.SavedFeed[]>
+    React.SetStateAction<app.bsky.actor.defs.SavedFeed[]>
   >
 }) {
   const {_} = useLingui()
@@ -625,7 +626,7 @@ function FollowingFeedCard() {
               height: 22,
             },
           ]}
-          fill={t.palette.white}
+          fill={accentForeground(t, t.palette.primary_500)}
         />
       </View>
       <View style={[a.flex_1, a.flex_row, a.gap_sm, a.align_center]}>

@@ -1,7 +1,4 @@
-import {
-  type AppBskyRichtextFacet,
-  type AtpAgent as AtpAgentType,
-} from '@atproto/api'
+import {type AtpAgent as AtpAgentType} from '@atproto/api'
 import {xrpc} from '@atproto/lex'
 import {
   base64url,
@@ -21,6 +18,7 @@ import {
   putPrivateRecord,
 } from '#/lib/spaces/lexicons'
 import {pdsAgent} from '#/state/session/agent'
+import {type app} from '#/lexicons'
 
 export const PRIVATE_POSTS_MOD_STATUS_METHOD =
   'party.tenna.private.getModStatus'
@@ -42,7 +40,7 @@ export type PrivatePostsState = Record<string, unknown>
 
 export type PrivatePost = {
   createdAt?: string
-  descriptionFacets?: AppBskyRichtextFacet.Main[]
+  descriptionFacets?: app.bsky.richtext.facet.Main[]
   error?: string
   text?: string
 }
@@ -281,7 +279,7 @@ export async function createPrivatePost({
   agent: AtpAgentType
   rkey: string
   text: string
-  facets?: AppBskyRichtextFacet.Main[]
+  facets?: app.bsky.richtext.facet.Main[]
   createdAt?: string
 }): Promise<{uri: string; cid: string}> {
   const directAgent = pdsAgent(agent)
@@ -308,13 +306,13 @@ export async function createPrivatePost({
   }
   if (spaces.body.spaces.some(spaceView => spaceView.uri === space)) {
     return (
-      await xrpc(xrpcAgent, putPrivateRecord, {params: {}, body: body as never})
+      await xrpc(xrpcAgent, putPrivateRecord, {params: {}, body: body})
     ).body
   }
   return (
     await xrpc(xrpcAgent, createPrivateRecord, {
       params: {},
-      body: body as never,
+      body: body,
     })
   ).body
 }

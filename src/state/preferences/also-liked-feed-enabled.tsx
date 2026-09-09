@@ -25,7 +25,7 @@ export function Provider({children}: {children: ReactNode}) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['alsoLikedFeedEnabled']) => {
       setState(Boolean(value))
-      persisted.write('alsoLikedFeedEnabled', value)
+      void persisted.write('alsoLikedFeedEnabled', value)
     },
     [setState],
   )

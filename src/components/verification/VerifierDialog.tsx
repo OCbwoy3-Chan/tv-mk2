@@ -6,9 +6,12 @@ import {Trans} from '@lingui/react/macro'
 
 import {urls} from '#/lib/constants'
 import {getUserDisplayName} from '#/lib/getUserDisplayName'
-import {useDeerVerificationEnabled} from '#/state/preferences/deer-verification'
+import {
+  useDeerVerification,
+  useDeerVerificationEnabled,
+} from '#/state/preferences/deer-verification'
 import {useSession} from '#/state/session'
-import {atoms as a, useBreakpoints, useTheme} from '#/alf'
+import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {VerifierCheck} from '#/components/icons/VerifierCheck'
@@ -17,6 +20,7 @@ import {Text} from '#/components/Typography'
 import {type FullVerificationState} from '#/components/verification'
 import {useAnalytics} from '#/analytics'
 import type * as bsky from '#/types/bsky'
+import {verifierColor} from './verifier-color'
 
 export {useDialogControl} from '#/components/Dialog'
 
@@ -51,6 +55,7 @@ function Inner({
   verificationState: FullVerificationState
 }) {
   const t = useTheme()
+  const {perVerifierBadges} = useDeerVerification()
   const ax = useAnalytics()
   const {_} = useLingui()
   const {gtMobile} = useBreakpoints()
@@ -68,7 +73,8 @@ function Inner({
     <Dialog.ScrollableInner
       label={label}
       style={[
-        gtMobile ? {width: 'auto', maxWidth: 400, minWidth: 200} : a.w_full,
+        a.w_full,
+        gtMobile && web({width: 'auto', maxWidth: 400, minWidth: 200}),
       ]}>
       <View style={[a.gap_lg]}>
         {!deerVerificationEnabled && (
@@ -91,7 +97,7 @@ function Inner({
               alt={_(
                 msg`An illustration showing that Bluesky selects trusted verifiers, and trusted verifiers in turn verify individual user accounts.`,
               )}
-            useAppleWebpCodec
+              useAppleWebpCodec
             />
           </View>
         )}
@@ -103,9 +109,16 @@ function Inner({
           </Text>
           <Text style={[a.text_md, a.leading_snug]}>
             <Trans>
-              Accounts with a scalloped blue check mark{' '}
+              Accounts with a scalloped check mark{' '}
               <RNText>
-                <VerifierCheck width={14} />
+                <VerifierCheck
+                  width={14}
+                  fill={
+                    perVerifierBadges
+                      ? verifierColor(profile.did, t)
+                      : t.palette.primary_500
+                  }
+                />
               </RNText>{' '}
               can verify others. These trusted verifiers are selected by{' '}
               {deerVerificationEnabled ? 'you' : 'Bluesky'}.

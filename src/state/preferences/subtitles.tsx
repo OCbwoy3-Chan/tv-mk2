@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (subtitlesEnabled: persisted.Schema['subtitlesEnabled']) => {
       setState(Boolean(subtitlesEnabled))
-      persisted.write('subtitlesEnabled', subtitlesEnabled)
+      void persisted.write('subtitlesEnabled', subtitlesEnabled)
     },
     [setState],
   )

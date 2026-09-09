@@ -30,7 +30,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['disableVerifyEmailReminder']) => {
       setState(value)
-      persisted.write('disableVerifyEmailReminder', value)
+      void persisted.write('disableVerifyEmailReminder', value)
     },
     [setState],
   )

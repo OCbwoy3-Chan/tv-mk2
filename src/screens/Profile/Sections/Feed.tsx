@@ -66,7 +66,7 @@ export function ProfileFeedSection({
       animated: IS_NATIVE,
       offset: -headerHeight,
     })
-    truncateAndInvalidate(queryClient, FEED_RQKEY(feed))
+    void truncateAndInvalidate(queryClient, FEED_RQKEY(feed))
     setHasNew(false)
   }, [scrollElRef, headerHeight, queryClient, feed, setHasNew])
 

@@ -4,19 +4,20 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
-import {useAgent, useSession} from '#/state/session'
-import {pdsAgent} from '#/state/session/agent'
-import {atoms as a, useBreakpoints, useTheme} from '#/alf'
+import {usePdsClient, useSession} from '#/state/session'
+import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {type DialogControlProps} from '#/components/Dialog'
 import {useConfirmEmail} from '#/components/dialogs/EmailDialog/data/useConfirmEmail'
+import {OAuthPermissionGate} from '#/components/dialogs/OAuthPermissionGate'
 import {Divider} from '#/components/Divider'
 import {ArrowRotateCounterClockwise_Stroke2_Corner0_Rounded as Resend} from '#/components/icons/ArrowRotate'
 import {useIntentDialogs} from '#/components/intents/IntentDialogs'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {IS_NATIVE} from '#/env'
+import {com} from '#/lexicons'
 
 export function VerifyEmailIntentDialog() {
   const {verifyEmailDialogControl: control} = useIntentDialogs()
@@ -24,7 +25,9 @@ export function VerifyEmailIntentDialog() {
   return (
     <Dialog.Outer control={control}>
       <Dialog.Handle />
-      <Inner control={control} />
+      <OAuthPermissionGate permission="email" standalone>
+        <Inner control={control} />
+      </OAuthPermissionGate>
     </Dialog.Outer>
   )
 }
@@ -38,7 +41,7 @@ function Inner({}: {control: DialogControlProps}) {
     'loading' | 'success' | 'failure' | 'resent'
   >('loading')
   const [sending, setSending] = useState(false)
-  const agent = useAgent()
+  const client = usePdsClient()
   const {currentAccount} = useSession()
   const {mutate: confirmEmail} = useConfirmEmail({
     onSuccess: () => setStatus('success'),
@@ -53,7 +56,7 @@ function Inner({}: {control: DialogControlProps}) {
 
   const onPressResendEmail = async () => {
     setSending(true)
-    await pdsAgent(agent).com.atproto.server.requestEmailConfirmation()
+    await client.call(com.atproto.server.requestEmailConfirmation)
     setSending(false)
     setStatus('resent')
   }
@@ -62,7 +65,8 @@ function Inner({}: {control: DialogControlProps}) {
     <Dialog.ScrollableInner
       label={_(msg`Verify email dialog`)}
       style={[
-        gtMobile ? {width: 'auto', maxWidth: 400, minWidth: 200} : a.w_full,
+        a.w_full,
+        gtMobile && web({width: 'auto', maxWidth: 400, minWidth: 200}),
       ]}>
       <View style={[a.gap_xl]}>
         {status === 'loading' ? (

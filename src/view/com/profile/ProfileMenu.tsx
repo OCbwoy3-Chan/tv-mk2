@@ -1,6 +1,6 @@
-import {memo, useCallback, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useMemo} from 'react'
+import {useRef, useState} from 'react'
 import * as ExpoClipboard from 'expo-clipboard'
-import {type AppBskyActorDefs} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
@@ -23,9 +23,7 @@ import {
   useSetDeerVerificationTrust,
 } from '#/state/preferences/deer-verification'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {useShowClearskyProfileLink} from '#/state/preferences/show-clearsky-profile-link'
 import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
-import {Nux, useNux, useSaveNux} from '#/state/queries/nuxs'
 import {
   RQKEY as profileQueryKey,
   useProfileBlockMutationQueue,
@@ -35,7 +33,6 @@ import {
 } from '#/state/queries/profile'
 import {useSession} from '#/state/session'
 import {EventStopper} from '#/view/com/util/EventStopper'
-import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
 import {useDialogControl} from '#/components/Dialog'
 import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
@@ -64,10 +61,10 @@ import {
   RepostStrike_Stroke2_Corner0_Rounded as RepostStrikeIcon,
 } from '#/components/icons/Repost'
 import {BlueskyIcon} from '#/components/icons/services/Bluesky'
-import {ClearskyIcon} from '#/components/icons/services/Clearsky'
 import {PDSlsIcon} from '#/components/icons/services/PDSls'
+import {SkyTraceIcon} from '#/components/icons/services/SkyTrace'
 import {SpeakerVolumeFull_Stroke2_Corner0_Rounded as UnmuteIcon} from '#/components/icons/Speaker'
-import {StarterPack as StarterPackIcon} from '#/components/icons/StarterPack'
+import {StarterPack_Stroke2_Corner0_Rounded as StarterPackIcon} from '#/components/icons/StarterPack'
 import * as Menu from '#/components/Menu'
 import {CheckboxItemText} from '#/components/Menu/CheckboxItem'
 import {BlockDialog} from '#/components/moderation/BlockDialog'
@@ -86,16 +83,14 @@ import {useActorStatus, useLiveNowConfig} from '#/features/liveNow'
 import {EditLiveDialog} from '#/features/liveNow/components/EditLiveDialog'
 import {GoLiveDialog} from '#/features/liveNow/components/GoLiveDialog'
 import {GoLiveDisabledDialog} from '#/features/liveNow/components/GoLiveDisabledDialog'
-import {Dot} from '#/features/nuxs/components/Dot'
-import {Gradient} from '#/features/nuxs/components/Gradient'
+import {type app} from '#/lexicons'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 
 let ProfileMenu = ({
   profile,
 }: {
-  profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
+  profile: Shadow<app.bsky.actor.defs.ProfileViewDetailed>
 }): React.ReactNode => {
-  const t = useTheme()
   const ax = useAnalytics()
   const {t: l} = useLingui()
   const {currentAccount, hasSession} = useSession()
@@ -116,13 +111,6 @@ let ProfileMenu = ({
   })
   const {canGoLive} = useLiveNowConfig()
   const status = useActorStatus(profile)
-  const statusNudge = useNux(Nux.LiveNowBetaNudge)
-  const statusNudgeActive =
-    isSelf &&
-    canGoLive &&
-    statusNudge.status === 'ready' &&
-    !statusNudge.nux?.completed
-  const {mutate: saveNux} = useSaveNux()
 
   const deerVerificationEnabled = useDeerVerificationEnabled()
   const deerVerificationTrusted = useDeerVerificationTrusted().has(profile.did)
@@ -146,7 +134,6 @@ let ProfileMenu = ({
   const pendingShareAction = useRef<() => void>(() => {})
 
   const atprotoExplorer = useAtprotoExplorer()
-  const showClearskyProfileLink = useShowClearskyProfileLink()
   const openLink = useOpenLink()
 
   const atprotoExplorerRepositoryUrl = toAtprotoExplorerUrl(
@@ -363,12 +350,7 @@ let ProfileMenu = ({
   }, [l, ax, queueUnfollow])
 
   const onPressFollowAccount = useCallback(() => {
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('follow')
-      followPromptControl.open()
-    } else {
-      void executeFollow()
-    }
+    void executeFollow()
   }, [confirmFollowUnfollow, executeFollow, followPromptControl])
 
   const onPressUnfollowAccount = useCallback(() => {
@@ -418,8 +400,8 @@ let ProfileMenu = ({
     openLink(toAtprotoExplorerUrl(atprotoExplorer, `at://${profile.did}`), true)
   }
 
-  const onOpenProfileInClearsky = () => {
-    openLink(`https://clearsky.app/${profile.did}/profile`, true)
+  const onOpenProfileInSkyTrace = () => {
+    openLink(`https://skytrace.aly.town/profile/${profile.did}`, true)
   }
 
   const verificationCreatePromptControl = Prompt.usePromptControl()
@@ -429,38 +411,26 @@ let ProfileMenu = ({
       return v.issuer === currentAccount?.did
     }) ?? []
 
-  const enableSquareButtons = useEnableSquareButtons()
-
   return (
     <EventStopper onKeyDown={false}>
       <Menu.Root>
         <Menu.Trigger label={l`More options`}>
           {({props}) => {
             return (
-              <>
-                <Button
-                  {...props}
-                  testID="profileHeaderDropdownBtn"
-                  label={l`More options`}
-                  // hitSlop reaches outside parent views on iOS, so the
-                  // left inset must stay within half of the 4pt row gap or
-                  // it steals taps from the adjacent header button
-                  hitSlop={{top: 6, bottom: 6, left: 2, right: 12}}
-                  variant="solid"
-                  color="secondary"
-                  size="small"
-                  shape={enableSquareButtons ? 'square' : 'round'}>
-                  {statusNudgeActive && (
-                    <Gradient
-                      style={[
-                        enableSquareButtons ? a.rounded_sm : a.rounded_full,
-                      ]}
-                    />
-                  )}
-                  <ButtonIcon icon={EllipsisIcon} size="sm" />
-                </Button>
-                {statusNudgeActive && <Dot top={1} right={1} />}
-              </>
+              <Button
+                {...props}
+                testID="profileHeaderDropdownBtn"
+                label={l`More options`}
+                // hitSlop reaches outside parent views on iOS, so the
+                // left inset must stay within half of the 4pt row gap or
+                // it steals taps from the adjacent header button
+                hitSlop={{top: 6, bottom: 6, left: 2, right: 12}}
+                variant="solid"
+                color="secondary"
+                size="small"
+                shape="round">
+                <ButtonIcon icon={EllipsisIcon} size="sm" />
+              </Button>
             )
           }}
         </Menu.Trigger>
@@ -609,17 +579,15 @@ let ProfileMenu = ({
                     position="right"
                   />
                 </Menu.Item>
-                {showClearskyProfileLink && (
-                  <Menu.Item
-                    testID="profileDropdownOpenInClearsky"
-                    label={l`Clearsky`}
-                    onPress={onOpenProfileInClearsky}>
-                    <Menu.ItemText>
-                      <Trans>Clearsky</Trans>
-                    </Menu.ItemText>
-                    <Menu.ItemIcon icon={ClearskyIcon} position="right" />
-                  </Menu.Item>
-                )}
+                <Menu.Item
+                  testID="profileDropdownOpenInSkyTrace"
+                  label={l`SkyTrace`}
+                  onPress={onOpenProfileInSkyTrace}>
+                  <Menu.ItemText>
+                    <Trans>SkyTrace</Trans>
+                  </Menu.ItemText>
+                  <Menu.ItemIcon icon={SkyTraceIcon} position="right" />
+                </Menu.Item>
               </Menu.Group>
             </Menu.Submenu>
             <Menu.Item
@@ -674,10 +642,10 @@ let ProfileMenu = ({
                 )}
                 <Menu.Item
                   testID="profileHeaderDropdownStarterPackAddRemoveBtn"
-                  label={l`Add to starter packs`}
+                  label={l`Add to Starter Packs`}
                   onPress={onPressAddToStarterPacks}>
                   <Menu.ItemText>
-                    <Trans>Add to starter packs</Trans>
+                    <Trans>Add to Starter Packs</Trans>
                   </Menu.ItemText>
                   <Menu.ItemIcon icon={StarterPackIcon} />
                 </Menu.Item>
@@ -731,13 +699,7 @@ let ProfileMenu = ({
                       } else {
                         goLiveDialogControl.open()
                       }
-                      saveNux({
-                        id: Nux.LiveNowBetaNudge,
-                        data: undefined,
-                        completed: true,
-                      })
                     }}>
-                    {statusNudgeActive && <Gradient />}
                     <Menu.ItemText>
                       {status.isDisabled ? (
                         <Trans>Go live (disabled)</Trans>
@@ -747,26 +709,7 @@ let ProfileMenu = ({
                         <Trans>Go live</Trans>
                       )}
                     </Menu.ItemText>
-                    {statusNudgeActive && (
-                      <Menu.ItemText
-                        style={[
-                          a.flex_0,
-                          {
-                            color: t.palette.primary_500,
-                            right: IS_WEB ? -8 : -4,
-                          },
-                        ]}>
-                        <Trans>New</Trans>
-                      </Menu.ItemText>
-                    )}
-                    <Menu.ItemIcon
-                      icon={LiveIcon}
-                      fill={
-                        statusNudgeActive
-                          ? () => t.palette.primary_500
-                          : undefined
-                      }
-                    />
+                    <Menu.ItemIcon icon={LiveIcon} />
                   </Menu.Item>
                 )}
                 {verification.viewer.role === 'verifier' &&

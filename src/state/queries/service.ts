@@ -1,7 +1,7 @@
-import {type ComAtprotoServerDescribeServer} from '@atproto/api'
 import {useQuery} from '@tanstack/react-query'
 
-import {STALE} from '#/state/queries'
+import {createServiceClient} from '#/lib/lexClient'
+import {com} from '#/lexicons'
 
 const RQKEY_ROOT = 'service-describe'
 export const RQKEY = (serviceUrl: string) => [RQKEY_ROOT, serviceUrl]
@@ -12,21 +12,13 @@ export function useServiceQuery(
 ) {
   return useQuery({
     queryKey: RQKEY(serviceUrl),
-    staleTime: STALE.HOURS.ONE,
-    queryFn: async ({signal}) => {
-      const base = serviceUrl.replace(/\/+$/, '')
-      const res = await fetch(
-        `${base}/xrpc/com.atproto.server.describeServer`,
-        {
-          signal,
-          credentials: 'omit',
-          headers: {accept: 'application/json'},
-        },
-      )
-      if (!res.ok) {
-        throw new Error(`describeServer failed with HTTP ${res.status}`)
-      }
-      return (await res.json()) as ComAtprotoServerDescribeServer.OutputSchema
+    queryFn: async () => {
+      /*
+       * The host is whatever the user typed or picked, so this describes it
+       * through a one-off service client rather than a session-scoped one.
+       */
+      const client = createServiceClient(serviceUrl)
+      return await client.call(com.atproto.server.describeServer)
     },
     enabled: isValidUrl(serviceUrl) && (opts?.enabled ?? true),
   })

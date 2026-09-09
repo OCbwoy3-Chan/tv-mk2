@@ -1,4 +1,4 @@
-import type {AtpAgent} from '@atproto/api'
+import  {type AtpAgent} from '@atproto/api'
 import {xrpc} from '@atproto/lex'
 
 import {pdsAgent} from '#/state/session/agent'

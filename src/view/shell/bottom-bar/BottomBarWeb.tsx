@@ -22,6 +22,7 @@ import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {convertBskyAppUrlIfNeeded} from '#/lib/strings/url-helpers'
 import {userStyle} from '#/lib/userstyles'
 import {emitSoftReset} from '#/state/events'
+import {badgeText, useBadgePreference} from '#/state/preferences/badge-text'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {
   useChatsTabBadgeDisplay,
@@ -35,7 +36,7 @@ import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useShellLayout} from '#/state/shell/shell-layout'
 import {useCloseAllActiveElements} from '#/state/util'
 import {Link} from '#/view/com/util/Link'
-import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {getSquareAvatarRadius, UserAvatar} from '#/view/com/util/UserAvatar'
 import {Logo} from '#/view/icons/Logo'
 import {Logotype} from '#/view/icons/Logotype'
 import {atoms as a, useTheme} from '#/alf'
@@ -62,6 +63,7 @@ import {Text} from '#/components/Typography'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB_TOUCH_DEVICE} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {router} from '#/routes'
 import {styles} from './BottomBarStyles'
 
@@ -84,8 +86,16 @@ export function BottomBarWeb() {
 
   const unreadMessageCount = useUnreadMessageCount()
   const notificationCountStr = useUnreadNotifications()
+  const [notificationsCustomText] = useBadgePreference('notificationsBadgeText')
   const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const notificationsText =
+    notificationsTabBadgeDisplay === 'text'
+      ? notificationsCustomText
+      : undefined
+  const [chatsCustomText] = useBadgePreference('chatsBadgeText')
   const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
+  const chatsText =
+    chatsTabBadgeDisplay === 'text' ? chatsCustomText : undefined
   const aa = useAgeAssurance()
   const isLabeler = profile?.associated?.labeler
 
@@ -115,9 +125,7 @@ export function BottomBarWeb() {
           styles.bottomBar,
           styles.bottomBarWeb,
           t.atoms.bg,
-          IS_WEB_TOUCH_DEVICE
-            ? {paddingBottom: Math.max(bottomInset, 15)}
-            : {paddingBottom: bottomInset},
+          {paddingBottom: bottomInset},
           hideBorder
             ? {borderColor: t.atoms.bg.backgroundColor}
             : t.atoms.border_contrast_low,
@@ -158,9 +166,17 @@ export function BottomBarWeb() {
                   href="/messages"
                   navItem="chat"
                   notificationCount={
-                    aa.flags.chatDisabled || chatsTabBadgeDisplay !== 'exact'
+                    aa.flags.chatDisabled ||
+                    (chatsTabBadgeDisplay !== 'exact' &&
+                      chatsTabBadgeDisplay !== 'text')
                       ? undefined
-                      : unreadMessageCount.numUnread
+                      : badgeText(
+                          unreadMessageCount.numUnread ||
+                            (unreadMessageCount.hasNew && chatsText?.trim()
+                              ? '•'
+                              : undefined),
+                          chatsText,
+                        )
                   }
                   hasNew={
                     aa.flags.chatDisabled || chatsTabBadgeDisplay === 'hidden'
@@ -190,8 +206,9 @@ export function BottomBarWeb() {
                   href="/notifications"
                   navItem="notifications"
                   notificationCount={
-                    notificationsTabBadgeDisplay === 'exact'
-                      ? notificationCountStr
+                    notificationsTabBadgeDisplay === 'exact' ||
+                    notificationsTabBadgeDisplay === 'text'
+                      ? badgeText(notificationCountStr, notificationsText)
                       : undefined
                   }
                   hasNew={
@@ -235,8 +252,13 @@ export function BottomBarWeb() {
                               : isLabeler
                                 ? styles.onProfileSquare
                                 : styles.onProfile,
-                            {borderColor: t.atoms.text.color},
+                            {borderColor: t.atoms.text.color, borderWidth: 2},
                           ],
+                          (enableSquareAvatars || isLabeler) && {
+                            borderRadius:
+                              getSquareAvatarRadius(iconWidth - 3) +
+                              (isActive ? 2 : 1),
+                          },
                         ]}>
                         <UserAvatar
                           avatar={profile?.avatar}
@@ -325,7 +347,6 @@ const NavItem: React.FC<{
   const t = useTheme()
   const {_} = useLingui()
   const ax = useAnalytics()
-  const {bottom: bottomInset} = useSafeAreaInsets()
   const {currentAccount} = useSession()
   const currentRoute = useNavigationState(state => {
     if (!state) {
@@ -338,21 +359,21 @@ const NavItem: React.FC<{
     ax.metric('nav:click', {item: navItem, surface: 'bottomBar'})
   }, [ax, navItem])
 
-  // Checks whether we're on someone else's profile
+  const profileName =
+    currentRoute.name === 'Profile'
+      ? (currentRoute.params as CommonNavigatorParams['Profile']).name
+      : undefined
+  const isOwnProfile =
+    profileName !== undefined &&
+    (profileName === currentAccount?.did ||
+      profileName === currentAccount?.handle)
+
   const isOnDifferentProfile =
-    currentRoute.name === 'Profile' &&
-    routeName === 'Profile' &&
-    (currentRoute.params as CommonNavigatorParams['Profile']).name !==
-      currentAccount?.handle
+    currentRoute.name === 'Profile' && routeName === 'Profile' && !isOwnProfile
 
   const isActive =
-    currentRoute.name === 'Profile'
-      ? isTab(currentRoute.name, routeName) &&
-        (currentRoute.params as CommonNavigatorParams['Profile']).name ===
-          (routeName === 'Profile'
-            ? currentAccount?.handle
-            : (currentRoute.params as CommonNavigatorParams['Profile']).name)
-      : isTab(currentRoute.name, routeName)
+    isTab(currentRoute.name, routeName) &&
+    (routeName !== 'Profile' || isOwnProfile)
 
   if (IS_WEB_TOUCH_DEVICE) {
     return (
@@ -373,11 +394,7 @@ const NavItem: React.FC<{
   return (
     <Link
       href={href}
-      style={[
-        styles.ctrl,
-        bottomInset === 0 && a.pb_lg,
-        userStyle('wsky-nav__item'),
-      ]}
+      style={[styles.ctrl, {paddingBottom: 13}, userStyle('wsky-nav__item')]}
       navigationAction={isOnDifferentProfile ? 'push' : 'navigate'}
       dataSet={{
         wskyActive: isActive ? 'true' : 'false',
@@ -402,7 +419,13 @@ const NavItem: React.FC<{
               other: '# unread items',
             })}`,
           )}>
-          <Text style={styles.notificationCountLabel}>{notificationCount}</Text>
+          <Text
+            style={[
+              styles.notificationCountLabel,
+              {color: accentForeground(t, t.palette.primary_500)},
+            ]}>
+            {notificationCount}
+          </Text>
         </View>
       ) : hasNew ? (
         <View
@@ -436,7 +459,6 @@ function TouchNavItem({
 }) {
   const t = useTheme()
   const {_} = useLingui()
-  const {bottom: bottomInset} = useSafeAreaInsets()
   const navigation = useNavigationDeduped()
   const closeAllActiveElements = useCloseAllActiveElements()
 
@@ -494,7 +516,7 @@ function TouchNavItem({
       style={[
         userStyle('wsky-nav__item'),
         styles.ctrl,
-        bottomInset === 0 && a.pb_lg,
+        {paddingBottom: 13},
         {
           transition: `transform ${ANIM_MS}ms`,
           transform: [{scale: pressed ? 0.8 : 1}],
@@ -527,7 +549,13 @@ function TouchNavItem({
               other: '# unread items',
             })}`,
           )}>
-          <Text style={styles.notificationCountLabel}>{notificationCount}</Text>
+          <Text
+            style={[
+              styles.notificationCountLabel,
+              {color: accentForeground(t, t.palette.primary_500)},
+            ]}>
+            {notificationCount}
+          </Text>
         </View>
       ) : hasNew ? (
         <View

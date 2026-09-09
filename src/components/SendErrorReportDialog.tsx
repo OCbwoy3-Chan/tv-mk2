@@ -36,7 +36,7 @@ function SendErrorReportDialogInner() {
 
   const {mutate: onSubmit, isPending} = useMutation({
     mutationFn: async () => {
-      sendErrorReport({
+      await sendErrorReport({
         title,
         description,
         handle: currentAccount?.handle ?? '',

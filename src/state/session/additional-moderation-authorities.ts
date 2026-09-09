@@ -1,6 +1,6 @@
-import {AtpAgent} from '@atproto/api'
+import {Client} from '@atproto/lex'
 
-import {device} from '#/storage'
+import {getIgnoredAppLabelers} from '#/state/preferences/ignored-app-labelers'
 
 export const BR_LABELER = 'did:plc:ekitcvx7uwnauoqy5oest3hm' // Brazil
 export const DE_LABELER = 'did:plc:r55ow3tocux5kafs5dq445fy' // Germany
@@ -64,27 +64,34 @@ const MODERATION_AUTHORITIES_DIDS = Array.from(
   new Set(Object.values(MODERATION_AUTHORITIES).flat()),
 )
 
-export function isNonConfigurableModerationAuthority(did: string) {
-  return MODERATION_AUTHORITIES_DIDS.includes(did)
+export function isNonConfigurableModerationAuthority(_did: string) {
+  return false
 }
 
 export function configureAdditionalModerationAuthorities() {
-  const geolocation = device.get(['mergedGeolocation'])
-  // default to all
-  let additionalLabelers: string[] = MODERATION_AUTHORITIES_DIDS
-
-  if (geolocation?.countryCode) {
-    // overwrite with only those necessary
-    additionalLabelers = MODERATION_AUTHORITIES[geolocation.countryCode] ?? []
-  }
-
-  if (__DEV__) {
-    additionalLabelers = []
-  }
-
-  const appLabelers = Array.from(
-    new Set([...AtpAgent.appLabelers, ...additionalLabelers]),
+  // Regional authorities are not automatically installed by this client.
+  // Remove previously installed entries as well as avoiding new additions.
+  configureGlobalAppLabelers(
+    Client.appLabelers.filter(
+      did => !MODERATION_AUTHORITIES_DIDS.includes(did),
+    ),
   )
+}
 
-  AtpAgent.configure({appLabelers})
+/**
+ * Set the global app labelers on the lex `Client` static, which every client
+ * reads, so a request carries the same `;redact` authorities whether or not
+ * there is a session behind it.
+ *
+ * It is a single global producer by design. The PDS client opts out with
+ * `appLabelers: null` (see `clients.ts`) because that service takes no
+ * moderation authorities. Appview and chat requests each carry one copy from
+ * their respective clients.
+ */
+export function configureGlobalAppLabelers(dids: string[]) {
+  Client.configure({
+    appLabelers: dids.filter(
+      did => !getIgnoredAppLabelers().includes(did),
+    ) as `did:${string}:${string}`[],
+  })
 }

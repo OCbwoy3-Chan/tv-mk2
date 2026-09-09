@@ -7,7 +7,6 @@ import {
   useState,
 } from 'react'
 import {View} from 'react-native'
-import {type AppBskyEmbedVideo} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -25,6 +24,7 @@ import {
 } from '#/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerWeb'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB_FIREFOX} from '#/env'
+import {type app} from '#/lexicons'
 import {useActiveVideoWeb} from './ActiveVideoWebContext'
 import {useVideoDownload} from './useVideoDownload'
 import * as VideoFallback from './VideoEmbedInner/VideoFallback'
@@ -34,13 +34,13 @@ const MIN_CARD_WIDTH = 280
 
 export function VideoEmbed({
   embed,
-  did,
+  post,
 }: {
-  embed: AppBskyEmbedVideo.View
-  did?: string
+  embed: app.bsky.embed.video.View
+  post?: app.bsky.feed.defs.PostView
 }) {
   const t = useTheme()
-  const onDownload = useVideoDownload({did, cid: embed.cid})
+  const onDownload = useVideoDownload({did: post?.author.did, cid: embed.cid})
   const ref = useRef<HTMLDivElement>(null)
   const {
     active: activeFromContext,
@@ -49,12 +49,27 @@ export function VideoEmbed({
     currentActiveView,
   } = useActiveVideoWeb()
   const [onScreen, setOnScreen] = useState(false)
+  const [meaningfullyVisible, setMeaningfullyVisible] = useState(false)
   const [isFullscreen] = useFullscreen()
   const lastKnownTime = useRef<number | undefined>(undefined)
+  const impressionTrackedRef = useRef(false)
+  const playbackStartTrackedRef = useRef(false)
+  const ax = useAnalytics()
 
   const isGif = embed.presentation === 'gif'
   // GIFs don't participate in the "one video at a time" system
   const active = isGif || activeFromContext
+
+  useEffect(() => {
+    if (!meaningfullyVisible || impressionTrackedRef.current) return
+    impressionTrackedRef.current = true
+    ax.metric('video:impression', {
+      postUri: post?.uri,
+      postAuthorDid: post?.author.did,
+      context: 'embed',
+      presentation: isGif ? 'gif' : 'video',
+    })
+  }, [ax, isGif, meaningfullyVisible, post?.author.did, post?.uri])
 
   useEffect(() => {
     if (!ref.current) return
@@ -64,6 +79,9 @@ export function VideoEmbed({
         const entry = entries[0]
         if (!entry) return
         setOnScreen(entry.isIntersecting)
+        setMeaningfullyVisible(
+          entry.isIntersecting && entry.intersectionRatio >= 0.5,
+        )
         // GIFs don't send position - they don't compete to be the active video
         if (!isGif) {
           sendPosition(
@@ -182,6 +200,17 @@ export function VideoEmbed({
             setActive={setActive}
             onScreen={onScreen}
             lastKnownTime={lastKnownTime}
+            onPlaybackStart={autoplay => {
+              if (playbackStartTrackedRef.current) return
+              playbackStartTrackedRef.current = true
+              ax.metric('video:playback:start', {
+                postUri: post?.uri,
+                postAuthorDid: post?.author.did,
+                context: 'embed',
+                presentation: isGif ? 'gif' : 'video',
+                autoplay,
+              })
+            }}
           />
         </OnlyNearScreen>
       </ErrorBoundary>
@@ -300,7 +329,7 @@ function VideoError({
   error,
   retry,
 }: {
-  embed: AppBskyEmbedVideo.View
+  embed: app.bsky.embed.video.View
   error: unknown
   retry: () => void
 }) {

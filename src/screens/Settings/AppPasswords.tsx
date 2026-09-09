@@ -1,4 +1,4 @@
-import {useCallback} from 'react'
+import {useCallback, useEffect} from 'react'
 import {View} from 'react-native'
 import Animated, {
   FadeIn,
@@ -6,7 +6,6 @@ import Animated, {
   LayoutAnimationConfig,
   LinearTransition,
 } from 'react-native-reanimated'
-import {type ComAtprotoServerListAppPasswords} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -14,16 +13,20 @@ import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {cleanError} from '#/lib/strings/errors'
+import {formatDateWithSystemTime} from '#/lib/strings/systemTime'
 import {
   useAppPasswordDeleteMutation,
   useAppPasswordsQuery,
 } from '#/state/queries/app-passwords'
+import {useSession} from '#/state/session'
 import {EmptyState} from '#/view/com/util/EmptyState'
 import {ErrorScreen} from '#/view/com/util/error/ErrorScreen'
 import {atoms as a, useTheme} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import * as Dialog from '#/components/Dialog'
 import {useDialogControl} from '#/components/Dialog'
+import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
 import {Growth_Stroke2_Corner0_Rounded as Growth} from '#/components/icons/Growth'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {Trash_Stroke2_Corner0_Rounded as TrashIcon} from '#/components/icons/Trash'
@@ -33,14 +36,21 @@ import {Loader} from '#/components/Loader'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
+import {type com} from '#/lexicons'
 import {AddAppPasswordDialog} from './components/AddAppPasswordDialog'
 import * as SettingsList from './components/SettingsList'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AppPasswords'>
 export function AppPasswordsScreen({}: Props) {
   const {_} = useLingui()
-  const {data: appPasswords, error} = useAppPasswordsQuery()
+  const {currentAccount} = useSession()
+  const isOauth = !!currentAccount?.isOauthSession
+  const legacyAuthControl = useDialogControl()
+  const {data: appPasswords, error} = useAppPasswordsQuery({enabled: !isOauth})
   const createAppPasswordControl = useDialogControl()
+  useEffect(() => {
+    if (!isOauth) legacyAuthControl.close()
+  }, [isOauth, legacyAuthControl])
 
   return (
     <Layout.Screen testID="AppPasswordsScreen">
@@ -54,7 +64,17 @@ export function AppPasswordsScreen({}: Props) {
         <Layout.Header.Slot />
       </Layout.Header.Outer>
       <Layout.Content>
-        {error ? (
+        {isOauth ? (
+          <Button
+            label={_(msg`Sign in to manage app passwords`)}
+            size="large"
+            color="primary"
+            onPress={() => legacyAuthControl.open()}>
+            <ButtonText>
+              <Trans>Sign in to manage app passwords</Trans>
+            </ButtonText>
+          </Button>
+        ) : error ? (
           <ErrorScreen
             title={_(msg`Oops!`)}
             message={_(msg`There was an issue fetching your app passwords`)}
@@ -124,6 +144,9 @@ export function AppPasswordsScreen({}: Props) {
         )}
       </Layout.Content>
 
+      <Dialog.Outer control={legacyAuthControl}>
+        <LegacyAuthRequiredDialogContent />
+      </Dialog.Outer>
       <AddAppPasswordDialog
         control={createAppPasswordControl}
         passwords={appPasswords?.map(p => p.name) || []}
@@ -135,7 +158,7 @@ export function AppPasswordsScreen({}: Props) {
 function AppPasswordCard({
   appPassword,
 }: {
-  appPassword: ComAtprotoServerListAppPasswords.AppPassword
+  appPassword: com.atproto.server.listAppPasswords.AppPassword
 }) {
   const t = useTheme()
   const {i18n, _} = useLingui()
@@ -173,7 +196,7 @@ function AppPasswordCard({
           <Text style={[t.atoms.text_contrast_medium]}>
             <Trans>
               Created{' '}
-              {i18n.date(appPassword.createdAt, {
+              {formatDateWithSystemTime(i18n, appPassword.createdAt, {
                 year: 'numeric',
                 month: 'numeric',
                 day: 'numeric',

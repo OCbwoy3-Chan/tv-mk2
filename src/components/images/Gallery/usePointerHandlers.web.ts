@@ -1,5 +1,4 @@
 import {useEffect} from 'react'
-import {type FlatList, type ScrollView} from 'react-native'
 
 import {ITEM_GAP} from '#/components/images/Gallery/const'
 import {tween} from '#/components/images/Gallery/tween'
@@ -50,7 +49,9 @@ export function usePointerHandlers({
   imageCount,
   allowButtonDrag = false,
 }: {
-  flatListRef: React.RefObject<FlatList | ScrollView | null>
+  flatListRef: React.RefObject<{
+    getScrollableNode: () => unknown
+  } | null>
   itemWidthsRef: React.RefObject<Map<number, number>>
   currentIndexRef: React.RefObject<number>
   scrollTo: (offset: number) => void
@@ -61,8 +62,7 @@ export function usePointerHandlers({
   useEffect(() => {
     if (imageCount <= 1) return
 
-    const el =
-      flatListRef.current?.getScrollableNode() as unknown as HTMLElement | null
+    const el = flatListRef.current?.getScrollableNode() as HTMLElement | null
     if (!el) return
 
     let isDragging = false

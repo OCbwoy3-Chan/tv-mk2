@@ -1,14 +1,14 @@
 import {useMutation} from '@tanstack/react-query'
 
-import {useAgent} from '#/state/session'
-import {pdsAgent} from '#/state/session/agent'
+import {usePdsClient} from '#/state/session'
+import {com} from '#/lexicons'
 
 export function useRequestEmailVerification() {
-  const agent = useAgent()
+  const client = usePdsClient()
 
   return useMutation({
     mutationFn: async () => {
-      await pdsAgent(agent).com.atproto.server.requestEmailConfirmation()
+      await client.call(com.atproto.server.requestEmailConfirmation)
     },
   })
 }

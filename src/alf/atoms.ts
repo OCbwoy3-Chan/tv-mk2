@@ -11,7 +11,7 @@ export const atoms = {
   ...baseAtoms,
 
   h_full_vh: web({
-    height: '100vh',
+    height: '100dvh',
   }),
 
   /**

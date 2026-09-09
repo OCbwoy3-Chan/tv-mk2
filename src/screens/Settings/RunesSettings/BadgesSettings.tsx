@@ -1,7 +1,7 @@
 import {useCallback, useMemo, useState} from 'react'
 import {LayoutAnimation, View} from 'react-native'
 import {useReducedMotion} from 'react-native-reanimated'
-import {type ModerationOpts} from '@atproto/api'
+import {type ModerationOpts} from '@bsky/sdk/moderation'
 import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {usePalette} from '#/lib/hooks/usePalette'
@@ -87,6 +87,19 @@ export function RunesBadgesSettingsScreen() {
           style={[a.w_full]}>
           <Toggle.LabelText style={[a.flex_1]}>
             <Trans>Use own selection of trusted verifiers</Trans>
+          </Toggle.LabelText>
+          <Toggle.Platform />
+        </Toggle.Item>
+        <Toggle.Item
+          name="per_verifier_badges"
+          label={l`Show one badge per verifier`}
+          value={deerVerification.perVerifierBadges ?? false}
+          onChange={value =>
+            setDeerVerification({...deerVerification, perVerifierBadges: value})
+          }
+          style={[a.w_full]}>
+          <Toggle.LabelText style={[a.flex_1]}>
+            <Trans>Show one badge per verifier</Trans>
           </Toggle.LabelText>
           <Toggle.Platform />
         </Toggle.Item>

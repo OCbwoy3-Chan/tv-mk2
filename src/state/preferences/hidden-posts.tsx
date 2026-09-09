@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
@@ -34,7 +34,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
     (fn: SetStateCb) => {
       const s = fn(persisted.get('hiddenPosts'))
       setState(s)
-      persisted.write('hiddenPosts', s)
+      void persisted.write('hiddenPosts', s)
     },
     [setState],
   )

@@ -24,10 +24,9 @@ import {getTabState, TabState} from '#/lib/routes/helpers'
 import {type SharedNavTab, TAB_TO_NAV_ITEM} from '#/lib/routes/tab-to-nav-item'
 import {type NavigationProp} from '#/lib/routes/types'
 import {sanitizeHandle} from '#/lib/strings/handles'
-import {colors} from '#/lib/styles'
 import {emitSoftReset} from '#/state/events'
+import {badgeText, useBadgePreference} from '#/state/preferences/badge-text'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {useKawaiiMode} from '#/state/preferences/kawaii'
 import {
   useFollowersMetricsDisplay,
   useFollowingMetricsDisplay,
@@ -36,7 +35,7 @@ import {
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useProfileQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession} from '#/state/session'
-import {useSetDrawerOpen} from '#/state/shell'
+import {useSetDrawerOpen, useThemePrefs} from '#/state/shell'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {useLogoVariant} from '#/view/icons/useLogoVariant'
 import {NavSignupCard} from '#/view/shell/NavSignupCard'
@@ -80,6 +79,8 @@ import {useAnalytics} from '#/analytics'
 import {IS_NATIVE, IS_WEB} from '#/env'
 import {InviteFriendsDialog} from '#/features/inviteFriends'
 import {useActorStatus} from '#/features/liveNow'
+import {accentForeground} from '#/features/themes/accentForeground'
+import {useActiveThemeUpdate} from '#/features/themes/api'
 
 const iconWidth = 26
 
@@ -343,7 +344,7 @@ let DrawerContent = ({}: React.PropsWithoutRef<{}>): React.ReactNode => {
   }, [navigation, setDrawerOpen, ax])
 
   const onPressFeedback = useCallback(() => {
-    Linking.openURL(
+    void Linking.openURL(
       FEEDBACK_FORM_URL({
         email: currentAccount?.email,
         handle: currentAccount?.handle,
@@ -352,7 +353,7 @@ let DrawerContent = ({}: React.PropsWithoutRef<{}>): React.ReactNode => {
   }, [currentAccount])
 
   const onPressHelp = useCallback(() => {
-    Linking.openURL(HELP_DESK_URL)
+    void Linking.openURL(HELP_DESK_URL)
   }, [])
 
   // rendering
@@ -593,7 +594,12 @@ let NotificationsMenuItem = ({
   const {_} = useLingui()
   const t = useTheme()
   const numUnreadNotifications = useUnreadNotifications()
+  const [notificationsCustomText] = useBadgePreference('notificationsBadgeText')
   const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const notificationsText =
+    notificationsTabBadgeDisplay === 'text'
+      ? notificationsCustomText
+      : undefined
   return (
     <MenuItem
       icon={
@@ -615,8 +621,9 @@ let NotificationsMenuItem = ({
             )
       }
       count={
-        notificationsTabBadgeDisplay === 'exact'
-          ? numUnreadNotifications
+        notificationsTabBadgeDisplay === 'exact' ||
+        notificationsTabBadgeDisplay === 'text'
+          ? badgeText(numUnreadNotifications, notificationsText)
           : undefined
       }
       hasNew={
@@ -724,10 +731,13 @@ ProfileMenuItem = memo(ProfileMenuItem)
 let SettingsMenuItem = ({onPress}: {onPress: () => void}): React.ReactNode => {
   const {_} = useLingui()
   const t = useTheme()
+  const {activeTheme} = useThemePrefs()
+  const themeUpdate = useActiveThemeUpdate(activeTheme)
   return (
     <MenuItem
       icon={<Settings style={[t.atoms.text]} width={iconWidth} />}
       label={_(msg`Settings`)}
+      hasNew={Boolean(themeUpdate)}
       onPress={onPress}
     />
   )
@@ -781,7 +791,7 @@ function MenuItem({icon, label, count, hasNew, bold, onPress}: MenuItemProps) {
                       a.font_semi_bold,
                       {
                         fontVariant: ['tabular-nums'],
-                        color: colors.white,
+                        color: accentForeground(t, t.palette.primary_500),
                       },
                     ]}
                     numberOfLines={1}>

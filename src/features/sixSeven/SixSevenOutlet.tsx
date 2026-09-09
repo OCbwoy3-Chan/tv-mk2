@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react'
 import {StyleSheet, useWindowDimensions, View} from 'react-native'
 
+import {native, web} from '#/alf'
 import {registerSixSevenControls} from '#/features/sixSeven/celebrate'
 import {ConfettiBurst} from '#/features/sixSeven/ConfettiBurst'
-import {native, web} from '#/alf'
 
 export function SixSevenOutlet() {
   const {width, height} = useWindowDimensions()

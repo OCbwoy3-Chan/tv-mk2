@@ -48,7 +48,7 @@ function getConfettiColors(palette: Palette): string[] {
 
 function pickParticleType(): ParticleType {
   const types: ParticleType[] = ['square', 'rectangle', 'circle']
-  return types[Math.floor(Math.random() * types.length)]!
+  return types[Math.floor(Math.random() * types.length)]
 }
 
 function getParticleDimensions(type: ParticleType): {
@@ -94,7 +94,7 @@ function createRandomParticle(
 
   return {
     id,
-    color: colors[Math.floor(Math.random() * colors.length)]!,
+    color: colors[Math.floor(Math.random() * colors.length)],
     type,
     startX,
     startY,

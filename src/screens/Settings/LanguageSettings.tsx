@@ -22,10 +22,10 @@ import {Admonition} from '#/components/Admonition'
 import {Button} from '#/components/Button'
 import {useDialogControl} from '#/components/Dialog'
 import {LanguageSelectDialog} from '#/components/dialogs/LanguageSelectDialog'
-import {createStaticClick, InlineLinkText} from '#/components/Link'
 import * as Toggle from '#/components/forms/Toggle'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import * as Layout from '#/components/Layout'
+import {createStaticClick, InlineLinkText} from '#/components/Link'
 import * as Select from '#/components/Select'
 import {Text} from '#/components/Typography'
 import * as SettingsList from './components/SettingsList'
@@ -282,7 +282,8 @@ export function LanguageSettingsScreen({}: Props) {
                     value as typeof translationServicePreference,
                   )
                 }}>
-                <Select.Trigger label={_(msg`Select post translation provider`)}>
+                <Select.Trigger
+                  label={_(msg`Select post translation provider`)}>
                   <Select.ValueText />
                   <Select.Icon />
                 </Select.Trigger>

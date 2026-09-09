@@ -79,7 +79,7 @@ export function ProfileLists({
     error,
     refetch,
   } = useProfileListsQuery(did, opts)
-  const isEmpty = !isPending && !data?.pages[0]?.lists.length
+  const isEmpty = !isPending && !data?.pages.some(page => page.lists.length)
   const {data: preferences} = usePreferencesQuery()
   const navigation = useNavigation()
   const {currentAccount} = useSession()
@@ -114,7 +114,7 @@ export function ProfileLists({
       animated: IS_NATIVE,
       offset: -headerOffset,
     })
-    queryClient.invalidateQueries({queryKey: RQKEY(did)})
+    void queryClient.invalidateQueries({queryKey: RQKEY(did)})
   }, [scrollElRef, queryClient, headerOffset, did])
 
   useImperativeHandle(ref, () => ({
@@ -142,7 +142,7 @@ export function ProfileLists({
   }, [isFetchingNextPage, hasNextPage, isError, fetchNextPage])
 
   const onPressRetryLoadMore = useCallback(() => {
-    fetchNextPage()
+    void fetchNextPage()
   }, [fetchNextPage])
 
   // rendering

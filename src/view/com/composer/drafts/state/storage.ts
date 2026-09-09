@@ -50,7 +50,7 @@ export async function saveMediaToLocal(
 
   try {
     const sourceFile = new File(normalizedSource)
-    sourceFile.copy(destFile)
+    await sourceFile.copy(destFile)
     // Update cache after successful save
     mediaExistsCache.set(localRefPath, true)
   } catch (error) {
@@ -68,9 +68,9 @@ export async function saveMediaToLocal(
  * Load a media file path from local storage
  * @returns The file URI for the saved media
  */
-export async function loadMediaFromLocal(
+export function loadMediaFromLocal(
   localRefPath: string,
-): Promise<string> {
+): string {
   const file = getMediaFile(localRefPath)
 
   if (!file.exists) {
@@ -83,9 +83,9 @@ export async function loadMediaFromLocal(
 /**
  * Delete a media file from local storage
  */
-export async function deleteMediaFromLocal(
+export function deleteMediaFromLocal(
   localRefPath: string,
-): Promise<void> {
+): void {
   const file = getMediaFile(localRefPath)
   // Idempotent: only delete if file exists
   if (file.exists) {

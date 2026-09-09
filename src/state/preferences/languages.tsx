@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import type {PropsWithChildren} from 'react'
+import  {type PropsWithChildren} from 'react'
 
 import {type AppLanguage} from '#/locale/languages'
 import * as persisted from '#/state/persisted'
@@ -44,7 +44,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
     (fn: SetStateCb) => {
       const s = fn(persisted.get('languagePrefs'))
       setState(s)
-      persisted.write('languagePrefs', s)
+      void persisted.write('languagePrefs', s)
     },
     [setState],
   )

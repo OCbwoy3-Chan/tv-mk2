@@ -8,7 +8,6 @@ import {
   type ViewStyle,
 } from 'react-native'
 import Animated, {
-  type AnimatedStyle,
   FadeIn,
   FadeOut,
   interpolateColor,
@@ -22,27 +21,17 @@ import Animated, {
   ZoomIn,
   ZoomOut,
 } from 'react-native-reanimated'
-import {
-  AppBskyEmbedRecord,
-  type ChatBskyActorDefs,
-  ChatBskyConvoDefs,
-  ChatBskyEmbedJoinLink,
-  moderateProfile,
-  RichText as RichTextAPI,
-} from '@atproto/api'
+import {moderateProfile} from '@bsky/sdk/moderation'
+import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
-import {isBlockedOrBlocking} from '#/lib/moderation/blocked-and-muted'
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
-import {sanitizeHandle} from '#/lib/strings/handles'
 import {useMaybeProfileShadow} from '#/state/cache/profile-shadow'
-import {type Shadow} from '#/state/cache/types'
 import {type ConvoItem} from '#/state/messages/convo/types'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
-import {useProfileBlockMutationQueue} from '#/state/queries/profile'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
 import {useSession} from '#/state/session'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
@@ -56,9 +45,11 @@ import {useReplyPreviewText} from '#/components/dms/replyPreview'
 import {ArrowCornerDownRight_Stroke2_Corner3_Rounded as ArrowCornerDownRightIcon} from '#/components/icons/ArrowCornerDownRight'
 import {InlineLinkText} from '#/components/Link'
 import * as ProfileCard from '#/components/ProfileCard'
-import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
+import {accentForeground} from '#/features/themes/accentForeground'
+import {app, chat} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 import {DateDivider} from './DateDivider'
 import {MessageItemEmbed} from './MessageItemEmbed'
 import {MessageItemInviteEmbed} from './MessageItemInviteEmbed'
@@ -66,7 +57,6 @@ import {groupReactions} from './ReactionsDialog'
 import {
   CLUSTERED_MESSAGE_THRESHOLD_MS,
   filterBlockedReactions,
-  MESSAGE_BUBBLE_MAX_WIDTH,
   MESSAGE_GAP_THRESHOLD_MS,
 } from './util'
 
@@ -76,16 +66,19 @@ const SQUARED_BORDER_RADIUS = 4
 const DISPLAY_NAME_INSET = 20
 
 export type MessageItemNeighbor =
-  | ChatBskyConvoDefs.MessageView
-  | ChatBskyConvoDefs.DeletedMessageView
+  | chat.bsky.convo.defs.MessageView
+  | chat.bsky.convo.defs.DeletedMessageView
   | null
 
 function messageIsReply(message: MessageItemNeighbor): boolean {
   return (
-    ChatBskyConvoDefs.isMessageView(message) &&
-    (ChatBskyConvoDefs.isMessageView(message.replyTo) ||
-      ChatBskyConvoDefs.isDeletedMessageView(message.replyTo) ||
-      ChatBskyConvoDefs.isMessageBeforeUserJoinedGroupView(message.replyTo))
+    bsky.isType(chat.bsky.convo.defs.messageView, message) &&
+    (bsky.isType(chat.bsky.convo.defs.messageView, message.replyTo) ||
+      bsky.isType(chat.bsky.convo.defs.deletedMessageView, message.replyTo) ||
+      bsky.isType(
+        chat.bsky.convo.defs.messageBeforeUserJoinedGroupView,
+        message.replyTo,
+      ))
   )
 }
 
@@ -97,7 +90,7 @@ function isWithinClusterBoundary({
   direction,
 }: {
   isPending: boolean
-  message: ChatBskyConvoDefs.MessageView
+  message: chat.bsky.convo.defs.MessageView
   adjacentMessage: MessageItemNeighbor
   isFromSameSender: boolean
   direction: 'prev' | 'next'
@@ -109,7 +102,7 @@ function isWithinClusterBoundary({
     return true
   }
   if (!isFromSameSender) return true
-  if (ChatBskyConvoDefs.isMessageView(adjacentMessage)) {
+  if (bsky.isType(chat.bsky.convo.defs.messageView, adjacentMessage)) {
     const currentSentAt = message.sentAt
     const thisDate = new Date(currentSentAt)
     const adjDate = new Date(adjacentMessage.sentAt)
@@ -136,7 +129,7 @@ let MessageItem = ({
   isGroupChat?: boolean
   prevMessage: MessageItemNeighbor
   nextMessage: MessageItemNeighbor
-  relatedProfiles: Map<string, ChatBskyActorDefs.ProfileViewBasic>
+  relatedProfiles: Map<string, chat.bsky.actor.defs.ProfileViewBasic>
 }): React.ReactNode => {
   const enableSquareButtons = useEnableSquareButtons()
   const t = useTheme()
@@ -155,13 +148,17 @@ let MessageItem = ({
   // tombstone, or a before-joined placeholder. Narrow away the open-union
   // fallback so we only render shapes we understand.
   const replyTo =
-    ChatBskyConvoDefs.isMessageView(message.replyTo) ||
-    ChatBskyConvoDefs.isDeletedMessageView(message.replyTo) ||
-    ChatBskyConvoDefs.isMessageBeforeUserJoinedGroupView(message.replyTo)
+    bsky.isType(chat.bsky.convo.defs.messageView, message.replyTo) ||
+    bsky.isType(chat.bsky.convo.defs.deletedMessageView, message.replyTo) ||
+    bsky.isType(
+      chat.bsky.convo.defs.messageBeforeUserJoinedGroupView,
+      message.replyTo,
+    )
       ? message.replyTo
       : undefined
   const replyToMessageId =
-    replyTo && !ChatBskyConvoDefs.isMessageBeforeUserJoinedGroupView(replyTo)
+    replyTo &&
+    !bsky.isType(chat.bsky.convo.defs.messageBeforeUserJoinedGroupView, replyTo)
       ? replyTo.id
       : undefined
   const onPressReplyTo = replyToMessageId
@@ -175,8 +172,14 @@ let MessageItem = ({
   const isFromSelf =
     message.sender?.did != null && message.sender.did === currentAccount?.did
 
-  const prevIsMessage = ChatBskyConvoDefs.isMessageView(prevMessage)
-  const nextIsMessage = ChatBskyConvoDefs.isMessageView(nextMessage)
+  const prevIsMessage = bsky.isType(
+    chat.bsky.convo.defs.messageView,
+    prevMessage,
+  )
+  const nextIsMessage = bsky.isType(
+    chat.bsky.convo.defs.messageView,
+    nextMessage,
+  )
 
   const isPrevFromSameSender =
     prevIsMessage &&
@@ -204,7 +207,7 @@ let MessageItem = ({
   })
 
   const hasLargeGapFromPrev =
-    !ChatBskyConvoDefs.isMessageView(prevMessage) ||
+    !bsky.isType(chat.bsky.convo.defs.messageView, prevMessage) ||
     new Date(message.sentAt).getTime() -
       new Date(prevMessage.sentAt).getTime() >
       MESSAGE_GAP_THRESHOLD_MS
@@ -251,13 +254,16 @@ let MessageItem = ({
     ? t.palette.primary_300
     : t.palette.primary_100
 
-  const rt = new RichTextAPI({text: message.text, facets: message.facets})
+  const rt = new RichTextAPI({
+    text: message.text,
+    facets: message.facets,
+  })
 
   const isEmojiOnly = isOnlyEmoji(message.text)
 
   const hasEmbed =
-    AppBskyEmbedRecord.isView(message.embed) ||
-    ChatBskyEmbedJoinLink.isView(message.embed)
+    bsky.isType(app.bsky.embed.record.view, message.embed) ||
+    bsky.isType(chat.bsky.embed.joinLink.view, message.embed)
   const hasEmbedAndText = hasEmbed && rt.text.length > 0
 
   const targetBottomRadius = squaredBottomCorner
@@ -510,17 +516,13 @@ let MessageItem = ({
                 {displayName}
               </Text>
             ) : null}
-            {false ? (// profile && isBlockedOrBlocking(profile) && isGroupChat ? (
-              <View/>
-              // <BlockedPlaceholder profile={profile} style={borderRadiusStyle} />
-            ) : (
               <View style={[a.relative]}>
                 <ActionsWrapper
                   isFromSelf={isFromSelf}
                   message={message}
                   senderProfile={profile}
                   moderationOpts={moderationOpts}>
-                  {AppBskyEmbedRecord.isView(message.embed) && (
+                  {bsky.isType(app.bsky.embed.record.view, message.embed) && (
                     <MessageItemEmbed
                       embed={message.embed}
                       isFromSelf={isFromSelf}
@@ -532,7 +534,10 @@ let MessageItem = ({
                       highlightSV={highlightSV}
                     />
                   )}
-                  {ChatBskyEmbedJoinLink.isView(message.embed) && (
+                  {bsky.isType(
+                    chat.bsky.embed.joinLink.view,
+                    message.embed,
+                  ) && (
                     <MessageItemInviteEmbed
                       embed={message.embed}
                       isFromSelf={isFromSelf}
@@ -576,7 +581,9 @@ let MessageItem = ({
                         value={rt}
                         style={[
                           a.text_md,
-                          isFromSelf && {color: t.palette.white},
+                          isFromSelf && {
+                            color: accentForeground(t, t.palette.primary_500),
+                          },
                           // Emoji-only: add top leading to avoid clipping the
                           // glyph, then pull the bottom up by the same amount so
                           // the glyph bottom-aligns with the avatar instead of
@@ -601,7 +608,6 @@ let MessageItem = ({
                 </ActionsWrapper>
                 {appliedReactions}
               </View>
-            )}
           </View>
         </View>
         {isLastInCluster && (
@@ -666,103 +672,6 @@ let MessageItemMetadata = ({
 MessageItemMetadata = memo(MessageItemMetadata)
 export {MessageItemMetadata}
 
-function BlockedPlaceholder({
-  profile,
-  style,
-}: {
-  profile: Shadow<ChatBskyActorDefs.ProfileViewBasic>
-  style?: AnimatedStyle<ViewStyle>
-}) {
-  const {t: l} = useLingui()
-  const t = useTheme()
-  const control = Prompt.usePromptControl()
-  const [_queueBlock, queueUnblock] = useProfileBlockMutationQueue(profile)
-
-  return (
-    <>
-      <Button
-        style={[{maxWidth: MESSAGE_BUBBLE_MAX_WIDTH}, a.self_start]}
-        label={
-          profile.viewer?.blocking
-            ? l`This message is hidden because you are blocking this user.`
-            : l`This message is hidden because this user is blocking you.`
-        }
-        accessibilityHint={l`Tap for details`}
-        onPress={() => control.open()}>
-        <Animated.View
-          style={[
-            a.ml_sm,
-            a.rounded_xl,
-            a.py_sm,
-            a.px_md,
-            t.atoms.bg,
-            a.self_start,
-            a.border,
-            t.atoms.border_contrast_high,
-            a.flex_shrink,
-            style,
-          ]}>
-          <Text
-            style={[
-              a.text_sm,
-              a.leading_snug,
-              a.italic,
-              t.atoms.text_contrast_medium,
-            ]}>
-            {profile.viewer?.blocking ? (
-              <Trans>
-                This message is hidden because you are blocking this user.
-              </Trans>
-            ) : (
-              <Trans>
-                This message is hidden because this user is blocking you.
-              </Trans>
-            )}
-          </Text>
-        </Animated.View>
-      </Button>
-      <Prompt.Outer control={control}>
-        <Prompt.Content>
-          <Prompt.TitleText>
-            {profile.viewer?.blocking ? (
-              <Trans>
-                You are blocking {sanitizeHandle(profile.handle, '@')}
-              </Trans>
-            ) : (
-              <Trans>
-                {sanitizeHandle(profile.handle, '@')} is blocking you
-              </Trans>
-            )}
-          </Prompt.TitleText>
-          <Prompt.DescriptionText>
-            {profile.viewer?.blocking ? (
-              <Trans>
-                Messages from this person are hidden while you are blocking
-                them.
-              </Trans>
-            ) : (
-              <Trans>
-                Messages from this person are hidden while they are blocking
-                you.
-              </Trans>
-            )}
-          </Prompt.DescriptionText>
-          <Prompt.Actions>
-            <Prompt.Action onPress={() => {}} cta={l`Okay`} color="primary" />
-            {profile.viewer?.blocking && !profile.viewer.blockingByList && (
-              <Prompt.Action
-                onPress={() => void queueUnblock()}
-                cta={l`Unblock`}
-                color="secondary"
-              />
-            )}
-          </Prompt.Actions>
-        </Prompt.Content>
-      </Prompt.Outer>
-    </>
-  )
-}
-
 /**
  * The "↪ X replied to Y" caption rendered above a reply message, in place of
  * the display name. `X` is the person sending the reply (self -> "you"), `Y` is
@@ -781,13 +690,13 @@ function ReplyCaption({
   enableSquareButtons,
 }: {
   replyTo:
-    | ChatBskyConvoDefs.MessageView
-    | ChatBskyConvoDefs.DeletedMessageView
-    | ChatBskyConvoDefs.MessageBeforeUserJoinedGroupView
+    | chat.bsky.convo.defs.MessageView
+    | chat.bsky.convo.defs.DeletedMessageView
+    | chat.bsky.convo.defs.MessageBeforeUserJoinedGroupView
   isFromSelf: boolean
   displayNameInset: number
   replierDisplayName: string | null
-  relatedProfiles: Map<string, ChatBskyActorDefs.ProfileViewBasic>
+  relatedProfiles: Map<string, chat.bsky.actor.defs.ProfileViewBasic>
   onPress?: () => void
   enableSquareButtons: boolean
 }) {
@@ -797,8 +706,8 @@ function ReplyCaption({
 
   let caption: string = ''
   if (
-    ChatBskyConvoDefs.isMessageView(replyTo) ||
-    ChatBskyConvoDefs.isDeletedMessageView(replyTo)
+    bsky.isType(chat.bsky.convo.defs.messageView, replyTo) ||
+    bsky.isType(chat.bsky.convo.defs.deletedMessageView, replyTo)
   ) {
     const originalSenderIsSelf = replyTo.sender.did === currentAccount?.did
     const originalProfile = relatedProfiles.get(replyTo.sender.did)
@@ -868,11 +777,11 @@ function ReplyQuote({
   onPress,
 }: {
   replyTo:
-    | ChatBskyConvoDefs.MessageView
-    | ChatBskyConvoDefs.DeletedMessageView
-    | ChatBskyConvoDefs.MessageBeforeUserJoinedGroupView
+    | chat.bsky.convo.defs.MessageView
+    | chat.bsky.convo.defs.DeletedMessageView
+    | chat.bsky.convo.defs.MessageBeforeUserJoinedGroupView
   isFromSelf: boolean
-  relatedProfiles: Map<string, ChatBskyActorDefs.ProfileViewBasic>
+  relatedProfiles: Map<string, chat.bsky.actor.defs.ProfileViewBasic>
   onPress?: () => void
 }) {
   const enableSquareButtons = useEnableSquareButtons()
@@ -881,8 +790,8 @@ function ReplyQuote({
   const getReplyPreviewText = useReplyPreviewText()
 
   const senderDid =
-    ChatBskyConvoDefs.isMessageView(replyTo) ||
-    ChatBskyConvoDefs.isDeletedMessageView(replyTo)
+    bsky.isType(chat.bsky.convo.defs.messageView, replyTo) ||
+    bsky.isType(chat.bsky.convo.defs.deletedMessageView, replyTo)
       ? replyTo.sender.did
       : undefined
   const senderProfile = useMaybeProfileShadow(
@@ -896,12 +805,14 @@ function ReplyQuote({
       ? createSanitizedDisplayName(senderProfile)
       : null
 
-  const tintColor = isFromSelf ? t.palette.white : t.atoms.text.color
+  const tintColor = isFromSelf
+    ? accentForeground(t, t.palette.primary_500)
+    : t.atoms.text.color
   const subtleColor = isFromSelf
-    ? t.palette.white
+    ? accentForeground(t, t.palette.primary_500)
     : t.atoms.text_contrast_high.color
   const borderColor = isFromSelf
-    ? utils.alpha(t.palette.white, 0.5)
+    ? utils.alpha(accentForeground(t, t.palette.primary_500), 0.5)
     : t.atoms.border_contrast_high.borderColor
 
   let text: string
@@ -912,9 +823,11 @@ function ReplyQuote({
       comment: 'A reply summary in chat',
     })
     subtle = true
-  } else if (ChatBskyConvoDefs.isMessageView(replyTo)) {
+  } else if (bsky.isType(chat.bsky.convo.defs.messageView, replyTo)) {
     ;({text, subtle} = getReplyPreviewText(replyTo))
-  } else if (ChatBskyConvoDefs.isMessageBeforeUserJoinedGroupView(replyTo)) {
+  } else if (
+    bsky.isType(chat.bsky.convo.defs.messageBeforeUserJoinedGroupView, replyTo)
+  ) {
     text = l({
       message: `(message sent before you joined)`,
       comment: 'A reply summary in chat',

@@ -1,28 +1,24 @@
 import {useCallback, useMemo, useState} from 'react'
 import {LayoutAnimation, Pressable, View} from 'react-native'
 import {Image} from 'expo-image'
-import {
-  AppBskyEmbedGallery,
-  AppBskyEmbedImages,
-  AppBskyEmbedRecord,
-  AppBskyEmbedRecordWithMedia,
-  AppBskyFeedPost,
-} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
+import {parsePrivatePostLink} from '#/lib/private-post-link'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
-import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {type ComposerOptsPostRef} from '#/state/shell/composer'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme, utils, web} from '#/alf'
 import {PostEmbedViewContext, QuoteEmbed} from '#/components/Post/Embed'
-import {ProfileBadges} from '#/components/ProfileBadges'
-import {Text} from '#/components/Typography'
-import {parseEmbed} from '#/types/bsky/post'
 import { PrivatePostEmbed } from '#/components/Post/Embed/PrivatePostEmbed'
+import {ProfileBadges} from '#/components/ProfileBadges'
+import {PronounPill} from '#/components/PronounPill'
+import {Text} from '#/components/Typography'
+import {app} from '#/lexicons'
+import * as bsky from '#/types/bsky'
+import {parseEmbed} from '#/types/bsky/post'
 
 export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
   const t = useTheme()
@@ -42,15 +38,15 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
 
   const quoteEmbed = useMemo(() => {
     if (
-      AppBskyEmbedRecord.isView(embed) &&
-      AppBskyEmbedRecord.isViewRecord(embed.record) &&
-      AppBskyFeedPost.isRecord(embed.record.value)
+      bsky.isType(app.bsky.embed.record.view, embed) &&
+      bsky.isType(app.bsky.embed.record.viewRecord, embed.record) &&
+      bsky.isType(app.bsky.feed.post, embed.record.value)
     ) {
       return embed
     } else if (
-      AppBskyEmbedRecordWithMedia.isView(embed) &&
-      AppBskyEmbedRecord.isViewRecord(embed.record.record) &&
-      AppBskyFeedPost.isRecord(embed.record.record.value)
+      bsky.isType(app.bsky.embed.recordWithMedia.view, embed) &&
+      bsky.isType(app.bsky.embed.record.viewRecord, embed.record.record) &&
+      bsky.isType(app.bsky.feed.post, embed.record.record.value)
     ) {
       return embed.record
     }
@@ -64,20 +60,20 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
     : null
 
   const {images, totalNumber} = useMemo(() => {
-    if (AppBskyEmbedImages.isView(embed)) {
+    if (bsky.isType(app.bsky.embed.images.view, embed)) {
       return {images: embed.images, totalNumber: embed.images.length}
-    } else if (AppBskyEmbedGallery.isView(embed)) {
+    } else if (bsky.isType(app.bsky.embed.gallery.view, embed)) {
       return {
         images: galleryItemsToImages(embed.items),
         totalNumber: embed.items.length,
       }
-    } else if (AppBskyEmbedRecordWithMedia.isView(embed)) {
-      if (AppBskyEmbedImages.isView(embed.media)) {
+    } else if (bsky.isType(app.bsky.embed.recordWithMedia.view, embed)) {
+      if (bsky.isType(app.bsky.embed.images.view, embed.media)) {
         return {
           images: embed.media.images,
           totalNumber: embed.media.images.length,
         }
-      } else if (AppBskyEmbedGallery.isView(embed.media)) {
+      } else if (bsky.isType(app.bsky.embed.gallery.view, embed.media)) {
         return {
           images: galleryItemsToImages(embed.media.items),
           totalNumber: embed.media.items.length,
@@ -87,10 +83,12 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
     return {images: [], totalNumber: 0}
   }, [embed])
 
-  const privatePostUrl = (((embed as any)?.external?.uri ?? "https://example.com?uri=0&cid=0") as string)
-  const isPrivatePostEmbed = privatePostUrl.startsWith("https://private-post.tenna.party?");
-  const privatePostUri = new URL(isPrivatePostEmbed ? privatePostUrl : "https://example.com").searchParams.get("uri") ?? "";
-  const privatePostCid = new URL(isPrivatePostEmbed ? privatePostUrl : "https://example.com").searchParams.get("cid") ?? "";
+  const privatePostLink = bsky.isType(app.bsky.embed.external.view, embed)
+    ? parsePrivatePostLink(embed.external.uri)
+    : undefined
+  const isPrivatePostEmbed = !!privatePostLink
+  const privatePostUri = privatePostLink?.uri ?? ''
+  const privatePostCid = privatePostLink?.cid ?? ''
 
   return (
     <Pressable
@@ -127,19 +125,7 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
             {getAuthorPrimaryName(replyTo.author, {hideDisplayNames})}
           </Text>
           <ProfileBadges profile={replyTo.author} size="sm" style={[a.pl_xs]} />
-          {replyTo.author?.pronouns && (
-            <Text
-              style={[
-                t.atoms.text_contrast_low,
-                a.text_md,
-                a.leading_snug,
-                a.pl_sm,
-              ]}
-              numberOfLines={1}
-              emoji>
-              {sanitizePronouns(replyTo.author.pronouns, true)}
-            </Text>
-          )}
+          <PronounPill pronouns={replyTo.author.pronouns} style={a.ml_xs} />
         </View>
         <View style={[a.flex_row, a.gap_md]}>
           <View style={[a.flex_1, a.flex_grow]}>
@@ -176,12 +162,12 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
 }
 
 function galleryItemsToImages(
-  items: AppBskyEmbedGallery.View['items'],
-): AppBskyEmbedImages.ViewImage[] {
+  items: app.bsky.embed.gallery.View['items'],
+): app.bsky.embed.images.ViewImage[] {
   // The reply-to thumbnail only renders up to 4 tiles; slicing here keeps
   // the existing layout switch valid for galleries up to 10 items.
   return items
-    .filter(AppBskyEmbedGallery.isViewImage)
+    .filter(item => bsky.isType(app.bsky.embed.gallery.viewImage, item))
     .slice(0, 4)
     .map(item => ({
       thumb: item.thumbnail,
@@ -195,7 +181,7 @@ function ComposerReplyToImages({
   images,
   totalNumber,
 }: {
-  images: AppBskyEmbedImages.ViewImage[]
+  images: app.bsky.embed.images.ViewImage[]
   totalNumber: number
 }) {
   const t = useTheme()

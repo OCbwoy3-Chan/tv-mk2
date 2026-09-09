@@ -18,6 +18,10 @@ export const router = new Router<AllNavigatableRoutes>({
   Lists: '/lists',
   // moderation
   Moderation: '/moderation',
+  ModerationInbox: '/moderation/inbox',
+  ModerationInboxSettings: '/moderation/inbox/settings',
+  ModerationInboxReportDetails: '/moderation/inbox/report/details',
+  ModerationInboxSubjectDetails: '/moderation/inbox/subject/details',
   ModerationModlists: '/moderation/modlists',
   ModerationMutedAccounts: '/moderation/muted-accounts',
   ModerationBlockedAccounts: '/moderation/blocked-accounts',
@@ -71,6 +75,8 @@ export const router = new Router<AllNavigatableRoutes>({
   RunesSettingsSyncSettings: '/settings/runes/settings-sync',
   AppearanceSettings: '/settings/appearance',
   AppearanceColorThemeSettings: '/settings/appearance/color-theme',
+  ThemeGallery: '/settings/appearance/themes/:mode',
+  ThemeEditor: '/settings/appearance/themes/edit/:rkey?',
   BetaFeaturesSettings: '/settings/beta-features',
   SavedFeeds: '/settings/saved-feeds',
   AccountSettings: '/settings/account',
@@ -93,6 +99,7 @@ export const router = new Router<AllNavigatableRoutes>({
   CopyrightPolicy: '/support/copyright',
   // hashtags
   Hashtag: '/hashtag/:tag',
+  Theme: '/profile/:name/theme/:rkey',
   Topic: '/topic/:topic',
   // DMs
   Messages: '/messages',
@@ -101,7 +108,7 @@ export const router = new Router<AllNavigatableRoutes>({
   MessagesConversation: '/messages/:conversation',
   MessagesConversationSettings: '/messages/:conversation/settings',
   MessagesJoinRequests: '/messages/:conversation/requests',
-  // starter packs
+  // Starter Packs
   Start: '/start/:name/:rkey',
   StarterPackEdit: '/starter-pack/edit/:rkey',
   StarterPack: '/starter-pack/:name/:rkey',

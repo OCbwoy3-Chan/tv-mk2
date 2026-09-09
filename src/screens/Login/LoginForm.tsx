@@ -1,9 +1,6 @@
 import {useRef, useState} from 'react'
 import {Keyboard, Pressable, type TextInput, View} from 'react-native'
-import {
-  ComAtprotoServerCreateSession,
-  type ComAtprotoServerDescribeServer,
-} from '@atproto/api'
+import {LexAuthFactorError} from '@atproto/lex-password-session'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {DEFAULT_SERVICE, HITSLOP_10, HITSLOP_20} from '#/lib/constants'
@@ -18,7 +15,7 @@ import {
   useHostingProvider,
 } from '#/state/queries/pds-detection'
 import {useSession, useSessionApi} from '#/state/session'
-import {getNativeOAuthClient} from '#/state/session/oauth-native-client'
+import {signInNative} from '#/state/session/oauth-native-sign-in'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {atoms as a, native, tokens, useBreakpoints, useTheme} from '#/alf'
 import * as Admonition from '#/components/Admonition'
@@ -36,13 +33,15 @@ import {createStaticClick, InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {IS_IOS, IS_NATIVE} from '#/env'
+import {type com} from '#/lexicons'
 import {AppServerButton} from './components/AppServerDialog'
 import {ConfirmHostingProviderDialog} from './components/ConfirmHostingProviderDialog'
 import {HandleAutocompleteInput} from './components/HandleAutocompleteInput'
 import {HostingProviderDialog} from './components/HostingProviderDialog'
+import {useEphemeralLogin} from './EphemeralLoginContext'
 import {FormContainer} from './FormContainer'
 
-type ServiceDescription = ComAtprotoServerDescribeServer.OutputSchema
+type ServiceDescription = com.atproto.server.describeServer.$OutputBody
 
 type LoginMode = 'oauth' | 'legacy'
 
@@ -189,11 +188,14 @@ function OAuthLoginFields({
   onPressBack: () => void
 }) {
   const {t: l} = useLingui()
-  const {login} = useSessionApi()
+  const {login: normalLogin} = useSessionApi()
+  const ephemeralLogin = useEphemeralLogin()
+  const login = ephemeralLogin?.submit ?? normalLogin
   const requestNotificationsPermission = useRequestNotificationsPermission()
   const {setShowLoggedOut, clearRequestedAccount} = useLoggedOutViewControls()
   const setHasCheckedForStarterPack = useSetHasCheckedForStarterPack()
   const identifierValueRef = useRef<string>(initialHandle || '')
+  const oauthAbortRef = useRef<AbortController | null>(null)
 
   const onPressNext = async () => {
     if (isProcessing) return
@@ -208,10 +210,17 @@ function OAuthLoginFields({
     }
 
     setIsProcessing(true)
+    const abortController = new AbortController()
+    oauthAbortRef.current = abortController
 
     try {
-      const client = getNativeOAuthClient()
-      const session = await client.signIn(identifier)
+      if (ephemeralLogin) {
+        await ephemeralLogin.authorize(identifier)
+        return
+      }
+      const session = await signInNative(identifier, {
+        signal: abortController.signal,
+      })
       await login(
         {
           service: '',
@@ -221,6 +230,7 @@ function OAuthLoginFields({
         },
         'LoginForm',
       )
+      if (ephemeralLogin) return
       onAttemptSuccess()
       setShowLoggedOut(false)
       clearRequestedAccount()
@@ -229,7 +239,11 @@ function OAuthLoginFields({
     } catch (e: unknown) {
       const errMsg = String(e)
       setIsProcessing(false)
-      if (errMsg.includes('cancelled') || errMsg.includes('dismiss')) {
+      if (
+        errMsg.includes('OAUTH_CANCELLED') ||
+        errMsg.includes('cancelled') ||
+        errMsg.includes('dismiss')
+      ) {
         return
       }
       if (isNetworkError(e)) {
@@ -245,6 +259,8 @@ function OAuthLoginFields({
         )
         setError(cleanError(errMsg))
       }
+    } finally {
+      oauthAbortRef.current = null
     }
   }
 
@@ -272,18 +288,27 @@ function OAuthLoginFields({
       <View style={[a.pt_md]}>
         <Button
           testID="loginNextButton"
-          label={l`Login`}
-          accessibilityHint={l`Opens your authorization server to sign in`}
-          color="primary"
+          label={isProcessing ? l`Cancel` : l`Login`}
+          accessibilityHint={
+            isProcessing
+              ? l`Cancels the sign-in process`
+              : l`Opens your authorization server to sign in`
+          }
+          color={isProcessing ? 'secondary' : 'primary'}
           size="large"
-          onPress={() => void onPressNext()}>
-          {isProcessing && <ButtonIcon icon={Loader} />}
+          onPress={() => {
+            if (isProcessing) {
+              oauthAbortRef.current?.abort()
+            } else {
+              void onPressNext()
+            }
+          }}>
           <ButtonText>
-            <Trans>Login</Trans>
+            {isProcessing ? <Trans>Cancel</Trans> : <Trans>Login</Trans>}
           </ButtonText>
         </Button>
       </View>
-      <AppServerButton />
+      {!ephemeralLogin && <AppServerButton />}
     </>
   )
 }
@@ -330,13 +355,15 @@ function LegacyLoginFields({
   const [identifier, setIdentifier] = useState(initialHandle || '')
   const [identifierFocused, setIdentifierFocused] = useState(false)
   const [authFactorToken, setAuthFactorToken] = useState('')
-  const identifierRef = useRef<TextInput>(null)
-  const passwordRef = useRef<TextInput>(null)
+  const identifierRef = useRef<React.ComponentRef<typeof TextInput>>(null)
+  const passwordRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const hasFocusedOnce = useRef(false)
   const [hasPassword, setHasPassword] = useState(false)
   const [revealPassword, setRevealPassword] = useState(false)
   const {t: l} = useLingui()
-  const {login} = useSessionApi()
+  const {login: normalLogin} = useSessionApi()
+  const ephemeralLogin = useEphemeralLogin()
+  const login = ephemeralLogin?.submit ?? normalLogin
   const {accounts} = useSession()
   const requestNotificationsPermission = useRequestNotificationsPermission()
   const {setShowLoggedOut, clearRequestedAccount} = useLoggedOutViewControls()
@@ -371,6 +398,7 @@ function LegacyLoginFields({
         },
         'LoginForm',
       )
+      if (ephemeralLogin) return
       onAttemptSuccess()
       setShowLoggedOut(false)
       clearRequestedAccount()
@@ -379,10 +407,11 @@ function LegacyLoginFields({
     } catch (err) {
       const errMsg = String(err)
       setIsProcessing(false)
-      if (
-        err instanceof
-        ComAtprotoServerCreateSession.AuthFactorTokenRequiredError
-      ) {
+      /*
+       * `LexAuthFactorError` is what `PasswordSession.login` throws when the
+       * server demands an email 2FA token.
+       */
+      if (err instanceof LexAuthFactorError) {
         setIsAuthFactorTokenNeeded(true)
       } else {
         onAttemptFailed()
@@ -407,7 +436,9 @@ function LegacyLoginFields({
           )
         } else {
           logger.warn('Failed to login', {error: errMsg})
-          setError(cleanError(errMsg))
+          /* the error object, not its stringification: cleanError only
+           * extracts the clean server message from a live LexError */
+          setError(cleanError(err))
         }
       }
     }
@@ -521,33 +552,39 @@ function LegacyLoginFields({
         <TextField.LabelText>
           <Trans>Username or email</Trans>
         </TextField.LabelText>
-        <HandleAutocompleteInput
-          initialValue={initialHandle || ''}
-          label={l`Username or email address`}
-          placeholder={null}
-          icon={
-            hostingProvider.state.status === 'email' ? EmailIcon : AtIcon
-          }
-          isInvalid={errorField === 'identifier' || showUnresolvedError}
-          autoFocus={!IS_IOS && !initialHandle}
-          editable={!isProcessing}
-          returnKeyType="next"
-          submitOnSelect={false}
-          showAutocomplete={hostingProvider.state.status !== 'email'}
-          inputRef={identifierRef}
-          onValueChange={v => {
-            identifierValueRef.current = v
-            setIdentifier(v)
-            if (errorField) setErrorField('none')
-            if (showResolveError) setShowResolveError(false)
-          }}
-          onFocus={() => setIdentifierFocused(true)}
-          onBlur={() => setIdentifierFocused(false)}
-          onSubmitEditing={() => {
-            passwordRef.current?.focus()
-          }}
-          accessibilityHint={l`Enter the username or email address you used when you created your account`}
-        />
+        <TextField.Root
+          isInvalid={errorField === 'identifier' || showUnresolvedError}>
+          <TextField.Icon
+            icon={hostingProvider.state.status === 'email' ? EmailIcon : AtIcon}
+          />
+          <TextField.Input
+            testID="loginUsernameInput"
+            inputRef={identifierRef}
+            label={l`Username or email address`}
+            placeholder={null}
+            autoCapitalize="none"
+            autoFocus={!IS_IOS && !initialHandle}
+            autoCorrect={false}
+            autoComplete="username"
+            returnKeyType="next"
+            textContentType="username"
+            defaultValue={initialHandle || ''}
+            onChangeText={v => {
+              identifierValueRef.current = v
+              setIdentifier(v)
+              if (errorField) setErrorField('none')
+              if (showResolveError) setShowResolveError(false)
+            }}
+            onFocus={() => setIdentifierFocused(true)}
+            onBlur={() => setIdentifierFocused(false)}
+            onSubmitEditing={() => {
+              passwordRef.current?.focus()
+            }}
+            blurOnSubmit={false}
+            editable={!isProcessing}
+            accessibilityHint={l`Enter the username or email address you used when you created your account`}
+          />
+        </TextField.Root>
         {showUnresolvedError && (
           <Text
             style={[
@@ -717,7 +754,7 @@ function LegacyLoginFields({
             </Button>
 
             <View style={[a.flex_shrink, a.justify_center]}>
-              <AppServerButton inline />
+              {!ephemeralLogin && <AppServerButton inline />}
             </View>
 
             <View style={[a.flex_shrink, a.justify_center, a.ml_auto]}>
@@ -783,7 +820,7 @@ function LegacyLoginFields({
 
       {!gtMobile && (
         <>
-          <AppServerButton />
+          {!ephemeralLogin && <AppServerButton />}
           <HostingProviderIndicator
             state={hostingProvider.state}
             onPress={() => serverInputControl.open()}
@@ -807,7 +844,12 @@ function RevealPasswordButton({
   const {t: l} = useLingui()
   const context = TextField.useTextFieldContext()
 
-  const Icon = !active ? EyeSlashIcon : EyeIcon
+  /*
+   * The icon shows the action the button performs, not the current state: an
+   * open eye when the password is hidden (tap to reveal), a crossed-out eye
+   * when it is visible (tap to hide).
+   */
+  const Icon = active ? EyeSlashIcon : EyeIcon
 
   if (!hasPassword && !context.focused) return null
 

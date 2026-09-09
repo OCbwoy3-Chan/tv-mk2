@@ -23,8 +23,8 @@ export function usePdsLabelQuery(
   const enabled = !!did && priority !== 'off'
   const subscribe = useCallback(
     (listener: () => void) =>
-      did ? subscribePdsLabel(did, listener) : () => {},
-    [did],
+      enabled && did ? subscribePdsLabel(did, listener) : () => {},
+    [did, enabled],
   )
   const getSnapshot = useCallback(
     () => (did ? getPdsLabelSnapshot(did) : getPdsLabelSnapshot('')),

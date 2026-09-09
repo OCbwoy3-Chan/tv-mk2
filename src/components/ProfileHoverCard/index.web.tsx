@@ -8,12 +8,15 @@ import {
   useState,
 } from 'react'
 import {View} from 'react-native'
+import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
 import {
-  type AppBskyActorDefs,
-  moderateProfile,
-  type ModerationOpts,
-} from '@atproto/api'
-import {flip, offset, shift, size, useFloating} from '@floating-ui/react-dom'
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  size,
+  useFloating,
+} from '@floating-ui/react-dom'
 import {msg, plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {useNavigation} from '@react-navigation/native'
@@ -35,8 +38,8 @@ import {
   useFollowersMetricsDisplay,
   useFollowingMetricsDisplay,
 } from '#/state/preferences/metrics-display-preference'
-import {useShowFollowedByOnOwnProfile} from '#/state/preferences/show-followed-by-on-own-profile'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useShowFollowedByOnOwnProfile} from '#/state/preferences/show-followed-by-on-own-profile'
 import {usePrefetchProfileQuery, useProfileQuery} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -70,6 +73,7 @@ import {Text} from '#/components/Typography'
 import {IS_WEB_TOUCH_DEVICE} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import {LiveStatus} from '#/features/liveNow/components/LiveStatusDialog'
+import {type app} from '#/lexicons'
 import {type ProfileHoverCardProps} from './types'
 
 const floatingMiddlewares = [
@@ -93,7 +97,7 @@ export function ProfileHoverCard(props: ProfileHoverCardProps) {
   const onPointerMove = () => {
     if (!prefetchedProfile.current) {
       prefetchedProfile.current = true
-      prefetchProfileQuery(props.did)
+      void prefetchProfileQuery(props.did)
     }
   }
 
@@ -139,10 +143,6 @@ const HIDE_DURATION = 200
 
 export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
   const navigation = useNavigation<NavigationProp>()
-
-  const {refs, floatingStyles} = useFloating({
-    middleware: floatingMiddlewares,
-  })
 
   const followPromptControl = Prompt.usePromptControl()
   const [followConfirmState, setFollowConfirmState] = useState<{
@@ -308,16 +308,16 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
   const prefetchProfileQuery = usePrefetchProfileQuery()
   const prefetchedProfile = useRef(false)
 
-  const prefetchIfNeeded = useCallback(async () => {
+  const prefetchIfNeeded = useCallback(() => {
     if (!prefetchedProfile.current) {
       prefetchedProfile.current = true
-      prefetchProfileQuery(props.did)
+      void prefetchProfileQuery(props.did)
     }
   }, [prefetchProfileQuery, props.did])
 
   const didFireHover = useRef(false)
   const onPointerMoveTarget = useCallback(() => {
-    prefetchIfNeeded()
+    void prefetchIfNeeded()
     // Conceptually we want something like onPointerEnter,
     // but we want to ignore entering only due to scrolling.
     // So instead we hover on the first onPointerMove.
@@ -349,6 +349,12 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
     currentState.stage === 'might-hide' ||
     currentState.stage === 'hiding'
 
+  const {refs, floatingStyles, isPositioned} = useFloating({
+    open: isVisible,
+    middleware: floatingMiddlewares,
+    whileElementsMounted: autoUpdate,
+  })
+
   const animationStyle = {
     animation:
       currentState.stage === 'hiding'
@@ -358,11 +364,10 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
 
   return (
     <View
-      // @ts-ignore View is being used as div
       ref={refs.setReference}
       onPointerMove={onPointerMoveTarget}
       onPointerLeave={onPointerLeaveTarget}
-      // @ts-ignore web only prop
+      // @ts-expect-error web only prop
       onMouseUp={onPress}
       style={[a.flex_shrink, props.inline && a.inline]}>
       {props.children}
@@ -370,7 +375,12 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
         <Portal>
           <div
             ref={refs.setFloating}
-            style={floatingStyles}
+            style={{
+              ...floatingStyles,
+              // Before positioning, the card sits at (0, 0) and can steal hover
+              // from avatars near the top of the feed, immediately closing it.
+              visibility: isPositioned ? 'visible' : 'hidden',
+            }}
             onPointerEnter={onPointerEnterCard}
             onPointerLeave={onPointerLeaveCard}>
             <div style={{willChange: 'transform', ...animationStyle}}>
@@ -486,7 +496,7 @@ function Inner({
   hide,
   onRequestFollowConfirmation,
 }: {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed
   moderationOpts: ModerationOpts
   hide: () => void
   onRequestFollowConfirmation?: (params: {
@@ -544,24 +554,7 @@ function Inner({
 
   const enableSquareButtons = useEnableSquareButtons()
 
-  const handleFollow = useCallback(() => {
-    if (confirmFollowUnfollow && onRequestFollowConfirmation) {
-      onRequestFollowConfirmation({
-        actionType: 'follow',
-        onConfirm: follow,
-        displayName: authorPrimaryName,
-        handle: profile.handle,
-      })
-    } else {
-      follow()
-    }
-  }, [
-    confirmFollowUnfollow,
-    follow,
-    onRequestFollowConfirmation,
-    authorPrimaryName,
-    profile.handle,
-  ])
+  const handleFollow = useCallback(() => follow(), [follow])
 
   const handleUnfollow = useCallback(() => {
     if (confirmFollowUnfollow && onRequestFollowConfirmation) {

@@ -5,10 +5,7 @@
 import {type Platform} from 'react-native'
 
 import {type NotificationReason} from '#/lib/hooks/useNotificationHandler'
-import {
-  type VideoCompressSkipReason,
-  type VideoUploadTransport,
-} from '#/lib/media/video/types'
+import {type VideoCompressSkipReason} from '#/lib/media/video/types'
 import {type NotificationType} from '#/state/queries/notifications/types'
 import {type FeedDescriptor} from '#/state/queries/post-feed'
 import {type LiveEventFeedMetricContext} from '#/features/liveEvents/types'
@@ -47,6 +44,7 @@ export type Events = {
       | 'SignupQueued'
       | 'Deactivated'
       | 'Takendown'
+      | 'AgeAssuranceDataUnavailableScreen'
       | 'AgeAssuranceNoAccessScreen'
     scope: 'current' | 'every'
   }
@@ -68,6 +66,26 @@ export type Events = {
   'state:foreground': {}
   'router:navigate': {
     from?: string
+  }
+  'web:list:size': {
+    itemCount: number
+    renderedRowCount: number
+    contentHeight: number
+    sessionAgeMs: number
+    milestone: 100 | 250 | 500 | 1000
+    heapUsedBytes?: number
+    heapLimitBytes?: number
+  }
+  'web:list:longTasks': {
+    itemCount: number
+    renderedRowCount: number
+    taskCount: number
+    totalDurationMs: number
+    maxDurationMs: number
+    intervalMs: number
+    sessionAgeMs: number
+    heapUsedBytes?: number
+    heapLimitBytes?: number
   }
   'nav:click': {
     item:
@@ -276,12 +294,7 @@ export type Events = {
   }
   'composer:open': {
     logContext:
-      | 'Fab'
-      | 'PostReply'
-      | 'QuotePost'
-      | 'ProfileFeed'
-      | 'Deeplink'
-      | 'Other'
+      'Fab' | 'PostReply' | 'QuotePost' | 'ProfileFeed' | 'Deeplink' | 'Other'
     isReply: boolean
     hasQuote: boolean
     hasDraft: boolean
@@ -438,6 +451,7 @@ export type Events = {
   'post:view': {
     uri: string
     authorDid: string
+    isReply: boolean
     logContext:
       | 'FeedItem'
       | 'PostThreadItem'
@@ -596,10 +610,7 @@ export type Events = {
   }
   'chat:create': {
     logContext:
-      | 'ProfileHeader'
-      | 'NewChatDialog'
-      | 'SendViaChatDialog'
-      | 'ConvoSettings'
+      'ProfileHeader' | 'NewChatDialog' | 'SendViaChatDialog' | 'ConvoSettings'
   }
   'chat:open': {
     logContext:
@@ -694,6 +705,7 @@ export type Events = {
   }
   'starterPack:removeUser': {
     starterPack?: string
+    context?: 'opt-out'
   }
   'starterPack:share': {
     starterPack: string
@@ -706,6 +718,10 @@ export type Events = {
     count: number
   }
   'starterPack:delete': {}
+  'starterPack:optOut': {
+    starterPack: string
+    action: 'optOut' | 'undo'
+  }
   'starterPack:create': {
     setName: boolean
     setDescription: boolean
@@ -758,12 +774,14 @@ export type Events = {
   }
   'trendingTopic:seen': {
     context: 'sidebar' | 'interstitial' | 'explore'
+    feedUri?: string
     recId?: string
     rank: number
     feedSliceIndex?: number
   }
   'trendingTopic:click': {
     context: 'sidebar' | 'interstitial' | 'explore'
+    feedUri?: string
     recId?: string
     rank: number
     feedSliceIndex?: number
@@ -1085,6 +1103,8 @@ export type Events = {
   'pet:label:toggle': {state: 'add' | 'remove'}
   'pet:badge:click': {}
 
+  'contentVisibility:algorithmicRecommendations:change': {hide: boolean}
+
   'live:create': {duration: number}
   'live:edit': {}
   'live:remove': {}
@@ -1345,10 +1365,7 @@ export type Events = {
   // invite friends dialog opened, with the surface that triggered it
   'invite:dialog:open': {
     logContext:
-      | 'ProfileHeader'
-      | 'Drawer'
-      | 'FindContactsSettings'
-      | 'NuxAnnouncement'
+      'ProfileHeader' | 'Drawer' | 'FindContactsSettings' | 'NuxAnnouncement'
   }
   // user copied the invite link to clipboard
   'invite:action:copy': {}
@@ -1391,6 +1408,41 @@ export type Events = {
     errorMessage: string
     /** HLS playlist URL, identifies the exact video for server-side lookup */
     playlist: string
+  }
+
+  /**
+   * The playable video was meaningfully visible. This is an exposure event,
+   * not proof that playback started. Fires once per mounted video item.
+   */
+  'video:impression': {
+    postUri?: string
+    postAuthorDid?: string
+    context: 'embed' | 'immersiveFeed'
+    presentation: 'video' | 'gif'
+  }
+  /**
+   * Playback advanced far enough to render the first frame. Preloading and
+   * merely becoming active do not count. Fires once per mounted video item;
+   * automatic loops do not produce another event.
+   */
+  'video:playback:start': {
+    postUri?: string
+    postAuthorDid?: string
+    context: 'embed' | 'immersiveFeed'
+    presentation: 'video' | 'gif'
+    autoplay: boolean
+  }
+  /**
+   * The user activated a third-party media player. Cross-origin players do
+   * not expose confirmed playback consistently, so this must not be treated
+   * as equivalent to video:playback:start without an explicit methodology.
+   */
+  'externalEmbed:playerActivated': {
+    postUri?: string
+    postAuthorDid?: string
+    source: string
+    playerType: string
+    mediaType: 'video' | 'audio' | 'gif' | 'other'
   }
 
   // === Video upload funnel (Frontend Spec section D) ===
@@ -1467,7 +1519,6 @@ export type Events = {
     bytes: number
     elapsedMs: number
     throughputBytesPerSec: number
-    transport: VideoUploadTransport
   }
   'video:upload:uploadFailed': {
     uploadId: string
@@ -1475,7 +1526,6 @@ export type Events = {
     bytes: number
     errorClass: string
     elapsedMs: number
-    transport: VideoUploadTransport
   }
   'video:upload:processingStarted': {
     uploadId: string
@@ -1512,4 +1562,25 @@ export type Events = {
   }
 
   'post:likedBy:click': {}
+
+  /*
+   * Beta features settings screen
+   */
+
+  // user toggled "Enable beta features"; fired only after the preference
+  // write succeeds
+  'betaFeatures:toggle': {
+    enabled: boolean
+    /** Gate keys of beta features active for this user at toggle time */
+    betaFeatureKeys: string[]
+  }
+  // user pressed the "Share feedback" button, opening the dialog
+  'betaFeatures:feedback:open': {
+    betaFeatureKeys: string[]
+  }
+  // user submitted feedback and it was sent successfully
+  'betaFeatures:feedback:submit': {
+    betaFeatureKeys: string[]
+    feedbackLength: number
+  }
 }

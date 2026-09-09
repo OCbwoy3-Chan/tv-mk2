@@ -1,6 +1,6 @@
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {TextInput, View, type ViewToken} from 'react-native'
-import {type ModerationOpts} from '@atproto/api'
+import {type ListViewToken as ViewToken, TextInput, View} from 'react-native'
+import {type ModerationOpts} from '@bsky/sdk/moderation'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
@@ -140,7 +140,7 @@ function DialogInner({guide}: {guide?: Follow10ProgressGuide}) {
   const [searchText, setSearchText] = useState(lastSearchText)
   const moderationOpts = useModerationOpts()
   const listRef = useRef<ListMethods>(null)
-  const inputRef = useRef<TextInput>(null)
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const [headerHeight, setHeaderHeight] = useState(0)
   const {currentAccount} = useSession()
 
@@ -271,10 +271,6 @@ function DialogInner({guide}: {guide?: Follow10ProgressGuide}) {
 
   // Track seen profiles
   const seenProfilesRef = useRef<Set<string>>(new Set())
-  const itemsRef = useRef(items)
-  itemsRef.current = items
-  const selectedInterestRef = useRef(selectedInterest)
-  selectedInterestRef.current = selectedInterest
 
   const onViewableItemsChanged = useNonReactiveCallback(
     ({viewableItems}: {viewableItems: ViewToken[]}) => {
@@ -283,7 +279,7 @@ function DialogInner({guide}: {guide?: Follow10ProgressGuide}) {
         if (item.type === 'profile') {
           if (!seenProfilesRef.current.has(item.profile.did)) {
             seenProfilesRef.current.add(item.profile.did)
-            const position = itemsRef.current.findIndex(
+            const position = items.findIndex(
               i => i.type === 'profile' && i.profile.did === item.profile.did,
             )
             ax.metric('suggestedUser:seen', {
@@ -293,9 +289,7 @@ function DialogInner({guide}: {guide?: Follow10ProgressGuide}) {
               position: position !== -1 ? position : 0,
               suggestedDid: item.profile.did,
               category:
-                selectedInterestRef.current === FOR_YOU_TAB
-                  ? null
-                  : selectedInterestRef.current,
+                selectedInterest === FOR_YOU_TAB ? null : selectedInterest,
             })
           }
         }
@@ -375,7 +369,7 @@ let Header = ({
   interestsDisplayNames,
 }: {
   guide?: Follow10ProgressGuide
-  inputRef: React.RefObject<TextInput | null>
+  inputRef: React.RefObject<React.ComponentRef<typeof TextInput> | null>
   listRef: React.RefObject<ListMethods | null>
   onSelectTab: (v: string) => void
   searchText: string
@@ -680,7 +674,7 @@ function SearchInput({
 }: {
   onChangeText: (text: string) => void
   onEscape: () => void
-  inputRef: React.RefObject<TextInput | null>
+  inputRef: React.RefObject<React.ComponentRef<typeof TextInput> | null>
   defaultValue: string
 }) {
   const t = useTheme()

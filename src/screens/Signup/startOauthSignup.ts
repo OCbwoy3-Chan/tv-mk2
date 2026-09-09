@@ -2,6 +2,7 @@ import {useRequestNotificationsPermission} from '#/lib/notifications/notificatio
 import {useSetHasCheckedForStarterPack} from '#/state/preferences/used-starter-packs'
 import {useSessionApi} from '#/state/session'
 import {getNativeOAuthClient} from '#/state/session/oauth-native-client'
+import {getOAuthScope} from '#/state/session/oauth-scopes'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 
 /**
@@ -16,7 +17,10 @@ export function useStartOauthSignup() {
 
   return async (serviceUrl: string) => {
     const client = getNativeOAuthClient()
-    const session = await client.signIn(serviceUrl, {prompt: 'create'})
+    const session = await client.signIn(serviceUrl, {
+      prompt: 'create',
+      scope: getOAuthScope(),
+    })
     await login(
       {
         service: '',

@@ -1,5 +1,4 @@
 import {View} from 'react-native'
-import {type AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -10,7 +9,7 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
-import {atoms as a, useBreakpoints, useTheme} from '#/alf'
+import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -22,6 +21,7 @@ import {Text} from '#/components/Typography'
 import {type FullVerificationState} from '#/components/verification'
 import {VerificationRemovePrompt} from '#/components/verification/VerificationRemovePrompt'
 import {useAnalytics} from '#/analytics'
+import {type app} from '#/lexicons'
 import type * as bsky from '#/types/bsky'
 
 export {useDialogControl} from '#/components/Dialog'
@@ -30,15 +30,18 @@ export function VerificationsDialog({
   control,
   profile,
   verificationState,
+  issuer,
 }: {
   control: Dialog.DialogControlProps
   profile: bsky.profile.AnyProfileView
   verificationState: FullVerificationState
+  issuer?: string
 }) {
   return (
     <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
       <Dialog.Handle />
       <Inner
+        issuer={issuer}
         control={control}
         profile={profile}
         verificationState={verificationState}
@@ -51,22 +54,29 @@ function Inner({
   profile,
   control,
   verificationState: state,
+  issuer,
 }: {
   control: Dialog.DialogControlProps
   profile: bsky.profile.AnyProfileView
   verificationState: FullVerificationState
+  issuer?: string
 }) {
   const t = useTheme()
   const ax = useAnalytics()
   const {_} = useLingui()
   const {gtMobile} = useBreakpoints()
 
+  const isVerified = profile.verification?.verifiedStatus === 'valid'
+  const verifications =
+    profile.verification?.verifications.filter(
+      v => !issuer || v.issuer === issuer,
+    ) ?? []
   const userName = getUserDisplayName(profile)
   const label = state.profile.isViewer
-    ? state.profile.isVerified
+    ? isVerified
       ? _(msg`You are verified`)
       : _(msg`Your verifications`)
-    : state.profile.isVerified
+    : isVerified
       ? _(msg`${userName} is verified`)
       : _(
           msg({
@@ -79,14 +89,15 @@ function Inner({
     <Dialog.ScrollableInner
       label={label}
       style={[
-        gtMobile ? {width: 'auto', maxWidth: 400, minWidth: 200} : a.w_full,
+        a.w_full,
+        gtMobile && web({width: 'auto', maxWidth: 400, minWidth: 200}),
       ]}>
       <View style={[a.gap_sm, a.pb_lg]}>
         <Text style={[a.text_2xl, a.font_semi_bold, a.pr_4xl, a.leading_tight]}>
           {label}
         </Text>
         <Text style={[a.text_md, a.leading_snug]}>
-          {state.profile.isVerified ? (
+          {isVerified ? (
             <Trans>
               This account has a checkmark because it's been verified by trusted
               sources.
@@ -107,7 +118,7 @@ function Inner({
           </Text>
 
           <View style={[a.gap_lg]}>
-            {profile.verification.verifications.map(v => (
+            {verifications.map(v => (
               <VerifierCard
                 key={v.uri}
                 verification={v}
@@ -117,12 +128,11 @@ function Inner({
             ))}
           </View>
 
-          {profile.verification.verifications.some(v => !v.isValid) &&
-            state.profile.isViewer && (
-              <Admonition type="warning" style={[a.mt_xs]}>
-                <Trans>Some of your verifications are invalid.</Trans>
-              </Admonition>
-            )}
+          {verifications.some(v => !v.isValid) && state.profile.isViewer && (
+            <Admonition type="warning" style={[a.mt_xs]}>
+              <Trans>Some of your verifications are invalid.</Trans>
+            </Admonition>
+          )}
         </View>
       ) : null}
 
@@ -181,7 +191,7 @@ function VerifierCard({
   subject,
   outerDialogControl,
 }: {
-  verification: AppBskyActorDefs.VerificationView
+  verification: app.bsky.actor.defs.VerificationView
   subject: bsky.profile.AnyProfileView
   outerDialogControl: Dialog.DialogControlProps
 }) {

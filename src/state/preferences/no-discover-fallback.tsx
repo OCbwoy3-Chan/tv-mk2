@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (noDiscoverFallback: persisted.Schema['noDiscoverFallback']) => {
       setState(noDiscoverFallback)
-      persisted.write('noDiscoverFallback', noDiscoverFallback)
+      void persisted.write('noDiscoverFallback', noDiscoverFallback)
     },
     [setState],
   )

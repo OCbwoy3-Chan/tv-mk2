@@ -1,13 +1,11 @@
 import {memo, useMemo, useState} from 'react'
 import {Pressable, View} from 'react-native'
 import {
-  type AppBskyActorDefs,
-  type AppBskyLabelerDefs,
   moderateProfile,
   type ModerationDecision,
   type ModerationOpts,
-  type RichText as RichTextAPI,
-} from '@atproto/api'
+} from '@bsky/sdk/moderation'
+import {type RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -67,6 +65,7 @@ import {useAnalytics} from '#/analytics'
 import {IS_IOS, IS_NATIVE} from '#/env'
 import {InviteFriendsDialog} from '#/features/inviteFriends'
 import {useActorStatus} from '#/features/liveNow'
+import {type app} from '#/lexicons'
 import {GermButton} from '../components/GermButton'
 import {ProfileHeaderDisplayName} from './DisplayName'
 import {EditProfileDialog} from './EditProfileDialog'
@@ -78,14 +77,13 @@ import {
 } from './ProfileHeaderLabeler'
 import {ProfileHeaderShell} from './Shell'
 import {ProfileHeaderSuggestedFollows} from './SuggestedFollows'
-
 interface Props {
-  profile: AppBskyActorDefs.ProfileViewDetailed
-  labeler?: AppBskyLabelerDefs.LabelerViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed
   descriptionRT: RichTextAPI | null
   moderationOpts: ModerationOpts
   hideBackButton?: boolean
   isPlaceholderProfile?: boolean
+  labeler?: app.bsky.labeler.defs.LabelerViewDetailed
 }
 
 let ProfileHeaderStandard = ({
@@ -98,7 +96,7 @@ let ProfileHeaderStandard = ({
 }: Props): React.ReactNode => {
   const t = useTheme()
   const profile =
-    useProfileShadow<AppBskyActorDefs.ProfileViewDetailed>(profileUnshadowed)
+    useProfileShadow<app.bsky.actor.defs.ProfileViewDetailed>(profileUnshadowed)
   const {currentAccount} = useSession()
   const {_, i18n} = useLingui()
   const showGermDmButton = useShowGermDmButton()
@@ -365,7 +363,7 @@ export function HeaderStandardButtons({
   onUnfollow,
   minimal,
 }: {
-  profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
+  profile: Shadow<app.bsky.actor.defs.ProfileViewDetailed>
   moderation: ModerationDecision
   moderationOpts: ModerationOpts
   onFollow?: () => void
@@ -400,7 +398,7 @@ export function HeaderStandardButtons({
     onFollow,
     onUnfollow,
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )
@@ -456,26 +454,37 @@ export function HeaderStandardButtons({
 
   const onPressFollow = () => {
     playHaptic()
-    requireAuth(() => {
-      if (confirmFollowUnfollow) {
-        setConfirmationAction('follow')
-        followPromptControl.open()
-      } else {
-        void executeFollow()
+    const displayNameOrHandle = profile.displayName || profile.handle
+    requireAuth(async () => {
+      try {
+        await queueFollow()
+        if (onFollow) {
+          onFollow()
+        }
+        Toast.show(
+          _(
+            msg`Following ${sanitizeDisplayName(
+              displayNameOrHandle,
+              moderation.ui('displayName'),
+            )}`,
+          ),
+        )
+      } catch (err) {
+        const e = err as Error
+        if (e?.name !== 'AbortError') {
+          logger.error('Failed to follow', {message: String(e)})
+          Toast.show(_(msg`There was an issue! ${e.toString()}`), {
+            type: 'error',
+          })
+        }
       }
     })
   }
 
   const onPressUnfollow = () => {
     playHaptic()
-    requireAuth(() => {
-      if (confirmFollowUnfollow) {
-        setConfirmationAction('unfollow')
-        followPromptControl.open()
-      } else {
-        void executeUnfollow()
-      }
-    })
+    setConfirmationAction('unfollow')
+    followPromptControl.open()
   }
 
   const onConfirmFollowAction = () => {
@@ -606,6 +615,10 @@ export function HeaderStandardButtons({
                     setPendingEphemeralAccount(account)
                     void (async () => {
                       const action = await getEphemeralFollowAction(account)
+                      if (!action) {
+                        setPendingEphemeralAccount(null)
+                        return
+                      }
                       setConfirmationAction(action)
                       followPromptControl.open()
                     })()

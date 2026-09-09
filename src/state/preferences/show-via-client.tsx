@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['showViaClient']) => {
       setState(value)
-      persisted.write('showViaClient', value)
+      void persisted.write('showViaClient', value)
     },
     [setState],
   )

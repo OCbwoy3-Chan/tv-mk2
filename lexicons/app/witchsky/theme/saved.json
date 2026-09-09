@@ -1,0 +1,19 @@
+{
+  "lexicon": 1,
+  "id": "app.witchsky.theme.saved",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["subject", "snapshot", "createdAt"],
+        "properties": {
+          "subject": {"type": "ref", "ref": "com.atproto.repo.strongRef"},
+          "snapshot": {"type": "ref", "ref": "app.witchsky.theme.colors"},
+          "createdAt": {"type": "string", "format": "datetime"}
+        }
+      }
+    }
+  }
+}

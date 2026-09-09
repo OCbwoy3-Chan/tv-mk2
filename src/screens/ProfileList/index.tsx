@@ -1,12 +1,8 @@
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {View} from 'react-native'
 import {useAnimatedRef} from 'react-native-reanimated'
-import {
-  AppBskyGraphDefs,
-  AtUri,
-  moderateUserList,
-  type ModerationOpts,
-} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
+import {moderateUserList, type ModerationOpts} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -42,6 +38,8 @@ import * as Layout from '#/components/Layout'
 import {Loader} from '#/components/Loader'
 import * as Hider from '#/components/moderation/Hider'
 import {IS_WEB} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
+import {app} from '#/lexicons'
 import {AboutSection} from './AboutSection'
 import {ErrorScreen} from './components/ErrorScreen'
 import {Header} from './components/Header'
@@ -146,7 +144,7 @@ function ProfileListScreenLoaded({
   preferences,
 }: Props & {
   uri: string
-  list: AppBskyGraphDefs.ListView
+  list: app.bsky.graph.defs.ListView
   moderationOpts: ModerationOpts
   preferences: UsePreferencesQueryResponse
 }) {
@@ -158,7 +156,7 @@ function ProfileListScreenLoaded({
   const {rkey} = route.params
   const feedSectionRef = useRef<SectionRef>(null)
   const aboutSectionRef = useRef<SectionRef>(null)
-  const isCurateList = list.purpose === AppBskyGraphDefs.CURATELIST
+  const isCurateList = list.purpose === app.bsky.graph.defs.curatelist.value
   const isScreenFocused = useIsFocused()
   const isHidden = list.labels?.findIndex(l => l.val === '!hide') !== -1
   const isOwner = currentAccount?.did === list.creator.did
@@ -176,7 +174,7 @@ function ProfileListScreenLoaded({
 
   const onChangeMembers = () => {
     if (isCurateList) {
-      truncateAndInvalidate(queryClient, FEED_RQKEY(`list|${list.uri}`))
+      void truncateAndInvalidate(queryClient, FEED_RQKEY(`list|${list.uri}`))
     }
   }
 
@@ -233,7 +231,12 @@ function ProfileListScreenLoaded({
               testID="composeFAB"
               userStyleVariant="compose"
               onPress={() => openComposer({logContext: 'Fab'})}
-              icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+              icon={
+                <EditBigIcon
+                  size="lg"
+                  fill={accentForeground(t, t.palette.primary_500)}
+                />
+              }
               accessibilityRole="button"
               accessibilityLabel={_(msg`New post`)}
               accessibilityHint=""
@@ -277,7 +280,12 @@ function ProfileListScreenLoaded({
             testID="composeFAB"
             userStyleVariant="compose"
             onPress={() => openComposer({logContext: 'Fab'})}
-            icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+            icon={
+              <EditBigIcon
+                size="lg"
+                fill={accentForeground(t, t.palette.primary_500)}
+              />
+            }
             accessibilityRole="button"
             accessibilityLabel={_(msg`New post`)}
             accessibilityHint=""

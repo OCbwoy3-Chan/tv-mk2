@@ -9,7 +9,7 @@ import {Text} from '#/components/Typography'
 import {navigate} from '#/Navigation'
 import type * as bsky from '#/types/bsky'
 import {TennaIcon} from '../Icons'
-import { deltaCharNames, isDeltaLabel, deltaCharIcons } from './TennaBadge'
+import { deltaCharIcons,deltaCharNames, isDeltaLabel } from './TennaBadge'
 
 export function TennaAccountAlert({
   control,

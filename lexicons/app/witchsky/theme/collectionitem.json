@@ -1,0 +1,28 @@
+{
+  "lexicon": 1,
+  "id": "app.witchsky.theme.collectionitem",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Record representing a theme's inclusion in a specific theme collection. Consumers should ignore duplicate items.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["subject", "collection", "createdAt"],
+        "properties": {
+          "subject": {
+            "type": "ref",
+            "ref": "com.atproto.repo.strongRef",
+            "description": "Reference to the theme included in the collection."
+          },
+          "collection": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "Reference to the app.witchsky.theme.collection record."
+          },
+          "createdAt": {"type": "string", "format": "datetime"}
+        }
+      }
+    }
+  }
+}

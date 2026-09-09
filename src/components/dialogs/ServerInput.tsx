@@ -93,7 +93,7 @@ function DialogInner({
         if (!pdsAddressHistory.includes(url)) {
           const newHistory = [url, ...pdsAddressHistory.slice(0, 4)]
           setPdsAddressHistory(newHistory)
-          persisted.write('pdsAddressHistory', newHistory)
+          void persisted.write('pdsAddressHistory', newHistory)
         }
 
         return url

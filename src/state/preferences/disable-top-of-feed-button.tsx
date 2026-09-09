@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (disableTopOfFeedButton: persisted.Schema['disableTopOfFeedButton']) => {
       setState(disableTopOfFeedButton)
-      persisted.write('disableTopOfFeedButton', disableTopOfFeedButton)
+      void persisted.write('disableTopOfFeedButton', disableTopOfFeedButton)
     },
     [setState],
   )

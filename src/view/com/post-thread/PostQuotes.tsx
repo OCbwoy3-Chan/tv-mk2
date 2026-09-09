@@ -1,11 +1,6 @@
 import {useCallback, useState} from 'react'
 import {View} from 'react-native'
-import {
-  type AppBskyFeedDefs,
-  AppBskyFeedPost,
-  moderatePost,
-  type ModerationDecision,
-} from '@atproto/api'
+import {moderatePost, type ModerationDecision} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -21,18 +16,33 @@ import {Post} from '#/view/com/post/Post'
 import {atoms as a, useTheme} from '#/alf'
 import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
 import {Text} from '#/components/Typography'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {List} from '../util/List'
 
+function renderItem({
+  item,
+  index,
+}: {
+  item: {
+    post: app.bsky.feed.defs.PostView
+    moderation: ModerationDecision
+    record: app.bsky.feed.post.Main
+  }
+  index: number
+}) {
+  return <Post post={item.post} hideTopBorder={index === 0} />
+}
+
 function keyExtractor(item: {
-  post: AppBskyFeedDefs.PostView
+  post: app.bsky.feed.defs.PostView
   moderation: ModerationDecision
-  record: AppBskyFeedPost.Record
+  record: app.bsky.feed.post.Main
 }) {
   return item.post.uri
 }
 
-function ExtractedQuotedPost({post}: {post: AppBskyFeedDefs.PostView}) {
+function ExtractedQuotedPost({post}: {post: app.bsky.feed.defs.PostView}) {
   const t = useTheme()
 
   return (
@@ -64,7 +74,7 @@ export function PostQuotes({
   isQuotedPostExtracted,
 }: {
   uri: string
-  quotedPost?: AppBskyFeedDefs.PostView
+  quotedPost?: app.bsky.feed.defs.PostView
   isQuotedPostExtracted: boolean
 }) {
   const {_} = useLingui()
@@ -96,10 +106,7 @@ export function PostQuotes({
       .flatMap(page =>
         page.posts.map(post => {
           if (
-            !bsky.dangerousIsType<AppBskyFeedPost.Record>(
-              post.record,
-              AppBskyFeedPost.isRecord,
-            ) ||
+            !bsky.isType(app.bsky.feed.post, post.record) ||
             !moderationOpts
           ) {
             return null
@@ -135,9 +142,9 @@ export function PostQuotes({
       index,
     }: {
       item: {
-        post: AppBskyFeedDefs.PostView
+        post: app.bsky.feed.defs.PostView
         moderation: ModerationDecision
-        record: AppBskyFeedPost.Record
+        record: app.bsky.feed.post.Main
       }
       index: number
     }) => (
@@ -192,7 +199,6 @@ export function PostQuotes({
           endMessageText={_(msg`That's all, folks!`)}
         />
       }
-      // @ts-ignore our .web version only -prf
       desktopFixedHeight
       initialNumToRender={initialNumToRender}
       windowSize={11}

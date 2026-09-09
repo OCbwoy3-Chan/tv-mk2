@@ -48,7 +48,7 @@ import * as Dialog from '#/components/Dialog'
 import * as Toggle from '#/components/forms/Toggle'
 import {Celebrate_Stroke2_Corner0_Rounded as CelebrateIcon} from '#/components/icons/Celebrate'
 import {Heart2_Stroke2_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
-import {Image_Stroke2_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
+import {Image_Stroke1_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {UFO_Stroke2_Corner0_Rounded as UfoIcon} from '#/components/icons/UFO'
 import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
@@ -76,7 +76,7 @@ export function RunesDisplaySettingsScreen() {
   const setThumbnailFormat = useSetThumbnailFormat()
   const fullsizeFormat = useFullsizeFormat() ?? 'webp'
   const setFullsizeFormat = useSetFullsizeFormat()
-  const downloadFormat = useDownloadFormat() ?? 'jpeg'
+  const downloadFormat = useDownloadFormat() ?? 'original'
   const setDownloadFormat = useSetDownloadFormat()
   const loadAsPngs = useLoadAsPngs()
   const setLoadAsPngs = useSetLoadAsPngs()

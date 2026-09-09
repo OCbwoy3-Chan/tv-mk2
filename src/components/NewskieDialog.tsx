@@ -1,6 +1,6 @@
 import {useMemo, useState} from 'react'
 import {View} from 'react-native'
-import {type AppBskyActorDefs, moderateProfile} from '@atproto/api'
+import {moderateProfile} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -19,12 +19,13 @@ import {Newskie} from '#/components/icons/Newskie'
 import * as StarterPackCard from '#/components/StarterPack/StarterPackCard'
 import {Text} from '#/components/Typography'
 import {IS_NATIVE} from '#/env'
+import {type app} from '#/lexicons'
 
 export function NewskieDialog({
   profile,
   disabled,
 }: {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed
   disabled?: boolean
 }) {
   const t = useTheme()
@@ -74,7 +75,7 @@ function DialogInner({
   createdAt,
   now,
 }: {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed
   createdAt: string
   now: number
 }) {
@@ -101,7 +102,7 @@ function DialogInner({
     if (isMe) {
       if (profile.joinedViaStarterPack) {
         return _(
-          msg`You joined Bluesky using a starter pack ${timeAgoString} ago`,
+          msg`You joined Bluesky using a Starter Pack ${timeAgoString} ago`,
         )
       } else {
         return _(msg`You joined Bluesky ${timeAgoString} ago`)
@@ -109,7 +110,7 @@ function DialogInner({
     } else {
       if (profile.joinedViaStarterPack) {
         return _(
-          msg`${profileName} joined Bluesky using a starter pack ${timeAgoString} ago`,
+          msg`${profileName} joined Bluesky using a Starter Pack ${timeAgoString} ago`,
         )
       } else {
         return _(msg`${profileName} joined Bluesky ${timeAgoString} ago`)

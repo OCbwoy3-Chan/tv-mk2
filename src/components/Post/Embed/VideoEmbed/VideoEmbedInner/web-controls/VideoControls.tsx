@@ -7,11 +7,7 @@ import type Hls from 'hls.js'
 
 import {formatTime} from '#/lib/media/video/formatTime'
 import {clamp} from '#/lib/numbers'
-import {
-  useAutoplayDisabled,
-  useSetSubtitlesEnabled,
-  useSubtitlesEnabled,
-} from '#/state/preferences'
+import {useAutoplayDisabled, useSubtitlesEnabled} from '#/state/preferences'
 import {atoms as a, useTheme, web} from '#/alf'
 import {useIsWithinMessage} from '#/components/dms/MessageContext'
 import {useFullscreen} from '#/components/hooks/useFullscreen'
@@ -20,22 +16,18 @@ import {
   ArrowsDiagonalIn_Stroke2_Corner0_Rounded as ArrowsInIcon,
   ArrowsDiagonalOut_Stroke2_Corner0_Rounded as ArrowsOutIcon,
 } from '#/components/icons/ArrowsDiagonal'
-import {
-  CC_Filled_Corner0_Rounded as CCActiveIcon,
-  CC_Stroke2_Corner0_Rounded as CCInactiveIcon,
-} from '#/components/icons/CC'
-import {Download_Stroke2_Corner0_Rounded as DownloadIcon} from '#/components/icons/Download'
 import {Pause_Filled_Corner0_Rounded as PauseIcon} from '#/components/icons/Pause'
 import {Play_Filled_Corner0_Rounded as PlayIcon} from '#/components/icons/Play'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {IS_WEB_MOBILE_IOS, IS_WEB_TOUCH_DEVICE} from '#/env'
 import {GifPresentationControls} from '../../GifPresentationControls'
+import {useVideoPlaybackSpeed} from '../../useVideoPlaybackSpeed'
 import {TimeIndicator} from '../TimeIndicator'
 import {ControlButton} from './ControlButton'
 import {Scrubber} from './Scrubber'
+import {SettingsMenu} from './SettingsMenu'
 import {useVideoElement} from './utils'
-import {type ControlsProps} from './VideoControls.shared'
 import {VolumeControl} from './VolumeControl'
 
 export function Controls({
@@ -82,10 +74,25 @@ export function Controls({
     error,
     canPlay,
   } = useVideoElement(videoRef)
+  const [playbackSpeed] = useVideoPlaybackSpeed()
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    const applySpeed = () => {
+      const rate = isGif ? 1 : playbackSpeed
+      video.defaultPlaybackRate = rate
+      video.playbackRate = rate
+    }
+    applySpeed()
+    video.addEventListener('loadedmetadata', applySpeed)
+    return () => video.removeEventListener('loadedmetadata', applySpeed)
+  }, [videoRef, playbackSpeed, isGif])
+
   const t = useTheme()
   const {_} = useLingui()
   const subtitlesEnabled = useSubtitlesEnabled()
-  const setSubtitlesEnabled = useSetSubtitlesEnabled()
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [selectedSubtitle, setSelectedSubtitle] = useState(0)
   const {
     state: hovered,
     onIn: onHover,
@@ -162,11 +169,11 @@ export function Controls({
   useEffect(() => {
     if (!hlsRef.current) return
     if (hasSubtitleTrack && subtitlesEnabled && canPlay) {
-      hlsRef.current.subtitleTrack = 0
+      hlsRef.current.subtitleTrack = selectedSubtitle
     } else {
       hlsRef.current.subtitleTrack = -1
     }
-  }, [hasSubtitleTrack, subtitlesEnabled, hlsRef, canPlay])
+  }, [hasSubtitleTrack, subtitlesEnabled, selectedSubtitle, hlsRef, canPlay])
 
   // clicking on any button should focus the player, if it's not already focused
   const drawFocus = useCallback(() => {
@@ -222,15 +229,43 @@ export function Controls({
     togglePlayPause()
   }, [drawFocus, togglePlayPause])
 
-  const onPressSubtitles = useCallback(() => {
-    drawFocus()
-    setSubtitlesEnabled(!subtitlesEnabled)
-  }, [drawFocus, setSubtitlesEnabled, subtitlesEnabled])
-
   const onPressFullscreen = useCallback(() => {
     drawFocus()
     toggleFullscreen()
   }, [drawFocus, toggleFullscreen])
+
+  useEffect(() => {
+    const onFullscreenKey = (event: KeyboardEvent) => {
+      const container = fullscreenRef.current
+      const target = event.target
+      if (
+        isGif ||
+        event.defaultPrevented ||
+        event.repeat ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        event.key.toLowerCase() !== 'f' ||
+        (target instanceof Element &&
+          target.closest(
+            'input, textarea, select, [contenteditable="true"]',
+          )) ||
+        !container
+      )
+        return
+      const fullscreenElement = document.fullscreenElement
+      const ownsKeyboard = fullscreenElement
+        ? fullscreenElement === container
+        : container.contains(document.activeElement) ||
+          (active && focused && document.activeElement === document.body)
+      if (!ownsKeyboard) return
+      event.preventDefault()
+      event.stopPropagation()
+      onPressFullscreen()
+    }
+    document.addEventListener('keydown', onFullscreenKey)
+    return () => document.removeEventListener('keydown', onFullscreenKey)
+  }, [active, focused, fullscreenRef, isGif, onPressFullscreen])
 
   const onSeek = useCallback(
     (time: number) => {
@@ -330,6 +365,7 @@ export function Controls({
   )
 
   const showControls =
+    settingsOpen ||
     ((focused || autoplayDisabled) && !playing) ||
     (interactingViaKeypress ? hasFocus : hovered)
 
@@ -448,27 +484,6 @@ export function Controls({
               {formatTime(currentTime)} / {formatTime(duration)}
             </Text>
           )}
-          {hasSubtitleTrack && (
-            <ControlButton
-              active={subtitlesEnabled}
-              activeLabel={_(msg`Disable captions`)}
-              inactiveLabel={_(msg`Enable captions`)}
-              activeIcon={CCActiveIcon}
-              inactiveIcon={CCInactiveIcon}
-              onPress={onPressSubtitles}
-            />
-          )}
-          {onDownload && (
-            <ControlButton
-              testID="videoDownloadBtn"
-              active={false}
-              activeLabel={_(msg`Download video`)}
-              inactiveLabel={_(msg`Download video`)}
-              activeIcon={DownloadIcon}
-              inactiveIcon={DownloadIcon}
-              onPress={onDownload}
-            />
-          )}
           <VolumeControl
             muted={muted}
             changeMuted={changeMuted}
@@ -476,6 +491,17 @@ export function Controls({
             onHover={onVolumeHover}
             onEndHover={onVolumeEndHover}
             drawFocus={drawFocus}
+          />
+          <SettingsMenu
+            hlsRef={hlsRef}
+            open={settingsOpen}
+            onOpenChange={open => {
+              if (open) drawFocus()
+              setSettingsOpen(open)
+            }}
+            selectedSubtitle={selectedSubtitle}
+            onSubtitleChange={setSelectedSubtitle}
+            onDownload={onDownload}
           />
           {!IS_WEB_MOBILE_IOS && (
             <ControlButton

@@ -66,12 +66,10 @@ let taskOrder = 0
 let activeCount = 0
 let activeNearCount = 0
 let nearDrainHandle:
-  | ReturnType<typeof InteractionManager.runAfterInteractions>
-  | undefined
+  ReturnType<typeof InteractionManager.runAfterInteractions> | undefined
 let persistTimer: ReturnType<typeof setTimeout> | undefined
 let persistInteractionHandle:
-  | ReturnType<typeof InteractionManager.runAfterInteractions>
-  | undefined
+  ReturnType<typeof InteractionManager.runAfterInteractions> | undefined
 
 function notifyLabelListeners(did: string) {
   labelListeners.get(did)?.forEach(listener => listener())

@@ -1,5 +1,4 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {type AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -31,6 +30,7 @@ import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {IS_IOS} from '#/env'
+import {type app} from '#/lexicons'
 import {GrowthHack} from './GrowthHack'
 
 export function ThreadItemAnchorFollowButton({
@@ -70,7 +70,7 @@ export function ThreadItemAnchorFollowButtonInner({
 function PostThreadFollowBtnLoaded({
   profile: profileUnshadowed,
 }: {
-  profile: AppBskyActorDefs.ProfileViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed
 }) {
   const navigation = useNavigation()
   const {_} = useLingui()
@@ -86,11 +86,12 @@ function PostThreadFollowBtnLoaded({
     profile,
     logContext: 'PostThreadItem',
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
   const confirmFollowUnfollow = useConfirmFollowUnfollow()
   const promptControl = Prompt.usePromptControl()
-  const [confirmationAction, setConfirmationAction] =
-    useState<'follow' | 'unfollow'>('follow')
+  const [confirmationAction, setConfirmationAction] = useState<
+    'follow' | 'unfollow'
+  >('follow')
   const [pendingEphemeralAccount, setPendingEphemeralAccount] =
     useState<SessionAccount | null>(null)
 
@@ -171,17 +172,18 @@ function PostThreadFollowBtnLoaded({
     } else {
       void executeUnfollow()
     }
-  }, [confirmationAction, executeFollow, executeUnfollow, pendingEphemeralAccount, onSelectEphemeralAccount])
+  }, [
+    confirmationAction,
+    executeFollow,
+    executeUnfollow,
+    pendingEphemeralAccount,
+    onSelectEphemeralAccount,
+  ])
 
   const onPress = useCallback(() => {
     if (!isFollowing) {
       requireAuth(() => {
-        if (confirmFollowUnfollow) {
-          setConfirmationAction('follow')
-          promptControl.open()
-        } else {
-          void executeFollow()
-        }
+        void executeFollow()
       })
     } else {
       requireAuth(() => {
@@ -253,6 +255,10 @@ function PostThreadFollowBtnLoaded({
               setPendingEphemeralAccount(account)
               void (async () => {
                 const action = await getEphemeralFollowAction(account)
+                if (!action) {
+                  setPendingEphemeralAccount(null)
+                  return
+                }
                 setConfirmationAction(action)
                 promptControl.open()
               })()
@@ -270,7 +276,9 @@ function PostThreadFollowBtnLoaded({
       {confirmFollowUnfollow && (
         <FollowConfirmationDialog
           control={promptControl}
-          displayName={sanitizeDisplayName(profile.displayName || profile.handle)}
+          displayName={sanitizeDisplayName(
+            profile.displayName || profile.handle,
+          )}
           handle={profile.handle}
           actionType={confirmationAction}
           onConfirm={onConfirm}

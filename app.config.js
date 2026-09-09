@@ -20,6 +20,7 @@ module.exports = function (_config) {
 
   const IS_TESTFLIGHT = process.env.EXPO_PUBLIC_ENV === 'testflight'
   const IS_PRODUCTION = process.env.EXPO_PUBLIC_ENV === 'production'
+  const IS_E2E = process.env.EXPO_PUBLIC_ENV === 'e2e'
   const IS_DEV = !IS_TESTFLIGHT && !IS_PRODUCTION
 
   const ASSOCIATED_DOMAINS = [
@@ -67,7 +68,6 @@ module.exports = function (_config) {
       icon: './assets/app-icons/ios_icon_legacy_light.png',
       userInterfaceStyle: 'automatic',
       primaryColor: '#EDBC1A',
-      newArchEnabled: true,
       ios: {
         supportsTablet: false,
         bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'party.tenna',
@@ -201,10 +201,6 @@ module.exports = function (_config) {
       androidStatusBar: {
         barStyle: 'light-content',
       },
-      // Dark nav bar in light mode is better than light nav bar in dark mode
-      androidNavigationBar: {
-        barStyle: 'light-content',
-      },
       android: {
         icon: './assets/app-icons/android_icon_legacy_light.png',
         adaptiveIcon: {
@@ -286,6 +282,25 @@ module.exports = function (_config) {
         checkAutomatically: 'NEVER',
       },
       plugins: [
+        [
+          'expo-dev-client',
+          {
+            toolsButton: false,
+            ...(IS_E2E
+              ? {
+                  launchMode: 'most-recent',
+                  skipOnboarding: true,
+                  showMenuAtLaunch: false,
+                  ios: {
+                    defaultLaunchURL: 'http://localhost:8081',
+                  },
+                  android: {
+                    defaultLaunchURL: 'http://10.0.2.2:8081',
+                  },
+                }
+              : {}),
+          },
+        ],
         'expo-video',
         'expo-localization',
         'expo-web-browser',
@@ -309,7 +324,7 @@ module.exports = function (_config) {
           'expo-build-properties',
           {
             ios: {
-              deploymentTarget: '15.1',
+              deploymentTarget: '16.4',
               buildReactNativeFromSource: true,
               ccacheEnabled: IS_DEV,
               cxxLanguageStandard: 'c++23',
@@ -323,8 +338,8 @@ module.exports = function (_config) {
             },
             android: {
               compileSdkVersion: 36,
-              targetSdkVersion: 35,
-              buildToolsVersion: '35.0.0',
+              targetSdkVersion: 36,
+              buildToolsVersion: '36.0.0',
               buildReactNativeFromSource: IS_PRODUCTION,
             },
           },
@@ -337,7 +352,6 @@ module.exports = function (_config) {
             sounds: PLATFORM === 'ios' ? ['assets/dm.aiff'] : ['assets/dm.mp3'],
           },
         ],
-        'react-native-compressor',
         [
           '@bitdrift/react-native',
           {
@@ -426,24 +440,22 @@ module.exports = function (_config) {
           'expo-splash-screen',
           {
             ios: {
-              enableFullScreenImage_legacy: true, // iOS only
-              backgroundColor: '#006AFF', // primary_500
-              image: './assets/splash/splash.png',
-              resizeMode: 'cover',
+              backgroundColor: '#fefbfb',
+              image: './assets/splash/witchsky.png',
+              resizeMode: 'contain',
               dark: {
-                enableFullScreenImage_legacy: true, // iOS only
-                backgroundColor: '#262220', // primary_900
-                image: './assets/splash/splash-dark.png',
-                resizeMode: 'cover',
+                backgroundColor: '#281c1c',
+                image: './assets/splash/witchsky.png',
+                resizeMode: 'contain',
               },
             },
             android: {
-              backgroundColor: '#E25C50', // primary_500
-              image: './assets/splash/android-splash-logo-white.png',
+              backgroundColor: '#fefbfb',
+              image: './assets/splash/witchsky.png',
               imageWidth: 102, // even division of 306px
               dark: {
-                backgroundColor: '#ED5345', // primary_900
-                image: './assets/splash/android-splash-logo-white.png',
+                backgroundColor: '#281c1c',
+                image: './assets/splash/witchsky.png',
                 imageWidth: 102,
               },
             },

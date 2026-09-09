@@ -51,7 +51,7 @@ export function FABInner({
 
   const tabletSpacing = gtMobile
     ? {right: 50, bottom: 50}
-    : {right: 24, bottom: clamp(insets.bottom, 15, 60) + 15}
+    : {right: 24, bottom: IS_WEB ? 24 : clamp(insets.bottom, 15, 60) + 15}
 
   return (
     <Animated.View
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   outer: {
-    // @ts-ignore web-only
+    // @ts-expect-error web-only
     position: IS_WEB ? 'fixed' : 'absolute',
     zIndex: 1,
     cursor: 'pointer',

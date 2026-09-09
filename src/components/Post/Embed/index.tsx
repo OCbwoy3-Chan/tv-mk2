@@ -1,18 +1,15 @@
 import {useCallback, useMemo} from 'react'
 import {View} from 'react-native'
-import {
-  type $Typed,
-  type AppBskyFeedDefs,
-  AppBskyFeedPost,
-  AtUri,
-  moderatePost,
-  RichText as RichTextAPI,
-} from '@atproto/api'
+import {type $Typed} from '@atproto/lex'
+import {AtUri} from '@atproto/syntax'
+import {moderatePost} from '@bsky/sdk/moderation'
+import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
+import {parsePrivatePostLink} from '#/lib/private-post-link'
 import {makeProfileLink} from '#/lib/routes/links'
 import {getChatInviteCodeFromUrl} from '#/lib/strings/url-helpers'
 import {useDirectFetchRecords} from '#/state/preferences/direct-fetch-records'
@@ -30,11 +27,14 @@ import {PostAlerts} from '#/components/moderation/PostAlerts'
 import * as ReportDialogMetadataContext from '#/components/moderation/ReportDialog/ReportDialogMetadataContext'
 import {StandardSiteEmbed} from '#/components/Post/Embed/StandardSiteEmbed'
 import {isStandardSiteEmbed} from '#/components/Post/Embed/StandardSiteEmbed/utils'
+import {ThemeEmbed} from '#/components/Post/Embed/ThemeEmbed'
+import {isThemeEmbed} from '#/components/Post/Embed/ThemeEmbed/utils'
 import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import {Embed as StarterPackCard} from '#/components/StarterPack/StarterPackCard'
 import {SubtleHover} from '#/components/SubtleHover'
 import {IS_ANDROID} from '#/env'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {
   type Embed as TEmbed,
@@ -47,9 +47,9 @@ import {ModeratedFeedEmbed} from './FeedEmbed'
 import {ImageEmbed} from './ImageEmbed'
 import {ModeratedListEmbed} from './ListEmbed'
 import {PostPlaceholder as PostPlaceholderText} from './PostPlaceholder'
+import { PrivatePostEmbed } from './PrivatePostEmbed'
 import {type CommonProps, type EmbedProps, PostEmbedViewContext} from './types'
 import {VideoEmbed} from './VideoEmbed'
-import { PrivatePostEmbed } from './PrivatePostEmbed'
 
 export {PostEmbedViewContext} from './types'
 
@@ -75,7 +75,11 @@ export function Embed({embed: rawEmbed, ...rest}: EmbedProps) {
     }
     case 'post_with_media': {
       return (
-        <View style={rest.style}>
+        <View
+          style={[
+            rest.style,
+            rest.viewContext === PostEmbedViewContext.ChatMessage && a.gap_sm,
+          ]}>
           <MediaEmbed embed={embed.media} {...rest} />
           <RecordEmbed embed={embed.view} {...rest} />
         </View>
@@ -105,11 +109,20 @@ function MediaEmbed({
       )
     }
     case 'link': {
-      if (embed.view.external.uri.startsWith("https://private-post.tenna.party")) {
-        const params = new URL(embed.view.external.uri).searchParams
-        return <PrivatePostEmbed style={[]} numberOfLines={undefined} textOnly={false} author={rest.post?.author.did} uri={params.get("uri") ?? ""} cid={params.get("cid") ?? ""} viewContext={rest.viewContext} />
+      const privatePostLink = parsePrivatePostLink(embed.view.external.uri)
+      if (privatePostLink) {
+        return <PrivatePostEmbed style={[]} numberOfLines={undefined} textOnly={false} author={rest.post?.author.did} {...privatePostLink} viewContext={rest.viewContext} />
       }
 
+      if (isThemeEmbed(embed.view.external)) {
+        return (
+          <ContentHider
+            modui={rest.moderation?.ui('contentMedia')}
+            activeStyle={[a.mt_sm]}>
+            <ThemeEmbed view={embed.view.external} onOpen={rest.onOpen} />
+          </ContentHider>
+        )
+      }
       if (isStandardSiteEmbed(embed.view.external)) {
         return (
           <ContentHider
@@ -147,6 +160,7 @@ function MediaEmbed({
             link={embed.view.external}
             onOpen={rest.onOpen}
             viewContext={rest.viewContext}
+            post={rest.post}
             style={[a.mt_sm, rest.style]}
           />
         </ContentHider>
@@ -157,7 +171,7 @@ function MediaEmbed({
         <ContentHider
           modui={rest.moderation?.ui('contentMedia')}
           activeStyle={[a.mt_sm]}>
-          <VideoEmbed embed={embed.view} did={rest.post?.author.did} />
+          <VideoEmbed embed={embed.view} post={rest.post} />
         </ContentHider>
       )
     }
@@ -401,7 +415,7 @@ export function QuoteEmbed({
   linkDisabled?: boolean
 }) {
   const moderationOpts = useModerationOpts()
-  const quote = useMemo<$Typed<AppBskyFeedDefs.PostView>>(
+  const quote = useMemo<$Typed<app.bsky.feed.defs.PostView>>(
     () => ({
       ...embed.view,
       $type: 'app.bsky.feed.defs#postView',
@@ -423,13 +437,7 @@ export function QuoteEmbed({
     IS_ANDROID && viewContext === PostEmbedViewContext.FeedCarousel
 
   const richText = useMemo(() => {
-    if (
-      !bsky.dangerousIsType<AppBskyFeedPost.Record>(
-        quote.record,
-        AppBskyFeedPost.isRecord,
-      )
-    )
-      return undefined
+    if (!bsky.isType(app.bsky.feed.post, quote.record)) return undefined
     const {text, facets} = quote.record
     return text.trim()
       ? new RichTextAPI({text: text, facets: facets})

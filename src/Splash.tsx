@@ -1,11 +1,5 @@
 import {useCallback, useEffect, useState} from 'react'
-import {
-  AccessibilityInfo,
-  Image as RNImage,
-  StyleSheet,
-  useColorScheme,
-  View,
-} from 'react-native'
+import {AccessibilityInfo, View} from 'react-native'
 import Animated, {
   Easing,
   interpolate,
@@ -14,21 +8,12 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
-import Svg, {Path, type SvgProps} from 'react-native-svg'
 import {scheduleOnRN} from 'react-native-worklets'
-import {Image} from 'expo-image'
 import * as SplashScreen from 'expo-splash-screen'
 
 import {Logotype} from '#/view/icons/Logotype'
-// @ts-ignore
-import splashImagePointer from '../assets/splash/splash.png'
-// @ts-ignore
-import darkSplashImagePointer from '../assets/splash/splash-dark.png'
+import {atoms as a, useTheme} from '#/alf'
 import { Logomark } from './view/icons/Logomark'
-const splashImageUri = RNImage.resolveAssetSource(splashImagePointer).uri
-const darkSplashImageUri = RNImage.resolveAssetSource(
-  darkSplashImagePointer,
-).uri
 
 export const Logo = Logomark
 
@@ -44,17 +29,11 @@ export function Splash(props: React.PropsWithChildren<Props>) {
   const outroApp = useSharedValue(0)
   const outroAppOpacity = useSharedValue(0)
   const [isAnimationComplete, setIsAnimationComplete] = useState(false)
-  const [isImageLoaded, setIsImageLoaded] = useState(false)
   const [isLayoutReady, setIsLayoutReady] = useState(false)
   const [reduceMotion, setReduceMotion] = useState<boolean | undefined>(false)
-  const isReady =
-    props.isReady &&
-    isImageLoaded &&
-    isLayoutReady &&
-    reduceMotion !== undefined
+  const isReady = props.isReady && isLayoutReady && reduceMotion !== undefined
 
-  const colorScheme = useColorScheme()
-  const isDarkMode = colorScheme === 'dark'
+  const t = useTheme()
 
   const logoAnimation = useAnimatedStyle(() => {
     const introScale = interpolate(intro.get(), [0, 1], [0.8, 1], 'clamp')
@@ -103,20 +82,19 @@ export function Splash(props: React.PropsWithChildren<Props>) {
 
   const onFinish = useCallback(() => setIsAnimationComplete(true), [])
   const onLayout = useCallback(() => setIsLayoutReady(true), [])
-  const onLoadEnd = useCallback(() => setIsImageLoaded(true), [])
 
   useEffect(() => {
     if (isReady) {
       SplashScreen.hideAsync()
         .then(() => {
-          intro.set(() =>
+          intro.set(
             withTiming(
               1,
               {duration: 400, easing: Easing.out(Easing.cubic)},
               () => {
                 'worklet'
                 // set these values to check animation at specific point
-                outroLogo.set(() =>
+                outroLogo.set(
                   withTiming(
                     1,
                     {duration: 1200, easing: Easing.in(Easing.cubic)},
@@ -125,13 +103,13 @@ export function Splash(props: React.PropsWithChildren<Props>) {
                     },
                   ),
                 )
-                outroApp.set(() =>
+                outroApp.set(
                   withTiming(1, {
                     duration: 1200,
                     easing: Easing.inOut(Easing.cubic),
                   }),
                 )
-                outroAppOpacity.set(() =>
+                outroAppOpacity.set(
                   withTiming(1, {
                     duration: 1200,
                     easing: Easing.in(Easing.cubic),
@@ -146,21 +124,25 @@ export function Splash(props: React.PropsWithChildren<Props>) {
   }, [onFinish, intro, outroLogo, outroApp, outroAppOpacity, isReady])
 
   useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion)
+    void AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion)
   }, [])
 
-  // special off-spec color for dark mode
-  const logoBg = isDarkMode ? '#0F1824' : '#fff'
+  const logoBg = t.atoms.bg.backgroundColor
 
   return (
     <View style={{flex: 1}} onLayout={onLayout}>
       {!isAnimationComplete && (
-        <View style={StyleSheet.absoluteFillObject}>
-          <Image
-            accessibilityIgnoresInvertColors
-            onLoadEnd={onLoadEnd}
-            source={{uri: isDarkMode ? darkSplashImageUri : splashImageUri}}
-            style={StyleSheet.absoluteFillObject}
+        <View
+          style={[
+            a.absolute,
+            a.inset_0,
+            a.align_center,
+            a.justify_center,
+            {backgroundColor: logoBg},
+          ]}>
+          <Logo
+            fill={t.palette.primary_500}
+            style={{width: 125, height: 125}}
           />
 
           <Animated.View
@@ -176,7 +158,7 @@ export function Splash(props: React.PropsWithChildren<Props>) {
                 opacity: 0,
               },
             ]}>
-            <Logotype fill="#fff" width={90} />
+            <Logotype fill={t.palette.contrast_1000} width={90} />
           </Animated.View>
         </View>
       )}
@@ -190,7 +172,8 @@ export function Splash(props: React.PropsWithChildren<Props>) {
           {!isAnimationComplete && (
             <Animated.View
               style={[
-                StyleSheet.absoluteFillObject,
+                a.absolute,
+                a.inset_0,
                 logoAnimation,
                 {
                   flex: 1,

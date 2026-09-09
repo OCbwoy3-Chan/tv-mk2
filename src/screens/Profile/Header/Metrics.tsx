@@ -1,5 +1,4 @@
 import {View} from 'react-native'
-import {type AppBskyActorDefs} from '@atproto/api'
 import {msg, plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -19,11 +18,12 @@ import {
 import {atoms as a, useTheme} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
+import {type app} from '#/lexicons'
 
 export function ProfileHeaderMetrics({
   profile,
 }: {
-  profile: Shadow<AppBskyActorDefs.ProfileViewDetailed>
+  profile: Shadow<app.bsky.actor.defs.ProfileViewDetailed>
 }) {
   const {_} = useLingui()
   const followersMetricsDisplay = useFollowersMetricsDisplay()

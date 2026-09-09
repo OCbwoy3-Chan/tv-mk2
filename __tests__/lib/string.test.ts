@@ -1,4 +1,4 @@
-import {RichText} from '@atproto/api'
+import {RichText} from '@bsky/sdk/richtext'
 import {i18n} from '@lingui/core'
 
 import {parseEmbedPlayerFromUrl} from '#/lib/strings/embed-player'
@@ -275,8 +275,8 @@ describe('toShareUrl', () => {
   const inputs = ['https://bsky.app', '/3jk7x4irgv52r', 'item/test/123']
   const outputs = [
     'https://bsky.app',
-    'https://bsky.app/3jk7x4irgv52r',
-    'https://bsky.app/item/test/123',
+    'https://tenna.party/3jk7x4irgv52r',
+    'https://tenna.party/item/test/123',
   ]
 
   it('appends https, when not present', () => {

@@ -1,6 +1,7 @@
 import {type StyleProp, View, type ViewStyle} from 'react-native'
-import {type AppBskyFeedDefs, type ComAtprotoLabelDefs} from '@atproto/api'
-import {Plural, useLingui} from '@lingui/react/macro'
+import {msg} from '@lingui/core/macro'
+import {useLingui} from '@lingui/react'
+import {Plural} from '@lingui/react/macro'
 
 import {filterUserFacingLabels} from '#/lib/moderation'
 import {useSession} from '#/state/session'
@@ -16,6 +17,7 @@ import {
   LabelsOnMeDialog,
   useLabelsOnMeDialogControl,
 } from '#/components/moderation/LabelsOnMeDialog'
+import {type app, type com} from '#/lexicons'
 
 export function LabelsOnMe({
   type = 'account',
@@ -24,11 +26,11 @@ export function LabelsOnMe({
   style,
 }: {
   type?: 'account' | 'content'
-  labels: ComAtprotoLabelDefs.Label[] | undefined
+  labels: com.atproto.label.defs.Label[] | undefined
   size?: ButtonSize
   style?: StyleProp<ViewStyle>
 }) {
-  const {t: l} = useLingui()
+  const {_} = useLingui()
   const {currentAccount} = useSession()
   const control = useLabelsOnMeDialogControl()
 
@@ -48,7 +50,7 @@ export function LabelsOnMe({
         variant="solid"
         color="secondary"
         size={size || 'small'}
-        label={l`View information about these labels`}
+        label={_(msg`View information about these labels`)}
         onPress={() => {
           control.open()
         }}>
@@ -77,7 +79,7 @@ export function LabelsOnMyPost({
   post,
   style,
 }: {
-  post: AppBskyFeedDefs.PostView
+  post: app.bsky.feed.defs.PostView
   style?: StyleProp<ViewStyle>
 }) {
   const {currentAccount} = useSession()
@@ -85,11 +87,6 @@ export function LabelsOnMyPost({
     return null
   }
   return (
-    <LabelsOnMe
-      type="content"
-      labels={post.labels}
-      size="tiny"
-      style={style}
-    />
+    <LabelsOnMe type="content" labels={post.labels} size="tiny" style={style} />
   )
 }

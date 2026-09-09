@@ -1,7 +1,7 @@
 import {View} from 'react-native'
-import {type ComAtprotoLabelDefs} from '@atproto/api'
-import {Image} from 'expo-image'
 import {type PathProps, type SvgProps} from 'react-native-svg'
+import {Image} from 'expo-image'
+import {type ComAtprotoLabelDefs} from '@atproto/api'
 import {useLingui} from '@lingui/react/macro'
 
 import {atoms as a, useTheme} from '#/alf'
@@ -17,7 +17,7 @@ const ICONS_FOR_ACCOUNT = {
 function SpecialIcon({
   source,
   ...rest
-}: {source: any; fill?: PathProps['fill']} & SvgProps) {
+}: {source: React.ComponentProps<typeof Image>['source']; fill?: PathProps['fill']} & SvgProps) {
   // @ts-ignore it's fiiiiine
   const size = parseInt(rest.width || 24)
 

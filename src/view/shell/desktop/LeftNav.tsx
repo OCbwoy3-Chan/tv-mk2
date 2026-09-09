@@ -1,7 +1,5 @@
 import {type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {StyleSheet, View} from 'react-native'
-import {type AppBskyActorDefs} from '@atproto/api'
-import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation, useNavigationState} from '@react-navigation/native'
 
@@ -17,6 +15,7 @@ import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
 import {userStyle} from '#/lib/userstyles'
 import {emitSoftReset} from '#/state/events'
+import {badgeText, useBadgePreference} from '#/state/preferences/badge-text'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
@@ -30,6 +29,7 @@ import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useProfilesQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
 import {useSortedAccountItems} from '#/state/session/sorting'
+import {useThemePrefs} from '#/state/shell'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useCloseAllActiveElements} from '#/state/util'
 import {LoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
@@ -96,6 +96,9 @@ import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {type Events} from '#/analytics/metrics/types'
 import {useActorStatus} from '#/features/liveNow'
+import {accentForeground} from '#/features/themes/accentForeground'
+import {useActiveThemeUpdate} from '#/features/themes/api'
+import {type app} from '#/lexicons'
 import {router} from '#/routes'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
 import {PlatformInfo} from '../../../../modules/expo-bluesky-swiss-army'
@@ -262,7 +265,7 @@ export function SwitchMenuItems({
   accounts:
     | {
         account: SessionAccount
-        profile?: AppBskyActorDefs.ProfileViewDetailed
+        profile?: app.bsky.actor.defs.ProfileViewDetailed
       }[]
     | undefined
   isLoading?: boolean
@@ -401,7 +404,7 @@ function SwitchMenuItem({
   onSelectAccount,
 }: {
   account: SessionAccount
-  profile: AppBskyActorDefs.ProfileViewDetailed | undefined
+  profile: app.bsky.actor.defs.ProfileViewDetailed | undefined
   onSelectAccount?: (account: SessionAccount) => void
 }) {
   const {t: l} = useLingui()
@@ -549,10 +552,7 @@ function NavItem({
               {right: -20}, // more breathing room
             ]}>
             <Text
-              accessibilityLabel={l`${plural(count, {
-                one: '# unread item',
-                other: '# unread items',
-              })}`}
+              accessibilityLabel={l`Unread activity: ${count}`}
               accessibilityHint=""
               accessible={true}
               numberOfLines={1}
@@ -568,7 +568,7 @@ function NavItem({
                   top: '-10%',
                   left: count.length === 1 ? 12 : 8,
                   backgroundColor: t.palette.primary_500,
-                  color: t.palette.white,
+                  color: accentForeground(t, t.palette.primary_500),
                   lineHeight: a.text_sm.fontSize,
                   paddingHorizontal: 4,
                   paddingVertical: 1,
@@ -629,9 +629,8 @@ function ComposeBtn({minimal}: {minimal: boolean}) {
           handle = await fetchHandle(handle)
         } catch (e) {
           handle = undefined
-        } finally {
-          setIsFetchingHandle(false)
         }
+        setIsFetchingHandle(false)
       }
 
       if (
@@ -689,6 +688,8 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
   const {hasSession, currentAccount} = useSession()
   const {t: l} = useLingui()
   const {gtMobile} = useBreakpoints()
+  const {activeTheme} = useThemePrefs()
+  const themeUpdate = useActiveThemeUpdate(activeTheme)
 
   const aa = useAgeAssurance()
   // splitview uses the minimal variant of the leftnav. unfortunately there's no easy
@@ -699,8 +700,16 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
     useLayoutBreakpoints()
   const numUnreadNotifications = useUnreadNotifications()
   const numUnreadMessages = useUnreadMessageCount()
+  const [notificationsCustomText] = useBadgePreference('notificationsBadgeText')
   const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const notificationsText =
+    notificationsTabBadgeDisplay === 'text'
+      ? notificationsCustomText
+      : undefined
+  const [chatsCustomText] = useBadgePreference('chatsBadgeText')
   const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
+  const chatsText =
+    chatsTabBadgeDisplay === 'text' ? chatsCustomText : undefined
 
   const leftNavMinimal = isMessagesRelatedScreen || leftNavMinimalBreakpoint
 
@@ -778,8 +787,9 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
             navItem="notifications"
             minimal={leftNavMinimal}
             count={
-              notificationsTabBadgeDisplay === 'exact'
-                ? numUnreadNotifications
+              notificationsTabBadgeDisplay === 'exact' ||
+              notificationsTabBadgeDisplay === 'text'
+                ? badgeText(numUnreadNotifications, notificationsText)
                 : undefined
             }
             hasNew={
@@ -797,8 +807,16 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
             navItem="chat"
             minimal={leftNavMinimal}
             count={
-              !aa.flags.chatDisabled && chatsTabBadgeDisplay === 'exact'
-                ? numUnreadMessages.numUnread
+              !aa.flags.chatDisabled &&
+              (chatsTabBadgeDisplay === 'exact' ||
+                chatsTabBadgeDisplay === 'text')
+                ? badgeText(
+                    numUnreadMessages.numUnread ||
+                      (numUnreadMessages.hasNew && chatsText?.trim()
+                        ? '•'
+                        : undefined),
+                    chatsText,
+                  )
                 : undefined
             }
             hasNew={
@@ -861,6 +879,7 @@ export function DesktopLeftNav({routeName}: {routeName: string}) {
             href="/settings"
             navItem="settings"
             minimal={leftNavMinimal}
+            hasNew={Boolean(themeUpdate)}
             icons={{
               inactive: SettingsIcon,
               active: SettingsFilledIcon,
@@ -878,8 +897,8 @@ const styles = StyleSheet.create({
   leftNav: {
     left: '50%',
     width: LEFT_NAV_STANDARD_WIDTH,
-    // @ts-expect-error web only
     maxHeight: '100vh',
+    // @ts-expect-error web only
     overflowY: 'auto',
     scrollbarWidth: 'thin',
   },

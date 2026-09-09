@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {ScrollView, View} from 'react-native'
-import {AppBskyEmbedVideo, AtUri} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -13,7 +13,6 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {RQKEY, usePostFeedQuery} from '#/state/queries/post-feed'
 import {BlockDrawerGesture} from '#/view/shell/BlockDrawerGesture'
 import {atoms as a, tokens, useGutters, useTheme} from '#/alf'
-import {ButtonIcon} from '#/components/Button'
 import {ChevronRight_Stroke2_Corner0_Rounded as ChevronRight} from '#/components/icons/Chevron'
 import {Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
@@ -22,6 +21,9 @@ import {
   CompactVideoPostCardPlaceholder,
 } from '#/components/VideoPostCard'
 import {useAnalytics} from '#/analytics'
+import {accentForeground} from '#/features/themes/accentForeground'
+import {app} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 
 const CARD_WIDTH = 100
 
@@ -44,7 +46,7 @@ export function ExploreTrendingVideos() {
         .getQueryCache()
         .find({queryKey: RQKEY(FEED_DESC, FEED_PARAMS)})
       if (query && query.getObserversCount() <= 1) {
-        query.fetch()
+        void query.fetch()
       }
     }
   })
@@ -160,7 +162,7 @@ function VideoCards({
       .flatMap(page => page.slices)
       .map(slice => slice.items[0])
       .filter(Boolean)
-      .filter(item => AppBskyEmbedVideo.isView(item.post.embed))
+      .filter(item => bsky.isType(app.bsky.embed.video.view, item.post.embed))
       .slice(0, 8)
   }, [data])
   const href = useMemo(() => {
@@ -222,7 +224,10 @@ function VideoCards({
                     backgroundColor: t.palette.primary_500,
                   },
                 ]}>
-                <ButtonIcon icon={ChevronRight} />
+                <ChevronRight
+                  size="md"
+                  style={{color: accentForeground(t, t.palette.primary_500)}}
+                />
               </View>
             </View>
           )}

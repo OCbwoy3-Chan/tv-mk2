@@ -28,7 +28,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['hideFeedsPromoTab']) => {
       setState(value)
-      persisted.write('hideFeedsPromoTab', value)
+      void persisted.write('hideFeedsPromoTab', value)
     },
     [setState],
   )

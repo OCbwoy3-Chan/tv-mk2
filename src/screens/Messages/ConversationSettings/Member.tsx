@@ -1,5 +1,5 @@
 import {View} from 'react-native'
-import {moderateProfile} from '@atproto/api'
+import {moderateProfile} from '@bsky/sdk/moderation'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {isBlockedOrBlocking} from '#/lib/moderation/blocked-and-muted'
@@ -13,11 +13,11 @@ import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {useRequireAuth, useSession} from '#/state/session'
 import {atoms as a, native, useTheme, web} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {
   type ConvoWithDetails,
   type GroupConvoMember,
 } from '#/components/dms/util'
-import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {createStaticClick, SimpleInlineLinkText} from '#/components/Link'
 import * as ProfileCard from '#/components/ProfileCard'
 import * as Prompt from '#/components/Prompt'
@@ -80,13 +80,7 @@ export function Member({
     })
   }
 
-  const handleFollow = () => {
-    if (confirmFollowUnfollow) {
-      promptControl.open()
-    } else {
-      executeFollow()
-    }
-  }
+  const handleFollow = () => executeFollow()
 
   const onConfirmFollow = () => {
     executeFollow()

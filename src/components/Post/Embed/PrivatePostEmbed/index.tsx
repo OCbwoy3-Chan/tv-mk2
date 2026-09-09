@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import {type StyleProp, type TextStyle, View} from 'react-native'
-import {RichText as RichTextApi} from '@atproto/api'
+import {RichText as RichTextApi} from '@bsky/sdk/richtext'
 
 import {MAX_POST_LINES} from '#/lib/constants'
 import {countLines} from '#/lib/strings/helpers'

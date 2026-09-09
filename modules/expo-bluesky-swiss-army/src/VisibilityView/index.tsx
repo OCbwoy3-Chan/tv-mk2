@@ -1,7 +1,7 @@
 import {NotImplementedError} from '../NotImplemented'
 import {type VisibilityViewProps} from './types'
 
-export async function updateActiveViewAsync() {
+export function updateActiveViewAsync() {
   throw new NotImplementedError()
 }
 

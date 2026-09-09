@@ -1,6 +1,6 @@
 import {memo, useMemo, useRef} from 'react'
 import * as ExpoClipboard from 'expo-clipboard'
-import {AtUri} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
 import {isIOS} from '@bsky.app/alf'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'

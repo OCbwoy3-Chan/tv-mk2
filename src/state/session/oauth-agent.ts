@@ -5,16 +5,13 @@ import {
 } from '@atproto/api'
 import {type OAuthSession} from '@atproto/oauth-client-browser'
 
-import {
-  APPVIEW_DID_PROXY,
-  BLUESKY_PROXY_HEADER,
-  BSKY_SERVICE,
-} from '#/lib/constants'
+import {BSKY_SERVICE} from '#/lib/constants'
 import {logger} from '#/logger'
-import {readCustomAppViewDidUri} from '#/state/preferences/custom-appview-did'
-import {type ProxyHeaderValue, sessionAccountToSession} from './agent'
+import {readAppViewProxy} from '#/state/preferences/custom-appview-did'
+import {sessionAccountToSession} from './agent'
 import {configureModerationForAccount} from './moderation'
-import {restoreOAuthSession} from './oauth-client-adapter'
+import {createOAuthTransport, restoreOAuthSession} from './oauth-client-adapter'
+import {hasOAuthAppViewScope} from './oauth-config'
 import {type SessionAccount} from './types'
 
 export async function oauthCreateAgent(session: OAuthSession) {
@@ -51,6 +48,10 @@ export async function oauthResumeSession(
       error: e instanceof Error ? e.message : String(e),
     })
     throw e
+  }
+  const {scope} = await session.getTokenInfo(false)
+  if (!hasOAuthAppViewScope(scope, readAppViewProxy())) {
+    throw new Error('Please authorize this account for the selected app server')
   }
   return await oauthCreateAgent(session)
 }
@@ -118,19 +119,22 @@ export async function oauthAgentAndSessionToSessionAccount(
 }
 
 export class OauthBskyAppAgent extends Agent {
-  readonly sessionManager: OAuthSession
+  readonly sessionManager: ReturnType<typeof createOAuthTransport>
+  readonly oauthSession: OAuthSession
   session?: AtpSessionData
   private _serviceUrl: URL
   private _pdsUrl?: URL
 
   constructor(session: OAuthSession) {
-    super(session)
-    this.sessionManager = session
+    const transport = createOAuthTransport(session)
+    super(transport)
+    this.sessionManager = transport
+    this.oauthSession = session
     this._serviceUrl = new URL(session.serverMetadata.issuer)
   }
 
   clone(): this {
-    const cloned = this.copyInto(new OauthBskyAppAgent(this.sessionManager))
+    const cloned = this.copyInto(new OauthBskyAppAgent(this.oauthSession))
     cloned.session = this.session
     cloned._serviceUrl = this._serviceUrl
     cloned._pdsUrl = this._pdsUrl
@@ -162,9 +166,7 @@ export class OauthBskyAppAgent extends Agent {
     this.session = sessionAccountToSession(account)
     this._serviceUrl = new URL(account.service)
     this._pdsUrl = account.pdsUrl ? new URL(account.pdsUrl) : undefined
-    const proxyDid =
-      readCustomAppViewDidUri() || BLUESKY_PROXY_HEADER.get() || APPVIEW_DID_PROXY
-    this.configureProxy(proxyDid as ProxyHeaderValue)
+    this.configureProxy(readAppViewProxy())
 
     await Promise.all([gates, moderation])
 

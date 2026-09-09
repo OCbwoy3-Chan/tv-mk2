@@ -18,6 +18,7 @@ import {clamp} from '#/lib/numbers'
 import {getTabState, TabState} from '#/lib/routes/helpers'
 import {type SharedNavTab, TAB_TO_NAV_ITEM} from '#/lib/routes/tab-to-nav-item'
 import {emitSoftReset} from '#/state/events'
+import {badgeText, useBadgePreference} from '#/state/preferences/badge-text'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
@@ -32,7 +33,7 @@ import {useSession} from '#/state/session'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useShellLayout} from '#/state/shell/shell-layout'
 import {useCloseAllActiveElements} from '#/state/util'
-import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {getSquareAvatarRadius, UserAvatar} from '#/view/com/util/UserAvatar'
 import {Logo} from '#/view/icons/Logo'
 import {Logotype} from '#/view/icons/Logotype'
 import {atoms as a, useTheme} from '#/alf'
@@ -63,6 +64,7 @@ import {Text} from '#/components/Typography'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
+import {accentForeground} from '#/features/themes/accentForeground'
 import {useDemoMode} from '#/storage/hooks/demo-mode'
 import {styles} from './BottomBarStyles'
 
@@ -77,8 +79,16 @@ export function BottomBar({navigation}: BottomTabBarProps) {
     useNavigationTabState()
   const numUnreadNotifications = useUnreadNotifications()
   const numUnreadMessages = useUnreadMessageCount()
+  const [notificationsCustomText] = useBadgePreference('notificationsBadgeText')
   const notificationsTabBadgeDisplay = useNotificationsTabBadgeDisplay()
+  const notificationsText =
+    notificationsTabBadgeDisplay === 'text'
+      ? notificationsCustomText
+      : undefined
+  const [chatsCustomText] = useBadgePreference('chatsBadgeText')
   const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
+  const chatsText =
+    chatsTabBadgeDisplay === 'text' ? chatsCustomText : undefined
   const aa = useAgeAssurance()
   const footerMinimalShellTransform = useMinimalShellFooterTransform()
   const {data: profile} = useProfileQuery({did: currentAccount?.did})
@@ -244,8 +254,16 @@ export function BottomBar({navigation}: BottomTabBarProps) {
               onPress={onPressMessages}
               onLongPress={onLongPressMessages}
               notificationCount={
-                !aa.flags.chatDisabled && chatsTabBadgeDisplay === 'exact'
-                  ? numUnreadMessages.numUnread
+                !aa.flags.chatDisabled &&
+                (chatsTabBadgeDisplay === 'exact' ||
+                  chatsTabBadgeDisplay === 'text')
+                  ? badgeText(
+                      numUnreadMessages.numUnread ||
+                        (numUnreadMessages.hasNew && chatsText?.trim()
+                          ? '•'
+                          : undefined),
+                      chatsText,
+                    )
                   : undefined
               }
               hasNew={
@@ -292,8 +310,9 @@ export function BottomBar({navigation}: BottomTabBarProps) {
               }
               onPress={onPressNotifications}
               notificationCount={
-                notificationsTabBadgeDisplay === 'exact'
-                  ? numUnreadNotifications
+                notificationsTabBadgeDisplay === 'exact' ||
+                notificationsTabBadgeDisplay === 'text'
+                  ? badgeText(numUnreadNotifications, notificationsText)
                   : undefined
               }
               hasNew={
@@ -323,14 +342,29 @@ export function BottomBar({navigation}: BottomTabBarProps) {
                       styles.ctrlIcon,
                       isLabeler ? styles.profileIconSquare : styles.profileIcon,
                       isAtMyProfile && [
-                        isLabeler ? styles.onProfileSquare : enableSquareAvatars
+                        isLabeler
                           ? styles.onProfileSquare
-                          : styles.onProfile,
+                          : enableSquareAvatars
+                            ? styles.onProfileSquare
+                            : styles.onProfile,
                         {
                           borderColor: t.atoms.text.color,
                           borderWidth: live ? 0 : enableSquareAvatars ? 1.5 : 1,
                         },
                       ],
+                      (enableSquareAvatars || isLabeler) && {
+                        borderRadius:
+                          getSquareAvatarRadius(
+                            iconWidth - (isAtMyProfile ? 3 : 2),
+                          ) +
+                          (isAtMyProfile
+                            ? live
+                              ? 0
+                              : enableSquareAvatars
+                                ? 1.5
+                                : 1
+                            : 1),
+                      },
                     ]}>
                     <UserAvatar
                       avatar={demoMode ? BOTTOM_BAR_AVI : profile?.avatar}
@@ -451,7 +485,10 @@ function Btn({
             {backgroundColor: t.palette.primary_500},
           ]}>
           <Text
-            style={styles.notificationCountLabel}
+            style={[
+              styles.notificationCountLabel,
+              {color: accentForeground(t, t.palette.primary_500)},
+            ]}
             maxFontSizeMultiplier={1.5}>
             {notificationCount}
           </Text>

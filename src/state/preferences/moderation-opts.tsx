@@ -1,5 +1,7 @@
-import {createContext, useContext, useMemo, type PropsWithChildren} from 'react'
-import {AtpAgent, type ModerationOpts} from '@atproto/api'
+import {createContext, useContext, useMemo} from 'react'
+import {type PropsWithChildren} from 'react'
+import {Client} from '@atproto/lex'
+import {type ModerationOpts} from '@bsky/sdk/moderation'
 
 import {useHiddenPosts, useLabelDefinitions} from '#/state/preferences'
 import {useIgnoredAppLabelers} from '#/state/preferences/ignored-app-labelers'
@@ -43,15 +45,19 @@ export function Provider({children}: PropsWithChildren<{}>) {
       userDid,
       prefs: {
         ...moderationPrefs,
-        labelers: moderationPrefs.labelers.length
-          ? moderationPrefs.labelers.filter(
-              l => !ignoredAppLabelers.includes(l.did),
-            )
-          : AtpAgent.appLabelers.map(did => ({
+        labelers: (moderationPrefs.labelers.length
+          ? moderationPrefs.labelers
+          : Client.appLabelers.map(did => ({
               did,
               labels: DEFAULT_LOGGED_OUT_LABEL_PREFERENCES,
-            })),
-        hiddenPosts: hiddenPosts || [],
+            }))
+        ).filter(labeler => !ignoredAppLabelers.includes(labeler.did)),
+        /*
+         * `hiddenPosts` comes from persisted storage typed as plain `string`,
+         * so brand it to the SDK's `AtUriString` slot.
+         */
+        hiddenPosts: (hiddenPosts ||
+          []) as ModerationOpts['prefs']['hiddenPosts'],
       },
       labelDefs,
     }

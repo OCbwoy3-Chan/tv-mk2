@@ -23,7 +23,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (loadAsPngs: persisted.Schema['loadAsPngs']) => {
       setState(loadAsPngs)
-      persisted.write('loadAsPngs', loadAsPngs)
+      void persisted.write('loadAsPngs', loadAsPngs)
     },
     [setState],
   )

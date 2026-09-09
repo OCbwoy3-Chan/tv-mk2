@@ -5,7 +5,7 @@ export function Logomark({
   fill,
   ...rest
 }: {fill?: PathProps['fill']} & SvgProps) {
-  const size = parseInt(rest.width || 32)
+  const size = Number.parseFloat(String(rest.width ?? 32))
 
   return (
     <Image

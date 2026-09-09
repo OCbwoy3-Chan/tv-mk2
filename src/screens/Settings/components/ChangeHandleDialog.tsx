@@ -10,7 +10,6 @@ import Animated, {
   SlideOutLeft,
   SlideOutRight,
 } from 'react-native-reanimated'
-import {type ComAtprotoServerDescribeServer} from '@atproto/api'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -28,12 +27,13 @@ import {useFetchDid, useUpdateHandleMutation} from '#/state/queries/handle'
 import {RQKEY as RQKEY_PROFILE} from '#/state/queries/profile'
 import {useServiceQuery} from '#/state/queries/service'
 import {useCurrentAccountProfile} from '#/state/queries/useCurrentAccountProfile'
-import {useAgent, useSession} from '#/state/session'
+import {useSession, useSessionApi} from '#/state/session'
 import {ErrorScreen} from '#/view/com/util/error/ErrorScreen'
-import {atoms as a, native, useBreakpoints, useTheme, web} from '#/alf'
+import {atoms as a, native, useBreakpoints, useTheme} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
+import {OAuthPermissionGate} from '#/components/dialogs/OAuthPermissionGate'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as TextField from '#/components/forms/TextField'
 import {
@@ -47,7 +47,7 @@ import {InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationStateWithDeer} from '#/components/verification'
-import {LegacyAuthRequiredDialogContent} from '#/components/dialogs/LegacyAuthRequiredDialog'
+import {type com} from '#/lexicons'
 import {CopyButton} from './CopyButton'
 
 export function ChangeHandleDialog({
@@ -55,18 +55,11 @@ export function ChangeHandleDialog({
 }: {
   control: Dialog.DialogControlProps
 }) {
-  const {currentAccount} = useSession()
-  const isOauth = !!currentAccount?.isOauthSession
-
   return (
-    <Dialog.Outer
-      control={control}
-      nativeOptions={isOauth ? {preventExpansion: true} : {fullHeight: true}}>
-      {isOauth ? (
-        <LegacyAuthRequiredDialogContent />
-      ) : (
+    <Dialog.Outer control={control} nativeOptions={{fullHeight: true}}>
+      <OAuthPermissionGate permission="handle" standalone>
         <ChangeHandleDialogInner />
-      )}
+      </OAuthPermissionGate>
     </Dialog.Outer>
   )
 }
@@ -74,13 +67,13 @@ export function ChangeHandleDialog({
 function ChangeHandleDialogInner() {
   const control = Dialog.useDialogContext()
   const {_} = useLingui()
-  const {currentAccount} = useSession()
   const enableSquareButtons = useEnableSquareButtons()
+  const {currentAccount} = useSession()
   const {
     data: serviceInfo,
     error: serviceInfoError,
     refetch,
-  } = useServiceQuery(currentAccount!.service)
+  } = useServiceQuery(currentAccount?.service ?? '')
 
   const [page, setPage] = useState<'provided-handle' | 'own-handle'>(
     'provided-handle',
@@ -159,12 +152,12 @@ function ProvidedHandlePage({
   serviceInfo,
   goToOwnHandle,
 }: {
-  serviceInfo: ComAtprotoServerDescribeServer.OutputSchema
+  serviceInfo: com.atproto.server.describeServer.$OutputBody
   goToOwnHandle: () => void
 }) {
   const {_} = useLingui()
   const [subdomain, setSubdomain] = useState('')
-  const agent = useAgent()
+  const {refreshSession} = useSessionApi()
   const control = Dialog.useDialogContext()
   const {currentAccount} = useSession()
   const queryClient = useQueryClient()
@@ -181,15 +174,11 @@ function ProvidedHandlePage({
   } = useUpdateHandleMutation({
     onSuccess: () => {
       if (currentAccount) {
-        queryClient.invalidateQueries({
+        void queryClient.invalidateQueries({
           queryKey: RQKEY_PROFILE(currentAccount.did),
         })
       }
-      if ('resumeSession' in agent && agent.session) {
-        agent.resumeSession(agent.session).then(() => control.close())
-      } else {
-        control.close()
-      }
+      void refreshSession().then(() => control.close())
     },
   })
 
@@ -327,7 +316,7 @@ function OwnHandlePage({goToServiceHandle}: {goToServiceHandle: () => void}) {
   const {currentAccount} = useSession()
   const [dnsPanel, setDNSPanel] = useState(true)
   const [domain, setDomain] = useState('')
-  const agent = useAgent()
+  const {refreshSession} = useSessionApi()
   const control = Dialog.useDialogContext()
   const fetchDid = useFetchDid()
   const queryClient = useQueryClient()
@@ -340,15 +329,11 @@ function OwnHandlePage({goToServiceHandle}: {goToServiceHandle: () => void}) {
   } = useUpdateHandleMutation({
     onSuccess: () => {
       if (currentAccount) {
-        queryClient.invalidateQueries({
+        void queryClient.invalidateQueries({
           queryKey: RQKEY_PROFILE(currentAccount.did),
         })
       }
-      if ('resumeSession' in agent && agent.session) {
-        agent.resumeSession(agent.session).then(() => control.close())
-      } else {
-        control.close()
-      }
+      void refreshSession().then(() => control.close())
     },
   })
 

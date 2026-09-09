@@ -22,7 +22,7 @@ import {IMAGE_SIZE_CONFIG_2K_1MB} from '#/lib/constants'
 import {usePhotoLibraryPermission} from '#/lib/hooks/usePermissions'
 import {compressIfNeeded} from '#/lib/media/manip'
 import {openCropper} from '#/lib/media/picker'
-import {getDataUriSize} from '#/lib/media/util'
+import {getUriSize} from '#/lib/media/uriSize'
 import {useRequestNotificationsPermission} from '#/lib/notifications/notifications'
 import {isCancelledError} from '#/lib/strings/errors'
 import {logger} from '#/logger'
@@ -98,7 +98,7 @@ export function StepProfile() {
   const canvasRef = useRef<PlaceholderCanvasRef>(null)
 
   useEffect(() => {
-    requestNotificationsPermission('StartOnboarding')
+    void requestNotificationsPermission('StartOnboarding')
   }, [requestNotificationsPermission])
 
   const sheetWrapper = useSheetWrapper()
@@ -107,6 +107,7 @@ export function StepProfile() {
       const response = await sheetWrapper(
         launchImageLibraryAsync({
           exif: false,
+          shouldDownloadFromNetwork: true,
           mediaTypes: ['images'],
           quality: 1,
           ...opts,
@@ -123,16 +124,16 @@ export function StepProfile() {
         const context = ImageManipulator.manipulate(asset.uri)
         const rendered = await context.renderAsync()
         const result = await rendered.saveAsync({
-          format: SaveFormat.JPEG,
+          format: SaveFormat.PNG,
           compress: 1.0,
         })
         return [
           {
-            mime: 'image/jpeg',
+            mime: 'image/png',
             height: rendered.height,
             width: rendered.width,
             path: result.uri,
-            size: getDataUriSize(result.uri),
+            size: await getUriSize(result.uri),
           },
         ]
       } catch {
@@ -160,7 +161,7 @@ export function StepProfile() {
         type: 'setProfileStepResults',
         image: avatar.image,
         imageUri,
-        imageMime: avatar.image?.mime ?? 'image/jpeg',
+        imageMime: avatar.image?.mime ?? 'image/png',
         isCreatedAvatar: avatar.useCreatedAvatar,
         creatorState: {
           emoji: avatar.placeholder,
@@ -210,10 +211,7 @@ export function StepProfile() {
         }
       }
     }
-    image = await compressIfNeeded(image, IMAGE_SIZE_CONFIG_2K_1MB, {
-      outputMime: 'image/webp',
-      forceEncode: true,
-    })
+    image = await compressIfNeeded(image, IMAGE_SIZE_CONFIG_2K_1MB)
 
     // If we are on mobile, prefetching the image will load the image into memory before we try and display it,
     // stopping any brief flickers.
@@ -236,7 +234,7 @@ export function StepProfile() {
 
   const onSecondaryPress = useCallback(() => {
     if (avatar.useCreatedAvatar) {
-      openLibrary()
+      void openLibrary()
     } else {
       creatorControl.open()
     }
@@ -331,6 +329,7 @@ export function StepProfile() {
             {
               width: 'auto',
               maxWidth: 410,
+              marginHorizontal: 'auto',
             },
           ]}>
           <View style={[a.align_center, {paddingTop: 20}]}>

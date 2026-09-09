@@ -5,8 +5,7 @@ export function Logotype({
   fill,
   ...rest
 }: {fill?: PathProps['fill']} & SvgProps) {
-  //@ts-expect-error
-  const size = parseInt(rest.width || 32)
+  const size = Number.parseFloat(String(rest.width ?? 32))
 
   return (
     <Image

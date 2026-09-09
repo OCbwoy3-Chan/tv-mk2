@@ -1,29 +1,48 @@
-import {createDownloadResumable, deleteAsync} from 'expo-file-system/legacy'
-import {manipulateAsync, SaveFormat} from 'expo-image-manipulator'
+import {
+  createDownloadResumable,
+  deleteAsync,
+  getInfoAsync,
+} from 'expo-file-system/legacy'
+import {ImageManipulator, SaveFormat} from 'expo-image-manipulator'
 
 import {IMAGE_SIZE_CONFIG_2K_1MB} from '../../src/lib/constants'
 import {
   downloadAndResize,
   type DownloadAndResizeOpts,
 } from '../../src/lib/media/manip'
-import {getResizedDimensions, resolveUploadImageMime, setWebpEncodeSupportForTests} from '../../src/lib/media/util'
+import {getResizedDimensions} from '../../src/lib/media/util'
 
 const mockResizedImage = {
-  path: 'file://resized-image.jpg',
   size: 100,
   width: 100,
   height: 100,
-  mime: 'image/webp',
+  mime: 'image/png',
 }
 
 describe('downloadAndResize', () => {
   const errorSpy = jest.spyOn(global.console, 'error')
 
   beforeEach(() => {
-    const mockedCreateResizedImage = manipulateAsync as jest.Mock
-    mockedCreateResizedImage.mockResolvedValue({
-      uri: 'file://resized-image.jpg',
-      ...mockResizedImage,
+    let savedImageCount = 0
+    const mockedManipulate = ImageManipulator.manipulate as jest.Mock
+    mockedManipulate.mockImplementation(() => {
+      const image = {
+        ...mockResizedImage,
+        release: jest.fn(),
+        uri: 'file://rendered-image.png',
+        saveAsync: jest.fn().mockImplementation(() => {
+          savedImageCount += 1
+          return Promise.resolve({
+            uri: `file://resized-image-${savedImageCount}.png`,
+            ...mockResizedImage,
+          })
+        }),
+      }
+      return {
+        release: jest.fn(),
+        renderAsync: jest.fn().mockResolvedValue(image),
+        resize: jest.fn(),
+      }
     })
   })
 
@@ -48,7 +67,10 @@ describe('downloadAndResize', () => {
     }
 
     const result = await downloadAndResize(opts)
-    expect(result).toEqual(mockResizedImage)
+    expect(result).toEqual({
+      ...mockResizedImage,
+      path: 'file://resized-image-7.png',
+    })
     expect(createDownloadResumable).toHaveBeenCalledWith(
       opts.uri,
       expect.anything(),
@@ -57,18 +79,96 @@ describe('downloadAndResize', () => {
       },
     )
 
-    // First time it gets called is to get dimensions
-    expect(manipulateAsync).toHaveBeenCalledWith(expect.any(String), [], {})
-    // The mocked source image is 100x100, below maxDimension, so it is not
-    // downsized. Quality is binary-searched; assert format + a resize pass.
-    expect(manipulateAsync).toHaveBeenCalledWith(
+    // First time it gets called is to get dimensions.
+    expect(ImageManipulator.manipulate).toHaveBeenNthCalledWith(
+      1,
       expect.any(String),
-      [{resize: {height: 100, width: 100}}],
-      {format: SaveFormat.WEBP, compress: expect.any(Number)},
     )
-    expect(deleteAsync).toHaveBeenCalledWith(expect.any(String), {
+    const firstContext = (ImageManipulator.manipulate as jest.Mock).mock
+      .results[0].value
+    expect(firstContext.resize).not.toHaveBeenCalled()
+
+    // The mocked source image is 100x100, below maxDimension, so it is not
+    // downsized.
+    const secondContext = (ImageManipulator.manipulate as jest.Mock).mock
+      .results[1].value
+    expect(secondContext.resize).toHaveBeenCalledWith({
+      height: 100,
+      width: 100,
+    })
+    const lastContext = (
+      ImageManipulator.manipulate as jest.Mock
+    ).mock.results.at(-1)!.value
+    const resizedImage = await lastContext.renderAsync.mock.results[0].value
+    expect(resizedImage.saveAsync).toHaveBeenCalledWith(
+      expect.objectContaining({format: SaveFormat.PNG, compress: 1.0}),
+    )
+    const deletedPaths = (deleteAsync as jest.Mock).mock.calls.map(
+      ([path]) => path,
+    )
+    expect(deletedPaths).toEqual(
+      expect.arrayContaining([
+        'file://resized-image-1.png',
+        'file://resized-image-2.png',
+        'file://resized-image-3.png',
+        'file://resized-image-4.png',
+        'file://resized-image-5.png',
+        'file://resized-image-6.png',
+      ]),
+    )
+    expect(deletedPaths).not.toContain('file://resized-image-7.png')
+  })
+
+  it('deletes a partial download when downloading fails', async () => {
+    const mockedFetch = createDownloadResumable as jest.Mock
+    mockedFetch.mockReturnValue({
+      cancelAsync: jest.fn(),
+      downloadAsync: jest.fn().mockRejectedValue(new Error('download failed')),
+    })
+
+    const opts: DownloadAndResizeOpts = {
+      uri: 'https://example.com/image.jpg',
+      maxDimension: 2000,
+      maxSize: 500000,
+      timeout: 10000,
+    }
+
+    await expect(downloadAndResize(opts)).rejects.toThrow('download failed')
+    expect(deleteAsync).toHaveBeenCalledWith(expect.stringMatching(/\.bin$/), {
       idempotent: true,
     })
+  })
+
+  it('deletes every intermediate image when resizing fails', async () => {
+    const mockedFetch = createDownloadResumable as jest.Mock
+    mockedFetch.mockReturnValue({
+      cancelAsync: jest.fn(),
+      downloadAsync: jest
+        .fn()
+        .mockResolvedValue({uri: 'file://downloaded-image.jpg'}),
+    })
+    ;(getInfoAsync as jest.Mock)
+      .mockResolvedValueOnce({exists: true, size: 100})
+      .mockRejectedValueOnce(new Error('stat failed'))
+
+    const opts: DownloadAndResizeOpts = {
+      uri: 'https://example.com/image.jpg',
+      maxDimension: 2000,
+      maxSize: 500000,
+      timeout: 10000,
+    }
+
+    await expect(downloadAndResize(opts)).rejects.toThrow('stat failed')
+    const deletedPaths = (deleteAsync as jest.Mock).mock.calls.map(
+      ([path]) => path,
+    )
+    expect(deletedPaths).toEqual(
+      expect.arrayContaining([
+        'file://resized-image-1.png',
+        'file://resized-image-2.png',
+        'file://resized-image-3.png',
+      ]),
+    )
   })
 
   it('should return undefined for invalid URI', async () => {
@@ -134,50 +234,5 @@ describe('downloadAndResize', () => {
       width: 1000,
       height: 2000,
     })
-  })
-})
-
-describe('resolveUploadImageMime', () => {
-  afterEach(() => {
-    setWebpEncodeSupportForTests(undefined)
-  })
-
-  it('forces JPEG for HEIC/HEIF sources even when WebP is requested', () => {
-    setWebpEncodeSupportForTests(true)
-    expect(resolveUploadImageMime('image/heic', 'image/webp')).toBe(
-      'image/jpeg',
-    )
-    expect(resolveUploadImageMime('image/heif', 'image/webp')).toBe(
-      'image/jpeg',
-    )
-    expect(resolveUploadImageMime('image/HEIC', 'image/webp')).toBe(
-      'image/jpeg',
-    )
-    expect(
-      resolveUploadImageMime('image/heic-sequence', 'image/webp'),
-    ).toBe('image/jpeg')
-  })
-
-  it('keeps the requested mime for non-HEIC sources when WebP encode works', () => {
-    setWebpEncodeSupportForTests(true)
-    expect(resolveUploadImageMime('image/jpeg', 'image/webp')).toBe(
-      'image/webp',
-    )
-    expect(resolveUploadImageMime('image/png', 'image/webp')).toBe(
-      'image/webp',
-    )
-    expect(resolveUploadImageMime('image/png', 'image/jpeg')).toBe(
-      'image/jpeg',
-    )
-  })
-
-  it('falls back to JPEG when the environment cannot encode WebP', () => {
-    setWebpEncodeSupportForTests(false)
-    expect(resolveUploadImageMime('image/jpeg', 'image/webp')).toBe(
-      'image/jpeg',
-    )
-    expect(resolveUploadImageMime('image/png', 'image/webp')).toBe(
-      'image/jpeg',
-    )
   })
 })

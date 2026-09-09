@@ -1,4 +1,3 @@
-import {AppBskyDraftCreateDraft, AppBskyDraftDefs} from '@atproto/api'
 import {
   useInfiniteQuery,
   useMutation,
@@ -7,10 +6,13 @@ import {
 
 import {decode} from '#/lib/storage-manifest/codec'
 import {isNetworkError} from '#/lib/strings/errors'
-import {useAgent} from '#/state/session'
+import {matchXrpcError} from '#/lib/xrpc-error'
+import {useAppviewClient, useChatClient} from '#/state/session'
 import {type ComposerState} from '#/view/com/composer/state/composer'
 import {useAnalytics} from '#/analytics'
 import {getDeviceId} from '#/analytics/identifiers'
+import {app} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 import {composerStateToDraft, draftViewToSummary} from './api'
 import {logger} from './logger'
 import * as storage from './storage'
@@ -21,7 +23,7 @@ const DRAFTS_QUERY_KEY = ['drafts']
  * Hook to list all drafts for the current account
  */
 export function useDraftsQuery() {
-  const agent = useAgent()
+  const client = useAppviewClient()
   const ax = useAnalytics()
 
   return useInfiniteQuery({
@@ -29,19 +31,22 @@ export function useDraftsQuery() {
     queryFn: async ({pageParam}) => {
       // Ensure media cache is populated before checking which media exists
       await storage.ensureMediaCachePopulated()
-      const res = await agent.app.bsky.draft.getDrafts({cursor: pageParam})
+      const data = await client.call(app.bsky.draft.getDrafts, {
+        cursor: pageParam,
+      })
       return {
-        cursor: res.data.cursor,
-        drafts: res.data.drafts
+        cursor: data.cursor,
+        drafts: data.drafts
           .filter(view => {
             const firstText = view.draft.posts[0]?.text ?? ''
             if (/^witchsky:storage/.test(firstText)) return false
             if (!/^tenna:storage/.test(firstText)) return true
             try {
-              decode(view.draft.posts.map(p => p.text ?? ''))
-              return false // valid manifest — hide it
+              decode(view.draft.posts.map(post => post.text ?? ''))
+              return false
             } catch {
-              return true // corrupt/partial — show it so the user can clean it up
+              // Keep corrupt or partial manifests visible for cleanup.
+              return true
             }
           })
           .map(view =>
@@ -61,7 +66,9 @@ export function useDraftsQuery() {
  * Load a draft's local media for editing.
  * Takes the full Draft object (from DraftSummary) to avoid re-fetching.
  */
-export async function loadDraftMedia(draft: AppBskyDraftDefs.Draft): Promise<{
+export async function loadDraftMedia(
+  draft: app.bsky.draft.defs.Draft,
+): Promise<{
   loadedMedia: Map<string, string>
 }> {
   // Load local media files
@@ -90,7 +97,7 @@ export async function loadDraftMedia(draft: AppBskyDraftDefs.Draft): Promise<{
     // Load gallery
     if (post.embedGallery) {
       for (const item of post.embedGallery.items) {
-        if (!AppBskyDraftDefs.isDraftEmbedImage(item)) continue
+        if (!bsky.isType(app.bsky.draft.defs.draftEmbedImage, item)) continue
         try {
           const url = await storage.loadMediaFromLocal(item.localRef.path)
           loadedMedia.set(item.localRef.path, url)
@@ -129,7 +136,8 @@ export async function loadDraftMedia(draft: AppBskyDraftDefs.Draft): Promise<{
  * This ensures we don't lose data if the network request fails.
  */
 export function useSaveDraftMutation() {
-  const agent = useAgent()
+  const client = useAppviewClient()
+  const chatClient = useChatClient()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -145,7 +153,11 @@ export function useSaveDraftMutation() {
       originalLocalRefs: Set<string> | undefined
     }> => {
       // Convert composer state to server draft format
-      const {draft, localRefPaths} = await composerStateToDraft(composerState)
+      const {draft: apiDraft, localRefPaths} = await composerStateToDraft(
+        {appviewClient: client, chatClient},
+        composerState,
+      )
+      const draft = apiDraft
 
       logger.debug('saving draft', {
         existingDraftId,
@@ -160,7 +172,7 @@ export function useSaveDraftMutation() {
         logger.debug('updating existing draft on server', {
           draftId: existingDraftId,
         })
-        await agent.app.bsky.draft.updateDraft({
+        await client.call(app.bsky.draft.updateDraft, {
           draft: {
             id: existingDraftId,
             draft,
@@ -170,8 +182,8 @@ export function useSaveDraftMutation() {
       } else {
         // Create new draft
         logger.debug('creating new draft on server')
-        const res = await agent.app.bsky.draft.createDraft({draft})
-        draftId = res.data.id
+        const data = await client.call(app.bsky.draft.createDraft, {draft})
+        draftId = data.id
         logger.debug('created new draft', {draftId})
       }
 
@@ -207,7 +219,7 @@ export function useSaveDraftMutation() {
             logger.debug('deleting orphaned media file', {
               localRefPath: oldRef,
             })
-            await storage.deleteMediaFromLocal(oldRef)
+            storage.deleteMediaFromLocal(oldRef)
           }
         }
       }
@@ -216,7 +228,7 @@ export function useSaveDraftMutation() {
     },
     onError: error => {
       // Check for draft limit error
-      if (error instanceof AppBskyDraftCreateDraft.DraftLimitReachedError) {
+      if (matchXrpcError(error, app.bsky.draft.createDraft)) {
         logger.error('Draft limit reached', {safeMessage: error.message})
         // Error will be handled by caller
       } else if (!isNetworkError(error)) {
@@ -233,7 +245,7 @@ export function useSaveDraftMutation() {
  * Takes the full draft data to avoid re-fetching for media cleanup.
  */
 export function useDeleteDraftMutation() {
-  const agent = useAgent()
+  const client = useAppviewClient()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -241,32 +253,33 @@ export function useDeleteDraftMutation() {
       draftId,
     }: {
       draftId: string
-      draft: AppBskyDraftDefs.Draft
+      draft: app.bsky.draft.defs.Draft
     }) => {
       // Delete from server first - if this fails, we keep local media for retry
-      await agent.app.bsky.draft.deleteDraft({id: draftId})
+      await client.call(app.bsky.draft.deleteDraft, {id: draftId})
     },
     onSuccess: async (_, {draft}) => {
       // Only delete local media after server deletion succeeds
       for (const post of draft.posts) {
         if (post.embedImages) {
           for (const img of post.embedImages) {
-            await storage.deleteMediaFromLocal(img.localRef.path)
+            storage.deleteMediaFromLocal(img.localRef.path)
           }
         }
         if (post.embedGallery) {
           for (const item of post.embedGallery.items) {
-            if (!AppBskyDraftDefs.isDraftEmbedImage(item)) continue
-            await storage.deleteMediaFromLocal(item.localRef.path)
+            if (!bsky.isType(app.bsky.draft.defs.draftEmbedImage, item))
+              continue
+            storage.deleteMediaFromLocal(item.localRef.path)
           }
         }
         if (post.embedVideos) {
           for (const vid of post.embedVideos) {
-            await storage.deleteMediaFromLocal(vid.localRef.path)
+            storage.deleteMediaFromLocal(vid.localRef.path)
           }
         }
       }
-      queryClient.invalidateQueries({queryKey: DRAFTS_QUERY_KEY})
+      void queryClient.invalidateQueries({queryKey: DRAFTS_QUERY_KEY})
     },
   })
 }
@@ -277,7 +290,7 @@ export function useDeleteDraftMutation() {
  * Takes draftId and originalLocalRefs from composer state.
  */
 export function useCleanupPublishedDraftMutation() {
-  const agent = useAgent()
+  const client = useAppviewClient()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -293,7 +306,9 @@ export function useCleanupPublishedDraftMutation() {
         mediaFileCount: originalLocalRefs.size,
       })
       // Delete from server first
-      await agent.app.bsky.draft.deleteDraft({id: draftId})
+      await client.call(app.bsky.draft.deleteDraft, {
+        id: draftId,
+      })
       logger.debug('deleted draft from server', {draftId})
     },
     onSuccess: async (_, {originalLocalRefs}) => {
@@ -302,9 +317,9 @@ export function useCleanupPublishedDraftMutation() {
         logger.debug('deleting media file after publish', {
           localRefPath: localRef,
         })
-        await storage.deleteMediaFromLocal(localRef)
+        storage.deleteMediaFromLocal(localRef)
       }
-      queryClient.invalidateQueries({queryKey: DRAFTS_QUERY_KEY})
+      void queryClient.invalidateQueries({queryKey: DRAFTS_QUERY_KEY})
       logger.debug('cleanup after publish complete')
     },
     onError: error => {

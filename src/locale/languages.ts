@@ -49,6 +49,15 @@ export enum AppLanguage {
   zh_TW = 'zh-Hant-TW',
 }
 
+/** Returns the first supported application language, defaulting to English. */
+export function findSupportedAppLanguage(languageTags: (string | undefined)[]) {
+  const supported = new Set(Object.values(AppLanguage))
+  for (const tag of languageTags) {
+    if (tag && supported.has(tag as AppLanguage)) return tag
+  }
+  return AppLanguage.en
+}
+
 interface AppLanguageConfig {
   code2: AppLanguage
   name: string

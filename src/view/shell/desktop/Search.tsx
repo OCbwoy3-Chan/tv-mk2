@@ -6,13 +6,13 @@ import {StackActions, useNavigation} from '@react-navigation/native'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
 import {atoms as a} from '#/alf'
-import {router} from '#/routes'
 import {
   Autocomplete as AutocompleteBase,
   type AutocompleteItem,
   useAutocomplete,
 } from '#/components/Autocomplete'
 import {SearchInput} from '#/components/forms/SearchInput'
+import {router} from '#/routes'
 
 export function DesktopSearch() {
   const navigation = useNavigation<NavigationProp>()

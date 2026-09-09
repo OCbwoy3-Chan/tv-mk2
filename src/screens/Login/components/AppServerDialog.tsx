@@ -1,12 +1,12 @@
 import {useCallback, useImperativeHandle, useRef, useState} from 'react'
 import {Keyboard, View} from 'react-native'
-import {isDid} from '@atproto/api'
 import {reloadAppAsync} from 'expo'
+import {isDid} from '@atproto/api'
 import {Trans, useLingui} from '@lingui/react/macro'
+import {useQueryClient} from '@tanstack/react-query'
 
-import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
-import {cleanError, isNetworkError} from '#/lib/strings/errors'
 import {useNavigationDeduped} from '#/lib/hooks/useNavigationDeduped'
+import {cleanError, isNetworkError} from '#/lib/strings/errors'
 import {logger} from '#/logger'
 import {
   APPVIEW_PRESETS,
@@ -23,21 +23,24 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {findService, useDidDocument} from '#/state/queries/resolve-identity'
 import {useServiceQuery} from '#/state/queries/service'
 import {useSession, useSessionApi} from '#/state/session'
-import {getNativeOAuthClient} from '#/state/session/oauth-native-client'
-import {saveOAuthReturnUrl} from '#/state/session/oauth-web-return-url'
+import {startAppViewSwitch} from '#/state/session/oauth-appview-switch'
+import {buildOAuthScope} from '#/state/session/oauth-config'
+import {signInNative} from '#/state/session/oauth-native-sign-in'
+import {getOAuthAudiences} from '#/state/session/oauth-scopes'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {atoms as a, useBreakpoints, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import {createStaticClick, InlineLinkText} from '#/components/Link'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as TextField from '#/components/forms/TextField'
 import {TinyChevronBottom_Stroke2_Corner0_Rounded as TinyChevronIcon} from '#/components/icons/Chevron'
 import {Globe_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
+import {createStaticClick, InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
-import {IS_NATIVE, IS_WEB} from '#/env'
+import {IS_WEB} from '#/env'
+import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
 
 type AppViewSelection = {did: string | undefined; url: string | undefined}
 
@@ -110,8 +113,8 @@ export function AppServerHeaderControl() {
   const t = useTheme()
   const {t: l} = useLingui()
   const {currentAccount} = useSession()
-  const {login, logoutCurrentAccount} = useSessionApi()
-  const {requestSwitchToAccount} = useLoggedOutViewControls()
+  const queryClient = useQueryClient()
+  const {login} = useSessionApi()
   const prepareSettingsSyncForRestart = usePrepareSettingsSyncForRestart()
   const [did] = useCustomAppViewDid()
   const [url] = useCustomAppViewUrl()
@@ -120,63 +123,71 @@ export function AppServerHeaderControl() {
   const isOauth = !!currentAccount?.isOauthSession
   const applyMode: AppServerApplyMode = isOauth ? 'reauth' : 'restart'
 
-  const onApply = useCallback(async () => {
-    if (!currentAccount) return
+  const setAppViewSelection = useSetAppViewSelection()
+  const onApply = useCallback(
+    async (selection: AppViewSelection) => {
+      const previousSelection = {did, url}
+      if (!currentAccount) return
 
-    if (applyMode === 'restart') {
-      await prepareSettingsSyncForRestart()
-      if (IS_WEB) {
-        window.location.reload()
-      } else {
-        await reloadAppAsync()
-      }
-      return
-    }
-
-    // OAuth: re-run authorization so the new AppView proxy is attached.
-    try {
-      if (IS_WEB) {
-        const {getWebOAuthClient} = await import(
-          '#/state/session/oauth-web-client'
-        )
-        saveOAuthReturnUrl()
-        const client = getWebOAuthClient()
-        await client.signIn(currentAccount.handle)
+      if (applyMode === 'restart') {
+        setAppViewSelection(selection)
+        await prepareSettingsSyncForRestart()
+        if (IS_WEB) {
+          window.location.reload()
+        } else {
+          await reloadAppAsync()
+        }
         return
       }
 
-      if (IS_NATIVE) {
-        const client = getNativeOAuthClient()
-        const session = await client.signIn(currentAccount.handle)
+      // Changing the AppView retains this account's authentication method.
+      // Commit routing only after authorization succeeds.
+      let applied = false
+      try {
+        if (IS_WEB) {
+          await startAppViewSwitch(currentAccount.did, selection)
+          return
+        }
+        const audiences = {
+          ...getOAuthAudiences(),
+          appview: `${selection.did || 'did:web:api.bsky.app'}#bsky_appview`,
+        }
+        const session = await signInNative(currentAccount.did, {
+          audiences,
+          scope: buildOAuthScope(audiences.appview, audiences.chat),
+        })
+        if (session.did !== currentAccount.did) {
+          throw new Error('Unexpected OAuth account')
+        }
+        setAppViewSelection(selection)
+        applied = true
         await login(
-          {
-            service: '',
-            identifier: '',
-            password: '',
-            oauthSession: session,
-          },
+          {service: '', identifier: '', password: '', oauthSession: session},
           'Settings',
         )
+        void queryClient.resetQueries().catch(error => {
+          logger.warn('App server query refresh failed', {error: String(error)})
+        })
+      } catch (e: unknown) {
+        if (applied) setAppViewSelection(previousSelection)
+        const errMsg = String(e)
+        if (errMsg.includes('cancelled') || errMsg.includes('dismiss')) return
+        logger.warn('App server reauth failed', {
+          error: isNetworkError(e) ? errMsg : cleanError(errMsg),
+        })
       }
-    } catch (e: unknown) {
-      const errMsg = String(e)
-      if (errMsg.includes('cancelled') || errMsg.includes('dismiss')) {
-        return
-      }
-      logger.warn('App server reauth failed', {
-        error: isNetworkError(e) ? errMsg : cleanError(errMsg),
-      })
-      logoutCurrentAccount('Settings')
-      requestSwitchToAccount({requestedAccount: currentAccount.did})
-    }
-  }, [
-    applyMode,
-    currentAccount,
-    login,
-    logoutCurrentAccount,
-    prepareSettingsSyncForRestart,
-    requestSwitchToAccount,
-  ])
+    },
+    [
+      applyMode,
+      did,
+      url,
+      currentAccount,
+      login,
+      prepareSettingsSyncForRestart,
+      setAppViewSelection,
+      queryClient,
+    ],
+  )
 
   return (
     <>
@@ -205,7 +216,7 @@ export function AppServerHeaderControl() {
       <AppServerDialog
         control={control}
         applyMode={applyMode}
-        onApply={() => void onApply()}
+        onApply={selection => void onApply(selection)}
       />
     </>
   )
@@ -219,9 +230,9 @@ export function AppServerDialog({
   control: Dialog.DialogOuterProps['control']
   applyMode?: AppServerApplyMode
   /**
-   * Called after a changed selection is saved, when `applyMode` is not `login`.
+   * Authorize or restart with a proposed selection before saving it.
    */
-  onApply?: () => void
+  onApply?: (selection: AppViewSelection) => void
 }) {
   const formRef = useRef<DialogInnerRef>(null)
   const confirmedRef = useRef(false)
@@ -246,8 +257,7 @@ export function AppServerDialog({
 
   const onClose = useCallback(() => {
     const result = formRef.current?.getFormState()
-    const shouldApply =
-      applyMode === 'login' || confirmedRef.current === true
+    const shouldApply = applyMode === 'login' || confirmedRef.current === true
     confirmedRef.current = false
 
     if (!shouldApply || !result || result === 'invalid') {
@@ -260,22 +270,17 @@ export function AppServerDialog({
     const changed = nextDid !== did || nextUrl !== (url ?? undefined)
     if (!changed) return
 
-    setAppViewSelection({did: nextDid, url: nextUrl})
-    if (applyMode !== 'login') {
-      onApply?.()
+    if (applyMode === 'login') {
+      setAppViewSelection({did: nextDid, url: nextUrl})
+    } else {
+      onApply?.({did: nextDid, url: nextUrl})
     }
-  }, [
-    applyMode,
-    did,
-    url,
-    setAppViewSelection,
-    onApply,
-    resetLocalState,
-  ])
+  }, [applyMode, did, url, setAppViewSelection, onApply, resetLocalState])
 
   return (
     <Dialog.Outer
       control={control}
+      onOpen={resetLocalState}
       onClose={onClose}
       nativeOptions={{preventExpansion: true}}>
       <Dialog.Handle />
@@ -339,8 +344,7 @@ function AppServerDialogInner({
    * hosts (e.g. bsky.social) apart from typos / unrelated sites.
    */
   const hasPdsInDidDoc =
-    !!atprotoPdsService?.serviceEndpoint &&
-    !bskyAppViewService?.serviceEndpoint
+    !!atprotoPdsService?.serviceEndpoint && !bskyAppViewService?.serviceEndpoint
   const shouldProbePds =
     preset === 'custom' &&
     !!normalizedCustomUrl &&
@@ -387,6 +391,17 @@ function AppServerDialogInner({
       normalizedCustomUrl,
     ],
   )
+
+  const [activeDid] = useCustomAppViewDid()
+  const [activeUrl] = useCustomAppViewUrl()
+  const activePreset = getActiveAppViewPreset(activeDid, activeUrl)
+  const selectionUnchanged =
+    preset === activePreset &&
+    (preset !== 'custom' ||
+      (derivedDid === activeDid &&
+        normalizeAppViewUrl(
+          bskyAppViewService?.serviceEndpoint || normalizedCustomUrl,
+        ) === normalizeAppViewUrl(activeUrl)))
 
   const confirmLabel =
     applyMode === 'reauth'
@@ -458,13 +473,13 @@ function AppServerDialogInner({
             {!!normalizedCustomUrl &&
               !!derivedDid &&
               (doc.isLoading || (shouldProbePds && pdsProbe.isLoading)) && (
-              <View style={[a.flex_row, a.align_center, a.gap_sm, a.mt_sm]}>
-                <Loader size="sm" />
-                <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
-                  <Trans>Looking up AppView…</Trans>
-                </Text>
-              </View>
-            )}
+                <View style={[a.flex_row, a.align_center, a.gap_sm, a.mt_sm]}>
+                  <Loader size="sm" />
+                  <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
+                    <Trans>Looking up AppView…</Trans>
+                  </Text>
+                </View>
+              )}
             {!!normalizedCustomUrl &&
               !!derivedDid &&
               !doc.isLoading &&
@@ -475,7 +490,7 @@ function AppServerDialogInner({
                     {looksLikePds ? (
                       <Trans>
                         This looks like a hosting provider (PDS) address, not an
-                        AppView. Your PDS is detected from your handle, or set 
+                        AppView. Your PDS is detected from your handle, or set
                         separately under Hosting provider; don’t enter it here!
                       </Trans>
                     ) : (
@@ -495,8 +510,8 @@ function AppServerDialogInner({
           style={[t.atoms.text_contrast_medium, a.text_sm, a.leading_snug]}>
           <Trans>
             The app server (AppView) provides posts, feeds, profiles, search,
-            notifications, and mutes. Your account still lives with your
-            hosting provider.
+            notifications, and mutes. Your account still lives with your hosting
+            provider.
           </Trans>
         </Text>
 
@@ -506,7 +521,10 @@ function AppServerDialogInner({
           size="large"
           onPress={onConfirm}
           label={confirmLabel}
-          disabled={preset === 'custom' && !customIsValid}>
+          disabled={
+            (preset === 'custom' && !customIsValid) ||
+            (applyMode !== 'login' && selectionUnchanged)
+          }>
           <ButtonText>{confirmLabel}</ButtonText>
         </Button>
 

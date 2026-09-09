@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (value: persisted.Schema['hideOwnTennaBadge']) => {
       setState(value)
-      persisted.write('hideOwnTennaBadge', value)
+      void persisted.write('hideOwnTennaBadge', value)
     },
     [setState],
   )

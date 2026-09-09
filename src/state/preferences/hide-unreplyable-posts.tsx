@@ -25,7 +25,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const setStateWrapped = useCallback(
     (hideUnreplyablePosts: persisted.Schema['hideUnreplyablePosts']) => {
       setState(hideUnreplyablePosts)
-      persisted.write('hideUnreplyablePosts', hideUnreplyablePosts)
+      void persisted.write('hideUnreplyablePosts', hideUnreplyablePosts)
     },
     [setState],
   )

@@ -1,12 +1,12 @@
+import {type Client} from '@atproto/lex'
 import {
-  type AppBskyFeedDefs,
-  type AppBskyGraphDefs,
-  type AtpAgent,
-  type ComAtprotoRepoStrongRef,
-} from '@atproto/api'
-import {AtUri} from '@atproto/api'
+  type AtIdentifierString,
+  AtUri,
+  type AtUriString,
+  type HandleString,
+} from '@atproto/syntax'
 
-import {DM_SERVICE_HEADERS, IMAGE_SIZE_CONFIG_2K_1MB} from '#/lib/constants'
+import {IMAGE_SIZE_CONFIG_2K_1MB} from '#/lib/constants'
 import {getLinkMeta, type LinkMeta} from '#/lib/link-meta/link-meta'
 import {resolveShortLink} from '#/lib/link-meta/resolve-short-link'
 import {downloadAndResize} from '#/lib/media/manip'
@@ -29,6 +29,13 @@ import {type ComposerImage} from '#/state/gallery'
 import {createComposerImage} from '#/state/gallery'
 import {type ChatInvitePreview} from '#/state/queries/join-links'
 import {type Gif} from '#/features/gifPicker/types'
+import {
+  getColorSets,
+  THEME_COLLECTION,
+  type ThemeRecord,
+} from '#/features/themes/types'
+import {parseThemeUrl} from '#/features/themes/urls'
+import {app, chat, com} from '#/lexicons'
 import {createGIFDescription} from '../gif-alt-text'
 
 type ResolvedExternalLink = {
@@ -47,30 +54,30 @@ type ResolvedExternalLink = {
 
 type ResolvedPostRecord = {
   type: 'record'
-  record: ComAtprotoRepoStrongRef.Main
+  record: com.atproto.repo.strongRef.Main
   kind: 'post'
-  view: AppBskyFeedDefs.PostView
+  view: app.bsky.feed.defs.PostView
 }
 
 type ResolvedFeedRecord = {
   type: 'record'
-  record: ComAtprotoRepoStrongRef.Main
+  record: com.atproto.repo.strongRef.Main
   kind: 'feed'
-  view: AppBskyFeedDefs.GeneratorView
+  view: app.bsky.feed.defs.GeneratorView
 }
 
 type ResolvedListRecord = {
   type: 'record'
-  record: ComAtprotoRepoStrongRef.Main
+  record: com.atproto.repo.strongRef.Main
   kind: 'list'
-  view: AppBskyGraphDefs.ListView
+  view: app.bsky.graph.defs.ListView
 }
 
 type ResolvedStarterPackRecord = {
   type: 'record'
-  record: ComAtprotoRepoStrongRef.Main
+  record: com.atproto.repo.strongRef.Main
   kind: 'starter-pack'
-  view: AppBskyGraphDefs.StarterPackView
+  view: app.bsky.graph.defs.StarterPackView
 }
 
 type ResolvedChatInvite = {
@@ -94,8 +101,21 @@ export class EmbeddingDisabledError extends Error {
   }
 }
 
+/**
+ * The clients a link resolution may need.
+ *
+ * Everything but the chat-invite branch is an appview read, and the chat invite
+ * preview goes through the chat client so it is proxied to the chat service.
+ * Both are passed together because the caller cannot know which branch a URL
+ * will take until it is parsed.
+ */
+export type LinkResolvers = {
+  appviewClient: Client
+  chatClient: Client
+}
+
 export async function resolveLink(
-  agent: AtpAgent,
+  {appviewClient, chatClient}: LinkResolvers,
   uri: string,
 ): Promise<ResolvedLink> {
   let resolvedUri = uri
@@ -125,15 +145,17 @@ export async function resolveLink(
     const [_0, handleOrDid, _1, rkey] = resolvedUri.split('/').filter(Boolean)
     const did = await fetchDid(handleOrDid)
     const feed = makeRecordUri(did, 'app.bsky.feed.generator', rkey)
-    const res = await agent.app.bsky.feed.getFeedGenerator({feed})
+    const data = await appviewClient.call(app.bsky.feed.getFeedGenerator, {
+      feed: feed,
+    })
     return {
       type: 'record',
       record: {
-        uri: res.data.view.uri,
-        cid: res.data.view.cid,
+        uri: data.view.uri,
+        cid: data.view.cid,
       },
       kind: 'feed',
-      view: res.data.view,
+      view: data.view,
     }
   }
   if (isBskyListUrl(resolvedUri)) {
@@ -141,28 +163,29 @@ export async function resolveLink(
     const [_0, handleOrDid, _1, rkey] = resolvedUri.split('/').filter(Boolean)
     const did = await fetchDid(handleOrDid)
     const list = makeRecordUri(did, 'app.bsky.graph.list', rkey)
-    const res = await agent.app.bsky.graph.getList({list})
+    const data = await appviewClient.call(app.bsky.graph.getList, {
+      list: list,
+    })
     return {
       type: 'record',
       record: {
-        uri: res.data.list.uri,
-        cid: res.data.list.cid,
+        uri: data.list.uri,
+        cid: data.list.cid,
       },
       kind: 'list',
-      view: res.data.list,
+      view: data.list,
     }
   }
   const chatInviteCode = getChatInviteCodeFromUrl(uri)
   if (chatInviteCode) {
-    const res = await agent.chat.bsky.group.getJoinLinkPreviews(
-      {codes: [chatInviteCode]},
-      {headers: DM_SERVICE_HEADERS},
-    )
+    const data = await chatClient.call(chat.bsky.group.getJoinLinkPreviews, {
+      codes: [chatInviteCode],
+    })
     return {
       type: 'chat-invite',
       uri,
       code: chatInviteCode,
-      view: res.data.joinLinkPreviews[0],
+      view: data.joinLinkPreviews[0],
     }
   }
   if (isBskyStartUrl(resolvedUri) || isBskyStarterPackUrl(resolvedUri)) {
@@ -174,34 +197,45 @@ export async function resolveLink(
     }
     const did = await fetchDid(parsed.name)
     const starterPack = createStarterPackUri({did, rkey: parsed.rkey})
-    const res = await agent.app.bsky.graph.getStarterPack({starterPack})
+    const data = await appviewClient.call(app.bsky.graph.getStarterPack, {
+      starterPack: starterPack as AtUriString,
+    })
     return {
       type: 'record',
       record: {
-        uri: res.data.starterPack.uri,
-        cid: res.data.starterPack.cid,
+        uri: data.starterPack.uri,
+        cid: data.starterPack.cid,
       },
       kind: 'starter-pack',
-      view: res.data.starterPack,
+      view: data.starterPack,
     }
   }
-  return resolveExternal(agent, resolvedUri)
+  const themeRoute = parseThemeUrl(resolvedUri)
+  if (themeRoute) {
+    try {
+      return await resolveThemeExternal(appviewClient, resolvedUri, themeRoute)
+    } catch {
+      // The deployed page metadata remains a safe fallback if direct record
+      // resolution is temporarily unavailable.
+    }
+  }
+  return resolveExternal(resolvedUri)
 
   // Forked from useGetPost. TODO: move into RQ.
   async function getPost({uri}: {uri: string}) {
     const urip = new AtUri(uri)
     if (!urip.host.startsWith('did:')) {
-      const res = await agent.resolveHandle({
-        handle: urip.host,
-      })
-      // @ts-expect-error TODO new-sdk-migration
-      urip.host = res.data.did
+      const data = await appviewClient.call(
+        com.atproto.identity.resolveHandle,
+        {handle: urip.host as HandleString},
+      )
+      urip.host = data.did
     }
-    const res = await agent.getPosts({
+    const data = await appviewClient.call(app.bsky.feed.getPosts, {
       uris: [urip.toString()],
     })
-    if (res.success && res.data.posts[0]) {
-      return res.data.posts[0]
+    if (data.posts[0]) {
+      return data.posts[0]
     }
     throw new Error('getPost: post not found')
   }
@@ -210,17 +244,90 @@ export async function resolveLink(
   async function fetchDid(handleOrDid: string) {
     let identifier = handleOrDid
     if (!identifier.startsWith('did:')) {
-      const res = await agent.resolveHandle({handle: identifier})
-      identifier = res.data.did
+      const data = await appviewClient.call(
+        com.atproto.identity.resolveHandle,
+        {handle: identifier as HandleString},
+      )
+      identifier = data.did
     }
     return identifier
   }
 }
 
-export async function resolveGif(
-  agent: AtpAgent,
-  gif: Gif,
+function didWebUrl(did: string) {
+  const parts = did.slice('did:web:'.length).split(':').map(decodeURIComponent)
+  const host = parts.shift()
+  return parts.length
+    ? `https://${host}/${parts.join('/')}/did.json`
+    : `https://${host}/.well-known/did.json`
+}
+
+async function resolveThemeExternal(
+  appviewClient: Client,
+  uri: string,
+  route: {name: string; rkey: string},
 ): Promise<ResolvedExternalLink> {
+  let did = route.name
+  if (!did.startsWith('did:')) {
+    const resolved = await appviewClient.call(
+      com.atproto.identity.resolveHandle,
+      {handle: did as HandleString},
+    )
+    did = resolved.did
+  }
+  const didDocumentUrl = did.startsWith('did:web:')
+    ? didWebUrl(did)
+    : `https://plc.directory/${encodeURIComponent(did)}`
+  const didDocumentResponse = await fetch(didDocumentUrl)
+  if (!didDocumentResponse.ok) throw new Error('DID document not found')
+  const didDocument = (await didDocumentResponse.json()) as {
+    service?: {id: string; serviceEndpoint: string}[]
+  }
+  const pds = didDocument.service?.find(service =>
+    service.id.endsWith('#atproto_pds'),
+  )?.serviceEndpoint
+  if (!pds) throw new Error('PDS not found')
+  const recordUrl = new URL('/xrpc/com.atproto.repo.getRecord', pds)
+  recordUrl.searchParams.set('repo', did)
+  recordUrl.searchParams.set('collection', THEME_COLLECTION)
+  recordUrl.searchParams.set('rkey', route.rkey)
+  const response = await fetch(recordUrl)
+  if (!response.ok) throw new Error('Theme not found')
+  const result = (await response.json()) as {
+    uri: string
+    cid: string
+    value: ThemeRecord
+  }
+  if (!result.value?.name || !result.value.base?.colors) {
+    throw new Error('Invalid theme')
+  }
+  let author = route.name
+  try {
+    const profile = await appviewClient.call(app.bsky.actor.getProfile, {
+      actor: did as AtIdentifierString,
+    })
+    author = profile.handle
+  } catch {}
+  const count = getColorSets(result.value).length
+  const description =
+    result.value.description ??
+    `${count} ${count === 1 ? 'variant' : 'variants'} · @${author.replace(/^@/, '')}`
+  const page = new URL(uri)
+  const thumbnail = new URL(
+    `/theme-og/${encodeURIComponent(route.name)}/${encodeURIComponent(route.rkey)}`,
+    page.origin,
+  )
+  return {
+    type: 'external',
+    uri,
+    title: result.value.name,
+    description,
+    thumb: await imageToThumb(thumbnail.toString()),
+    associatedRefs: [{uri: result.uri as AtUriString, cid: result.cid}],
+  }
+}
+
+export async function resolveGif(gif: Gif): Promise<ResolvedExternalLink> {
   const gifUrl = gif.media_formats.gif.url
   const params = new URLSearchParams()
   params.set('hh', String(gif.media_formats.gif.dims[1]))
@@ -259,11 +366,8 @@ function getFileSlug(url: string | undefined): string | undefined {
   return dotIndex > 0 ? filename.slice(0, dotIndex) : undefined
 }
 
-async function resolveExternal(
-  agent: AtpAgent,
-  uri: string,
-): Promise<ResolvedExternalLink> {
-  const result = await getLinkMeta(agent, uri)
+async function resolveExternal(uri: string): Promise<ResolvedExternalLink> {
+  const result = await getLinkMeta(uri)
   return {
     type: 'external',
     uri: result.url,

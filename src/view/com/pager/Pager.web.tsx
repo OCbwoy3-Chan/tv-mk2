@@ -64,13 +64,6 @@ export function Pager({
   const dragProgress = useSharedValue(selectedPage)
   const dragState = useSharedValue<'idle' | 'dragging' | 'settling'>('idle')
 
-  useImperativeHandle(ref, () => ({
-    setPage: (index: number) => {
-      onTabBarSelect(index)
-    },
-  }))
-
-  /* eslint-disable react-hooks/preserve-manual-memoization -- restored memoization */
   const onTabBarSelect = useCallback(
     (index: number) => {
       const scrollY = window.scrollY
@@ -105,6 +98,12 @@ export function Pager({
     [selectedPage, setSelectedPage, onPageSelected, onTabPressed],
   )
   /* eslint-enable react-hooks/preserve-manual-memoization */
+
+  useImperativeHandle(ref, () => ({
+    setPage: (index: number) => {
+      onTabBarSelect(index)
+    },
+  }))
 
   return (
     <View testID={testID} style={s.hContentRegion}>

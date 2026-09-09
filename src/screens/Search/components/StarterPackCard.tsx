@@ -1,10 +1,6 @@
 import {useState} from 'react'
 import {View} from 'react-native'
-import {
-  type AppBskyGraphDefs,
-  AppBskyGraphStarterpack,
-  moderateProfile,
-} from '@atproto/api'
+import {moderateProfile} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -23,13 +19,14 @@ import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import {useStarterPackLink} from '#/components/StarterPack/StarterPackCard'
 import {SubtleHover} from '#/components/SubtleHover'
 import {Text} from '#/components/Typography'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 export function StarterPackCard({
   view,
   onPress,
 }: {
-  view: AppBskyGraphDefs.StarterPackView
+  view: app.bsky.graph.defs.StarterPackView
   onPress?: () => void
 }) {
   const t = useTheme()
@@ -38,13 +35,9 @@ export function StarterPackCard({
   const {gtPhone} = useBreakpoints()
   const link = useStarterPackLink({view})
   const record = view.record
+  const isOwnStarterPack = view.creator?.did === currentAccount?.did
 
-  if (
-    !bsky.dangerousIsType<AppBskyGraphStarterpack.Record>(
-      record,
-      AppBskyGraphStarterpack.isRecord,
-    )
-  ) {
+  if (!bsky.isType(app.bsky.graph.starterpack, record)) {
     return null
   }
 
@@ -108,7 +101,7 @@ export function StarterPackCard({
                     t.atoms.text_contrast_medium,
                   ]}
                   numberOfLines={1}>
-                  {view.creator?.did === currentAccount?.did
+                  {isOwnStarterPack
                     ? _(msg`By you`)
                     : _(msg`By ${sanitizeHandle(view.creator.handle, '@')}`)}
                 </Text>

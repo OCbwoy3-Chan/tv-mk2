@@ -1,12 +1,7 @@
-import {memo, useMemo} from 'react'
+import {memo, useMemo, useState} from 'react'
 import {Text as RNText, View} from 'react-native'
-import {
-  AppBskyFeedDefs,
-  AppBskyFeedPost,
-  type AppBskyFeedThreadgate,
-  AtUri,
-  RichText as RichTextAPI,
-} from '@atproto/api'
+import {AtUri} from '@atproto/syntax'
+import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
@@ -75,18 +70,21 @@ import {PostAlerts} from '#/components/moderation/PostAlerts'
 import * as ReportDialogMetadataContext from '#/components/moderation/ReportDialog/ReportDialogMetadataContext'
 import {type AppModerationCause} from '#/components/Pills'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
+import {KnownLikers} from '#/components/Post/KnownLikers'
 import {TranslatedPost} from '#/components/Post/Translated'
 import {PostControls, PostControlsSkeleton} from '#/components/PostControls'
 import {PostTags} from '#/components/PostTags'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import * as Prompt from '#/components/Prompt'
+import {PronounPill} from '#/components/PronounPill'
 import {RichText} from '#/components/RichText'
 import * as Skele from '#/components/Skeleton'
 import {Text} from '#/components/Typography'
 import {WhoCanReply} from '#/components/WhoCanReply'
-import {useAnalytics} from '#/analytics'
+import {Features, useAnalytics} from '#/analytics'
 import {useActorStatus} from '#/features/liveNow'
+import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
 export type ThreadItemAnchorReaderSeam = ReaderSeamData & {
@@ -108,7 +106,7 @@ export function ThreadItemAnchor({
    */
   readerSeam?: ThreadItemAnchorReaderSeam
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
   postSource?: PostSource
 }) {
   const postShadow = usePostShadow(item.value.post)
@@ -228,13 +226,14 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   item: Extract<ThreadItem, {type: 'threadPost'}>
   isRoot: boolean
   readerSeam?: ThreadItemAnchorReaderSeam
-  postShadow: Shadow<AppBskyFeedDefs.PostView>
+  postShadow: Shadow<app.bsky.feed.defs.PostView>
   onPostSuccess?: (data: OnPostSuccessData) => void
-  threadgateRecord?: AppBskyFeedThreadgate.Record
+  threadgateRecord?: app.bsky.feed.threadgate.Main
   postSource?: PostSource
 }) {
   const inReader = !!readerSeam
   const t = useTheme()
+  const [nameRowHeight, setNameRowHeight] = useState<number>()
   const ax = useAnalytics()
   const {t: l} = useLingui()
   const {openComposer} = useOpenComposer()
@@ -276,6 +275,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const repostsMetricsDisplay = useRepostsMetricsDisplay()
   const quotesMetricsDisplay = useQuotesMetricsDisplay()
   const savesMetricsDisplay = useSavesMetricsDisplay()
+  const showExpandedMetrics =
+    shouldShowThreadExpandedMetric(repostsMetricsDisplay, post.repostCount) ||
+    shouldShowThreadExpandedMetric(likesMetricsDisplay, post.likeCount) ||
+    shouldShowThreadExpandedMetric(quotesMetricsDisplay, post.quoteCount) ||
+    shouldShowThreadExpandedMetric(savesMetricsDisplay, post.bookmarkCount)
 
   const likesHref = useMemo(() => {
     const urip = new AtUri(post.uri)
@@ -319,7 +323,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const viaRepost = useMemo(() => {
     const reason = postSource?.post.reason
 
-    if (AppBskyFeedDefs.isReasonRepost(reason) && reason.uri && reason.cid) {
+    if (
+      bsky.isType(app.bsky.feed.defs.reasonRepost, reason) &&
+      reason.uri &&
+      reason.cid
+    ) {
       return {
         uri: reason.uri,
         cid: reason.cid,
@@ -395,6 +403,17 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
       <GalleryBleed>
         <View
           testID={`postThreadItem-by-${post.author.handle}`}
+          {...{
+            dataSet: {
+              keyboardNavigationPost: post.uri,
+              keyboardNavigationHref: makeProfileLink(
+                post.author,
+                'post',
+                new AtUri(post.uri).rkey,
+              ),
+              keyboardNavigationClickable: 'false',
+            },
+          }}
           style={[
             {
               paddingHorizontal: sidePadding,
@@ -436,11 +455,23 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   hideDisplayNames && a.justify_center,
                 ]}>
                 <ProfileHoverCard did={post.author.did} style={[a.w_full]}>
-                  <View style={[a.flex_row, a.align_center]}>
+                  <View
+                    style={[
+                      a.flex_row,
+                      a.flex_wrap,
+                      a.align_center,
+                      a.overflow_hidden,
+                      {maxHeight: nameRowHeight},
+                    ]}>
                     <Text
+                      onLayout={event => {
+                        const {height} = event.nativeEvent.layout
+                        if (height > 0) setNameRowHeight(height)
+                      }}
                       emoji
                       style={[
-                        a.flex_shrink,
+                        a.flex_shrink_0,
+                        {maxWidth: '100%'},
                         isCompactPosts ? a.text_md : a.text_lg,
                         a.font_semi_bold,
                         a.leading_snug,
@@ -449,20 +480,17 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       {displayName}
                     </Text>
 
-                    <View
-                      style={[
-                        a.pl_xs,
-                        a.flex_row,
-                        a.gap_2xs,
-                        a.align_center,
-                        isCompactPosts && {marginTop: 1},
-                      ]}>
-                      <ProfileBadges
-                        profile={authorShadow}
-                        size="md"
-                        interactive
-                      />
-                    </View>
+                    <ProfileBadges
+                      profile={authorShadow}
+                      size="md"
+                      interactive
+                      style={[a.pl_xs, isCompactPosts && {marginTop: 1}]}
+                    />
+                    {post.author.pronouns && (
+                      <View style={[a.pl_xs, a.flex_shrink_0]}>
+                        <PronounPill pronouns={post.author.pronouns} />
+                      </View>
+                    )}
                   </View>
                   {!hideDisplayNames && (
                     <Text
@@ -565,24 +593,8 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   <ExpandedPostDetails
                     post={item.value.post}
                     isThreadAuthor={isThreadAuthor}
-                    compactPosts={isCompactPosts}
                   />
-                  {shouldShowThreadExpandedMetric(
-                    repostsMetricsDisplay,
-                    post.repostCount,
-                  ) ||
-                  shouldShowThreadExpandedMetric(
-                    likesMetricsDisplay,
-                    post.likeCount,
-                  ) ||
-                  shouldShowThreadExpandedMetric(
-                    quotesMetricsDisplay,
-                    post.quoteCount,
-                  ) ||
-                  shouldShowThreadExpandedMetric(
-                    savesMetricsDisplay,
-                    post.bookmarkCount,
-                  ) ? (
+                  {showExpandedMetrics ? (
                     // Show this section unless we're *sure* it has no engagement.
                     <View
                       style={[
@@ -594,9 +606,8 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                           columnGap: a.gap_lg.gap,
                         },
                         a.border_t,
-                        a.border_b,
-                        isCompactPosts ? a.mt_sm : a.mt_md,
-                        isCompactPosts ? a.py_sm : a.py_md,
+                        a.mt_md,
+                        a.py_sm,
                         t.atoms.border_contrast_low,
                       ]}>
                       {shouldShowThreadExpandedMetric(
@@ -655,9 +666,14 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       ) : null}
                     </View>
                   ) : null}
+                  <KnownLikers
+                    post={post}
+                    feature={Features.PostThreadKnownLikersEnable}
+                    outerStyle={[a.pt_xs, a.pb_sm]}
+                  />
                   <View
                     style={[
-                      isCompactPosts ? a.pt_2xs : a.pt_sm,
+                      !showExpandedMetrics && a.pt_sm,
                       a.pb_2xs,
                       !isCompactPosts && {
                         marginLeft: -5,
@@ -707,25 +723,18 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 function ExpandedPostDetails({
   post,
   isThreadAuthor,
-  compactPosts,
 }: {
   post: Extract<ThreadItem, {type: 'threadPost'}>['value']['post']
   isThreadAuthor: boolean
-  compactPosts: boolean
 }) {
   const t = useTheme()
   const {i18n} = useLingui()
   const showViaClient = useShowViaClient()
   const isRootPost = !('reply' in post.record)
-  const via = post.record.via as string | undefined
+  const via = (post.record as {via?: string}).via
 
   return (
-    <View
-      style={[
-        compactPosts ? a.gap_sm : a.gap_md,
-        compactPosts ? a.pt_sm : a.pt_md,
-        a.align_start,
-      ]}>
+    <View style={[a.gap_md, a.pt_md, a.align_start]}>
       <BackdatedPostIndicator post={post} />
       <View style={[a.flex_row, a.align_center, a.flex_wrap, a.gap_sm]}>
         <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
@@ -744,17 +753,14 @@ function truncateVia(via: string) {
   return via.length > 24 ? `${via.slice(0, 23)}…` : via
 }
 
-function BackdatedPostIndicator({post}: {post: AppBskyFeedDefs.PostView}) {
+function BackdatedPostIndicator({post}: {post: app.bsky.feed.defs.PostView}) {
   const t = useTheme()
   const {t: l, i18n} = useLingui()
   const control = Prompt.usePromptControl()
   const enableSquareButtons = useEnableSquareButtons()
 
   const indexedAt = new Date(post.indexedAt)
-  const createdAt = bsky.dangerousIsType<AppBskyFeedPost.Record>(
-    post.record,
-    AppBskyFeedPost.isRecord,
-  )
+  const createdAt = bsky.isType(app.bsky.feed.post.main, post.record)
     ? new Date(post.record.createdAt)
     : new Date(post.indexedAt)
 
@@ -872,8 +878,8 @@ function ThreadExpandedMetricText({
 }
 
 function getThreadAuthor(
-  post: AppBskyFeedDefs.PostView,
-  record: AppBskyFeedPost.Record,
+  post: app.bsky.feed.defs.PostView,
+  record: app.bsky.feed.post.Main,
 ): string {
   if (!record.reply) {
     return post.author.did

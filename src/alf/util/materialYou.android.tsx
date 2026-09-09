@@ -31,7 +31,10 @@ export function getMaterialYouColor(
     )
   }
 
-  return palette[color]?.[shadeIndex] || fallback
+  const extendedPalette = palette as MaterialYouPalette & {
+    system_error?: string[]
+  }
+  return extendedPalette[color]?.[shadeIndex] || fallback
 }
 
 const colorsChangedCallbacks = new Set<() => void>()

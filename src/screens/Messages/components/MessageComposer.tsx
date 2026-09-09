@@ -13,7 +13,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {scheduleOnRN} from 'react-native-worklets'
 import {GlassContainer} from 'expo-glass-effect'
 import {LinearGradient} from 'expo-linear-gradient'
-import {type $Typed, type ChatBskyConvoDefs} from '@atproto/api'
+import {type $Typed} from '@atproto/lex'
 import {ScrollEdgeEffect} from '@bsky.app/expo-scroll-edge-effect'
 import {useLingui} from '@lingui/react/macro'
 import {countGraphemes} from 'unicode-segmenter/grapheme'
@@ -21,6 +21,7 @@ import {countGraphemes} from 'unicode-segmenter/grapheme'
 import {HITSLOP_10, MAX_DM_GRAPHEME_LENGTH} from '#/lib/constants'
 import {useHaptics} from '#/lib/haptics'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
+import {parseMarkdownLinks} from '#/lib/strings/rich-text-manip'
 import {isBskyChatInviteUrl, isBskyPostUrl} from '#/lib/strings/url-helpers'
 import {useEmail} from '#/state/email-verification'
 import {
@@ -38,6 +39,8 @@ import {PaperPlaneVertical_Filled_Stroke2_Corner1_Rounded as PaperPlaneIcon} fro
 import {Loader} from '#/components/Loader'
 import * as Toast from '#/components/Toast'
 import {IS_ANDROID, IS_IOS, IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
+import {type chat} from '#/lexicons'
 import {type MessageEmbedState} from './MessageInputEmbed'
 
 const MIN_HEIGHT = 40
@@ -54,7 +57,7 @@ export function MessageComposer({
   onSendMessage: (
     message: string,
     embed?: MessageEmbedState,
-    replyTo?: $Typed<ChatBskyConvoDefs.MessageView>,
+    replyTo?: $Typed<chat.bsky.convo.defs.MessageView>,
   ) => void
   messageEmbed: MessageEmbedState | undefined
   setEmbed: (embedUrl: string | undefined) => void
@@ -108,11 +111,11 @@ export function MessageComposer({
   const onSubmit = (
     message: string,
     embed: MessageEmbedState | undefined,
-    replyTo: ChatBskyConvoDefs.MessageView | null,
+    replyTo: chat.bsky.convo.defs.MessageView | null,
   ) => {
     if (!editable) return
     if (!embed && message.trim() === '') return
-    const graphemeCount = countGraphemes(message)
+    const graphemeCount = countGraphemes(parseMarkdownLinks(message).text)
     if (graphemeCount > MAX_DM_GRAPHEME_LENGTH) {
       Toast.show(
         l`Message is too long (${graphemeCount}/${MAX_DM_GRAPHEME_LENGTH})`,
@@ -190,7 +193,7 @@ export function MessageComposer({
       <View
         collapsable={false}
         ref={native(
-          (node: View) =>
+          (node: React.ComponentRef<typeof View>) =>
             void composerInternalApiRef.current?.setAutocompleteAnchor(node),
         )}>
         <GlassContainer
@@ -214,7 +217,9 @@ export function MessageComposer({
                     composerInternalApiRef.current?.insert(emoji.native)
                   }
                   nextFocusRef={() =>
-                    composerInternalApiRef.current?.input?.element
+                    composerInternalApiRef.current?.input
+                      ?.element as unknown as
+                      {focus: () => void} | null | undefined
                   }>
                   <EmojiPicker.Trigger label={l`Open emoji picker`}>
                     {({props, state, control}) => (
@@ -253,6 +258,7 @@ export function MessageComposer({
               ) : null}
 
               <Composer
+                enableMaskedLinks
                 nativeID={textInputId}
                 label={l`Message input field`}
                 placeholder={
@@ -340,9 +346,25 @@ function SubmitButton({
         onPress={onPress}
         disabled={disabled}>
         {loading ? (
-          <Loader size="md" fill={t.palette.white} style={[a.mb_2xs]} />
+          <Loader
+            size="md"
+            fill={
+              disabled
+                ? t.atoms.text_contrast_medium.color
+                : accentForeground(t, t.palette.primary_500)
+            }
+            style={[a.mb_2xs]}
+          />
         ) : (
-          <PaperPlaneIcon size="md" fill={t.palette.white} style={[a.mb_2xs]} />
+          <PaperPlaneIcon
+            size="md"
+            fill={
+              disabled
+                ? t.atoms.text_contrast_medium.color
+                : accentForeground(t, t.palette.primary_500)
+            }
+            style={[a.mb_2xs]}
+          />
         )}
       </Pressable>
     </GlassView>

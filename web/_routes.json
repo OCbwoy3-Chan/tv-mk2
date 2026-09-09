@@ -1,5 +1,11 @@
 {
   "version": 1,
-  "include": ["/__embed/profile/*"],
+  "include": [
+    "/__embed/profile/*",
+    "/profile/*/theme/*",
+    "/theme-og/*",
+    "/oauth-client-metadata.json",
+    "/oauth-client-metadata-native.json"
+  ],
   "exclude": []
 }

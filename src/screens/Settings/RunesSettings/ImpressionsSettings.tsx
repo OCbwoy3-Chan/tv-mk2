@@ -1,11 +1,12 @@
 import {type ComponentProps} from 'react'
-import {View} from 'react-native'
+import {TextInput, View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {
   type CountsMetricsDisplay,
   type NotificationDotDisplay,
 } from '#/lib/metrics-display'
+import {useBadgePreference} from '#/state/preferences/badge-text'
 import {
   useChatsTabBadgeDisplay,
   useFollowedByMetricsDisplay,
@@ -39,13 +40,14 @@ import {
   useShowFollowsYouBadge,
 } from '#/state/preferences/show-follows-you-badge'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import {atoms as a, useBreakpoints} from '#/alf'
+import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import * as Toggle from '#/components/forms/Toggle'
 import * as ToggleButton from '#/components/forms/ToggleButton'
 import {Bell_Stroke2_Corner0_Rounded as BellIcon} from '#/components/icons/Bell'
 import {Person_Stroke2_Corner0_Rounded as PersonIcon} from '#/components/icons/Person'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {Text} from '#/components/Typography'
+import {IS_WEB} from '#/env'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 type MetricsDisplayMode = CountsMetricsDisplay
@@ -80,6 +82,8 @@ export function RunesImpressionsSettingsScreen() {
   const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
   const setChatsTabBadgeDisplay = useSetChatsTabBadgeDisplay()
 
+  const [titleSource = 'notifications', setTitleSource] =
+    useBadgePreference('tabTitleSource')
   const labels = useMetricDisplayLabels()
 
   return (
@@ -166,12 +170,51 @@ export function RunesImpressionsSettingsScreen() {
       </Toggle.Item>
       <SettingsList.Divider style={[a.mt_0]} />
       <ImpressionsSectionHeader icon={BellIcon} label={l`Badges`} />
+      {IS_WEB && (
+        <View style={[a.px_lg, a.py_lg, a.gap_sm]}>
+          <Text style={[a.font_semi_bold]}>
+            <Trans>Visible in browser title</Trans>
+          </Text>
+          <ToggleButton.Group
+            label={l`Visible in browser title`}
+            values={[titleSource]}
+            onChange={values => {
+              const value = values[0]
+              if (
+                value === 'notifications' ||
+                value === 'chats' ||
+                value === 'none'
+              )
+                setTitleSource(value)
+            }}>
+            <ToggleButton.Button name="none" label={l`Hidden`}>
+              <ToggleButton.ButtonText>
+                <Trans>Hidden</Trans>
+              </ToggleButton.ButtonText>
+            </ToggleButton.Button>
+            <ToggleButton.Button
+              name="notifications"
+              label={l`Notifications`}>
+              <ToggleButton.ButtonText>
+                <Trans>Notifications</Trans>
+              </ToggleButton.ButtonText>
+            </ToggleButton.Button>
+            <ToggleButton.Button name="chats" label={l`Chats`}>
+              <ToggleButton.ButtonText>
+                <Trans>Chats</Trans>
+              </ToggleButton.ButtonText>
+            </ToggleButton.Button>
+          </ToggleButton.Group>
+        </View>
+      )}
       <TabBadgeRow
+        textKey="notificationsBadgeText"
         name={l`Notifications`}
         value={notificationsTabBadgeDisplay}
         onChange={setNotificationsTabBadgeDisplay}
       />
       <TabBadgeRow
+        textKey="chatsBadgeText"
         name={l`Chats`}
         value={chatsTabBadgeDisplay}
         onChange={setChatsTabBadgeDisplay}
@@ -181,19 +224,29 @@ export function RunesImpressionsSettingsScreen() {
 }
 
 function TabBadgeRow({
+  textKey,
   name,
   value,
   onChange,
 }: {
   name: string
+  textKey: 'notificationsBadgeText' | 'chatsBadgeText'
   value: NotificationDotDisplay
   onChange: (value: NotificationDotDisplay) => void
 }) {
   const {t: l} = useLingui()
 
+  const [customText = '', setCustomText] = useBadgePreference(textKey)
+  const theme = useTheme()
+
   const handleChange = (values: string[]) => {
     const next = values[0] as NotificationDotDisplay | undefined
-    if (next === 'hidden' || next === 'visible' || next === 'exact') {
+    if (
+      next === 'hidden' ||
+      next === 'visible' ||
+      next === 'exact' ||
+      next === 'text'
+    ) {
       onChange(next)
     }
   }
@@ -220,7 +273,37 @@ function TabBadgeRow({
             <Trans>Number</Trans>
           </ToggleButton.ButtonText>
         </ToggleButton.Button>
+        <ToggleButton.Button name="text" label={l`Text`}>
+          <ToggleButton.ButtonText>
+            <Trans>Text</Trans>
+          </ToggleButton.ButtonText>
+        </ToggleButton.Button>
       </ToggleButton.Group>
+      {value === 'text' && (
+        <>
+          <Text style={[a.text_sm]}>
+            <Trans>
+              Custom badge text:
+            </Trans>
+          </Text>
+          <TextInput
+            accessibilityLabel={l`Custom badge text for ${name}`}
+            accessibilityHint={l`Leave blank to show the unread number`}
+            value={customText}
+            onChangeText={setCustomText}
+            maxLength={16}
+            placeholder={l`e.g. 🐴`}
+            placeholderTextColor={theme.atoms.text_contrast_medium.color}
+            style={[
+              a.border,
+              a.rounded_sm,
+              a.p_md,
+              theme.atoms.border_contrast_low,
+              theme.atoms.text,
+            ]}
+          />
+        </>
+      )}
     </View>
   )
 }

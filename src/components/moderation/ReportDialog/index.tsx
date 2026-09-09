@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react'
 import {Pressable, type ScrollView, View} from 'react-native'
-import {type AppBskyLabelerDefs, BSKY_LABELER_DID} from '@atproto/api'
+import {api} from '@bsky/sdk'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {wait} from '#/lib/async/wait'
@@ -19,7 +19,7 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useMyLabelersQuery} from '#/state/queries/preferences'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
-import {atoms as a, useGutters, useTheme} from '#/alf'
+import {atoms as a, useGutters, useTheme, web} from '#/alf'
 import * as Admonition from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -39,6 +39,7 @@ import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE} from '#/env'
+import {type app} from '#/lexicons'
 import {useSubmitReportMutation} from './action'
 import {
   BSKY_LABELER_ONLY_REPORT_REASONS,
@@ -92,7 +93,7 @@ export function ReportDialog(
     openCount: number
     videoTimestampSeconds?: number
   }>({openCount: 0})
-  const onOpen = useCallback(() => {
+  const onOpen = () => {
     const seconds =
       subject?.type === 'post' && subject.attributes.video
         ? reportDialogMetadata?.current.videoTimestampSeconds
@@ -105,7 +106,7 @@ export function ReportDialog(
       videoTimestampSeconds:
         seconds !== undefined && seconds >= 1 ? Math.floor(seconds) : undefined,
     }))
-  }, [reportDialogMetadata, subject])
+  }
   const propsOnClose = props.onClose
   const onClose = useCallback(() => {
     ax.metric('reportDialog:close', {})
@@ -159,7 +160,7 @@ function Inner(
   const logger = ax.logger.useChild(ax.logger.Context.ReportDialog)
   const t = useTheme()
   const {t: l} = useLingui()
-  const ref = useRef<ScrollView>(null)
+  const ref = useRef<React.ComponentRef<typeof ScrollView>>(null)
   const {
     data: allLabelers,
     isLoading: isLabelerLoading,
@@ -225,7 +226,7 @@ function Inner(
       .filter(l => {
         if (!state.selectedOption) return false
         if (isBskyOnlyReason || isBskyOnlySubject) {
-          return l.creator.did === BSKY_LABELER_DID
+          return l.creator.did === api.moderation.did
         }
         const supportedReasonTypes: string[] | undefined = l.reasonTypes
         if (supportedReasonTypes === undefined) return true
@@ -321,9 +322,8 @@ function Inner(
         type: 'setError',
         error,
       })
-    } finally {
-      setIsPending(false)
     }
+    setIsPending(false)
   }, [logger, submitReport, props, state, ax, l, videoTimestampSeconds])
 
   useCallOnce(() => {
@@ -337,7 +337,7 @@ function Inner(
       testID="report:dialog"
       label={l`Report dialog`}
       ref={ref}
-      style={[a.w_full, {maxWidth: 500}]}>
+      style={[a.w_full, web({maxWidth: 500})]}>
       <View style={[a.gap_2xl, IS_NATIVE && a.pt_md]}>
         <StepOuter>
           <StepTitle
@@ -646,7 +646,7 @@ function Inner(
               </View>
 
               {videoTimestampSeconds !== undefined &&
-                state.selectedLabeler?.creator.did === BSKY_LABELER_DID && (
+                state.selectedLabeler?.creator.did === api.moderation.did && (
                   <IncludeVideoTimestampToggle
                     seconds={videoTimestampSeconds}
                     selected={state.includeVideoTimestamp}
@@ -1049,8 +1049,8 @@ function LabelerCard({
   labeler,
   onSelect,
 }: {
-  labeler: AppBskyLabelerDefs.LabelerViewDetailed
-  onSelect?: (option: AppBskyLabelerDefs.LabelerViewDetailed) => void
+  labeler: app.bsky.labeler.defs.LabelerViewDetailed
+  onSelect?: (option: app.bsky.labeler.defs.LabelerViewDetailed) => void
 }) {
   const t = useTheme()
   const {t: l} = useLingui()

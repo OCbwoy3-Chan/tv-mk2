@@ -16,6 +16,7 @@ type StateContext = {
   hue: persisted.Schema['hue']
   material3Accent: persisted.Schema['material3Accent']
   material3Style: persisted.Schema['material3Style']
+  activeTheme: persisted.Schema['activeTheme']
 }
 type SetContext = {
   setColorMode: (v: persisted.Schema['colorMode']) => void
@@ -24,6 +25,7 @@ type SetContext = {
   setHue: (v: persisted.Schema['hue']) => void
   setMaterial3Accent: (v: persisted.Schema['material3Accent']) => void
   setMaterial3Style: (v: persisted.Schema['material3Style']) => void
+  setActiveTheme: (v: persisted.Schema['activeTheme']) => void
 }
 
 const stateContext = createContext<StateContext>({
@@ -33,6 +35,7 @@ const stateContext = createContext<StateContext>({
   hue: 0,
   material3Accent: '#ee6300',
   material3Style: 'TONAL_SPOT',
+  activeTheme: undefined,
 })
 stateContext.displayName = 'ColorModeStateContext'
 const setContext = createContext<SetContext>({} as SetContext)
@@ -51,6 +54,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
   const [material3Style, setMaterial3Style] = useState(
     () => persisted.get('material3Style') ?? 'TONAL_SPOT',
   )
+  const [activeTheme, setActiveTheme] = useState(() =>
+    persisted.get('activeTheme'),
+  )
 
   const stateContextValue = useMemo(
     () => ({
@@ -60,8 +66,17 @@ export function Provider({children}: PropsWithChildren<{}>) {
       hue,
       material3Accent,
       material3Style,
+      activeTheme,
     }),
-    [colorMode, darkTheme, colorScheme, hue, material3Accent, material3Style],
+    [
+      colorMode,
+      darkTheme,
+      colorScheme,
+      hue,
+      material3Accent,
+      material3Style,
+      activeTheme,
+    ],
   )
 
   const setContextValue = useMemo(
@@ -88,9 +103,15 @@ export function Provider({children}: PropsWithChildren<{}>) {
         setMaterial3Accent(_material3Accent)
         void persisted.write('material3Accent', _material3Accent)
       },
-      setMaterial3Style: (_material3Style: persisted.Schema['material3Style']) => {
+      setMaterial3Style: (
+        _material3Style: persisted.Schema['material3Style'],
+      ) => {
         setMaterial3Style(_material3Style)
         void persisted.write('material3Style', _material3Style)
+      },
+      setActiveTheme: (_activeTheme: persisted.Schema['activeTheme']) => {
+        setActiveTheme(_activeTheme)
+        void persisted.write('activeTheme', _activeTheme)
       },
     }),
     [],
@@ -115,12 +136,12 @@ export function Provider({children}: PropsWithChildren<{}>) {
         setMaterial3Accent(nextMaterial3Accent)
       },
     )
-    const unsub6 = persisted.onUpdate(
-      'material3Style',
-      nextMaterial3Style => {
-        setMaterial3Style(nextMaterial3Style)
-      },
-    )
+    const unsub6 = persisted.onUpdate('material3Style', nextMaterial3Style => {
+      setMaterial3Style(nextMaterial3Style)
+    })
+    const unsub7 = persisted.onUpdate('activeTheme', nextActiveTheme => {
+      setActiveTheme(nextActiveTheme)
+    })
     return () => {
       unsub1()
       unsub2()
@@ -128,6 +149,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       unsub4()
       unsub5()
       unsub6()
+      unsub7()
     }
   }, [])
 

@@ -163,7 +163,7 @@ const GalleryItem = ({
   const editControl = Dialog.useDialogControl()
   const [altBtnViewTag, setAltBtnViewTag] = useState<number>()
 
-  const altBtnRef = (node: View | null) => {
+  const altBtnRef = (node: React.ComponentRef<typeof View> | null) => {
     // for iOS 26 fluid transition
     if (IS_IOS && node) {
       const tag = findNodeHandle(node)
@@ -179,7 +179,7 @@ const GalleryItem = ({
     })
 
     if (IS_NATIVE) {
-      cropImage(image).then(next => {
+      void cropImage(image).then(next => {
         onChange(next)
       })
     } else {

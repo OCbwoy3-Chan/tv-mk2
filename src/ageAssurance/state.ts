@@ -1,5 +1,4 @@
 import {useEffect, useMemo, useState} from 'react'
-import {type AppBskyAgeassuranceDefs} from '@atproto/api'
 
 import {getAge} from '#/lib/strings/time'
 import {useSession} from '#/state/session'
@@ -7,6 +6,7 @@ import {
   getConfigFromCache,
   getOtherRequiredDataFromCache,
   getServerStateFromCache,
+  type OtherRequiredDataStatus,
   useAgeAssuranceServerDataContext,
 } from '#/ageAssurance/data'
 import {logger} from '#/ageAssurance/logger'
@@ -18,6 +18,7 @@ import {
   AgeAssuranceStatus,
 } from '#/ageAssurance/types'
 import {type Geolocation, useGeolocation} from '#/geolocation'
+import {type app} from '#/lexicons'
 import {device} from '#/storage'
 
 const PERMISSIVE_FLAGS: AgeAssuranceFlags = {
@@ -39,14 +40,15 @@ const PERMISSIVE_FLAGS: AgeAssuranceFlags = {
  * We intentionally keep this permissive (matching the older behavior) and
  * allow full access for logged-in users.
  */
-function computeAgeAssuranceState({
+export function computeAgeAssuranceState({
   hasSession,
 }: {
   hasSession: boolean
   geolocation: Geolocation
-  config?: AppBskyAgeassuranceDefs.Config
-  state?: AppBskyAgeassuranceDefs.State
+  config?: app.bsky.ageassurance.defs.Config
+  state?: app.bsky.ageassurance.defs.State
   metadata?: AgeAssuranceMetadata
+  otherRequiredDataStatus?: OtherRequiredDataStatus
 }) {
   if (!hasSession)
     return {
@@ -73,9 +75,10 @@ export function unsafeGetAndComputeAgeAssurance({did}: {did: string}) {
   const config = getConfigFromCache()
   const state = getServerStateFromCache({did})
   const requiredData = getOtherRequiredDataFromCache({did})
-  const geolocation =
-    device.get(['mergedGeolocation']) ||
-    ({countryCode: undefined, regionCode: undefined} as Geolocation)
+  const geolocation = device.get(['mergedGeolocation']) || {
+    countryCode: undefined,
+    regionCode: undefined,
+  }
 
   const metadata: AgeAssuranceMetadata = {
     accountCreatedAt: state?.metadata?.accountCreatedAt,

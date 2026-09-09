@@ -6,23 +6,26 @@ import {HITSLOP_20} from '#/lib/constants'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {type Shadow} from '#/state/cache/types'
 import {usePdsProfilePriority} from '#/state/pds-viewability'
+import {useDeerVerification} from '#/state/preferences/deer-verification'
 import {
   usePdsLabelEnabled,
   usePdsLabelHideBskyPds,
 } from '#/state/preferences/pds-label'
 import {useDeerVerificationProfileOverlay} from '#/state/queries/deer-verification'
 import {usePdsFaviconUrl, usePdsLabelQuery} from '#/state/queries/pds-label'
-import {atoms as a, useAlf, type ViewStyleProp} from '#/alf'
+import {atoms as a, useAlf, useTheme, type ViewStyleProp} from '#/alf'
 import {useNativeFontScale} from '#/alf/util/dimensions'
 import {BotBadge, BotBadgeButton, isBotAccount} from '#/components/BotBadge'
 import {Button} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
-import { PdsBadgeIcon, PdsDialog } from '#/components/PdsDialog'
-import { isPetAccount, PetBadge, PetBadgeButton } from '#/components/PetBadge'
-import { useSimpleVerificationState } from '#/components/verification'
-import { VerificationCheck } from '#/components/verification/VerificationCheck'
-import { VerificationCheckButton } from '#/components/verification/VerificationCheckButton'
-import { IS_WEB } from '#/env'
+import {PdsBadgeIcon, PdsDialog} from '#/components/PdsDialog'
+import {isPetAccount, PetBadge, PetBadgeButton} from '#/components/PetBadge'
+import {useSimpleVerificationState} from '#/components/verification'
+import {verificationBadges} from '#/components/verification/badges'
+import {VerificationCheck} from '#/components/verification/VerificationCheck'
+import {VerificationCheckButton} from '#/components/verification/VerificationCheckButton'
+import {verifierColor} from '#/components/verification/verifier-color'
+import {IS_WEB} from '#/env'
 import type * as bsky from '#/types/bsky'
 import { BetaBadge, BetaBadgeButton, useIsBetaBadgeVisible } from './BetaBadge'
 import { SpecialBadge, SpecialBadgeButton } from './CrackComponents/Tenna/SpecialBadge'
@@ -92,8 +95,10 @@ export function ProfileBadgesFromProfileShadow({
 }: Omit<ProfileBadgesProps, 'profile'> & {
   profile: Shadow<bsky.profile.AnyProfileView>
 }) {
+  const t = useTheme()
   const shadowed = useDeerVerificationProfileOverlay(profile)
-  const verification = useSimpleVerificationState({ profile: shadowed })
+  const {perVerifierBadges} = useDeerVerification()
+  const verification = useSimpleVerificationState({profile: shadowed})
   const pdsLabelEnabled = usePdsLabelEnabled()
   const hideBskyPds = usePdsLabelHideBskyPds()
   const isBskyHandle =
@@ -101,10 +106,8 @@ export function ProfileBadgesFromProfileShadow({
   const shouldShowPdsCandidate =
     pdsLabelEnabled && !(hideBskyPds && isBskyHandle)
   const pdsProfilePriority = usePdsProfilePriority(shadowed.did)
-  const shouldResolvePds =
-    shouldShowPdsCandidate && pdsProfilePriority !== 'off'
   const {data: pdsData, isLoading: isPdsLoading} = usePdsLabelQuery(
-    shouldResolvePds ? shadowed.did : undefined,
+    shouldShowPdsCandidate ? shadowed.did : undefined,
     pdsProfilePriority,
   )
   const pdsFaviconUrl = usePdsFaviconUrl(
@@ -145,17 +148,20 @@ export function ProfileBadgesFromProfileShadow({
 
   const gap = isOnTheSmallSide ? a.gap_2xs : a.gap_xs
   const padding = gap.gap / 2
+  const hitSlops = []
   let visibleBadgeIndex = 0
-  const hitSlops = badgeVisibility.map(isVisible => {
-    if (!isVisible) return HITSLOP_20
-
+  for (const isVisible of badgeVisibility) {
+    if (!isVisible) {
+      hitSlops.push(HITSLOP_20)
+      continue
+    }
     const index = visibleBadgeIndex++
-    return {
+    hitSlops.push({
       ...HITSLOP_20,
       left: index === 0 ? HITSLOP_20.left : padding,
       right: index === badgeCount - 1 ? HITSLOP_20.right : padding,
-    }
-  })
+    })
+  }
 
   return (
     <View
@@ -208,12 +214,27 @@ export function ProfileBadgesFromProfileShadow({
         </>
       ) : (
         <>
-          {verification.showBadge ? (
-            <VerificationCheck
-              verifier={verification.role === 'verifier'}
-              width={verificationIconWidth}
-            />
-          ) : null}
+          {verification.showBadge &&
+            verificationBadges(shadowed, !!perVerifierBadges).map(badge => (
+              <VerificationCheck
+                key={
+                  badge.kind === 'verifier'
+                    ? 'verifier'
+                    : (badge.issuer ?? 'verification')
+                }
+                verifier={badge.kind === 'verifier'}
+                fill={
+                  !perVerifierBadges
+                    ? t.palette.primary_500
+                    : badge.kind === 'verifier'
+                      ? verifierColor(badge.did, t)
+                      : badge.kind === 'verification' && badge.issuer
+                        ? verifierColor(badge.issuer, t)
+                        : verifierColor(shadowed.did, t)
+                }
+                width={verificationIconWidth}
+              />
+            ))}
           {showBetaBadge ? (
             <BetaBadge
               profile={shadowed}

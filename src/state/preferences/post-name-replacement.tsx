@@ -56,7 +56,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
     ) => {
       _setState(curr => {
         const next = typeof val === 'function' ? val(curr) : val
-        persisted.write('postReplacement', next)
+        void persisted.write('postReplacement', next)
         return next
       })
     },

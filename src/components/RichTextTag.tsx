@@ -160,10 +160,10 @@ export function RichTextTag({
           onPress={() => {
             if (isMuted) {
               resetUpsert()
-              removeMutedWords(removeableMuteWords)
+              void removeMutedWords(removeableMuteWords)
             } else {
               resetRemove()
-              upsertMutedWord([
+              void upsertMutedWord([
                 {value: tag, targets: ['tag'], actorTarget: 'all'},
               ])
             }

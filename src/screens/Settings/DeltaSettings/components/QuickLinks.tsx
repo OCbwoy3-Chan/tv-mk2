@@ -4,11 +4,11 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import { atoms as a, useTheme } from '#/alf'
 import { TobyIcon } from '#/components/CrackComponents/Icons'
+import { Lock_Stroke2_Corner0_Rounded } from '#/components/icons/Lock'
 import { ShieldCheck_Stroke2_Corner0_Rounded } from '#/components/icons/Shield'
+import { Sparkle_Stroke2_Corner0_Rounded } from '#/components/icons/Sparkle'
 import { Separator } from '#/components/Select'
 import { Text } from '#/components/Typography'
-import { Sparkle_Stroke2_Corner0_Rounded } from '#/components/icons/Sparkle'
-import { Lock_Stroke2_Corner0_Rounded } from '#/components/icons/Lock'
 
 export function TennaQuickLinks() {
   const t = useTheme()

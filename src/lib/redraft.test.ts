@@ -8,8 +8,10 @@ import {
 
 import {getRedraftImages} from './redraft'
 
-const blobs = Array.from({length: 5}, (_, index) =>
-  ({ref: {toString: () => `blob-${index}`}} as unknown as BlobRef),
+const blobs = Array.from(
+  {length: 5},
+  (_, index) =>
+    ({ref: {toString: () => `blob-${index}`}}) as unknown as BlobRef,
 )
 
 const recordGallery = {

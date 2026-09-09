@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef} from 'react'
+import {useCallback, useEffect, useEffectEvent, useRef} from 'react'
 import {StyleSheet, View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
@@ -23,6 +23,11 @@ export function CustomFeedEmptyState() {
   const {currentAccount} = useSession()
   const hasLoggedDiscoverEmptyErrorRef = useRef(false)
 
+  const logDiscoverEmptyError = useEffectEvent((did: string) => {
+    hasLoggedDiscoverEmptyErrorRef.current = true
+    ax.metric('feed:discover:emptyError', {userDid: did})
+  })
+
   useEffect(() => {
     // Log the empty feed error event
     if (feedFeedback.feedSourceInfo && currentAccount?.did) {
@@ -31,13 +36,14 @@ export function CustomFeedEmptyState() {
         uri === DISCOVER_FEED_URI &&
         !hasLoggedDiscoverEmptyErrorRef.current
       ) {
-        hasLoggedDiscoverEmptyErrorRef.current = true
-        ax.metric('feed:discover:emptyError', {
-          userDid: currentAccount.did,
-        })
+        logDiscoverEmptyError(currentAccount.did)
       }
     }
-  }, [feedFeedback.feedSourceInfo, currentAccount?.did])
+  }, [
+	feedFeedback.feedSourceInfo,
+	currentAccount?.did,
+	ax
+])
   const {t: l} = useLingui()
   const pal = usePalette('default')
   const navigation = useNavigation<NavigationProp>()

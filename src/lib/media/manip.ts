@@ -1,5 +1,5 @@
 import {Image as RNImage} from 'react-native'
-import uuid from 'react-native-uuid'
+import * as uuid from 'react-native-uuid'
 import {
   cacheDirectory,
   copyAsync,
@@ -12,46 +12,33 @@ import {
   StorageAccessFramework,
   writeAsStringAsync,
 } from 'expo-file-system/legacy'
-import {manipulateAsync, SaveFormat} from 'expo-image-manipulator'
-import * as MediaLibrary from 'expo-media-library'
+import {SaveFormat} from 'expo-image-manipulator'
+import * as MediaLibrary from 'expo-media-library/legacy'
 import * as Sharing from 'expo-sharing'
 
-import {formatToFileExt} from '#/lib/media/image-formats'
+import {formatToFileExt, imageMimeToExtension} from '#/lib/media/image-formats'
 import {logger} from '#/logger'
 import {IS_ANDROID, IS_IOS} from '#/env'
+import {renderImage} from './image-manipulator'
 import {type PickerImage} from './picker.shared'
 import {type Dimensions} from './types'
-import {
-  getDownloadImageUri,
-  getResizedDimensions,
-  resolveUploadImageMime,
-} from './util'
+import {getDownloadImageUri, getResizedDimensions} from './util'
 import {mimeToExt} from './video/util'
 
 export async function compressIfNeeded(
   img: PickerImage,
   {maxDimension, maxSize}: {maxDimension: number; maxSize: number},
-  opts?: {outputMime?: 'image/jpeg' | 'image/webp'; forceEncode?: boolean},
 ): Promise<PickerImage> {
-  const outputMime = resolveUploadImageMime(
-    img.mime,
-    opts?.outputMime ?? 'image/jpeg',
-  )
-  const needsReencode =
-    opts?.forceEncode || img.size >= maxSize || img.mime !== outputMime
-
-  if (!needsReencode) {
+  if (img.size < maxSize) {
     return img
   }
-
   const resizedImage = await doResize(normalizePath(img.path), {
     maxDimension,
     maxSize,
-    outputMime,
   })
   const finalImageMovedPath = await moveToPermanentPath(
     resizedImage.path,
-    resizedImage.mime === 'image/jpeg' ? '.jpg' : '.webp',
+    '.png',
   )
   const finalImg = {
     ...resizedImage,
@@ -75,7 +62,11 @@ export async function downloadAndResize(opts: DownloadAndResizeOpts) {
     return
   }
 
-  const path = await downloadImage(opts.uri, String(uuid.v4()), opts.timeout)
+  const path = await downloadImage(
+    opts.uri,
+    String(uuid.default.v4()),
+    opts.timeout,
+  )
 
   try {
     return await doResize(path, {
@@ -93,17 +84,30 @@ export async function shareImageModal({uri}: {uri: string}) {
     return
   }
 
-  const downloadedPath = await downloadImage(uri, String(uuid.v4()), 15e3)
-  const {uri: jpegUri} = await manipulateAsync(downloadedPath, [], {
-    format: SaveFormat.JPEG,
-    compress: 1.0,
-  })
-  void safeDeleteAsync(downloadedPath)
-  const imagePath = await moveToPermanentPath(jpegUri, '.jpg')
-  await Sharing.shareAsync(imagePath, {
-    mimeType: 'image/jpeg',
-    UTI: 'image/jpeg',
-  })
+  const downloadedPath = await downloadImage(
+    uri,
+    String(uuid.default.v4()),
+    15e3,
+  )
+  let jpegUri: string | undefined
+  let imagePath: string | undefined
+
+  try {
+    const jpeg = await renderImage(downloadedPath, undefined, {
+      format: SaveFormat.JPEG,
+      compress: 1.0,
+    })
+    jpegUri = jpeg.uri
+    imagePath = await moveToPermanentPath(jpegUri, '.jpg')
+    await Sharing.shareAsync(imagePath, {
+      mimeType: 'image/jpeg',
+      UTI: 'image/jpeg',
+    })
+  } finally {
+    await safeDeleteAsync(downloadedPath)
+    if (jpegUri) await safeDeleteAsync(jpegUri)
+    if (imagePath) await safeDeleteAsync(imagePath)
+  }
 }
 
 const ALBUM_NAME = 'Bluesky'
@@ -115,7 +119,7 @@ const ALBUM_NAME = 'Bluesky'
  */
 export async function saveImageToMediaLibrary({
   uri,
-  format = 'jpeg',
+  format = 'original',
 }: {
   uri: string
   format?: string
@@ -123,7 +127,7 @@ export async function saveImageToMediaLibrary({
   const downloadUri = getDownloadImageUri(uri, format)
   const downloadedPath = await downloadImage(
     downloadUri,
-    String(uuid.v4()),
+    String(uuid.default.v4()),
     20e3,
   )
   const dotIndex = downloadedPath.lastIndexOf('.')
@@ -192,13 +196,13 @@ export async function saveImageToMediaLibrary({
     })
     throw err
   } finally {
-    safeDeleteAsync(imagePath)
+    void safeDeleteAsync(imagePath)
   }
 }
 
 export async function saveVideoToMediaLibrary({uri}: {uri: string}) {
   // download the file to cache
-  const tempPath = `${cacheDirectory ?? ''}/${String(uuid.v4())}.bin`
+  const tempPath = `${cacheDirectory ?? ''}/${String(uuid.default.v4())}.bin`
   const dlResumable = createDownloadResumable(uri, tempPath, {cache: true})
   const dlRes = await dlResumable.downloadAsync().catch(() => null)
   if (!dlRes?.uri) return false
@@ -261,22 +265,18 @@ export function getImageDim(path: string): Promise<Dimensions> {
 interface DoResizeOpts {
   maxDimension: number
   maxSize: number
-  outputMime?: 'image/jpeg' | 'image/webp'
 }
 
 async function doResize(
   localUri: string,
   opts: DoResizeOpts,
 ): Promise<PickerImage> {
-  const outputMime = opts.outputMime ?? 'image/webp'
-  const outputFormat =
-    outputMime === 'image/jpeg' ? SaveFormat.JPEG : SaveFormat.WEBP
   // We need to get the dimensions of the image before we resize it. Previously, the library we used allowed us to enter
   // a "max size", and it would do the "best possible size" calculation for us.
   // Now instead, we have to supply the final dimensions to the manipulation function instead.
   // Performing an "empty" manipulation lets us get the dimensions of the original image. React Native's Image.getSize()
   // does not work for local files...
-  const imageRes = await manipulateAsync(localUri, [], {})
+  const imageRes = await renderImage(localUri)
   const newDimensions = getResizedDimensions(
     {
       width: imageRes.width,
@@ -287,59 +287,64 @@ async function doResize(
 
   let minQualityPercentage = 0
   let maxQualityPercentage = 101 // exclusive
-  let newDataUri
+  let newDataUri: PickerImage | undefined
   const intermediateUris = []
 
-  while (maxQualityPercentage - minQualityPercentage > 1) {
-    const qualityPercentage = Math.round(
-      (maxQualityPercentage + minQualityPercentage) / 2,
-    )
-    const resizeRes = await manipulateAsync(
-      localUri,
-      [{resize: newDimensions}],
-      {
-        format: outputFormat,
-        compress: qualityPercentage / 100,
-      },
-    )
-
-    intermediateUris.push(resizeRes.uri)
-
-    const fileInfo = await getInfoAsync(resizeRes.uri)
-    if (!fileInfo.exists) {
-      throw new Error(
-        'The image manipulation library failed to create a new image.',
+  try {
+    while (maxQualityPercentage - minQualityPercentage > 1) {
+      const qualityPercentage = Math.round(
+        (maxQualityPercentage + minQualityPercentage) / 2,
       )
-    }
+      const resizeRes = await renderImage(
+        localUri,
+        context => context.resize(newDimensions),
+        {
+          format: SaveFormat.PNG,
+          compress: qualityPercentage / 100,
+        },
+      )
 
-    if (fileInfo.size < opts.maxSize) {
-      minQualityPercentage = qualityPercentage
-      newDataUri = {
-        path: normalizePath(resizeRes.uri),
-        mime: outputMime,
-        size: fileInfo.size,
-        width: resizeRes.width,
-        height: resizeRes.height,
+      intermediateUris.push(resizeRes.uri)
+
+      const fileInfo = await getInfoAsync(resizeRes.uri)
+      if (!fileInfo.exists) {
+        throw new Error(
+          'The image manipulation library failed to create a new image.',
+        )
       }
-    } else {
-      maxQualityPercentage = qualityPercentage
+
+      if (fileInfo.size < opts.maxSize) {
+        minQualityPercentage = qualityPercentage
+        newDataUri = {
+          path: normalizePath(resizeRes.uri),
+          mime: 'image/png',
+          size: fileInfo.size,
+          width: resizeRes.width,
+          height: resizeRes.height,
+        }
+      } else {
+        maxQualityPercentage = qualityPercentage
+      }
     }
-  }
 
-  for (const intermediateUri of intermediateUris) {
-    if (newDataUri?.path !== normalizePath(intermediateUri)) {
-      safeDeleteAsync(intermediateUri)
+    if (newDataUri) {
+      return newDataUri
     }
-  }
 
-  if (newDataUri) {
-    safeDeleteAsync(imageRes.uri)
-    return newDataUri
+    throw new Error(
+      `This image is too big! We couldn't compress it down to ${opts.maxSize} bytes`,
+    )
+  } catch (err) {
+    newDataUri = undefined
+    throw err
+  } finally {
+    await safeDeleteAsync(imageRes.uri)
+    await Promise.all(
+      intermediateUris
+        .filter(uri => newDataUri?.path !== normalizePath(uri))
+        .map(safeDeleteAsync),
+    )
   }
-
-  throw new Error(
-    `This image is too big! We couldn't compress it down to ${opts.maxSize} bytes`,
-  )
 }
 
 async function moveToPermanentPath(path: string, ext: string): Promise<string> {
@@ -348,7 +353,7 @@ async function moveToPermanentPath(path: string, ext: string): Promise<string> {
   Relevant: IOS bug when trying to open a second time:
   https://github.com/ivpusic/react-native-image-crop-picker/issues/1199
   */
-  const filename = uuid.v4()
+  const filename = uuid.default.v4()
 
   // cacheDirectory will not ever be null on native, but it could be on web. This function only ever gets called on
   // native so we assert as a string.
@@ -357,7 +362,7 @@ async function moveToPermanentPath(path: string, ext: string): Promise<string> {
     from: normalizePath(path),
     to: normalizePath(destinationPath),
   })
-  safeDeleteAsync(path)
+  void safeDeleteAsync(path)
   return normalizePath(destinationPath)
 }
 
@@ -449,7 +454,10 @@ async function withTempFile<T>(
 ): Promise<T> {
   // cacheDirectory will not ever be null so we assert as a string.
   // Using a directory so that the file name is not a random string
-  const tmpDirUri = joinPath(cacheDirectory as string, String(uuid.v4()))
+  const tmpDirUri = joinPath(
+    cacheDirectory as string,
+    String(uuid.default.v4()),
+  )
   await makeDirectoryAsync(tmpDirUri, {intermediates: true})
 
   try {
@@ -460,7 +468,7 @@ async function withTempFile<T>(
 
     return await cb(tmpFileUrl)
   } finally {
-    safeDeleteAsync(tmpDirUri)
+    void safeDeleteAsync(tmpDirUri)
   }
 }
 
@@ -470,36 +478,45 @@ async function downloadImage(uri: string, destName: string, timeout: number) {
   const tempPath = `${cacheDirectory ?? ''}/${destName}.bin`
   const dlResumable = createDownloadResumable(uri, tempPath, {cache: true})
   let timedOut = false
+  let downloadedPath: string | undefined
+  let finalPath: string | undefined
   const to1 = setTimeout(() => {
     timedOut = true
-    void dlResumable.cancelAsync()
+    void dlResumable.cancelAsync().catch(() => undefined)
   }, timeout)
 
-  const dlRes = await dlResumable.downloadAsync()
-  clearTimeout(to1)
-
-  if (!dlRes?.uri) {
-    if (timedOut) {
-      throw new Error('Failed to download image - timed out')
-    } else {
-      throw new Error('Failed to download image - dlRes is undefined')
+  try {
+    let dlRes
+    try {
+      dlRes = await dlResumable.downloadAsync()
+    } finally {
+      clearTimeout(to1)
     }
+
+    if (!dlRes?.uri) {
+      if (timedOut) {
+        throw new Error('Failed to download image - timed out')
+      } else {
+        throw new Error('Failed to download image - dlRes is undefined')
+      }
+    }
+
+    downloadedPath = dlRes.uri
+    const ext = extFromMime(dlRes.mimeType)
+    finalPath = `${cacheDirectory ?? ''}/${destName}.${ext}`
+    await moveAsync({from: downloadedPath, to: finalPath})
+
+    return normalizePath(finalPath)
+  } catch (err) {
+    await Promise.all(
+      [...new Set([tempPath, downloadedPath, finalPath])]
+        .filter(path => path !== undefined)
+        .map(safeDeleteAsync),
+    )
+    throw err
   }
-
-  const ext = extFromMime(dlRes.mimeType)
-  const finalPath = `${cacheDirectory ?? ''}/${destName}.${ext}`
-  await moveAsync({from: dlRes.uri, to: finalPath})
-
-  return normalizePath(finalPath)
-}
-
-const MIME_TO_EXT: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/webp': 'webp',
-  'image/png': 'png',
-  'image/gif': 'gif',
 }
 
 function extFromMime(mimeType?: string | null): string {
-  return (mimeType && MIME_TO_EXT[mimeType]) || 'jpg'
+  return imageMimeToExtension(mimeType) ?? 'jpg'
 }

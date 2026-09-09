@@ -16,14 +16,15 @@ import {
 import { useAltTextAiProvider } from '#/state/preferences/openrouter'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import { atoms as a, useTheme } from '#/alf'
+import {Admonition} from '#/components/Admonition'
 import * as Toggle from '#/components/forms/Toggle'
 import { Accessibility_Stroke2_Corner2_Rounded as AccessibilityIcon } from '#/components/icons/Accessibility'
 import { Haptic_Stroke2_Corner2_Rounded as HapticIcon } from '#/components/icons/Haptic'
 import { Lab_Stroke2_Corner0_Rounded as BeakerIcon } from '#/components/icons/Lab'
 import * as Layout from '#/components/Layout'
-import { Text } from '#/components/Typography'
-import { IS_NATIVE } from '#/env'
-import {Admonition} from '#/components/Admonition'
+import {Text} from '#/components/Typography'
+import {IS_NATIVE} from '#/env'
+import {KeyboardShortcutsSettings} from '#/features/keyboardShortcuts/SettingsSection'
 
 type Props = NativeStackScreenProps<
   CommonNavigatorParams,
@@ -111,6 +112,8 @@ export function AccessibilitySettingsScreen({ }: Props) {
               </Text>
             </View>
           </SettingsList.LinkItem>
+
+          <KeyboardShortcutsSettings />
 
           {IS_NATIVE && (
             <>

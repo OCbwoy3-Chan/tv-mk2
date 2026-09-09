@@ -18,6 +18,7 @@ import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 
 const failedFaviconUrls = new Set<string>()
+const loadedFaviconUrls = new Set<string>()
 
 function formatBskyPdsDisplayName(hostname: string): string {
   const match = hostname.match(/^([^.]+)\.([^.]+)\.host\.bsky\.network$/)
@@ -378,7 +379,10 @@ function FaviconBadgeIcon({
       url => url !== currentUrl && url && !failedFaviconUrls.has(url),
     )
   const [currentUrl, setCurrentUrl] = useState<string | undefined>(getNextUrl)
-  const [imageLoaded, setImageLoaded] = useState(false)
+  // Remounted post headers should display cached favicons immediately.
+  const [imageLoaded, setImageLoaded] = useState(
+    () => !!currentUrl && loadedFaviconUrls.has(currentUrl),
+  )
 
   if (!currentUrl) {
     return <DbBadgeIcon size={size} borderRadius={borderRadius} />
@@ -412,14 +416,18 @@ function FaviconBadgeIcon({
           opacity: imageLoaded ? 1 : 0,
         }}
         accessibilityIgnoresInvertColors
+        fadeDuration={0}
         onLoad={() => {
+          loadedFaviconUrls.add(currentUrl)
           setImageLoaded(true)
         }}
         onError={() => {
           failedFaviconUrls.add(currentUrl)
-          setImageLoaded(false)
+          loadedFaviconUrls.delete(currentUrl)
 
-          setCurrentUrl(getNextUrl(currentUrl))
+          const nextUrl = getNextUrl(currentUrl)
+          setImageLoaded(!!nextUrl && loadedFaviconUrls.has(nextUrl))
+          setCurrentUrl(nextUrl)
         }}
       />
     </View>

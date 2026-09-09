@@ -2,14 +2,14 @@ import {View} from 'react-native'
 import {type ComAtprotoLabelDefs} from '@atproto/api'
 import {useLingui} from '@lingui/react/macro'
 
+import { useHideOwnTennaBadge } from '#/state/preferences/hide-own-tennabadge'
+import { useSession } from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {useDialogControl} from '#/components/Dialog'
 import type * as bsky from '#/types/bsky'
 import {TennaIcon} from '../Icons'
 import { TennaAccountAlert } from './TennaAccountAlert'
-import { useHideOwnTennaBadge } from '#/state/preferences/hide-own-tennabadge'
-import { useSession } from '#/state/session'
 
 export const deltaCharNames: {[char: string]: string} = {
   kris: "Kris",
@@ -18,7 +18,7 @@ export const deltaCharNames: {[char: string]: string} = {
   noelle: "Noelle"
 };
 
-export const deltaCharIcons: {[char: string]: any} = {
+export const deltaCharIcons: {[char: string]: React.ComponentProps<typeof import('expo-image').Image>['source']} = {
   "toby": require('#/../assets/badges/toby.png'),
   "kris": require('#/../assets/badges/kris.png'),
   "susie": require('#/../assets/badges/susie.png'),

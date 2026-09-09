@@ -1,8 +1,10 @@
 import {type StyleProp, type TextStyle} from 'react-native'
-import {type AppBskyActorGetProfile} from '@atproto/api'
 
 import {makeProfileLink} from '#/lib/routes/links'
-import {getAuthorPrimaryName, sanitizeDisplayName} from '#/lib/strings/display-names'
+import {
+  getAuthorPrimaryName,
+  sanitizeDisplayName,
+} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {STALE} from '#/state/queries'
@@ -10,6 +12,7 @@ import {useProfileQuery} from '#/state/queries/profile'
 import {atoms as a} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
+import {type app} from '#/lexicons'
 import {LoadingPlaceholder} from './LoadingPlaceholder'
 
 export function UserInfoText({
@@ -20,7 +23,7 @@ export function UserInfoText({
   style,
 }: {
   did: string
-  attr?: keyof AppBskyActorGetProfile.OutputSchema
+  attr?: keyof app.bsky.actor.getProfile.$OutputBody
   loading?: string
   failed?: string
   prefix?: string

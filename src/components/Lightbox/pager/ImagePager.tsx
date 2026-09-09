@@ -11,7 +11,10 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {PixelRatio, StyleSheet, useWindowDimensions, View} from 'react-native'
 import {SystemBars} from 'react-native-edge-to-edge'
 import {Gesture} from 'react-native-gesture-handler'
-import PagerView from 'react-native-pager-view'
+import PagerView, {
+  type PagerViewOnPageSelectedEvent,
+  type PageScrollStateChangedNativeEvent,
+} from 'react-native-pager-view'
 import Animated, {
   type AnimatableValue,
   type AnimatedRef,
@@ -82,7 +85,7 @@ export default function ImageViewRoot({
 }: {
   lightbox: Lightbox | null
   onRequestClose: () => void
-  onPressSave: (uri: string) => void
+  onPressSave: (uri: string, format: string) => void
   onPressShare: (uri: string) => void
 }) {
   'use no memo'
@@ -119,16 +122,12 @@ export default function ImageViewRoot({
 
     // https://github.com/software-mansion/react-native-reanimated/issues/6677
     rAF_FIXED(() => {
-      openProgress.set(() =>
-        isAnimated ? withClampedSpring(1, SLOW_SPRING) : 1,
-      )
+      openProgress.set(isAnimated ? withClampedSpring(1, SLOW_SPRING) : 1)
     })
     return () => {
       // https://github.com/software-mansion/react-native-reanimated/issues/6677
       rAF_FIXED(() => {
-        openProgress.set(() =>
-          isAnimated ? withClampedSpring(0, SLOW_SPRING) : 0,
-        )
+        openProgress.set(isAnimated ? withClampedSpring(0, SLOW_SPRING) : 0)
       })
     }
   }, [nextLightbox, openProgress, thumbRects])
@@ -229,7 +228,7 @@ function ImageView({
   setImageIndex: React.Dispatch<React.SetStateAction<number>>
   orientation: 'portrait' | 'landscape'
   onRequestClose: () => void
-  onPressSave: (uri: string) => void
+  onPressSave: (uri: string, format: string) => void
   onPressShare: (uri: string) => void
   onFlyAway: () => void
   safeAreaRef: AnimatedRef<View>
@@ -387,7 +386,7 @@ function ImageView({
       <PagerView
         scrollEnabled={!isScaled}
         initialPage={initialImageIndex}
-        onPageSelected={e => {
+        onPageSelected={(e: PagerViewOnPageSelectedEvent) => {
           const next = e.nativeEvent.position
           setImageIndex(prev => {
             if (metricsContext && prev !== next) {
@@ -405,7 +404,7 @@ function ImageView({
           })
           setIsScaled(false)
         }}
-        onPageScrollStateChanged={e => {
+        onPageScrollStateChanged={(e: PageScrollStateChangedNativeEvent) => {
           setIsDragging(e.nativeEvent.pageScrollState !== 'idle')
         }}
         overdrag={true}
@@ -439,7 +438,7 @@ function ImageView({
           <Header
             onRequestClose={handleRequestClose}
             onPressShare={() => onPressShare(images[imageIndex].uri)}
-            onPressSave={() => onPressSave(images[imageIndex].uri)}
+            onPressSave={format => onPressSave(images[imageIndex].uri, format)}
             imageCount={images.length}
             activeIndex={imageIndex}
           />
@@ -591,25 +590,23 @@ function LightboxImage({
           // This is a bug in Reanimated, but for now we'll work around it like this.
           dismissSwipeTranslateY.set(1)
         }
-        dismissSwipeTranslateY.set(() => {
-          'worklet'
-          return withDecay({
+        dismissSwipeTranslateY.set(
+          withDecay({
             velocity: e.velocityY,
             velocityFactor: Math.max(3500 / Math.abs(e.velocityY), 1), // Speed up if it's too slow.
             deceleration: 1, // Danger! This relies on the reaction below stopping it.
             reduceMotion: ReduceMotion.Never, // If this animation doesn't run, the image gets stuck - therefore override Reduce Motion
-          })
-        })
+          }),
+        )
       } else {
-        dismissSwipeTranslateY.set(() => {
-          'worklet'
-          return withSpring(0, {
+        dismissSwipeTranslateY.set(
+          withSpring(0, {
             stiffness: 700,
             damping: 50,
             mass: 1,
             reduceMotion: ReduceMotion.Never,
-          })
-        })
+          }),
+        )
       }
     })
 

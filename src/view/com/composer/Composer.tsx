@@ -28,7 +28,6 @@ import {Circle as ProgressCircle} from 'react-native-progress'
 import Animated, {
   type AnimatedRef,
   type AnimatedStyle,
-  Easing,
   FadeIn,
   FadeOut,
   interpolateColor,
@@ -40,7 +39,6 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withRepeat,
   withTiming,
   ZoomIn,
   ZoomOut,
@@ -50,16 +48,11 @@ import {scheduleOnUI} from 'react-native-worklets'
 import * as FileSystem from 'expo-file-system'
 import {EncodingType, readAsStringAsync} from 'expo-file-system/legacy'
 import {type ImagePickerAsset} from 'expo-image-picker'
-import {
-  AppBskyDraftCreateDraft,
-  AppBskyUnspeccedDefs,
-  type AppBskyUnspeccedGetPostThreadV2,
-  type AtpAgent,
-  AtUri,
-  ChatBskyGroupDefs,
-  RichText,
-} from '@atproto/api'
+import {type AtpAgent} from '@atproto/api'
 import {TID} from '@atproto/common-web'
+import {type Client, type UriString} from '@atproto/lex'
+import {AtUri, type AtUriString} from '@atproto/syntax'
+import {RichText} from '@bsky/sdk/richtext'
 import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
@@ -82,7 +75,6 @@ import {
   MAX_GRAPHEME_LENGTH,
   SUPPORTED_MIME_TYPES,
   type SupportedMimeTypes,
-  VIDEO_10_MINUTE_MAX_DURATION_MS,
   VIDEO_MAX_DURATION_MS,
 } from '#/lib/constants'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
@@ -94,6 +86,7 @@ import {isSpacesCompatiblePDS} from '#/lib/spaces'
 import {cleanError} from '#/lib/strings/errors'
 import {colors} from '#/lib/styles'
 import {userStyle} from '#/lib/userstyles'
+import {matchXrpcError} from '#/lib/xrpc-error'
 import {logger} from '#/logger'
 import {useDialogStateControlContext} from '#/state/dialogs'
 import {emitPostCreated} from '#/state/events'
@@ -129,10 +122,22 @@ import {
   threadgateViewToAllowUISetting,
   useThreadgateViewQuery,
 } from '#/state/queries/threadgate'
-import {useAgent, useSession, useSessionApi} from '#/state/session'
+import {
+  useAppviewClient,
+  useChatClient,
+  usePdsClient,
+  useSession,
+} from '#/state/session'
+import {useAgent, useSessionApi} from '#/state/session'
+import {pdsAgent} from '#/state/session/agent'
+import {
+  buildAppviewClient,
+  buildChatClient,
+  buildPdsClient,
+} from '#/state/session/clients'
+import {isEphemeralAuthError} from '#/state/session/ephemeral-auth'
 import {useComposerControls} from '#/state/shell/composer'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
-import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {AtprotoBtn} from '#/view/com/composer/AtprotoBtn'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
@@ -167,10 +172,12 @@ import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as EmojiPicker from '#/components/EmojiPicker'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
+import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
 import {
   ArrowBottom_Stroke2_Corner0_Rounded as ArrowDownIcon,
   ArrowTop_Stroke2_Corner0_Rounded as ArrowUpIcon,
 } from '#/components/icons/Arrow'
+import {CircleCheck_Stroke2_Corner0_Rounded as CircleCheckIcon} from '#/components/icons/CircleCheck'
 import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfoIcon} from '#/components/icons/CircleInfo'
 import {EmojiArc_Stroke2_Corner0_Rounded as EmojiSmileIcon} from '#/components/icons/Emoji'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
@@ -193,6 +200,8 @@ import {
   IS_WEB_SAFARI,
 } from '#/env'
 import {type Gif} from '#/features/gifPicker/types'
+import {app, chat} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 import {BottomSheetPortalProvider} from '../../../../modules/bottom-sheet'
 import {
   draftToComposerPosts,
@@ -222,12 +231,14 @@ import {
   type PostDraft,
   type ThreadDraft,
 } from './state/composer'
+import {prepareVideoForAccount} from './state/prepareVideoForAccount'
 import {
   NO_VIDEO,
   type NoVideoState,
   processVideo,
   type VideoState,
 } from './state/video'
+import {videoProgressWithinPhase} from './state/videoProgress'
 import {type TextInputRef} from './text-input/TextInput.types'
 import {getVideoMetadata} from './videos/metadata'
 import {clearThumbnailCache} from './videos/VideoTranscodeBackdrop'
@@ -318,13 +329,12 @@ export const ComposePost = ({
   const {accounts, currentAccount} = useSession()
   const t = useTheme()
   const ax = useAnalytics()
-  const allow10MinuteVideos = ax.features.enabled(
-    ax.features.VideoAllow10MinuteEnable,
-  )
-  const videoMaxDurationMs = allow10MinuteVideos
-    ? VIDEO_10_MINUTE_MAX_DURATION_MS
-    : VIDEO_MAX_DURATION_MS
+  const client = useAppviewClient()
+  const chatClient = useChatClient()
+  const pdsClient = usePdsClient()
   const agent = useAgent()
+  const omitViaField = useOmitViaField()
+  const tidSuffix = useTidSuffix()
   const sessionApi = useSessionApi()
   const queryClient = useQueryClient()
   const currentDid = currentAccount!.did
@@ -354,13 +364,11 @@ export const ComposePost = ({
   useEffect(() => {
     setActiveAccountDid(initialActiveAccountDid ?? currentDid)
   }, [initialActiveAccountDid, currentDid])
-
   const {closeComposer} = useComposerControls()
-  const {requestSwitchToAccount} = useLoggedOutViewControls()
+  const showEphemeralError = useEphemeralAccountError()
   const {t: l, i18n} = useLingui()
   const requireAltTextEnabled = useRequireAltTextEnabled()
-  const omitViaField = useOmitViaField()
-  const tidSuffix = useTidSuffix()
+
   const langPrefs = useLanguagePrefs()
   const setLangPrefs = useLanguagePrefsApi()
   const textInputRef = useRef<TextInputRef>(null)
@@ -534,6 +542,65 @@ export const ComposePost = ({
     [activePost.id],
   )
 
+  const processSelectedAccountVideo = useCallback(
+    async (
+      asset: Parameters<typeof processVideo>[0],
+      dispatchVideo: Parameters<typeof processVideo>[1],
+      signal: AbortSignal,
+      telemetry: Parameters<typeof processVideo>[6],
+    ) => {
+      let ephemeral: AtpAgent | undefined
+      try {
+        const account = accounts.find(
+          account => account.did === activeAccountDid,
+        )
+        if (!account)
+          throw new Error('The selected posting account is no longer signed in')
+        const uploadClient =
+          account.did === currentDid
+            ? pdsClient
+            : buildPdsClient(
+                pdsAgent(
+                  (ephemeral = await sessionApi.createEphemeralAgent(account)),
+                ),
+              )
+        if (signal.aborted) return
+        if (uploadClient.assertDid !== account.did) {
+          throw new Error(
+            'The video upload session does not match the selected account',
+          )
+        }
+        await processVideo(
+          asset,
+          dispatchVideo,
+          uploadClient,
+          account.pdsUrl ?? account.service,
+          signal,
+          i18n,
+          telemetry,
+        )
+      } catch (error) {
+        const account = accounts.find(a => a.did === activeAccountDid)
+        if (account && account.did !== currentDid && isEphemeralAuthError(error)) {
+          showEphemeralError(error, account, () => processSelectedAccountVideo(asset, dispatchVideo, signal, telemetry))
+        }
+        dispatchVideo({
+          type: 'to_error',
+          error: error instanceof Error ? error.message : String(error),
+          signal,
+        })
+      } finally {
+        if (
+          ephemeral &&
+          'dispose' in ephemeral &&
+          typeof ephemeral.dispose === 'function'
+        )
+          (ephemeral.dispose as () => void)()
+      }
+    },
+    [accounts, activeAccountDid, currentDid, pdsClient, sessionApi, i18n, showEphemeralError],
+  )
+
   const selectVideo = useCallback(
     async (postId: string, asset: ImagePickerAsset) => {
       /*
@@ -549,7 +616,7 @@ export const ComposePost = ({
         asset.mimeType !== 'image/gif'
       ) {
         try {
-          const probed = await getVideoMetadata(asset.uri)
+          const probed = await getVideoMetadata(asset.uri, asset.mimeType)
           asset = {
             ...asset,
             mimeType: probed.mimeType ?? asset.mimeType,
@@ -584,7 +651,7 @@ export const ComposePost = ({
        * Fail early on duration so we don't spend time compressing a video the
        * server would reject anyway.
        */
-      if (asset.duration != null && asset.duration > videoMaxDurationMs) {
+      if (asset.duration != null && asset.duration > VIDEO_MAX_DURATION_MS) {
         composerDispatch({
           type: 'update_post',
           postId: postId,
@@ -592,9 +659,7 @@ export const ComposePost = ({
             type: 'embed_update_video',
             videoAction: {
               type: 'to_error',
-              error: allow10MinuteVideos
-                ? l`Videos must be 10 minutes or less.`
-                : l`Videos must be less than 3 minutes long.`,
+              error: l`Videos must be 10 minutes or less.`,
               signal: abortController.signal,
             },
           },
@@ -602,7 +667,7 @@ export const ComposePost = ({
         return
       }
 
-      void processVideo(
+      void processSelectedAccountVideo(
         asset,
         videoAction => {
           composerDispatch({
@@ -614,23 +679,11 @@ export const ComposePost = ({
             },
           })
         },
-        agent,
-        currentDid,
         abortController.signal,
-        i18n,
         telemetry,
       )
     },
-    [
-      l,
-      i18n,
-      agent,
-      currentDid,
-      composerDispatch,
-      ax.metric,
-      videoMaxDurationMs,
-      allow10MinuteVideos,
-    ],
+    [l, processSelectedAccountVideo, composerDispatch, ax.metric],
   )
 
   const onInitVideo = useNonReactiveCallback(() => {
@@ -690,22 +743,22 @@ export const ComposePost = ({
           let uri = videoInfo.uri
           if (IS_ANDROID) {
             // Android: expo-file-system double-encodes filenames with special chars.
-            // The file exists, but react-native-compressor's MediaMetadataRetriever
-            // can't handle the double-encoded URI. Copy to a temp file with a simple name.
+            // The native metadata probe can't handle the double-encoded URI, so
+            // copy it to a temp file with a simple name.
             const sourceFile = new FileSystem.File(videoInfo.uri)
             const tempFileName = `draft-video-${Date.now()}.${mimeToExt(videoInfo.mimeType)}`
             const tempFile = new FileSystem.File(
               FileSystem.Paths.cache,
               tempFileName,
             )
-            sourceFile.copy(tempFile)
+            await sourceFile.copy(tempFile)
             logger.debug('restoreVideo: copied to temp file', {
               source: videoInfo.uri,
               temp: tempFile.uri,
             })
             uri = tempFile.uri
           }
-          asset = await getVideoMetadata(uri)
+          asset = await getVideoMetadata(uri, videoInfo.mimeType)
         }
 
         // Start video processing using existing flow
@@ -727,7 +780,7 @@ export const ComposePost = ({
           },
         })
 
-        if (asset.duration != null && asset.duration > videoMaxDurationMs) {
+        if (asset.duration != null && asset.duration > VIDEO_MAX_DURATION_MS) {
           composerDispatch({
             type: 'update_post',
             postId,
@@ -735,9 +788,7 @@ export const ComposePost = ({
               type: 'embed_update_video',
               videoAction: {
                 type: 'to_error',
-                error: allow10MinuteVideos
-                  ? l`Videos must be 10 minutes or less.`
-                  : l`Videos must be less than 3 minutes long.`,
+                error: l`Videos must be 10 minutes or less.`,
                 signal: abortController.signal,
               },
             },
@@ -784,7 +835,7 @@ export const ComposePost = ({
         }
 
         // Start video compression and upload
-        void processVideo(
+        void processSelectedAccountVideo(
           asset,
           videoAction => {
             composerDispatch({
@@ -796,10 +847,7 @@ export const ComposePost = ({
               },
             })
           },
-          agent,
-          currentDid,
           abortController.signal,
-          i18n,
           telemetry,
         )
       } catch (e) {
@@ -809,16 +857,7 @@ export const ComposePost = ({
         })
       }
     },
-    [
-      l,
-      i18n,
-      agent,
-      currentDid,
-      composerDispatch,
-      ax.metric,
-      videoMaxDurationMs,
-      allow10MinuteVideos,
-    ],
+    [l, processSelectedAccountVideo, composerDispatch, ax.metric],
   )
 
   const handleSelectDraft = useCallback(
@@ -896,7 +935,9 @@ export const ComposePost = ({
 
   const getDraftSaveError = useCallback(
     (e: unknown): string => {
-      if (e instanceof AppBskyDraftCreateDraft.DraftLimitReachedError) {
+      if (
+        matchXrpcError(e, app.bsky.draft.createDraft) === 'DraftLimitReached'
+      ) {
         return l`You've reached the maximum number of drafts`
       }
       return l`Failed to save draft`
@@ -1154,14 +1195,14 @@ export const ComposePost = ({
     .map(post => post.embed.link!.uri)
   const linkQueries = useQueries({
     queries: linkUris.map(uri => ({
-      ...resolveLinkQueryOptions(agent, uri),
+      ...resolveLinkQueryOptions({appviewClient: client, chatClient}, uri),
       enabled: false,
     })),
   })
   const hasUnavailableChatInvite = linkQueries.some(
     q =>
       q.data?.type === 'chat-invite' &&
-      !ChatBskyGroupDefs.isJoinLinkPreviewView(q.data.view),
+      !bsky.isType(chat.bsky.group.defs.joinLinkPreviewView, q.data.view),
   )
 
   const canPost =
@@ -1268,18 +1309,18 @@ export const ComposePost = ({
     setError('')
     setIsPublishing(true)
 
-    let currentAgent = agent
     let ephemeralAgent: AtpAgent | undefined
     let postUri: string | undefined
     let postSuccessData: OnPostSuccessData
     try {
       if (activeAccountDid && activeAccountDid !== currentAccount?.did) {
         const activeAccount = accounts.find(a => a.did === activeAccountDid)
+        if (!activeAccount)
+          throw new Error('The selected posting account is no longer signed in')
         if (activeAccount) {
           try {
             ephemeralAgent =
               await sessionApi.createEphemeralAgent(activeAccount)
-            currentAgent = ephemeralAgent
           } catch (e) {
             logger.error(
               'Composer: failed to create ephemeral agent for account switch',
@@ -1288,20 +1329,63 @@ export const ComposePost = ({
               },
             )
             setIsPublishing(false)
-            requestSwitchToAccount({requestedAccount: activeAccount.did})
-            Toast.show(
-              l`Please sign in as @${activeAccount.handle} to post as them`,
-              {
-                type: 'warning',
-              },
-            )
+            showEphemeralError(e, activeAccount, () => onPressPublish())
             return
           }
         }
       }
 
+      const postingAgent = ephemeralAgent ? pdsAgent(ephemeralAgent) : undefined
+      const postingPdsClient = postingAgent
+        ? buildPdsClient(postingAgent)
+        : pdsClient
+      if (postingPdsClient.assertDid !== activeAccountDid) {
+        throw new Error(
+          'The posting session does not match the selected account',
+        )
+      }
+      const postingThread = {
+        ...filteredThread,
+        posts: await Promise.all(
+          filteredThread.posts.map(async post => {
+            const media = post.embed.media
+            if (media?.type !== 'video' || media.video.status !== 'done')
+              return post
+            const account = accounts.find(
+              account => account.did === activeAccountDid,
+            )
+            if (!account)
+              throw new Error(
+                'The selected posting account is no longer signed in',
+              )
+            const video = await prepareVideoForAccount(
+              media.video,
+              postingPdsClient,
+              account.pdsUrl ?? account.service,
+              currentDid,
+              i18n,
+            )
+            return {
+              ...post,
+              embed: {
+                ...post.embed,
+                media: {
+                  ...media,
+                  video,
+                },
+              },
+            }
+          }),
+        ),
+      }
       logger.info(`composer: posting...`)
+      const postingClients = {
+        appviewClient: postingAgent ? buildAppviewClient(postingAgent) : client,
+        chatClient: postingAgent ? buildChatClient(postingAgent) : chatClient,
+        pdsClient: postingPdsClient,
+      }
       if (isPrivatePost) {
+        const currentAgent = postingAgent ?? pdsAgent(agent)
         if (!(await isSpacesCompatiblePDS(currentAgent))) {
           throw new Error(l`Private posts not supported by your PDS.`)
         }
@@ -1315,7 +1399,7 @@ export const ComposePost = ({
         }
         const privateDraft = filteredThread.posts[0]
         const resolved = await apilib.resolveRT(
-          currentAgent,
+          postingClients.appviewClient,
           privateDraft.richtext,
         )
         const rkey = TID.nextStr()
@@ -1347,13 +1431,14 @@ export const ComposePost = ({
               embed: {
                 quote: undefined,
                 media: undefined,
-                link: {type: 'link', uri: link.toString()},
+                link: {type: 'link', uri: link.toString() as UriString},
               },
             },
           ],
         }
         postUri = (
-          await apilib.post(currentAgent, queryClient, {
+          await apilib.post(queryClient, {
+            ...postingClients,
             thread: wrapper,
             onStateChange: setPublishingStage,
             omitViaField,
@@ -1362,8 +1447,9 @@ export const ComposePost = ({
         ).uris[0]
       } else {
         postUri = (
-          await apilib.post(currentAgent, queryClient, {
-            thread: filteredThread,
+          await apilib.post(queryClient, {
+            ...postingClients,
+            thread: postingThread,
             replyTo: replyTo?.uri,
             onStateChange: setPublishingStage,
             langs: currentLanguages,
@@ -1397,25 +1483,26 @@ export const ComposePost = ({
             5,
             _e => true,
             async () => {
-              const res = await currentAgent.app.bsky.unspecced.getPostThreadV2(
+              const res = await client.call(
+                app.bsky.unspecced.getPostThreadV2,
                 {
-                  anchor: postUri!,
+                  anchor: postUri! as AtUriString,
                   above: false,
                   below: filteredThread.posts.length - 1,
                   branchingFactor: 1,
                 },
               )
-              if (res.data.thread.length !== filteredThread.posts.length) {
+              if (res.thread.length !== filteredThread.posts.length) {
                 throw new Error(`composer: app view is not ready`)
               }
               if (
-                !res.data.thread.every(p =>
-                  AppBskyUnspeccedDefs.isThreadItemPost(p.value),
+                !res.thread.every(p =>
+                  bsky.isType(app.bsky.unspecced.defs.threadItemPost, p.value),
                 )
               ) {
                 throw new Error(`composer: app view returned non-post items`)
               }
-              return res.data.thread
+              return res.thread
             },
             1e3,
           )
@@ -1430,6 +1517,10 @@ export const ComposePost = ({
         })
       }
     } catch (e) {
+      const account = accounts.find(a => a.did === activeAccountDid)
+      if (account && account.did !== currentAccount?.did && isEphemeralAuthError(e)) {
+        showEphemeralError(e, account, () => onPressPublish())
+      }
       logger.error(e instanceof Error ? e : String(e), {
         message: `Composer: create post failed`,
         hasImages: filteredThread.posts.some(
@@ -1487,7 +1578,7 @@ export const ComposePost = ({
           const resolved = q.data
           if (
             resolved?.type === 'chat-invite' &&
-            ChatBskyGroupDefs.isJoinLinkPreviewView(resolved.view)
+            bsky.isType(chat.bsky.group.defs.joinLinkPreviewView, resolved.view)
           ) {
             ax.metric('groupchat:inviteLink:shared', {
               convoId: resolved.view.convoId,
@@ -1523,10 +1614,10 @@ export const ComposePost = ({
     setLangPrefs.savePostLanguageToHistory()
     if (initQuote) {
       // We want to wait for the quote count to update before we call `onPost`, which will refetch data
-      void whenAppViewReady(agent, initQuote.uri, res => {
-        const anchor = res.data.thread.at(0)
+      void whenAppViewReady(client, initQuote.uri, res => {
+        const anchor = res?.thread.at(0)
         if (
-          AppBskyUnspeccedDefs.isThreadItemPost(anchor?.value) &&
+          bsky.isType(app.bsky.unspecced.defs.threadItemPost, anchor?.value) &&
           anchor.value.post.quoteCount !== initQuote.quoteCount
         ) {
           onPost?.(postUri)
@@ -1570,7 +1661,9 @@ export const ComposePost = ({
   }, [
     l,
     ax,
-    agent,
+    client,
+    chatClient,
+    pdsClient,
     canPost,
     isPublishing,
     currentLanguages,
@@ -1591,13 +1684,14 @@ export const ComposePost = ({
     missingAltError,
     missingAltTextPromptControl,
     getFilteredThread,
+    currentDid,
+    i18n,
     linkQueries,
     setLangPrefs,
     accounts,
     activeAccountDid,
     currentAccount?.did,
     sessionApi,
-    requestSwitchToAccount,
     composerState.thread.posts,
     isPrivatePost,
     privatePostsEnabled,
@@ -1606,6 +1700,7 @@ export const ComposePost = ({
     activeAccount?.isOauthSession,
     omitViaField,
     tidSuffix,
+    showEphemeralError,
   ])
 
   const handleConfirmSkipEmpty = () => {
@@ -1898,12 +1993,12 @@ export const ComposePost = ({
                   color="primary"
                 />
               )}
+              <Prompt.Cancel cta={l`Keep editing`} />
               <Prompt.Action
                 cta={l`Discard`}
                 onPress={handleDiscard}
                 color="negative_subtle"
               />
-              <Prompt.Cancel cta={l`Keep editing`} />
             </Prompt.Actions>
           </Prompt.Outer>
         )}
@@ -2016,7 +2111,7 @@ let ComposerPost = memo(function ComposerPost({
 
   const onNewLink = useCallback(
     (uri: string) => {
-      dispatchPost({type: 'embed_add_uri', uri})
+      dispatchPost({type: 'embed_add_uri', uri: uri as UriString})
     },
     [dispatchPost],
   )
@@ -2052,6 +2147,8 @@ let ComposerPost = memo(function ComposerPost({
 
   return (
     <View
+      // Keep focused inputs attached while active-state opacity changes.
+      collapsable={false}
       style={[
         a.mx_lg,
         a.mb_sm,
@@ -2088,7 +2185,7 @@ let ComposerPost = memo(function ComposerPost({
           style={[a.pt_xs]}
           richtext={richtext}
           placeholder={selectTextInputPlaceholder}
-          autoFocus={isLastPost}
+          autoFocus={isActive}
           webForceMinHeight={forceMinHeight}
           // To avoid overlap with the close button:
           hasRightPadding={isPartOfThread}
@@ -2111,6 +2208,9 @@ let ComposerPost = memo(function ComposerPost({
           canMovePostDown={canMovePostDown}
           onAddPost={onAddPost}
           onMovePost={onMovePost}
+          onFocusPost={direction =>
+            dispatch({type: 'focus_adjacent_post', direction})
+          }
           accessible={true}
           accessibilityLabel={l`Write post`}
           accessibilityHint={l`Compose posts up to ${plural(
@@ -2128,7 +2228,7 @@ let ComposerPost = memo(function ComposerPost({
             {canMovePostUp && (
               <Button
                 label={l`Move post up`}
-                accessibilityHint={l`Shortcut: Alt plus Up Arrow`}
+                accessibilityHint={l`Shortcut: Alt plus Shift plus Up Arrow`}
                 size="small"
                 color="secondary"
                 variant="ghost"
@@ -2170,7 +2270,7 @@ let ComposerPost = memo(function ComposerPost({
             {canMovePostDown && (
               <Button
                 label={l`Move post down`}
-                accessibilityHint={l`Shortcut: Alt plus Down Arrow`}
+                accessibilityHint={l`Shortcut: Alt plus Shift plus Down Arrow`}
                 size="small"
                 color="secondary"
                 variant="ghost"
@@ -2531,7 +2631,10 @@ function ComposerEmbeds({
               (video.status === 'compressing' ? (
                 <VideoTranscodeProgress
                   asset={video.asset}
-                  progress={video.progress}
+                  progress={videoProgressWithinPhase(
+                    'compressing',
+                    video.progress,
+                  )}
                   clear={clearVideo}
                 />
               ) : video.video ? (
@@ -2547,7 +2650,7 @@ function ComposerEmbeds({
               'playlistUri' in video && (
                 <View style={[a.relative, a.mt_lg]}>
                   <VideoEmbedRedraft
-                    blobRef={video.pendingPublish?.blobRef}
+                    blobRef={video.pendingPublish.blobRef}
                     playlistUri={video.playlistUri}
                     aspectRatio={video.redraftDimensions}
                     onRemove={clearVideo}
@@ -2639,8 +2742,9 @@ function ComposerPills({
         bounces={false}
         keyboardShouldPersistTaps="always"
         showsHorizontalScrollIndicator={false}>
-        {isReply ? null : (
+        {
           <ThreadgateBtn
+            isReply={isReply}
             postgate={thread.postgate}
             onChangePostgate={nextPostgate => {
               dispatch({type: 'update_postgate', postgate: nextPostgate})
@@ -2654,7 +2758,7 @@ function ComposerPills({
             }}
             style={bottomBarAnimatedStyle}
           />
-        )}
+        }
         <TagsBtn
           tags={post.tags}
           onChange={nextTags => {
@@ -3076,17 +3180,20 @@ function useKeyboardVerticalOffset() {
 }
 
 async function whenAppViewReady(
-  agent: AtpAgent,
+  client: Client,
   uri: string,
-  fn: (res: AppBskyUnspeccedGetPostThreadV2.Response) => boolean,
+  fn: (
+    res: app.bsky.unspecced.getPostThreadV2.$OutputBody | undefined,
+    err: unknown,
+  ) => boolean,
 ) {
   await until(
     5, // 5 tries
     1e3, // 1s delay between tries
     fn,
     () =>
-      agent.app.bsky.unspecced.getPostThreadV2({
-        anchor: uri,
+      client.call(app.bsky.unspecced.getPostThreadV2, {
+        anchor: uri as AtUriString,
         above: false,
         below: 0,
         branchingFactor: 0,
@@ -3279,28 +3386,7 @@ function VideoUploadToolbar({state}: {state: VideoState}) {
   const t = useTheme()
   const {t: l} = useLingui()
   const progress = state.progress
-  const shouldRotate =
-    state.status === 'processing' && (progress === 0 || progress === 1)
-  let wheelProgress = shouldRotate ? 0.33 : progress
-
-  const rotate = useDerivedValue(() => {
-    if (shouldRotate) {
-      return withRepeat(
-        withTiming(360, {
-          duration: 2500,
-          easing: Easing.out(Easing.cubic),
-        }),
-        -1,
-      )
-    }
-    return 0
-  })
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{rotateZ: `${rotate.get()}deg`}],
-    }
-  })
+  let wheelProgress = progress
 
   let text = ''
 
@@ -3330,7 +3416,7 @@ function VideoUploadToolbar({state}: {state: VideoState}) {
       break
     case 'error':
       text = l`Error`
-      wheelProgress = 100
+      wheelProgress = 1
       break
     case 'done':
       if (isGif) {
@@ -3343,7 +3429,13 @@ function VideoUploadToolbar({state}: {state: VideoState}) {
 
   return (
     <ToolbarWrapper style={[a.flex_row, a.align_center, {paddingVertical: 5}]}>
-      <Animated.View style={[animatedStyle]}>
+      {state.status === 'done' ? (
+        <Animated.View
+          entering={ZoomIn.duration(300)}
+          style={[a.align_center, a.justify_center, {height: 30, width: 30}]}>
+          <CircleCheckIcon size="lg" fill={t.palette.primary_500} />
+        </Animated.View>
+      ) : (
         <ProgressCircle
           size={30}
           borderWidth={1}
@@ -3355,7 +3447,7 @@ function VideoUploadToolbar({state}: {state: VideoState}) {
           }
           progress={wheelProgress}
         />
-      </Animated.View>
+      )}
       <Text style={[a.font_semi_bold, a.ml_sm]}>{text}</Text>
     </ToolbarWrapper>
   )

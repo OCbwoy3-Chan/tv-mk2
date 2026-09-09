@@ -38,6 +38,7 @@ import * as Layout from '#/components/Layout'
 import {InlineLinkText, Link} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {IS_NATIVE} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
 
 // We don't currently persist this across reloads since
 // you gotta visit All to clear the badge anyway.
@@ -169,7 +170,12 @@ export function NotificationsScreen({}: Props) {
         testID="composeFAB"
         userStyleVariant="compose"
         onPress={() => openComposer({logContext: 'Fab'})}
-        icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+        icon={
+          <EditBigIcon
+            size="lg"
+            fill={accentForeground(t, t.palette.primary_500)}
+          />
+        }
         accessibilityRole="button"
         accessibilityLabel={_(msg`New post`)}
         accessibilityHint=""
@@ -210,11 +216,11 @@ function NotificationsTab({
     scrollToTop()
     if (hasNew) {
       // render what we have now
-      truncateAndInvalidate(queryClient, NOTIFS_RQKEY(filter))
+      void truncateAndInvalidate(queryClient, NOTIFS_RQKEY(filter))
     } else if (!isLoading) {
       // check with the server
       setIsLoadingLatest(true)
-      checkUnread({invalidate: true})
+      void checkUnread({invalidate: true})
         .catch(() => undefined)
         .then(() => setIsLoadingLatest(false))
     }
@@ -239,7 +245,7 @@ function NotificationsTab({
       // we're just going to look it up synchronously.
       currentIsScrolledDown = window.scrollY > 200
     }
-    checkUnread({invalidate: !currentIsScrolledDown})
+    void checkUnread({invalidate: !currentIsScrolledDown})
   })
 
   // on-visible setup
@@ -271,7 +277,7 @@ function NotificationsTab({
         ListHeaderComponent={
           filter === 'mentions' ? (
             <DisabledNotificationsWarning active={isFocusedAndActive} />
-          ) : null
+          ) : undefined
         }
       />
       {(isScrolledDown || hasNew) && (

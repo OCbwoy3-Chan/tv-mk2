@@ -1,6 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useAnimatedRef} from 'react-native-reanimated'
-import {AppBskyFeedDefs} from '@atproto/api'
 import {useLingui} from '@lingui/react/macro'
 import {useIsFocused} from '@react-navigation/native'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -39,6 +38,8 @@ import {EditBig_Stroke2_Corner2_Rounded as EditBigIcon} from '#/components/icons
 import {HashtagWide_Stroke1_Corner0_Rounded as HashtagWideIcon} from '#/components/icons/Hashtag'
 import * as Layout from '#/components/Layout'
 import {IS_NATIVE} from '#/env'
+import {accentForeground} from '#/features/themes/accentForeground'
+import {app} from '#/lexicons'
 import {
   CustomFeedHeader,
   CustomFeedHeaderSkeleton,
@@ -175,7 +176,7 @@ export function CustomFeedScreenInner({
   const isVideoFeed = useMemo(() => {
     const isBskyVideoFeed = VIDEO_FEED_URIS.includes(feedInfo.uri)
     const feedIsVideoMode =
-      feedInfo.contentMode === AppBskyFeedDefs.CONTENTMODEVIDEO
+      feedInfo.contentMode === app.bsky.feed.defs.contentModeVideo.value
     const _isVideoFeed = isBskyVideoFeed || feedIsVideoMode
     return IS_NATIVE && _isVideoFeed
   }, [feedInfo])
@@ -214,7 +215,12 @@ export function CustomFeedScreenInner({
           testID="composeFAB"
           userStyleVariant="compose"
           onPress={() => openComposer({logContext: 'Fab'})}
-          icon={<EditBigIcon size="lg" fill={t.palette.white} />}
+          icon={
+            <EditBigIcon
+              size="lg"
+              fill={accentForeground(t, t.palette.primary_500)}
+            />
+          }
           accessibilityRole="button"
           accessibilityLabel={l`New post`}
           accessibilityHint=""

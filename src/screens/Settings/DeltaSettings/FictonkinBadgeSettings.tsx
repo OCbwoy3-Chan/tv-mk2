@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useEffect,useState } from 'react'
 import { View } from 'react-native'
-import { type $Typed, ComAtprotoLabelDefs } from '@atproto/api'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useQueryClient } from '@tanstack/react-query'
 
-import { atoms as a, useTheme } from '#/alf'
-import * as Toggle from '#/components/forms/Toggle'
-import { Text } from '#/components/Typography'
-import { Button, ButtonText } from '#/components/Button'
+import { useHideOwnTennaBadge, useSetHideOwnTennaBadge } from '#/state/preferences/hide-own-tennabadge'
 import { RQKEY_ROOT as POST_FEED_RQKEY_ROOT } from '#/state/queries/post-feed'
 import {
     useProfileQuery,
@@ -15,10 +11,14 @@ import {
 } from '#/state/queries/profile'
 import { postThreadQueryKeyRoot } from '#/state/queries/usePostThread/types'
 import { useSession } from '#/state/session'
-import * as bsky from '#/types/bsky'
-import { isDeltaLabel } from '#/components/CrackComponents/Tenna/TennaBadge'
+import { atoms as a, useTheme } from '#/alf'
 import { Admonition } from '#/components/Admonition'
-import { useHideOwnTennaBadge, useSetHideOwnTennaBadge } from '#/state/preferences/hide-own-tennabadge'
+import { Button, ButtonText } from '#/components/Button'
+import { isDeltaLabel } from '#/components/CrackComponents/Tenna/TennaBadge'
+import * as Toggle from '#/components/forms/Toggle'
+import { Text } from '#/components/Typography'
+import {com} from '#/lexicons'
+import * as bsky from '#/types/bsky'
 
 export function FictionkinBadgeSettings() {
     const t = useTheme()
@@ -64,9 +64,9 @@ export function FictionkinBadgeSettings() {
             {
                 profile,
                 updates: existing => {
-                    const labels: $Typed<ComAtprotoLabelDefs.SelfLabels> = bsky.validate(
+                    const labels: com.atproto.label.defs.SelfLabels = bsky.isType(
+                        com.atproto.label.defs.selfLabels,
                         existing.labels,
-                        ComAtprotoLabelDefs.validateSelfLabels,
                     )
                         ? existing.labels
                         : {
@@ -84,20 +84,21 @@ export function FictionkinBadgeSettings() {
                     if (labels.values.length === 0) {
                         delete existing.labels
                     } else {
-                        existing.labels = labels
+                        existing.labels = {...labels, $type: 'com.atproto.label.defs#selfLabels'}
                     }
 
                     return existing
                 },
                 checkCommitted: res => {
-                    const exists = !!res.data.labels?.some(l => l.val === newValue)
+                    if (!res) return false
+                    const exists = !!res.labels?.some(l => l.val === newValue && l.src === res.did)
                     return exists === wasAdded
                 },
             },
             {
                 onSuccess() {
-                    queryClient.invalidateQueries({ queryKey: [POST_FEED_RQKEY_ROOT] })
-                    queryClient.invalidateQueries({ queryKey: [postThreadQueryKeyRoot] })
+                    void queryClient.invalidateQueries({ queryKey: [POST_FEED_RQKEY_ROOT] })
+                    void queryClient.invalidateQueries({ queryKey: [postThreadQueryKeyRoot] })
                     setIsSaved(true)
                 },
             },

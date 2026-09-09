@@ -25,7 +25,7 @@ export function Provider({ children }: PropsWithChildren<{}>) {
     const setStateWrapped = useCallback(
         (value: persisted.Schema['privatePostsEnabled']) => {
             setState(value)
-            persisted.write('privatePostsEnabled', value)
+            void persisted.write('privatePostsEnabled', value)
         },
         [setState],
     )

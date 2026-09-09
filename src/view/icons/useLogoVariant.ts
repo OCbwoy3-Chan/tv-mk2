@@ -1,12 +1,10 @@
 import {useKawaiiMode} from '#/state/preferences/kawaii'
 import {useAnalytics} from '#/analytics'
-import {useGeolocation} from '#/geolocation'
 
 export type LogoVariant = 'default' | 'japan' | 'kawaii'
 
 export function useLogoVariant(allowVariants = true): LogoVariant {
   const ax = useAnalytics()
-  const geolocation = useGeolocation()
   const kawaii = useKawaiiMode()
   const japanLogoEnabled =
     allowVariants &&
