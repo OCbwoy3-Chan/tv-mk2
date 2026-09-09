@@ -36,7 +36,7 @@ import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useShellLayout} from '#/state/shell/shell-layout'
 import {useCloseAllActiveElements} from '#/state/util'
 import {Link} from '#/view/com/util/Link'
-import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {getSquareAvatarRadius, UserAvatar} from '#/view/com/util/UserAvatar'
 import {Logo} from '#/view/icons/Logo'
 import {Logotype} from '#/view/icons/Logotype'
 import {atoms as a, useTheme} from '#/alf'
@@ -252,8 +252,13 @@ export function BottomBarWeb() {
                               : isLabeler
                                 ? styles.onProfileSquare
                                 : styles.onProfile,
-                            {borderColor: t.atoms.text.color},
+                            {borderColor: t.atoms.text.color, borderWidth: 2},
                           ],
+                          (enableSquareAvatars || isLabeler) && {
+                            borderRadius:
+                              getSquareAvatarRadius(iconWidth - 3) +
+                              (isActive ? 2 : 1),
+                          },
                         ]}>
                         <UserAvatar
                           avatar={profile?.avatar}
@@ -354,21 +359,21 @@ const NavItem: React.FC<{
     ax.metric('nav:click', {item: navItem, surface: 'bottomBar'})
   }, [ax, navItem])
 
-  // Checks whether we're on someone else's profile
+  const profileName =
+    currentRoute.name === 'Profile'
+      ? (currentRoute.params as CommonNavigatorParams['Profile']).name
+      : undefined
+  const isOwnProfile =
+    profileName !== undefined &&
+    (profileName === currentAccount?.did ||
+      profileName === currentAccount?.handle)
+
   const isOnDifferentProfile =
-    currentRoute.name === 'Profile' &&
-    routeName === 'Profile' &&
-    (currentRoute.params as CommonNavigatorParams['Profile']).name !==
-      currentAccount?.handle
+    currentRoute.name === 'Profile' && routeName === 'Profile' && !isOwnProfile
 
   const isActive =
-    currentRoute.name === 'Profile'
-      ? isTab(currentRoute.name, routeName) &&
-        (currentRoute.params as CommonNavigatorParams['Profile']).name ===
-          (routeName === 'Profile'
-            ? currentAccount?.handle
-            : (currentRoute.params as CommonNavigatorParams['Profile']).name)
-      : isTab(currentRoute.name, routeName)
+    isTab(currentRoute.name, routeName) &&
+    (routeName !== 'Profile' || isOwnProfile)
 
   if (IS_WEB_TOUCH_DEVICE) {
     return (
@@ -389,11 +394,7 @@ const NavItem: React.FC<{
   return (
     <Link
       href={href}
-      style={[
-        styles.ctrl,
-        {paddingBottom: 13},
-        userStyle('wsky-nav__item'),
-      ]}
+      style={[styles.ctrl, {paddingBottom: 13}, userStyle('wsky-nav__item')]}
       navigationAction={isOnDifferentProfile ? 'push' : 'navigate'}
       dataSet={{
         wskyActive: isActive ? 'true' : 'false',

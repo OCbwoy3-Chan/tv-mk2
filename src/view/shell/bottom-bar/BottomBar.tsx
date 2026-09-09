@@ -33,7 +33,7 @@ import {useSession} from '#/state/session'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useShellLayout} from '#/state/shell/shell-layout'
 import {useCloseAllActiveElements} from '#/state/util'
-import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {getSquareAvatarRadius, UserAvatar} from '#/view/com/util/UserAvatar'
 import {Logo} from '#/view/icons/Logo'
 import {Logotype} from '#/view/icons/Logotype'
 import {atoms as a, useTheme} from '#/alf'
@@ -352,6 +352,19 @@ export function BottomBar({navigation}: BottomTabBarProps) {
                           borderWidth: live ? 0 : enableSquareAvatars ? 1.5 : 1,
                         },
                       ],
+                      (enableSquareAvatars || isLabeler) && {
+                        borderRadius:
+                          getSquareAvatarRadius(
+                            iconWidth - (isAtMyProfile ? 3 : 2),
+                          ) +
+                          (isAtMyProfile
+                            ? live
+                              ? 0
+                              : enableSquareAvatars
+                                ? 1.5
+                                : 1
+                            : 1),
+                      },
                     ]}>
                     <UserAvatar
                       avatar={demoMode ? BOTTOM_BAR_AVI : profile?.avatar}

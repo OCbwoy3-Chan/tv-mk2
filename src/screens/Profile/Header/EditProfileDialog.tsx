@@ -22,7 +22,10 @@ import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useProfileUpdateMutation} from '#/state/queries/profile'
 import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
-import {EditableUserAvatar} from '#/view/com/util/UserAvatar'
+import {
+  EditableUserAvatar,
+  getSquareAvatarRadius,
+} from '#/view/com/util/UserAvatar'
 import {UserBanner} from '#/view/com/util/UserBanner'
 import {atoms as a, useTheme} from '#/alf'
 import * as tokens from '#/alf/tokens'
@@ -331,7 +334,9 @@ function DialogInner({
               width: 84,
               height: 84,
               borderWidth: 2,
-              borderRadius: enableSquareAvatars ? 11 : 42,
+              borderRadius: enableSquareAvatars
+                ? getSquareAvatarRadius(80) + 2
+                : 42,
               borderColor: t.atoms.bg.backgroundColor,
             },
           ]}>

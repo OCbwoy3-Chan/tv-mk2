@@ -67,6 +67,10 @@ import {LiveStatusDialog} from '#/features/liveNow/components/LiveStatusDialog'
 import {accentForeground} from '#/features/themes/accentForeground'
 import type * as bsky from '#/types/bsky'
 
+export function getSquareAvatarRadius(size: number) {
+  return size > 32 ? 8 : 3
+}
+
 export type UserAvatarType = 'user' | 'algo' | 'list' | 'labeler'
 
 interface BaseUserAvatarProps {
@@ -116,7 +120,10 @@ let DefaultAvatar = ({
 
   const aviStyle = useMemo(() => {
     if (finalShape === 'square') {
-      return {borderRadius: size > 32 ? 8 : 3, overflow: 'hidden'} as const
+      return {
+        borderRadius: getSquareAvatarRadius(size),
+        overflow: 'hidden',
+      } as const
     }
   }, [finalShape, size])
 
@@ -266,7 +273,7 @@ let UserAvatar = ({
     let borderRadius
 
     if (finalShape === 'square') {
-      borderRadius = size > 32 ? 8 : 3
+      borderRadius = getSquareAvatarRadius(size)
     } else {
       borderRadius = Math.floor(size / 2)
     }
@@ -415,7 +422,7 @@ let EditableUserAvatar = ({
       return {
         width: size,
         height: size,
-        borderRadius: size > 32 ? 8 : 3,
+        borderRadius: getSquareAvatarRadius(size),
       }
     }
     return {
@@ -625,7 +632,7 @@ let PreviewableUserAvatar = ({
   const linkStyle =
     props.type !== 'algo' && props.type !== 'list'
       ? a.rounded_full
-      : {borderRadius: props.size > 32 ? 8 : 3}
+      : {borderRadius: getSquareAvatarRadius(props.size)}
 
   return (
     <ProfileHoverCard did={profile.did} disable={disableHoverCard}>

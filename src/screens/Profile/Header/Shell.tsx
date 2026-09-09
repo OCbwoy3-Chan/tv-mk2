@@ -25,7 +25,7 @@ import {
 import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {useSession} from '#/state/session'
 import {LoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
-import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {getSquareAvatarRadius, UserAvatar} from '#/view/com/util/UserAvatar'
 import {UserBanner} from '#/view/com/util/UserBanner'
 import {atoms as a, platform, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
@@ -293,7 +293,7 @@ let ProfileHeaderShell = ({
           <View
             style={[
               t.atoms.bg,
-              enableSquareAvatars ? a.rounded_md : a.rounded_full,
+              a.rounded_full,
               {
                 width: 94,
                 height: 94,
@@ -302,7 +302,11 @@ let ProfileHeaderShell = ({
                   ? t.palette.negative_500
                   : t.atoms.bg.backgroundColor,
               },
-              profile.associated?.labeler && a.rounded_md,
+              (enableSquareAvatars || profile.associated?.labeler) && {
+                borderRadius:
+                  getSquareAvatarRadius(live.isActive ? 88 : 90) +
+                  (live.isActive ? 3 : 2),
+              },
             ]}>
             <Animated.View ref={aviRef} collapsable={false}>
               <UserAvatar

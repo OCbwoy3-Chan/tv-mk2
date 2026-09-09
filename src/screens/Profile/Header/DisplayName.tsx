@@ -57,7 +57,9 @@ export function ProfileHeaderDisplayName({
         <View
           style={[
             a.pl_xs,
-            web({verticalAlign: 'middle'}),
+            // Anchor to the name instead of the first badge's content baseline.
+            // Lift the centered row slightly to align with the visible letters.
+            web({verticalAlign: 'middle', transform: [{translateY: -1}]}),
             {marginTop: platform({ios: 2})},
           ]}>
           <ProfileBadges
