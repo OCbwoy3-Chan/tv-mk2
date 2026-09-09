@@ -5,7 +5,7 @@
 web builds generate it automatically for both hosting outputs. Deploy the web
 metadata before distributing native clients that request new scopes.
 
-Initial sign-in requests `party.tenna.app.permissions2`,
+Initial sign-in requests `app.bsky.authFullApp`,
 `chat.bsky.authFullChatClient`, and `app.witchsky.theme.authFull`, plus media
 uploads and moderation reports. New chat RPCs missing from the published set
 are requested individually with the selected chat audience. The first two sets inherit the selected service

@@ -1,5 +1,4 @@
 import {
-  APP_OAUTH_PERMISSION_SET,
   buildOAuthScope,
   createOAuthMetadata,
   DEFAULT_APPVIEW_AUDIENCE,
@@ -9,33 +8,16 @@ import {
 } from '../oauth-config'
 
 describe('OAuth permission configuration', () => {
-  it('identifies Tenna Party and grants its push and private-vessel permissions', () => {
-    const metadata = createOAuthMetadata({baseUrl: 'https://tenna.party'})
-    expect(metadata.client_name).toBe('tenna.party')
-    expect(metadata.client_id).toBe(
-      'https://tenna.party/oauth-client-metadata.json',
-    )
-    expect(metadata.scope.split(' ')).toContain(
-      'include:party.tenna.private.privateVesselPermissions?aud=*',
-    )
-    for (const method of [
-      'party.tenna.private.getPost',
-      'party.tenna.private.getModStatus',
-      'party.tenna.private.getState',
-      'party.tenna.private.registerSpaceCredential',
-    ]) {
-      expect(metadata.scope.split(' ')).not.toContain(`rpc:${method}?aud=*`)
-    }
-    expect(metadata.scope.split(' ')).toContain(
-      `rpc:app.bsky.notification.registerPush?aud=${encodeURIComponent('did:web:push.tenna.party#bsky_notif')}`,
-    )
-  })
   it('requests app permission sets without account-management access', () => {
     const scopes = buildOAuthScope().split(' ')
     expect(scopes).toContain(
-      `include:${APP_OAUTH_PERMISSION_SET}?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
+      `include:app.bsky.authFullApp?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
     )
     expect(scopes).toContain('include:app.witchsky.theme.authFull')
+    expect(scopes).toContain('include:party.tenna.app.permissions2')
+    expect(scopes).toContain(
+      'include:party.tenna.private.privateVesselPermissions',
+    )
     expect(scopes.some(scope => scope.startsWith('transition:'))).toBe(false)
     for (const scope of Object.values(OPTIONAL_OAUTH_SCOPES))
       expect(scopes).not.toContain(scope)
@@ -57,7 +39,7 @@ describe('OAuth permission configuration', () => {
       'https://dev.tenna.party/auth/web/callback',
     ])
     expect(metadata.scope).toContain(
-      `include:${APP_OAUTH_PERMISSION_SET}?aud=${encodeURIComponent(appview)}`,
+      `include:app.bsky.authFullApp?aud=${encodeURIComponent(appview)}`,
     )
     expect(metadata.scope).toContain(
       `include:chat.bsky.authFullChatClient?aud=${encodeURIComponent(chat)}`,

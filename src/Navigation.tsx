@@ -635,14 +635,6 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         }}
       />
       <Stack.Screen
-        name="AIPreferencesSettings"
-        getComponent={() => AIPreferencesSettingsScreen}
-        options={{
-          title: title(msg`AI Preferences`),
-          requireAuth: true,
-        }}
-      />
-      <Stack.Screen
         name="DeltaSettings"
         getComponent={() => DeltaSettingsScreen}
         options={{

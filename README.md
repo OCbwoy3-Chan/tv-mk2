@@ -26,7 +26,6 @@ Moderation:
 - Bypass Bluesky !hide label and blocks on viewing lists
 
 Misc:
-- Brought back AI prefs in our settings
 - Big warning on stuff that has to do with AI (too much work to remove)
 - Private posts via embeds + atproto permissioned data
 

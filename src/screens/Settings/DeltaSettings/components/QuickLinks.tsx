@@ -35,11 +35,6 @@ export function TennaQuickLinks() {
             text: l`Moderation labels`,
             path: '/settings/deltas/labels',
             icon: ShieldCheck_Stroke2_Corner0_Rounded,
-          },
-          {
-            text: l`AI Preferences`,
-            path: '/settings/deltas/ai',
-            icon: Sparkle_Stroke2_Corner0_Rounded
           }
         ],
       },
