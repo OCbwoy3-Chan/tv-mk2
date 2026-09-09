@@ -926,7 +926,7 @@ msgstr "{requestCount, plural, other {# felkérés}}"
 msgid "{requestCount}+ requests"
 msgstr "Több, mint {requestCount} kérelem"
 
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:83
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:78
 msgid "{text}"
 msgstr ""
 
@@ -1171,7 +1171,7 @@ msgstr "A bejegyzésíró felületet ábrázoló képernyőkép, amelyen egy új
 msgid "A selected recipient is not followed by the sender."
 msgstr "Az egyik címzettet nem követi a feladó."
 
-#: src/Navigation.tsx:873
+#: src/Navigation.tsx:865
 #: src/screens/Settings/AboutSettings.tsx:86
 #: src/screens/Settings/Settings.tsx:508
 #: src/screens/Settings/Settings.tsx:511
@@ -1229,7 +1229,7 @@ msgstr "Akadálymentesítés"
 msgid "Accessibility Settings"
 msgstr "Akadálymentesítés"
 
-#: src/Navigation.tsx:788
+#: src/Navigation.tsx:780
 #: src/screens/Login/LoginForm.tsx:271
 #: src/screens/Login/LoginForm.web.tsx:241
 #: src/screens/Settings/AccountSettings.tsx:56
@@ -1330,7 +1330,7 @@ msgstr ""
 msgid "Activity from others"
 msgstr "Mások tevékenységei"
 
-#: src/Navigation.tsx:849
+#: src/Navigation.tsx:841
 msgid "Activity notifications"
 msgstr "Tevékenységértesítések"
 
@@ -1666,16 +1666,6 @@ msgstr "Az életkor-igazolás általában csupán néhány percet vesz igénybe.
 msgid "AI alt text provider"
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:54
-msgid "AI preferences"
-msgstr ""
-
-#: src/Navigation.tsx:641
-#: src/screens/Settings/AIPreferencesSettings.tsx:63
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:40
-msgid "AI Preferences"
-msgstr ""
-
 #: src/screens/Settings/AltTextAiSettings.tsx:270
 msgid "AI provider API key"
 msgstr ""
@@ -1726,10 +1716,6 @@ msgstr "Kulcsszavak"
 #: src/view/screens/Feeds.tsx:712
 msgid "All the feeds you've saved, right in one place."
 msgstr "Itt egy helyen megtalálod az összes elmentett hírfolyamot."
-
-#: src/screens/Settings/AIPreferencesSettings.tsx:36
-msgid "Allow"
-msgstr ""
 
 #: src/screens/Settings/components/AddAppPasswordDialog.tsx:146
 #: src/screens/Settings/components/AddAppPasswordDialog.tsx:153
@@ -1809,7 +1795,7 @@ msgstr "Már van kódod?"
 msgid "Already signed in as @{0}"
 msgstr "Már bejelentkeztél, mint @{0}"
 
-#: src/Navigation.tsx:731
+#: src/Navigation.tsx:723
 #: src/screens/PostThread/components/ThreadAlsoLiked.tsx:98
 #: src/screens/Settings/RunesSettings/AlsoLikedSettings.tsx:28
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:90
@@ -2072,7 +2058,7 @@ msgstr ""
 msgid "API key"
 msgstr ""
 
-#: src/Navigation.tsx:881
+#: src/Navigation.tsx:873
 #: src/screens/Settings/AppIconSettings/index.tsx:65
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:19
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:24
@@ -2186,7 +2172,7 @@ msgstr "Döntés fellebbezése"
 msgid "Appeal this label"
 msgstr "Feljegyzés fellebbezése"
 
-#: src/Navigation.tsx:757
+#: src/Navigation.tsx:749
 #: src/screens/Settings/AppearanceSettings.tsx:148
 #: src/screens/Settings/Settings.tsx:460
 #: src/screens/Settings/Settings.tsx:463
@@ -2398,7 +2384,7 @@ msgstr "Automatikus fiók"
 msgid "Automatic"
 msgstr "Automatikus"
 
-#: src/Navigation.tsx:681
+#: src/Navigation.tsx:673
 #: src/screens/Settings/AccessibilitySettings.tsx:103
 #: src/screens/Settings/AltTextAiSettings.tsx:63
 msgid "Automatic alt text generation"
@@ -2425,7 +2411,7 @@ msgstr ""
 msgid "Automation label"
 msgstr "Automatizálási feljegyzés"
 
-#: src/Navigation.tsx:804
+#: src/Navigation.tsx:796
 #: src/screens/Settings/AutomationLabelSettings.tsx:103
 msgid "Automation Label"
 msgstr "Automatizálási feljegyzés"
@@ -2496,7 +2482,7 @@ msgstr "Vissza"
 msgid "Back to Chats"
 msgstr "Vissza a csevegésekhez"
 
-#: src/Navigation.tsx:701
+#: src/Navigation.tsx:693
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:76
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:172
 #: src/screens/Settings/RunesSettings/index.tsx:29
@@ -2596,7 +2582,7 @@ msgstr "Az életkor-igazolási folyamat megkezdéséhez töltsd ki az alábbi me
 msgid "Beta Feature"
 msgstr "Kísérleti funkció"
 
-#: src/Navigation.tsx:796
+#: src/Navigation.tsx:788
 #: src/screens/Settings/BetaFeaturesSettings.tsx:116
 msgid "Beta features"
 msgstr "Kísérleti funkciók"
@@ -3237,7 +3223,7 @@ msgstr ""
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:92
 #: src/lib/hooks/useNotificationHandler.ts:133
-#: src/Navigation.tsx:899
+#: src/Navigation.tsx:891
 #: src/view/shell/bottom-bar/BottomBar.tsx:278
 #: src/view/shell/desktop/LeftNav.tsx:805
 #: src/view/shell/Drawer.tsx:579
@@ -3297,7 +3283,7 @@ msgstr "A csoport tulajdonosa nem hagyhatja el azt."
 msgid "Chat recipient is not followed by the sender."
 msgstr "A címzettet nem követi a feladó."
 
-#: src/Navigation.tsx:919
+#: src/Navigation.tsx:911
 msgid "Chat request inbox"
 msgstr "Csevegési kérelmek"
 
@@ -3307,7 +3293,7 @@ msgid "Chat requests"
 msgstr "Csevegési kérelmek"
 
 #: src/components/dms/ConvoMenu.tsx:91
-#: src/Navigation.tsx:914
+#: src/Navigation.tsx:906
 #: src/screens/Messages/ChatList.tsx:99
 #: src/screens/Messages/ChatList.tsx:103
 #: src/screens/Messages/ChatList.tsx:678
@@ -3775,7 +3761,7 @@ msgstr "Színmód"
 msgid "Color theme"
 msgstr "Színséma"
 
-#: src/Navigation.tsx:765
+#: src/Navigation.tsx:757
 msgid "Color Theme"
 msgstr ""
 
@@ -3845,10 +3831,6 @@ msgstr "GIF tömörítése folyamatban…"
 #: src/view/com/composer/Composer.tsx:3400
 msgid "Compressing video..."
 msgstr "Videó tömörítése folyamatban…"
-
-#: src/screens/Settings/AIPreferencesSettings.tsx:170
-msgid "Configure AI preference for: {name}"
-msgstr ""
 
 #: src/components/moderation/LabelPreference.tsx:88
 msgid "Configure content filtering setting for category: {name}"
@@ -3960,7 +3942,7 @@ msgstr "Tartalom és mellékletek"
 msgid "Content and media"
 msgstr "Tartalom és mellékletek"
 
-#: src/Navigation.tsx:857
+#: src/Navigation.tsx:849
 msgid "Content and Media"
 msgstr "Tartalom és mellékletek"
 
@@ -4389,7 +4371,7 @@ msgstr ""
 
 #: src/components/StarterPack/ProfileStarterPacks.tsx:206
 #: src/components/StarterPack/ProfileStarterPacks.tsx:315
-#: src/Navigation.tsx:950
+#: src/Navigation.tsx:942
 #: src/view/screens/Profile.tsx:584
 #: src/view/screens/Profile.tsx:585
 msgid "Create a Starter Pack"
@@ -4773,15 +4755,11 @@ msgstr "A Plivo hitelesítés után törli ezeket az adatokat"
 msgid "Deleted list"
 msgstr "Törölt lista"
 
-#: src/Navigation.tsx:649
+#: src/Navigation.tsx:641
 #: src/screens/Settings/DeltaSettings/index.tsx:22
 #: src/screens/Settings/Settings.tsx:494
 #: src/screens/Settings/Settings.tsx:499
 msgid "Deltas"
-msgstr ""
-
-#: src/screens/Settings/AIPreferencesSettings.tsx:38
-msgid "Deny"
 msgstr ""
 
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:467
@@ -5013,7 +4991,7 @@ msgstr "Javaslat mellőzése"
 msgid "Dismisses the QR scanner"
 msgstr "QR-kódolvasó bezárása"
 
-#: src/Navigation.tsx:726
+#: src/Navigation.tsx:718
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:87
 #: src/screens/Settings/RunesSettings/index.tsx:51
 #: src/screens/Settings/RunesSettings/index.tsx:54
@@ -5464,7 +5442,7 @@ msgstr "Felhasználólista szerkesztése"
 msgid "Edit who can reply"
 msgstr "Válaszjogosultsági beállítások szerkesztése"
 
-#: src/Navigation.tsx:955
+#: src/Navigation.tsx:947
 msgid "Edit your Starter Pack"
 msgstr ""
 
@@ -5538,10 +5516,6 @@ msgstr "Jelenítsd meg ezt a bejegyzést a honlapodon! Másold ki az alábbi kó
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerWeb.tsx:78
 msgid "Embedded video player"
 msgstr "Beágyazott videólejátszó"
-
-#: src/screens/Settings/AIPreferencesSettings.tsx:207
-msgid "Embedding"
-msgstr ""
 
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:123
 msgid "Embeds in private posts will NOT be supported because people will use them post GTA 6 leaks."
@@ -5907,8 +5881,7 @@ msgstr "Bejegyzés teljes szövegének kibontása/összecsukása"
 msgid "Expected uri to resolve to a record"
 msgstr "Az URI nem old fel egy rekordot"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:78
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:47
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:42
 #: src/screens/Settings/FollowingFeedPreferences.tsx:127
 msgid "Experimental"
 msgstr "Kísérleti"
@@ -5945,7 +5918,7 @@ msgid "Explicit sexual images."
 msgstr "Szexuális tartalmakat ábrázoló képek."
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:90
-#: src/Navigation.tsx:1160
+#: src/Navigation.tsx:1152
 #: src/screens/Search/Shell.tsx:550
 #: src/view/shell/desktop/LeftNav.tsx:775
 #: src/view/shell/Drawer.tsx:527
@@ -5992,7 +5965,7 @@ msgstr "Külső videólejátszók"
 msgid "Extra"
 msgstr ""
 
-#: src/Navigation.tsx:741
+#: src/Navigation.tsx:733
 msgid "Extra settings"
 msgstr ""
 
@@ -6371,7 +6344,7 @@ msgstr ""
 msgid "Favicon Service URL"
 msgstr ""
 
-#: src/Navigation.tsx:746
+#: src/Navigation.tsx:738
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:192
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:195
 #: src/screens/Settings/RunesSettings/FeatureGatesSettings.tsx:20
@@ -6433,8 +6406,8 @@ msgid "Feedback sent to feed operator"
 msgstr "Visszajelzés elküldve az üzemeltetőnek"
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:93
-#: src/Navigation.tsx:716
-#: src/Navigation.tsx:935
+#: src/Navigation.tsx:708
+#: src/Navigation.tsx:927
 #: src/screens/SavedFeeds.tsx:114
 #: src/screens/SavedFeeds.tsx:308
 #: src/screens/Search/SearchResults.tsx:109
@@ -6550,8 +6523,8 @@ msgstr "Követendő fiókok felfedezése"
 msgid "Find and invite friends"
 msgstr "Barátok meghívása"
 
-#: src/Navigation.tsx:836
-#: src/Navigation.tsx:977
+#: src/Navigation.tsx:828
+#: src/Navigation.tsx:969
 msgid "Find Contacts"
 msgstr "Ismerősök felkutatása"
 
@@ -6979,10 +6952,6 @@ msgstr ""
 msgid "Generate invite link"
 msgstr "Meghívó létrehozása"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:204
-msgid "Generate new content or interactions modeled on your data. This includes AI imitations of your writing, photos, or audio."
-msgstr ""
-
 #: src/screens/Messages/components/InviteLinkDialog.tsx:444
 msgid "Generate new invite link"
 msgstr "Új meghívó létrehozása"
@@ -7316,7 +7285,7 @@ msgctxt "toast"
 msgid "Group chat name updated"
 msgstr "Csoportbeszélgetés átnevezve"
 
-#: src/Navigation.tsx:904
+#: src/Navigation.tsx:896
 #: src/screens/Messages/ConversationSettings/index.tsx:110
 msgid "Group chat settings"
 msgstr "Csoportbeszélgetés beállításai"
@@ -7434,7 +7403,7 @@ msgstr "Veszélyes vagy káros tevékenységek"
 msgid "Harming or endangering minors"
 msgstr "Kiskorúak veszélyeztetése vagy károsítása"
 
-#: src/Navigation.tsx:888
+#: src/Navigation.tsx:880
 msgid "Hashtag"
 msgstr "Címke"
 
@@ -7718,8 +7687,8 @@ msgid "Holy Shit!"
 msgstr ""
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:89
-#: src/Navigation.tsx:1155
-#: src/Navigation.tsx:1176
+#: src/Navigation.tsx:1147
+#: src/Navigation.tsx:1168
 #: src/view/shell/bottom-bar/BottomBar.tsx:216
 #: src/view/shell/desktop/LeftNav.tsx:765
 #: src/view/shell/Drawer.tsx:553
@@ -7961,7 +7930,7 @@ msgstr "Importáld a névjegyeidet és találd meg az ismerőseidet!"
 msgid "Imported on {0}"
 msgstr "Importálás dátuma: {0}"
 
-#: src/Navigation.tsx:706
+#: src/Navigation.tsx:698
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:90
 #: src/screens/Settings/RunesSettings/index.tsx:37
 #: src/screens/Settings/RunesSettings/index.tsx:40
@@ -8057,11 +8026,7 @@ msgstr ""
 msgid "Incorrect username or password"
 msgstr "Érvénytelen felhasználónév vagy jelszó"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:199
-msgid "Inference"
-msgstr ""
-
-#: src/Navigation.tsx:736
+#: src/Navigation.tsx:728
 #: src/screens/Settings/RunesSettings/index.tsx:59
 #: src/screens/Settings/RunesSettings/index.tsx:62
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:180
@@ -9073,10 +9038,6 @@ msgstr ""
 msgid "Long press to open tag menu for {0}"
 msgstr "Tartsd lenyomva a(z) {0} címkét a menü megnyitásához"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:200
-msgid "Look up your data when AI is answering someone's question. The AI doesn't keep it, but it might quote or reference it in real time."
-msgstr ""
-
 #: src/screens/Login/components/AppServerDialog.tsx:479
 msgid "Looking up AppView…"
 msgstr ""
@@ -9259,7 +9220,7 @@ msgstr "az alábbi személyeket megemlítő bejegyzések"
 msgid "Menu"
 msgstr "Menü"
 
-#: src/Navigation.tsx:696
+#: src/Navigation.tsx:688
 #: src/screens/Settings/RunesSettings/index.tsx:23
 #: src/screens/Settings/RunesSettings/index.tsx:26
 #: src/screens/Settings/RunesSettings/MenusSettings.tsx:48
@@ -9322,7 +9283,7 @@ msgstr "Az üzenet túl hosszú ({MAX_DM_GRAPHEME_LENGTH}/{graphemeCount})"
 msgid "Message options"
 msgstr "Üzenetlehetőségek"
 
-#: src/Navigation.tsx:1170
+#: src/Navigation.tsx:1162
 msgid "Messages"
 msgstr "Üzenetek"
 
@@ -9383,7 +9344,7 @@ msgstr "Moderátori üzenetek"
 msgid "Moderation inbox settings"
 msgstr ""
 
-#: src/Navigation.tsx:673
+#: src/Navigation.tsx:665
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:35
 #: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:19
 msgid "Moderation labels"
@@ -10052,10 +10013,6 @@ msgstr "Még nincsenek bejegyzések"
 msgid "No posts yet"
 msgstr "Még nincsenek bejegyzések"
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:37
-msgid "No preference"
-msgstr ""
-
 #: src/view/com/post-thread/PostQuotes.tsx:166
 msgid "No quotes yet"
 msgstr "Még nincsenek idézések"
@@ -10232,8 +10189,8 @@ msgid "Notice"
 msgstr ""
 
 #: src/components/dialogs/NotificationSettingsDialog.tsx:72
-#: src/Navigation.tsx:843
-#: src/Navigation.tsx:930
+#: src/Navigation.tsx:835
+#: src/Navigation.tsx:922
 #: src/view/screens/Notifications.tsx:141
 msgid "Notification settings"
 msgstr "Értesítési beállítások"
@@ -10244,8 +10201,8 @@ msgid "Notification sounds"
 msgstr "Értesítési hangok"
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:91
-#: src/Navigation.tsx:925
-#: src/Navigation.tsx:1165
+#: src/Navigation.tsx:917
+#: src/Navigation.tsx:1157
 #: src/screens/Messages/Settings.tsx:255
 #: src/screens/Notifications/ActivityList.tsx:31
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:93
@@ -11116,7 +11073,7 @@ msgstr ""
 msgid "Pet label"
 msgstr ""
 
-#: src/Navigation.tsx:812
+#: src/Navigation.tsx:804
 #: src/screens/Settings/PetLabelSettings.tsx:99
 msgid "Pet Label"
 msgstr ""
@@ -11720,8 +11677,8 @@ msgstr "Adatvédelem"
 msgid "Privacy and security"
 msgstr "Adatvédelem és biztonság"
 
+#: src/Navigation.tsx:812
 #: src/Navigation.tsx:820
-#: src/Navigation.tsx:828
 #: src/screens/Settings/ActivityPrivacySettings.tsx:41
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:69
 msgid "Privacy and Security"
@@ -11756,8 +11713,8 @@ msgstr ""
 msgid "Private post"
 msgstr ""
 
-#: src/Navigation.tsx:665
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:50
+#: src/Navigation.tsx:657
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:45
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:74
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:84
 msgid "Private posts"
@@ -11816,7 +11773,7 @@ msgstr "profil"
 msgid "Profile"
 msgstr "Profil"
 
-#: src/Navigation.tsx:657
+#: src/Navigation.tsx:649
 #: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:19
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:30
 msgid "Profile badges"
@@ -11836,7 +11793,7 @@ msgctxt "toast"
 msgid "Profile updated"
 msgstr "Profil frissítve"
 
-#: src/Navigation.tsx:721
+#: src/Navigation.tsx:713
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:124
 #: src/screens/Settings/RunesSettings/ProfileSettings.tsx:55
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:47
@@ -12821,7 +12778,7 @@ msgstr "Kérelem elküldve"
 msgid "Requests"
 msgstr "Kérelmek"
 
-#: src/Navigation.tsx:909
+#: src/Navigation.tsx:901
 #: src/screens/Messages/JoinRequests.tsx:56
 #: src/screens/Messages/JoinRequests.tsx:422
 msgid "Requests to join"
@@ -13049,7 +13006,7 @@ msgstr ""
 msgid "Rule violated:"
 msgstr ""
 
-#: src/Navigation.tsx:689
+#: src/Navigation.tsx:681
 #: src/screens/Settings/RunesSettings/index.tsx:22
 #: src/screens/Settings/Settings.tsx:502
 #: src/screens/Settings/Settings.tsx:505
@@ -13215,7 +13172,7 @@ msgid "Saved Feeds"
 msgstr "Mentett hírfolyamok"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:145
-#: src/Navigation.tsx:969
+#: src/Navigation.tsx:961
 #: src/screens/Bookmarks.tsx:60
 msgid "Saved Posts"
 msgstr "Mentett bejegyzések"
@@ -13270,10 +13227,6 @@ msgstr "QR-kód beolvasása"
 #: src/lib/interests.ts:71
 msgid "Science"
 msgstr "Tudomány"
-
-#: src/screens/Settings/AIPreferencesSettings.tsx:91
-msgid "Scrapers will not respect your choices, we know that. It's impossible to fully protect your posts from training AI Slop scrapers, Bluesky is an ATProto app, in an open ecosystem. These settings are here because there's a lexicon for them."
-msgstr ""
 
 #: src/view/com/posts/PostFeedItemCarousel.tsx:181
 msgid "Scroll carousel left"
@@ -13928,7 +13881,7 @@ msgctxt "toast"
 msgid "Settings saved"
 msgstr "Beállítások elmentve"
 
-#: src/Navigation.tsx:751
+#: src/Navigation.tsx:743
 #: src/screens/Settings/RunesSettings/index.tsx:70
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:85
 msgid "Settings sync"
@@ -14713,8 +14666,8 @@ msgstr "Csevegés létrehozása"
 msgid "Start chat with {displayName}"
 msgstr "Csevegés indítása vele: {displayName}"
 
-#: src/Navigation.tsx:940
-#: src/Navigation.tsx:945
+#: src/Navigation.tsx:932
+#: src/Navigation.tsx:937
 #: src/screens/StarterPack/Wizard/index.tsx:192
 msgid "Starter Pack"
 msgstr "Kezdőcsomag"
@@ -14988,10 +14941,6 @@ msgstr ""
 #. placeholder {1}: syncAllProgress.total
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:191
 msgid "Syncing… ({0}/{1})"
-msgstr ""
-
-#: src/screens/Settings/AIPreferencesSettings.tsx:203
-msgid "Synthetic content"
 msgstr ""
 
 #: src/components/dialogs/Embed.tsx:155
@@ -15411,14 +15360,14 @@ msgid "The video could not be uploaded to your hosting provider. Please try agai
 msgstr "A tárhelyszolgáltató nem tudta fogadni a videófájlt. Próbáld újra később."
 
 #: src/components/Post/Embed/ThemeEmbed/index.tsx:28
-#: src/Navigation.tsx:782
+#: src/Navigation.tsx:774
 #: src/screens/Settings/AppearanceSettings.tsx:235
 #: src/screens/Settings/AppearanceSettings/ThemeQuickSelector.tsx:93
 #: src/screens/Theme.tsx:177
 msgid "Theme"
 msgstr "Téma"
 
-#: src/Navigation.tsx:777
+#: src/Navigation.tsx:769
 #: src/screens/Settings/AppearanceSettings/ThemeEditor.tsx:269
 msgid "Theme editor"
 msgstr ""
@@ -15428,7 +15377,7 @@ msgstr ""
 msgid "Theme name"
 msgstr ""
 
-#: src/Navigation.tsx:772
+#: src/Navigation.tsx:764
 msgid "Themes"
 msgstr ""
 
@@ -15891,10 +15840,6 @@ msgstr "Ez a moderálási szolgáltatás jelenleg nem elérhető. A részleteket
 msgid "This only gets rid of the reminder on app launch, useful if your PDS does not have email verification setup. This does NOT give access to features locked behind email verification."
 msgstr ""
 
-#: src/screens/Settings/AIPreferencesSettings.tsx:83
-msgid "This page was removed from Witchsky, however you may still access it here!"
-msgstr ""
-
 #: src/components/dms/MessagesListDeletedAccountFooter.tsx:47
 msgid "This person has deactivated, been suspended, or deleted their account. You can read chat history but can’t send new messages."
 msgstr ""
@@ -16199,17 +16144,13 @@ msgstr "Felkapott"
 msgid "Top replies first"
 msgstr "A legjobbra értékelt válaszok elöl"
 
-#: src/Navigation.tsx:893
+#: src/Navigation.tsx:885
 msgid "Topic"
 msgstr "Témakör"
 
 #. placeholder {0}: index + 1
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/SettingsMenu.tsx:92
 msgid "Track {0}"
-msgstr ""
-
-#: src/screens/Settings/AIPreferencesSettings.tsx:195
-msgid "Training"
 msgstr ""
 
 #: src/components/dms/MessageContextMenu.tsx:194
@@ -16843,7 +16784,7 @@ msgstr "Videó feltöltése folyamatban…"
 msgid "URL"
 msgstr ""
 
-#: src/Navigation.tsx:711
+#: src/Navigation.tsx:703
 #: src/screens/Settings/RunesSettings/index.tsx:45
 #: src/screens/Settings/RunesSettings/index.tsx:48
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:36
@@ -16920,14 +16861,6 @@ msgstr "A másik alkalmazásba a felhasználóneveddel és ezzel jelentkezhetsz 
 #: src/components/ageAssurance/AgeAssuranceInitDialog.tsx:287
 msgid "Use your account email address, or another real email address you control, in case KWS or Bluesky needs to contact you."
 msgstr "Add meg a fiókod e-mail-címét vagy egy másik, tulajdonodat képző e-mail-címet, arra az esetre, ha a jövőben a KWS-nek vagy a Blueskynak fel kell vennie Veled a kapcsolatot."
-
-#: src/screens/Settings/AIPreferencesSettings.tsx:208
-msgid "Use your data in AI search and recommendation systems. This is how AI finds similar accounts, groups users by interests, and decides what to show in some personalized feeds."
-msgstr ""
-
-#: src/screens/Settings/AIPreferencesSettings.tsx:196
-msgid "Use your data to build or train new AI models. Once your work is in a model, it stays there, even if you delete your account later."
-msgstr ""
 
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:310
 msgid "Used for custom verifications and fixing nuclear blocks via backlinks."
@@ -17174,7 +17107,7 @@ msgstr ""
 msgid "Video failed to process"
 msgstr "A videó feldolgozása meghiúsult"
 
-#: src/Navigation.tsx:961
+#: src/Navigation.tsx:953
 msgid "Video Feed"
 msgstr "Videófolyam"
 
@@ -18700,7 +18633,7 @@ msgstr "A kiválasztott videófájl meghaladja a tárhelyszolgáltatót korlátj
 msgid "Your hosting provider is detected automatically from the username you enter."
 msgstr "A tárhelyszolgáltató a felhasználónév alapján történik megállapításra."
 
-#: src/Navigation.tsx:865
+#: src/Navigation.tsx:857
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:65
 #: src/screens/Settings/ContentAndMediaSettings.tsx:94
 #: src/screens/Settings/ContentAndMediaSettings.tsx:97
