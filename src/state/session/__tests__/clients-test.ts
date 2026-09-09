@@ -469,7 +469,7 @@ it.each(['did:web:api.blacksky.community', 'did:web:api.eurosky.network'])(
         expect(headersFor(fetchMock, nsid).get('atproto-proxy')).toBe(audience)
       }
       expect(getOAuthScope()).toContain(
-        `include:app.bsky.authFullApp?aud=${encodeURIComponent(audience)}`,
+        `include:party.tenna.app.permissions2?aud=${encodeURIComponent(audience)}`,
       )
       for (const nsid of [
         'app.bsky.actor.getPreferences',

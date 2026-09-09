@@ -1,6 +1,7 @@
 /** Shared by clients, metadata generation, and the metadata HTTP handlers. */
 export const DEFAULT_APPVIEW_AUDIENCE = 'did:web:api.bsky.app#bsky_appview'
 export const DEFAULT_CHAT_AUDIENCE = 'did:web:api.bsky.chat#bsky_chat'
+export const APP_OAUTH_PERMISSION_SET = 'party.tenna.app.permissions2'
 export const NATIVE_REDIRECT_URI = 'party.tenna:/auth/callback'
 export const ANDROID_REDIRECT_URI = 'app.tennaparty:/auth/callback'
 
@@ -41,7 +42,11 @@ export function hasOAuthAppViewScope(scope: string, audience: string) {
       return false
     }
     if (resource === 'include') {
-      return positional === 'app.bsky.authFullApp'
+      return (
+        positional === APP_OAUTH_PERMISSION_SET ||
+        // Existing grants from before the Tenna permission set remain valid.
+        positional === 'app.bsky.authFullApp'
+      )
     }
     const methods = positional
       ? [decodeURIComponent(positional)]
@@ -61,7 +66,7 @@ export function buildOAuthScope(
 ) {
   return [
     'atproto',
-    `include:app.bsky.authFullApp?aud=${encodeURIComponent(appview)}`,
+    `include:${APP_OAUTH_PERMISSION_SET}?aud=${encodeURIComponent(appview)}`,
     // Preferences live on the PDS under its default Bluesky audience. Sending
     // them to Blacksky reaches an unimplemented endpoint instead of that store.
     ...(appview === DEFAULT_APPVIEW_AUDIENCE
@@ -88,8 +93,12 @@ export function buildOAuthScope(
     // Reports can be sent to any of the user's selected labelers.
     'rpc:com.atproto.moderation.createReport?aud=*',
     // Tenna's push service and configurable Private Vessel instances are separate audiences.
-    ...['app.bsky.notification.registerPush', 'app.bsky.notification.unregisterPush'].map(
-      method => `rpc:${method}?aud=${encodeURIComponent('did:web:push.tenna.party#bsky_notif')}`,
+    ...[
+      'app.bsky.notification.registerPush',
+      'app.bsky.notification.unregisterPush',
+    ].map(
+      method =>
+        `rpc:${method}?aud=${encodeURIComponent('did:web:push.tenna.party#bsky_notif')}`,
     ),
     'include:party.tenna.private.privateVesselPermissions?aud=*',
     ...permissions.map(permission => OPTIONAL_OAUTH_SCOPES[permission]),

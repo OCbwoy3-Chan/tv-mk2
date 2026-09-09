@@ -1,4 +1,5 @@
 import {
+  APP_OAUTH_PERMISSION_SET,
   buildOAuthScope,
   createOAuthMetadata,
   DEFAULT_APPVIEW_AUDIENCE,
@@ -11,7 +12,9 @@ describe('OAuth permission configuration', () => {
   it('identifies Tenna Party and grants its push and private-vessel permissions', () => {
     const metadata = createOAuthMetadata({baseUrl: 'https://tenna.party'})
     expect(metadata.client_name).toBe('tenna.party')
-    expect(metadata.client_id).toBe('https://tenna.party/oauth-client-metadata.json')
+    expect(metadata.client_id).toBe(
+      'https://tenna.party/oauth-client-metadata.json',
+    )
     expect(metadata.scope.split(' ')).toContain(
       'include:party.tenna.private.privateVesselPermissions?aud=*',
     )
@@ -23,12 +26,14 @@ describe('OAuth permission configuration', () => {
     ]) {
       expect(metadata.scope.split(' ')).not.toContain(`rpc:${method}?aud=*`)
     }
-    expect(metadata.scope.split(' ')).toContain(`rpc:app.bsky.notification.registerPush?aud=${encodeURIComponent('did:web:push.tenna.party#bsky_notif')}`)
+    expect(metadata.scope.split(' ')).toContain(
+      `rpc:app.bsky.notification.registerPush?aud=${encodeURIComponent('did:web:push.tenna.party#bsky_notif')}`,
+    )
   })
   it('requests app permission sets without account-management access', () => {
     const scopes = buildOAuthScope().split(' ')
     expect(scopes).toContain(
-      `include:app.bsky.authFullApp?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
+      `include:${APP_OAUTH_PERMISSION_SET}?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
     )
     expect(scopes).toContain('include:app.witchsky.theme.authFull')
     expect(scopes.some(scope => scope.startsWith('transition:'))).toBe(false)
@@ -52,7 +57,7 @@ describe('OAuth permission configuration', () => {
       'https://dev.tenna.party/auth/web/callback',
     ])
     expect(metadata.scope).toContain(
-      `include:app.bsky.authFullApp?aud=${encodeURIComponent(appview)}`,
+      `include:${APP_OAUTH_PERMISSION_SET}?aud=${encodeURIComponent(appview)}`,
     )
     expect(metadata.scope).toContain(
       `include:chat.bsky.authFullChatClient?aud=${encodeURIComponent(chat)}`,

@@ -36,7 +36,7 @@ func TestOAuthMetadata(t *testing.T) {
 		if metadata.ClientID != target {
 			t.Fatalf("wrong client ID: %s", metadata.ClientID)
 		}
-		if !strings.Contains(metadata.Scope, "include:app.bsky.authFullApp?aud="+url.QueryEscape(audience)) {
+		if !strings.Contains(metadata.Scope, "include:party.tenna.app.permissions2?aud="+url.QueryEscape(audience)) {
 			t.Fatal("missing selected audience")
 		}
 		for _, method := range []string{"app.bsky.actor.getPreferences", "app.bsky.actor.putPreferences"} {
