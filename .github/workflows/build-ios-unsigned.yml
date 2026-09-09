@@ -33,7 +33,7 @@ jobs:
       - name: ☕️ Setup Cocoapods
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
-          version: 1.16.2
+          version: latest
 
       - name: 🔤 Compile translations
         run: pnpm intl:build

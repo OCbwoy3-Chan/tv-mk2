@@ -48,10 +48,6 @@ jobs:
 
       - name: 📦 Install Android SDK Components
         run: |
-          # Install NDK versions
-          echo "Installing NDK 27.0.12077973..."
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "ndk;27.0.12077973"
-
           echo "Installing NDK 27.1.12297006..."
           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "ndk;27.1.12297006"
 
@@ -63,11 +59,8 @@ jobs:
           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-36"
 
           # Install Build Tools
-          echo "Installing Build Tools 35.0.0..."
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;35.0.0"
-
-          echo "Installing Build Tools 37.0.0..."
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;37.0.0"
+          echo "Installing Build Tools 36.0.0..."
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;36.0.0"
 
       - name: ✅ Verify Android SDK Installation
         run: |

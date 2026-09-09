@@ -551,10 +551,19 @@ diff --git a/android/build/tmp/kotlin-classes/debug/com/assembless/reactnativema
 deleted file mode 100644
 index be1afee666ef6b9e10b48f99002b38039f4ed8a1..0000000000000000000000000000000000000000
 diff --git a/android/build.gradle b/android/build.gradle
-index d9460ae69ec192b99e135aec394dc9d6cad55f0d..da6eab0cd08698a2a6c1dca1803ea9ed39b0899e 100644
+index d9460ae69ec192b99e135aec394dc9d6cad55f0d..88c8b5524cf8cc14cf544be884a9c5100bba215f 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
-@@ -22,12 +22,12 @@ apply plugin: 'com.android.library'
+@@ -5,7 +5,7 @@ buildscript {
+ 
+     repositories {
+         google()
+-        jcenter()
++        mavenCentral()
+     }
+ 
+     dependencies {
+@@ -22,18 +22,17 @@ apply plugin: 'com.android.library'
  apply plugin: 'kotlin-android'
  
  android {
@@ -567,6 +576,12 @@ index d9460ae69ec192b99e135aec394dc9d6cad55f0d..da6eab0cd08698a2a6c1dca1803ea9ed
 -        targetSdkVersion safeExtGet('targetSdkVersion', "32")
 +        targetSdkVersion safeExtGet('targetSdkVersion', "35")
      }
+ }
+ 
+ repositories {
+     google()
+-    jcenter()
+     mavenCentral()
  }
  
 diff --git a/android/gradle/wrapper/gradle-wrapper.jar b/android/gradle/wrapper/gradle-wrapper.jar
@@ -584,37 +599,6 @@ index ac1b06f93825db68fb0c0b5150917f340eaa5d02..00000000000000000000000000000000
 diff --git a/android/local.properties b/android/local.properties
 deleted file mode 100644
 index 1ca84a9077e6001a61a4e5ec1a55822010372e63..0000000000000000000000000000000000000000
-diff --git a/android/src/main/java/com/assembless/reactnativematerialyou/RNMaterialYouModule.kt b/android/src/main/java/com/assembless/reactnativematerialyou/RNMaterialYouModule.kt
-index 2d4cbf925ff8d8d6b6c9eeaa6790a19e2cc9ea67..674daf26ac198bb1dbcde13c97f9d2a787d81f81 100644
---- a/android/src/main/java/com/assembless/reactnativematerialyou/RNMaterialYouModule.kt
-+++ b/android/src/main/java/com/assembless/reactnativematerialyou/RNMaterialYouModule.kt
-@@ -132,6 +132,26 @@ class RNMaterialYouModule(val reactContext: ReactApplicationContext) : ReactCont
-         colorMap.putArray("system_neutral1", system_neutral1);
-         colorMap.putArray("system_neutral2", system_neutral2);
- 
-+        if (android.os.Build.VERSION.SDK_INT >= 35) {
-+            val system_error: WritableArray? = toWritableArray(arrayOf(
-+                R.color.system_error_0,
-+                R.color.system_error_10,
-+                R.color.system_error_50,
-+                R.color.system_error_100,
-+                R.color.system_error_200,
-+                R.color.system_error_300,
-+                R.color.system_error_400,
-+                R.color.system_error_500,
-+                R.color.system_error_600,
-+                R.color.system_error_700,
-+                R.color.system_error_800,
-+                R.color.system_error_900,
-+                R.color.system_error_1000
-+            ).map { colorToHex(it) });
-+
-+            colorMap.putArray("system_error", system_error);
-+        }
-+
-         return colorMap;
-     }
- 
 diff --git a/babel.config.js b/babel.config.js
 deleted file mode 100644
 index 6328b6a4c4bdf67f877c97b6ca83c3e1e290702a..0000000000000000000000000000000000000000
@@ -4662,20 +4646,6 @@ index e6d7c38635eeba200b92502e968891f4c81737cf..00000000000000000000000000000000
 diff --git a/ios/RNMaterialYouModule.xcodeproj/xcshareddata/xcschemes/RNMaterialYouModule.xcscheme b/ios/RNMaterialYouModule.xcodeproj/xcshareddata/xcschemes/RNMaterialYouModule.xcscheme
 deleted file mode 100644
 index 51d8cc1dc7898e7f08f854d2636622fbd5ddaefb..0000000000000000000000000000000000000000
-diff --git a/lib/types.d.ts b/lib/types.d.ts
-index 91d097f1cddbc6fe384867ebae067f1c2499da43..27ce4ee0a146510dff6728a0e71f5b08198f733e 100644
---- a/lib/types.d.ts
-+++ b/lib/types.d.ts
-@@ -19,4 +19,9 @@ export declare type MaterialYouPalette = {
-      * Android API: [system_neutral2](https://developer.android.com/reference/android/R.color#system_neutral2_0)
-      */
-     system_neutral2: string[];
-+    /**
-+     * Android API: [system_error](https://developer.android.com/reference/android/R.color#system_error_0)
-+     * Only available on Android 14+ / API level 35+
-+     */
-+    system_error?: string[];
- };
 diff --git a/src/__tests__/index.test.ts b/src/__tests__/index.test.ts
 deleted file mode 100644
 index 89786542cdf9483003b471959a1844606de2a8ca..0000000000000000000000000000000000000000
