@@ -19,6 +19,7 @@ import {
 import {type ReanimatedScrollEvent} from 'react-native-reanimated/lib/typescript/hook/commonTypes'
 
 import {batchedUpdates} from '#/lib/batchedUpdates'
+import {createRowObserver} from '#/lib/createRowObserver'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {useScrollHandlers} from '#/lib/ScrollContext'
 import {addStyle} from '#/lib/styles'
@@ -645,6 +646,11 @@ function useResizeObserver(
   }, [handleResize, isActive, ref])
 }
 
+const observeNearViewport = createRowObserver(
+  ON_ITEM_NEAR_VIEWPORT_INTERSECTION_OPTS,
+)
+const observeSeen = createRowObserver(ON_ITEM_SEEN_INTERSECTION_OPTS)
+
 let Row = function RowImpl<ItemT>({
   item,
   index,
@@ -679,13 +685,8 @@ let Row = function RowImpl<ItemT>({
   useEffect(() => {
     if (!onItemNearViewport) return
 
-    const observer = new IntersectionObserver(
-      handleNearViewportIntersection,
-      ON_ITEM_NEAR_VIEWPORT_INTERSECTION_OPTS,
-    )
     const row: Element | null = rowRef.current
-    if (row) observer.observe(row)
-    return () => observer.disconnect()
+    if (row) return observeNearViewport(row, handleNearViewportIntersection)
   }, [handleNearViewportIntersection, onItemNearViewport])
 
   const handleIntersection = useNonReactiveCallback(
@@ -717,18 +718,12 @@ let Row = function RowImpl<ItemT>({
     if (!onItemSeen) {
       return
     }
-    const observer = new IntersectionObserver(
-      handleIntersection,
-      ON_ITEM_SEEN_INTERSECTION_OPTS,
-    )
     const row: Element | null = rowRef.current
-    if (row) {
-      observer.observe(row)
-    }
+    const unobserve = row ? observeSeen(row, handleIntersection) : undefined
     return () => {
-      if (row) {
-        observer.unobserve(row)
-      }
+      unobserve?.()
+      clearTimeout(intersectionTimeout.current)
+      intersectionTimeout.current = undefined
     }
   }, [handleIntersection, onItemSeen])
 

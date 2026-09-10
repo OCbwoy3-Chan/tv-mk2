@@ -1,9 +1,8 @@
-import {useCallback, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {View} from 'react-native'
 import Animated, {FadeIn} from 'react-native-reanimated'
 import {plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react/macro'
-import {useQueryClient} from '@tanstack/react-query'
 
 import {CountWheel} from '#/lib/custom-animations/CountWheel'
 import {AnimatedLikeIcon} from '#/lib/custom-animations/LikeIcon'
@@ -22,7 +21,7 @@ import {
   threadgateRecordToAllowUISetting,
   threadgateViewToAllowUISetting,
 } from '#/state/queries/threadgate/util'
-import {useRequireAuth, useSession, useSessionApi} from '#/state/session'
+import {useRequireAuth, useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
 import {ReaderSeamReplies} from '#/screens/PostThread/components/ReaderSeamControls'
 import {ThreadComposePromptPill} from '#/screens/PostThread/components/ThreadComposePrompt'
@@ -33,11 +32,10 @@ import {
 } from '#/screens/PostThread/const'
 import {type ThreadPostItem} from '#/screens/PostThread/reader'
 import {atoms as a, useTheme} from '#/alf'
-import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
+import {EphemeralAccountSwitcherFromScope} from '#/components/EphemeralAccountSwitcher'
 import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
 import {useRunWithEphemeralAgent} from '#/components/hooks/useRunWithEphemeralAgent'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
-import {fetchReplyableSwitcherAccounts} from '#/components/PostControls/alternateAccountsReplyEligibility'
 import {
   PostControlButton,
   PostControlButtonIcon,
@@ -133,8 +131,6 @@ function ReaderSeamInner({
   const t = useTheme()
   const {t: l} = useLingui()
   const {accounts, currentAccount, hasSession} = useSession()
-  const {createEphemeralAgent} = useSessionApi()
-  const queryClient = useQueryClient()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
   const showEphemeralError = useEphemeralAccountError()
   const [hovered, setHovered] = useState(false)
@@ -155,13 +151,6 @@ function ReaderSeamInner({
     return !(settings.length === 1 && settings[0].type === 'everybody')
   }, [shadow.threadgate, threadgateRecord])
   const hasAlternateAccounts = accounts.length > 1
-  const switcherAccounts = useMemo(
-    () =>
-      accounts
-        .filter(account => account.did !== currentAccount?.did)
-        .map(account => ({account})),
-    [accounts, currentAccount?.did],
-  )
 
   const [queueLike, queueUnlike] = usePostLikeMutationQueue(
     shadow,
@@ -242,20 +231,26 @@ function ReaderSeamInner({
     })
   }
 
-  const resolveReplyableAccounts = useCallback(async () => {
-    const replyableAccounts = await fetchReplyableSwitcherAccounts({
-      queryClient,
-      postUri: shadow.uri,
-      switcherAccounts,
-      createEphemeralAgent,
-    })
-    if (replyableAccounts.length === 0) {
-      Toast.show(l`No other accounts can reply to this post`, {
-        type: 'warning',
-      })
+  const onSelectReplyAccount = async (account: (typeof accounts)[number]) => {
+    try {
+      if (isReplyGatedPost) {
+        const allowed = await runWithEphemeralAgent(account, async agent => {
+          const res = await agent.getPosts({uris: [shadow.uri]})
+          const target = res.data.posts[0]
+          return Boolean(target && !target.viewer?.replyDisabled)
+        })
+        if (!allowed) {
+          Toast.show(l`This account cannot reply to this post`, {
+            type: 'warning',
+          })
+          return
+        }
+      }
+      onPressReply(account.did)
+    } catch (error) {
+      showEphemeralError(error, account, onSelectReplyAccount)
     }
-    return replyableAccounts
-  }, [createEphemeralAgent, l, queryClient, shadow.uri, switcherAccounts])
+  }
 
   const onSelectLikeAccount = async (account: (typeof accounts)[number]) => {
     try {
@@ -414,15 +409,12 @@ function ReaderSeamInner({
           onMouseLeave={() => setHovered(false)}
           style={[a.flex_row, a.align_center, a.ml_auto]}>
           {hasAlternateAccounts && currentAccount ? (
-            <EphemeralAccountSwitcher
+            <EphemeralAccountSwitcherFromScope
               selectedDid={currentAccount.did}
               title={l`Reply as`}
               triggerBehavior="longPress"
-              resolveAccounts={
-                isReplyGatedPost ? resolveReplyableAccounts : undefined
-              }
               onSelectAccount={account => {
-                onPressReply(account.did)
+                void onSelectReplyAccount(account)
               }}
               renderTrigger={({triggerProps}) =>
                 renderReplyButton(triggerProps.onLongPress)
@@ -432,7 +424,7 @@ function ReaderSeamInner({
             renderReplyButton()
           )}
           {hasAlternateAccounts && currentAccount ? (
-            <EphemeralAccountSwitcher
+            <EphemeralAccountSwitcherFromScope
               selectedDid={currentAccount.did}
               title={l`Repost as`}
               triggerBehavior="longPress"
@@ -447,7 +439,7 @@ function ReaderSeamInner({
             renderRepostButton()
           )}
           {hasAlternateAccounts && currentAccount ? (
-            <EphemeralAccountSwitcher
+            <EphemeralAccountSwitcherFromScope
               selectedDid={currentAccount.did}
               title={l`Like as`}
               triggerBehavior="longPress"

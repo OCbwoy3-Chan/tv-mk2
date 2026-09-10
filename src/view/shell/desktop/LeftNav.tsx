@@ -261,6 +261,7 @@ export function SwitchMenuItems({
   showAddAccount,
   title,
   onSelectAccount,
+  onCloseAutoFocus,
 }: {
   accounts:
     | {
@@ -274,6 +275,7 @@ export function SwitchMenuItems({
   showAddAccount?: boolean
   title?: string
   onSelectAccount?: (account: SessionAccount) => void
+  onCloseAutoFocus?: (event: Event) => void
 }) {
   const {t: l} = useLingui()
   const {setShowLoggedOut} = useLoggedOutViewControls()
@@ -293,7 +295,7 @@ export function SwitchMenuItems({
   }
 
   return (
-    <Menu.Outer>
+    <Menu.Outer onCloseAutoFocus={onCloseAutoFocus}>
       {isLoading ? (
         <Menu.Group>
           <Menu.LabelText>

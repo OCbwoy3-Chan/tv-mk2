@@ -1,13 +1,5 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {View} from 'react-native'
+import {createContext, useCallback, useContext, useMemo, useState} from 'react'
+import {type GestureResponderEvent} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
 import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
@@ -15,9 +7,14 @@ import {type SessionAccount, useSession} from '#/state/session'
 import {SwitchMenuItems} from '#/view/shell/desktop/LeftNav'
 import {useDialogControl} from '#/components/Dialog'
 import {SwitchAccountDialog} from '#/components/dialogs/SwitchAccount'
+import {
+  EphemeralAccountPicker,
+  useAccountPickerControl,
+} from '#/components/EphemeralAccountPicker'
+import {type AccountPickerRequest} from '#/components/EphemeralAccountPicker/types'
 import * as Menu from '#/components/Menu'
 import * as Prompt from '#/components/Prompt'
-import {IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
+import {IS_WEB_TOUCH_DEVICE} from '#/env'
 import {type app} from '#/lexicons'
 
 type AccountListItem = {
@@ -28,7 +25,7 @@ type AccountListItem = {
 export type SwitcherTriggerProps = {
   ref: null
   onPress: (() => void) | undefined
-  onLongPress?: (() => void) | undefined
+  onLongPress?: ((event?: GestureResponderEvent) => void) | undefined
   onFocus: () => void
   onBlur: () => void
   onPressIn: () => void
@@ -42,6 +39,7 @@ type EphemeralAccountSwitcherContextValue = {
   currentProfile?: app.bsky.actor.defs.ProfileViewDetailed
   switcherAccounts: AccountListItem[]
   signOutPromptControl: ReturnType<typeof Prompt.usePromptControl>
+  openAccountPicker: (request: AccountPickerRequest) => void
 }
 
 type EphemeralAccountSwitcherData = Pick<
@@ -109,14 +107,26 @@ function EphemeralAccountSwitcherProvider({
   signOutPromptControl: ReturnType<typeof Prompt.usePromptControl>
   children: React.ReactNode
 }) {
+  const pickerControl = useAccountPickerControl()
+  const {open} = pickerControl
+  const [request, setRequest] = useState<AccountPickerRequest | null>(null)
+  const openAccountPicker = useCallback(
+    (next: NonNullable<typeof request>) => {
+      setRequest(next)
+      open()
+    },
+    [open],
+  )
   const contextValue = useMemo<EphemeralAccountSwitcherContextValue>(
     () => ({
       hasAlternateAccounts,
       currentProfile,
       switcherAccounts,
       signOutPromptControl,
+      openAccountPicker,
     }),
     [
+      openAccountPicker,
       currentProfile,
       hasAlternateAccounts,
       signOutPromptControl,
@@ -127,6 +137,12 @@ function EphemeralAccountSwitcherProvider({
   return (
     <EphemeralAccountSwitcherContext.Provider value={contextValue}>
       {children}
+      <EphemeralAccountPicker
+        control={pickerControl}
+        request={request}
+        accounts={switcherAccounts}
+        signOutPromptControl={signOutPromptControl}
+      />
     </EphemeralAccountSwitcherContext.Provider>
   )
 }
@@ -185,147 +201,12 @@ export function useEphemeralAccountSwitcher() {
   return context
 }
 
-export function EphemeralAccountSwitcherMenu({
-  title,
-  onSelectAccount,
-  accounts: accountsOverride,
-  resolveAccounts,
-  renderTrigger,
-}: {
-  title: string
-  onSelectAccount: (account: SessionAccount) => void
-  accounts?: AccountListItem[]
-  resolveAccounts?: () => Promise<AccountListItem[]>
-  renderTrigger: (args: {
-    currentProfile?: app.bsky.actor.defs.ProfileViewDetailed
-    triggerProps: SwitcherTriggerProps
-  }) => React.ReactNode
-}) {
-  const {t: l} = useLingui()
-  const {
-    hasAlternateAccounts,
-    currentProfile,
-    switcherAccounts,
-    signOutPromptControl,
-  } = useEphemeralAccountSwitcher()
-  const menuAccounts = accountsOverride ?? switcherAccounts
-  const hasMenuAccounts = resolveAccounts
-    ? hasAlternateAccounts
-    : menuAccounts.length > 0
-  const menuControl = Menu.useMenuControl()
-  const dismissGuardRef = useRef(false)
-  const [resolvedAccounts, setResolvedAccounts] = useState<
-    AccountListItem[] | null
-  >(null)
-  const [isResolvingAccounts, setIsResolvingAccounts] = useState(false)
-
-  const displayedAccounts =
-    resolveAccounts && resolvedAccounts !== null
-      ? resolvedAccounts
-      : menuAccounts
-
-  useEffect(() => {
-    if (!IS_WEB || !menuControl.isOpen) {
-      if (!menuControl.isOpen) {
-        setResolvedAccounts(null)
-        setIsResolvingAccounts(false)
-      }
-      return
-    }
-
-    if (!resolveAccounts || isResolvingAccounts || resolvedAccounts !== null) {
-      return
-    }
-
-    setIsResolvingAccounts(true)
-    void resolveAccounts()
-      .then(accounts => {
-        setResolvedAccounts(accounts)
-        setIsResolvingAccounts(false)
-        if (accounts.length === 0) {
-          menuControl.close()
-        }
-      })
-      .catch(() => {
-        setIsResolvingAccounts(false)
-        menuControl.close()
-      })
-  }, [
-    isResolvingAccounts,
-    menuControl,
-    menuControl.isOpen,
-    resolveAccounts,
-    resolvedAccounts,
-  ])
-
-  const openMenu = useCallback(() => {
-    if (menuControl.isOpen) {
-      return
-    }
-    dismissGuardRef.current = true
-    menuControl.open()
-
-    const releaseGuard = () => {
-      requestAnimationFrame(() => {
-        dismissGuardRef.current = false
-      })
-    }
-    window.addEventListener('pointerup', releaseGuard, {once: true})
-    window.addEventListener('pointercancel', releaseGuard, {once: true})
-  }, [menuControl])
-
-  if (!hasAlternateAccounts || !hasMenuAccounts) {
-    return renderTrigger({
-      currentProfile,
-      triggerProps: {
-        ...noopTriggerProps,
-        accessibilityLabel: l`Switch accounts`,
-      },
-    })
-  }
-
-  return (
-    <Menu.Root control={menuControl} dismissGuardRef={dismissGuardRef}>
-      <Menu.Trigger label={l`Switch accounts`}>
-        {({props: menuTriggerProps}) => (
-          <View {...menuTriggerProps}>
-            {renderTrigger({
-              currentProfile,
-              triggerProps: {
-                ref: null,
-                onPress: undefined,
-                onLongPress: openMenu,
-                onFocus: () => {},
-                onBlur: () => {},
-                onPressIn: () => {},
-                onPressOut: () => {},
-                accessibilityLabel: l`Switch accounts`,
-                accessibilityRole: 'button',
-              },
-            })}
-          </View>
-        )}
-      </Menu.Trigger>
-      <SwitchMenuItems
-        accounts={displayedAccounts}
-        isLoading={isResolvingAccounts}
-        signOutPromptControl={signOutPromptControl}
-        showExtraButtons={false}
-        showAddAccount={false}
-        title={title}
-        onSelectAccount={onSelectAccount}
-      />
-    </Menu.Root>
-  )
-}
-
 type EphemeralAccountSwitcherProps = {
   selectedDid: string
   title: string
   onSelectAccount: (account: SessionAccount) => void
   triggerBehavior?: 'press' | 'longPress'
   accounts?: AccountListItem[]
-  resolveAccounts?: () => Promise<AccountListItem[]>
   renderTrigger: (args: {
     currentProfile?: app.bsky.actor.defs.ProfileViewDetailed
     triggerProps: SwitcherTriggerProps
@@ -333,6 +214,16 @@ type EphemeralAccountSwitcherProps = {
 }
 
 export function EphemeralAccountSwitcher(props: EphemeralAccountSwitcherProps) {
+  const context = useContext(EphemeralAccountSwitcherContext)
+  if (context && props.triggerBehavior === 'longPress') {
+    return <EphemeralAccountSwitcherFromScope {...props} />
+  }
+  return <StandaloneEphemeralAccountSwitcher {...props} />
+}
+
+function StandaloneEphemeralAccountSwitcher(
+  props: EphemeralAccountSwitcherProps,
+) {
   const data = useEphemeralAccountSwitcherData(props.selectedDid)
   return <EphemeralAccountSwitcherWithData {...props} data={data} />
 }
@@ -341,9 +232,24 @@ export function EphemeralAccountSwitcherFromScope(
   props: EphemeralAccountSwitcherProps,
 ) {
   const data = useEphemeralAccountSwitcher()
-  return (
-    <EphemeralAccountSwitcherWithData {...props} data={data} useExistingScope />
-  )
+  if (props.triggerBehavior === 'longPress') {
+    return props.renderTrigger({
+      currentProfile: data.currentProfile,
+      triggerProps: {
+        ...noopTriggerProps,
+        onLongPress: data.hasAlternateAccounts
+          ? event =>
+              data.openAccountPicker({
+                title: props.title,
+                onSelectAccount: props.onSelectAccount,
+                target: event?.target,
+                pointerHeld: event?.type === 'pointerdown',
+              })
+          : undefined,
+      },
+    })
+  }
+  return <EphemeralAccountSwitcherWithData {...props} data={data} />
 }
 
 function EphemeralAccountSwitcherWithData({
@@ -352,84 +258,18 @@ function EphemeralAccountSwitcherWithData({
   onSelectAccount,
   triggerBehavior = 'press',
   accounts: accountsOverride,
-  resolveAccounts,
   renderTrigger,
   data,
-  useExistingScope = false,
 }: EphemeralAccountSwitcherProps & {
   data: EphemeralAccountSwitcherData
-  useExistingScope?: boolean
 }) {
   const {t: l} = useLingui()
   const {switcherAccounts, hasAlternateAccounts, currentProfile} = data
   const menuAccounts = accountsOverride ?? switcherAccounts
   const control = useDialogControl()
-  const menuControl = Menu.useMenuControl()
   const signOutPromptControl = Prompt.usePromptControl()
-  const [resolvedAccounts, setResolvedAccounts] = useState<
-    AccountListItem[] | null
-  >(null)
-  const [isResolvingAccounts, setIsResolvingAccounts] = useState(false)
 
-  const dialogAccounts =
-    resolveAccounts && resolvedAccounts !== null
-      ? resolvedAccounts
-      : menuAccounts
-
-  const openDialog = useCallback(() => {
-    if (resolveAccounts) {
-      setResolvedAccounts(null)
-      setIsResolvingAccounts(true)
-      control.open()
-      void resolveAccounts()
-        .then(accounts => {
-          setResolvedAccounts(accounts)
-          setIsResolvingAccounts(false)
-          if (accounts.length === 0) {
-            control.close()
-          }
-        })
-        .catch(() => {
-          setIsResolvingAccounts(false)
-          control.close()
-        })
-      return
-    }
-    control.open()
-  }, [control, resolveAccounts])
-
-  const hasMenuAccounts = resolveAccounts
-    ? hasAlternateAccounts
-    : menuAccounts.length > 0
-  const displayedAccounts =
-    resolveAccounts && resolvedAccounts !== null
-      ? resolvedAccounts
-      : menuAccounts
-
-  const openMenuWithResolve = useCallback(() => {
-    if (!resolveAccounts) {
-      menuControl.open()
-      return
-    }
-
-    setResolvedAccounts(null)
-    setIsResolvingAccounts(true)
-    menuControl.open()
-    void resolveAccounts()
-      .then(accounts => {
-        setResolvedAccounts(accounts)
-        setIsResolvingAccounts(false)
-        if (accounts.length === 0) {
-          menuControl.close()
-        }
-      })
-      .catch(() => {
-        setIsResolvingAccounts(false)
-        menuControl.close()
-      })
-  }, [menuControl, resolveAccounts])
-
-  if (!hasAlternateAccounts || !hasMenuAccounts) {
+  if (!hasAlternateAccounts || menuAccounts.length === 0) {
     return renderTrigger({
       currentProfile,
       triggerProps: {
@@ -439,32 +279,11 @@ function EphemeralAccountSwitcherWithData({
     })
   }
 
-  if (!IS_WEB_TOUCH_DEVICE && triggerBehavior === 'longPress') {
-    const trigger = (
-      <EphemeralAccountSwitcherMenu
-        title={title}
-        onSelectAccount={onSelectAccount}
-        resolveAccounts={resolveAccounts}
-        renderTrigger={renderTrigger}
-      />
-    )
-
-    return useExistingScope ? (
-      trigger
-    ) : (
-      <EphemeralAccountSwitcherProvider
-        data={data}
-        signOutPromptControl={signOutPromptControl}>
-        {trigger}
-      </EphemeralAccountSwitcherProvider>
-    )
-  }
-
-  if (IS_WEB_TOUCH_DEVICE) {
+  if (IS_WEB_TOUCH_DEVICE || triggerBehavior === 'longPress') {
     const openProps =
       triggerBehavior === 'longPress'
-        ? {onPress: undefined, onLongPress: openDialog}
-        : {onPress: openDialog, onLongPress: undefined}
+        ? {onPress: undefined, onLongPress: control.open}
+        : {onPress: control.open, onLongPress: undefined}
 
     return (
       <>
@@ -483,8 +302,7 @@ function EphemeralAccountSwitcherWithData({
         })}
         <SwitchAccountDialog
           control={control}
-          accounts={dialogAccounts.map(item => item.account)}
-          isLoading={isResolvingAccounts}
+          accounts={menuAccounts.map(item => item.account)}
           pendingDid={null}
           selectedDid={selectedDid}
           title={title}
@@ -496,23 +314,19 @@ function EphemeralAccountSwitcherWithData({
   }
 
   return (
-    <Menu.Root control={resolveAccounts ? menuControl : undefined}>
+    <Menu.Root>
       <Menu.Trigger label={l`Switch accounts`}>
         {({props}) =>
           renderTrigger({
             currentProfile,
             triggerProps: {
               ...(props as SwitcherTriggerProps),
-              onPress: resolveAccounts
-                ? openMenuWithResolve
-                : (props as SwitcherTriggerProps).onPress,
             },
           })
         }
       </Menu.Trigger>
       <SwitchMenuItems
-        accounts={displayedAccounts}
-        isLoading={resolveAccounts ? isResolvingAccounts : undefined}
+        accounts={menuAccounts}
         signOutPromptControl={signOutPromptControl}
         showExtraButtons={false}
         showAddAccount={false}
