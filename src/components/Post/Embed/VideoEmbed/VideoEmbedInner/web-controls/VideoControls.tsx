@@ -183,27 +183,26 @@ export function Controls({
     setFocused(true)
   }, [active, setActive, setFocused])
 
-  const emptySpacePressTimeoutRef =
-    useRef<ReturnType<typeof setTimeout>>(undefined)
+  const playingBeforeClickRef = useRef<boolean | null>(null)
   const emptySpaceRef = useRef<HTMLDivElement>(null)
 
   const onPressEmptySpace = useCallback(
     (evt: GestureResponderEvent) => {
-      const clickCount = (evt.nativeEvent as unknown as {detail?: number})
-        .detail
+      const clickCount = (evt.nativeEvent as unknown as {detail?: number}).detail
       if (clickCount && clickCount > 1) return
 
-      clearTimeout(emptySpacePressTimeoutRef.current)
-      emptySpacePressTimeoutRef.current = setTimeout(() => {
-        if (!focused) {
-          drawFocus()
-          if (autoplayDisabled) play()
-        } else {
-          togglePlayPause()
-        }
-      }, 200)
+      playingBeforeClickRef.current = null
+      if (!focused) {
+        drawFocus()
+        if (autoplayDisabled) play()
+      } else {
+        playingBeforeClickRef.current = videoRef.current
+          ? !videoRef.current.paused
+          : null
+        togglePlayPause()
+      }
     },
-    [togglePlayPause, drawFocus, focused, autoplayDisabled, play],
+    [togglePlayPause, drawFocus, focused, autoplayDisabled, play, videoRef],
   )
 
   const onDoubleClickEmptySpace = useCallback(
@@ -211,18 +210,17 @@ export function Controls({
       if (!emptySpaceRef.current?.contains(evt.target as Node)) return
 
       evt.stopPropagation()
-      clearTimeout(emptySpacePressTimeoutRef.current)
-      drawFocus()
       toggleFullscreen()
+      // Undo the first click's playback toggle without delaying single clicks.
+      if (playingBeforeClickRef.current !== null) {
+        if (playingBeforeClickRef.current) play()
+        else pause()
+        playingBeforeClickRef.current = null
+      }
+      drawFocus()
     },
-    [drawFocus, toggleFullscreen],
+    [drawFocus, toggleFullscreen, play, pause],
   )
-
-  useEffect(() => {
-    return () => {
-      clearTimeout(emptySpacePressTimeoutRef.current)
-    }
-  }, [])
 
   const onPressPlayPause = useCallback(() => {
     drawFocus()
@@ -235,20 +233,26 @@ export function Controls({
   }, [drawFocus, toggleFullscreen])
 
   useEffect(() => {
-    const onFullscreenKey = (event: KeyboardEvent) => {
+    const onVideoKey = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase()
+      const isFrameStep = key === ',' || key === '.'
+      const isSeek = key === 'arrowleft' || key === 'arrowright' || isFrameStep
       const container = fullscreenRef.current
       const target = event.target
       if (
         isGif ||
         event.defaultPrevented ||
-        event.repeat ||
+        (event.repeat && key === 'f') ||
+        event.isComposing ||
+        event.shiftKey ||
         event.ctrlKey ||
         event.metaKey ||
         event.altKey ||
-        event.key.toLowerCase() !== 'f' ||
+        (key !== 'f' && !isSeek) ||
+        settingsOpen ||
         (target instanceof Element &&
           target.closest(
-            'input, textarea, select, [contenteditable="true"]',
+            'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="menu"], [role="menuitem"]',
           )) ||
         !container
       )
@@ -259,13 +263,37 @@ export function Controls({
         : container.contains(document.activeElement) ||
           (active && focused && document.activeElement === document.body)
       if (!ownsKeyboard) return
+      const video = videoRef.current
+      if (isSeek && (!video || !Number.isFinite(video.duration))) return
       event.preventDefault()
       event.stopPropagation()
-      onPressFullscreen()
+      if (key === 'f') {
+        onPressFullscreen()
+      } else if (video) {
+        drawFocus()
+        if (isFrameStep) pause()
+        const direction = key === 'arrowleft' || key === ',' ? -1 : 1
+        // Assign currentTime directly so small steps don't snap to keyframes.
+        video.currentTime = clamp(
+          video.currentTime + direction * (isFrameStep ? 1 / 30 : 5),
+          0,
+          video.duration,
+        )
+      }
     }
-    document.addEventListener('keydown', onFullscreenKey)
-    return () => document.removeEventListener('keydown', onFullscreenKey)
-  }, [active, focused, fullscreenRef, isGif, onPressFullscreen])
+    document.addEventListener('keydown', onVideoKey)
+    return () => document.removeEventListener('keydown', onVideoKey)
+  }, [
+    active,
+    focused,
+    fullscreenRef,
+    isGif,
+    onPressFullscreen,
+    settingsOpen,
+    videoRef,
+    drawFocus,
+    pause,
+  ])
 
   const onSeek = useCallback(
     (time: number) => {
@@ -299,8 +327,9 @@ export function Controls({
     const currentTime = videoRef.current.currentTime
 
     const duration = videoRef.current.duration || 0
-    onSeek(clamp(currentTime - 5, 0, duration))
-  }, [onSeek, videoRef])
+    if (!Number.isFinite(duration)) return
+    videoRef.current.currentTime = clamp(currentTime - 5, 0, duration)
+  }, [videoRef])
 
   const seekRight = useCallback(() => {
     if (!videoRef.current) return
@@ -308,8 +337,9 @@ export function Controls({
     const currentTime = videoRef.current.currentTime
 
     const duration = videoRef.current.duration || 0
-    onSeek(clamp(currentTime + 5, 0, duration))
-  }, [onSeek, videoRef])
+    if (!Number.isFinite(duration)) return
+    videoRef.current.currentTime = clamp(currentTime + 5, 0, duration)
+  }, [videoRef])
 
   const [showCursor, setShowCursor] = useState(true)
   const cursorTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
