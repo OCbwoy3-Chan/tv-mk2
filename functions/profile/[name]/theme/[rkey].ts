@@ -23,31 +23,19 @@ export const onRequestGet: PagesFunction<Env> = async context => {
       <meta property="og:image:width" content="1200">
       <meta property="og:image:height" content="630">
       <meta name="twitter:card" content="summary_large_image">`
-    if (context.env.ASSETS) {
-      const assetUrl = new URL('/index.html', url)
-      const response = await context.env.ASSETS.fetch(
-        new Request(assetUrl, context.request),
-      )
-      if (response.ok) {
-        const html = (await response.text()).replace(
-          '</head>',
-          `${meta}</head>`,
-        )
-        return new Response(html, {
-          headers: {
-            ...Object.fromEntries(response.headers),
-            'content-type': 'text/html; charset=utf-8',
-          },
-        })
-      }
-    }
-    return new Response(
-      `<!doctype html><html><head>${meta}</head><body><main><h1>${escapeHtml(value.name)}</h1><p>${escapeHtml(subtitle)}</p><p>${escapeHtml(description)}</p><a href="${escapeHtml(url.pathname)}">Open in Witchsky</a></main></body></html>`,
-      {
-        headers: {'content-type': 'text/html; charset=utf-8'},
+    const response = await context.next()
+    if (!response.ok) return response
+
+    const html = (await response.text()).replace('</head>', `${meta}</head>`)
+    return new Response(html, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: {
+        ...Object.fromEntries(response.headers),
+        'content-type': 'text/html; charset=utf-8',
       },
-    )
+    })
   } catch {
-    return new Response('Theme not found', {status: 404})
+    return context.next()
   }
 }
