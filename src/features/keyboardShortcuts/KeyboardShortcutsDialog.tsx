@@ -1,10 +1,16 @@
 // Adapted from eurosky-social/eurosky-social-app (MIT), eurosky/fork.
+import {useState} from 'react'
 import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {atoms as a, useTheme, web} from '#/alf'
+import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import * as Toggle from '#/components/forms/Toggle'
+import {
+  ChevronBottom_Stroke2_Corner0_Rounded as ChevronDownIcon,
+  ChevronTop_Stroke2_Corner0_Rounded as ChevronUpIcon,
+} from '#/components/icons/Chevron'
 import {Text} from '#/components/Typography'
 import {useKeyboardShortcutsPreference} from './preferences'
 
@@ -58,12 +64,20 @@ function KeyboardShortcutsDialogInner() {
           <ShortcutRow shortcut="?" label={l`Show keyboard shortcuts`} />
           <ShortcutRow shortcut="/" label={l`Focus search`} />
           <ShortcutRow shortcut="N" label={l`Compose a new post`} />
-          <ShortcutRow shortcut="." label={l`Refresh the current feed`} />
+          <ShortcutRow shortcut="U" label={l`Refresh the current feed`} />
           <ShortcutRow shortcut="Esc" label={l`Clear post selection`} />
         </ShortcutGroup>
 
         <ShortcutGroup title={l`Focused video`}>
           <ShortcutRow shortcut="F" label={l`Toggle fullscreen`} />
+          <ShortcutRow
+            shortcut="← / →"
+            label={l`Seek backward or forward 5 seconds`}
+          />
+          <ShortcutRow
+            shortcut=", / ."
+            label={l`Step backward or forward one frame`}
+          />
         </ShortcutGroup>
 
         <ShortcutGroup title={l`Composer`}>
@@ -120,15 +134,12 @@ function KeyboardShortcutsDialogInner() {
             value={enabled}
             onChange={setEnabled}>
             <Toggle.LabelText style={[a.flex_1]}>
-              <Trans>Enable keyboard shortcuts</Trans>
+              <Trans>Enable app keyboard shortcuts</Trans>
             </Toggle.LabelText>
             <Toggle.Platform />
           </Toggle.Item>
           <Text style={[a.text_xs, t.atoms.text_contrast_medium]}>
-            <Trans>
-              This controls app shortcuts only. Standard keyboard behavior in
-              forms, menus, and dialogs remains available.
-            </Trans>
+            <Trans>Standard keyboard controls remain available.</Trans>
           </Text>
         </View>
       </View>
@@ -144,10 +155,37 @@ function ShortcutGroup({
   title: string
   children: React.ReactNode
 }) {
+  const {t: l} = useLingui()
+  const t = useTheme()
+  const [expanded, setExpanded] = useState(true)
+
   return (
-    <View style={[a.gap_sm]}>
-      <Text style={[a.text_lg, a.font_bold]}>{title}</Text>
-      <View style={[a.gap_xs]}>{children}</View>
+    <View style={[a.gap_sm, a.px_sm]}>
+      <Button
+        label={
+          expanded
+            ? l`Collapse ${title} shortcuts`
+            : l`Expand ${title} shortcuts`
+        }
+        accessibilityState={{expanded}}
+        onPress={() => setExpanded(value => !value)}
+        style={[
+          a.flex_row,
+          a.align_center,
+          a.justify_between,
+          a.gap_sm,
+          a.px_sm,
+          a.py_sm,
+          a.rounded_sm,
+          {marginHorizontal: -a.p_sm.padding},
+        ]}
+        hoverStyle={[t.atoms.bg_contrast_25]}>
+        <ButtonText style={[a.text_lg, a.font_bold]}>{title}</ButtonText>
+        <View style={[a.mr_2xs]}>
+          <ButtonIcon icon={expanded ? ChevronUpIcon : ChevronDownIcon} />
+        </View>
+      </Button>
+      {expanded && <View style={[a.gap_xs]}>{children}</View>}
     </View>
   )
 }

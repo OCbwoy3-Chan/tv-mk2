@@ -31,7 +31,7 @@ const CHORD_TIMEOUT_MS = 1000
 const APP_CHARACTER_KEYS = new Set([
   '?',
   '/',
-  '.',
+  'u',
   'g',
   'n',
   'h',
@@ -404,7 +404,7 @@ export function KeyboardShortcuts() {
         return
       }
 
-      if (key === '.') {
+      if (key === 'u') {
         consume(event)
         clearSelection()
         emitSoftReset()
