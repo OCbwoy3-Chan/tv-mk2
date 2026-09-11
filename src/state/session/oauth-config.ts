@@ -61,6 +61,19 @@ export function buildOAuthScope(
   return [
     'atproto',
     `include:app.bsky.authFullApp?aud=${encodeURIComponent(appview)}`,
+    // These newer methods are missing from the published app permission set.
+    ...[
+      'app.bsky.draft.getDrafts',
+      'app.bsky.draft.createDraft',
+      'app.bsky.draft.updateDraft',
+      'app.bsky.draft.deleteDraft',
+      'app.bsky.unspecced.getSuggestedOnboardingUsers',
+      'app.bsky.unspecced.getSuggestedUsersForDiscover',
+      'app.bsky.unspecced.getSuggestedUsersForExplore',
+      'app.bsky.unspecced.getSuggestedUsersForSeeMore',
+    ].map(method => `rpc:${method}?aud=${encodeURIComponent(appview)}`),
+    'repo:app.bsky.actor.contentVisibilityDeclaration?action=create&action=update',
+    'repo:app.bsky.graph.verification?action=create&action=delete',
     // Preferences live on the PDS under its default Bluesky audience. Sending
     // them to Blacksky reaches an unimplemented endpoint instead of that store.
     ...(appview === DEFAULT_APPVIEW_AUDIENCE

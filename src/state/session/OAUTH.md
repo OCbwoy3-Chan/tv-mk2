@@ -7,7 +7,13 @@ metadata before distributing native clients that request new scopes.
 
 Initial sign-in requests `app.bsky.authFullApp`,
 `chat.bsky.authFullChatClient`, and `app.witchsky.theme.authFull`, plus media
-uploads and moderation reports. New chat RPCs missing from the published set
+uploads and moderation reports. Draft CRUD and the newer suggested-user RPCs
+are granted explicitly for the selected AppView because the published app set
+omits them. Draft grants also cover cloud settings sync. Content-visibility
+preferences need create/update access to their declaration record; issuing and
+revoking verifications need create/delete access to verification records. Existing
+sessions need to authorize again after the updated metadata is deployed.
+No supplemental age-assurance permissions are requested. New chat RPCs missing from the published set
 are requested individually with the selected chat audience. The first two sets inherit the selected service
 DID and fragment. Custom audiences are encoded into the metadata URL and served
 by the Pages Functions or Go handler. Keep both handlers enabled when hosting.

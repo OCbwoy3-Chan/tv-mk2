@@ -19,7 +19,6 @@ import {
   useAltTextAiConfig,
   useAltTextAiConfigured,
 } from '#/state/preferences/openrouter'
-import {useAgent} from '#/state/session'
 import {AltTextCounterWrapper} from '#/view/com/composer/AltTextCounterWrapper'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
@@ -84,7 +83,6 @@ const ImageAltTextInner = ({
 }): React.ReactNode => {
   const {_, i18n} = useLingui()
   const t = useTheme()
-  const agent = useAgent()
   const {width: screenWidth} = useWindowDimensions()
 
   const [isGenerating, setIsGenerating] = useState(false)
@@ -148,7 +146,7 @@ const ImageAltTextInner = ({
         mimeType = ext === 'png' ? 'image/png' : 'image/jpeg'
       }
 
-      const generated = await generateAltText(aiConfig, base64, mimeType, agent)
+      const generated = await generateAltText(aiConfig, base64, mimeType)
 
       setAltText(enforceLen(generated, MAX_ALT_TEXT, true))
     } catch (err) {
@@ -158,7 +156,7 @@ const ImageAltTextInner = ({
     } finally {
       setIsGenerating(false)
     }
-  }, [agent, aiConfig, image, setAltText])
+  }, [aiConfig, image, setAltText])
 
   return (
     <Dialog.ScrollableInner label={_(msg`Add alt text`)}>

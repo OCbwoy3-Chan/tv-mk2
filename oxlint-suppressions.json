@@ -368,16 +368,6 @@
       "count": 3
     }
   },
-  "src/lib/ai/generateAltText.test.ts": {
-    "typescript/no-unsafe-member-access": {
-      "count": 1
-    }
-  },
-  "src/lib/ai/generateAltText.ts": {
-    "typescript/no-unsafe-call": {
-      "count": 1
-    }
-  },
   "src/lib/api/feed/demo.ts": {
     "typescript/require-await": {
       "count": 2

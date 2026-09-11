@@ -134,3 +134,32 @@ it('grants only legacy Bluesky search for Blacksky outage fallback', () => {
     buildOAuthScope('did:web:custom.example#bsky_appview').split(' '),
   ).not.toContain(grant)
 })
+
+it.each([
+  DEFAULT_APPVIEW_AUDIENCE,
+  'did:web:api.blacksky.community#bsky_appview',
+])('grants draft and suggestion operations for %s', appview => {
+  const scopes = buildOAuthScope(appview).split(' ')
+  for (const method of [
+    'app.bsky.draft.getDrafts',
+    'app.bsky.draft.createDraft',
+    'app.bsky.draft.updateDraft',
+    'app.bsky.draft.deleteDraft',
+    'app.bsky.unspecced.getSuggestedOnboardingUsers',
+    'app.bsky.unspecced.getSuggestedUsersForDiscover',
+    'app.bsky.unspecced.getSuggestedUsersForExplore',
+    'app.bsky.unspecced.getSuggestedUsersForSeeMore',
+  ]) {
+    expect(scopes).toContain(`rpc:${method}?aud=${encodeURIComponent(appview)}`)
+  }
+  expect(scopes).toContain(
+    'repo:app.bsky.actor.contentVisibilityDeclaration?action=create&action=update',
+  )
+  expect(scopes.some(scope => scope.includes('app.bsky.ageassurance.'))).toBe(
+    false,
+  )
+  expect(scopes.some(scope => scope.includes('cocore'))).toBe(false)
+  expect(scopes).toContain(
+    'repo:app.bsky.graph.verification?action=create&action=delete',
+  )
+})

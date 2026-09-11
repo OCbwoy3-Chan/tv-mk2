@@ -2386,7 +2386,6 @@ function AltTextReminder({
                   aiConfig,
                   base64,
                   mimeType,
-                  agent,
                 )
 
                 dispatch({
