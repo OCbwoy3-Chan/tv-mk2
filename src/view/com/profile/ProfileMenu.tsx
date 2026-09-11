@@ -392,16 +392,15 @@ let ProfileMenu = ({
         atprotoExplorer,
         `at://${profile.did}/app.bsky.actor.profile/self`,
       ),
-      true,
     )
   }
 
   const onOpenRepoInAtprotoExplorer = () => {
-    openLink(toAtprotoExplorerUrl(atprotoExplorer, `at://${profile.did}`), true)
+    openLink(toAtprotoExplorerUrl(atprotoExplorer, `at://${profile.did}`))
   }
 
   const onOpenProfileInSkyTrace = () => {
-    openLink(`https://skytrace.aly.town/profile/${profile.did}`, true)
+    openLink(`https://skytrace.aly.town/profile/${profile.did}`)
   }
 
   const verificationCreatePromptControl = Prompt.usePromptControl()

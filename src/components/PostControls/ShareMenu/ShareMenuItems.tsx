@@ -153,12 +153,12 @@ let ShareMenuItems = ({
 
   const onOpenOriginalPost = () => {
     if (originalPostUrl) {
-      openLink(originalPostUrl, true)
+      openLink(originalPostUrl)
     }
   }
 
   const onOpenPostInAtprotoExplorer = () => {
-    openLink(toAtprotoExplorerUrl(atprotoExplorer, post.uri), true)
+    openLink(toAtprotoExplorerUrl(atprotoExplorer, post.uri))
   }
 
   const onOpenPostInSkythread = () => {
@@ -166,7 +166,6 @@ let ShareMenuItems = ({
       `https://skythread.mackuba.eu/?q=${encodeURIComponent(
         toShareUrlBsky(href),
       )}`,
-      true,
     )
   }
 
