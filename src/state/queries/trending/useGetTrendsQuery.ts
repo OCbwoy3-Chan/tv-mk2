@@ -21,7 +21,7 @@ import {useAppviewClient} from '#/state/session'
 import {app} from '#/lexicons'
 
 export const DEFAULT_LIMIT = 5
-export const DEFAULT_FETCH_LIMIT = 20
+export const DEFAULT_FETCH_LIMIT = 25
 
 type QueryProps = {
   fetchLimit?: number

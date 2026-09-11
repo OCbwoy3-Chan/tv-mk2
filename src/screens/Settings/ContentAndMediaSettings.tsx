@@ -164,7 +164,7 @@ export function ContentAndMediaSettingsScreen({}: Props) {
                   </Select.Trigger>
                   <Select.Content
                     label={l`Trending topic count`}
-                    items={Array.from({length: 20}, (_, i) => ({
+                    items={Array.from({length: 25}, (_, i) => ({
                       value: String(i + 1),
                       label: String(i + 1),
                     }))}

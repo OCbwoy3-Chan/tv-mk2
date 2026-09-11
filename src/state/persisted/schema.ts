@@ -382,7 +382,7 @@ const schema = z.object({
 
   /** @deprecated */
   mutedThreads: z.array(z.string()),
-  trendingTopicCount: z.number().int().min(1).max(20).optional(),
+  trendingTopicCount: z.number().int().min(1).max(25).optional(),
   trendingDisabled: z.boolean().optional(),
   trendingVideoDisabled: z.boolean().optional(),
 

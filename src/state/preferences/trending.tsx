@@ -77,7 +77,7 @@ export function Provider({children}: {children: React.ReactNode}) {
     [],
   )
   const setTrendingTopicCount = (count: number) => {
-    if (!Number.isInteger(count) || count < 1 || count > 20) return
+    if (!Number.isInteger(count) || count < 1 || count > 25) return
     setCount(count)
     void persisted.write('trendingTopicCount', count)
   }

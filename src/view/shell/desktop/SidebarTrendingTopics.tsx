@@ -34,7 +34,7 @@ function Inner() {
   const ax = useAnalytics()
 
   const {trendingTopicCount: preferredTopicCount} = useTrendingSettings()
-  const trendingTopicCount = Math.min(preferredTopicCount, 10)
+  const trendingTopicCount = Math.min(preferredTopicCount, 7)
 
   const trendingPrompt = Prompt.usePromptControl()
   const {setTrendingDisabled} = useTrendingSettingsApi()
