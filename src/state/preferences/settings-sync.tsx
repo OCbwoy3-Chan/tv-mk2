@@ -114,6 +114,7 @@ export const SYNCED_PREFS_KEYS = [
   'openAiCompatibleBaseUrl',
   'openAiCompatibleModel',
   'useHandleInLinks',
+  'trendingTopicCount',
   'trendingDisabled',
   'trendingVideoDisabled',
   'autoLikeOnRepost',

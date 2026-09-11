@@ -86,7 +86,7 @@ export function AccountSettingsScreen({}: Props) {
               </>
             )}
           </SettingsList.Item>
-          {currentAccount?.email && !currentAccount.emailConfirmed && (
+          {currentAccount?.email && currentAccount.emailConfirmed === false && (
             <SettingsList.PressableItem
               label={l`Verify your email`}
               onPress={() =>

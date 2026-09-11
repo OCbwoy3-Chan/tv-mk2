@@ -183,10 +183,6 @@ import {EmojiArc_Stroke2_Corner0_Rounded as EmojiSmileIcon} from '#/components/i
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
 import {LazyQuoteEmbed} from '#/components/Post/Embed/LazyQuoteEmbed'
-import {
-  fetchReplyableSwitcherAccounts,
-  type ReplyableAccountListItem,
-} from '#/components/PostControls/alternateAccountsReplyEligibility'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
@@ -429,37 +425,33 @@ export const ComposePost = ({
     return !(settings.length === 1 && settings[0].type === 'everybody')
   }, [replyTo, replyThreadgateView, isReplyThreadgateFetched])
 
-  const resolveReplyableAccounts = useCallback(async () => {
-    if (!replyTo) {
-      return []
+  const accountSelectionVersion = useRef(0)
+  const selectActiveAccount = async (did: string) => {
+    const version = ++accountSelectionVersion.current
+    const account = accounts.find(candidate => candidate.did === did)
+    if (!account) return
+    try {
+      if (replyTo && isReplyGatedPost) {
+        const agent = await sessionApi.createEphemeralAgent(account)
+        const res = await agent.getPosts({uris: [replyTo.uri]})
+        if (version !== accountSelectionVersion.current) return
+        const target = res.data.posts[0]
+        if (!target || target.viewer?.replyDisabled) {
+          Toast.show(l`This account cannot reply to this post`, {
+            type: 'warning',
+          })
+          return
+        }
+      }
+      if (version === accountSelectionVersion.current) setActiveAccountDid(did)
+    } catch (error) {
+      if (version === accountSelectionVersion.current) {
+        showEphemeralError(error, account, refreshed =>
+          selectActiveAccount(refreshed.did),
+        )
+      }
     }
-    const switcherAccounts = accounts
-      .filter(account => account.did !== activeAccountDid)
-      .map(account => ({account}))
-    const replyableAccounts = await fetchReplyableSwitcherAccounts({
-      queryClient,
-      postUri: replyTo.uri,
-      switcherAccounts,
-      createEphemeralAgent: sessionApi.createEphemeralAgent,
-    })
-    if (replyableAccounts.length === 0) {
-      Toast.show(l`No other accounts can reply to this post`, {
-        type: 'warning',
-      })
-    }
-    return replyableAccounts
-  }, [
-    accounts,
-    activeAccountDid,
-    l,
-    queryClient,
-    replyTo,
-    sessionApi.createEphemeralAgent,
-  ])
-
-  const replyAccountSwitcherResolve = isReplyGatedPost
-    ? resolveReplyableAccounts
-    : undefined
+  }
 
   /**
    * The currently selected languages of the post. Prefer local temporary
@@ -581,8 +573,19 @@ export const ComposePost = ({
         )
       } catch (error) {
         const account = accounts.find(a => a.did === activeAccountDid)
-        if (account && account.did !== currentDid && isEphemeralAuthError(error)) {
-          showEphemeralError(error, account, () => processSelectedAccountVideo(asset, dispatchVideo, signal, telemetry))
+        if (
+          account &&
+          account.did !== currentDid &&
+          isEphemeralAuthError(error)
+        ) {
+          showEphemeralError(error, account, () =>
+            processSelectedAccountVideo(
+              asset,
+              dispatchVideo,
+              signal,
+              telemetry,
+            ),
+          )
         }
         dispatchVideo({
           type: 'to_error',
@@ -598,7 +601,15 @@ export const ComposePost = ({
           (ephemeral.dispose as () => void)()
       }
     },
-    [accounts, activeAccountDid, currentDid, pdsClient, sessionApi, i18n, showEphemeralError],
+    [
+      accounts,
+      activeAccountDid,
+      currentDid,
+      pdsClient,
+      sessionApi,
+      i18n,
+      showEphemeralError,
+    ],
   )
 
   const selectVideo = useCallback(
@@ -1518,7 +1529,11 @@ export const ComposePost = ({
       }
     } catch (e) {
       const account = accounts.find(a => a.did === activeAccountDid)
-      if (account && account.did !== currentAccount?.did && isEphemeralAuthError(e)) {
+      if (
+        account &&
+        account.did !== currentAccount?.did &&
+        isEphemeralAuthError(e)
+      ) {
         showEphemeralError(e, account, () => onPressPublish())
       }
       logger.error(e instanceof Error ? e : String(e), {
@@ -1933,8 +1948,9 @@ export const ComposePost = ({
                   onError={setError}
                   onPublish={onComposerPostPublish}
                   activeAccountDid={activeAccountDid}
-                  setActiveAccountDid={setActiveAccountDid}
-                  resolveAccounts={replyAccountSwitcherResolve}
+                  setActiveAccountDid={did => {
+                    void selectActiveAccount(did)
+                  }}
                 />
                 {IS_WEBFooterSticky && post.id === activePost.id && (
                   <View style={styles.stickyFooterWeb}>{footer}</View>
@@ -2044,7 +2060,6 @@ let ComposerPost = memo(function ComposerPost({
   onPublish,
   activeAccountDid,
   setActiveAccountDid,
-  resolveAccounts,
 }: {
   post: PostDraft
   dispatch: (action: ComposerAction) => void
@@ -2068,7 +2083,6 @@ let ComposerPost = memo(function ComposerPost({
   onPublish: (richtext: RichText) => void
   activeAccountDid: string
   setActiveAccountDid: (did: string) => void
-  resolveAccounts?: () => Promise<ReplyableAccountListItem[]>
 }) {
   const {t: l} = useLingui()
   const richtext = post.richtext
@@ -2160,7 +2174,6 @@ let ComposerPost = memo(function ComposerPost({
         <EphemeralAccountSwitcher
           selectedDid={activeAccountDid}
           title={l`Post from account`}
-          resolveAccounts={resolveAccounts}
           onSelectAccount={account => setActiveAccountDid(account.did)}
           renderTrigger={({currentProfile, triggerProps}) => (
             <Button
@@ -2522,7 +2535,6 @@ function AltTextReminder({
                   aiConfig,
                   base64,
                   mimeType,
-                  agent,
                 )
 
                 dispatch({

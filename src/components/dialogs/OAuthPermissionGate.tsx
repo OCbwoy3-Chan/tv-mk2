@@ -79,7 +79,10 @@ export function OAuthPermissionGate({
           (granted !== undefined && hasOAuthPermission(granted, key)),
       )
       const scope = getOAuthScope(permissions)
-      const account = await reauthenticateAccount(currentAccount, {scope})
+      const account = await reauthenticateAccount(currentAccount, {
+        scope,
+        directOAuth: true,
+      })
       if (!account.isOauthSession) {
         await resumeSession(account)
         return

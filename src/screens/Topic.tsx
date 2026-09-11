@@ -10,12 +10,18 @@ import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {shareUrl} from '#/lib/sharing'
 import {cleanError} from '#/lib/strings/errors'
 import {enforceLen} from '#/lib/strings/helpers'
+import {
+  getActiveAppViewPreset,
+  useCustomAppViewDid,
+  useCustomAppViewUrl,
+} from '#/state/preferences/custom-appview-did'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useSearchPostsV2Query} from '#/state/queries/search-posts-v2'
 import {Pager} from '#/view/com/pager/Pager'
 import {TabBar} from '#/view/com/pager/TabBar'
 import {Post} from '#/view/com/post/Post'
 import {List} from '#/view/com/util/List'
+import {BlackskyTopic} from '#/screens/BlackskyTopic'
 import {atoms as a, web} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
 import {ArrowOutOfBoxModified_Stroke2_Corner2_Rounded as Share} from '#/components/icons/ArrowOutOfBox'
@@ -33,7 +39,19 @@ const keyExtractor = (item: app.bsky.feed.defs.PostView, index: number) => {
   return `${item.uri}-${index}`
 }
 
-export default function TopicScreen({
+export default function TopicScreen(
+  props: NativeStackScreenProps<CommonNavigatorParams, 'Topic'>,
+) {
+  const [did] = useCustomAppViewDid()
+  const [url] = useCustomAppViewUrl()
+  const {topic} = props.route.params
+  if (getActiveAppViewPreset(did, url) === 'blacksky' && /^\d+$/.test(topic)) {
+    return <BlackskyTopic key={topic} topicId={topic} />
+  }
+  return <SearchTopicScreen {...props} />
+}
+
+function SearchTopicScreen({
   route,
 }: NativeStackScreenProps<CommonNavigatorParams, 'Topic'>) {
   const {topic} = route.params

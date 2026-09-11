@@ -266,7 +266,9 @@ function OAuthLoginFields({
             <Trans>Back</Trans>
           </ButtonText>
         </Button>
-        {!ephemeralLogin && <AppServerButton inline />}
+        {(!ephemeralLogin || ephemeralLogin.options?.allowAppServerSwitch) && (
+          <AppServerButton inline />
+        )}
         <View style={a.flex_1} />
         <Button
           testID="loginNextButton"
@@ -698,7 +700,10 @@ function LegacyLoginFields({
               </ButtonText>
             </Button>
             <View style={[a.flex_shrink, a.justify_center]}>
-              {!ephemeralLogin && <AppServerButton inline />}
+              {(!ephemeralLogin ||
+                ephemeralLogin.options?.allowAppServerSwitch) && (
+                <AppServerButton inline />
+              )}
             </View>
             <View style={[a.flex_shrink, a.justify_center, a.ml_auto]}>
               <HostingProviderIndicator
@@ -749,7 +754,10 @@ function LegacyLoginFields({
 
       {!gtMobile && (
         <>
-          {!ephemeralLogin && <AppServerButton />}
+          {(!ephemeralLogin ||
+            ephemeralLogin.options?.allowAppServerSwitch) && (
+            <AppServerButton />
+          )}
           <HostingProviderIndicator
             state={hostingProvider.state}
             onPress={() => serverInputControl.open()}

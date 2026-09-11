@@ -5,7 +5,7 @@ import {useSession, useSessionApi} from '#/state/session'
 import {emitEmailVerified} from '#/components/dialogs/EmailDialog/events'
 
 export type AccountEmailState = {
-  isEmailVerified: boolean
+  isEmailVerified: boolean | undefined
   email2FAEnabled: boolean
 }
 
@@ -20,11 +20,11 @@ export function useAccountEmailState() {
   const {currentAccount} = useSession()
   const {partialRefreshSession} = useSessionApi()
   const [prevIsEmailVerified, setPrevEmailIsVerified] = useState(
-    !!currentAccount?.emailConfirmed,
+    currentAccount?.emailConfirmed,
   )
   const state: AccountEmailState = useMemo(
     () => ({
-      isEmailVerified: !!currentAccount?.emailConfirmed,
+      isEmailVerified: currentAccount?.emailConfirmed,
       email2FAEnabled: !!currentAccount?.emailAuthFactor,
     }),
     [currentAccount],
@@ -51,11 +51,11 @@ export function useAccountEmailState() {
    * all use `once` to prevent multiple handlers firing.
    */
   useEffect(() => {
-    if (state.isEmailVerified && !prevIsEmailVerified) {
+    if (state.isEmailVerified === true && prevIsEmailVerified !== true) {
       setPrevEmailIsVerified(true)
       emitEmailVerified()
-    } else if (!state.isEmailVerified && prevIsEmailVerified) {
-      setPrevEmailIsVerified(false)
+    } else if (state.isEmailVerified !== prevIsEmailVerified) {
+      setPrevEmailIsVerified(state.isEmailVerified)
     }
   }, [state, prevIsEmailVerified])
 

@@ -2,6 +2,7 @@ import {device} from '#/storage'
 import {
   completeWebOAuth,
   ensureAppViewAccess,
+  readOAuthCallbackParams,
   startAppViewSwitch,
 } from '../oauth-appview-switch'
 import {restoreOAuthSession} from '../oauth-client-adapter'
@@ -17,23 +18,29 @@ jest.mock('../oauth-scopes', () => ({
   }),
 }))
 jest.mock('../oauth-web-client', () => ({getWebOAuthClient: jest.fn()}))
-jest.mock('../oauth-web-return-url', () => ({saveOAuthReturnUrl: jest.fn()}))
 
 const selection = {
   did: 'did:web:api.eurosky.network',
   url: 'https://api.eurosky.network',
 }
-const init = jest.fn()
+const initCallback = jest.fn()
 const signIn = jest.fn()
 const login = jest.fn()
 const values = new Map<string, string>()
+const account = 'did:plc:account'
+const session = {
+  did: account,
+  getTokenInfo: () =>
+    Promise.resolve({scope: buildOAuthScope(selection.did + '#bsky_appview')}),
+}
 
 beforeEach(() => {
-  jest.clearAllMocks()
+  jest.resetAllMocks()
   values.clear()
   Object.defineProperty(globalThis, 'window', {
     configurable: true,
     value: {
+      location: {hash: '', search: '', pathname: '/auth/web/callback'},
       sessionStorage: {
         getItem: (key: string) => values.get(key) ?? null,
         setItem: (key: string, value: string) => values.set(key, value),
@@ -45,40 +52,105 @@ beforeEach(() => {
     configurable: true,
     value: {randomUUID: () => 'switch-state'},
   })
-  jest.mocked(getWebOAuthClient).mockReturnValue({init, signIn} as never)
-  signIn.mockImplementation(() => new Promise(() => {}))
+  jest
+    .mocked(getWebOAuthClient)
+    .mockReturnValue({initCallback, signIn} as never)
   login.mockResolvedValue(undefined)
 })
 
-it('redirects without changing the active selection', () => {
-  void startAppViewSwitch('did:plc:account', selection)
-  expect(signIn).toHaveBeenCalledWith('did:plc:account', {
+function legacyCallback() {
+  window.location.hash = '#state=opaque-state&code=authorization-code'
+  values.set(
+    'oauth_appview_switch',
+    JSON.stringify({
+      account,
+      state: 'switch-state',
+      selection,
+      previous: {},
+      audiences: {
+        appview: selection.did + '#bsky_appview',
+        chat: 'did:web:api.bsky.chat#bsky_chat',
+      },
+    }),
+  )
+}
+
+it('opens a popup immediately and leaves source routing intact until consent', async () => {
+  let authorize!: (value: typeof session) => void
+  signIn.mockReturnValue(
+    new Promise(resolve => {
+      authorize = resolve
+    }),
+  )
+  const switching = startAppViewSwitch(account, selection, login)
+  expect(signIn).toHaveBeenCalledWith(account, {
     scope: expect.stringContaining(encodeURIComponent(selection.did)),
-    state: 'switch-state',
+    display: 'popup',
+  })
+  expect(JSON.parse(values.get('oauth_appview_switch')!)).toMatchObject({
+    mode: 'popup',
   })
   expect(device.set).not.toHaveBeenCalled()
-})
-
-it('keeps the original selection on PDS cancellation', async () => {
-  void startAppViewSwitch('did:plc:account', selection)
-  init.mockRejectedValueOnce(new Error('access_denied'))
-  await expect(completeWebOAuth(login)).rejects.toThrow('access_denied')
-  expect(device.set).not.toHaveBeenCalled()
   expect(login).not.toHaveBeenCalled()
+  authorize(session)
+  await switching
+  expect(device.set).toHaveBeenCalledWith(['customAppViewDid'], selection.did)
+  expect(login).toHaveBeenCalledWith(session)
   expect(values.size).toBe(0)
 })
 
-it('uses the requested client and applies routing before login', async () => {
-  void startAppViewSwitch('did:plc:account', selection)
-  init.mockResolvedValueOnce({
-    session: {did: 'did:plc:account'},
-    state: 'switch-state',
-  })
-  login.mockImplementationOnce(() => {
-    expect(device.set).toHaveBeenCalledWith(
-      ['customAppViewDid'],
-      selection.did,
+it.each(['access_denied', 'cancelled'])(
+  'preserves routing after %s',
+  async reason => {
+    signIn.mockRejectedValue(new Error(reason))
+    await expect(startAppViewSwitch(account, selection, login)).rejects.toThrow(
+      reason,
     )
+    expect(device.set).not.toHaveBeenCalled()
+    expect(login).not.toHaveBeenCalled()
+    expect(values.size).toBe(0)
+  },
+)
+
+it('rejects the wrong account before changing routing', async () => {
+  signIn.mockResolvedValue({...session, did: 'did:plc:other'})
+  await expect(startAppViewSwitch(account, selection, login)).rejects.toThrow(
+    'Unexpected OAuth',
+  )
+  expect(device.set).not.toHaveBeenCalled()
+  expect(login).not.toHaveBeenCalled()
+})
+
+it('rejects a grant that omitted the selected AppView', async () => {
+  signIn.mockResolvedValue({
+    ...session,
+    getTokenInfo: () => Promise.resolve({scope: buildOAuthScope()}),
+  })
+  await expect(startAppViewSwitch(account, selection, login)).rejects.toThrow(
+    'Please authorize',
+  )
+  expect(device.set).not.toHaveBeenCalled()
+})
+
+it('keeps the new routing when loading fails after the old grant was replaced', async () => {
+  signIn.mockResolvedValue(session)
+  login.mockRejectedValue(new Error('network unavailable'))
+  await expect(startAppViewSwitch(account, selection, login)).rejects.toThrow(
+    'network unavailable',
+  )
+  expect(device.set).toHaveBeenCalledTimes(2)
+  expect(device.set).toHaveBeenLastCalledWith(
+    ['customAppViewUrl'],
+    selection.url,
+  )
+  expect(values.size).toBe(0)
+})
+
+it('completes a redirect started by an older client using its requested audience', async () => {
+  legacyCallback()
+  initCallback.mockResolvedValue({session, state: 'switch-state'})
+  login.mockImplementationOnce(() => {
+    expect(device.set).toHaveBeenCalledWith(['customAppViewDid'], selection.did)
     return Promise.resolve()
   })
   await expect(completeWebOAuth(login)).resolves.toBe(true)
@@ -89,50 +161,93 @@ it('uses the requested client and applies routing before login', async () => {
   expect(values.size).toBe(0)
 })
 
+it('shares the callback exchange between startup and the callback route', async () => {
+  legacyCallback()
+  let finish!: (value: unknown) => void
+  initCallback.mockImplementation(() => {
+    window.location.hash = ''
+    return new Promise(resolve => {
+      finish = resolve
+    })
+  })
+  const first = completeWebOAuth(login)
+  const secondLogin = jest.fn()
+  const second = completeWebOAuth(secondLogin)
+  expect(first).toBe(second)
+  expect(initCallback).toHaveBeenCalledTimes(1)
+  finish({session, state: 'switch-state'})
+  await first
+  expect(login).toHaveBeenCalledTimes(1)
+  expect(secondLogin).not.toHaveBeenCalled()
+  await expect(completeWebOAuth(secondLogin)).resolves.toBe(false)
+  expect(initCallback).toHaveBeenCalledTimes(1)
+})
+
+it.each(['hash', 'search'] as const)(
+  'recognizes callback parameters in %s',
+  key => {
+    window.location[key] = `${key === 'hash' ? '#' : '?'}state=opaque&code=code`
+    expect(readOAuthCallbackParams()?.get('code')).toBe('code')
+  },
+)
+
+it('does not restore or reauthenticate on a bare callback route', async () => {
+  await expect(completeWebOAuth(login)).resolves.toBe(false)
+  expect(initCallback).not.toHaveBeenCalled()
+  expect(login).not.toHaveBeenCalled()
+})
+
+it('leaves popup login and routing to the initiating page', async () => {
+  legacyCallback()
+  const pending = JSON.parse(values.get('oauth_appview_switch')!)
+  values.set(
+    'oauth_appview_switch',
+    JSON.stringify({...pending, mode: 'popup'}),
+  )
+  const handoff = Object.assign(new Error('continued in parent'), {
+    code: 'LOGIN_CONTINUED_IN_PARENT_WINDOW',
+  })
+  initCallback.mockRejectedValue(handoff)
+  await expect(completeWebOAuth(login)).rejects.toBe(handoff)
+  expect(device.set).not.toHaveBeenCalled()
+  expect(login).not.toHaveBeenCalled()
+})
+
 it.each([
   {did: 'did:plc:other', state: 'switch-state'},
-  {did: 'did:plc:account', state: 'different-switch'},
-])('rejects a mismatched callback %j', async ({did, state}) => {
-  void startAppViewSwitch('did:plc:account', selection)
-  init.mockResolvedValueOnce({session: {did}, state})
+  {did: account, state: 'different-switch'},
+])('rejects a mismatched redirect callback %j', async ({did, state}) => {
+  legacyCallback()
+  initCallback.mockResolvedValue({session: {did}, state})
   await expect(completeWebOAuth(login)).rejects.toThrow('Unexpected OAuth')
   expect(device.set).not.toHaveBeenCalled()
   expect(login).not.toHaveBeenCalled()
 })
 
-it('rolls back routing if session construction fails', async () => {
-  void startAppViewSwitch('did:plc:account', selection)
-  init.mockResolvedValueOnce({
-    session: {did: 'did:plc:account'},
-    state: 'switch-state',
-  })
-  login.mockRejectedValueOnce(new Error('session failed'))
-  await expect(completeWebOAuth(login)).rejects.toThrow('session failed')
-  expect(device.set).toHaveBeenLastCalledWith(['customAppViewUrl'], undefined)
-  expect(device.set).toHaveBeenNthCalledWith(
-    3,
-    ['customAppViewDid'],
-    undefined,
-  )
-})
-
 it('reports a missing grant without starting OAuth or changing routing', async () => {
-  jest.mocked(restoreOAuthSession).mockResolvedValue({
-    getTokenInfo: () =>
-      Promise.resolve({
-        scope: buildOAuthScope(selection.did + '#bsky_appview'),
-      }),
-  } as never)
-  signIn.mockResolvedValue(undefined)
-  expect(await ensureAppViewAccess('did:plc:account')).toBe(false)
+  jest.mocked(restoreOAuthSession).mockResolvedValue(session as never)
+  expect(await ensureAppViewAccess(account)).toBe(false)
   expect(signIn).not.toHaveBeenCalled()
   expect(device.set).not.toHaveBeenCalled()
 })
 
-it('resumes a saved account whose grant matches the active server', async () => {
-  jest.mocked(restoreOAuthSession).mockResolvedValue({
-    getTokenInfo: () => Promise.resolve({scope: buildOAuthScope()}),
-  } as never)
-  expect(await ensureAppViewAccess('did:plc:account')).toBe(true)
-  expect(signIn).not.toHaveBeenCalled()
+it('stops waiting on a stuck browser lock without launching authorization', async () => {
+  jest.useFakeTimers()
+  try {
+    jest.mocked(restoreOAuthSession).mockReturnValueOnce(new Promise(() => {}))
+    const access = ensureAppViewAccess(account)
+    const rejected = expect(access).rejects.toMatchObject({
+      name: 'OAuthSessionBusyError',
+    })
+    await jest.advanceTimersByTimeAsync(10_000)
+    await rejected
+    expect(signIn).not.toHaveBeenCalled()
+    expect(device.set).not.toHaveBeenCalled()
+    jest.mocked(restoreOAuthSession).mockResolvedValueOnce({
+      getTokenInfo: () => Promise.resolve({scope: buildOAuthScope()}),
+    } as never)
+    await expect(ensureAppViewAccess(account)).resolves.toBe(true)
+  } finally {
+    jest.useRealTimers()
+  }
 })

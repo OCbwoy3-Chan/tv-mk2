@@ -7,14 +7,21 @@ import {
   createBskyTopicsHeader,
 } from '#/lib/api/feed/utils'
 import {logger} from '#/logger'
+import {
+  APPVIEW_PRESETS,
+  getActiveAppViewPreset,
+  useCustomAppViewDid,
+  useCustomAppViewUrl,
+} from '#/state/preferences/custom-appview-did'
 import {getContentLanguages} from '#/state/preferences/languages'
+import {useTrendingSettings} from '#/state/preferences/trending'
 import {STALE} from '#/state/queries'
 import {usePreferencesQuery} from '#/state/queries/preferences'
 import {useAppviewClient} from '#/state/session'
 import {app} from '#/lexicons'
 
 export const DEFAULT_LIMIT = 5
-export const DEFAULT_FETCH_LIMIT = 20
+export const DEFAULT_FETCH_LIMIT = 25
 
 type QueryProps = {
   fetchLimit?: number
@@ -36,9 +43,14 @@ export const createGetTrendsQueryKey = (fetchLimit?: number) =>
 
 export function useGetTrendsQuery(props: QueryProps = {}) {
   const client = useAppviewClient()
+  const [appViewDid] = useCustomAppViewDid()
+  const [appViewUrl] = useCustomAppViewUrl()
+  const isBlacksky =
+    getActiveAppViewPreset(appViewDid, appViewUrl) === 'blacksky'
+  const {trendingTopicCount} = useTrendingSettings()
   const {data: preferences} = usePreferencesQuery()
   const fetchLimit = props.fetchLimit ?? DEFAULT_FETCH_LIMIT
-  const limit = props.limit ?? DEFAULT_LIMIT
+  const limit = props.limit ?? trendingTopicCount
   const mutedWords = useMemo(() => {
     return preferences?.moderationPrefs?.mutedWords || []
   }, [preferences?.moderationPrefs])
@@ -47,9 +59,22 @@ export function useGetTrendsQuery(props: QueryProps = {}) {
     enabled: !!preferences,
     refetchOnWindowFocus: props.refetchOnWindowFocus,
     staleTime: STALE.MINUTES.THREE,
-    queryKey: createGetTrendsQueryKey(fetchLimit),
+    queryKey: [...createGetTrendsQueryKey(fetchLimit), appViewDid, appViewUrl],
     queryFn: async () => {
       const contentLangs = getContentLanguages().join(',')
+      const headers = {
+        ...createBskyTopicsHeader(aggregateUserInterests(preferences)),
+        'Accept-Language': contentLangs,
+      }
+      if (isBlacksky) {
+        const response = await fetch(
+          `${APPVIEW_PRESETS.blacksky.url}/xrpc/app.bsky.unspecced.getTrends?limit=${fetchLimit}`,
+          {headers},
+        )
+        if (!response.ok)
+          throw new Error(`getTrends failed: ${response.status}`)
+        return (await response.json()) as app.bsky.unspecced.getTrends.$OutputBody
+      }
       const data = await client.call(
         app.bsky.unspecced.getTrends,
         {

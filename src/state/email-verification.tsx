@@ -39,7 +39,8 @@ export function Provider({children}: {children: React.ReactNode}) {
   const needsEmailVerification =
     !isSelfHost &&
     checkEmailConfirmed &&
-    !currentAccount?.emailConfirmed &&
+    // OAuth omits email status without email access; unknown is not unverified.
+    currentAccount?.emailConfirmed === false &&
     isNewEnough
 
   const value = useMemo(

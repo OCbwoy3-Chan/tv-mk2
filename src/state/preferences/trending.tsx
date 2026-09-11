@@ -6,11 +6,11 @@ import {
   useMemo,
   useState,
 } from 'react'
-import  {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 
 type StateContext = {
+  trendingTopicCount: number
   trendingDisabled: Exclude<persisted.Schema['trendingDisabled'], undefined>
   trendingVideoDisabled: Exclude<
     persisted.Schema['trendingVideoDisabled'],
@@ -18,6 +18,7 @@ type StateContext = {
   >
 }
 type ApiContext = {
+  setTrendingTopicCount(count: number): void
   setTrendingDisabled(
     hidden: Exclude<persisted.Schema['trendingDisabled'], undefined>,
   ): void
@@ -27,11 +28,13 @@ type ApiContext = {
 }
 
 const StateContext = createContext<StateContext>({
+  trendingTopicCount: 5,
   trendingDisabled: Boolean(persisted.defaults.trendingDisabled),
   trendingVideoDisabled: Boolean(persisted.defaults.trendingVideoDisabled),
 })
 StateContext.displayName = 'TrendingStateContext'
 const ApiContext = createContext<ApiContext>({
+  setTrendingTopicCount() {},
   setTrendingDisabled() {},
   setTrendingVideoDisabled() {},
 })
@@ -59,23 +62,38 @@ function usePersistedBooleanValue<T extends keyof persisted.Schema>(key: T) {
   return [value, set] as const
 }
 
-export function Provider({children}: PropsWithChildren<{}>) {
+export function Provider({children}: {children: React.ReactNode}) {
   const [trendingDisabled, setTrendingDisabled] =
     usePersistedBooleanValue('trendingDisabled')
   const [trendingVideoDisabled, setTrendingVideoDisabled] =
     usePersistedBooleanValue('trendingVideoDisabled')
 
+  const [trendingTopicCount, setCount] = useState(
+    () => persisted.get('trendingTopicCount') ?? 5,
+  )
+  useEffect(
+    () =>
+      persisted.onUpdate('trendingTopicCount', count => setCount(count ?? 5)),
+    [],
+  )
+  const setTrendingTopicCount = (count: number) => {
+    if (!Number.isInteger(count) || count < 1 || count > 25) return
+    setCount(count)
+    void persisted.write('trendingTopicCount', count)
+  }
+
   /*
    * Context
    */
   const state = useMemo(
-    () => ({trendingDisabled, trendingVideoDisabled}),
-    [trendingDisabled, trendingVideoDisabled],
+    () => ({trendingDisabled, trendingVideoDisabled, trendingTopicCount}),
+    [trendingDisabled, trendingVideoDisabled, trendingTopicCount],
   )
-  const api = useMemo(
-    () => ({setTrendingDisabled, setTrendingVideoDisabled}),
-    [setTrendingDisabled, setTrendingVideoDisabled],
-  )
+  const api = {
+    setTrendingDisabled,
+    setTrendingVideoDisabled,
+    setTrendingTopicCount,
+  }
 
   return (
     <StateContext.Provider value={state}>

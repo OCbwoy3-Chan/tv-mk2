@@ -38,6 +38,7 @@ import {TinyChevronBottom_Stroke2_Corner0_Rounded as TinyChevronIcon} from '#/co
 import {Globe_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
 import {createStaticClick, InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
+import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
@@ -120,6 +121,7 @@ export function AppServerHeaderControl() {
   const [url] = useCustomAppViewUrl()
   const control = Dialog.useDialogControl()
   const title = getActiveAppViewTitle(did, url)
+  const [isSwitching, setIsSwitching] = useState(false)
   const isOauth = !!currentAccount?.isOauthSession
   const applyMode: AppServerApplyMode = isOauth ? 'reauth' : 'restart'
 
@@ -142,10 +144,22 @@ export function AppServerHeaderControl() {
 
       // Changing the AppView retains this account's authentication method.
       // Commit routing only after authorization succeeds.
+      setIsSwitching(true)
       let applied = false
       try {
         if (IS_WEB) {
-          await startAppViewSwitch(currentAccount.did, selection)
+          await startAppViewSwitch(currentAccount.did, selection, session =>
+            login(
+              {
+                service: '',
+                identifier: '',
+                password: '',
+                oauthSession: session,
+              },
+              'Settings',
+            ),
+          )
+          await queryClient.resetQueries()
           return
         }
         const audiences = {
@@ -172,15 +186,21 @@ export function AppServerHeaderControl() {
         if (applied) setAppViewSelection(previousSelection)
         const errMsg = String(e)
         if (errMsg.includes('cancelled') || errMsg.includes('dismiss')) return
+        Toast.show(l`Unable to change app server: ${cleanError(errMsg)}`, {
+          type: 'error',
+        })
         logger.warn('App server reauth failed', {
           error: isNetworkError(e) ? errMsg : cleanError(errMsg),
         })
+      } finally {
+        setIsSwitching(false)
       }
     },
     [
       applyMode,
       did,
       url,
+      l,
       currentAccount,
       login,
       prepareSettingsSyncForRestart,
@@ -200,6 +220,7 @@ export function AppServerHeaderControl() {
               ? l`Change App server. You’ll need to sign in again.`
               : l`Change App server. The app will restart.`
           }
+          disabled={isSwitching}
           size="small"
           variant="ghost"
           color="secondary"
@@ -292,6 +313,14 @@ export function AppServerDialog({
         setCustomUrl={setCustomUrl}
         applyMode={applyMode}
         onConfirm={() => {
+          if (IS_WEB && applyMode === 'reauth') {
+            const selection = formRef.current?.getFormState()
+            if (!selection || selection === 'invalid') return
+            // Open the popup during the press, before the close animation.
+            onApply?.(selection)
+            control.close()
+            return
+          }
           confirmedRef.current = true
           control.close()
         }}

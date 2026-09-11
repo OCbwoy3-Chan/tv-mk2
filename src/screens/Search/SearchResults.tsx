@@ -536,7 +536,7 @@ let SearchScreenPostResults = ({
               desktopFixedHeight
               ListFooterComponent={
                 <SearchResultsFooter
-                  isFetchingNextPage={isFetchingNextPage}
+                  isFetchingNextPage={isFetching}
                   hasNextPage={hasNextPage}
                   onLoadMore={onEndReached}
                 />
@@ -550,7 +550,7 @@ let SearchScreenPostResults = ({
 
               buttonAlign="left"
               button={
-                hasNextPage
+                hasNextPage && !isFetching
                   ? {
                       label: l`Load more`,
                       text: l`Load more`,
@@ -677,7 +677,7 @@ let SearchScreenUserResults = ({
           ListFooterComponent={
             <SearchResultsFooter
               hasNextPage={hasNextPage && hasSession}
-              isFetchingNextPage={isFetchingNextPage}
+              isFetchingNextPage={isFetching}
               onLoadMore={onEndReached}
             />
           }
@@ -687,7 +687,7 @@ let SearchScreenUserResults = ({
           messageText={<NoResultsText query={query} />}
           buttonAlign="left"
           button={
-            hasNextPage && hasSession
+            hasNextPage && hasSession && !isFetching
               ? {
                   label: l`Load more`,
                   text: l`Load more`,

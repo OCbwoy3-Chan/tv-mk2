@@ -2,6 +2,7 @@ import {describe, expect, it} from '@jest/globals'
 
 import {
   appendFromMe,
+  buildSearchPostsV1Params,
   buildSearchPostsV2Filters,
   extractFromMe,
   extractSearchPostsParams,
@@ -264,5 +265,33 @@ describe(`buildSearchPostsV2Filters`, () => {
       excludeAuthors: [`bob`, `carol`],
       excludeHashtags: [`spam`],
     })
+  })
+})
+
+describe('buildSearchPostsV1Params', () => {
+  it('maps supported filters to legacy structured params', () => {
+    expect(
+      buildSearchPostsV1Params('cats from:me', {
+        authors: ['alice.test'],
+        languages: ['en'],
+        hashtags: ['cats'],
+        since: '2026-01-01T00:00:00Z',
+      }),
+    ).toMatchObject({
+      q: 'cats from:me',
+      author: 'alice.test',
+      lang: 'en',
+      tag: ['cats'],
+      since: '2026-01-01T00:00:00Z',
+    })
+  })
+  it('keeps multiple values and legacy query operators', () => {
+    expect(
+      buildSearchPostsV1Params('cats', {
+        authors: ['alice.test', 'bob.test'],
+        excludeHashtags: ['spam'],
+        hasMedia: true,
+      }).q,
+    ).toBe('cats (from:alice.test OR from:bob.test) -#spam media:true')
   })
 })

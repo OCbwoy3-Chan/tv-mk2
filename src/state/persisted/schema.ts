@@ -239,6 +239,7 @@ const schema = z.object({
   lastSelectedHomeFeed: z.string().optional(),
   pdsAddressHistory: z.array(z.string()).optional(),
   disableHaptics: z.boolean().optional(),
+  extractQuotedPost: z.boolean().optional(),
   disableAutoplay: z.boolean().optional(),
   kawaii: z.boolean().optional(),
   customPostRkeysEnabled: z.boolean().optional(),
@@ -388,6 +389,7 @@ const schema = z.object({
 
   /** @deprecated */
   mutedThreads: z.array(z.string()),
+  trendingTopicCount: z.number().int().min(1).max(25).optional(),
   trendingDisabled: z.boolean().optional(),
   trendingVideoDisabled: z.boolean().optional(),
 
@@ -458,6 +460,7 @@ export const defaults: Schema = {
   lastSelectedHomeFeed: undefined,
   pdsAddressHistory: [],
   disableHaptics: false,
+  extractQuotedPost: false,
   disableAutoplay: PlatformInfo.getIsReducedMotionEnabled(),
   kawaii: false,
   customPostRkeysEnabled: true,
@@ -466,6 +469,7 @@ export const defaults: Schema = {
   atprotoRkeySuffixDefault: 'meow',
   hasCheckedForStarterPack: false,
   subtitlesEnabled: true,
+  trendingTopicCount: 5,
   trendingDisabled: true,
   trendingVideoDisabled: true,
 

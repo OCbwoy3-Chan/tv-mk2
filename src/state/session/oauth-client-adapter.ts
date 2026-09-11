@@ -2,7 +2,7 @@ import {type OAuthSession} from '@atproto/oauth-client-browser'
 
 import {getWebOAuthClient} from './oauth-web-client'
 
-let restoreChain: Promise<unknown> = Promise.resolve()
+const restoreChains = new Map<string, Promise<unknown>>()
 
 export function createOAuthTransport(session: OAuthSession) {
   return {
@@ -21,9 +21,14 @@ export function restoreOAuthSession(
   did: string,
   refresh: boolean | 'auto' = 'auto',
 ): Promise<OAuthSession> {
-  const result = restoreChain.then(() =>
-    getWebOAuthClient().restore(did, refresh === 'auto' ? undefined : refresh),
+  const client = getWebOAuthClient()
+  const result = (restoreChains.get(did) ?? Promise.resolve()).then(() =>
+    client.restore(did, refresh === 'auto' ? undefined : refresh),
   )
-  restoreChain = result.catch(() => {})
+  const chain = result.catch(() => {})
+  restoreChains.set(did, chain)
+  void chain.then(() => {
+    if (restoreChains.get(did) === chain) restoreChains.delete(did)
+  })
   return result
 }

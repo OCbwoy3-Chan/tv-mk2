@@ -7,6 +7,10 @@ export type SessionAccount = PersistedAccount
 
 export type ReauthenticationOptions = {
   scope?: string
+  /** Start OAuth from the initiating press without showing the login chooser. */
+  directOAuth?: boolean
+  /** Main account sign-in may change the AppView before authorization. */
+  allowAppServerSwitch?: boolean
 }
 
 /** Session-change events understood by the reducer and logging hooks. */

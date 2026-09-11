@@ -9,14 +9,14 @@ import {
 } from 'react'
 
 import {
-  COCORE_ALT_TEXT_AI_BASE_URL,
   DEFAULT_ALT_TEXT_AI_MODEL,
   OPENROUTER_ALT_TEXT_AI_BASE_URL,
 } from '#/lib/constants'
 import * as persisted from '#/state/persisted'
 
-export type AltTextAiProvider = NonNullable<
-  persisted.Schema['altTextAiProvider']
+export type AltTextAiProvider = Exclude<
+  NonNullable<persisted.Schema['altTextAiProvider']>,
+  'cocore'
 >
 type EnabledAltTextAiProvider = Exclude<AltTextAiProvider, 'none'>
 
@@ -96,7 +96,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
 
   const settings = useMemo<Settings>(
     () => ({
-      provider: provider ?? 'none',
+      provider: provider === 'cocore' ? 'none' : (provider ?? 'none'),
       openRouterApiKey,
       openRouterModel,
       prompt,
@@ -157,7 +157,6 @@ export function useAltTextAiApiKey() {
   switch (settings.provider) {
     case 'openaiCompatible':
       return settings.openAiCompatibleApiKey
-    case 'cocore':
     case 'none':
       return undefined
     default:
@@ -181,7 +180,6 @@ export function useSetAltTextAiApiKey() {
 export function useAltTextAiModel() {
   const settings = useContext(settingsContext)
   switch (settings.provider) {
-    case 'cocore':
     case 'none':
       return undefined
     case 'openaiCompatible':
@@ -207,8 +205,6 @@ export function useSetAltTextAiModel() {
 export function useAltTextAiBaseUrl() {
   const settings = useContext(settingsContext)
   switch (settings.provider) {
-    case 'cocore':
-      return COCORE_ALT_TEXT_AI_BASE_URL
     case 'none':
       return undefined
     case 'openaiCompatible':

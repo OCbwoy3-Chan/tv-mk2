@@ -22,6 +22,7 @@ import {
   atoms as a,
   type TextStyleProp,
   useAlf,
+  utils,
   type ViewStyleProp,
   web,
 } from '#/alf'
@@ -343,6 +344,9 @@ export function Composer({
         )}
         <AutosizedTextarea
           placeholderTextColor={t.palette.contrast_500}
+          selectionColor={utils.alpha(t.palette.primary_500, 0.4)}
+          cursorColor={t.palette.primary_500}
+          selectionHandleColor={t.palette.primary_500}
           accessibilityLabel={label}
           accessibilityHint={label}
           onSubmitEditing={e => {

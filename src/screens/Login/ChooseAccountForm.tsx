@@ -8,6 +8,7 @@ import {canAttemptSessionResume} from '#/state/session/util'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {atoms as a, web} from '#/alf'
 import {AccountList} from '#/components/AccountList'
+import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as TextField from '#/components/forms/TextField'
 import * as Toast from '#/components/Toast'
@@ -22,6 +23,7 @@ export const ChooseAccountForm = ({
   onSelectAccount: (account?: SessionAccount) => void
   onPressBack: () => void
 }) => {
+  const [error, setError] = useState('')
   const [pendingDid, setPendingDid] = useState<string | null>(null)
   const {t: l} = useLingui()
   const ax = useAnalytics()
@@ -45,6 +47,7 @@ export const ChooseAccountForm = ({
         Toast.show(l`Already signed in as @${account.handle}`)
         return
       }
+      setError('')
       try {
         setPendingDid(account.did)
         await resumeSession(account, true)
@@ -54,6 +57,12 @@ export const ChooseAccountForm = ({
         })
         Toast.show(l`Signed in as @${account.handle}`)
       } catch (err) {
+        if (err instanceof Error && err.name === 'OAuthSessionBusyError') {
+          setError(
+            l`Sign-in is taking too long. Another Witchsky tab or window may be using this account’s session. Close that view, then try again.`,
+          )
+          return
+        }
         if (/cancelled|dismiss|OAUTH_CANCELLED/i.test(String(err))) return
         logger.warn('choose account: initSession failed', {
           message: err instanceof Error ? err.message : String(err),
@@ -81,6 +90,7 @@ export const ChooseAccountForm = ({
       testID="chooseAccountForm"
       titleText={<Trans>Select account</Trans>}
       style={web([a.py_2xl])}>
+      {error ? <Admonition type="error">{error}</Admonition> : null}
       <View>
         {IS_WEB && (
           <TextField.LabelText>

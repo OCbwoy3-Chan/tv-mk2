@@ -1,9 +1,8 @@
-import {memo, useCallback, useMemo, useState} from 'react'
+import {memo, useMemo, useState} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {type RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react/macro'
-import {useQueryClient} from '@tanstack/react-query'
 
 import {CountWheel} from '#/lib/custom-animations/CountWheel'
 import {AnimatedLikeIcon} from '#/lib/custom-animations/LikeIcon'
@@ -30,7 +29,7 @@ import {
   threadgateRecordToAllowUISetting,
   threadgateViewToAllowUISetting,
 } from '#/state/queries/threadgate/util'
-import {useRequireAuth, useSession, useSessionApi} from '#/state/session'
+import {useRequireAuth, useSession} from '#/state/session'
 import {
   ProgressGuideAction,
   useProgressGuideControls,
@@ -47,7 +46,6 @@ import {useAnalytics} from '#/analytics'
 import {type app} from '#/lexicons'
 import {useAutoLikeOnRepost} from '../../state/preferences/auto-like-on-repost.tsx'
 import {useRunWithEphemeralAgent} from '../hooks/useRunWithEphemeralAgent'
-import {fetchReplyableSwitcherAccounts} from './alternateAccountsReplyEligibility'
 import {BookmarkButton} from './BookmarkButton'
 import {MetricCountLabel} from './MetricCountLabel'
 import {
@@ -98,8 +96,6 @@ function PostControlsInner({
   const {openComposer} = useOpenComposer()
   const {feedDescriptor} = useFeedFeedbackContext()
   const {accounts, currentAccount} = useSession()
-  const {createEphemeralAgent} = useSessionApi()
-  const queryClient = useQueryClient()
   const getPost = useGetPost()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
   const showEphemeralError = useEphemeralAccountError()
@@ -294,28 +290,26 @@ function PostControlsInner({
     gtPhone,
   })
   const hasAlternateAccounts = accounts.length > 1 && Boolean(currentAccount)
-  const switcherAccounts = useMemo(
-    () =>
-      accounts
-        .filter(account => account.did !== currentAccount?.did)
-        .map(account => ({account})),
-    [accounts, currentAccount?.did],
-  )
-
-  const resolveReplyableAccounts = useCallback(async () => {
-    const replyableAccounts = await fetchReplyableSwitcherAccounts({
-      queryClient,
-      postUri: post.uri,
-      switcherAccounts,
-      createEphemeralAgent,
-    })
-    if (replyableAccounts.length === 0) {
-      Toast.show(l`No other accounts can reply to this post`, {
-        type: 'warning',
-      })
+  const onSelectReplyAccount = async (account: (typeof accounts)[number]) => {
+    try {
+      if (isReplyGatedPost) {
+        const allowed = await runWithEphemeralAgent(account, async agent => {
+          const res = await agent.getPosts({uris: [post.uri]})
+          const target = res.data.posts[0]
+          return Boolean(target && !target.viewer?.replyDisabled)
+        })
+        if (!allowed) {
+          Toast.show(l`This account cannot reply to this post`, {
+            type: 'warning',
+          })
+          return
+        }
+      }
+      onReplyAsAccount(account.did)
+    } catch (error) {
+      showEphemeralError(error, account, onSelectReplyAccount)
     }
-    return replyableAccounts
-  }, [createEphemeralAgent, l, post.uri, queryClient, switcherAccounts])
+  }
 
   const onSelectLikeAccount = async (account: (typeof accounts)[number]) => {
     try {
@@ -560,11 +554,8 @@ function PostControlsInner({
                 selectedDid={currentAccount.did}
                 title={l`Reply as`}
                 triggerBehavior="longPress"
-                resolveAccounts={
-                  isReplyGatedPost ? resolveReplyableAccounts : undefined
-                }
                 onSelectAccount={account => {
-                  onReplyAsAccount(account.did)
+                  void onSelectReplyAccount(account)
                 }}
                 renderTrigger={({triggerProps}) =>
                   renderReplyButton(triggerProps.onLongPress)

@@ -1,7 +1,5 @@
 import {View} from 'react-native'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 
 import {urls} from '#/lib/constants'
 import {
@@ -14,13 +12,14 @@ import {atoms as a, useGutters} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import * as Toggle from '#/components/forms/Toggle'
 import {CircleCheck_Stroke2_Corner0_Rounded as CircleCheck} from '#/components/icons/CircleCheck'
+import {Verified_Stroke2_Corner2_Rounded as VerifiedIcon} from '#/components/icons/Verified'
 import * as Layout from '#/components/Layout'
 import {InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {useAnalytics} from '#/analytics'
 
 export function Screen() {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const ax = useAnalytics()
   const gutters = useGutters(['base'])
   const {data: preferences} = usePreferencesQuery()
@@ -46,12 +45,10 @@ export function Screen() {
                 <InlineLinkText
                   overridePresentation
                   to={urls.website.blog.initialVerificationAnnouncement}
-                  label={_(
-                    msg({
-                      message: `Learn more`,
-                      context: `english-only-resource`,
-                    }),
-                  )}
+                  label={l({
+                    message: `Learn more`,
+                    context: `english-only-resource`,
+                  })}
                   onPress={() => {
                     ax.metric('verification:learn-more', {
                       location: 'verificationSettings',
@@ -69,6 +66,15 @@ export function Screen() {
               <Loader size="xl" />
             </View>
           )}
+          <SettingsList.LinkItem
+            to="/settings/runes/badges"
+            label={l`Badges`}
+            testID="verificationBadgeSettingsLink">
+            <SettingsList.ItemIcon icon={VerifiedIcon} />
+            <SettingsList.ItemText>
+              <Trans>Badges</Trans>
+            </SettingsList.ItemText>
+          </SettingsList.LinkItem>
         </SettingsList.Container>
       </Layout.Content>
     </Layout.Screen>
@@ -76,7 +82,7 @@ export function Screen() {
 }
 
 function Inner({preferences}: {preferences: UsePreferencesQueryResponse}) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const {hideBadges} = preferences.verificationPrefs
   const {mutate: setVerificationPrefs, isPending} =
     useSetVerificationPrefsMutation()
@@ -85,7 +91,7 @@ function Inner({preferences}: {preferences: UsePreferencesQueryResponse}) {
     <Toggle.Item
       type="checkbox"
       name="hideBadges"
-      label={_(msg`Hide verification badges`)}
+      label={l`Hide verification badges`}
       value={hideBadges}
       disabled={isPending}
       onChange={value => {

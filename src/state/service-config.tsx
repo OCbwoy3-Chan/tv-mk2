@@ -1,5 +1,10 @@
 import {createContext, useContext, useMemo} from 'react'
 
+import {
+  getActiveAppViewPreset,
+  useCustomAppViewDid,
+  useCustomAppViewUrl,
+} from '#/state/preferences/custom-appview-did'
 import {useLanguagePrefs} from '#/state/preferences/languages'
 import {useServiceConfigQuery} from '#/state/queries/service-config'
 import {device} from '#/storage'
@@ -16,10 +21,14 @@ TrendingContext.displayName = 'TrendingContext'
 const CheckEmailConfirmedContext = createContext<boolean | null>(null)
 
 export function Provider({children}: {children: React.ReactNode}) {
+  const [appViewDid] = useCustomAppViewDid()
+  const [appViewUrl] = useCustomAppViewUrl()
+  const isBlacksky =
+    getActiveAppViewPreset(appViewDid, appViewUrl) === 'blacksky'
   const langPrefs = useLanguagePrefs()
   const {data: config, isLoading: isInitialLoad} = useServiceConfigQuery()
   const trending = useMemo<TrendingContext>(() => {
-    if (__DEV__) {
+    if (__DEV__ || isBlacksky) {
       return {enabled: true}
     }
 
@@ -47,7 +56,7 @@ export function Provider({children}: {children: React.ReactNode}) {
     device.set(['trendingBetaEnabled'], enabled)
 
     return {enabled}
-  }, [isInitialLoad, config, langPrefs.contentLanguages])
+  }, [isInitialLoad, config, langPrefs.contentLanguages, isBlacksky])
 
   // probably true, so default to true when loading
   // if the call fails, the query will set it to false for us

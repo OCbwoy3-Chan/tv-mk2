@@ -20,8 +20,6 @@ import {TrendingTopicLink} from '#/components/TrendingTopics'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 
-const TRENDING_LIMIT = 14
-
 export function TrendingInterstitial() {
   const {enabled} = useTrendingConfig()
   const {trendingDisabled} = useTrendingSettings()
@@ -29,6 +27,7 @@ export function TrendingInterstitial() {
 }
 
 export function Inner() {
+  const {trendingTopicCount} = useTrendingSettings()
   const t = useTheme()
   const {t: l} = useLingui()
   const ax = useAnalytics()
@@ -40,7 +39,7 @@ export function Inner() {
     error,
     isLoading,
   } = useGetTrendsQuery({
-    limit: TRENDING_LIMIT,
+    limit: trendingTopicCount,
     refetchOnWindowFocus: true,
   })
   const noTopics = !isLoading && !error && !trending?.trends?.length

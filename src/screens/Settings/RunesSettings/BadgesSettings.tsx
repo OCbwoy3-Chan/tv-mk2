@@ -44,6 +44,7 @@ import {
   ChevronBottom_Stroke2_Corner0_Rounded as ChevronBottomIcon,
   ChevronTop_Stroke2_Corner0_Rounded as ChevronTopIcon,
 } from '#/components/icons/Chevron'
+import {CircleCheck_Stroke2_Corner0_Rounded as CircleCheck} from '#/components/icons/CircleCheck'
 import {PaintRoller_Stroke2_Corner2_Rounded as PaintRollerIcon} from '#/components/icons/PaintRoller'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {Star_Stroke2_Corner0_Rounded as StarIcon} from '#/components/icons/Star'
@@ -75,9 +76,9 @@ export function RunesBadgesSettingsScreen() {
   return (
     <RunesScreenLayout titleText={l`Badges`}>
       <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-        <SettingsList.ItemIcon icon={VerifiedIcon} />
+        <SettingsList.ItemIcon icon={CircleCheck} />
         <SettingsList.ItemText>
-          <Trans>Trusted verifiers</Trans>
+          <Trans>Verification badges</Trans>
         </SettingsList.ItemText>
         <Toggle.Item
           name="custom_verifications"

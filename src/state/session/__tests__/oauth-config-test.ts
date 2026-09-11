@@ -14,10 +14,9 @@ describe('OAuth permission configuration', () => {
       `include:app.bsky.authFullApp?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
     )
     expect(scopes).toContain('include:app.witchsky.theme.authFull')
-    expect(scopes).toContain('include:party.tenna.app.permissions2')
-    expect(scopes).toContain(
-      'include:party.tenna.private.privateVesselPermissions',
-    )
+    expect(
+      scopes.some(scope => scope.startsWith('repo:app.witchsky.theme.')),
+    ).toBe(false)
     expect(scopes.some(scope => scope.startsWith('transition:'))).toBe(false)
     for (const scope of Object.values(OPTIONAL_OAUTH_SCOPES))
       expect(scopes).not.toContain(scope)
@@ -124,4 +123,43 @@ it('recognizes expanded PDS grants with positional or named methods', () => {
       hasOAuthAppViewScope(scope, 'did:web:api.eurosky.network#bsky_appview'),
     ).toBe(false)
   }
+})
+
+it('grants only legacy Bluesky search for Blacksky outage fallback', () => {
+  const grant = `rpc:app.bsky.feed.searchPosts?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`
+  expect(
+    buildOAuthScope('did:web:api.blacksky.community#bsky_appview').split(' '),
+  ).toContain(grant)
+  expect(
+    buildOAuthScope('did:web:custom.example#bsky_appview').split(' '),
+  ).not.toContain(grant)
+})
+
+it.each([
+  DEFAULT_APPVIEW_AUDIENCE,
+  'did:web:api.blacksky.community#bsky_appview',
+])('grants draft and suggestion operations for %s', appview => {
+  const scopes = buildOAuthScope(appview).split(' ')
+  for (const method of [
+    'app.bsky.draft.getDrafts',
+    'app.bsky.draft.createDraft',
+    'app.bsky.draft.updateDraft',
+    'app.bsky.draft.deleteDraft',
+    'app.bsky.unspecced.getSuggestedOnboardingUsers',
+    'app.bsky.unspecced.getSuggestedUsersForDiscover',
+    'app.bsky.unspecced.getSuggestedUsersForExplore',
+    'app.bsky.unspecced.getSuggestedUsersForSeeMore',
+  ]) {
+    expect(scopes).toContain(`rpc:${method}?aud=${encodeURIComponent(appview)}`)
+  }
+  expect(scopes).toContain(
+    'repo:app.bsky.actor.contentVisibilityDeclaration?action=create&action=update',
+  )
+  expect(scopes.some(scope => scope.includes('app.bsky.ageassurance.'))).toBe(
+    false,
+  )
+  expect(scopes.some(scope => scope.includes('cocore'))).toBe(false)
+  expect(scopes).toContain(
+    'repo:app.bsky.graph.verification?action=create&action=delete',
+  )
 })

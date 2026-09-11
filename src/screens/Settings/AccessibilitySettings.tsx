@@ -44,11 +44,9 @@ export function AccessibilitySettingsScreen({ }: Props) {
   const providerName =
     altTextAiProvider === 'none'
       ? l`None`
-      : altTextAiProvider === 'cocore'
-        ? l`co/core`
-        : altTextAiProvider === 'openrouter'
-          ? l`OpenRouter`
-          : l`OpenAI-compatible API`
+      : altTextAiProvider === 'openrouter'
+        ? l`OpenRouter`
+        : l`OpenAI-compatible API`
 
   return (
     <Layout.Screen>

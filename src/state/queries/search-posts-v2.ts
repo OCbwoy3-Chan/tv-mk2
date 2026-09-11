@@ -8,12 +8,22 @@ import {
   useInfiniteQuery,
 } from '@tanstack/react-query'
 
+import {
+  getActiveAppViewPreset,
+  useCustomAppViewDid,
+  useCustomAppViewUrl,
+} from '#/state/preferences/custom-appview-did'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
-import {useAppviewClient} from '#/state/session'
+import {
+  isBlackskySearchUpstreamFailure,
+  isSearchV2Unavailable,
+} from '#/state/queries/search-fallback'
+import {useAppviewClient, useSession} from '#/state/session'
 import {type SearchFilters} from '#/screens/Search/searchParams'
 import {app} from '#/lexicons'
 import {
   appendFromMe,
+  buildSearchPostsV1Params,
   buildSearchPostsV2Filters,
   extractSearchPostsParams,
 } from './search-posts-params'
@@ -22,6 +32,13 @@ import {
   embedViewRecordToPostView,
   getEmbeddedPost,
 } from './util'
+
+/** Remember unsupported v2 endpoints per session client, including pagination. */
+const legacySearchClients = new WeakSet<object>()
+type SearchPage = app.bsky.feed.searchPostsV2.$OutputBody & {
+  blueskySearch?: boolean
+}
+type SearchCursor = {cursor: string; blueskySearch?: boolean} | undefined
 
 const searchPostsQueryKeyRoot = 'search-posts'
 const searchPostsV2QueryKey = ({
@@ -46,6 +63,9 @@ export function useSearchPostsV2Query({
   filters?: SearchFilters
 }) {
   const client = useAppviewClient()
+  const {currentAccount} = useSession()
+  const [appViewDid] = useCustomAppViewDid()
+  const [appViewUrl] = useCustomAppViewUrl()
   const moderationOpts = useModerationOpts()
   const selectArgs = useMemo(
     () => ({
@@ -62,13 +82,18 @@ export function useSearchPostsV2Query({
   } | null>(null)
 
   return useInfiniteQuery<
-    app.bsky.feed.searchPostsV2.$OutputBody,
+    SearchPage,
     Error,
     InfiniteData<app.bsky.feed.searchPostsV2.$OutputBody>,
     QueryKey,
-    string | undefined
+    SearchCursor
   >({
-    queryKey: searchPostsV2QueryKey({query, sort, filters}),
+    queryKey: [
+      ...searchPostsV2QueryKey({query, sort, filters}),
+      appViewDid,
+      appViewUrl,
+      currentAccount?.did,
+    ],
     queryFn: async ({pageParam}) => {
       /*
        * Operators embedded in the query string (e.g. for back-compat links) are
@@ -87,21 +112,58 @@ export function useSearchPostsV2Query({
         filters,
       ) as app.bsky.feed.searchPostsV2.$Params
       const finalQuery = appendFromMe(q, filters?.from === 'me')
-      return await client.call(app.bsky.feed.searchPostsV2, {
-        ...builtFilters,
-        query: finalQuery,
+      const legacyParams = {
+        ...buildSearchPostsV1Params(finalQuery, builtFilters),
+        sort,
         limit: 25,
-        cursor: pageParam,
-        /*
-         * v2 calls the recency sort 'recent'; the rest of the app still uses
-         * the v1 'latest' label.
-         */
-        sort: sort === 'latest' ? 'recent' : sort,
-        allTime: true,
-      })
+        cursor: pageParam?.cursor,
+      }
+      const searchBluesky = async (): Promise<SearchPage> => {
+        const data = await client.call(
+          app.bsky.feed.searchPosts,
+          legacyParams,
+          {service: 'did:web:api.bsky.app#bsky_appview'},
+        )
+        return {...data, blueskySearch: true}
+      }
+      // Keep Bluesky cursors on the same endpoint for this result set.
+      if (pageParam?.blueskySearch) return searchBluesky()
+      if (!legacySearchClients.has(client)) {
+        try {
+          return await client.call(app.bsky.feed.searchPostsV2, {
+            ...builtFilters,
+            query: finalQuery,
+            limit: 25,
+            cursor: pageParam?.cursor,
+            /*
+             * v2 calls the recency sort 'recent'; the rest of the app still uses
+             * the v1 'latest' label.
+             */
+            sort: sort === 'latest' ? 'recent' : sort,
+            allTime: true,
+          })
+        } catch (error) {
+          if (!isSearchV2Unavailable(error)) throw error
+          legacySearchClients.add(client)
+        }
+      }
+      try {
+        return await client.call(app.bsky.feed.searchPosts, legacyParams)
+      } catch (error) {
+        if (
+          pageParam?.cursor ||
+          getActiveAppViewPreset(appViewDid, appViewUrl) !== 'blacksky' ||
+          !isBlackskySearchUpstreamFailure(error)
+        )
+          throw error
+        return searchBluesky()
+      }
     },
     initialPageParam: undefined,
-    getNextPageParam: lastPage => lastPage.cursor,
+    getNextPageParam: lastPage =>
+      lastPage.cursor
+        ? {cursor: lastPage.cursor, blueskySearch: lastPage.blueskySearch}
+        : undefined,
     enabled: enabled ?? !!moderationOpts,
     select: useCallback(
       (data: InfiniteData<app.bsky.feed.searchPostsV2.$OutputBody>) => {

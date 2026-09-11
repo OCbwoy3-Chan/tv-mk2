@@ -1,6 +1,15 @@
 import {logger} from '#/logger'
 import {UITextView} from '#/platform/ui-text-view'
-import {atoms as a, type TextStyleProp, useAlf, useTheme, web} from '#/alf'
+import {
+  atoms as a,
+  native,
+  platform,
+  type TextStyleProp,
+  useAlf,
+  useTheme,
+  utils,
+  web,
+} from '#/alf'
 import {
   childHasEmoji,
   normalizeTextStyles,
@@ -58,6 +67,12 @@ export function Text({
     style: s,
     dataSet: Object.assign({tooltip: title}, dataSet || {}),
     allowFontScaling,
+    ...native({
+      selectionColor: platform({
+        ios: t.palette.primary_500,
+        default: utils.alpha(t.palette.primary_500, 0.4),
+      }),
+    }),
     ...rest,
   }
 

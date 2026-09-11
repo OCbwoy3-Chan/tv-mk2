@@ -16,7 +16,7 @@ export function Manage2FA({showScreen}: ScreenProps<ScreenID.Manage2FA>) {
   >(null)
 
   useEffect(() => {
-    if (!isEmailVerified) {
+    if (isEmailVerified === false) {
       showScreen({
         id: ScreenID.Verify,
         instructions: [

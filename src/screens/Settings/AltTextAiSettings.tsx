@@ -47,7 +47,6 @@ export function AltTextAiSettingsScreen({}: Props) {
   const baseUrlControl = Dialog.useDialogControl()
   const providerItems = [
     {value: 'none', label: l`None`},
-    {value: 'cocore', label: l`co/core`},
     {value: 'openrouter', label: l`OpenRouter`},
     {value: 'openaiCompatible', label: l`OpenAI-compatible API`},
   ] as const
@@ -107,21 +106,6 @@ export function AltTextAiSettingsScreen({}: Props) {
             <SettingsList.Item>
               <Admonition type="info" style={[a.flex_1]}>
                 <Trans>Automatic alt text generation is turned off.</Trans>
-              </Admonition>
-            </SettingsList.Item>
-          ) : provider === 'cocore' ? (
-            <SettingsList.Item>
-              <Admonition type="info" style={[a.flex_1]}>
-                <Trans>
-                  co/core is automatic. Witchsky mints a short-lived AT Protocol
-                  service-auth token and selects the best vision model currently
-                  online. No API key or model setup is needed. If co/core
-                  requires one-time account connection, visit{' '}
-                  <InlineLinkText to="https://cocore.dev" label="cocore.dev">
-                    cocore.dev
-                  </InlineLinkText>
-                  .
-                </Trans>
               </Admonition>
             </SettingsList.Item>
           ) : (
@@ -212,7 +196,7 @@ export function AltTextAiSettingsScreen({}: Props) {
             </>
           )}
 
-          {provider !== 'none' && provider !== 'cocore' && (
+          {provider !== 'none' && (
             <>
               <ApiKeyDialog
                 key={provider}

@@ -19,6 +19,7 @@ import {type RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
+import {useQueryClient} from '@tanstack/react-query'
 
 import {DISCOVER_DEBUG_DIDS} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
@@ -38,6 +39,7 @@ import {getPostLanguageTags} from '#/locale/helpers'
 import {logger} from '#/logger'
 import {type Shadow} from '#/state/cache/post-shadow'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {replaceRedraftedPost} from '#/state/cache/replace-redrafted-post'
 import {useFeedFeedbackContext} from '#/state/feed-feedback'
 import {
   useHiddenPosts,
@@ -211,6 +213,8 @@ let PostMenuItems = ({
     const urip = new AtUri(postUri)
     return makeProfileLink(postAuthor, 'post', urip.rkey)
   }, [postUri, postAuthor])
+
+  const queryClient = useQueryClient()
 
   const onDeletePost = () => {
     deletePostMutate({uri: postUri}).then(
@@ -387,8 +391,37 @@ let PostMenuItems = ({
       tags: record.tags,
       imageUris,
       videoUri,
-      onPost: () => {
-        onDeletePost()
+      onPost: newUri => {
+        if (!newUri) return
+        void (async () => {
+          try {
+            const replacement = await getPost({uri: newUri})
+            await deletePostMutate({uri: postUri})
+            replaceRedraftedPost(queryClient, postUri, replacement)
+            const route = getCurrentRoute(navigation.getState())
+            if (route.name === 'PostThread') {
+              const params = route.params as CommonNavigatorParams['PostThread']
+              if (
+                (params.name === postAuthor.did ||
+                  params.name === postAuthor.handle) &&
+                makeProfileLink(postAuthor, 'post', params.rkey) === href
+              ) {
+                const {host, rkey} = new AtUri(newUri)
+                navigation.replace('PostThread', {name: host, rkey})
+              }
+            }
+          } catch (error) {
+            logger.error('Failed to replace redrafted post', {
+              safeMessage: error,
+            })
+            Toast.show(
+              l`Your new post was published, but the original could not be replaced.`,
+              {
+                type: 'error',
+              },
+            )
+          }
+        })()
       },
       quote: quotePost,
       replyTo,
