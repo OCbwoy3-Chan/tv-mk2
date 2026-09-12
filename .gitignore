@@ -144,3 +144,10 @@ docs/superpowers/
 
 # pnpm
 .pnpm-store/
+
+# Generated PWA assets
+bskyweb/static/pwa/
+bskyweb/static/sw.js
+bskyweb/static/workbox-*.js
+bskyweb/static/fonts/
+bskyweb/static/style.css
