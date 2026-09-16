@@ -100,15 +100,18 @@ export function normalizeData(data: Schema) {
 
   if (next.imageCdnHost) {
     try {
-      if (new URL(next.imageCdnHost).origin === 'https://cdn.bsky.app') {
+      const origin = new URL(next.imageCdnHost).origin
+      if (origin === 'https://cdn.bsky.app') {
         next.imageCdnHost = undefined
+      } else if (origin === 'https://cdn.blueat.network') {
+        next.imageCdnHost = 'https://luna.madebydanny.uk'
       }
     } catch {}
   }
 
   const imageCdnPresets = [
     'https://porxie-bsky.dollware.net',
-    'https://cdn.blueat.network',
+    'https://luna.madebydanny.uk',
   ]
   const plcDirectoryPresets = [
     'https://plc.directory',
