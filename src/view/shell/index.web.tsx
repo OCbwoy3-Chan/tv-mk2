@@ -2,10 +2,11 @@ import {useCallback, useEffect, useLayoutEffect, useState} from 'react'
 import {StyleSheet, TouchableWithoutFeedback, View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
-import {useNavigation} from '@react-navigation/native'
+import {StackActions, useNavigation} from '@react-navigation/native'
 import {RemoveScrollBar} from 'react-remove-scroll-bar'
 
 import {useIntentHandler} from '#/lib/hooks/useIntentHandler'
+import {handlePastedLink} from '#/lib/routes/pasteLink'
 import {type NavigationProp} from '#/lib/routes/types'
 import {useSession} from '#/state/session'
 import {useIsDrawerOpen, useSetDrawerOpen} from '#/state/shell'
@@ -112,6 +113,16 @@ function ShellInner() {
   const welcomeModalControl = useWelcomeModal()
 
   useIntentHandler()
+
+  useEffect(() => {
+    const onPaste = (event: ClipboardEvent) => {
+      handlePastedLink(event, link => {
+        navigator.dispatch(StackActions.push(link.screen, link.params))
+      })
+    }
+    document.addEventListener('paste', onPaste)
+    return () => document.removeEventListener('paste', onPaste)
+  }, [navigator])
 
   useLayoutEffect(() => {
     const rootElement = document.documentElement
