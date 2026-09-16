@@ -83,3 +83,68 @@ it('opens image media using the existing embed control', () => {
   expect(clickPostAction(post, 'media')).toBe(true)
   expect(open).toHaveBeenCalledTimes(1)
 })
+
+it('does not perform an interaction when its dropdown is unavailable', () => {
+  const post = createPost({top: 20})
+  const button = document.createElement('button')
+  button.dataset.testid = 'likeBtn'
+  const like = jest.fn()
+  button.addEventListener('click', like)
+  post.appendChild(button)
+
+  expect(clickPostAction(post, 'like', true)).toBe(false)
+  expect(like).not.toHaveBeenCalled()
+})
+
+it('requests the account dropdown with a shifted click', () => {
+  const post = createPost({top: 20})
+  const button = document.createElement('button')
+  button.dataset.testid = 'postBookmarkBtn'
+  button.dataset.keyboardDropdown = 'true'
+  const open = jest.fn()
+  button.addEventListener('click', event => open(event.shiftKey))
+  post.appendChild(button)
+
+  expect(clickPostAction(post, 'save', true)).toBe(true)
+  expect(open).toHaveBeenCalledWith(true)
+})
+
+it.each(['repost', 'quote'] as const)(
+  'opens the %s menu without invoking an action when shifted',
+  action => {
+    jest.useFakeTimers()
+    const post = createPost({top: 20})
+    const button = document.createElement('button')
+    button.dataset.testid = 'repostBtn'
+    const item = document.createElement('button')
+    item.dataset.testid = 'repostDropdownRepostBtn'
+    const repost = jest.fn()
+    item.addEventListener('click', repost)
+    button.addEventListener('click', () => document.body.appendChild(item))
+    post.appendChild(button)
+
+    expect(clickPostAction(post, action, true)).toBe(true)
+    jest.runAllTimers()
+    expect(item.isConnected).toBe(true)
+    expect(repost).not.toHaveBeenCalled()
+    jest.useRealTimers()
+  },
+)
+
+it('quotes through the quote menu item', () => {
+  jest.useFakeTimers()
+  const post = createPost({top: 20})
+  const button = document.createElement('button')
+  button.dataset.testid = 'repostBtn'
+  const item = document.createElement('button')
+  item.dataset.testid = 'repostDropdownQuoteBtn'
+  const quote = jest.fn()
+  item.addEventListener('click', quote)
+  button.addEventListener('click', () => document.body.appendChild(item))
+  post.appendChild(button)
+
+  expect(clickPostAction(post, 'quote')).toBe(true)
+  jest.runAllTimers()
+  expect(quote).toHaveBeenCalledTimes(1)
+  jest.useRealTimers()
+})

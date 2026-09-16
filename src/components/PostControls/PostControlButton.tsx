@@ -65,6 +65,13 @@ export function PostControlButton({
   const handlePress = useMemo(() => {
     if (onPress) {
       return (evt: GestureResponderEvent) => {
+        if (
+          (evt.nativeEvent as unknown as MouseEvent).shiftKey &&
+          onLongPress
+        ) {
+          onLongPress(evt)
+          return
+        }
         playHaptic('Light')
         onPress(evt)
       }
@@ -95,6 +102,7 @@ export function PostControlButton({
       variant="ghost"
       color="secondary"
       {...props}
+      {...(onLongPress ? {dataSet: {keyboardDropdown: 'true'}} : {})}
       hitSlop={{
         ...DEFAULT_HITSLOP,
         ...(props.hitSlop || {}),

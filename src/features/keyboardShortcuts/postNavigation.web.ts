@@ -3,9 +3,10 @@ const POST_SELECTOR = '[data-keyboard-navigation-post]'
 const SELECTED_ATTRIBUTE = 'data-keyboard-navigation-selected'
 
 export type PostAction =
-  'reply' | 'like' | 'repost' | 'save' | 'share' | 'media'
+  'quote' | 'reply' | 'like' | 'repost' | 'save' | 'share' | 'media'
 
 const ACTION_TEST_IDS: Record<PostAction, string> = {
+  quote: 'repostBtn',
   reply: 'replyBtn',
   like: 'likeBtn',
   repost: 'repostBtn',
@@ -60,7 +61,11 @@ export function setPostSelected(element: HTMLElement, selected: boolean) {
   }
 }
 
-export function clickPostAction(element: HTMLElement, action: PostAction) {
+export function clickPostAction(
+  element: HTMLElement,
+  action: PostAction,
+  dropdown = false,
+) {
   const control = element.querySelector<HTMLElement>(
     `[data-testid="${ACTION_TEST_IDS[action]}"]`,
   )
@@ -74,11 +79,27 @@ export function clickPostAction(element: HTMLElement, action: PostAction) {
   }
   if (!control) return false
 
+  if (control.getAttribute('aria-disabled') === 'true') return false
+  if (dropdown) {
+    if (control.dataset.keyboardDropdown === 'true') {
+      control.dispatchEvent(
+        new MouseEvent('click', {bubbles: true, shiftKey: true}),
+      )
+      return true
+    }
+    if (action === 'repost' || action === 'quote') {
+      control.click()
+      return true
+    }
+    return false
+  }
   control.click()
-  if (action === 'repost') {
+  if (action === 'repost' || action === 'quote') {
     setTimeout(() => {
       document
-        .querySelector<HTMLElement>('[data-testid="repostDropdownRepostBtn"]')
+        .querySelector<HTMLElement>(
+          `[data-testid="${action === 'quote' ? 'repostDropdownQuoteBtn' : 'repostDropdownRepostBtn'}"]:not([aria-disabled="true"])`,
+        )
         ?.click()
     })
   }

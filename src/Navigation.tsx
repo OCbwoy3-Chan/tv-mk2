@@ -1462,6 +1462,13 @@ function navigate<K extends keyof AllNavigatorParams>(
   return Promise.resolve()
 }
 
+/** Returns to the previous app screen when one is available. */
+export function goBack() {
+  if (!navigationRef.isReady() || !navigationRef.canGoBack()) return false
+  navigationRef.goBack()
+  return true
+}
+
 function resetToTab(
   tabName: 'HomeTab' | 'SearchTab' | 'MessagesTab' | 'NotificationsTab',
 ) {

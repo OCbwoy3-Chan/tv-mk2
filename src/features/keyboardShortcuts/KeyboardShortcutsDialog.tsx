@@ -124,7 +124,16 @@ function KeyboardShortcutsDialogInner() {
             label={l`Like or unlike the selected post`}
           />
           <ShortcutRow shortcut="T" label={l`Repost or undo repost`} />
-          <ShortcutRow shortcut="S" label={l`Open sharing options`} />
+          <ShortcutRow shortcut="Q" label={l`Quote the selected post`} />
+          <ShortcutRow
+            shortcut="S"
+            label={l`Save or unsave the selected post`}
+          />
+          <ShortcutRow shortcut="X" label={l`Open sharing options`} />
+          <ShortcutRow
+            shortcut="Shift R / Q / T / L / S"
+            label={l`Open the interaction dropdown`}
+          />
         </ShortcutGroup>
 
         <View

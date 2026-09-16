@@ -168,6 +168,9 @@ function PostInner({
       <Link
         href={itemHref}
         dataSet={{
+          keyboardNavigationPost: post.uri,
+          keyboardNavigationHref: itemHref,
+          keyboardNavigationClickable: 'true',
           wskyEmbed: post.embed ? 'true' : 'false',
           wskyReply: record.reply ? 'true' : 'false',
           wskyRepost: 'false',

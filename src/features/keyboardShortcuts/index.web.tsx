@@ -10,7 +10,7 @@ import {useSession} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import * as Dialog from '#/components/Dialog'
 import {Text} from '#/components/Typography'
-import {navigate} from '#/Navigation'
+import {goBack, navigate} from '#/Navigation'
 import {router} from '#/routes'
 import {listenOpenKeyboardShortcuts} from './events'
 import {KeyboardShortcutsDialog} from './KeyboardShortcutsDialog'
@@ -43,6 +43,8 @@ const APP_CHARACTER_KEYS = new Set([
   't',
   'b',
   's',
+  'q',
+  'x',
 ])
 
 const POST_ACTIONS: Partial<Record<string, PostAction>> = {
@@ -50,7 +52,9 @@ const POST_ACTIONS: Partial<Record<string, PostAction>> = {
   r: 'reply',
   l: 'like',
   t: 'repost',
-  s: 'share',
+  q: 'quote',
+  s: 'save',
+  x: 'share',
 }
 
 type FeedReturnTarget = {
@@ -262,9 +266,9 @@ export function KeyboardShortcuts() {
     restoreTimeoutRef.current = setTimeout(tryRestore)
   })
 
-  const runPostAction = (action: PostAction) => {
+  const runPostAction = (action: PostAction, dropdown = false) => {
     const selected = getSelectedVisiblePost()
-    return selected ? clickPostAction(selected, action) : false
+    return selected ? clickPostAction(selected, action, dropdown) : false
   }
 
   const goTo = useNonReactiveCallback((key: string) => {
@@ -378,11 +382,18 @@ export function KeyboardShortcuts() {
         clearChord()
         return
       }
-      if (event.shiftKey && key !== '?') {
+      if (event.shiftKey && key !== '?' && !'rqtls'.includes(key)) {
         clearChord()
         return
       }
       if (event.repeat && key !== 'j' && key !== 'k') return
+
+      if (event.shiftKey && key !== '?') {
+        clearChord()
+        const action = POST_ACTIONS[key]
+        if (action && runPostAction(action, true)) consume(event)
+        return
+      }
 
       if (pendingChordRef.current === 'g') {
         clearChord()
@@ -416,6 +427,10 @@ export function KeyboardShortcuts() {
         if (returnTarget && getCurrentPath() === returnTarget.destinationPath) {
           consume(event)
           window.history.back()
+        } else {
+          consume(event)
+          clearSelection()
+          if (!goBack()) goTo('h')
         }
         return
       }
