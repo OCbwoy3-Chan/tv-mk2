@@ -11,6 +11,7 @@ import {
   shouldRetryError,
 } from '#/lib/strings/errors'
 import {augmentSearchQuery} from '#/lib/strings/helpers'
+import {useDisableInfiniteScroll} from '#/state/preferences/disable-infinite-scroll'
 import {useActorSearch} from '#/state/queries/actor-search'
 import {usePopularFeedsSearch} from '#/state/queries/feed'
 import {useSearchPostsV2Query} from '#/state/queries/search-posts-v2'
@@ -34,6 +35,7 @@ import * as FeedCard from '#/components/FeedCard'
 import * as Layout from '#/components/Layout'
 import {InlineLinkText} from '#/components/Link'
 import {ListFooter} from '#/components/Lists'
+import {usePaginatedList} from '#/components/Pagination'
 import {SearchError} from '#/components/SearchError'
 import {Text} from '#/components/Typography'
 import {type Metrics, useAnalytics} from '#/analytics'
@@ -382,18 +384,20 @@ let SearchScreenPostResults = ({
     return augmentSearchQuery(query || '')
   }, [query])
 
+  const paginated = useDisableInfiniteScroll()
   const v2 = useSearchPostsV2Query({
+    paginated,
     query: augmentedV2Query,
     filters,
     sort,
     enabled: active,
   })
+  const pagination = usePaginatedList(v2, paginated)
   const {
     isFetched,
     data: results,
     isFetching,
     error,
-    refetch,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -402,9 +406,9 @@ let SearchScreenPostResults = ({
   const t = useTheme()
   const onPullToRefresh = useCallback(async () => {
     setIsPTR(true)
-    await refetch()
+    await pagination.refresh()
     setIsPTR(false)
-  }, [setIsPTR, refetch])
+  }, [setIsPTR, pagination])
   const onEndReached = useCallback(() => {
     if (isFetching || !hasNextPage || error) return
     void fetchNextPage()
@@ -491,7 +495,7 @@ let SearchScreenPostResults = ({
     )
   }
 
-  return error ? (
+  return error && !results ? (
     <EmptyState
       messageText={
         shouldRetryError(error) || isNetworkError(error)
@@ -504,8 +508,14 @@ let SearchScreenPostResults = ({
     <>
       {isFetched ? (
         <>
-          {posts.length ? (
+          {posts.length || paginated ? (
             <List
+              key={pagination.key}
+              ref={pagination.ref}
+              ListHeaderComponent={pagination.header}
+              ListEmptyComponent={
+                <EmptyState messageText={<NoResultsText query={query} />} />
+              }
               data={items}
               renderItem={({
                 item,
@@ -527,7 +537,7 @@ let SearchScreenPostResults = ({
               onRefresh={() => {
                 void onPullToRefresh()
               }}
-              onEndReached={onEndReached}
+              onEndReached={paginated ? undefined : onEndReached}
               onItemSeen={(item: SearchResultSlice) => {
                 if (item.type === 'post') {
                   trackPostView(item.post)
@@ -535,11 +545,13 @@ let SearchScreenPostResults = ({
               }}
               desktopFixedHeight
               ListFooterComponent={
-                <SearchResultsFooter
-                  isFetchingNextPage={isFetching}
-                  hasNextPage={hasNextPage}
-                  onLoadMore={onEndReached}
-                />
+                pagination.footer ?? (
+                  <SearchResultsFooter
+                    isFetchingNextPage={isFetching}
+                    hasNextPage={hasNextPage}
+                    onLoadMore={onEndReached}
+                  />
+                )
               }
             />
           ) : (
@@ -605,25 +617,31 @@ let SearchScreenUserResults = ({
   const {hasSession} = useSession()
   const [isPTR, setIsPTR] = useState(false)
 
+  const paginated = useDisableInfiniteScroll()
+  const resultQuery = useActorSearch({
+    paginated,
+    query,
+    enabled: active,
+  })
+  const pagination = usePaginatedList(
+    {...resultQuery, hasNextPage: resultQuery.hasNextPage && hasSession},
+    paginated,
+  )
   const {
     isFetched,
     data: results,
     isFetching,
     error,
-    refetch,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  } = useActorSearch({
-    query,
-    enabled: active,
-  })
+  } = resultQuery
 
   const onPullToRefresh = useCallback(async () => {
     setIsPTR(true)
-    await refetch()
+    await pagination.refresh()
     setIsPTR(false)
-  }, [setIsPTR, refetch])
+  }, [setIsPTR, pagination])
   const onEndReached = useCallback(() => {
     if (!hasSession) return
     if (isFetching || !hasNextPage || error) return
@@ -644,7 +662,7 @@ let SearchScreenUserResults = ({
     fireTracking()
   }
 
-  if (error) {
+  if (error && !results) {
     return (
       <EmptyState
         messageText={
@@ -659,8 +677,14 @@ let SearchScreenUserResults = ({
 
   return isFetched && profiles ? (
     <>
-      {profiles.length ? (
+      {profiles.length || paginated ? (
         <List
+          key={pagination.key}
+          ref={pagination.ref}
+          ListHeaderComponent={pagination.header}
+          ListEmptyComponent={
+            <EmptyState messageText={<NoResultsText query={query} />} />
+          }
           data={profiles}
           renderItem={({
             item,
@@ -672,14 +696,16 @@ let SearchScreenUserResults = ({
           keyExtractor={(item: bsky.profile.AnyProfileView) => item.did}
           refreshing={isPTR}
           onRefresh={() => void onPullToRefresh()}
-          onEndReached={onEndReached}
+          onEndReached={paginated ? undefined : onEndReached}
           desktopFixedHeight
           ListFooterComponent={
-            <SearchResultsFooter
-              hasNextPage={hasNextPage && hasSession}
-              isFetchingNextPage={isFetching}
-              onLoadMore={onEndReached}
-            />
+            pagination.footer ?? (
+              <SearchResultsFooter
+                hasNextPage={hasNextPage && hasSession}
+                isFetchingNextPage={isFetching}
+                onLoadMore={onEndReached}
+              />
+            )
           }
         />
       ) : (
@@ -735,6 +761,13 @@ let SearchScreenFeedsResults = ({
   const ax = useAnalytics()
   const t = useTheme()
 
+  const paginated = useDisableInfiniteScroll()
+  const resultQuery = usePopularFeedsSearch({
+    paginated,
+    query,
+    enabled: active,
+  })
+  const pagination = usePaginatedList(resultQuery, paginated)
   const {
     data: results,
     isFetched,
@@ -743,10 +776,7 @@ let SearchScreenFeedsResults = ({
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  } = usePopularFeedsSearch({
-    query,
-    enabled: active,
-  })
+  } = resultQuery
   const feeds = useMemo(() => {
     return results?.pages.flatMap(page => page.feeds) || []
   }, [results])
@@ -767,8 +797,14 @@ let SearchScreenFeedsResults = ({
 
   return isFetched ? (
     <>
-      {feeds.length || hasNextPage ? (
+      {feeds.length || hasNextPage || paginated ? (
         <List
+          key={pagination.key}
+          ref={pagination.ref}
+          ListHeaderComponent={pagination.header}
+          ListEmptyComponent={
+            <EmptyState messageText={<NoResultsText query={query} />} />
+          }
           data={feeds}
           renderItem={({
             item,
@@ -788,13 +824,15 @@ let SearchScreenFeedsResults = ({
             </View>
           )}
           keyExtractor={(item: app.bsky.feed.defs.GeneratorView) => item.uri}
-          onEndReached={onEndReached}
+          onEndReached={paginated ? undefined : onEndReached}
           desktopFixedHeight
           ListFooterComponent={
-            <ListFooter
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-            />
+            pagination.footer ?? (
+              <ListFooter
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+              />
+            )
           }
         />
       ) : (
@@ -839,25 +877,28 @@ let SearchScreenStarterPackResults = ({
   const {t: l} = useLingui()
   const [isPTR, setIsPTR] = useState(false)
 
+  const paginated = useDisableInfiniteScroll()
+  const resultQuery = useStarterPackSearch({
+    paginated,
+    query,
+    enabled: active,
+  })
+  const pagination = usePaginatedList(resultQuery, paginated)
   const {
     isFetched,
     data: results,
     isFetching,
     error,
-    refetch,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-  } = useStarterPackSearch({
-    query,
-    enabled: active,
-  })
+  } = resultQuery
 
   const onPullToRefresh = useCallback(async () => {
     setIsPTR(true)
-    await refetch()
+    await pagination.refresh()
     setIsPTR(false)
-  }, [setIsPTR, refetch])
+  }, [setIsPTR, pagination])
   const onEndReached = useCallback(() => {
     if (isFetching || !hasNextPage || error) return
     void fetchNextPage()
@@ -876,7 +917,7 @@ let SearchScreenStarterPackResults = ({
     fireTracking()
   }
 
-  if (error) {
+  if (error && !results) {
     return (
       <EmptyState
         messageText={
@@ -891,8 +932,14 @@ let SearchScreenStarterPackResults = ({
 
   return isFetched ? (
     <>
-      {starterPacks.length ? (
+      {starterPacks.length || paginated ? (
         <List
+          key={pagination.key}
+          ref={pagination.ref}
+          ListHeaderComponent={pagination.header}
+          ListEmptyComponent={
+            <EmptyState messageText={<NoResultsText query={query} />} />
+          }
           data={starterPacks}
           renderItem={({
             item,
@@ -908,13 +955,15 @@ let SearchScreenStarterPackResults = ({
           keyExtractor={(item: app.bsky.graph.defs.StarterPackView) => item.uri}
           refreshing={isPTR}
           onRefresh={() => void onPullToRefresh()}
-          onEndReached={onEndReached}
+          onEndReached={paginated ? undefined : onEndReached}
           desktopFixedHeight
           ListFooterComponent={
-            <ListFooter
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-            />
+            pagination.footer ?? (
+              <ListFooter
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+              />
+            )
           }
         />
       ) : (

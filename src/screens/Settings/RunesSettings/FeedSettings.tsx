@@ -83,8 +83,8 @@ export function RunesUsabilityFeedSettingsScreen() {
       <SettingsList.Item>
         <Admonition type="info" style={[a.flex_1]}>
           <Trans>
-            Use pages instead of infinite scrolling. Each new page replaces the
-            previous posts to reduce memory use.
+            Use pages in feeds, search results, and saved posts. Each new page
+            replaces the previous results to reduce memory use.
           </Trans>
         </Admonition>
       </SettingsList.Item>

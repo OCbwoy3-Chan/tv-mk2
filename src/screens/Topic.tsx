@@ -15,6 +15,7 @@ import {
   useCustomAppViewDid,
   useCustomAppViewUrl,
 } from '#/state/preferences/custom-appview-did'
+import {useDisableInfiniteScroll} from '#/state/preferences/disable-infinite-scroll'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useSearchPostsV2Query} from '#/state/queries/search-posts-v2'
 import {Pager} from '#/view/com/pager/Pager'
@@ -27,6 +28,7 @@ import {Button, ButtonIcon} from '#/components/Button'
 import {ArrowOutOfBoxModified_Stroke2_Corner2_Rounded as Share} from '#/components/icons/ArrowOutOfBox'
 import * as Layout from '#/components/Layout'
 import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
+import {usePaginatedList} from '#/components/Pagination'
 import {type app} from '#/lexicons'
 
 const renderItem = ({
@@ -147,6 +149,14 @@ function TopicScreenTab({
   const [isPTR, setIsPTR] = useState(false)
   const trackPostView = usePostViewTracking('Topic')
 
+  const paginated = useDisableInfiniteScroll()
+  const resultQuery = useSearchPostsV2Query({
+    paginated,
+    query: decodeURIComponent(topic),
+    sort,
+    enabled: active,
+  })
+  const pagination = usePaginatedList(resultQuery, paginated)
   const {
     data,
     isFetched,
@@ -154,14 +164,10 @@ function TopicScreenTab({
     isLoading,
     isError,
     error,
-    refetch,
     fetchNextPage,
     hasNextPage,
-  } = useSearchPostsV2Query({
-    query: decodeURIComponent(topic),
-    sort,
-    enabled: active,
-  })
+  } = resultQuery
+  const refetch = pagination.refresh
 
   const posts = useMemo(() => {
     return data?.pages.flatMap(page => page.posts) || []
@@ -180,7 +186,7 @@ function TopicScreenTab({
 
   return (
     <>
-      {posts.length < 1 ? (
+      {posts.length < 1 && !paginated ? (
         <ListMaybePlaceholder
           isLoading={isLoading || !isFetched}
           isError={isError}
@@ -190,21 +196,35 @@ function TopicScreenTab({
         />
       ) : (
         <List
+          key={pagination.key}
+          ref={pagination.ref}
+          ListHeaderComponent={pagination.header}
+          ListEmptyComponent={
+            <ListMaybePlaceholder
+              isLoading={isLoading || !isFetched}
+              isError={isError}
+              onRetry={refetch}
+              emptyType="results"
+              emptyMessage={l`We couldn't find any results for that topic.`}
+            />
+          }
           data={posts}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           refreshing={isPTR}
           onRefresh={() => void onRefresh()}
-          onEndReached={onEndReached}
+          onEndReached={paginated ? undefined : onEndReached}
           onEndReachedThreshold={4}
           onItemSeen={trackPostView}
           desktopFixedHeight
           ListFooterComponent={
-            <ListFooter
-              isFetchingNextPage={isFetchingNextPage}
-              error={cleanError(error)}
-              onRetry={fetchNextPage}
-            />
+            pagination.footer ?? (
+              <ListFooter
+                isFetchingNextPage={isFetchingNextPage}
+                error={cleanError(error)}
+                onRetry={fetchNextPage}
+              />
+            )
           }
           initialNumToRender={initialNumToRender}
           windowSize={11}

@@ -11,6 +11,7 @@ import {shareUrl} from '#/lib/sharing'
 import {cleanError} from '#/lib/strings/errors'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {enforceLen} from '#/lib/strings/helpers'
+import {useDisableInfiniteScroll} from '#/state/preferences/disable-infinite-scroll'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useSearchPostsV2Query} from '#/state/queries/search-posts-v2'
 import {useSession} from '#/state/session'
@@ -26,6 +27,7 @@ import {ArrowOutOfBoxModified_Stroke2_Corner2_Rounded as Share} from '#/componen
 import * as Layout from '#/components/Layout'
 import {InlineLinkText} from '#/components/Link'
 import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
+import {usePaginatedList} from '#/components/Pagination'
 import {SearchError} from '#/components/SearchError'
 import {Text} from '#/components/Typography'
 import {type app} from '#/lexicons'
@@ -181,17 +183,9 @@ function HashtagScreenTab({
     return isCashtag ? `#${fullTag}` : fullTag
   }, [fullTag, isCashtag])
 
-  const {
-    data,
-    isFetched,
-    isFetchingNextPage,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    fetchNextPage,
-    hasNextPage,
-  } = useSearchPostsV2Query({
+  const paginated = useDisableInfiniteScroll()
+  const resultQuery = useSearchPostsV2Query({
+    paginated,
     query: queryParam,
     sort,
     enabled: active,
@@ -199,6 +193,18 @@ function HashtagScreenTab({
       author,
     },
   })
+  const pagination = usePaginatedList(resultQuery, paginated)
+  const {
+    data,
+    isFetched,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+  } = resultQuery
+  const refetch = pagination.refresh
 
   const posts = useMemo(() => {
     return data?.pages.flatMap(page => page.posts) || []
@@ -256,7 +262,7 @@ function HashtagScreenTab({
 
   return (
     <>
-      {posts.length < 1 ? (
+      {posts.length < 1 && !paginated ? (
         <ListMaybePlaceholder
           isLoading={isLoading || !isFetched}
           isError={isError}
@@ -266,21 +272,35 @@ function HashtagScreenTab({
         />
       ) : (
         <List
+          key={pagination.key}
+          ref={pagination.ref}
+          ListHeaderComponent={pagination.header}
+          ListEmptyComponent={
+            <ListMaybePlaceholder
+              isLoading={isLoading || !isFetched}
+              isError={isError}
+              onRetry={refetch}
+              emptyType="results"
+              emptyMessage={l`We couldn't find any results for that tag.`}
+            />
+          }
           data={posts}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           refreshing={isPTR}
           onRefresh={() => void onRefresh()}
-          onEndReached={onEndReached}
+          onEndReached={paginated ? undefined : onEndReached}
           onEndReachedThreshold={4}
           onItemSeen={trackPostView}
           desktopFixedHeight
           ListFooterComponent={
-            <ListFooter
-              isFetchingNextPage={isFetchingNextPage}
-              error={cleanError(error)}
-              onRetry={fetchNextPage}
-            />
+            pagination.footer ?? (
+              <ListFooter
+                isFetchingNextPage={isFetchingNextPage}
+                error={cleanError(error)}
+                onRetry={fetchNextPage}
+              />
+            )
           }
           initialNumToRender={initialNumToRender}
           windowSize={11}

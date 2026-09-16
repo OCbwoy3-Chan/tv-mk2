@@ -7,6 +7,11 @@ import {
 } from '@tanstack/react-query'
 
 import {STALE} from '#/state/queries'
+import {
+  type CursorPageParam,
+  unwrapCursor,
+  useCursorPagination,
+} from '#/state/queries/cursor-pagination'
 import {useAppviewClient} from '#/state/session'
 import {app} from '#/lexicons'
 
@@ -22,35 +27,40 @@ export function useActorSearch({
   enabled,
   maintainData,
   limit = 25,
+  paginated = false,
 }: {
   query: string
   enabled?: boolean
   maintainData?: boolean
   limit?: number
+  paginated?: boolean
 }) {
   const client = useAppviewClient()
-  return useInfiniteQuery<
+  const pagination = useCursorPagination<
+    app.bsky.actor.searchActors.$OutputBody,
+    string | undefined
+  >(RQKEY(query, limit), paginated, page => page.cursor, undefined)
+  const result = useInfiniteQuery<
     app.bsky.actor.searchActors.$OutputBody,
     Error,
     InfiniteData<app.bsky.actor.searchActors.$OutputBody>,
     QueryKey,
-    string | undefined
+    CursorPageParam<string | undefined>
   >({
     staleTime: STALE.MINUTES.FIVE,
-    queryKey: RQKEY(query, limit),
+    ...pagination,
     queryFn: async ({pageParam}) => {
       return await client.call(app.bsky.actor.searchActors, {
         q: query,
         limit,
-        cursor: pageParam,
+        cursor: unwrapCursor(pageParam),
       })
     },
     enabled: enabled && !!query,
-    initialPageParam: undefined,
-    getNextPageParam: lastPage => lastPage.cursor,
     placeholderData: maintainData ? keepPreviousData : undefined,
     select,
   })
+  return {...result, paginationQueryKey: pagination.queryKey}
 }
 
 function select(data: InfiniteData<app.bsky.actor.searchActors.$OutputBody>) {
