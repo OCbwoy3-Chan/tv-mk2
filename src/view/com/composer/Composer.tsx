@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useReducer,
   useRef,
@@ -122,8 +123,9 @@ import {
   buildPdsClient,
 } from '#/state/session/clients'
 import {isEphemeralAuthError} from '#/state/session/ephemeral-auth'
-import {useComposerControls} from '#/state/shell/composer'
+import {useComposerControls, useComposerState} from '#/state/shell/composer'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
+import {saveRecovery} from '#/state/shell/composer/recovery'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
 import {DraftsButton} from '#/view/com/composer/drafts/DraftsButton'
@@ -287,6 +289,7 @@ function useAddImagesWithCap(
 
 type Props = ComposerOpts
 export const ComposePost = ({
+  recoveredState,
   activeAccountDid: initialActiveAccountDid,
   openAccountSwitcher = false,
   replyTo,
@@ -321,6 +324,7 @@ export const ComposePost = ({
     setActiveAccountDid(initialActiveAccountDid ?? currentDid)
   }, [initialActiveAccountDid, currentDid])
   const {closeComposer} = useComposerControls()
+  const isComposerOpen = !!useComposerState()
   const showEphemeralError = useEphemeralAccountError()
   const {t: l, i18n} = useLingui()
   const requireAltTextEnabled = useRequireAltTextEnabled()
@@ -451,16 +455,23 @@ export const ComposePost = ({
 
   const [composerState, composerDispatch] = useReducer(
     composerReducer,
-    createComposerState({
-      initImageUris,
-      initQuoteUri: initQuote?.uri,
-      initText,
-      initMention,
-      initInteractionSettings: preferences?.postInteractionSettings,
-      initVideoUri,
-      initTags,
-    }),
+    recoveredState ??
+      createComposerState({
+        initImageUris,
+        initQuoteUri: initQuote?.uri,
+        initText,
+        initMention,
+        initInteractionSettings: preferences?.postInteractionSettings,
+        initVideoUri,
+        initTags,
+      }),
   )
+
+  useLayoutEffect(() => {
+    if (isComposerOpen) {
+      saveRecovery(currentDid, {activeAccountDid, replyTo}, composerState)
+    }
+  }, [isComposerOpen, currentDid, activeAccountDid, replyTo, composerState])
 
   const thread = composerState.thread
 
@@ -822,6 +833,28 @@ export const ComposePost = ({
     },
     [l, processSelectedAccountVideo, composerDispatch, ax.metric],
   )
+
+  const resumeRecoveredVideos = useNonReactiveCallback(() => {
+    for (const post of recoveredState?.thread.posts ?? []) {
+      const media = post.embed.media
+      if (
+        media?.type === 'video' &&
+        media.video.status !== 'done' &&
+        media.video.asset
+      ) {
+        void restoreVideo(post.id, {
+          uri: media.video.asset.uri,
+          mimeType: media.video.asset.mimeType ?? 'video/mp4',
+          altText: media.video.altText,
+          captions: [],
+          localRefPath: '',
+        })
+      }
+    }
+  })
+  useEffect(() => {
+    resumeRecoveredVideos()
+  }, [resumeRecoveredVideos])
 
   const handleSelectDraft = useCallback(
     async (draftSummary: DraftSummary) => {

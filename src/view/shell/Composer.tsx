@@ -39,6 +39,7 @@ export function Composer() {
       aria-modal
       accessibilityViewIsModal>
       <ComposePost
+        recoveredState={state.recoveredState}
         activeAccountDid={state.activeAccountDid}
         replyTo={state.replyTo}
         onPost={state.onPost}

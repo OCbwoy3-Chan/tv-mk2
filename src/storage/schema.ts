@@ -100,6 +100,9 @@ export type Device = {
 }
 
 export type Account = {
+  /** Native composition recovered after process death. */
+  composerRecovery?: string
+
   searchTermHistory?: string[]
   searchAccountHistory?: string[]
 

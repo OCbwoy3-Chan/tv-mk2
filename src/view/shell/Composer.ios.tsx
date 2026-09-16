@@ -38,6 +38,7 @@ export function Composer() {
       <View style={[a.flex_1, t.atoms.bg]}>
         <TooltipSheetCompatProvider>
           <ComposePost
+            recoveredState={state?.recoveredState}
             cancelRef={ref}
             activeAccountDid={state?.activeAccountDid}
             replyTo={state?.replyTo}

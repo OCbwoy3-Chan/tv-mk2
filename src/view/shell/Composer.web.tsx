@@ -1,3 +1,4 @@
+import {useEffect} from 'react'
 import {StyleSheet, View} from 'react-native'
 import {DismissableLayer, FocusGuards, FocusScope} from 'radix-ui/internal'
 import {RemoveScrollBar} from 'react-remove-scroll-bar'
@@ -31,6 +32,15 @@ function Inner({state}: {state: ComposerOpts}) {
   const {gtMobile} = useBreakpoints()
   const {reduceMotionEnabled} = useA11y()
 
+  useEffect(() => {
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [])
+
   FocusGuards.useFocusGuards()
 
   return (
@@ -63,6 +73,7 @@ function Inner({state}: {state: ComposerOpts}) {
             ],
           ]}>
           <ComposePost
+            recoveredState={state.recoveredState}
             cancelRef={ref}
             activeAccountDid={state.activeAccountDid}
             openAccountSwitcher={state.openAccountSwitcher}
