@@ -6,13 +6,14 @@ import {
   type RQPageParam,
 } from '#/state/queries/post-feed'
 import {getPostFeedPaginationOptions} from '#/state/queries/post-feed-pagination'
+import {refreshPostFeedQueries} from '#/state/queries/refresh-post-feed'
 
 function setup(paginated = true) {
   const client = new QueryClient({defaultOptions: {queries: {retry: false}}})
   const api = {} as FeedAPI
   let fail = false
   const observer = new InfiniteQueryObserver(client, {
-    queryKey: ['pagination-test'],
+    queryKey: ['post-feed', 'following', {paginated}],
     ...getPostFeedPaginationOptions(paginated),
     initialPageParam: undefined as RQPageParam,
     queryFn: ({pageParam}): FeedPageUnselected => {
@@ -47,7 +48,7 @@ test('deep pagination retains only one page and its continuation cursor', async 
         String(page - 1),
       )
     }
-    await client.resetQueries({queryKey: ['pagination-test']})
+    await client.resetQueries({queryKey: ['post-feed', 'following']})
     expect(observer.getCurrentResult().data?.pages.map(p => p.page)).toEqual([
       1,
     ])
@@ -80,6 +81,84 @@ test('infinite scrolling continues to accumulate pages', async () => {
     await observer.fetchNextPage()
     const result = await observer.fetchNextPage()
     expect(result.data?.pages.map(p => p.page)).toEqual([1, 2, 3])
+  } finally {
+    cleanup()
+  }
+})
+
+test('previous page replaces the current page and can advance again', async () => {
+  const {observer, cleanup} = setup()
+  try {
+    await observer.refetch()
+    await observer.fetchNextPage()
+    await observer.fetchNextPage()
+    const previous = await observer.fetchPreviousPage()
+    expect(previous.data?.pages.map(p => p.page)).toEqual([2])
+    expect(previous.data?.pageParams).toHaveLength(1)
+    const first = await observer.fetchPreviousPage()
+    expect(first.data?.pages.map(p => p.page)).toEqual([1])
+    expect(first.hasPreviousPage).toBe(false)
+    const next = await observer.fetchNextPage()
+    expect(next.data?.pages.map(p => p.page)).toEqual([2])
+  } finally {
+    cleanup()
+  }
+})
+
+test('a failed previous page retains the current page for retry', async () => {
+  const {observer, setFail, cleanup} = setup()
+  try {
+    await observer.refetch()
+    await observer.fetchNextPage()
+    setFail(true)
+    const failed = await observer.fetchPreviousPage()
+    expect(failed.isFetchPreviousPageError).toBe(true)
+    expect(failed.data?.pages.map(p => p.page)).toEqual([2])
+    setFail(false)
+    const retried = await observer.fetchPreviousPage()
+    expect(retried.data?.pages.map(p => p.page)).toEqual([1])
+  } finally {
+    cleanup()
+  }
+})
+
+test.each([true, false])(
+  'refresh shortcuts return to page one (paginated=%s)',
+  async paginated => {
+    const {client, observer, cleanup} = setup(paginated)
+    try {
+      await observer.refetch()
+      await observer.fetchNextPage()
+      await observer.fetchNextPage()
+      await refreshPostFeedQueries(client, ['post-feed', 'following'])
+      expect(observer.getCurrentResult().data?.pages.map(p => p.page)).toEqual([
+        1,
+      ])
+      expect(observer.getCurrentResult().data?.pageParams).toEqual([undefined])
+      expect(observer.getCurrentResult().hasPreviousPage).toBe(false)
+    } finally {
+      cleanup()
+    }
+  },
+)
+
+test('refreshing page one keeps its posts visible throughout the request', async () => {
+  const {client, observer, cleanup} = setup()
+  try {
+    await observer.refetch()
+    const states: {pending: boolean; pages: number[] | undefined}[] = []
+    const unsubscribe = observer.subscribe(result => {
+      states.push({
+        pending: result.isPending,
+        pages: result.data?.pages.map(page => page.page),
+      })
+    })
+    await refreshPostFeedQueries(client, ['post-feed', 'following'])
+    unsubscribe()
+    expect(states.length).toBeGreaterThan(0)
+    expect(
+      states.every(state => !state.pending && state.pages?.[0] === 1),
+    ).toBe(true)
   } finally {
     cleanup()
   }

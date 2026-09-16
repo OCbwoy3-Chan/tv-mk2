@@ -8,6 +8,15 @@ export function getPostFeedPaginationOptions(paginated: boolean) {
   return {
     maxPages: paginated ? 1 : undefined,
     gcTime: paginated ? 0 : undefined,
+    getPreviousPageParam(firstPage: FeedPageUnselected): RQPageParam {
+      return paginated && firstPage.page > 1
+        ? {
+            api: firstPage.api,
+            cursor: String(firstPage.page - 2),
+            page: firstPage.page - 1,
+          }
+        : undefined
+    },
     getNextPageParam(lastPage: FeedPageUnselected): RQPageParam {
       return lastPage.cursor
         ? {

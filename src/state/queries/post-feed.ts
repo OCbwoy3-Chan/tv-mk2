@@ -22,6 +22,7 @@ import {HomeFeedAPI} from '#/lib/api/feed/home'
 import {LikesFeedAPI} from '#/lib/api/feed/likes'
 import {ListFeedAPI} from '#/lib/api/feed/list'
 import {MergeFeedAPI} from '#/lib/api/feed/merge'
+import {PaginatedFeedAPI} from '#/lib/api/feed/paginated'
 import {PostListFeedAPI} from '#/lib/api/feed/posts'
 import {type FeedAPI, type ReasonFeedSource} from '#/lib/api/feed/types'
 import {aggregateUserInterests} from '#/lib/api/feed/utils'
@@ -199,25 +200,38 @@ export function usePostFeedQuery(
     staleTime: STALE.INFINITY,
     ...getPostFeedPaginationOptions(params?.paginated ?? false),
     queryKey: RQKEY(feedDesc, params),
-    async queryFn({pageParam}: {pageParam: RQPageParam}) {
+    async queryFn({
+      pageParam,
+      signal,
+    }: {
+      pageParam: RQPageParam
+      signal: AbortSignal
+    }) {
       logger.debug('usePostFeedQuery', {feedDesc, cursor: pageParam?.cursor})
-      const {api, cursor} = pageParam
-        ? pageParam
-        : {
-            api: createApi({
-              feedDesc,
-              feedParams: params || {},
-              feedTuners,
-              client,
-              // Not in the query key because they don't change:
-              userInterests,
-              // Not in the query key. Reacting to it switching isn't important:
-              enableFollowingToDiscoverFallback,
-            }),
-            cursor: undefined,
-          }
+      const makeApi = () =>
+        createApi({
+          feedDesc,
+          feedParams: params || {},
+          feedTuners,
+          client,
+          userInterests,
+          enableFollowingToDiscoverFallback,
+        })
+      const api =
+        pageParam?.api ??
+        (params?.paginated
+          ? new PaginatedFeedAPI(
+              makeApi,
+              feedDesc === 'following' &&
+                (!!params.mergeFeedEnabled ||
+                  enableFollowingToDiscoverFallback),
+            )
+          : makeApi())
+      const cursor = pageParam?.cursor
 
-      const res = await api.fetch({cursor, limit: fetchLimit})
+      const res = await (api instanceof PaginatedFeedAPI
+        ? api.fetch({cursor, limit: fetchLimit, signal})
+        : api.fetch({cursor, limit: fetchLimit}))
 
       /*
        * If this is a public view, we need to check if posts fail moderation.

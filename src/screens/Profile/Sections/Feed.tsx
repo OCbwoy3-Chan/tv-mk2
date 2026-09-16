@@ -10,7 +10,7 @@ import {
   type FeedDescriptor,
   RQKEY as FEED_RQKEY,
 } from '#/state/queries/post-feed'
-import {truncateAndInvalidate} from '#/state/queries/util'
+import {refreshPostFeedQueries} from '#/state/queries/refresh-post-feed'
 import {PostFeed, type PostFeedRef} from '#/view/com/posts/PostFeed'
 import {
   EmptyState,
@@ -66,7 +66,7 @@ export function ProfileFeedSection({
       animated: IS_NATIVE,
       offset: -headerHeight,
     })
-    void truncateAndInvalidate(queryClient, FEED_RQKEY(feed))
+    void refreshPostFeedQueries(queryClient, FEED_RQKEY(feed))
     setHasNew(false)
   }, [scrollElRef, headerHeight, queryClient, feed, setHasNew])
 

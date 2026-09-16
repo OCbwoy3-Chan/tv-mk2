@@ -433,6 +433,9 @@ let PostFeed = ({
     refetch,
     hasNextPage,
     isFetchingNextPage,
+    isFetchingPreviousPage,
+    isFetchPreviousPageError,
+    fetchPreviousPage,
     fetchNextPage,
   } = usePostFeedQuery(feed, feedParams, opts)
   const pageNumber = data?.pages[0]?.page ?? 1
@@ -942,7 +945,7 @@ let PostFeed = ({
       reason: 'pull-to-refresh',
     })
     try {
-      if (disableInfiniteScroll) {
+      if (disableInfiniteScroll && pageNumber > 1) {
         await queryClient.resetQueries({
           queryKey: RQKEY(feed, feedParams),
           exact: true,
@@ -998,8 +1001,8 @@ let PostFeed = ({
   }, [refetch, onHasNew])
 
   const onPressRetryLoadMore = useCallback(() => {
-    void fetchNextPage()
-  }, [fetchNextPage])
+    void (isFetchPreviousPageError ? fetchPreviousPage() : fetchNextPage())
+  }, [isFetchPreviousPageError, fetchPreviousPage, fetchNextPage])
 
   // rendering
   // =
@@ -1164,15 +1167,15 @@ let PostFeed = ({
           <Button
             testID={
               position === 'top'
-                ? 'feedFirstPageButtonTop'
-                : 'feedFirstPageButton'
+                ? 'feedPreviousPageButtonTop'
+                : 'feedPreviousPageButton'
             }
-            label={l`First page`}
+            label={l`Previous page`}
             color="secondary"
             size="small"
             disabled={isFetching || !enabled}
-            onPress={refreshFeed}>
-            <ButtonText>{l`First page`}</ButtonText>
+            onPress={() => fetchPreviousPage()}>
+            <ButtonText>{l`Previous page`}</ButtonText>
           </Button>
         )}
         <Text accessibilityLiveRegion="polite">{l`Page ${pageNumber}`}</Text>
@@ -1209,7 +1212,7 @@ let PostFeed = ({
       Math.max(headerOffset, 32) * (IS_WEB ? 1 : 2) +
       (IS_WEB ? bottomBarOffset : 0)
 
-    return isFetchingNextPage ? (
+    return isFetchingNextPage || isFetchingPreviousPage ? (
       <View style={[styles.feedFooter]}>
         <ActivityIndicator color={t.palette.primary_500} />
         <View style={{height: offset}} />
@@ -1233,6 +1236,7 @@ let PostFeed = ({
     hasNextPage,
     pageNumber,
     isFetchingNextPage,
+    isFetchingPreviousPage,
     shouldRenderEndOfFeed,
     renderEndOfFeed,
     headerOffset,
