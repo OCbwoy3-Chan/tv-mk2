@@ -11,6 +11,7 @@ export function SearchAutocompleteInput({
   fixedParams: _fixedParams,
   onSelectProfile: _onSelectProfile,
   onSelectSearch: _onSelectSearch,
+  onOpenLink: _onOpenLink,
   ...rest
 }: SearchAutocompleteInputProps) {
   return <SearchInput {...rest} />

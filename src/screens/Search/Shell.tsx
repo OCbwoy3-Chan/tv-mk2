@@ -20,12 +20,18 @@ import Animated, {
 } from 'react-native-reanimated'
 import {setStringAsync} from 'expo-clipboard'
 import {Trans, useLingui} from '@lingui/react/macro'
-import {useFocusEffect, useNavigation, useRoute} from '@react-navigation/native'
+import {
+  StackActions,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
 
 import {HITSLOP_10, HITSLOP_20} from '#/lib/constants'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {MagnifyingGlassIcon} from '#/lib/icons'
+import {parseSearchLink} from '#/lib/routes/searchLink'
 import {type NavigationProp, type SearchParams} from '#/lib/routes/types'
 import {userStyle} from '#/lib/userstyles'
 import {listenSoftReset} from '#/state/events'
@@ -336,6 +342,14 @@ export function SearchScreenShell({
     route.name,
   ])
 
+  const onOpenLink = (value: string) => {
+    const link = parseSearchLink(value)
+    if (!link) return
+    setShowAutocomplete(false)
+    textInput.current?.blur()
+    navigation.dispatch(StackActions.push(link.screen, link.params))
+  }
+
   const onSubmit = (source: 'typed' | 'autocomplete') => () => {
     const nextQuery = searchTextRef.current
     ax.metric('search:query', {
@@ -616,6 +630,7 @@ export function SearchScreenShell({
                       fixedParams={Boolean(fixedParams)}
                       onSelectProfile={onSelectProfile}
                       onSelectSearch={onSelectSearch}
+                      onOpenLink={onOpenLink}
                     />
                   </View>
                 </View>
@@ -675,6 +690,7 @@ export function SearchScreenShell({
                 isFetching={isAutocompleteFetching}
                 searchText={searchText}
                 onSubmit={onSubmit('autocomplete')}
+                onOpenLink={onOpenLink}
                 onResultPress={onAutocompleteResultPress}
                 onProfileClick={handleProfileClick}
               />

@@ -30,8 +30,18 @@ export type AutocompleteSearch = {
   value: string
 }
 
+export type AutocompleteOpenLink = {
+  key: string
+  type: 'open-link'
+  value: string
+}
+
 export type AutocompleteItem =
-  AutocompleteProfile | AutocompleteTag | AutocompleteEmoji | AutocompleteSearch
+  | AutocompleteProfile
+  | AutocompleteTag
+  | AutocompleteEmoji
+  | AutocompleteSearch
+  | AutocompleteOpenLink
 
 export type AutocompleteItemType = AutocompleteItem['type']
 

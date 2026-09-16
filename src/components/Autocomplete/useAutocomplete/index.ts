@@ -3,6 +3,7 @@ import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
 import {keepPreviousData, useQuery} from '@tanstack/react-query'
 
 import {isJustAMute, moduiContainsHideableOffense} from '#/lib/moderation'
+import {parseSearchLink} from '#/lib/routes/searchLink'
 import {
   useCustomAppViewDid,
   useCustomAppViewUrl,
@@ -51,7 +52,6 @@ export function useAutocomplete({
    * pick up App server changes from the login dialog. Rebuild a guest agent
    * from persisted AppView settings whenever that selection changes.
    */
-  
 
   const query = useQuery({
     staleTime: STALE.MINUTES.ONE,
@@ -118,13 +118,12 @@ export function useAutocomplete({
   })
 
   const items = useMemo(() => {
-    if (!query.data) {
-      return []
-    }
-
-    const results = [...query.data]
+    const results: AutocompleteItem[] = [...(query.data ?? [])]
 
     if (showSearchFallback && q) {
+      if (parseSearchLink(q)) {
+        results.unshift({key: `open-link-${q}`, type: 'open-link', value: q})
+      }
       results.unshift({
         key: `search-${q}`,
         type: 'search' as const,

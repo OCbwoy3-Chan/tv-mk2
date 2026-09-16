@@ -20,4 +20,6 @@ export type SearchAutocompleteInputProps = SearchInputProps & {
    * Web only. Called when the "Search for X" row in the dropdown is selected.
    */
   onSelectSearch?: (value: string) => void
+  /** Called when the separate open-link suggestion is selected on web. */
+  onOpenLink?: (value: string) => void
 }
