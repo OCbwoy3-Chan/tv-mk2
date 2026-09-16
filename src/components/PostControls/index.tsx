@@ -1,4 +1,4 @@
-import {memo, useMemo, useState} from 'react'
+import {memo, useMemo, useRef, useState} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {type RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {plural} from '@lingui/core/macro'
@@ -185,7 +185,10 @@ function PostControlsInner({
     }
   }
 
-  const onRepost = async () => {
+  const repostInFlight = useRef(false)
+
+  const onRepost = async (bump = false) => {
+    if (repostInFlight.current) return
     if (isBlocked) {
       Toast.show(l`Cannot interact with a blocked user`, {
         type: 'warning',
@@ -194,8 +197,13 @@ function PostControlsInner({
     }
 
     const existingRepost = post.viewer?.repost
+    repostInFlight.current = true
     try {
-      if (!existingRepost) {
+      if (bump && post.viewer?.repost) {
+        await queueUnrepost()
+        await queueRepost()
+        Toast.show(l`Repost bumped`)
+      } else if (!existingRepost) {
         sendInteraction({
           item: post.uri,
           event: 'app.bsky.feed.defs#interactionRepost',
@@ -222,8 +230,16 @@ function PostControlsInner({
     } catch (err) {
       const e = err as Error
       if (e?.name !== 'AbortError') {
-        throw e
+        if (bump) {
+          Toast.show(l`Could not bump repost. Please try again.`, {
+            type: 'error',
+          })
+        } else {
+          throw e
+        }
       }
+    } finally {
+      repostInFlight.current = false
     }
   }
 
@@ -464,6 +480,7 @@ function PostControlsInner({
           : quotesMetricsDisplay
       }
       onRepost={() => void onRepost()}
+      onBumpRepost={() => void onRepost(true)}
       onQuote={onQuote}
       onLongPress={onLongPress}
       big={big}
