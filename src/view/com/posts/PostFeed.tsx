@@ -944,8 +944,9 @@ let PostFeed = ({
       feedUrl: feed,
       reason: 'pull-to-refresh',
     })
+    const resetToFirstPage = disableInfiniteScroll && pageNumber > 1
     try {
-      if (disableInfiniteScroll && pageNumber > 1) {
+      if (resetToFirstPage) {
         await queryClient.resetQueries({
           queryKey: RQKEY(feed, feedParams),
           exact: true,

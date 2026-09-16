@@ -145,12 +145,13 @@ function PostControlsInner({
       return false
     }
 
+    let latestPost
     try {
-      const latestPost = await getPost({uri: post.uri})
-      return !latestPost.viewer?.like
+      latestPost = await getPost({uri: post.uri})
     } catch {
       return false
     }
+    return !latestPost.viewer?.like
   }
 
   const onPressToggleLike = async () => {
@@ -202,16 +203,18 @@ function PostControlsInner({
           reqId,
         })
         await queueRepost()
-        if (autoLikeOnRepost && (await shouldAutoLikeOnRepost())) {
-          setHasLikeIconBeenToggled(true)
-          sendInteraction({
-            item: post.uri,
-            event: 'app.bsky.feed.defs#interactionLike',
-            feedContext,
-            reqId,
-          })
-          captureAction(ProgressGuideAction.Like)
-          await queueLike()
+        if (autoLikeOnRepost) {
+          if (await shouldAutoLikeOnRepost()) {
+            setHasLikeIconBeenToggled(true)
+            sendInteraction({
+              item: post.uri,
+              event: 'app.bsky.feed.defs#interactionLike',
+              feedContext,
+              reqId,
+            })
+            captureAction(ProgressGuideAction.Like)
+            await queueLike()
+          }
         }
       } else {
         await queueUnrepost()
@@ -327,11 +330,11 @@ function PostControlsInner({
         return false
       })
 
-      Toast.show(
-        wasLiked
-          ? l`Removed like as @${account.handle}`
-          : l`Liked as @${account.handle}`,
-      )
+      if (wasLiked) {
+        Toast.show(l`Removed like as @${account.handle}`)
+      } else {
+        Toast.show(l`Liked as @${account.handle}`)
+      }
     } catch (e) {
       showEphemeralError(e, account, onSelectLikeAccount)
     }
@@ -361,11 +364,11 @@ function PostControlsInner({
         return false
       })
 
-      Toast.show(
-        wasReposted
-          ? l`Removed repost as @${account.handle}`
-          : l`Reposted as @${account.handle}`,
-      )
+      if (wasReposted) {
+        Toast.show(l`Removed repost as @${account.handle}`)
+      } else {
+        Toast.show(l`Reposted as @${account.handle}`)
+      }
     } catch (e) {
       showEphemeralError(e, account, onSelectRepostAccount)
     }
@@ -394,11 +397,11 @@ function PostControlsInner({
         },
       )
 
-      Toast.show(
-        wasBookmarked
-          ? l`Removed save as @${account.handle}`
-          : l`Saved as @${account.handle}`,
-      )
+      if (wasBookmarked) {
+        Toast.show(l`Removed save as @${account.handle}`)
+      } else {
+        Toast.show(l`Saved as @${account.handle}`)
+      }
     } catch (e) {
       showEphemeralError(e, account, onSelectBookmarkAccount)
     }
