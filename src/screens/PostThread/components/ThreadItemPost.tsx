@@ -231,6 +231,13 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
   const {currentAccount} = useSession()
   const compactPosts = useCompactPosts()
   const avatarSize = compactPosts ? 34 : LINEAR_AVI_WIDTH
+  const horizontalPadding = compactPosts ? OUTER_SPACE - 2 : OUTER_SPACE
+  const bottomPadding =
+    !item.ui.showChildReplyLine && !item.ui.precedesChildReadMore
+      ? compactPosts
+        ? OUTER_SPACE / 3
+        : OUTER_SPACE / 2
+      : 0
 
   const post = item.value.post
   const record = item.value.post.record
@@ -304,6 +311,13 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
             keyboardNavigationClickable: 'true',
           }}
           href={postHref}
+          // Include the outer spacing in the link's click and focus area.
+          style={{
+            marginHorizontal: -horizontalPadding,
+            paddingHorizontal: horizontalPadding,
+            marginBottom: -bottomPadding,
+            paddingBottom: bottomPadding,
+          }}
           disabled={overrides?.moderation === true}
           modui={moderation.ui('contentList')}
           hiderStyle={[a.pl_0, a.pr_2xs, a.bg_transparent]}
