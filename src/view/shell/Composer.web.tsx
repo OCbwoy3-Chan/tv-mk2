@@ -65,6 +65,7 @@ function Inner({state}: {state: ComposerOpts}) {
           <ComposePost
             cancelRef={ref}
             activeAccountDid={state.activeAccountDid}
+            openAccountSwitcher={state.openAccountSwitcher}
             replyTo={state.replyTo}
             quote={state.quote}
             onPost={state.onPost}

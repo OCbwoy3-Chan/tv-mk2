@@ -288,6 +288,7 @@ function useAddImagesWithCap(
 type Props = ComposerOpts
 export const ComposePost = ({
   activeAccountDid: initialActiveAccountDid,
+  openAccountSwitcher = false,
   replyTo,
   onPost,
   onPostSuccess,
@@ -1798,6 +1799,7 @@ export const ComposePost = ({
                   onClearVideo={clearVideo}
                   onError={setError}
                   onPublish={onComposerPostPublish}
+                  openAccountSwitcher={openAccountSwitcher && index === 0}
                   activeAccountDid={activeAccountDid}
                   setActiveAccountDid={did => {
                     void selectActiveAccount(did)
@@ -1911,6 +1913,7 @@ let ComposerPost = memo(function ComposerPost({
   onPublish,
   activeAccountDid,
   setActiveAccountDid,
+  openAccountSwitcher,
 }: {
   post: PostDraft
   dispatch: (action: ComposerAction) => void
@@ -1933,6 +1936,7 @@ let ComposerPost = memo(function ComposerPost({
   onError: (error: string) => void
   onPublish: (richtext: RichText) => void
   activeAccountDid: string
+  openAccountSwitcher: boolean
   setActiveAccountDid: (did: string) => void
 }) {
   const {t: l} = useLingui()
@@ -2023,6 +2027,7 @@ let ComposerPost = memo(function ComposerPost({
       ]}>
       <View style={[a.flex_row, IS_NATIVE && a.flex_1]}>
         <EphemeralAccountSwitcher
+          defaultOpen={openAccountSwitcher}
           selectedDid={activeAccountDid}
           title={l`Post from account`}
           onSelectAccount={account => setActiveAccountDid(account.did)}

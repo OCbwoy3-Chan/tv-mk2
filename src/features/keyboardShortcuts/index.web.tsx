@@ -14,15 +14,21 @@ import {goBack, navigate} from '#/Navigation'
 import {router} from '#/routes'
 import {listenOpenKeyboardShortcuts} from './events'
 import {KeyboardShortcutsDialog} from './KeyboardShortcutsDialog'
+import {PostMediaDialog} from './PostMediaDialog.web'
 import {
   clickPost,
   clickPostAction,
   getInitialVisiblePost,
   getNavigablePosts,
+  getPostActivityShortcut,
   getPostAnnouncement,
+  getPostAuthorRoute,
   getPostHref,
+  getPostMediaTargets,
   isPostVisible,
+  openPostMediaTarget,
   type PostAction,
+  type PostMediaTarget,
   setPostSelected,
 } from './postNavigation.web'
 import {useKeyboardShortcutsPreference} from './preferences'
@@ -45,6 +51,7 @@ const APP_CHARACTER_KEYS = new Set([
   's',
   'q',
   'x',
+  'p',
 ])
 
 const POST_ACTIONS: Partial<Record<string, PostAction>> = {
@@ -75,6 +82,8 @@ export function KeyboardShortcuts() {
   const {enabled} = useKeyboardShortcutsPreference()
   const {activeScopes, disableScope, enableScope} = useHotkeysContext()
   const dialogControl = Dialog.useDialogControl()
+  const mediaDialogControl = Dialog.useDialogControl()
+  const [mediaTargets, setMediaTargets] = useState<PostMediaTarget[]>([])
   const selectedPostRef = useRef<HTMLElement | null>(null)
   const originalTabIndexRef = useRef<string | null>(null)
   const pendingChordRef = useRef<string | null>(null)
@@ -268,7 +277,38 @@ export function KeyboardShortcuts() {
 
   const runPostAction = (action: PostAction, dropdown = false) => {
     const selected = getSelectedVisiblePost()
-    return selected ? clickPostAction(selected, action, dropdown) : false
+    if (!selected) return false
+    if (action === 'media') {
+      const targets = getPostMediaTargets(selected)
+      if (targets.length === 0) return false
+      if (targets.length === 1) return openPostMediaTarget(targets[0])
+      setMediaTargets(targets)
+      mediaDialogControl.open()
+      return true
+    }
+    return clickPostAction(selected, action, dropdown)
+  }
+
+  const openPostPage = (
+    selected: HTMLElement,
+    route: NonNullable<
+      | ReturnType<typeof getPostAuthorRoute>
+      | ReturnType<typeof getPostActivityShortcut>
+    >,
+  ) => {
+    const destinationPath = router.matchName(route.name)?.build(route.params)
+    if (!destinationPath) return false
+    clearTimeout(openedPostTimeoutRef.current)
+    clearTimeout(restoreTimeoutRef.current)
+    feedReturnTargetsRef.current.push({
+      postUri: selected.dataset.keyboardNavigationPost!,
+      sourcePath: getCurrentPath(),
+      destinationPath,
+      viewportTop: selected.getBoundingClientRect().top,
+    })
+    clearSelection()
+    void navigate(route.name, route.params)
+    return true
   }
 
   const goTo = useNonReactiveCallback((key: string) => {
@@ -378,6 +418,13 @@ export function KeyboardShortcuts() {
         clearChord()
         return
       }
+      if (event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+        clearChord()
+        const selected = getSelectedVisiblePost()
+        const route = selected && getPostActivityShortcut(selected, event)
+        if (route && selected && openPostPage(selected, route)) consume(event)
+        return
+      }
       if (event.metaKey || event.ctrlKey || event.altKey) {
         clearChord()
         return
@@ -457,6 +504,13 @@ export function KeyboardShortcuts() {
         return
       }
 
+      if (key === 'p') {
+        const selected = getSelectedVisiblePost()
+        const route = selected && getPostAuthorRoute(selected)
+        if (route && selected && openPostPage(selected, route)) consume(event)
+        return
+      }
+
       const postAction = POST_ACTIONS[key]
       if (postAction && runPostAction(postAction)) consume(event)
     }
@@ -496,6 +550,7 @@ export function KeyboardShortcuts() {
         onOpen={() => setDialogOpen(true)}
         onClose={() => setDialogOpen(false)}
       />
+      <PostMediaDialog control={mediaDialogControl} targets={mediaTargets} />
       <View
         accessibilityLiveRegion="polite"
         style={[

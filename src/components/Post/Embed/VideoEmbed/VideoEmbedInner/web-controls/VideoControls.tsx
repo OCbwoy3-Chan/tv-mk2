@@ -188,7 +188,8 @@ export function Controls({
 
   const onPressEmptySpace = useCallback(
     (evt: GestureResponderEvent) => {
-      const clickCount = (evt.nativeEvent as unknown as {detail?: number}).detail
+      const clickCount = (evt.nativeEvent as unknown as {detail?: number})
+        .detail
       if (clickCount && clickCount > 1) return
 
       playingBeforeClickRef.current = null
@@ -423,6 +424,8 @@ export function Controls({
 
   return (
     <div
+      data-testid="postVideoFocusTarget"
+      tabIndex={-1}
       style={{
         position: 'absolute',
         inset: 0,
@@ -439,11 +442,18 @@ export function Controls({
       onPointerLeave={onEndHoverWithTimeout}
       onPointerDown={onPointerDown}
       onDoubleClick={onDoubleClickEmptySpace}
-      onFocus={onFocus}
+      onFocus={event => {
+        onFocus()
+        if (event.target === event.currentTarget) {
+          drawFocus()
+          setInteractingViaKeypress(true)
+        }
+      }}
       onBlur={onBlur}
       onKeyDown={onKeyDown}>
       <div ref={emptySpaceRef} style={{display: 'flex', flex: 1, minHeight: 0}}>
         <Pressable
+          testID="postMediaOpenBtn"
           accessibilityRole="button"
           onPointerEnter={onPointerMoveEmptySpace}
           onPointerMove={onPointerMoveEmptySpace}

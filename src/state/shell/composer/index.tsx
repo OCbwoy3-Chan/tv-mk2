@@ -37,6 +37,8 @@ export type ComposerLogContext =
   'Fab' | 'PostReply' | 'QuotePost' | 'ProfileFeed' | 'Deeplink' | 'Other'
 
 export interface ComposerOpts {
+  /** Open the account picker when the composer mounts. */
+  openAccountSwitcher?: boolean
   activeAccountDid?: string
   replyTo?: ComposerOptsPostRef
   onPost?: (postUri: string | undefined) => void

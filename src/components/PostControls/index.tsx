@@ -227,7 +227,7 @@ function PostControlsInner({
     }
   }
 
-  const onQuote = () => {
+  const onQuote = (openAccountSwitcher = false) => {
     if (isBlocked) {
       Toast.show(l`Cannot interact with a blocked user`, {
         type: 'warning',
@@ -249,6 +249,7 @@ function PostControlsInner({
     })
     openComposer({
       quote: post,
+      openAccountSwitcher,
       onPost: onPostReply,
       logContext: 'QuotePost',
     })

@@ -29,6 +29,7 @@ export function GifPresentationControls({
   return (
     <>
       <Button
+        testID="postMediaOpenBtn"
         label={isPlaying ? _(msg`Pause GIF`) : _(msg`Play GIF`)}
         accessibilityHint={_(msg`Plays or pauses the GIF`)}
         style={[

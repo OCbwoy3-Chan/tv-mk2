@@ -87,15 +87,15 @@ function KeyboardShortcutsDialogInner() {
             label={l`Publish from the composer`}
           />
           <ShortcutRow
-            shortcut="Alt Enter"
+            shortcut="Alt/⌥ Enter"
             label={l`Add a post to the thread`}
           />
           <ShortcutRow
-            shortcut="Alt ↑ / ↓"
+            shortcut="Alt/⌥ ↑ / ↓"
             label={l`Focus the previous or next post`}
           />
           <ShortcutRow
-            shortcut="Alt Shift ↑ / ↓"
+            shortcut="Alt/⌥ Shift ↑ / ↓"
             label={l`Move the current post`}
           />
         </ShortcutGroup>
@@ -117,7 +117,11 @@ function KeyboardShortcutsDialogInner() {
           <ShortcutRow shortcut="J" label={l`Select the next post`} />
           <ShortcutRow shortcut="K" label={l`Select the previous post`} />
           <ShortcutRow shortcut="B / Enter" label={l`Open the selected post`} />
-          <ShortcutRow shortcut="O" label={l`Open the selected post’s image`} />
+          <ShortcutRow shortcut="P" label={l`View the author’s profile`} />
+          <ShortcutRow
+            shortcut="O"
+            label={l`Open the image, video, or embed`}
+          />
           <ShortcutRow shortcut="R" label={l`Reply to the selected post`} />
           <ShortcutRow
             shortcut="L"
@@ -131,8 +135,12 @@ function KeyboardShortcutsDialogInner() {
           />
           <ShortcutRow shortcut="X" label={l`Open sharing options`} />
           <ShortcutRow
-            shortcut="Shift R / Q / T / L / S"
+            shortcut="Shift + R / T / Q / L / S"
             label={l`Open the interaction dropdown`}
+          />
+          <ShortcutRow
+            shortcut="Alt/⌥ + T / Q / L"
+            label={l`View reposts, quotes, or likes`}
           />
         </ShortcutGroup>
 

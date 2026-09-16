@@ -32,7 +32,7 @@ import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
 import {Embed as StarterPackCard} from '#/components/StarterPack/StarterPackCard'
 import {SubtleHover} from '#/components/SubtleHover'
-import {IS_ANDROID} from '#/env'
+import {IS_ANDROID, IS_WEB} from '#/env'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {
@@ -51,7 +51,18 @@ import {VideoEmbed} from './VideoEmbed'
 
 export {PostEmbedViewContext} from './types'
 
-export function Embed({embed: rawEmbed, ...rest}: EmbedProps) {
+export function Embed(props: EmbedProps) {
+  if (IS_WEB) {
+    return (
+      <div data-keyboard-navigation-embed style={{display: 'contents'}}>
+        <EmbedInner {...props} />
+      </div>
+    )
+  }
+  return <EmbedInner {...props} />
+}
+
+function EmbedInner({embed: rawEmbed, ...rest}: EmbedProps) {
   const embed = parseEmbed(rawEmbed)
 
   switch (embed.type) {
@@ -59,7 +70,11 @@ export function Embed({embed: rawEmbed, ...rest}: EmbedProps) {
     case 'gallery':
     case 'link':
     case 'video': {
-      return <MediaEmbed embed={embed} {...rest} />
+      return (
+        <EmbedTarget kind={embed.type === 'link' ? 'embed' : 'media'}>
+          <MediaEmbed embed={embed} {...rest} />
+        </EmbedTarget>
+      )
     }
     case 'feed':
     case 'list':
@@ -69,7 +84,11 @@ export function Embed({embed: rawEmbed, ...rest}: EmbedProps) {
     case 'post_not_found':
     case 'post_blocked':
     case 'post_detached': {
-      return <RecordEmbed embed={embed} {...rest} />
+      return (
+        <EmbedTarget kind={embed.type.startsWith('post') ? 'quote' : 'embed'}>
+          <RecordEmbed embed={embed} {...rest} />
+        </EmbedTarget>
+      )
     }
     case 'post_with_media': {
       return (
@@ -78,8 +97,13 @@ export function Embed({embed: rawEmbed, ...rest}: EmbedProps) {
             rest.style,
             rest.viewContext === PostEmbedViewContext.ChatMessage && a.gap_sm,
           ]}>
-          <MediaEmbed embed={embed.media} {...rest} />
-          <RecordEmbed embed={embed.view} {...rest} />
+          <EmbedTarget kind={embed.media.type === 'link' ? 'embed' : 'media'}>
+            <MediaEmbed embed={embed.media} {...rest} />
+          </EmbedTarget>
+          <EmbedTarget
+            kind={embed.view.type.startsWith('post') ? 'quote' : 'embed'}>
+            <RecordEmbed embed={embed.view} {...rest} />
+          </EmbedTarget>
         </View>
       )
     }
@@ -87,6 +111,24 @@ export function Embed({embed: rawEmbed, ...rest}: EmbedProps) {
       return null
     }
   }
+}
+
+/** Keep each top-level attachment separate from media nested in quoted posts. */
+function EmbedTarget({
+  kind,
+  children,
+}: {
+  kind: 'media' | 'embed' | 'quote'
+  children: React.ReactNode
+}) {
+  if (!IS_WEB) return children
+  return (
+    <div
+      data-keyboard-navigation-embed-target={kind}
+      style={{display: 'contents'}}>
+      {children}
+    </div>
+  )
 }
 
 function MediaEmbed({
@@ -526,6 +568,7 @@ export function QuoteEmbed({
                 </View>
               ) : (
                 <Link
+                  testID="quotedPostOpenBtn"
                   style={[!active && a.p_md]}
                   hoverStyle={t.atoms.border_contrast_high}
                   href={itemHref}
