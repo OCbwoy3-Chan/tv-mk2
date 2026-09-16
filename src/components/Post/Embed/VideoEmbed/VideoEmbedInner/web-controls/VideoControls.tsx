@@ -242,13 +242,13 @@ export function Controls({
       if (
         isGif ||
         event.defaultPrevented ||
-        (event.repeat && key === 'f') ||
+        (event.repeat && (key === 'f' || key === 'm')) ||
         event.isComposing ||
         event.shiftKey ||
         event.ctrlKey ||
         event.metaKey ||
         event.altKey ||
-        (key !== 'f' && !isSeek) ||
+        (key !== 'f' && key !== 'm' && !isSeek) ||
         settingsOpen ||
         (target instanceof Element &&
           target.closest(
@@ -269,6 +269,9 @@ export function Controls({
       event.stopPropagation()
       if (key === 'f') {
         onPressFullscreen()
+      } else if (key === 'm') {
+        drawFocus()
+        changeMuted(value => !value)
       } else if (video) {
         drawFocus()
         if (isFrameStep) pause()
@@ -289,6 +292,7 @@ export function Controls({
     fullscreenRef,
     isGif,
     onPressFullscreen,
+    changeMuted,
     settingsOpen,
     videoRef,
     drawFocus,

@@ -70,6 +70,7 @@ function KeyboardShortcutsDialogInner() {
 
         <ShortcutGroup title={l`Focused video`}>
           <ShortcutRow shortcut="F" label={l`Toggle fullscreen`} />
+          <ShortcutRow shortcut="M" label={l`Mute or unmute video`} />
           <ShortcutRow
             shortcut="← / →"
             label={l`Seek backward or forward 5 seconds`}
