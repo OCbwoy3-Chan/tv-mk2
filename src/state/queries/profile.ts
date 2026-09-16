@@ -22,6 +22,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
+import chunk from 'lodash.chunk'
 
 import {uploadBlob} from '#/lib/api'
 import {until} from '#/lib/async/until'
@@ -58,6 +59,8 @@ export * from '#/state/queries/unstable-profile-cache'
 export const precacheProfile = unstableCacheProfileView
 
 const RQKEY_ROOT = 'profile'
+/** Maximum actors accepted by app.bsky.actor.getProfiles per request. */
+const GET_PROFILES_MAX_ACTORS = 25
 export const RQKEY = (did: string) => [RQKEY_ROOT, did]
 
 export const profilesQueryKeyRoot = 'profiles'
@@ -109,9 +112,14 @@ export function useProfilesQuery({
     staleTime: STALE.MINUTES.FIVE,
     queryKey: profilesQueryKey(handles),
     queryFn: async () => {
-      return await client.call(app.bsky.actor.getProfiles, {
-        actors: handles as AtIdentifierString[],
-      })
+      const responses = await Promise.all(
+        chunk(handles, GET_PROFILES_MAX_ACTORS).map(actors =>
+          client.call(app.bsky.actor.getProfiles, {
+            actors: actors as AtIdentifierString[],
+          }),
+        ),
+      )
+      return {profiles: responses.flatMap(response => response.profiles)}
     },
     placeholderData: maintainData ? keepPreviousData : undefined,
   })
