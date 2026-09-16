@@ -43,6 +43,7 @@ import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {useFeedTuners} from '../preferences/feed-tuners'
 import {useModerationOpts} from '../preferences/moderation-opts'
+import {getPostFeedPaginationOptions} from './post-feed-pagination'
 import {usePreferencesQuery} from './preferences'
 import {
   didOrHandleUriMatches,
@@ -74,9 +75,12 @@ export interface FeedParams {
   mergeFeedEnabled?: boolean
   mergeFeedSources?: string[]
   feedCacheKey?: 'discover' | 'explore' | undefined
+  /** Keep only the current page and wait for explicit navigation. */
+  paginated?: boolean
 }
 
-type RQPageParam = {cursor: string | undefined; api: FeedAPI} | undefined
+export type RQPageParam =
+  {cursor: string | undefined; api: FeedAPI; page?: number} | undefined
 
 export const RQKEY_ROOT = 'post-feed'
 export function RQKEY(feedDesc: FeedDescriptor, params?: FeedParams) {
@@ -116,6 +120,7 @@ export interface FeedPageUnselected {
   cursor: string | undefined
   feed: app.bsky.feed.defs.FeedViewPost[]
   fetchedAt: number
+  page: number
 }
 
 export interface FeedPage {
@@ -124,6 +129,7 @@ export interface FeedPage {
   cursor: string | undefined
   slices: FeedPostSlice[]
   fetchedAt: number
+  page: number
 }
 
 /**
@@ -191,6 +197,7 @@ export function usePostFeedQuery(
   >({
     enabled,
     staleTime: STALE.INFINITY,
+    ...getPostFeedPaginationOptions(params?.paginated ?? false),
     queryKey: RQKEY(feedDesc, params),
     async queryFn({pageParam}: {pageParam: RQPageParam}) {
       logger.debug('usePostFeedQuery', {feedDesc, cursor: pageParam?.cursor})
@@ -231,16 +238,10 @@ export function usePostFeedQuery(
         cursor: res.cursor,
         feed: res.feed,
         fetchedAt: Date.now(),
+        page: pageParam?.page ?? 1,
       }
     },
     initialPageParam: undefined,
-    getNextPageParam: lastPage =>
-      lastPage.cursor
-        ? {
-            api: lastPage.api,
-            cursor: lastPage.cursor,
-          }
-        : undefined,
     select: useCallback(
       (data: InfiniteData<FeedPageUnselected, RQPageParam>) => {
         // If the selection depends on some data, that data should
@@ -292,6 +293,7 @@ export function usePostFeedQuery(
               tuner,
               cursor: page.cursor,
               fetchedAt: page.fetchedAt,
+              page: page.page,
               slices: tuner
                 .tune(page.feed)
                 .map(slice => {
@@ -377,7 +379,11 @@ export function usePostFeedQuery(
       itemCount += slice.items.length
     }
   }
-  useAutoPagination(query, itemCount, MIN_POSTS)
+  useAutoPagination(
+    {...query, hasNextPage: !params?.paginated && query.hasNextPage},
+    itemCount,
+    MIN_POSTS,
+  )
 
   return query
 }
