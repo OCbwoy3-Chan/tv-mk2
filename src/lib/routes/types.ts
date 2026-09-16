@@ -44,6 +44,7 @@ export type CommonNavigatorParams = {
   PostLikedBy: {name: string; rkey: string}
   PostRepostedBy: {name: string; rkey: string}
   PostQuotes: {name: string; rkey: string}
+  PostQuoteChain: {name: string; rkey: string}
   CustomFeed: {
     name: string
     rkey: string
