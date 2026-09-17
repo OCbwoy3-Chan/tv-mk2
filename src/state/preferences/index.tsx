@@ -17,6 +17,7 @@ import {Provider as DeerVerificationProvider} from './deer-verification'
 import {Provider as DirectFetchRecordsProvider} from './direct-fetch-records'
 import {Provider as DisableComposerPromptProvider} from './disable-composer-prompt'
 import {Provider as DisableHapticsProvider} from './disable-haptics'
+import {Provider as DisableInfiniteScrollProvider} from './disable-infinite-scroll'
 import {Provider as DisableTopOfFeedButtonProvider} from './disable-top-of-feed-button'
 import {Provider as DisableVerifyEmailReminderProvider} from './disable-verify-email-reminder'
 import {Provider as DisableViaRepostNotificationProvider} from './disable-via-repost-notification'
@@ -235,9 +236,11 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                           <TidSuffixProvider>
                                                                                                                                             <AtprotoRkeySettingsProvider>
                                                                                                                                               <PrivatePostsEnabledProvider>
-                                                                                                                                                {
-                                                                                                                                                  children
-                                                                                                                                                }
+                                                                                                                                                <DisableInfiniteScrollProvider>
+                                                                                                                                                 {
+                                                                                                                                                    children
+                                                                                                                                                  }
+                                                                                                                                               </DisableInfiniteScrollProvider>
                                                                                                                                               </PrivatePostsEnabledProvider>
                                                                                                                                             </AtprotoRkeySettingsProvider>
                                                                                                                                           </TidSuffixProvider>

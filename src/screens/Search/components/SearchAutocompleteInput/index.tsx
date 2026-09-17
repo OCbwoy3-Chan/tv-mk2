@@ -22,6 +22,7 @@ export function SearchAutocompleteInput({
   fixedParams,
   onSelectProfile,
   onSelectSearch,
+  onOpenLink,
   value = '',
   onFocus,
   onBlur,
@@ -64,6 +65,8 @@ export function SearchAutocompleteInput({
       onSelectProfile?.(item.profile, position)
     } else if (item.type === 'search') {
       onSelectSearch?.(item.value)
+    } else if (item.type === 'open-link') {
+      onOpenLink?.(item.value)
     }
     inputRef.current?.blur()
   }

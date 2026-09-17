@@ -70,6 +70,7 @@ function KeyboardShortcutsDialogInner() {
 
         <ShortcutGroup title={l`Focused video`}>
           <ShortcutRow shortcut="F" label={l`Toggle fullscreen`} />
+          <ShortcutRow shortcut="M" label={l`Mute or unmute video`} />
           <ShortcutRow
             shortcut="← / →"
             label={l`Seek backward or forward 5 seconds`}
@@ -86,15 +87,15 @@ function KeyboardShortcutsDialogInner() {
             label={l`Publish from the composer`}
           />
           <ShortcutRow
-            shortcut="Alt Enter"
+            shortcut="Alt/⌥ Enter"
             label={l`Add a post to the thread`}
           />
           <ShortcutRow
-            shortcut="Alt ↑ / ↓"
+            shortcut="Alt/⌥ ↑ / ↓"
             label={l`Focus the previous or next post`}
           />
           <ShortcutRow
-            shortcut="Alt Shift ↑ / ↓"
+            shortcut="Alt/⌥ Shift ↑ / ↓"
             label={l`Move the current post`}
           />
         </ShortcutGroup>
@@ -116,14 +117,31 @@ function KeyboardShortcutsDialogInner() {
           <ShortcutRow shortcut="J" label={l`Select the next post`} />
           <ShortcutRow shortcut="K" label={l`Select the previous post`} />
           <ShortcutRow shortcut="B / Enter" label={l`Open the selected post`} />
-          <ShortcutRow shortcut="O" label={l`Open the selected post’s image`} />
+          <ShortcutRow shortcut="P" label={l`View the author’s profile`} />
+          <ShortcutRow
+            shortcut="O"
+            label={l`Open the image, video, or embed`}
+          />
           <ShortcutRow shortcut="R" label={l`Reply to the selected post`} />
           <ShortcutRow
             shortcut="L"
             label={l`Like or unlike the selected post`}
           />
           <ShortcutRow shortcut="T" label={l`Repost or undo repost`} />
-          <ShortcutRow shortcut="S" label={l`Open sharing options`} />
+          <ShortcutRow shortcut="Q" label={l`Quote the selected post`} />
+          <ShortcutRow
+            shortcut="S"
+            label={l`Save or unsave the selected post`}
+          />
+          <ShortcutRow shortcut="X" label={l`Open sharing options`} />
+          <ShortcutRow
+            shortcut="Shift + R / T / Q / L / S"
+            label={l`Open the interaction dropdown`}
+          />
+          <ShortcutRow
+            shortcut="Alt/⌥ + T / Q / L"
+            label={l`View reposts, quotes, or likes`}
+          />
         </ShortcutGroup>
 
         <View

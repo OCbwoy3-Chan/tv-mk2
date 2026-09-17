@@ -144,8 +144,9 @@
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--background').trim())
   </script>
 
+  <link rel="manifest" href="/pwa/manifest.webmanifest">
   {% include "scripts.html" %}
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ staticCDNHost }}/static/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/pwa/icon-180.png">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ staticCDNHost }}/static/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ staticCDNHost }}/static/favicon-16x16.png">
   <link rel="mask-icon" href="{{ staticCDNHost }}/static/safari-pinned-tab.svg" color="#ED5345">

@@ -24,6 +24,7 @@ export function EphemeralAccountPicker({
 
   useEffect(() => {
     if (!control.isOpen) return
+    const initialRect = anchor?.getBoundingClientRect()
     dismissGuardRef.current = Boolean(request?.pointerHeld)
     const release = () => {
       requestAnimationFrame(() => {
@@ -35,6 +36,20 @@ export function EphemeralAccountPicker({
       if (
         event.target instanceof Element &&
         event.target.closest('[role="menu"]')
+      )
+        return
+      /*
+       * Opening a modal can emit scroll events without moving the trigger
+       * (including in horizontally scrolled carousels). Only dismiss when
+       * scrolling actually invalidates the menu's fixed anchor position.
+       */
+      const currentRect = anchor?.getBoundingClientRect()
+      if (
+        anchor?.isConnected &&
+        initialRect &&
+        currentRect &&
+        currentRect.top === initialRect.top &&
+        currentRect.left === initialRect.left
       )
         return
       control.close()
@@ -50,7 +65,7 @@ export function EphemeralAccountPicker({
       window.removeEventListener('blur', release)
       window.removeEventListener('scroll', closeOnScroll, true)
     }
-  }, [control, request])
+  }, [anchor, control, request])
 
   return (
     <Menu.Root control={control} dismissGuardRef={dismissGuardRef}>

@@ -8,6 +8,12 @@ import {
 } from '@tanstack/react-query'
 
 import {
+  type CursorPageParam,
+  pageNumber,
+  unwrapCursor,
+  useCursorPagination,
+} from '#/state/queries/cursor-pagination'
+import {
   didOrHandleUriMatches,
   embedViewRecordToPostView,
   getEmbeddedPost,
@@ -19,25 +25,30 @@ import * as bsky from '#/types/bsky'
 export const bookmarksQueryKeyRoot = 'bookmarks'
 export const createBookmarksQueryKey = () => [bookmarksQueryKeyRoot]
 
-export function useBookmarksQuery() {
+export function useBookmarksQuery({
+  paginated = false,
+}: {paginated?: boolean} = {}) {
   const client = useAppviewClient()
 
-  return useInfiniteQuery<
+  const pagination = useCursorPagination<
+    app.bsky.bookmark.getBookmarks.$OutputBody,
+    string | undefined
+  >(createBookmarksQueryKey(), paginated, page => page.cursor, undefined)
+  const result = useInfiniteQuery<
     app.bsky.bookmark.getBookmarks.$OutputBody,
     Error,
     InfiniteData<app.bsky.bookmark.getBookmarks.$OutputBody>,
     QueryKey,
-    string | undefined
+    CursorPageParam<string | undefined>
   >({
-    queryKey: createBookmarksQueryKey(),
+    ...pagination,
     async queryFn({pageParam}) {
       return await client.call(app.bsky.bookmark.getBookmarks, {
-        cursor: pageParam,
+        cursor: unwrapCursor(pageParam),
       })
     },
-    initialPageParam: undefined,
-    getNextPageParam: lastPage => lastPage.cursor,
   })
+  return {...result, paginationQueryKey: pagination.queryKey}
 }
 
 export async function truncateAndInvalidate(qc: QueryClient) {
@@ -69,7 +80,7 @@ export function optimisticallySaveBookmark(
       return {
         ...data,
         pages: data.pages.map((page, index) => {
-          if (index === 0) {
+          if (index === 0 && pageNumber(data.pageParams[0]) === 1) {
             post.$type = 'app.bsky.feed.defs#postView'
             const bookmark: app.bsky.bookmark.defs.BookmarkView = {
               createdAt: toDatetimeString(new Date()),

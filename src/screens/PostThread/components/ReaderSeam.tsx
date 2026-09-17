@@ -1,4 +1,4 @@
-import {useMemo, useState} from 'react'
+import {useMemo, useRef, useState} from 'react'
 import {View} from 'react-native'
 import Animated, {FadeIn} from 'react-native-reanimated'
 import {plural} from '@lingui/core/macro'
@@ -190,19 +190,37 @@ function ReaderSeamInner({
     }
   }
 
-  const onRepost = async () => {
+  const repostInFlight = useRef(false)
+
+  const onRepost = async (bump = false) => {
+    if (repostInFlight.current) return
     if (isBlocked) {
       Toast.show(l`Cannot interact with a blocked user`, {type: 'warning'})
       return
     }
+    repostInFlight.current = true
     try {
-      if (!shadow.viewer?.repost) {
+      if (bump && shadow.viewer?.repost) {
+        await queueUnrepost()
+        await queueRepost()
+        Toast.show(l`Repost bumped`)
+      } else if (!shadow.viewer?.repost) {
         await queueRepost()
       } else {
         await queueUnrepost()
       }
     } catch (err) {
-      if ((err as Error)?.name !== 'AbortError') throw err
+      if ((err as Error)?.name !== 'AbortError') {
+        if (bump) {
+          Toast.show(l`Could not bump repost. Please try again.`, {
+            type: 'error',
+          })
+        } else {
+          throw err
+        }
+      }
+    } finally {
+      repostInFlight.current = false
     }
   }
 
@@ -330,6 +348,7 @@ function ReaderSeamInner({
       isReposted={!!shadow.viewer?.repost}
       repostCount={(shadow.repostCount ?? 0) + (shadow.quoteCount ?? 0)}
       onRepost={() => void onRepost()}
+      onBumpRepost={() => void onRepost(true)}
       onQuote={onQuote}
       onLongPress={onLongPress}
       embeddingDisabled={Boolean(shadow.viewer?.embeddingDisabled)}

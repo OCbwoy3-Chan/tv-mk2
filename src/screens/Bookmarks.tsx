@@ -18,6 +18,7 @@ import {
 } from '#/lib/routes/types'
 import {cleanError} from '#/lib/strings/errors'
 import {userStyle} from '#/lib/userstyles'
+import {useDisableInfiniteScroll} from '#/state/preferences/disable-infinite-scroll'
 import {useBookmarkMutation} from '#/state/queries/bookmarks/useBookmarkMutation'
 import {useBookmarksQuery} from '#/state/queries/bookmarks/useBookmarksQuery'
 import {Post} from '#/view/com/post/Post'
@@ -30,6 +31,7 @@ import {BookmarkDeleteLarge, BookmarkFilled} from '#/components/icons/Bookmark'
 import {CircleQuestion_Stroke2_Corner2_Rounded as QuestionIcon} from '#/components/icons/CircleQuestion'
 import * as Layout from '#/components/Layout'
 import {ListFooter} from '#/components/Lists'
+import {usePaginatedList} from '#/components/Pagination'
 import * as Skele from '#/components/Skeleton'
 import * as toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
@@ -95,6 +97,9 @@ function BookmarksInner() {
   const initialNumToRender = useInitialNumToRender()
   const [isPTRing, setIsPTRing] = useState(false)
   const trackPostView = usePostViewTracking('Bookmarks')
+  const paginated = useDisableInfiniteScroll()
+  const resultQuery = useBookmarksQuery({paginated})
+  const pagination = usePaginatedList(resultQuery, paginated)
   const {
     data,
     isLoading,
@@ -102,8 +107,8 @@ function BookmarksInner() {
     hasNextPage,
     fetchNextPage,
     error,
-    refetch,
-  } = useBookmarksQuery()
+  } = resultQuery
+  const refetch = pagination.refresh
 
   const onRefresh = useCallback(async () => {
     setIsPTRing(true)
@@ -126,7 +131,7 @@ function BookmarksInner() {
 
     if (isLoading) {
       i.push({type: 'loading', key: 'loading'})
-    } else if (error || !data) {
+    } else if (!data) {
       // handled in Footer
     } else {
       const bookmarks = data.pages.flatMap(p => p.bookmarks)
@@ -166,13 +171,16 @@ function BookmarksInner() {
 
   return (
     <List
+      key={pagination.key}
+      ref={pagination.ref}
+      ListHeaderComponent={pagination.header}
       style={userStyle('wsky-bookmarks')}
       data={items}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       refreshing={isPTRing}
       onRefresh={() => void onRefresh()}
-      onEndReached={() => void onEndReached()}
+      onEndReached={paginated ? undefined : () => void onEndReached()}
       onEndReachedThreshold={4}
       onItemSeen={(item: ListItem) => {
         if (item.type === 'bookmark') {
@@ -180,12 +188,14 @@ function BookmarksInner() {
         }
       }}
       ListFooterComponent={
-        <ListFooter
-          isFetchingNextPage={isFetchingNextPage}
-          error={cleanError(error)}
-          onRetry={fetchNextPage}
-          style={[isEmpty && a.border_t_0]}
-        />
+        pagination.footer ?? (
+          <ListFooter
+            isFetchingNextPage={isFetchingNextPage}
+            error={cleanError(error)}
+            onRetry={fetchNextPage}
+            style={[isEmpty && a.border_t_0]}
+          />
+        )
       }
       initialNumToRender={initialNumToRender}
       windowSize={9}

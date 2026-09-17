@@ -58,7 +58,7 @@ import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 const IMAGE_CDN_PRESETS = [
   'https://porxie-bsky.dollware.net',
-  'https://cdn.blueat.network',
+  'https://luna.madebydanny.uk',
   'https://cdn.at.protogen.nexus' // tenna.party mention 🥹
 ] as const
 
@@ -147,7 +147,7 @@ export function RunesInfrastructureSettingsScreen() {
   const imageCdnItems = [
     {value: 'default', label: l`App server default`},
     {value: IMAGE_CDN_PRESETS[0], label: l`Dollware Porxie`},
-    {value: IMAGE_CDN_PRESETS[1], label: l`Blueat`},
+    {value: IMAGE_CDN_PRESETS[1], label: l`Luna`},
     {value: IMAGE_CDN_PRESETS[2], label: l`Protogen Porxie` },
     {value: 'custom', label: l`Custom`},
   ]

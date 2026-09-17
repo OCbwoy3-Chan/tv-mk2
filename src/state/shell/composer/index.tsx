@@ -13,6 +13,9 @@ import {
   RQKEY_GIF_ROOT,
   RQKEY_LINK_ROOT,
 } from '#/state/queries/resolve-link'
+import {useSession} from '#/state/session'
+import {clearRecovery, readRecovery} from '#/state/shell/composer/recovery'
+import {type ComposerState} from '#/view/com/composer/state/composer'
 import * as Toast from '#/components/Toast'
 import {type app} from '#/lexicons'
 
@@ -37,6 +40,11 @@ export type ComposerLogContext =
   'Fab' | 'PostReply' | 'QuotePost' | 'ProfileFeed' | 'Deeplink' | 'Other'
 
 export interface ComposerOpts {
+  /** Local native composition restored after app termination. */
+  recoveredState?: ComposerState
+
+  /** Open the account picker when the composer mounts. */
+  openAccountSwitcher?: boolean
   activeAccountDid?: string
   replyTo?: ComposerOptsPostRef
   onPost?: (postUri: string | undefined) => void
@@ -87,7 +95,18 @@ controlsContext.displayName = 'ComposerControlsContext'
 
 export function Provider({children}: React.PropsWithChildren<{}>) {
   const {_} = useLingui()
-  const [state, setState] = useState<StateContext>()
+  const {currentAccount, accounts} = useSession()
+  const [state, setState] = useState<StateContext>(() => {
+    if (!currentAccount) return undefined
+    const recovery = readRecovery(currentAccount.did)
+    if (
+      !recovery ||
+      !accounts.some(a => a.did === recovery.opts.activeAccountDid)
+    ) {
+      return undefined
+    }
+    return {...recovery.opts, recoveredState: recovery.state}
+  })
   const queryClient = useQueryClient()
 
   const openComposer = useNonReactiveCallback((opts: ComposerOpts) => {
@@ -132,6 +151,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     let wasOpen = !!state
     if (wasOpen) {
       setState(undefined)
+      if (currentAccount) clearRecovery(currentAccount.did)
       void purgeTemporaryImageFiles()
       // Purging deletes cached thumbnails on disk, so remove the query
       // caches that may hold references to those now-deleted file paths.

@@ -395,7 +395,18 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   }
 
   return (
-    <>
+    <View
+      {...{
+        dataSet: {
+          keyboardNavigationPost: post.uri,
+          keyboardNavigationHref: makeProfileLink(
+            post.author,
+            'post',
+            new AtUri(post.uri).rkey,
+          ),
+          keyboardNavigationClickable: 'false',
+        },
+      }}>
       <ThreadItemAnchorParentReplyLine
         isRoot={isRoot}
         compactPosts={isCompactPosts}
@@ -403,17 +414,6 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
       <GalleryBleed>
         <View
           testID={`postThreadItem-by-${post.author.handle}`}
-          {...{
-            dataSet: {
-              keyboardNavigationPost: post.uri,
-              keyboardNavigationHref: makeProfileLink(
-                post.author,
-                'post',
-                new AtUri(post.uri).rkey,
-              ),
-              keyboardNavigationClickable: 'false',
-            },
-          }}
           style={[
             {
               paddingHorizontal: sidePadding,
@@ -716,7 +716,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
           </View>
         </View>
       </GalleryBleed>
-    </>
+    </View>
   )
 })
 

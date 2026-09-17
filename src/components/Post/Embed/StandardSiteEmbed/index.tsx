@@ -146,6 +146,7 @@ export const StandardSiteEmbed = ({
        * it can't be nested inside the article's peek.
        */}
       <Link
+        testID="postEmbedOpenBtn"
         peek
         shouldProxy
         to={view.uri}

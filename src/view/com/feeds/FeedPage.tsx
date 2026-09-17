@@ -26,7 +26,7 @@ import {
   type FeedParams,
   RQKEY as FEED_RQKEY,
 } from '#/state/queries/post-feed'
-import {truncateAndInvalidate} from '#/state/queries/util'
+import {refreshPostFeedQueries} from '#/state/queries/refresh-post-feed'
 import {useSession} from '#/state/session'
 import {PostFeed} from '#/view/com/posts/PostFeed'
 import {FAB} from '#/view/com/util/fab/FAB'
@@ -104,7 +104,7 @@ export function FeedPage({
       TabState.InsideAtRoot
     if (isScreenFocused && isPageFocused) {
       scrollToTop()
-      void truncateAndInvalidate(queryClient, FEED_RQKEY(feed))
+      void refreshPostFeedQueries(queryClient, FEED_RQKEY(feed))
       setHasNew(false)
       ax.metric('feed:refresh', {
         feedType: feed.split('|')[0],
@@ -128,7 +128,7 @@ export function FeedPage({
 
   const onPressLoadLatest = useCallback(() => {
     scrollToTop()
-    void truncateAndInvalidate(queryClient, FEED_RQKEY(feed))
+    void refreshPostFeedQueries(queryClient, FEED_RQKEY(feed))
     setHasNew(false)
     ax.metric('feed:refresh', {
       feedType: feed.split('|')[0],

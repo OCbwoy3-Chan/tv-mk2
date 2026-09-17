@@ -95,6 +95,7 @@ export function ExternalGif({
         onAccept={load}
       />
       <Pressable
+        testID="postMediaOpenBtn"
         style={[
           {height: 300},
           a.w_full,

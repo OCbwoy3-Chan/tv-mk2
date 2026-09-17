@@ -2,6 +2,7 @@ import {useCallback} from 'react'
 
 import {useDialogStateControlContext} from '#/state/dialogs'
 import {useLightboxControls} from '#/components/Lightbox/state'
+import {IS_WEB} from '#/env'
 import {useComposerControls} from './shell/composer'
 import {useSetDrawerOpen} from './shell/drawer-open'
 
@@ -39,7 +40,8 @@ export function useCloseAllActiveElements() {
   const setDrawerOpen = useSetDrawerOpen()
   return useCallback(() => {
     closeLightbox()
-    closeComposer()
+    // Web navigation can continue underneath the open composer.
+    if (!IS_WEB) closeComposer()
     closeAlfDialogs()
     setDrawerOpen(false)
   }, [closeLightbox, closeComposer, closeAlfDialogs, setDrawerOpen])

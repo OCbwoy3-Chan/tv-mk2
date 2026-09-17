@@ -5,6 +5,10 @@ import {
   useSetDisableComposerPrompt,
 } from '#/state/preferences/disable-composer-prompt'
 import {
+  useDisableInfiniteScroll,
+  useSetDisableInfiniteScroll,
+} from '#/state/preferences/disable-infinite-scroll'
+import {
   useDisableTopOfFeedButton,
   useSetDisableTopOfFeedButton,
 } from '#/state/preferences/disable-top-of-feed-button'
@@ -34,10 +38,14 @@ import {EyeSlash_Stroke2_Corner0_Rounded as EyeSlashIcon} from '#/components/ico
 import {PencilLine_Stroke2_Corner2_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
+import {TimesLarge_Stroke2_Corner0_Rounded as TimesIcon} from '#/components/icons/Times'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesUsabilityFeedSettingsScreen() {
   const {t: l} = useLingui()
+
+  const disableInfiniteScroll = useDisableInfiniteScroll()
+  const setDisableInfiniteScroll = useSetDisableInfiniteScroll()
 
   const noDiscoverFallback = useNoDiscoverFallback()
   const setNoDiscoverFallback = useSetNoDiscoverFallback()
@@ -59,6 +67,27 @@ export function RunesUsabilityFeedSettingsScreen() {
 
   return (
     <RunesScreenLayout titleText={l`Feeds`}>
+      <Toggle.Item
+        name="disable_infinite_scroll"
+        label={l`Disable infinite scroll`}
+        value={disableInfiniteScroll}
+        onChange={setDisableInfiniteScroll}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={TimesIcon} />
+          <SettingsList.ItemText>
+            <Trans>Disable infinite scroll</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <SettingsList.Item>
+        <Admonition type="info" style={[a.flex_1]}>
+          <Trans>
+            Use pages in feeds, search results, and saved posts. Each new page
+            replaces the previous results to reduce memory use.
+          </Trans>
+        </Admonition>
+      </SettingsList.Item>
       <Toggle.Item
         name="no_discover_fallback"
         label={l`Do not fall back to discover feed`}

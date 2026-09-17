@@ -1,4 +1,12 @@
-import {createContext, useCallback, useContext, useMemo, useState} from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {type GestureResponderEvent} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
@@ -202,6 +210,8 @@ export function useEphemeralAccountSwitcher() {
 }
 
 type EphemeralAccountSwitcherProps = {
+  /** Open the picker when this switcher first mounts. */
+  defaultOpen?: boolean
   selectedDid: string
   title: string
   onSelectAccount: (account: SessionAccount) => void
@@ -253,6 +263,7 @@ export function EphemeralAccountSwitcherFromScope(
 }
 
 function EphemeralAccountSwitcherWithData({
+  defaultOpen = false,
   selectedDid,
   title,
   onSelectAccount,
@@ -268,6 +279,26 @@ function EphemeralAccountSwitcherWithData({
   const menuAccounts = accountsOverride ?? switcherAccounts
   const control = useDialogControl()
   const signOutPromptControl = Prompt.usePromptControl()
+  const menuControl = Menu.useMenuControl()
+  const usesDialog = IS_WEB_TOUCH_DEVICE || triggerBehavior === 'longPress'
+  const open = usesDialog ? control.open : menuControl.open
+  const openedInitially = useRef(false)
+
+  useEffect(() => {
+    if (
+      !defaultOpen ||
+      openedInitially.current ||
+      !hasAlternateAccounts ||
+      menuAccounts.length === 0
+    )
+      return
+    // Let the composer's focus scope mount before the picker takes focus.
+    const timeout = setTimeout(() => {
+      openedInitially.current = true
+      open()
+    }, 0)
+    return () => clearTimeout(timeout)
+  }, [defaultOpen, hasAlternateAccounts, menuAccounts.length, open])
 
   if (!hasAlternateAccounts || menuAccounts.length === 0) {
     return renderTrigger({
@@ -314,7 +345,7 @@ function EphemeralAccountSwitcherWithData({
   }
 
   return (
-    <Menu.Root>
+    <Menu.Root control={menuControl}>
       <Menu.Trigger label={l`Switch accounts`}>
         {({props}) =>
           renderTrigger({

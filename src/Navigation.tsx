@@ -102,6 +102,7 @@ import {NotificationsActivityListScreen} from '#/screens/Notifications/ActivityL
 import {PostLikedByScreen} from '#/screens/Post/PostLikedBy'
 import {PostQuotesScreen} from '#/screens/Post/PostQuotes'
 import {PostRepostedByScreen} from '#/screens/Post/PostRepostedBy'
+import {PostQuoteChainScreen} from '#/screens/Post/QuoteChain'
 import {ProfileKnownFollowersScreen} from '#/screens/Profile/KnownFollowers'
 import {ProfileFollowersScreen} from '#/screens/Profile/ProfileFollowers'
 import {ProfileFollowsScreen} from '#/screens/Profile/ProfileFollows'
@@ -522,6 +523,11 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         options={({route}) => ({
           title: title(msg`Post by @${route.params.name}`),
         })}
+      />
+      <Stack.Screen
+        name="PostQuoteChain"
+        getComponent={() => PostQuoteChainScreen}
+        options={{title: title(msg`Quote chain`)}}
       />
       <Stack.Screen
         name="PostQuotes"
@@ -1499,6 +1505,13 @@ function navigate<K extends keyof AllNavigatorParams>(
     ])
   }
   return Promise.resolve()
+}
+
+/** Returns to the previous app screen when one is available. */
+export function goBack() {
+  if (!navigationRef.isReady() || !navigationRef.canGoBack()) return false
+  navigationRef.goBack()
+  return true
 }
 
 function resetToTab(

@@ -18,6 +18,7 @@ function renderItem(
       return <AutocompleteItemProfile {...item} />
     case 'emoji':
       return <AutocompleteItemEmoji {...item} />
+    case 'open-link':
     case 'search':
       return <AutocompleteItemSearch {...item} />
     default:

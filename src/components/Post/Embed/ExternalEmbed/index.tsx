@@ -109,6 +109,7 @@ export const ExternalEmbed = ({
 
   return (
     <Link
+      testID="postEmbedOpenBtn"
       label={link.title || _(msg`Open link to ${niceUrl}`)}
       to={link.uri}
       shouldProxy={true}

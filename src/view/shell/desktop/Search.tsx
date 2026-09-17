@@ -1,9 +1,11 @@
-import {useState} from 'react'
-import {View} from 'react-native'
+import {useRef, useState} from 'react'
+import {type TextInput, View} from 'react-native'
 import {useSift} from '@bsky.app/sift'
 import {StackActions, useNavigation} from '@react-navigation/native'
 
+import {mergeRefs} from '#/lib/merge-refs'
 import {makeProfileLink} from '#/lib/routes/links'
+import {parseSearchLink} from '#/lib/routes/searchLink'
 import {type NavigationProp} from '#/lib/routes/types'
 import {atoms as a} from '#/alf'
 import {
@@ -15,6 +17,7 @@ import {SearchInput} from '#/components/forms/SearchInput'
 import {router} from '#/routes'
 
 export function DesktopSearch() {
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const navigation = useNavigation<NavigationProp>()
   const [active, setActive] = useState(false)
   const [query, setQuery] = useState<string>('')
@@ -48,21 +51,28 @@ export function DesktopSearch() {
   const onSubmit = () => {
     if (!query.length) return
     onClearText()
-    sift.elements.input.blur()
+    inputRef.current?.blur()
     navigation.dispatch(StackActions.push('Search', {q: query}))
   }
 
   const onSelect = (item: AutocompleteItem) => {
     if (item.type === 'profile') {
       onClearText()
-      sift.elements.input.blur()
+      inputRef.current?.blur()
       const [screen, params] = router.matchPath(makeProfileLink(item.profile))
       // @ts-expect-error TODO: type matchPath well enough that it can be plugged into navigation.navigate directly
       navigation.navigate(screen, params)
     } else if (item.type === 'search') {
       onClearText()
-      sift.elements.input.blur()
+      inputRef.current?.blur()
       navigation.navigate('Search', {q: item.value})
+    } else if (item.type === 'open-link') {
+      const link = parseSearchLink(item.value)
+      if (link) {
+        onClearText()
+        inputRef.current?.blur()
+        navigation.dispatch(StackActions.push(link.screen, link.params))
+      }
     }
   }
 
@@ -77,6 +87,7 @@ export function DesktopSearch() {
         onClearText={onClearText}
         onSubmitEditing={onSubmit}
         {...sift.targetProps}
+        ref={mergeRefs([sift.targetProps.ref, inputRef])}
       />
       {showResults && (
         <Inner

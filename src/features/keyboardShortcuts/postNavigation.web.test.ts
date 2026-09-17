@@ -1,9 +1,17 @@
 /** @jest-environment jsdom */
 
+import 'fast-text-encoding'
+
+import {POST_KEYBOARD_ACTION_EVENT} from './postActions.web'
 import {
   clickPostAction,
   getInitialVisiblePost,
   getNavigablePosts,
+  getPostActivityRoute,
+  getPostActivityShortcut,
+  getPostAuthorRoute,
+  getPostMediaTargets,
+  openPostMediaTarget,
   setPostSelected,
 } from './postNavigation.web'
 
@@ -82,4 +90,331 @@ it('opens image media using the existing embed control', () => {
   post.appendChild(embed)
   expect(clickPostAction(post, 'media')).toBe(true)
   expect(open).toHaveBeenCalledTimes(1)
+})
+
+it('does not perform an interaction when its dropdown is unavailable', () => {
+  const post = createPost({top: 20})
+  const button = document.createElement('button')
+  button.dataset.testid = 'likeBtn'
+  const like = jest.fn()
+  button.addEventListener('click', like)
+  post.appendChild(button)
+
+  expect(clickPostAction(post, 'like', true)).toBe(false)
+  expect(like).not.toHaveBeenCalled()
+})
+
+it('requests the account dropdown with a shifted click', () => {
+  const post = createPost({top: 20})
+  const button = document.createElement('button')
+  button.dataset.testid = 'postBookmarkBtn'
+  button.dataset.keyboardDropdown = 'true'
+  const open = jest.fn()
+  button.addEventListener('click', event => open(event.shiftKey))
+  post.appendChild(button)
+
+  expect(clickPostAction(post, 'save', true)).toBe(true)
+  expect(open).toHaveBeenCalledWith(true)
+})
+
+it('opens the repost menu without reposting when shifted', () => {
+  const post = createPost({top: 20})
+  const button = document.createElement('button')
+  button.dataset.testid = 'repostBtn'
+  const openMenu = jest.fn()
+  button.addEventListener('click', openMenu)
+  post.appendChild(button)
+
+  expect(clickPostAction(post, 'repost', true)).toBe(true)
+  expect(openMenu).toHaveBeenCalledTimes(1)
+})
+
+it.each([
+  ['repost', false],
+  ['quote', false],
+  ['quote', true],
+] as const)(
+  'dispatches %s (switcher: %s) without opening the post menu',
+  (action, dropdown) => {
+    const post = createPost({top: 20})
+    const button = document.createElement('button')
+    button.dataset.testid = 'repostBtn'
+    const openMenu = jest.fn()
+    const runAction = jest.fn()
+    button.addEventListener('click', openMenu)
+    post.addEventListener(POST_KEYBOARD_ACTION_EVENT, event => {
+      event.preventDefault()
+      runAction((event as CustomEvent).detail)
+    })
+    post.appendChild(button)
+
+    expect(clickPostAction(post, action, dropdown)).toBe(true)
+    expect(runAction).toHaveBeenCalledWith({
+      action,
+      openAccountSwitcher: dropdown,
+    })
+    expect(openMenu).not.toHaveBeenCalled()
+  },
+)
+
+it('activates the video play control and then focuses the player', () => {
+  const post = createPost({top: 20})
+  const video = document.createElement('div')
+  video.dataset.testid = 'postVideoFocusTarget'
+  video.tabIndex = -1
+  const play = document.createElement('button')
+  play.dataset.testid = 'postMediaOpenBtn'
+  const click = jest.fn()
+  play.addEventListener('click', click)
+  video.appendChild(play)
+  post.appendChild(video)
+
+  expect(clickPostAction(post, 'media')).toBe(true)
+  expect(document.activeElement).toBe(video)
+  expect(click).toHaveBeenCalledTimes(1)
+})
+
+it('uses the external player control so consent can be requested before playback', () => {
+  const post = createPost({top: 20})
+  const link = document.createElement('a')
+  link.dataset.testid = 'postEmbedOpenBtn'
+  const play = document.createElement('button')
+  play.dataset.testid = 'postMediaOpenBtn'
+  const consent = jest.fn()
+  const openLink = jest.fn()
+  play.addEventListener('click', event => {
+    event.preventDefault()
+    consent()
+  })
+  link.addEventListener('click', event => {
+    if (!event.defaultPrevented) openLink()
+  })
+  link.appendChild(play)
+  post.appendChild(link)
+
+  expect(clickPostAction(post, 'media')).toBe(true)
+  expect(consent).toHaveBeenCalledTimes(1)
+  expect(openLink).not.toHaveBeenCalled()
+})
+
+it('opens the embed link without activating unrelated post controls', () => {
+  const post = createPost({top: 20})
+  const unrelated = document.createElement('button')
+  unrelated.setAttribute('role', 'button')
+  const interact = jest.fn()
+  unrelated.addEventListener('click', interact)
+  post.appendChild(unrelated)
+  const embed = document.createElement('div')
+  embed.dataset.keyboardNavigationEmbed = ''
+  const link = document.createElement('a')
+  link.href = '#embed'
+  const open = jest.fn((event: MouseEvent) => event.preventDefault())
+  link.addEventListener('click', open)
+  embed.appendChild(link)
+  post.appendChild(embed)
+
+  expect(clickPostAction(post, 'media')).toBe(true)
+  expect(open).toHaveBeenCalledTimes(1)
+  expect(interact).not.toHaveBeenCalled()
+})
+
+it('focuses an already loaded external player', () => {
+  const post = createPost({top: 20})
+  const embed = document.createElement('div')
+  embed.dataset.keyboardNavigationEmbed = ''
+  const frame = document.createElement('iframe')
+  embed.appendChild(frame)
+  post.appendChild(embed)
+
+  expect(clickPostAction(post, 'media')).toBe(true)
+  expect(document.activeElement).toBe(frame)
+})
+
+it.each([
+  ['l', 'PostLikedBy'],
+  ['t', 'PostRepostedBy'],
+  ['q', 'PostQuotes'],
+])('resolves the selected post’s %s activity page', (key, name) => {
+  const post = createPost({top: 20})
+  post.dataset.keyboardNavigationPost =
+    'at://did:plc:author/app.bsky.feed.post/record'
+  expect(getPostActivityRoute(post, key)).toEqual({
+    name,
+    params: {name: 'did:plc:author', rkey: 'record'},
+  })
+})
+
+it('ignores unsupported activity keys and invalid post URIs', () => {
+  const post = createPost({top: 20})
+  expect(getPostActivityRoute(post, 'l')).toBeUndefined()
+  post.dataset.keyboardNavigationPost =
+    'at://did:plc:author/app.bsky.feed.post/record'
+  expect(getPostActivityRoute(post, 's')).toBeUndefined()
+  post.dataset.keyboardNavigationPost =
+    'at://did:plc:author/app.bsky.feed.like/record'
+  expect(getPostActivityRoute(post, 'l')).toBeUndefined()
+})
+
+it.each([
+  ['KeyL', '¬', 'PostLikedBy'],
+  ['KeyT', '†', 'PostRepostedBy'],
+  ['KeyQ', 'œ', 'PostQuotes'],
+])('handles macOS Option with AltGraph for %s', (code, key, name) => {
+  const post = createPost({top: 20})
+  post.dataset.keyboardNavigationPost =
+    'at://did:plc:author/app.bsky.feed.post/record'
+  const event = new KeyboardEvent('keydown', {
+    code,
+    key,
+    altKey: true,
+    modifierAltGraph: true,
+  })
+  expect(event.getModifierState('AltGraph')).toBe(true)
+  expect(getPostActivityShortcut(post, event)).toEqual({
+    name,
+    params: {name: 'did:plc:author', rkey: 'record'},
+  })
+})
+
+it.each([
+  {ctrlKey: true},
+  {metaKey: true},
+  {shiftKey: true},
+  {repeat: true},
+  {altKey: false},
+])('ignores other modifiers and repeats: %j', modifiers => {
+  const post = createPost({top: 20})
+  post.dataset.keyboardNavigationPost =
+    'at://did:plc:author/app.bsky.feed.post/record'
+  const event = new KeyboardEvent('keydown', {
+    code: 'KeyL',
+    key: 'l',
+    altKey: true,
+    ...modifiers,
+  })
+  expect(getPostActivityShortcut(post, event)).toBeUndefined()
+})
+
+it.each(['image', 'video', 'link', 'nested quote'])(
+  'opens the quoted child post instead of its %s',
+  kind => {
+    const post = createPost({top: 20})
+    const quote = document.createElement('a')
+    quote.dataset.testid = 'quotedPostOpenBtn'
+    quote.href = '#quoted-post'
+    const openQuote = jest.fn((event: MouseEvent) => event.preventDefault())
+    quote.addEventListener('click', openQuote)
+    const embed = document.createElement('div')
+    embed.className = 'wsky-post__media'
+    embed.dataset.keyboardNavigationEmbed = ''
+    const child = document.createElement('button')
+    child.setAttribute('role', 'button')
+    child.dataset.testid =
+      kind === 'nested quote'
+        ? 'quotedPostOpenBtn'
+        : kind === 'link'
+          ? 'postEmbedOpenBtn'
+          : kind === 'video'
+            ? 'postMediaOpenBtn'
+            : ''
+    const openChildEmbed = jest.fn()
+    child.addEventListener('click', openChildEmbed)
+    embed.appendChild(child)
+    quote.appendChild(embed)
+    post.appendChild(quote)
+
+    expect(clickPostAction(post, 'media')).toBe(true)
+    expect(openQuote).toHaveBeenCalledTimes(1)
+    expect(openChildEmbed).not.toHaveBeenCalled()
+  },
+)
+
+it('offers each top-level attachment without exposing a quoted post’s media', () => {
+  const post = createPost({top: 20})
+  const controls: HTMLButtonElement[] = []
+  const actions = [jest.fn(), jest.fn(), jest.fn()]
+  const kinds = ['media', 'embed', 'quote'] as const
+  const ids = ['postMediaOpenBtn', 'postEmbedOpenBtn', 'quotedPostOpenBtn']
+  for (const [index, kind] of kinds.entries()) {
+    const boundary = document.createElement('div')
+    boundary.dataset.keyboardNavigationEmbedTarget = kind
+    const button = document.createElement('button')
+    button.dataset.testid = ids[index]
+    button.addEventListener('click', actions[index])
+    boundary.appendChild(button)
+    post.appendChild(boundary)
+    controls.push(button)
+  }
+  const nested = document.createElement('div')
+  nested.dataset.keyboardNavigationEmbedTarget = 'media'
+  const nestedMedia = document.createElement('button')
+  nestedMedia.dataset.testid = 'postMediaOpenBtn'
+  const playNestedMedia = jest.fn()
+  nestedMedia.addEventListener('click', playNestedMedia)
+  nested.appendChild(nestedMedia)
+  controls[2].appendChild(nested)
+
+  const targets = getPostMediaTargets(post)
+  expect(targets.map(target => target.kind)).toEqual(kinds)
+  expect(targets.map(target => target.control)).toEqual(controls)
+  expect(clickPostAction(post, 'media')).toBe(false)
+  expect(actions.every(action => action.mock.calls.length === 0)).toBe(true)
+  expect(openPostMediaTarget(targets[1])).toBe(true)
+  expect(actions[1]).toHaveBeenCalledTimes(1)
+  expect(actions[0]).not.toHaveBeenCalled()
+  expect(actions[2]).not.toHaveBeenCalled()
+  expect(playNestedMedia).not.toHaveBeenCalled()
+})
+
+it('ignores unavailable attachments and stale choices', () => {
+  const post = createPost({top: 20})
+  const boundary = document.createElement('div')
+  boundary.dataset.keyboardNavigationEmbedTarget = 'media'
+  const button = document.createElement('button')
+  button.dataset.testid = 'postMediaOpenBtn'
+  button.disabled = true
+  boundary.appendChild(button)
+  post.appendChild(boundary)
+  expect(getPostMediaTargets(post)).toEqual([])
+  button.disabled = false
+  const [target] = getPostMediaTargets(post)
+  const play = jest.fn()
+  button.addEventListener('click', play)
+  post.remove()
+  expect(openPostMediaTarget(target)).toBe(false)
+  expect(play).not.toHaveBeenCalled()
+})
+
+it('opens a quote alone without offering its nested media as another choice', () => {
+  const post = createPost({top: 20})
+  const quote = document.createElement('div')
+  quote.dataset.keyboardNavigationEmbedTarget = 'quote'
+  const link = document.createElement('a')
+  link.dataset.testid = 'quotedPostOpenBtn'
+  const nested = document.createElement('div')
+  nested.dataset.keyboardNavigationEmbedTarget = 'media'
+  const button = document.createElement('button')
+  button.dataset.testid = 'postMediaOpenBtn'
+  nested.appendChild(button)
+  link.appendChild(nested)
+  quote.appendChild(link)
+  post.appendChild(quote)
+  const open = jest.fn()
+  link.addEventListener('click', open)
+
+  expect(getPostMediaTargets(post)).toEqual([{kind: 'quote', control: link}])
+  expect(clickPostAction(post, 'media')).toBe(true)
+  expect(open).toHaveBeenCalledTimes(1)
+})
+
+it('resolves P to the selected post author’s profile', () => {
+  const post = createPost({top: 20})
+  post.dataset.keyboardNavigationPost =
+    'at://did:plc:author/app.bsky.feed.post/record'
+  expect(getPostAuthorRoute(post)).toEqual({
+    name: 'Profile',
+    params: {name: 'did:plc:author'},
+  })
+  post.dataset.keyboardNavigationPost = 'invalid'
+  expect(getPostAuthorRoute(post)).toBeUndefined()
 })

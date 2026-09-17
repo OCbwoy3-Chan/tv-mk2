@@ -23,8 +23,8 @@ import {
   usePreferencesQuery,
   type UsePreferencesQueryResponse,
 } from '#/state/queries/preferences'
+import {refreshPostFeedQueries} from '#/state/queries/refresh-post-feed'
 import {useResolveUriQuery} from '#/state/queries/resolve-uri'
-import {truncateAndInvalidate} from '#/state/queries/util'
 import {useSession} from '#/state/session'
 import {PostFeed} from '#/view/com/posts/PostFeed'
 import {EmptyState} from '#/view/com/util/EmptyState'
@@ -152,7 +152,7 @@ export function CustomFeedScreenInner({
       animated: IS_NATIVE,
       offset: 0, // -headerHeight,
     })
-    void truncateAndInvalidate(queryClient, FEED_RQKEY(feed))
+    void refreshPostFeedQueries(queryClient, FEED_RQKEY(feed))
     setHasNew(false)
   }, [scrollElRef, queryClient, feed, setHasNew])
 

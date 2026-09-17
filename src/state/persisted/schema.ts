@@ -267,6 +267,7 @@ const schema = z.object({
   hideFeedsPromoTab: z.boolean().optional(),
   disableViaRepostNotification: z.boolean().optional(),
   disableComposerPrompt: z.boolean().optional(),
+  disableInfiniteScroll: z.boolean().optional(),
   disableTopOfFeedButton: z.boolean().optional(),
   showAvatarFollowButton: z.boolean().optional(),
   /** @deprecated Migrated to likesMetricsDisplay */
@@ -489,6 +490,7 @@ export const defaults: Schema = {
   hideFeedsPromoTab: false,
   disableViaRepostNotification: false,
   disableComposerPrompt: true,
+  disableInfiniteScroll: false,
   disableTopOfFeedButton: false,
   showAvatarFollowButton: false,
   likesMetricsDisplay: 'visible',

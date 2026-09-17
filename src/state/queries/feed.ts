@@ -17,6 +17,10 @@ import {DISCOVER_FEED_URI, DISCOVER_SAVED_FEED} from '#/lib/constants'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {GCTIME, STALE} from '#/state/queries'
+import {
+  unwrapCursor,
+  useCursorPagination,
+} from '#/state/queries/cursor-pagination'
 import {RQKEY as listQueryKey} from '#/state/queries/list'
 import {usePreferencesQuery} from '#/state/queries/preferences'
 import {createQueryKey} from '#/state/queries/util'
@@ -372,31 +376,40 @@ export const createPopularFeedsSearchQueryKey = (query: string) => [
 export function usePopularFeedsSearch({
   query,
   enabled,
+  paginated = false,
 }: {
   query: string
   enabled?: boolean
+  paginated?: boolean
 }) {
   const client = useAppviewClient()
   const moderationOpts = useModerationOpts()
   const enabledInner = enabled ?? Boolean(moderationOpts)
 
-  return useInfiniteQuery({
+  const pagination = useCursorPagination<
+    app.bsky.unspecced.getPopularFeedGenerators.$OutputBody,
+    string | undefined
+  >(
+    createPopularFeedsSearchQueryKey(query),
+    paginated,
+    page => page.cursor,
+    undefined,
+  )
+  const result = useInfiniteQuery({
     enabled: enabledInner,
-    queryKey: createPopularFeedsSearchQueryKey(query),
+    ...pagination,
     queryFn: async ({pageParam}) => {
       const data = await client.call(
         app.bsky.unspecced.getPopularFeedGenerators,
         {
           limit: 15,
           query: query,
-          cursor: pageParam,
+          cursor: unwrapCursor(pageParam),
         },
       )
 
       return data
     },
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: lastPage => lastPage.cursor,
     placeholderData: keepPreviousData,
     select(data) {
       return {
@@ -411,6 +424,7 @@ export function usePopularFeedsSearch({
       }
     },
   })
+  return {...result, paginationQueryKey: pagination.queryKey}
 }
 
 export type SavedFeedSourceInfo = FeedSourceInfo & {

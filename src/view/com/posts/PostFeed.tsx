@@ -18,10 +18,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native'
-import {
-  AppBskyEmbedImages,
-  AppBskyFeedDefs,
-} from '@atproto/api'
+import {AppBskyEmbedImages, AppBskyFeedDefs} from '@atproto/api'
 import {type RichText as RichTextType} from '@bsky/sdk/richtext'
 import {useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
@@ -41,6 +38,7 @@ import {
   PdsViewabilityProvider,
 } from '#/state/pds-viewability'
 import {useDisableComposerPrompt} from '#/state/preferences/disable-composer-prompt'
+import {useDisableInfiniteScroll} from '#/state/preferences/disable-infinite-scroll'
 import {useHideUnreplyablePosts} from '#/state/preferences/hide-unreplyable-posts'
 import {useRepostCarouselEnabled} from '#/state/preferences/repost-carousel-enabled'
 import {useTrendingSettings} from '#/state/preferences/trending'
@@ -72,6 +70,7 @@ import {
   AgeAssuranceDismissibleFeedBanner,
   useInternalState as useAgeAssuranceBannerState,
 } from '#/components/ageAssurance/AgeAssuranceDismissibleFeedBanner'
+import {Button, ButtonText} from '#/components/Button'
 import {ProgressGuide, SuggestedFollows} from '#/components/FeedInterstitials'
 import {
   PostFeedVideoGridRow,
@@ -81,6 +80,7 @@ import {FeedTrendingTopicsInterstitial} from '#/components/interstitials/FeedTre
 import {TrendingVideos as TrendingVideosInterstitial} from '#/components/interstitials/TrendingVideos'
 import {isStandardSiteEmbed} from '#/components/Post/Embed/StandardSiteEmbed/utils'
 import {RichText} from '#/components/RichText'
+import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
 import {DiscoverFeedLiveEventFeedsAndTrendingBanner} from '#/features/liveEvents/components/DiscoverFeedLiveEventFeedsAndTrendingBanner'
@@ -328,7 +328,7 @@ export type PostFeedRef = {
 let PostFeed = ({
   feed,
   description,
-  feedParams,
+  feedParams: providedFeedParams,
   ignoreFilterFor,
   style,
   enabled,
@@ -380,11 +380,14 @@ let PostFeed = ({
   const ax = useAnalytics()
   const t = useTheme()
   const {t: l} = useLingui()
+  const disableInfiniteScroll = useDisableInfiniteScroll()
+  const feedParams = disableInfiniteScroll
+    ? {...providedFeedParams, paginated: true}
+    : providedFeedParams
   const queryClient = useQueryClient()
   const {currentAccount, hasSession} = useSession()
   const initialNumToRender = useInitialNumToRender()
   const feedFeedback = useFeedFeedbackContext()
-  const pdsViewabilityStore = useMemo(() => createPdsViewabilityStore(), [])
   const [isPTRing, setIsPTRing] = useState(false)
   // eslint-disable-next-line react-hooks/purity
   const lastFetchRef = useRef<number>(Date.now())
@@ -430,8 +433,30 @@ let PostFeed = ({
     refetch,
     hasNextPage,
     isFetchingNextPage,
+    isFetchingPreviousPage,
+    isFetchPreviousPageError,
+    fetchPreviousPage,
     fetchNextPage,
   } = usePostFeedQuery(feed, feedParams, opts)
+  const pageNumber = data?.pages[0]?.page ?? 1
+  const pageIdentity = disableInfiniteScroll
+    ? `${feed}:${pageNumber}`
+    : undefined
+  const pdsViewabilityStore = useMemo(
+    () => createPdsViewabilityStore(),
+    [pageIdentity],
+  )
+  const localScrollElRef: ListRef = useRef(null)
+  const listRef = scrollElRef ?? localScrollElRef
+  useEffect(() => {
+    if (disableInfiniteScroll) {
+      listRef.current?.scrollToOffset({offset: -headerOffset, animated: false})
+      seenActorWithStatusRef.current.clear()
+      seenPostUrisRef.current.clear()
+      seenPerPostUrisRef.current.clear()
+      setHasPressedShowLessUris(new Set())
+    }
+  }, [disableInfiniteScroll, pageIdentity, listRef, headerOffset])
   const lastFetchedAt = data?.pages[0].fetchedAt
   const isEmpty = useMemo(
     () => !isFetching && !data?.pages?.some(page => page.slices.length),
@@ -881,31 +906,31 @@ let PostFeed = ({
 
     return arr
   }, [
-	description,
-	isFetched,
-	isError,
-	isEmpty,
-	lastFetchedAt,
-	data,
-	feed,
-	feedType,
-	feedUriOrActorDid,
-	feedTab,
-	hasSession,
-	showProgressInterstitial,
-	trendingVideoDisabled,
-	gtMobile,
-	isVideoFeed,
-	areVideoFeedsEnabled,
-	useRepostCarousel,
-	hasPressedShowLessUris,
-	ageAssuranceBannerState,
-	isCurrentFeedAtStartupSelected,
-	blockedOrMutedAuthors,
-	trendingIndices,
-	disableComposerPrompt,
-	hideUnreplyablePosts
-])
+    description,
+    isFetched,
+    isError,
+    isEmpty,
+    lastFetchedAt,
+    data,
+    feed,
+    feedType,
+    feedUriOrActorDid,
+    feedTab,
+    hasSession,
+    showProgressInterstitial,
+    trendingVideoDisabled,
+    gtMobile,
+    isVideoFeed,
+    areVideoFeedsEnabled,
+    useRepostCarousel,
+    hasPressedShowLessUris,
+    ageAssuranceBannerState,
+    isCurrentFeedAtStartupSelected,
+    blockedOrMutedAuthors,
+    trendingIndices,
+    disableComposerPrompt,
+    hideUnreplyablePosts,
+  ])
 
   // events
   // =
@@ -919,8 +944,16 @@ let PostFeed = ({
       feedUrl: feed,
       reason: 'pull-to-refresh',
     })
+    const resetToFirstPage = disableInfiniteScroll && pageNumber > 1
     try {
-      await truncateAndInvalidate(queryClient, RQKEY(feed, feedParams))
+      if (resetToFirstPage) {
+        await queryClient.resetQueries({
+          queryKey: RQKEY(feed, feedParams),
+          exact: true,
+        })
+      } else {
+        await truncateAndInvalidate(queryClient, RQKEY(feed, feedParams))
+      }
       if (onHasNew) {
         onHasNew(false)
       }
@@ -969,8 +1002,8 @@ let PostFeed = ({
   }, [refetch, onHasNew])
 
   const onPressRetryLoadMore = useCallback(() => {
-    void fetchNextPage()
-  }, [fetchNextPage])
+    void (isFetchPreviousPageError ? fetchPreviousPage() : fetchNextPage())
+  }, [isFetchPreviousPageError, fetchPreviousPage, fetchNextPage])
 
   // rendering
   // =
@@ -1118,6 +1151,54 @@ let PostFeed = ({
     ],
   )
 
+  function renderPaginationControls(position: 'top' | 'bottom') {
+    if (!hasNextPage && pageNumber === 1) return null
+
+    return (
+      <View
+        style={[
+          a.flex_row,
+          a.align_center,
+          a.justify_center,
+          a.gap_sm,
+          a.px_md,
+          a.py_md,
+        ]}>
+        {pageNumber > 1 && (
+          <Button
+            testID={
+              position === 'top'
+                ? 'feedPreviousPageButtonTop'
+                : 'feedPreviousPageButton'
+            }
+            label={l`Previous page`}
+            color="secondary"
+            size="small"
+            disabled={isFetching || !enabled}
+            onPress={() => fetchPreviousPage()}>
+            <ButtonText>{l`Previous page`}</ButtonText>
+          </Button>
+        )}
+        <Text accessibilityLiveRegion="polite">{l`Page ${pageNumber}`}</Text>
+        {hasNextPage && !isError && (
+          <Button
+            testID={
+              position === 'top'
+                ? 'feedNextPageButtonTop'
+                : 'feedNextPageButton'
+            }
+            label={l`Next page`}
+            color="secondary"
+            size="small"
+            disabled={isFetching || !enabled}
+            onPress={onEndReached}>
+            <ButtonText>{l`Next page`}</ButtonText>
+          </Button>
+        )}
+      </View>
+    )
+  }
+
   const shouldRenderEndOfFeed =
     !hasNextPage && !isEmpty && !isFetching && !isError && !!renderEndOfFeed
   const bottomBarOffset = useBottomBarOffset()
@@ -1132,10 +1213,17 @@ let PostFeed = ({
       Math.max(headerOffset, 32) * (IS_WEB ? 1 : 2) +
       (IS_WEB ? bottomBarOffset : 0)
 
-    return isFetchingNextPage ? (
+    return isFetchingNextPage || isFetchingPreviousPage ? (
       <View style={[styles.feedFooter]}>
         <ActivityIndicator color={t.palette.primary_500} />
         <View style={{height: offset}} />
+      </View>
+    ) : disableInfiniteScroll &&
+      isFetched &&
+      (hasNextPage || pageNumber > 1) ? (
+      <View style={[a.align_center, a.gap_md, {paddingBottom: offset}]}>
+        {renderPaginationControls('bottom')}
+        {shouldRenderEndOfFeed && renderEndOfFeed()}
       </View>
     ) : shouldRenderEndOfFeed ? (
       <View style={{minHeight: offset}}>{renderEndOfFeed()}</View>
@@ -1143,13 +1231,19 @@ let PostFeed = ({
       <View style={{height: offset}} />
     )
   }, [
-	isFetchingNextPage,
-	shouldRenderEndOfFeed,
-	renderEndOfFeed,
-	headerOffset,
-	bottomBarOffset,
-	t.palette.primary_500
-])
+    disableInfiniteScroll,
+    isFetched,
+    renderPaginationControls,
+    hasNextPage,
+    pageNumber,
+    isFetchingNextPage,
+    isFetchingPreviousPage,
+    shouldRenderEndOfFeed,
+    renderEndOfFeed,
+    headerOffset,
+    bottomBarOffset,
+    t.palette.primary_500,
+  ])
 
   const liveNowConfig = useLiveNowConfig()
 
@@ -1342,12 +1436,22 @@ let PostFeed = ({
       <View testID={testID} style={[style, userStyle('wsky-feed')]}>
         <List
           testID={testID ? `${testID}-flatlist` : undefined}
-          ref={scrollElRef}
+          ref={listRef}
+          key={disableInfiniteScroll ? pageNumber : 'infinite'}
           data={feedItems}
           keyExtractor={(item: FeedRow) => item.key}
           renderItem={renderItem}
           ListFooterComponent={FeedFooter}
-          ListHeaderComponent={ListHeaderComponent}
+          ListHeaderComponent={
+            disableInfiniteScroll && pageNumber > 1 ? (
+              <>
+                {ListHeaderComponent && <ListHeaderComponent />}
+                {renderPaginationControls('top')}
+              </>
+            ) : (
+              ListHeaderComponent
+            )
+          }
           refreshing={isPTRing}
           onRefresh={() => void onRefresh()}
           headerOffset={headerOffset}
@@ -1356,7 +1460,9 @@ let PostFeed = ({
             minHeight: Dimensions.get('window').height * 1.5,
           }}
           onScrolledDownChange={handleScrolledDownChange}
-          onEndReached={() => void onEndReached()}
+          onEndReached={
+            disableInfiniteScroll ? undefined : () => void onEndReached()
+          }
           onEndReachedThreshold={2} // number of posts left to trigger load more
           removeClippedSubviews={true}
           extraData={extraData}

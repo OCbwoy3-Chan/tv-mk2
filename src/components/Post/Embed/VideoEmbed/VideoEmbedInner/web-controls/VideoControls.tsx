@@ -188,7 +188,8 @@ export function Controls({
 
   const onPressEmptySpace = useCallback(
     (evt: GestureResponderEvent) => {
-      const clickCount = (evt.nativeEvent as unknown as {detail?: number}).detail
+      const clickCount = (evt.nativeEvent as unknown as {detail?: number})
+        .detail
       if (clickCount && clickCount > 1) return
 
       playingBeforeClickRef.current = null
@@ -242,13 +243,13 @@ export function Controls({
       if (
         isGif ||
         event.defaultPrevented ||
-        (event.repeat && key === 'f') ||
+        (event.repeat && (key === 'f' || key === 'm')) ||
         event.isComposing ||
         event.shiftKey ||
         event.ctrlKey ||
         event.metaKey ||
         event.altKey ||
-        (key !== 'f' && !isSeek) ||
+        (key !== 'f' && key !== 'm' && !isSeek) ||
         settingsOpen ||
         (target instanceof Element &&
           target.closest(
@@ -269,6 +270,9 @@ export function Controls({
       event.stopPropagation()
       if (key === 'f') {
         onPressFullscreen()
+      } else if (key === 'm') {
+        drawFocus()
+        changeMuted(value => !value)
       } else if (video) {
         drawFocus()
         if (isFrameStep) pause()
@@ -289,6 +293,7 @@ export function Controls({
     fullscreenRef,
     isGif,
     onPressFullscreen,
+    changeMuted,
     settingsOpen,
     videoRef,
     drawFocus,
@@ -419,6 +424,8 @@ export function Controls({
 
   return (
     <div
+      data-testid="postVideoFocusTarget"
+      tabIndex={-1}
       style={{
         position: 'absolute',
         inset: 0,
@@ -435,11 +442,18 @@ export function Controls({
       onPointerLeave={onEndHoverWithTimeout}
       onPointerDown={onPointerDown}
       onDoubleClick={onDoubleClickEmptySpace}
-      onFocus={onFocus}
+      onFocus={event => {
+        onFocus()
+        if (event.target === event.currentTarget) {
+          drawFocus()
+          setInteractingViaKeypress(true)
+        }
+      }}
       onBlur={onBlur}
       onKeyDown={onKeyDown}>
       <div ref={emptySpaceRef} style={{display: 'flex', flex: 1, minHeight: 0}}>
         <Pressable
+          testID="postMediaOpenBtn"
           accessibilityRole="button"
           onPointerEnter={onPointerMoveEmptySpace}
           onPointerMove={onPointerMoveEmptySpace}

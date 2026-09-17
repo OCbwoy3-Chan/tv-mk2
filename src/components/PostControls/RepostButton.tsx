@@ -1,8 +1,7 @@
 import {memo, useCallback} from 'react'
 import {View} from 'react-native'
-import {msg, plural} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {plural} from '@lingui/core/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 
 import {useHaptics} from '#/lib/haptics'
 import {type CountsMetricsDisplay} from '#/lib/metrics-display'
@@ -11,7 +10,10 @@ import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {CloseQuote_Stroke2_Corner1_Rounded as QuoteIcon} from '#/components/icons/Quote'
-import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
+import {
+  Repost_Stroke2_Corner3_Rounded as RepostIcon,
+  RepostRepost_Stroke2_Corner2_Rounded as BumpRepostIcon,
+} from '#/components/icons/Repost'
 import {MetricCountLabel} from '#/components/PostControls/MetricCountLabel'
 import {Text} from '#/components/Typography'
 import {PostControlButton, PostControlButtonIcon} from './PostControlButton'
@@ -21,6 +23,7 @@ interface Props {
   repostCount?: number
   metricsDisplay?: CountsMetricsDisplay
   onRepost: () => void
+  onBumpRepost: () => void
   onQuote: () => void
   onLongPress?: () => void
   big?: boolean
@@ -32,13 +35,14 @@ let RepostButton = ({
   repostCount,
   metricsDisplay = 'visible',
   onRepost,
+  onBumpRepost,
   onQuote,
   onLongPress,
   big,
   embeddingDisabled,
 }: Props): React.ReactNode => {
   const t = useTheme()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const requireAuth = useRequireAuth()
   const dialogControl = Dialog.useDialogControl()
 
@@ -64,26 +68,22 @@ let RepostButton = ({
         onLongPress={onLongPress ?? onDefaultLongPress}
         label={
           isReposted
-            ? _(
-                msg({
-                  message: `Undo repost (${plural(repostCount || 0, {
-                    one: '# repost',
-                    other: '# reposts',
-                  })})`,
-                  comment:
-                    'Accessibility label for the repost button when the post has been reposted, verb followed by number of reposts and noun',
-                }),
-              )
-            : _(
-                msg({
-                  message: `Repost (${plural(repostCount || 0, {
-                    one: '# repost',
-                    other: '# reposts',
-                  })})`,
-                  comment:
-                    'Accessibility label for the repost button when the post has not been reposted, verb form followed by number of reposts and noun form',
-                }),
-              )
+            ? l({
+                message: `Undo repost (${plural(repostCount || 0, {
+                  one: '# repost',
+                  other: '# reposts',
+                })})`,
+                comment:
+                  'Accessibility label for the repost button when the post has been reposted, verb followed by number of reposts and noun',
+              })
+            : l({
+                message: `Repost (${plural(repostCount || 0, {
+                  one: '# repost',
+                  other: '# reposts',
+                })})`,
+                comment:
+                  'Accessibility label for the repost button when the post has not been reposted, verb form followed by number of reposts and noun form',
+              })
         }>
         <PostControlButtonIcon icon={RepostIcon} />
         {typeof repostCount !== 'undefined' ? (
@@ -105,6 +105,7 @@ let RepostButton = ({
         <RepostButtonDialogInner
           isReposted={isReposted}
           onRepost={onRepost}
+          onBumpRepost={onBumpRepost}
           onQuote={onQuote}
           embeddingDisabled={embeddingDisabled}
         />
@@ -118,16 +119,18 @@ export {RepostButton}
 export const RepostButtonDialogInner = memo(function RepostButtonDialogInner({
   isReposted,
   onRepost,
+  onBumpRepost,
   onQuote,
   embeddingDisabled,
 }: {
   isReposted: boolean
   onRepost: () => void
+  onBumpRepost: () => void
   onQuote: () => void
   embeddingDisabled: boolean
 }): React.ReactNode {
   const t = useTheme()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const playHaptic = useHaptics()
   const control = Dialog.useDialogContext()
 
@@ -149,15 +152,15 @@ export const RepostButtonDialogInner = memo(function RepostButtonDialogInner({
   const onPressClose = useCallback(() => control.close(), [control])
 
   return (
-    <Dialog.ScrollableInner label={_(msg`Repost or quote post`)}>
+    <Dialog.ScrollableInner label={l`Repost or quote post`}>
       <View style={a.gap_xl}>
         <View style={a.gap_xs}>
           <Button
             style={[a.justify_start, a.px_md, a.gap_sm]}
             label={
               isReposted
-                ? _(msg`Remove repost`)
-                : _(msg({message: `Repost`, context: 'action'}))
+                ? l`Remove repost`
+                : l({message: `Repost`, context: 'action'})
             }
             onPress={onPressRepost}
             size="large"
@@ -172,15 +175,29 @@ export const RepostButtonDialogInner = memo(function RepostButtonDialogInner({
               )}
             </Text>
           </Button>
+          {isReposted && (
+            <Button
+              testID="bumpRepostBtn"
+              style={[a.justify_start, a.px_md, a.gap_sm]}
+              label={l`Bump repost`}
+              onPress={() => {
+                playHaptic()
+                control.close(() => onBumpRepost())
+              }}
+              size="large"
+              variant="ghost"
+              color="primary">
+              <BumpRepostIcon size="lg" fill={t.palette.primary_500} />
+              <Text style={[a.font_semi_bold, a.text_xl]}>
+                <Trans>Bump repost</Trans>
+              </Text>
+            </Button>
+          )}
           <Button
             disabled={embeddingDisabled}
             testID="quoteBtn"
             style={[a.justify_start, a.px_md, a.gap_sm]}
-            label={
-              embeddingDisabled
-                ? _(msg`Quote posts disabled`)
-                : _(msg`Quote post`)
-            }
+            label={embeddingDisabled ? l`Quote posts disabled` : l`Quote post`}
             onPress={onPressQuote}
             size="large"
             variant="ghost"
@@ -208,7 +225,7 @@ export const RepostButtonDialogInner = memo(function RepostButtonDialogInner({
           </Button>
         </View>
         <Button
-          label={_(msg`Cancel quote post`)}
+          label={l`Cancel quote post`}
           onPress={onPressClose}
           size="large"
           color="secondary">

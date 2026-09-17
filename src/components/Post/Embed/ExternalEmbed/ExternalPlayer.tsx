@@ -64,6 +64,7 @@ function PlaceholderOverlay({
   return (
     <View style={[a.absolute, a.inset_0, {zIndex: 2}]}>
       <Pressable
+        testID="postMediaOpenBtn"
         accessibilityRole="button"
         accessibilityLabel={_(msg`Play Video`)}
         accessibilityHint={_(msg`Plays the video`)}

@@ -13,7 +13,9 @@ import {usePostQuery} from '#/state/queries/post'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
 import {PostQuotes as PostQuotesComponent} from '#/view/com/post-thread/PostQuotes'
+import {hasQuoteChain} from '#/screens/Post/QuoteChain/util'
 import {Button, ButtonIcon} from '#/components/Button'
+import {ChainLink_Stroke2_Corner0_Rounded as ChainLink} from '#/components/icons/ChainLink'
 import {
   ChevronBottomTop_Stroke2_Corner0_Rounded as ChevronIn,
   ChevronTopBottom_Stroke2_Corner0_Rounded as ChevronOut,
@@ -21,7 +23,7 @@ import {
 import * as Layout from '#/components/Layout'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'PostQuotes'>
-export const PostQuotesScreen = ({route}: Props) => {
+export const PostQuotesScreen = ({route, navigation}: Props) => {
   const {t: l} = useLingui()
   const {name, rkey} = route.params
   const uri = makeRecordUri(name, 'app.bsky.feed.post', rkey)
@@ -72,6 +74,20 @@ export const PostQuotesScreen = ({route}: Props) => {
             </>
           )}
         </Layout.Header.Content>
+        {hasQuoteChain(post?.embed) && (
+          <Layout.Header.Slot>
+            <Button
+              testID="quoteChainButton"
+              label={l`View quote chain`}
+              size="small"
+              color="secondary"
+              variant="ghost"
+              shape="round"
+              onPress={() => navigation.push('PostQuoteChain', {name, rkey})}>
+              <ButtonIcon icon={ChainLink} size="md" />
+            </Button>
+          </Layout.Header.Slot>
+        )}
         <Layout.Header.Slot>
           {post && (
             <Button

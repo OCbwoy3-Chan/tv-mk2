@@ -23,8 +23,8 @@ import {
   usePreferencesQuery,
   type UsePreferencesQueryResponse,
 } from '#/state/queries/preferences'
+import {refreshPostFeedQueries} from '#/state/queries/refresh-post-feed'
 import {useResolveUriQuery} from '#/state/queries/resolve-uri'
-import {truncateAndInvalidate} from '#/state/queries/util'
 import {useSession} from '#/state/session'
 import {PagerWithHeader} from '#/view/com/pager/PagerWithHeader'
 import {FAB} from '#/view/com/util/fab/FAB'
@@ -174,7 +174,7 @@ function ProfileListScreenLoaded({
 
   const onChangeMembers = () => {
     if (isCurateList) {
-      void truncateAndInvalidate(queryClient, FEED_RQKEY(`list|${list.uri}`))
+      void refreshPostFeedQueries(queryClient, FEED_RQKEY(`list|${list.uri}`))
     }
   }
 

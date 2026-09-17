@@ -276,6 +276,14 @@ func serve(cctx *cli.Context) error {
 	// OAuth callback (serves SPA so React handles it client-side)
 	e.GET("/auth/web/callback", server.WebGeneric)
 
+	e.GET("/pwa/*", echo.WrapHandler(staticHandler))
+	e.GET("/sw.js", echo.WrapHandler(staticHandler), func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Response().Header().Set("Cache-Control", "no-cache")
+			return next(c)
+		}
+	})
+
 	e.GET("/iframe/*", echo.WrapHandler(staticHandler))
 	e.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", staticHandler)), func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

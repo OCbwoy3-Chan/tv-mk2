@@ -1,4 +1,4 @@
-import {memo, useMemo, useState} from 'react'
+import {memo, useMemo, useRef, useState} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {type RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {plural} from '@lingui/core/macro'
@@ -145,12 +145,13 @@ function PostControlsInner({
       return false
     }
 
+    let latestPost
     try {
-      const latestPost = await getPost({uri: post.uri})
-      return !latestPost.viewer?.like
+      latestPost = await getPost({uri: post.uri})
     } catch {
       return false
     }
+    return !latestPost.viewer?.like
   }
 
   const onPressToggleLike = async () => {
@@ -184,7 +185,10 @@ function PostControlsInner({
     }
   }
 
-  const onRepost = async () => {
+  const repostInFlight = useRef(false)
+
+  const onRepost = async (bump = false) => {
+    if (repostInFlight.current) return
     if (isBlocked) {
       Toast.show(l`Cannot interact with a blocked user`, {
         type: 'warning',
@@ -193,8 +197,13 @@ function PostControlsInner({
     }
 
     const existingRepost = post.viewer?.repost
+    repostInFlight.current = true
     try {
-      if (!existingRepost) {
+      if (bump && post.viewer?.repost) {
+        await queueUnrepost()
+        await queueRepost()
+        Toast.show(l`Repost bumped`)
+      } else if (!existingRepost) {
         sendInteraction({
           item: post.uri,
           event: 'app.bsky.feed.defs#interactionRepost',
@@ -202,16 +211,18 @@ function PostControlsInner({
           reqId,
         })
         await queueRepost()
-        if (autoLikeOnRepost && (await shouldAutoLikeOnRepost())) {
-          setHasLikeIconBeenToggled(true)
-          sendInteraction({
-            item: post.uri,
-            event: 'app.bsky.feed.defs#interactionLike',
-            feedContext,
-            reqId,
-          })
-          captureAction(ProgressGuideAction.Like)
-          await queueLike()
+        if (autoLikeOnRepost) {
+          if (await shouldAutoLikeOnRepost()) {
+            setHasLikeIconBeenToggled(true)
+            sendInteraction({
+              item: post.uri,
+              event: 'app.bsky.feed.defs#interactionLike',
+              feedContext,
+              reqId,
+            })
+            captureAction(ProgressGuideAction.Like)
+            await queueLike()
+          }
         }
       } else {
         await queueUnrepost()
@@ -219,12 +230,20 @@ function PostControlsInner({
     } catch (err) {
       const e = err as Error
       if (e?.name !== 'AbortError') {
-        throw e
+        if (bump) {
+          Toast.show(l`Could not bump repost. Please try again.`, {
+            type: 'error',
+          })
+        } else {
+          throw e
+        }
       }
+    } finally {
+      repostInFlight.current = false
     }
   }
 
-  const onQuote = () => {
+  const onQuote = (openAccountSwitcher = false) => {
     if (isBlocked) {
       Toast.show(l`Cannot interact with a blocked user`, {
         type: 'warning',
@@ -246,6 +265,7 @@ function PostControlsInner({
     })
     openComposer({
       quote: post,
+      openAccountSwitcher,
       onPost: onPostReply,
       logContext: 'QuotePost',
     })
@@ -327,11 +347,11 @@ function PostControlsInner({
         return false
       })
 
-      Toast.show(
-        wasLiked
-          ? l`Removed like as @${account.handle}`
-          : l`Liked as @${account.handle}`,
-      )
+      if (wasLiked) {
+        Toast.show(l`Removed like as @${account.handle}`)
+      } else {
+        Toast.show(l`Liked as @${account.handle}`)
+      }
     } catch (e) {
       showEphemeralError(e, account, onSelectLikeAccount)
     }
@@ -361,11 +381,11 @@ function PostControlsInner({
         return false
       })
 
-      Toast.show(
-        wasReposted
-          ? l`Removed repost as @${account.handle}`
-          : l`Reposted as @${account.handle}`,
-      )
+      if (wasReposted) {
+        Toast.show(l`Removed repost as @${account.handle}`)
+      } else {
+        Toast.show(l`Reposted as @${account.handle}`)
+      }
     } catch (e) {
       showEphemeralError(e, account, onSelectRepostAccount)
     }
@@ -394,11 +414,11 @@ function PostControlsInner({
         },
       )
 
-      Toast.show(
-        wasBookmarked
-          ? l`Removed save as @${account.handle}`
-          : l`Saved as @${account.handle}`,
-      )
+      if (wasBookmarked) {
+        Toast.show(l`Removed save as @${account.handle}`)
+      } else {
+        Toast.show(l`Saved as @${account.handle}`)
+      }
     } catch (e) {
       showEphemeralError(e, account, onSelectBookmarkAccount)
     }
@@ -460,6 +480,7 @@ function PostControlsInner({
           : quotesMetricsDisplay
       }
       onRepost={() => void onRepost()}
+      onBumpRepost={() => void onRepost(true)}
       onQuote={onQuote}
       onLongPress={onLongPress}
       big={big}

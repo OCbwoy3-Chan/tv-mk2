@@ -15,6 +15,11 @@ import {
 } from '#/state/preferences/custom-appview-did'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {
+  type CursorPageParam,
+  unwrapCursor,
+  useCursorPagination,
+} from '#/state/queries/cursor-pagination'
+import {
   isBlackskySearchUpstreamFailure,
   isSearchV2Unavailable,
 } from '#/state/queries/search-fallback'
@@ -56,7 +61,9 @@ export function useSearchPostsV2Query({
   sort,
   enabled,
   filters,
+  paginated = false,
 }: {
+  paginated?: boolean
   query: string
   sort?: 'top' | 'latest'
   enabled?: boolean
@@ -81,20 +88,30 @@ export function useSearchPostsV2Query({
     result: InfiniteData<app.bsky.feed.searchPostsV2.$OutputBody>
   } | null>(null)
 
-  return useInfiniteQuery<
-    SearchPage,
-    Error,
-    InfiniteData<app.bsky.feed.searchPostsV2.$OutputBody>,
-    QueryKey,
-    SearchCursor
-  >({
-    queryKey: [
+  const pagination = useCursorPagination<SearchPage, SearchCursor>(
+    [
       ...searchPostsV2QueryKey({query, sort, filters}),
       appViewDid,
       appViewUrl,
       currentAccount?.did,
     ],
-    queryFn: async ({pageParam}) => {
+    paginated,
+    page =>
+      page.cursor
+        ? {cursor: page.cursor, blueskySearch: page.blueskySearch}
+        : undefined,
+    undefined,
+  )
+  const result = useInfiniteQuery<
+    SearchPage,
+    Error,
+    InfiniteData<app.bsky.feed.searchPostsV2.$OutputBody>,
+    QueryKey,
+    CursorPageParam<SearchCursor>
+  >({
+    ...pagination,
+    queryFn: async ({pageParam: rawPageParam}) => {
+      const pageParam = unwrapCursor(rawPageParam)
       /*
        * Operators embedded in the query string (e.g. for back-compat links) are
        * merged with the explicit structured filters from the advanced search
@@ -159,11 +176,6 @@ export function useSearchPostsV2Query({
         return searchBluesky()
       }
     },
-    initialPageParam: undefined,
-    getNextPageParam: lastPage =>
-      lastPage.cursor
-        ? {cursor: lastPage.cursor, blueskySearch: lastPage.blueskySearch}
-        : undefined,
     enabled: enabled ?? !!moderationOpts,
     select: useCallback(
       (data: InfiniteData<app.bsky.feed.searchPostsV2.$OutputBody>) => {
@@ -237,6 +249,7 @@ export function useSearchPostsV2Query({
       [selectArgs],
     ),
   })
+  return {...result, paginationQueryKey: pagination.queryKey}
 }
 
 export function* findAllPostsInQueryData(
