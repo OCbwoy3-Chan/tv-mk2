@@ -44,23 +44,25 @@ jobs:
       - name: 🔧 Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
+          packages: |
+            platform-tools
           log-accepted-android-sdk-licenses: true
 
       - name: 📦 Install Android SDK Components
+        shell: bash
         run: |
-          echo "Installing NDK 27.1.12297006..."
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "ndk;27.1.12297006"
+          set -euo pipefail
 
-          # Install Platform APIs
-          echo "Installing Android API 35..."
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-35"
+          SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
 
-          echo "Installing Android API 36..."
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-36"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
 
-          # Install Build Tools
-          echo "Installing Build Tools 36.0.0..."
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;36.0.0"
+          "$SDKMANAGER" \
+            "platform-tools" \
+            "ndk;27.1.12297006" \
+            "platforms;android-35" \
+            "platforms;android-36" \
+            "build-tools;36.0.0"
 
       - name: ✅ Verify Android SDK Installation
         run: |
