@@ -46,7 +46,7 @@ import {TitleCase_Stroke2_Corner0_Rounded as Aa} from '#/components/icons/TitleC
 import {Window_Stroke2_Corner2_Rounded as SquareIcon} from '#/components/icons/Window'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
-import {IS_ANDROID} from '#/env'
+import {IS_ANDROID, IS_NATIVE} from '#/env'
 import {useActiveThemeUpdate, useSaveTheme} from '#/features/themes/api'
 import {
   type ActiveTheme,
@@ -55,6 +55,7 @@ import {
 } from '#/features/themes/types'
 import {ThemeQuickSelector} from './AppearanceSettings/ThemeQuickSelector'
 import * as SettingsList from './components/SettingsList'
+import { SettingsListItem as AppIconButton } from './AppIconSettings/SettingsListItem'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AppearanceSettings'>
 
@@ -270,6 +271,13 @@ export function AppearanceSettingsScreen({}: Props) {
               />
 
               <SettingsList.Divider />
+
+              {IS_NATIVE && (
+                <>
+                  <AppIconButton/>
+                  <SettingsList.Divider />
+                </>
+              )}
 
               <Toggle.Item
                 name="hide_display_names"

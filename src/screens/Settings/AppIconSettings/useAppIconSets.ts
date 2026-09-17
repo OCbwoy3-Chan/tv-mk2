@@ -3,6 +3,7 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
 import {type AppIconSet} from '#/screens/Settings/AppIconSettings/types'
+import { IOS_MAJOR_VERSION, IS_IOS } from '#/env'
 
 export function useAppIconSets() {
   const {_} = useLingui()
@@ -23,7 +24,7 @@ export function useAppIconSets() {
           )
         },
       },
-      {
+      (!IS_IOS || IOS_MAJOR_VERSION < 26) && {
         id: 'default_dark',
         name: _(msg({context: 'Name of app icon variant', message: 'Dark'})),
         iosImage: () => {
@@ -34,6 +35,102 @@ export function useAppIconSets() {
         androidImage: () => {
           return require(
             `../../../../assets/app-icons/android_icon_legacy_dark.png`,
+          )
+        },
+      },
+    ].filter(a=>!!a) satisfies AppIconSet[]
+
+    const liquidGlass = [
+      {
+        id: 'liquid_glass_r' as AppIconSet['id'],
+        name: _(
+          msg({
+            context: 'Name of app icon variant',
+            message: 'Roblox (Late 2015)',
+          }),
+        ),
+        iosImage: () => {
+          return require(
+            `../../../../assets/app-icons/ios_icon_liquid_glass_r.png`,
+          )
+        },
+        androidImage: () => {
+          return require(
+            `../../../../assets/app-icons/android_icon_liquid_glass_r.png`,
+          )
+        },
+      },
+      {
+        id: 'liquid_glass_o' as AppIconSet['id'],
+        name: _(
+          msg({
+            context: 'Name of app icon variant',
+            message: 'Roblox',
+          }),
+        ),
+        iosImage: () => {
+          return require(
+            `../../../../assets/app-icons/ios_icon_liquid_glass_o.png`,
+          )
+        },
+        androidImage: () => {
+          return require(
+            `../../../../assets/app-icons/android_icon_liquid_glass_o.png`,
+          )
+        },
+      },
+      {
+        id: 'liquid_glass_bluesky' as AppIconSet['id'],
+        name: _(
+          msg({
+            context: 'Name of app icon variant',
+            message: 'Bluesky',
+          }),
+        ),
+        iosImage: () => {
+          return require(
+            `../../../../assets/app-icons/ios_icon_bluesky_liquid_glass.png`,
+          )
+        },
+        androidImage: () => {
+          return require(
+            `../../../../assets/app-icons/android_icon_bluesky_liquid_glass.png`,
+          )
+        },
+      },
+    ] satisfies AppIconSet[]
+
+    const testFlight = [
+      {
+        id: 'testflight' as AppIconSet['id'],
+        name: _(
+          msg({context: 'Name of app icon variant', message: 'TestFlight'}),
+        ),
+        iosImage: () => {
+          return require(`../../../../assets/app-icons/ios_icon_testflight.png`)
+        },
+        androidImage: () => {
+          return require(
+            `../../../../assets/app-icons/android_icon_testflight.png`,
+          )
+        },
+      },
+      {
+        id: 'bluesky_testflight' as AppIconSet['id'],
+        name: _(
+          msg({
+            context: 'Name of app icon variant',
+            message: 'Bluesky TestFlight',
+          }),
+        ),
+        iosImage: () => {
+          return require(
+            `../../../../assets/app-icons/ios_icon_bluesky_testflight.png`,
+          )
+        },
+        androidImage: () => {
+          return require(
+            `../../../../assets/app-icons/android_icon_bluesky_testflight.png`,
           )
         },
       },
@@ -150,6 +247,8 @@ export function useAppIconSets() {
 
     return {
       defaults,
+      liquidGlass,
+      testFlight,
       core: [] as AppIconSet[],
     }
   }, [_])

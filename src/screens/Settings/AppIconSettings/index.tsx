@@ -30,6 +30,8 @@ export function AppIconSettingsScreen({}: Props) {
     if (IS_ANDROID) {
       const next =
         sets.defaults.find(i => i.id === icon) ??
+        sets.liquidGlass.find(i => i.id === icon) ??
+        sets.testFlight.find(i => i.id === icon) ??
         sets.core.find(i => i.id === icon)
       Alert.alert(
         next
@@ -78,6 +80,56 @@ export function AppIconSettingsScreen({}: Props) {
               key={icon.id}
               icon={icon}
               isEnd={i === sets.defaults.length - 1}>
+              <AppIcon icon={icon} key={icon.id} size={40} />
+              <RowText>{icon.name}</RowText>
+            </Row>
+          ))}
+        </Group>
+
+        <Text
+          style={[
+            a.text_md,
+            a.mt_xl,
+            a.mb_sm,
+            a.font_semi_bold,
+            t.atoms.text_contrast_medium,
+          ]}>
+          <Trans>Other icons</Trans>
+        </Text>
+        <Group
+          label={_(msg`Other icons`)}
+          value={currentAppIcon}
+          onChange={onSetAppIcon}>
+          {sets.liquidGlass.map((icon, i) => (
+            <Row
+              key={icon.id}
+              icon={icon}
+              isEnd={i === sets.liquidGlass.length - 1}>
+              <AppIcon icon={icon} key={icon.id} size={40} />
+              <RowText>{icon.name}</RowText>
+            </Row>
+          ))}
+        </Group>
+
+        <Text
+          style={[
+            a.text_md,
+            a.mt_xl,
+            a.mb_sm,
+            a.font_semi_bold,
+            t.atoms.text_contrast_medium,
+          ]}>
+          <Trans>TestFlight icon</Trans>
+        </Text>
+        <Group
+          label={_(msg`TestFlight icons`)}
+          value={currentAppIcon}
+          onChange={onSetAppIcon}>
+          {sets.testFlight.map((icon, i) => (
+            <Row
+              key={icon.id}
+              icon={icon}
+              isEnd={i === sets.testFlight.length - 1}>
               <AppIcon icon={icon} key={icon.id} size={40} />
               <RowText>{icon.name}</RowText>
             </Row>

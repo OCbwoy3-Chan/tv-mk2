@@ -34,7 +34,7 @@ export const IS_E2E = ENV === 'e2e'
 /**
  * Indicates whether the app is `__DEV__` or TestFlight
  */
-export const IS_INTERNAL = IS_DEV || IS_TESTFLIGHT
+export const IS_INTERNAL = true // IS_DEV || IS_TESTFLIGHT
 
 /**
  * The commit hash that the current bundle was made from. The user can
