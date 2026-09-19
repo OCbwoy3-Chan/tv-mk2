@@ -97,7 +97,7 @@ export function AppServerButton({
         <ButtonText
           style={[t.atoms.text_contrast_medium, a.font_normal]}
           numberOfLines={1}>
-          {title}
+          <Trans>App server</Trans>
         </ButtonText>
         <TinyChevronIcon width={8} style={[t.atoms.text_contrast_medium]} />
       </Button>

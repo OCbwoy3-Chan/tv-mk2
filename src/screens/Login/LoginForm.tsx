@@ -268,7 +268,7 @@ function OAuthLoginFields({
     <>
       <View style={[a.relative, a.z_20, native({overflow: 'visible'})]}>
         <TextField.LabelText>
-          <Trans>Account</Trans>
+          <Trans>Account handle</Trans>
         </TextField.LabelText>
         <HandleAutocompleteInput
           initialValue={initialHandle || ''}
