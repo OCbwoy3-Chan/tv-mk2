@@ -326,13 +326,15 @@ export function TextInput({
                 // as a stand-in. bail out if the last grapheme is a newline
                 // to let the default behavior handle it -sfn
                 if (lastGrapheme !== '\n') {
-                  // otherwise, delete the last grapheme using deleteRange,
-                  // so that emojis are deleted as a whole
                   const deleteFrom = cursorPosition - lastGrapheme.length
-                  editor?.commands.deleteRange({
-                    from: deleteFrom,
-                    to: cursorPosition,
-                  })
+                  /*
+                   * Delete the whole grapheme through the active view so emoji
+                   * stay intact. The editor captured by this handler
+                   * can be stale after useEditor recreates it for a new theme.
+                   */
+                  view.dispatch(
+                    view.state.tr.delete(deleteFrom, cursorPosition),
+                  )
                   return true
                 }
               }
