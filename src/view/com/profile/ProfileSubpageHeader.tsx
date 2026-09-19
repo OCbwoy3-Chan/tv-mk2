@@ -106,7 +106,7 @@ export function ProfileSubpageHeader({
             accessibilityHint=""
             style={{width: 58}}>
             {avatarType === 'starter-pack' ? (
-              <StarterPackIcon width={58} gradient="sky" />
+              <StarterPackIcon width={58} />
             ) : (
               <UserAvatar type={avatarType} size={58} avatar={avatar} />
             )}

@@ -137,9 +137,11 @@ export function DesktopFeeds() {
                 <Plus
                   style={{width: 16, height: 16}}
                   fill={
-                    isActive || hovered
-                      ? t.atoms.text.color
-                      : t.atoms.text_contrast_medium.color
+                    isActive
+                      ? accentForeground(t, t.palette.primary_100)
+                      : hovered
+                        ? t.atoms.text.color
+                        : t.atoms.text_contrast_medium.color
                   }
                 />
               </View>
