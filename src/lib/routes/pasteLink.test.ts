@@ -1,4 +1,5 @@
 /** @jest-environment jsdom */
+// eslint-disable-next-line import/no-nodejs-modules -- Restore a complete URL implementation in this Node-hosted test.
 import {URL} from 'node:url'
 
 import {handlePastedLink} from '#/lib/routes/pasteLink'
