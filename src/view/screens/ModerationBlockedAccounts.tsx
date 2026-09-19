@@ -73,15 +73,13 @@ export function ModerationBlockedAccounts({}: Props) {
   }) => {
     if (!moderationOpts) return null
     return (
-      <View
+      <ProfileCard.Default
         style={[a.py_md, a.px_xl, a.border_t, t.atoms.border_contrast_low]}
-        key={item.did}>
-        <ProfileCard.Default
-          testID={`blockedAccount-${index}`}
-          profile={item}
-          moderationOpts={moderationOpts}
-        />
-      </View>
+        key={item.did}
+        testID={`blockedAccount-${index}`}
+        profile={item}
+        moderationOpts={moderationOpts}
+      />
     )
   }
 

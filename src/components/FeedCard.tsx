@@ -40,7 +40,7 @@ type Props = {
   onPress?: () => void
 }
 
-export function Default(props: Props) {
+export function Default(props: Props & {style?: LinkProps['style']}) {
   const {view} = props
   return (
     <Link {...props}>
@@ -78,6 +78,7 @@ export function Link({
 
   return (
     <InternalLink
+      {...{dataSet: {keyboardNavigationItem: 'true'}}}
       label={view.displayName}
       to={href}
       style={[a.flex_col]}

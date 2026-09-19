@@ -145,14 +145,14 @@ export function ProfileStarterPacks({
       index,
     }: ListRenderItemInfo<app.bsky.graph.defs.StarterPackViewBasic>) => {
       return (
-        <View
+        <StarterPackCard
+          starterPack={item}
           style={[
             a.p_lg,
             (isTabletOrDesktop || index !== 0) && a.border_t,
             t.atoms.border_contrast_low,
-          ]}>
-          <StarterPackCard starterPack={item} />
-        </View>
+          ]}
+        />
       )
     },
     [isTabletOrDesktop, t.atoms.border_contrast_low],

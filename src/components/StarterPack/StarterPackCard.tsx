@@ -22,12 +22,14 @@ import * as bsky from '#/types/bsky'
 
 export function Default({
   starterPack,
+  style,
 }: {
   starterPack?: bsky.starterPack.AnyStarterPackView
+  style?: BaseLinkProps['style']
 }) {
   if (!starterPack) return null
   return (
-    <Link starterPack={starterPack}>
+    <Link starterPack={starterPack} style={style}>
       <Card starterPack={starterPack} />
     </Link>
   )
@@ -132,9 +134,11 @@ export function useStarterPackLink({
 export function Link({
   starterPack,
   children,
+  style,
 }: {
   starterPack: bsky.starterPack.AnyStarterPackView
   onPress?: () => void
+  style?: BaseLinkProps['style']
   children: BaseLinkProps['children']
 }) {
   const {t: l} = useLingui()
@@ -152,6 +156,7 @@ export function Link({
 
   return (
     <BaseLink
+      dataSet={{keyboardNavigationItem: 'true'}}
       to={`/starter-pack/${handleOrDid}/${rkey}`}
       label={l`Navigate to ${record.name}`}
       onPress={() => {
@@ -162,7 +167,7 @@ export function Link({
         )
         precacheStarterPack(queryClient, starterPack)
       }}
-      style={[a.flex_col, a.align_start]}>
+      style={[a.flex_col, a.align_start, style]}>
       {children}
     </BaseLink>
   )

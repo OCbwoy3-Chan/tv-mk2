@@ -317,6 +317,8 @@ export function useLink({
 export type LinkProps = Omit<BaseLinkProps, 'disableMismatchWarning'> &
   Omit<ButtonProps, 'onPress' | 'disabled'> & {
     overridePresentation?: boolean
+    /** Web data attributes forwarded to the link element. */
+    dataSet?: Record<string, string | number | undefined>
   }
 
 /**
@@ -372,6 +374,7 @@ export function Link({
           download,
         },
         dataSet: {
+          ...rest.dataSet,
           // no underline, only `InlineLink` has underlines
           noUnderline: '1',
         },

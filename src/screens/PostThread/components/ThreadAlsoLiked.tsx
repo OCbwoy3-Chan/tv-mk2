@@ -1,5 +1,5 @@
 import {type RefObject, useCallback} from 'react'
-import {type HostInstance,View} from 'react-native'
+import {type HostInstance, View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
@@ -72,6 +72,8 @@ export function ThreadAlsoLiked({
             t.atoms.border_contrast_low,
           ]}>
           <Button.Button
+            {...{dataSet: {keyboardNavigationItem: 'true'}}}
+            testID="alsoLikedToggle"
             ref={headerRef}
             label={
               collapsed

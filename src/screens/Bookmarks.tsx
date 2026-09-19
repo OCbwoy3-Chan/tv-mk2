@@ -232,6 +232,8 @@ function BookmarkNotFound({
 
   return (
     <View
+      testID="bookmarkNotFound"
+      {...{dataSet: {keyboardNavigationItem: 'true'}}}
       style={[
         a.flex_row,
         a.align_start,

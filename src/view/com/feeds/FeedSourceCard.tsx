@@ -181,6 +181,7 @@ export function FeedSourceCardLoaded({
   if (link) {
     return (
       <Link
+        {...{dataSet: {keyboardNavigationItem: 'true'}}}
         testID={`feed-${feed.displayName}`}
         label={
           feed.type === 'feed'

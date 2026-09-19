@@ -63,6 +63,7 @@ export function Default({
   profile,
   moderationOpts,
   logContext = 'ProfileCard',
+  style,
   testID,
   position,
   contextProfileDid,
@@ -71,13 +72,14 @@ export function Default({
   profile: bsky.profile.AnyProfileView
   moderationOpts: ModerationOpts
   logContext?: 'ProfileCard' | 'StarterPackProfilesList'
+  style?: LinkProps['style']
   testID?: string
   position?: number
   contextProfileDid?: string
   onPress?: (e: GestureResponderEvent) => void
 }) {
   return (
-    <Link testID={testID} profile={profile} onPress={onPress}>
+    <Link testID={testID} profile={profile} onPress={onPress} style={style}>
       <Card
         profile={profile}
         moderationOpts={moderationOpts}
@@ -157,6 +159,7 @@ export function Link({
 
   return (
     <InternalLink
+      {...{dataSet: {keyboardNavigationItem: 'true'}}}
       testID={`profileCard-${profile.handle}-link`}
       label={l`View ${getAuthorPrimaryName(profile, {
         hideDisplayNames,
@@ -514,7 +517,10 @@ export function FollowButtonInner({
     logContext,
     onFollow,
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({
+    profile,
+    onAuthenticated: onSelectEphemeralAccount,
+  })
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )

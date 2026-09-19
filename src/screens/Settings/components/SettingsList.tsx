@@ -23,7 +23,13 @@ ItemContext.displayName = 'SettingsListItemContext'
 const Portal = createPortalGroup()
 
 export function Container({children}: {children: React.ReactNode}) {
-  return <View style={[a.flex_1, a.py_md]}>{children}</View>
+  return (
+    <View
+      {...{dataSet: {keyboardNavigationSettings: 'true'}}}
+      style={[a.flex_1, a.py_md]}>
+      {children}
+    </View>
+  )
 }
 
 /**

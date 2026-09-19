@@ -30,12 +30,15 @@ import {
   type PostAction,
   type PostMediaTarget,
   setPostSelected,
+  switchPageTab,
 } from './postNavigation.web'
 import {useKeyboardShortcutsPreference} from './preferences'
 
 const CHORD_TIMEOUT_MS = 1000
 const APP_CHARACTER_KEYS = new Set([
   '?',
+  '[',
+  ']',
   '/',
   'u',
   'g',
@@ -140,7 +143,7 @@ export function KeyboardShortcuts() {
     }
 
     const summary = getPostAnnouncement(post)
-    setAnnouncement(summary ? l`Selected post: ${summary}` : l`Selected post`)
+    setAnnouncement(summary ? l`Selected item: ${summary}` : l`Selected item`)
   }
 
   const moveSelection = useNonReactiveCallback((direction: 1 | -1) => {
@@ -211,6 +214,11 @@ export function KeyboardShortcuts() {
     const selected = getSelectedVisiblePost()
     if (!selected) return false
 
+    if (!selected.dataset.keyboardNavigationPost) {
+      selected.click()
+      return true
+    }
+
     const href = getPostHref(selected)
     const postUri = selected.dataset.keyboardNavigationPost
     if (!href || !postUri) return false
@@ -277,7 +285,7 @@ export function KeyboardShortcuts() {
 
   const runPostAction = (action: PostAction, dropdown = false) => {
     const selected = getSelectedVisiblePost()
-    if (!selected) return false
+    if (!selected?.dataset.keyboardNavigationPost) return false
     if (action === 'media') {
       const targets = getPostMediaTargets(selected)
       if (targets.length === 0) return false
@@ -484,6 +492,14 @@ export function KeyboardShortcuts() {
 
       if (key === 'Escape') {
         if (clearSelection()) consume(event)
+        return
+      }
+
+      if (key === '[' || key === ']') {
+        if (switchPageTab(key === ']' ? 1 : -1)) {
+          clearSelection()
+          consume(event)
+        }
         return
       }
 

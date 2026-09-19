@@ -88,19 +88,25 @@ export const ProfilesList = forwardRef<SectionRef, ProfilesListProps>(
       index,
     }: ListRenderItemInfo<app.bsky.graph.defs.ListItemView>) => {
       return (
-        <View
-          style={[
-            a.p_lg,
-            t.atoms.border_contrast_low,
-            (IS_WEB || index !== 0) && a.border_t,
-          ]}>
+        <View>
           <ProfileCard
+            style={[
+              a.p_lg,
+              t.atoms.border_contrast_low,
+              (IS_WEB || index !== 0) && a.border_t,
+            ]}
             profile={item.subject}
             moderationOpts={moderationOpts}
             logContext="StarterPackProfilesList"
           />
           {item.subjectOptedOut ? (
-            <OptedOutControls item={item} listUri={listUri} canRemove={isOwn} />
+            <View style={[a.px_lg, a.pb_lg]}>
+              <OptedOutControls
+                item={item}
+                listUri={listUri}
+                canRemove={isOwn}
+              />
+            </View>
           ) : null}
         </View>
       )
