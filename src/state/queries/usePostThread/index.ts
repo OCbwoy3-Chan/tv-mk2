@@ -95,7 +95,7 @@ export function usePostThread({
       const placeholder = getThreadPlaceholder(qc, anchor!)
       const data = await client.call(app.bsky.unspecced.getPostThreadV2, {
         anchor: anchor! as AtUriString,
-        branchingFactor: view === 'linear' ? LINEAR_VIEW_BF : TREE_VIEW_BF,
+        branchingFactor: apiView === 'linear' ? LINEAR_VIEW_BF : TREE_VIEW_BF,
         below,
         sort: sort,
       })
