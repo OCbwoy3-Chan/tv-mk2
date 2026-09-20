@@ -9,6 +9,7 @@ import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {type ActiveConvoStates} from '#/state/messages/convo'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useUnavailableProfileLabel} from '#/state/queries/unavailable-content'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme, web} from '#/alf'
 import {LeaveConvoPrompt} from '#/components/dms/LeaveConvoPrompt'
@@ -117,11 +118,10 @@ function InviterHeader({
     () => moderateProfile(profile, moderationOpts),
     [profile, moderationOpts],
   )
-  const displayName = createSanitizedDisplayName(
-    profile,
-    true,
-    moderation.ui('displayName'),
-  )
+  const unavailableLabel = useUnavailableProfileLabel(profile)
+  const displayName =
+    unavailableLabel ??
+    createSanitizedDisplayName(profile, true, moderation.ui('displayName'))
 
   return (
     <View style={[a.flex_row, a.align_center, a.gap_sm]}>
@@ -158,7 +158,7 @@ function InviterHeader({
           </Trans>
         </Text>
         <Text style={[web(a.pt_xs), a.text_sm, t.atoms.text_contrast_high]}>
-          {sanitizeHandle(profile.handle, '@')}
+          {unavailableLabel ?? sanitizeHandle(profile.handle, '@')}
         </Text>
       </View>
     </View>

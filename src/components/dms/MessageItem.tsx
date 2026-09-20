@@ -37,6 +37,7 @@ import {type ConvoItem} from '#/state/messages/convo/types'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useProfileBlockMutationQueue} from '#/state/queries/profile'
+import {useUnavailableProfileLabel} from '#/state/queries/unavailable-content'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
 import {useSession} from '#/state/session'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
@@ -174,7 +175,10 @@ let MessageItem = ({
 
   const isPending = item.type === 'pending-message'
 
-  const displayName = profile ? createSanitizedDisplayName(profile) : null
+  const unavailableLabel = useUnavailableProfileLabel(profile)
+  const displayName = profile
+    ? (unavailableLabel ?? createSanitizedDisplayName(profile))
+    : null
 
   const isFromSelf =
     message.sender?.did != null && message.sender.did === currentAccount?.did
@@ -812,17 +816,23 @@ function ReplyCaption({
   const {t: l} = useLingui()
   const {currentAccount} = useSession()
 
+  const originalProfile =
+    bsky.isType(chat.bsky.convo.defs.messageView, replyTo) ||
+    bsky.isType(chat.bsky.convo.defs.deletedMessageView, replyTo)
+      ? relatedProfiles.get(replyTo.sender.did)
+      : undefined
+  const unavailableLabel = useUnavailableProfileLabel(originalProfile)
+
   let caption: string = ''
   if (
     bsky.isType(chat.bsky.convo.defs.messageView, replyTo) ||
     bsky.isType(chat.bsky.convo.defs.deletedMessageView, replyTo)
   ) {
     const originalSenderIsSelf = replyTo.sender.did === currentAccount?.did
-    const originalProfile = relatedProfiles.get(replyTo.sender.did)
     const originalName = originalSenderIsSelf
       ? null
       : originalProfile
-        ? createSanitizedDisplayName(originalProfile)
+        ? (unavailableLabel ?? createSanitizedDisplayName(originalProfile))
         : null
 
     caption = isFromSelf
@@ -908,9 +918,10 @@ function ReplyQuote({
   // Hide the quoted content if we block, or are blocked by, the original
   // sender - mirroring how the message bubble itself is hidden.
   const isBlocked = senderProfile ? isBlockedOrBlocking(senderProfile) : false
+  const unavailableLabel = useUnavailableProfileLabel(senderProfile)
   const senderName =
     senderProfile && !isBlocked
-      ? createSanitizedDisplayName(senderProfile)
+      ? (unavailableLabel ?? createSanitizedDisplayName(senderProfile))
       : null
 
   const tintColor = isFromSelf

@@ -5,6 +5,7 @@ import {HITSLOP_20} from '#/lib/constants'
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
 import {useConvoActive} from '#/state/messages/convo'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useUnavailableProfileLabel} from '#/state/queries/unavailable-content'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {useMessageReplies} from '#/components/dms/MessageReplies'
@@ -46,8 +47,9 @@ function MessageInputReplyInner({
   }
 
   const senderProfile = convo.relatedProfiles.get(replyTo.sender.did)
+  const unavailableLabel = useUnavailableProfileLabel(senderProfile)
   const displayName = senderProfile
-    ? createSanitizedDisplayName(senderProfile, false)
+    ? (unavailableLabel ?? createSanitizedDisplayName(senderProfile, false))
     : null
 
   return (

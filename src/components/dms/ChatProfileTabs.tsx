@@ -9,6 +9,7 @@ import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useUnavailableProfileLabel} from '#/state/queries/unavailable-content'
 import {DraggableScrollView} from '#/view/com/pager/DraggableScrollView'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
@@ -92,10 +93,13 @@ function Tab({
   const enableSquareButtons = useEnableSquareButtons()
 
   const moderation = moderateProfile(profile, moderationOpts!)
-  const displayName = sanitizeDisplayName(
-    profile.displayName || sanitizeHandle(profile.handle),
-    moderation.ui('displayName'),
-  )
+  const unavailableLabel = useUnavailableProfileLabel(profile)
+  const displayName =
+    unavailableLabel ??
+    sanitizeDisplayName(
+      profile.displayName || sanitizeHandle(profile.handle),
+      moderation.ui('displayName'),
+    )
 
   const isLabeler = profile.associated?.labeler
 

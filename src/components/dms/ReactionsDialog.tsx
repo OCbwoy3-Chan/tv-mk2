@@ -12,6 +12,7 @@ import {HITSLOP_10} from '#/lib/constants'
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {type ActiveConvoStates, useConvoActive} from '#/state/messages/convo'
+import {useUnavailableProfileLabel} from '#/state/queries/unavailable-content'
 import {useSession} from '#/state/session'
 import {type SessionAccount} from '#/state/session/types'
 import {DraggableScrollView} from '#/view/com/pager/DraggableScrollView'
@@ -154,8 +155,10 @@ function ReactionRow({
 
   const isFromSelf = currentAccount?.did === profile.did
 
-  const displayName = createSanitizedDisplayName(profile, true)
-  const handle = sanitizeHandle(profile.handle, '@')
+  const unavailableLabel = useUnavailableProfileLabel(profile)
+  const displayName =
+    unavailableLabel ?? createSanitizedDisplayName(profile, true)
+  const handle = unavailableLabel ?? sanitizeHandle(profile.handle, '@')
 
   const handleOnPress = () => {
     const remainingReactions = allReactions.filter(

@@ -10,6 +10,7 @@ import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfol
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useRemoveFromGroupChat} from '#/state/queries/messages/remove-from-group'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
+import {useUnavailableAccountLabel} from '#/state/queries/unavailable-content'
 import {useRequireAuth, useSession} from '#/state/session'
 import {atoms as a, native, useTheme, web} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
@@ -45,6 +46,10 @@ export function Member({
   const {t: l} = useLingui()
 
   const profile = useProfileShadow(profileUnshadowed)
+  const unavailableLabel = useUnavailableAccountLabel(
+    profile.did,
+    profile.handle === 'missing.invalid',
+  )
   const {currentAccount} = useSession()
   const moderationOpts = useModerationOpts()
 
@@ -94,7 +99,7 @@ export function Member({
 
   const isDeletedAccount = profile.handle === 'missing.invalid'
   const displayName = isDeletedAccount
-    ? l`Deleted Account`
+    ? unavailableLabel
     : createSanitizedDisplayName(profile, true, moderation.ui('displayName'))
   const isProfileOwner = profile.did === convo.primaryMember?.did
   const isSelf = currentAccount?.did === profile.did
@@ -138,14 +143,27 @@ export function Member({
                 moderationOpts={moderationOpts}
               />
               <View style={[a.flex_1]}>
-                <ProfileCard.Name
-                  profile={profile}
-                  moderationOpts={moderationOpts}
-                />
-                <ProfileCard.Handle
-                  profile={profile}
-                  textStyle={[a.text_xs, native({top: -1})]}
-                />
+                {isDeletedAccount ? (
+                  <>
+                    <Text emoji numberOfLines={1}>
+                      {unavailableLabel}
+                    </Text>
+                    <Text style={a.text_xs}>
+                      <Trans>Account inaccessible</Trans>
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <ProfileCard.Name
+                      profile={profile}
+                      moderationOpts={moderationOpts}
+                    />
+                    <ProfileCard.Handle
+                      profile={profile}
+                      textStyle={[a.text_xs, native({top: -1})]}
+                    />
+                  </>
+                )}
                 {!isProfileOwner && (
                   <Text
                     numberOfLines={1}

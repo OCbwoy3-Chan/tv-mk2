@@ -27,6 +27,7 @@ import {
 } from '#/state/queries/messages/conversation'
 import {JOIN_REQUESTS_THRESHOLD} from '#/state/queries/messages/list-join-requests'
 import {unstableCacheProfileView} from '#/state/queries/profile'
+import {useUnavailableAccountLabel} from '#/state/queries/unavailable-content'
 import {useSession} from '#/state/session'
 import {TimeElapsed} from '#/view/com/util/TimeElapsed'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
@@ -123,6 +124,10 @@ function DirectChatItem({
 }) {
   const {t: l} = useLingui()
   const profile = useProfileShadow(convo.primaryMember)
+  const unavailableLabel = useUnavailableAccountLabel(
+    profile.did,
+    profile.handle === 'missing.invalid',
+  )
   const {isWithinLeftPanel} = useIsWithinSplitView()
 
   const moderation = useMemo(
@@ -132,7 +137,7 @@ function DirectChatItem({
 
   const isDeletedAccount = profile.handle === 'missing.invalid'
   const displayName = isDeletedAccount
-    ? l`Deleted Account`
+    ? unavailableLabel
     : createSanitizedDisplayName(profile, true, moderation.ui('displayName'))
 
   return (
@@ -149,12 +154,14 @@ function DirectChatItem({
       primaryProfileModeration={moderation}
       title={displayName}
       subtitle={
-        isDeletedAccount ? undefined : sanitizeHandle(profile.handle, '@')
+        isDeletedAccount
+          ? l`Account inaccessible`
+          : sanitizeHandle(profile.handle, '@')
       }
       accessibilityHint={
         !isDeletedAccount
           ? l`Go to conversation with ${profile.handle}`
-          : l`Go to conversation with a deleted or a deactivated account`
+          : l`Go to conversation with ${unavailableLabel}`
       }
       showMenu={showMenu}
       selected={selected}
@@ -326,9 +333,7 @@ function BaseChatItem({
     ) {
       lastMessageSentAt = convo.view.lastMessage.sentAt
 
-      lastMessage = isDeletedAccount
-        ? l`Conversation deleted`
-        : l`Message deleted`
+      lastMessage = l`Message deleted`
     }
 
     // Message
