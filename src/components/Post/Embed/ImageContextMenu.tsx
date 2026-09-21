@@ -4,6 +4,12 @@ import {useLingui} from '@lingui/react/macro'
 
 import {shareImageModal} from '#/lib/media/manip'
 import {useSaveImageToMediaLibrary} from '#/lib/media/save-image'
+import {useFullsizeFormat} from '#/state/preferences/fullsize-format'
+import {
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {ArrowShareRight_Stroke2_Corner2_Rounded as ShareIcon} from '#/components/icons/ArrowShareRight'
 import {Download_Stroke2_Corner0_Rounded as DownloadIcon} from '#/components/icons/Download'
 import * as PeekMenu from '#/components/PeekMenu'
@@ -39,6 +45,9 @@ export function ImageContextMenu({
 }) {
   const {t: l} = useLingui()
   const saveImage = useSaveImageToMediaLibrary()
+  const imageCdnHost = useImageCdnHost()
+  const thumbnailFormat = useThumbnailFormat()
+  const fullsizeFormat = useFullsizeFormat()
 
   if (!IS_IOS) {
     return children
@@ -56,8 +65,16 @@ export function ImageContextMenu({
       <PeekMenu.Trigger
         preview={{
           type: 'image',
-          uri: fullsizeUri,
-          thumbUri,
+          uri: applyImageTransforms(fullsizeUri, {
+            imageCdnHost,
+            format: fullsizeFormat ?? 'webp',
+          }),
+          thumbUri: thumbUri
+            ? applyImageTransforms(thumbUri, {
+                imageCdnHost,
+                format: thumbnailFormat,
+              })
+            : undefined,
           aspectRatio: aspectRatio && aspectRatio > 0 ? aspectRatio : 1,
         }}
         borderRadius={borderRadius}

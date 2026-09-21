@@ -12,7 +12,7 @@ export function resolveEmbedImageUris(
     fullsizeFormat,
     loadAsPngs,
   }: {
-    thumbnailFormat: string
+    thumbnailFormat?: string
     fullsizeFormat: string
     loadAsPngs: boolean
   },
@@ -26,7 +26,9 @@ export function resolveEmbedImageUris(
   const resolvedFullsizeFormat =
     pngSized && fullsizeFormat === 'webp' ? 'png' : fullsizeFormat
   const fullsize = modifyImageFormat(img.fullsize, resolvedFullsizeFormat)
-  const thumb = modifyImageFormat(img.thumb, thumbnailFormat)
+  const thumb = thumbnailFormat
+    ? modifyImageFormat(img.thumb, thumbnailFormat)
+    : img.thumb
 
   return {fullsize, thumb}
 }
