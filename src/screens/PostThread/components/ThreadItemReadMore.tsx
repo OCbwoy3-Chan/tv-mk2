@@ -74,6 +74,7 @@ export const ThreadItemReadMore = memo(function ThreadItemReadMore({
           }}
         />
         <Link
+          dataSet={{keyboardNavigationItem: 'true'}}
           label={_(msg`Read more replies`)}
           to={item.href}
           style={[a.gap_xs]}>
@@ -131,6 +132,7 @@ export const ThreadItemReadMore = memo(function ThreadItemReadMore({
         ]}
       />
       <Link
+        dataSet={{keyboardNavigationItem: 'true'}}
         label={_(msg`Read more replies`)}
         to={item.href}
         style={[a.pt_sm, a.pb_md, a.gap_xs]}>

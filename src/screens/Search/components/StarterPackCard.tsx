@@ -48,6 +48,7 @@ export function StarterPackCard({
 
   return (
     <Link
+      dataSet={{keyboardNavigationItem: 'true'}}
       to={link.to}
       label={link.label}
       onHoverIn={link.precache}
