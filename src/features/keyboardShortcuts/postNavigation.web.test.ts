@@ -511,3 +511,80 @@ it('navigates settings controls, skipping disabled controls and nested targets',
   outside.setAttribute('role', 'button')
   expect(getNavigablePosts()).toEqual([link, toggle])
 })
+
+it('opens the selected post menu without activating the post', () => {
+  const post = createPost({top: 20})
+  const menu = document.createElement('button')
+  menu.dataset.testid = 'postDropdownBtn'
+  const onClick = jest.fn()
+  menu.addEventListener('click', onClick)
+  post.appendChild(menu)
+
+  expect(clickPostAction(post, 'menu')).toBe(true)
+  expect(onClick).toHaveBeenCalledTimes(1)
+
+  menu.setAttribute('aria-disabled', 'true')
+  expect(clickPostAction(post, 'menu')).toBe(false)
+  expect(onClick).toHaveBeenCalledTimes(1)
+})
+
+it('keeps split-view chat navigation in the focused pane', () => {
+  document.body.replaceChildren()
+  const chat = createPost({top: 20})
+  delete chat.dataset.keyboardNavigationPost
+  chat.dataset.keyboardNavigationItem = 'true'
+  chat.dataset.keyboardNavigationScope = 'chats'
+  chat.tabIndex = 0
+  const message = createPost({top: 30, left: 500})
+  delete message.dataset.keyboardNavigationPost
+  message.dataset.keyboardNavigationItem = 'true'
+  message.dataset.keyboardNavigationScope = 'messages'
+  message.tabIndex = -1
+  const nextMessage = createPost({top: 140, left: 500})
+  delete nextMessage.dataset.keyboardNavigationPost
+  nextMessage.dataset.keyboardNavigationItem = 'true'
+  nextMessage.dataset.keyboardNavigationScope = 'messages'
+
+  expect(getNavigablePosts()).toEqual([message, nextMessage])
+  chat.focus()
+  expect(getNavigablePosts()).toEqual([chat])
+  message.focus()
+  expect(getNavigablePosts()).toEqual([message, nextMessage])
+})
+
+it('navigates chats when no conversation is open', () => {
+  document.body.replaceChildren()
+  const chat = createPost({top: 20})
+  delete chat.dataset.keyboardNavigationPost
+  chat.dataset.keyboardNavigationItem = 'true'
+  chat.dataset.keyboardNavigationScope = 'chats'
+
+  expect(getNavigablePosts()).toEqual([chat])
+})
+
+it('opens a chat message embed without following links in the message text', () => {
+  document.body.replaceChildren()
+  const message = createPost({top: 20})
+  delete message.dataset.keyboardNavigationPost
+  message.dataset.keyboardNavigationItem = 'true'
+  message.dataset.keyboardNavigationScope = 'messages'
+  message.innerHTML = `
+    <a href="https://example.com">message text link</a>
+    <div data-keyboard-navigation-embed>
+      <div data-keyboard-navigation-embed-target="quote">
+        <button data-testid="quotedPostOpenBtn">embedded post</button>
+      </div>
+    </div>
+  `
+  const embeddedPost = message.querySelector('button')!
+  const onOpen = jest.fn()
+  embeddedPost.addEventListener('click', onOpen)
+
+  const targets = getPostMediaTargets(message)
+  expect(targets).toEqual([{kind: 'quote', control: embeddedPost}])
+  expect(openPostMediaTarget(targets[0])).toBe(true)
+  expect(onOpen).toHaveBeenCalledTimes(1)
+
+  message.querySelector('[data-keyboard-navigation-embed]')!.remove()
+  expect(getPostMediaTargets(message)).toEqual([])
+})

@@ -489,6 +489,12 @@ let MessageItem = ({
     <>
       {hasLargeGapFromPrev && <DateDivider date={message.sentAt} />}
       <View
+        {...{
+          dataSet: {
+            keyboardNavigationItem: 'true',
+            keyboardNavigationScope: 'messages',
+          },
+        }}
         style={[
           messageInset,
           isFirstInCluster ? a.mt_md : {marginTop: CLUSTERED_MESSAGE_GAP},

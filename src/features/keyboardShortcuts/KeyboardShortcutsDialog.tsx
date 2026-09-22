@@ -141,6 +141,7 @@ function KeyboardShortcutsDialogInner() {
             label={l`Save or unsave the selected post`}
           />
           <ShortcutRow shortcut="X" label={l`Open sharing options`} />
+          <ShortcutRow shortcut="M" label={l`Open the post menu`} />
           <ShortcutRow
             shortcut="Shift + R / T / Q / L / S"
             label={l`Open the interaction dropdown`}

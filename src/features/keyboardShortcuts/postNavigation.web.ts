@@ -18,7 +18,7 @@ const POST_SELECTOR = `[data-keyboard-navigation-post], [data-keyboard-navigatio
 const SELECTED_ATTRIBUTE = 'data-keyboard-navigation-selected'
 
 export type PostAction =
-  'quote' | 'reply' | 'like' | 'repost' | 'save' | 'share' | 'media'
+  'quote' | 'reply' | 'like' | 'repost' | 'save' | 'share' | 'media' | 'menu'
 
 const ACTION_TEST_IDS: Record<PostAction, string> = {
   quote: 'repostBtn',
@@ -28,6 +28,7 @@ const ACTION_TEST_IDS: Record<PostAction, string> = {
   save: 'postBookmarkBtn',
   share: 'postShareBtn',
   media: 'postMediaOpenBtn',
+  menu: 'postDropdownBtn',
 }
 
 function isRendered(element: HTMLElement) {
@@ -52,7 +53,7 @@ export function isPostVisible(element: HTMLElement) {
 }
 
 export function getNavigablePosts() {
-  return Array.from(document.querySelectorAll<HTMLElement>(POST_SELECTOR))
+  const items = Array.from(document.querySelectorAll<HTMLElement>(POST_SELECTOR))
     .filter(isRendered)
     .filter(
       element =>
@@ -69,6 +70,17 @@ export function getNavigablePosts() {
       const bRect = b.getBoundingClientRect()
       return aRect.top - bRect.top || aRect.left - bRect.left
     })
+  const focusedScope = document.activeElement?.closest<HTMLElement>(
+    '[data-keyboard-navigation-scope]',
+  )?.dataset.keyboardNavigationScope
+  const scope =
+    focusedScope ??
+    (items.some(item => item.dataset.keyboardNavigationScope === 'messages')
+      ? 'messages'
+      : undefined)
+  return scope
+    ? items.filter(item => item.dataset.keyboardNavigationScope === scope)
+    : items
 }
 
 export function getInitialVisiblePost(posts: HTMLElement[]) {
