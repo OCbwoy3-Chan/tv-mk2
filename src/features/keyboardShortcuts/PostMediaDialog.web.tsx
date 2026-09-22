@@ -17,7 +17,7 @@ export function PostMediaDialog({
   const {t: l} = useLingui()
   const t = useTheme()
   const labels = {
-    media: l`Image or video`,
+    media: l`Media`,
     embed: l`Embed`,
     quote: l`Quoted post`,
   }
@@ -28,14 +28,10 @@ export function PostMediaDialog({
   }
 
   function onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-    if (
-      event.altKey ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.shiftKey ||
-      event.repeat
-    )
-      return
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+    const isNext = event.key === 'j' || event.key === 'ArrowDown'
+    const isPrevious = event.key === 'k' || event.key === 'ArrowUp'
+    if (event.repeat && !isNext && !isPrevious) return
     const number = Number(event.key)
     if (number >= 1 && number <= targets.length) {
       event.preventDefault()
@@ -43,7 +39,7 @@ export function PostMediaDialog({
       choose(number - 1)
       return
     }
-    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+    if (!isNext && !isPrevious && event.key !== 'b') return
     const buttons = Array.from(
       event.currentTarget.querySelectorAll<HTMLElement>(
         '[data-testid^="postMediaChoice-"]',
@@ -52,7 +48,13 @@ export function PostMediaDialog({
     const currentIndex = buttons.findIndex(
       button => button === document.activeElement,
     )
-    const direction = event.key === 'ArrowDown' ? 1 : -1
+    if (event.key === 'b') {
+      event.preventDefault()
+      event.stopPropagation()
+      choose(currentIndex < 0 ? 0 : currentIndex)
+      return
+    }
+    const direction = isNext ? 1 : -1
     const nextIndex =
       currentIndex < 0
         ? 0
@@ -74,7 +76,8 @@ export function PostMediaDialog({
             </Text>
             <Text style={[t.atoms.text_contrast_medium]}>
               <Trans>
-                Choose with the arrow keys and Enter, or press a number.
+                Choose with j/k or the arrow keys, then press b or Enter. You
+                can also press a number.
               </Trans>
             </Text>
             <View style={[a.gap_sm]}>

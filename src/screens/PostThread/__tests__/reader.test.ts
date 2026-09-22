@@ -1,6 +1,8 @@
 import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {
   buildReaderThread,
+  getReaderRoot,
+  hasReaderThread,
   type ReaderSegmentItem,
   type ThreadPostItem,
 } from '../reader'
@@ -150,7 +152,7 @@ describe('buildReaderThread', () => {
     expect(items.map(i => i.type)).toEqual(['threadPost', 'readerSegment'])
   })
 
-  it('ends the chain when opThread is false', () => {
+  it('includes self-replies without the original author thread flag', () => {
     const anchor = post({rkey: 'a', depth: 0})
     const one = post({rkey: 'b', depth: 1, opThread: true})
     const selfReplyOffThread = post({rkey: 'c', depth: 2, opThread: false})
@@ -159,7 +161,10 @@ describe('buildReaderThread', () => {
       NO_SEAMS,
     )
 
-    expect(items.map(i => i.type)).toEqual(['threadPost', 'readerSegment'])
+    expect(segmentsOf(items).map(item => item.item)).toEqual([
+      one,
+      selfReplyOffThread,
+    ])
   })
 
   it('marks the expanded seam from the expanded uri', () => {
@@ -249,5 +254,46 @@ describe('buildReaderThread', () => {
 
     expect(items[0]).toBe(parent)
     expect(items[1]).toBe(anchor)
+  })
+})
+
+describe('reader threads in replies', () => {
+  function replyTo(child: ThreadPostItem, parent: ThreadPostItem) {
+    child.value.post.record.reply = {
+      root: {uri: parent.uri, cid: 'root'},
+      parent: {uri: parent.uri, cid: 'parent'},
+    } as typeof child.value.post.record.reply
+    return child
+  }
+
+  it('starts at the replying author instead of the conversation root', () => {
+    const root = post({rkey: 'root', depth: -2, did: 'did:plc:other'})
+    const first = replyTo(post({rkey: 'first', depth: -1}), root)
+    const anchor = replyTo(post({rkey: 'anchor', depth: 0}), first)
+    expect(getReaderRoot([root, first, anchor])).toBe(first.uri)
+    expect(hasReaderThread([root, first, anchor])).toBe(true)
+    expect(getReaderRoot([root, {...first, depth: 0}])).toBe(first.uri)
+  })
+
+  it('offers and builds reader view for another participant self-thread', () => {
+    const root = post({rkey: 'root', depth: -1, did: 'did:plc:other'})
+    const anchor = replyTo(post({rkey: 'anchor', depth: 0}), root)
+    const child = replyTo(post({rkey: 'child', depth: 1}), anchor)
+    const items = [root, anchor, child]
+    expect(getReaderRoot(items)).toBe(anchor.uri)
+    expect(hasReaderThread(items)).toBe(true)
+    expect(segmentsOf(buildReaderThread(items, NO_SEAMS).items)[0].item).toBe(
+      child,
+    )
+    expect(hasReaderThread([root, anchor])).toBe(false)
+  })
+
+  it('fetches missing same-author parents without jumping across authors', () => {
+    const parent = post({rkey: 'parent', depth: -1})
+    const anchor = replyTo(post({rkey: 'anchor', depth: 0}), parent)
+    expect(getReaderRoot([anchor])).toBe(parent.uri)
+    const other = post({rkey: 'other', depth: -1, did: 'did:plc:other'})
+    replyTo(anchor, other)
+    expect(getReaderRoot([anchor])).toBe(anchor.uri)
   })
 })

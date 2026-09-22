@@ -45,6 +45,10 @@ export function OutgoingRequestListItem({
   return (
     <>
       <Link
+        dataSet={{
+          keyboardNavigationItem: 'true',
+          keyboardNavigationScope: 'chats',
+        }}
         label={l`Rescind request to join group chat`}
         {...createStaticClick(() => {
           prompt.open()

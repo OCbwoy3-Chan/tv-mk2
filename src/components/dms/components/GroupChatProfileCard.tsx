@@ -4,6 +4,7 @@ import {Trans} from '@lingui/react/macro'
 
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {useUnavailableProfileLabel} from '#/state/queries/unavailable-content'
 import {atoms as a, useTheme} from '#/alf'
 import {canBeAddedToGroup} from '#/components/dms/util'
 import * as Toggle from '#/components/forms/Toggle'
@@ -21,11 +22,15 @@ export function GroupChatProfileCard({
   const t = useTheme()
   const enabled = canBeAddedToGroup(profile)
   const moderation = moderateProfile(profile, moderationOpts)
-  const handle = sanitizeHandle(profile.handle, '@')
-  const displayName = sanitizeDisplayName(
-    profile.displayName || sanitizeHandle(profile.handle),
-    moderation.ui('displayName'),
-  )
+  const unavailableLabel = useUnavailableProfileLabel(profile)
+  const displayName =
+    unavailableLabel ??
+    sanitizeDisplayName(
+      profile.displayName || sanitizeHandle(profile.handle),
+      moderation.ui('displayName'),
+    )
+
+  const handle = unavailableLabel ?? sanitizeHandle(profile.handle, '@')
 
   return (
     <Toggle.Item

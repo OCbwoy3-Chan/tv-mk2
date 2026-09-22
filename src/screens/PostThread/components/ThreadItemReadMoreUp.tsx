@@ -25,6 +25,7 @@ export const ThreadItemReadMoreUp = memo(function ThreadItemReadMoreUp({
 
   return (
     <Link
+      dataSet={{keyboardNavigationItem: 'true'}}
       label={_(msg`Continue thread`)}
       to={item.href}
       style={[

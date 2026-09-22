@@ -191,47 +191,46 @@ export function ListMembers({
           if (!moderationOpts) return null
 
           return (
-            <View
+            <ProfileCard.Link
+              profile={profile}
               style={[
                 a.py_md,
                 a.px_xl,
                 a.border_t,
                 t.atoms.border_contrast_low,
               ]}>
-              <ProfileCard.Link profile={profile}>
-                <ProfileCard.Outer>
-                  <ProfileCard.Header>
-                    <ProfileCard.Avatar
-                      profile={profile}
-                      moderationOpts={moderationOpts}
-                    />
-                    <ProfileCard.NameAndHandle
-                      profile={profile}
-                      moderationOpts={moderationOpts}
-                    />
-                    {isOwner && (
-                      <Button
-                        testID={`user-${profile.handle}-editBtn`}
-                        label={_(msg({message: 'Edit', context: 'action'}))}
-                        onPress={e => onPressEditMembership(e, profile)}
-                        size="small"
-                        color="secondary">
-                        <ButtonText>
-                          <Trans context="action">Edit</Trans>
-                        </ButtonText>
-                      </Button>
-                    )}
-                  </ProfileCard.Header>
-
-                  <ProfileCard.Labels
+              <ProfileCard.Outer>
+                <ProfileCard.Header>
+                  <ProfileCard.Avatar
                     profile={profile}
                     moderationOpts={moderationOpts}
                   />
+                  <ProfileCard.NameAndHandle
+                    profile={profile}
+                    moderationOpts={moderationOpts}
+                  />
+                  {isOwner && (
+                    <Button
+                      testID={`user-${profile.handle}-editBtn`}
+                      label={_(msg({message: 'Edit', context: 'action'}))}
+                      onPress={e => onPressEditMembership(e, profile)}
+                      size="small"
+                      color="secondary">
+                      <ButtonText>
+                        <Trans context="action">Edit</Trans>
+                      </ButtonText>
+                    </Button>
+                  )}
+                </ProfileCard.Header>
 
-                  <ProfileCard.Description profile={profile} />
-                </ProfileCard.Outer>
-              </ProfileCard.Link>
-            </View>
+                <ProfileCard.Labels
+                  profile={profile}
+                  moderationOpts={moderationOpts}
+                />
+
+                <ProfileCard.Description profile={profile} />
+              </ProfileCard.Outer>
+            </ProfileCard.Link>
           )
         }
       }

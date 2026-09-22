@@ -65,7 +65,7 @@ function KeyboardShortcutsDialogInner() {
           <ShortcutRow shortcut="/" label={l`Focus search`} />
           <ShortcutRow shortcut="N" label={l`Compose a new post`} />
           <ShortcutRow shortcut="U" label={l`Refresh the current feed`} />
-          <ShortcutRow shortcut="Esc" label={l`Clear post selection`} />
+          <ShortcutRow shortcut="Esc" label={l`Clear selection`} />
         </ShortcutGroup>
 
         <ShortcutGroup title={l`Focused video`}>
@@ -112,11 +112,18 @@ function KeyboardShortcutsDialogInner() {
           <ShortcutRow shortcut="G S" label={l`Settings`} />
         </ShortcutGroup>
 
-        <ShortcutGroup title={l`Selected post`}>
+        <ShortcutGroup title={l`Page navigation`}>
+          <ShortcutRow shortcut="[ / ]" label={l`Previous or next page tab`} />
           <ShortcutRow shortcut="H" label={l`Return to the previous feed`} />
-          <ShortcutRow shortcut="J" label={l`Select the next post`} />
-          <ShortcutRow shortcut="K" label={l`Select the previous post`} />
-          <ShortcutRow shortcut="B / Enter" label={l`Open the selected post`} />
+          <ShortcutRow shortcut="J" label={l`Select the next item`} />
+          <ShortcutRow shortcut="K" label={l`Select the previous item`} />
+          <ShortcutRow
+            shortcut="B / Enter"
+            label={l`Open or toggle the selected item`}
+          />
+        </ShortcutGroup>
+
+        <ShortcutGroup title={l`Selected post`}>
           <ShortcutRow shortcut="P" label={l`View the author’s profile`} />
           <ShortcutRow
             shortcut="O"
@@ -134,6 +141,7 @@ function KeyboardShortcutsDialogInner() {
             label={l`Save or unsave the selected post`}
           />
           <ShortcutRow shortcut="X" label={l`Open sharing options`} />
+          <ShortcutRow shortcut="M" label={l`Open the post menu`} />
           <ShortcutRow
             shortcut="Shift + R / T / Q / L / S"
             label={l`Open the interaction dropdown`}

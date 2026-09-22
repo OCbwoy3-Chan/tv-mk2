@@ -3,11 +3,22 @@ import {AtUri} from '@atproto/syntax'
 import {POST_KEYBOARD_ACTION_EVENT} from './postActions.web'
 
 // Adapted from eurosky-social/eurosky-social-app (MIT), eurosky/fork.
-const POST_SELECTOR = '[data-keyboard-navigation-post]'
+const SETTINGS_CONTROL_SELECTOR = [
+  'a[href]',
+  'button',
+  '[role="button"]',
+  '[role="link"]',
+  '[role="checkbox"]',
+  '[role="radio"]',
+  '[role="switch"]',
+]
+  .map(selector => `[data-keyboard-navigation-settings] ${selector}`)
+  .join(', ')
+const POST_SELECTOR = `[data-keyboard-navigation-post], [data-keyboard-navigation-item], ${SETTINGS_CONTROL_SELECTOR}`
 const SELECTED_ATTRIBUTE = 'data-keyboard-navigation-selected'
 
 export type PostAction =
-  'quote' | 'reply' | 'like' | 'repost' | 'save' | 'share' | 'media'
+  'quote' | 'reply' | 'like' | 'repost' | 'save' | 'share' | 'media' | 'menu'
 
 const ACTION_TEST_IDS: Record<PostAction, string> = {
   quote: 'repostBtn',
@@ -17,9 +28,11 @@ const ACTION_TEST_IDS: Record<PostAction, string> = {
   save: 'postBookmarkBtn',
   share: 'postShareBtn',
   media: 'postMediaOpenBtn',
+  menu: 'postDropdownBtn',
 }
 
 function isRendered(element: HTMLElement) {
+  if (element.closest('[aria-hidden="true"], [inert]')) return false
   const style = window.getComputedStyle(element)
   if (style.display === 'none' || style.visibility === 'hidden') return false
 
@@ -40,8 +53,14 @@ export function isPostVisible(element: HTMLElement) {
 }
 
 export function getNavigablePosts() {
-  return Array.from(document.querySelectorAll<HTMLElement>(POST_SELECTOR))
+  const items = Array.from(document.querySelectorAll<HTMLElement>(POST_SELECTOR))
     .filter(isRendered)
+    .filter(
+      element =>
+        element.getAttribute('aria-disabled') !== 'true' &&
+        !element.matches(':disabled'),
+    )
+    .filter(element => !element.parentElement?.closest(POST_SELECTOR))
     .filter(element => {
       const rect = element.getBoundingClientRect()
       return rect.right > 0 && rect.left < window.innerWidth
@@ -51,6 +70,17 @@ export function getNavigablePosts() {
       const bRect = b.getBoundingClientRect()
       return aRect.top - bRect.top || aRect.left - bRect.left
     })
+  const focusedScope = document.activeElement?.closest<HTMLElement>(
+    '[data-keyboard-navigation-scope]',
+  )?.dataset.keyboardNavigationScope
+  const scope =
+    focusedScope ??
+    (items.some(item => item.dataset.keyboardNavigationScope === 'messages')
+      ? 'messages'
+      : undefined)
+  return scope
+    ? items.filter(item => item.dataset.keyboardNavigationScope === scope)
+    : items
 }
 
 export function getInitialVisiblePost(posts: HTMLElement[]) {
@@ -247,4 +277,28 @@ export function getPostActivityShortcut(
     ? event.key.toLowerCase()
     : event.code.replace(/^Key/, '').toLowerCase()
   return getPostActivityRoute(element, key)
+}
+
+/** Switch the page's own tab bar, including tabs outside its scroll viewport. */
+export function switchPageTab(direction: 1 | -1) {
+  const tabBar = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-keyboard-navigation-tabs]'),
+  ).find(element => {
+    if (!isRendered(element)) return false
+    const rect = element.getBoundingClientRect()
+    return rect.right > 0 && rect.left < window.innerWidth
+  })
+  if (!tabBar) return false
+  const tabs = Array.from(
+    tabBar.querySelectorAll<HTMLElement>('[role="tab"]'),
+  ).filter(
+    tab =>
+      tab.getAttribute('aria-disabled') !== 'true' && !tab.matches(':disabled'),
+  )
+  const index = tabs.findIndex(
+    tab => tab.getAttribute('aria-selected') === 'true',
+  )
+  if (index < 0 || tabs.length < 2) return false
+  tabs[(index + direction + tabs.length) % tabs.length].click()
+  return true
 }

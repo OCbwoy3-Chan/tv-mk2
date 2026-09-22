@@ -20,6 +20,7 @@ import {
   createCacheMutator,
   getThreadPlaceholder,
 } from '#/state/queries/usePostThread/queryCache'
+import {extendSelfThreadChain} from '#/state/queries/usePostThread/selfThreadChain'
 import {
   buildThread,
   sortAndAnnotateThreadItems,
@@ -95,10 +96,29 @@ export function usePostThread({
       const placeholder = getThreadPlaceholder(qc, anchor!)
       const data = await client.call(app.bsky.unspecced.getPostThreadV2, {
         anchor: anchor! as AtUriString,
-        branchingFactor: view === 'linear' ? LINEAR_VIEW_BF : TREE_VIEW_BF,
+        branchingFactor: apiView === 'linear' ? LINEAR_VIEW_BF : TREE_VIEW_BF,
         below,
         sort: sort,
       })
+
+      if (view === 'reader') {
+        data.thread = await extendSelfThreadChain({
+          thread: data.thread || [],
+          async fetchBelow(anchorUri) {
+            const continuation = await client.call(
+              app.bsky.unspecced.getPostThreadV2,
+              {
+                anchor: anchorUri as AtUriString,
+                above: false,
+                below,
+                branchingFactor: LINEAR_VIEW_BF,
+                sort,
+              },
+            )
+            return continuation.thread || []
+          },
+        })
+      }
 
       const cachedKnownLikers =
         placeholder &&

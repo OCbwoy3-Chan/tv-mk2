@@ -1,6 +1,7 @@
 import {useCallback, useMemo, useState} from 'react'
 import {View} from 'react-native'
 import {type $Typed} from '@atproto/lex'
+import {AtUri} from '@atproto/syntax'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -21,6 +22,10 @@ import {userStyle} from '#/lib/userstyles'
 import {useDisableInfiniteScroll} from '#/state/preferences/disable-infinite-scroll'
 import {useBookmarkMutation} from '#/state/queries/bookmarks/useBookmarkMutation'
 import {useBookmarksQuery} from '#/state/queries/bookmarks/useBookmarksQuery'
+import {
+  useUnavailableAccountLabel,
+  useUnavailablePostQuery,
+} from '#/state/queries/unavailable-content'
 import {Post} from '#/view/com/post/Post'
 import {EmptyState} from '#/view/com/util/EmptyState'
 import {List} from '#/view/com/util/List'
@@ -216,6 +221,9 @@ function BookmarkNotFound({
   const t = useTheme()
   const {_} = useLingui()
   const {mutateAsync: bookmark} = useBookmarkMutation()
+  const author = new AtUri(post.uri).host
+  const authorLabel = useUnavailableAccountLabel(author)
+  const {data: status} = useUnavailablePostQuery(post.uri)
 
   const remove = async () => {
     try {
@@ -232,6 +240,8 @@ function BookmarkNotFound({
 
   return (
     <View
+      testID="bookmarkNotFound"
+      {...{dataSet: {keyboardNavigationItem: 'true'}}}
       style={[
         a.flex_row,
         a.align_start,
@@ -245,10 +255,9 @@ function BookmarkNotFound({
         <QuestionIcon size="lg" fill={t.atoms.text_contrast_low.color} />
       </Skele.Circle>
       <View style={[a.flex_1, a.gap_2xs]}>
-        <View style={[a.flex_row, a.gap_xs]}>
-          <Skele.Text style={[a.text_md, {width: 80}]} />
-          <Skele.Text style={[a.text_md, {width: 100}]} />
-        </View>
+        <Text emoji numberOfLines={1} style={[a.text_md, a.font_semi_bold]}>
+          {authorLabel}
+        </Text>
 
         <Text
           style={[
@@ -257,7 +266,13 @@ function BookmarkNotFound({
             a.italic,
             t.atoms.text_contrast_medium,
           ]}>
-          <Trans>This post was deleted by its author</Trans>
+          {status === 'deleted' ? (
+            <Trans>This post was deleted</Trans>
+          ) : status === 'account' ? (
+            <Trans>This account is inaccessible</Trans>
+          ) : (
+            <Trans>This post is unavailable</Trans>
+          )}
         </Text>
       </View>
       <Button

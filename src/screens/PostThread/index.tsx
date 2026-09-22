@@ -64,7 +64,12 @@ import {
   ThreadItemTreePost,
   ThreadItemTreePostSkeleton,
 } from '#/screens/PostThread/components/ThreadItemTreePost'
-import {buildReaderThread, type ReaderItem} from '#/screens/PostThread/reader'
+import {
+  buildReaderThread,
+  getReaderRoot,
+  hasReaderThread,
+  type ReaderItem,
+} from '#/screens/PostThread/reader'
 import {
   atoms as a,
   native,
@@ -421,9 +426,7 @@ export function PostThread({
          * data hasn't loaded yet, the effect below corrects the root once it
          * arrives.
          */
-        setReaderRoot(
-          anchor?.value.post.record.reply?.root?.uri ?? anchor?.uri ?? uri,
-        )
+        setReaderRoot(getReaderRoot(thread.data.items) ?? uri)
       } else {
         setReaderRoot(null)
       }
@@ -440,7 +443,7 @@ export function PostThread({
    */
   const readerRootCorrection =
     thread.state.view === 'reader' && anchor?.type === 'threadPost'
-      ? (anchor.value.post.record.reply?.root?.uri ?? null)
+      ? getReaderRoot(thread.data.items)
       : null
   useEffect(() => {
     if (readerRootCorrection && readerRootCorrection !== readerRoot) {
@@ -465,19 +468,7 @@ export function PostThread({
     )
   }, [ax, thread.state.view, thread.state.savedView, setViewWrapped])
 
-  /**
-   * Whether to surface the reader toggle. The anchor must itself be part of the
-   * OP self-thread - the root, or an `opThread` post mid-chain - otherwise the
-   * chain is just incidental context above a reply the user navigated into.
-   */
-  const hasOpThreadChain = useMemo(() => {
-    if (anchor?.type !== 'threadPost') return false
-    if (!(isRoot || anchor.value.opThread)) return false
-    return thread.data.items.some(
-      item =>
-        item.type === 'threadPost' && item.depth !== 0 && item.value.opThread,
-    )
-  }, [thread.data.items, anchor, isRoot])
+  const hasOpThreadChain = hasReaderThread(thread.data.items)
 
   /*
    * Keep this sticky while a sort change temporarily replaces the response

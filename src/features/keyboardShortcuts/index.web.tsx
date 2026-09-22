@@ -30,12 +30,15 @@ import {
   type PostAction,
   type PostMediaTarget,
   setPostSelected,
+  switchPageTab,
 } from './postNavigation.web'
 import {useKeyboardShortcutsPreference} from './preferences'
 
 const CHORD_TIMEOUT_MS = 1000
 const APP_CHARACTER_KEYS = new Set([
   '?',
+  '[',
+  ']',
   '/',
   'u',
   'g',
@@ -44,6 +47,7 @@ const APP_CHARACTER_KEYS = new Set([
   'j',
   'k',
   'o',
+  'm',
   'r',
   'l',
   't',
@@ -56,6 +60,7 @@ const APP_CHARACTER_KEYS = new Set([
 
 const POST_ACTIONS: Partial<Record<string, PostAction>> = {
   o: 'media',
+  m: 'menu',
   r: 'reply',
   l: 'like',
   t: 'repost',
@@ -140,7 +145,7 @@ export function KeyboardShortcuts() {
     }
 
     const summary = getPostAnnouncement(post)
-    setAnnouncement(summary ? l`Selected post: ${summary}` : l`Selected post`)
+    setAnnouncement(summary ? l`Selected item: ${summary}` : l`Selected item`)
   }
 
   const moveSelection = useNonReactiveCallback((direction: 1 | -1) => {
@@ -211,6 +216,12 @@ export function KeyboardShortcuts() {
     const selected = getSelectedVisiblePost()
     if (!selected) return false
 
+    if (!selected.dataset.keyboardNavigationPost) {
+      selected.click()
+      if (selected.dataset.keyboardNavigationScope === 'chats') clearSelection()
+      return true
+    }
+
     const href = getPostHref(selected)
     const postUri = selected.dataset.keyboardNavigationPost
     if (!href || !postUri) return false
@@ -278,7 +289,11 @@ export function KeyboardShortcuts() {
   const runPostAction = (action: PostAction, dropdown = false) => {
     const selected = getSelectedVisiblePost()
     if (!selected) return false
-    if (action === 'media') {
+    if (
+      action === 'media' &&
+      (selected.dataset.keyboardNavigationPost ||
+        selected.dataset.keyboardNavigationScope === 'messages')
+    ) {
       const targets = getPostMediaTargets(selected)
       if (targets.length === 0) return false
       if (targets.length === 1) return openPostMediaTarget(targets[0])
@@ -286,6 +301,7 @@ export function KeyboardShortcuts() {
       mediaDialogControl.open()
       return true
     }
+    if (!selected.dataset.keyboardNavigationPost) return false
     return clickPostAction(selected, action, dropdown)
   }
 
@@ -389,6 +405,18 @@ export function KeyboardShortcuts() {
         outline-offset: -2px !important;
         scroll-margin-top: 64px;
       }
+      [data-keyboard-navigation-scope][data-keyboard-navigation-selected="true"] {
+        outline: none !important;
+      }
+      [data-keyboard-navigation-scope][data-keyboard-navigation-selected="true"]::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border: 2px solid ${t.palette.primary_500};
+        border-radius: inherit;
+        pointer-events: none;
+        z-index: 100;
+      }
     `
     document.head.appendChild(style)
     return () => style.remove()
@@ -487,6 +515,14 @@ export function KeyboardShortcuts() {
         return
       }
 
+      if (key === '[' || key === ']') {
+        if (switchPageTab(key === ']' ? 1 : -1)) {
+          clearSelection()
+          consume(event)
+        }
+        return
+      }
+
       if (key === 'j' || key === 'k') {
         if (moveSelection(key === 'j' ? 1 : -1)) consume(event)
         return
@@ -508,6 +544,14 @@ export function KeyboardShortcuts() {
         const selected = getSelectedVisiblePost()
         const route = selected && getPostAuthorRoute(selected)
         if (route && selected && openPostPage(selected, route)) consume(event)
+        return
+      }
+
+      if (
+        key === 'm' &&
+        (target.closest('[data-testid="postVideoFocusTarget"]') ||
+          document.fullscreenElement)
+      ) {
         return
       }
 

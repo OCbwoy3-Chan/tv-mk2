@@ -47,3 +47,12 @@ it('does not override an explicitly chosen full-size format with PNG', () => {
   )
   expect(result.fullsize).toBe(image.replace('@jpeg', '@ico'))
 })
+
+it('reuses the feed thumbnail URL when no thumbnail format is selected', () => {
+  const thumb = image.replace('/feed_fullsize/', '/feed_thumbnail/')
+  const result = resolveEmbedImageUris(
+    {fullsize: image, thumb},
+    {fullsizeFormat: 'webp', loadAsPngs: true},
+  )
+  expect(result.thumb).toBe(thumb)
+})

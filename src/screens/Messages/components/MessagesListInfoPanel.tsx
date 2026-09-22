@@ -7,6 +7,7 @@ import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-disp
 import {type NavigationProp} from '#/lib/routes/types'
 import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useUnavailableProfileLabel} from '#/state/queries/unavailable-content'
 import {useSession} from '#/state/session'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme} from '#/alf'
@@ -32,16 +33,19 @@ export function MessagesListInfoPanel({
   const profile = convo.members.filter(
     profile => profile.did !== currentAccount?.did,
   )[0]
-  const handle = sanitizeHandle(profile.handle, '@')
-  const displayName = moderationOpts
-    ? createSanitizedDisplayName(
-        profile,
-        true,
-        moderateProfile(profile, moderationOpts).ui('displayName'),
-      )
-    : handle
+  const unavailableLabel = useUnavailableProfileLabel(profile)
+  const handle = unavailableLabel ?? sanitizeHandle(profile.handle, '@')
+  const displayName =
+    unavailableLabel ??
+    (moderationOpts
+      ? createSanitizedDisplayName(
+          profile,
+          true,
+          moderateProfile(profile, moderationOpts).ui('displayName'),
+        )
+      : handle)
   const profileLink =
-    profile.handle && !isInvalidHandle(profile.handle)
+    profile.handle && !unavailableLabel && !isInvalidHandle(profile.handle)
       ? profile.handle
       : profile.did
 

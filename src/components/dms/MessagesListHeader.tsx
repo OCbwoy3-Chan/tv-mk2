@@ -8,6 +8,7 @@ import {makeProfileLink} from '#/lib/routes/links'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useUnavailableAccountLabel} from '#/state/queries/unavailable-content'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {useIsWithinSplitView} from '#/screens/Messages/components/splitView/context'
 import {android, atoms as a, useTheme, web} from '#/alf'
@@ -84,6 +85,10 @@ function ProfileHeaderReady({
   const t = useTheme()
   const {t: l} = useLingui()
   const profile = useProfileShadow(convo.primaryMember)
+  const unavailableLabel = useUnavailableAccountLabel(
+    profile.did,
+    profile.handle === 'missing.invalid',
+  )
 
   const moderation = moderateProfile(profile, moderationOpts)
 
@@ -100,9 +105,11 @@ function ProfileHeaderReady({
 
   const isDeletedAccount = profile?.handle === 'missing.invalid'
   const displayName = isDeletedAccount
-    ? l`Deleted Account`
+    ? unavailableLabel
     : createSanitizedDisplayName(profile, true, moderation.ui('displayName'))
-  const handle = isDeletedAccount ? null : sanitizeHandle(profile.handle, '@')
+  const handle = isDeletedAccount
+    ? l`Account inaccessible`
+    : sanitizeHandle(profile.handle, '@')
 
   return (
     <Wrapper

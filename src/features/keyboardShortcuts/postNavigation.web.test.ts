@@ -13,6 +13,7 @@ import {
   getPostMediaTargets,
   openPostMediaTarget,
   setPostSelected,
+  switchPageTab,
 } from './postNavigation.web'
 
 function createPost({
@@ -417,4 +418,173 @@ it('resolves P to the selected post author’s profile', () => {
   })
   post.dataset.keyboardNavigationPost = 'invalid'
   expect(getPostAuthorRoute(post)).toBeUndefined()
+})
+
+describe('page keyboard navigation', () => {
+  beforeEach(() => {
+    document.body.replaceChildren()
+  })
+
+  it('includes rows and section toggles in visual order without nested posts', () => {
+    const post = createPost({top: 10})
+    const row = createPost({top: 120})
+    delete row.dataset.keyboardNavigationPost
+    row.dataset.keyboardNavigationItem = 'true'
+    const nested = createPost({top: 140})
+    row.appendChild(nested)
+    const heading = createPost({top: 250})
+    delete heading.dataset.keyboardNavigationPost
+    heading.dataset.keyboardNavigationItem = 'true'
+
+    expect(getNavigablePosts()).toEqual([post, row, heading])
+  })
+
+  it('excludes rows in inactive screens', () => {
+    const hidden = createPost({top: 10})
+    const screen = document.createElement('div')
+    screen.setAttribute('aria-hidden', 'true')
+    document.body.appendChild(screen)
+    screen.appendChild(hidden)
+    const visible = createPost({top: 20})
+
+    expect(getNavigablePosts()).toEqual([visible])
+  })
+
+  it('switches and wraps page tabs, including horizontally scrolled tabs', () => {
+    const bar = createPost({top: 0})
+    delete bar.dataset.keyboardNavigationPost
+    bar.dataset.keyboardNavigationTabs = 'true'
+    const tabs = Array.from({length: 3}, (_, index) => {
+      const tab = document.createElement('button')
+      tab.setAttribute('role', 'tab')
+      tab.setAttribute('aria-selected', String(index === 0))
+      tab.addEventListener('click', () => {
+        tabs.forEach(item =>
+          item.setAttribute('aria-selected', String(item === tab)),
+        )
+      })
+      bar.appendChild(tab)
+      return tab
+    })
+    expect(switchPageTab(-1)).toBe(true)
+    expect(tabs[2].getAttribute('aria-selected')).toBe('true')
+    expect(switchPageTab(1)).toBe(true)
+    expect(tabs[0].getAttribute('aria-selected')).toBe('true')
+    tabs[1].setAttribute('aria-disabled', 'true')
+    switchPageTab(1)
+    expect(tabs[2].getAttribute('aria-selected')).toBe('true')
+    bar.setAttribute('aria-hidden', 'true')
+    expect(switchPageTab(1)).toBe(false)
+  })
+
+  it('leaves unrelated tab controls alone', () => {
+    const bar = createPost({top: 0})
+    bar.setAttribute('role', 'tablist')
+    expect(switchPageTab(1)).toBe(false)
+  })
+})
+
+it('navigates settings controls, skipping disabled controls and nested targets', () => {
+  document.body.replaceChildren()
+  const settings = document.createElement('div')
+  settings.dataset.keyboardNavigationSettings = 'true'
+  document.body.appendChild(settings)
+  const link = createPost({top: 20})
+  delete link.dataset.keyboardNavigationPost
+  link.setAttribute('role', 'link')
+  settings.appendChild(link)
+  const nested = createPost({top: 25})
+  delete nested.dataset.keyboardNavigationPost
+  nested.setAttribute('role', 'button')
+  link.appendChild(nested)
+  const toggle = createPost({top: 100})
+  delete toggle.dataset.keyboardNavigationPost
+  toggle.setAttribute('role', 'checkbox')
+  settings.appendChild(toggle)
+  const disabled = createPost({top: 200})
+  delete disabled.dataset.keyboardNavigationPost
+  disabled.setAttribute('role', 'button')
+  disabled.setAttribute('aria-disabled', 'true')
+  settings.appendChild(disabled)
+  const outside = createPost({top: 300})
+  delete outside.dataset.keyboardNavigationPost
+  outside.setAttribute('role', 'button')
+  expect(getNavigablePosts()).toEqual([link, toggle])
+})
+
+it('opens the selected post menu without activating the post', () => {
+  const post = createPost({top: 20})
+  const menu = document.createElement('button')
+  menu.dataset.testid = 'postDropdownBtn'
+  const onClick = jest.fn()
+  menu.addEventListener('click', onClick)
+  post.appendChild(menu)
+
+  expect(clickPostAction(post, 'menu')).toBe(true)
+  expect(onClick).toHaveBeenCalledTimes(1)
+
+  menu.setAttribute('aria-disabled', 'true')
+  expect(clickPostAction(post, 'menu')).toBe(false)
+  expect(onClick).toHaveBeenCalledTimes(1)
+})
+
+it('keeps split-view chat navigation in the focused pane', () => {
+  document.body.replaceChildren()
+  const chat = createPost({top: 20})
+  delete chat.dataset.keyboardNavigationPost
+  chat.dataset.keyboardNavigationItem = 'true'
+  chat.dataset.keyboardNavigationScope = 'chats'
+  chat.tabIndex = 0
+  const message = createPost({top: 30, left: 500})
+  delete message.dataset.keyboardNavigationPost
+  message.dataset.keyboardNavigationItem = 'true'
+  message.dataset.keyboardNavigationScope = 'messages'
+  message.tabIndex = -1
+  const nextMessage = createPost({top: 140, left: 500})
+  delete nextMessage.dataset.keyboardNavigationPost
+  nextMessage.dataset.keyboardNavigationItem = 'true'
+  nextMessage.dataset.keyboardNavigationScope = 'messages'
+
+  expect(getNavigablePosts()).toEqual([message, nextMessage])
+  chat.focus()
+  expect(getNavigablePosts()).toEqual([chat])
+  message.focus()
+  expect(getNavigablePosts()).toEqual([message, nextMessage])
+})
+
+it('navigates chats when no conversation is open', () => {
+  document.body.replaceChildren()
+  const chat = createPost({top: 20})
+  delete chat.dataset.keyboardNavigationPost
+  chat.dataset.keyboardNavigationItem = 'true'
+  chat.dataset.keyboardNavigationScope = 'chats'
+
+  expect(getNavigablePosts()).toEqual([chat])
+})
+
+it('opens a chat message embed without following links in the message text', () => {
+  document.body.replaceChildren()
+  const message = createPost({top: 20})
+  delete message.dataset.keyboardNavigationPost
+  message.dataset.keyboardNavigationItem = 'true'
+  message.dataset.keyboardNavigationScope = 'messages'
+  message.innerHTML = `
+    <a href="https://example.com">message text link</a>
+    <div data-keyboard-navigation-embed>
+      <div data-keyboard-navigation-embed-target="quote">
+        <button data-testid="quotedPostOpenBtn">embedded post</button>
+      </div>
+    </div>
+  `
+  const embeddedPost = message.querySelector('button')!
+  const onOpen = jest.fn()
+  embeddedPost.addEventListener('click', onOpen)
+
+  const targets = getPostMediaTargets(message)
+  expect(targets).toEqual([{kind: 'quote', control: embeddedPost}])
+  expect(openPostMediaTarget(targets[0])).toBe(true)
+  expect(onOpen).toHaveBeenCalledTimes(1)
+
+  message.querySelector('[data-keyboard-navigation-embed]')!.remove()
+  expect(getPostMediaTargets(message)).toEqual([])
 })

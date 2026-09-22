@@ -1,11 +1,9 @@
-import {
-  AppBskyUnspeccedDefs,
-  type AppBskyUnspeccedGetPostThreadV2,
-} from '@atproto/api'
+import {AppBskyUnspeccedDefs} from '@atproto/api'
 
-import {extendSelfThreadChain} from '../selfThreadChain'
+import {extendSelfThreadChain} from '#/state/queries/usePostThread/selfThreadChain'
+import {type app} from '#/lexicons'
 
-type RawThreadItem = AppBskyUnspeccedGetPostThreadV2.ThreadItem
+type RawThreadItem = app.bsky.unspecced.getPostThreadV2.ThreadItem
 
 const OP_DID = 'did:plc:op'
 
@@ -118,6 +116,70 @@ describe('extendSelfThreadChain', () => {
     expect(fetchBelow).toHaveBeenCalledTimes(2)
     expect(rkeys(result)).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
     expect(depths(result)).toEqual([0, 1, 2, 3, 4, 5, 6, 7])
+  })
+
+  it('extends a self-thread started in another author’s replies', async () => {
+    const thread = [
+      post({rkey: 'a', depth: 0, opThread: false, replyCount: 1}),
+      post({rkey: 'b', depth: 1, opThread: false, moreReplies: 1}),
+    ]
+    const fetchBelow = jest
+      .fn()
+      .mockResolvedValue([
+        post({rkey: 'b', depth: 0, opThread: false, replyCount: 1}),
+        post({rkey: 'c', depth: 1, opThread: false}),
+      ])
+
+    const result = await extendSelfThreadChain({thread, fetchBelow})
+
+    expect(fetchBelow).toHaveBeenCalledWith(thread[1].uri)
+    expect(rkeys(result)).toEqual(['a', 'b', 'c'])
+    expect(depths(result)).toEqual([0, 1, 2])
+  })
+
+  it('continues past 110 posts in another batch without losing the earlier posts', async () => {
+    const initial = Array.from({length: 111}, (_, depth) =>
+      post({
+        rkey: String(depth),
+        depth,
+        replyCount: 1,
+        moreReplies: depth === 110 ? 1 : 0,
+      }),
+    )
+    const fetchBelow = jest.fn((uri: string) => {
+      const start = Number(uri.split('/').pop())
+      return Promise.resolve(
+        Array.from({length: 11}, (_, depth) =>
+          post({
+            rkey: String(start + depth),
+            depth,
+            replyCount: 1,
+            moreReplies: depth === 10 ? 1 : 0,
+          }),
+        ),
+      )
+    })
+
+    const first = await extendSelfThreadChain({
+      thread: initial,
+      maxFetches: 1,
+      fetchBelow,
+    })
+    const second = await extendSelfThreadChain({
+      thread: first,
+      maxFetches: 1,
+      fetchBelow,
+    })
+
+    expect(fetchBelow.mock.calls.map(([uri]) => uri.split('/').pop())).toEqual([
+      '110',
+      '120',
+    ])
+    expect(rkeys(second)).toEqual(
+      Array.from({length: 131}, (_, i) => String(i)),
+    )
+    expect(depths(second)).toEqual(Array.from({length: 131}, (_, i) => i))
+    expect(initial).toHaveLength(111)
   })
 
   it('stops at maxFetches even if the chain continues', async () => {

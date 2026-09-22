@@ -16,45 +16,45 @@ export function ThreadItemShowOtherReplies({onPress}: {onPress: () => void}) {
 
   return (
     <Button
+      {...{dataSet: {keyboardNavigationItem: 'true'}}}
       onPress={() => {
         onPress()
         ax.metric('thread:click:showOtherReplies', {})
       }}
-      label={label}>
-      {({hovered, pressed}) => (
+      label={label}
+      style={t.atoms.bg}
+      hoverStyle={t.atoms.bg_contrast_25}>
+      <View
+        style={[
+          a.flex_1,
+          a.flex_row,
+          a.align_center,
+          a.gap_sm,
+          a.py_lg,
+          a.px_xl,
+          a.border_t,
+          t.atoms.border_contrast_low,
+        ]}>
         <View
           style={[
-            a.flex_1,
-            a.flex_row,
+            t.atoms.bg_contrast_25,
             a.align_center,
-            a.gap_sm,
-            a.py_lg,
-            a.px_xl,
-            a.border_t,
-            t.atoms.border_contrast_low,
-            hovered || pressed ? t.atoms.bg_contrast_25 : t.atoms.bg,
+            a.justify_center,
+            {
+              width: 26,
+              height: 26,
+              borderRadius: 13,
+              marginRight: 4,
+            },
           ]}>
-          <View
-            style={[
-              t.atoms.bg_contrast_25,
-              a.align_center,
-              a.justify_center,
-              {
-                width: 26,
-                height: 26,
-                borderRadius: 13,
-                marginRight: 4,
-              },
-            ]}>
-            <EyeSlash size="sm" fill={t.atoms.text_contrast_medium.color} />
-          </View>
-          <Text
-            style={[t.atoms.text_contrast_medium, a.flex_1, a.leading_snug]}
-            numberOfLines={1}>
-            {label}
-          </Text>
+          <EyeSlash size="sm" fill={t.atoms.text_contrast_medium.color} />
         </View>
-      )}
+        <Text
+          style={[t.atoms.text_contrast_medium, a.flex_1, a.leading_snug]}
+          numberOfLines={1}>
+          {label}
+        </Text>
+      </View>
     </Button>
   )
 }

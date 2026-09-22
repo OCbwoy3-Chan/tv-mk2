@@ -6,6 +6,54 @@ import {type ThreadItem} from '#/state/queries/usePostThread/types'
 export type ThreadPostItem = Extract<ThreadItem, {type: 'threadPost'}>
 
 /**
+ * Find the start of the selected author's self-reply chain, stopping before
+ * another participant's post. Missing same-author parents can be fetched by
+ * re-anchoring there, then resolving again when that response arrives.
+ */
+export function getReaderRoot(items: ThreadItem[]): string | null {
+  let current = items.find(
+    (item): item is ThreadPostItem =>
+      item.type === 'threadPost' && item.depth === 0,
+  )
+  if (!current) return null
+  const did = current.value.post.author.did
+  const visited = new Set<string>()
+  while (!visited.has(current.uri)) {
+    visited.add(current.uri)
+    const parentUri = current.value.post.record.reply?.parent?.uri
+    if (!parentUri) break
+    const parent = items.find(
+      (item): item is ThreadPostItem =>
+        item.type === 'threadPost' && item.uri === parentUri,
+    )
+    if (!parent) {
+      return new AtUri(parentUri).host === did ? parentUri : current.uri
+    }
+    if (parent.value.post.author.did !== did) break
+    current = parent
+  }
+  return current.uri
+}
+
+/** Whether the selected post has a same-author parent or direct reply. */
+export function hasReaderThread(items: ThreadItem[]): boolean {
+  const anchor = items.find(
+    (item): item is ThreadPostItem =>
+      item.type === 'threadPost' && item.depth === 0,
+  )
+  if (!anchor) return false
+  return (
+    getReaderRoot(items) !== anchor.uri ||
+    items.some(
+      item =>
+        item.type === 'threadPost' &&
+        item.depth === 1 &&
+        item.value.post.author.did === anchor.value.post.author.did,
+    )
+  )
+}
+
+/**
  * A toggle rendered after a post, inside its bracket. Expanding it reveals the
  * post's actions and replies, so the post bodies themselves stay plain,
  * selectable text.
@@ -84,7 +132,7 @@ export function buildReaderThread(
 
   /*
    * Locate the start of the OP self-thread chain: a depth-1 reply by the
-   * anchor author marked `opThread` by the appview. The appview usually
+   * anchor author. The appview usually
    * serves it directly below the anchor, but depending on sort it may not be
    * the first sibling, so scan all hydrated depth-1 replies.
    */
@@ -93,7 +141,6 @@ export function buildReaderThread(
       i > anchorIndex &&
       item.type === 'threadPost' &&
       item.depth === 1 &&
-      item.value.opThread &&
       item.value.post.author.did === anchorDid,
   )
   if (chainStart === -1) return noChain
@@ -113,7 +160,6 @@ export function buildReaderThread(
     if (
       item.type === 'threadPost' &&
       item.depth === prev.depth + 1 &&
-      item.value.opThread &&
       item.value.post.author.did === anchorDid
     ) {
       chain.push(item)

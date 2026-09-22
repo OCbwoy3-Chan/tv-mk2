@@ -802,6 +802,7 @@ function NotificationRow({
      */
     return (
       <Pressable
+        {...{dataSet: {keyboardNavigationItem: 'true'}}}
         testID={linkProps.testID}
         onHoverIn={() => setHovered(true)}
         onHoverOut={() => setHovered(false)}
@@ -813,7 +814,11 @@ function NotificationRow({
     )
   }
 
-  return <Link {...linkProps}>{children}</Link>
+  return (
+    <Link {...linkProps} {...{dataSet: {keyboardNavigationItem: 'true'}}}>
+      {children}
+    </Link>
+  )
 }
 
 function FollowedViaStarterPack({

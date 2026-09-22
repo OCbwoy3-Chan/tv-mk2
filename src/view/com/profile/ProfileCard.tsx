@@ -1,4 +1,4 @@
-import {type GestureResponderEvent, View} from 'react-native'
+import {type GestureResponderEvent} from 'react-native'
 
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {atoms as a, useTheme} from '#/alf'
@@ -26,20 +26,18 @@ export function ProfileCardWithFollowBtn({
   if (!moderationOpts) return null
 
   return (
-    <View
+    <ProfileCard.Default
       style={[
         a.py_md,
         a.px_xl,
         !noBorder && [a.border_t, t.atoms.border_contrast_low],
-      ]}>
-      <ProfileCard.Default
-        profile={profile}
-        moderationOpts={moderationOpts}
-        logContext={logContext}
-        position={position}
-        contextProfileDid={contextProfileDid}
-        onPress={onPress}
-      />
-    </View>
+      ]}
+      profile={profile}
+      moderationOpts={moderationOpts}
+      logContext={logContext}
+      position={position}
+      contextProfileDid={contextProfileDid}
+      onPress={onPress}
+    />
   )
 }

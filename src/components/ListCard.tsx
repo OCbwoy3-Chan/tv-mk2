@@ -94,7 +94,11 @@ export function Link({
   }, [view, queryClient])
 
   return (
-    <InternalLink label={view.name} to={href} {...props}>
+    <InternalLink
+      {...{dataSet: {keyboardNavigationItem: 'true'}}}
+      label={view.name}
+      to={href}
+      {...props}>
       {children}
     </InternalLink>
   )

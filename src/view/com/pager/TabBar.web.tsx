@@ -104,6 +104,7 @@ export function TabBar({
 
   return (
     <View
+      {...{dataSet: {keyboardNavigationTabs: 'true'}}}
       testID={testID}
       style={[t.atoms.bg, styles.outer, userStyle('wsky-tabs')]}
       accessibilityRole="tablist">
@@ -129,6 +130,7 @@ export function TabBar({
               ]}
               hoverStyle={t.atoms.bg_contrast_25}
               onPress={() => onPressItem(i)}
+              aria-selected={selected}
               accessibilityRole="tab">
               <View style={styles.itemInner}>
                 <Text

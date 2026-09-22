@@ -81,6 +81,7 @@ function LoadMore({item}: {item: ExploreScreenItems & {type: 'loadMore'}}) {
 
   return (
     <Button
+      {...{dataSet: {keyboardNavigationItem: 'true'}}}
       label={l`Load more`}
       onPress={handleOnPress}
       style={[a.relative, a.w_full]}>
@@ -823,25 +824,24 @@ export function Explore({
         }
         case 'feed': {
           return (
-            <View
+            <FeedCard.Default
+              view={item.feed}
               style={[
-                a.border_t,
-                t.atoms.border_contrast_low,
+                a.flex_col,
                 a.px_lg,
                 a.py_lg,
-              ]}>
-              <FeedCard.Default
-                view={item.feed}
-                onPress={() => {
-                  if (!useFullExperience) {
-                    return
-                  }
-                  ax.metric('feed:suggestion:press', {
-                    feedUrl: item.feed.uri,
-                  })
-                }}
-              />
-            </View>
+                a.border_t,
+                t.atoms.border_contrast_low,
+              ]}
+              onPress={() => {
+                if (!useFullExperience) {
+                  return
+                }
+                ax.metric('feed:suggestion:press', {
+                  feedUrl: item.feed.uri,
+                })
+              }}
+            />
           )
         }
         case 'starterPack': {

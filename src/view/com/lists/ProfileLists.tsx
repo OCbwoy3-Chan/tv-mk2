@@ -191,15 +191,15 @@ export function ProfileLists({
       }
       if (preferences) {
         return (
-          <View
+          <ListCard.Default
+            view={item}
             style={[
               (index !== 0 || IS_WEB) && a.border_t,
               t.atoms.border_contrast_low,
               a.px_lg,
               a.py_lg,
-            ]}>
-            <ListCard.Default view={item} />
-          </View>
+            ]}
+          />
         )
       }
       return null

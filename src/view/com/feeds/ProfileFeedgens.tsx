@@ -192,15 +192,15 @@ export function ProfileFeedgens({
       }
       if (preferences) {
         return (
-          <View
+          <FeedCard.Default
+            view={item}
             style={[
               (index !== 0 || IS_WEB) && a.border_t,
               t.atoms.border_contrast_low,
               a.px_lg,
               a.py_lg,
-            ]}>
-            <FeedCard.Default view={item} />
-          </View>
+            ]}
+          />
         )
       }
       return null
