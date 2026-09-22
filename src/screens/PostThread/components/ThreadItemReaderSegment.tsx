@@ -126,69 +126,77 @@ const ThreadItemReaderSegmentInner = memo(
           wskyRepost: 'false',
         }}
         style={userStyle('wsky-post', 'wsky-post__surface')}>
-        <GalleryBleed>
-          <View style={[{paddingHorizontal: OUTER_SPACE}]}>
-            <View style={userStyle('wsky-post__content')}>
-              {seam.expanded && (
-                <>
-                  <LabelsOnMyPost post={post} style={[a.pb_xs]} />
-                  <PostAlerts
-                    modui={moderation.ui('contentList')}
-                    style={[a.pb_2xs]}
-                  />
-                </>
-              )}
-              {richText?.text ? (
-                <View style={[a.mb_2xs, userStyle('wsky-post__text')]}>
-                  {/* Intentionally not line-limited: reader view is for
+        <View
+          {...{
+            dataSet: {
+              keyboardNavigationPost: post.uri,
+              keyboardNavigationHref: seam.href,
+              keyboardNavigationClickable: 'false',
+            },
+          }}>
+          <GalleryBleed>
+            <View style={[{paddingHorizontal: OUTER_SPACE}]}>
+              <View style={userStyle('wsky-post__content')}>
+                {seam.expanded && (
+                  <>
+                    <LabelsOnMyPost post={post} style={[a.pb_xs]} />
+                    <PostAlerts
+                      modui={moderation.ui('contentList')}
+                      style={[a.pb_2xs]}
+                    />
+                  </>
+                )}
+                {richText?.text ? (
+                  <View style={[a.mb_2xs, userStyle('wsky-post__text')]}>
+                    {/* Intentionally not line-limited: reader view is for
                       uninterrupted reading */}
-                  <RichText
-                    enableTags
-                    selectable
-                    value={richText}
-                    style={[a.flex_1, a.text_lg]}
-                    authorHandle={post.author.handle}
-                    shouldProxyLinks={true}
-                  />
-                </View>
-              ) : undefined}
-              <TranslatedPost
-                hideTranslateLink
-                post={post}
-                postTextStyle={[a.text_lg]}
-              />
-              {post.embed && (
-                <View style={[a.pb_2xs, userStyle('wsky-post__embed')]}>
-                  <Embed
-                    embed={post.embed}
-                    moderation={moderation}
-                    viewContext={PostEmbedViewContext.ThreadHighlighted}
-                    post={post}
-                  />
-                </View>
-              )}
-              <PostTags post={post} style={[a.pb_2xs]} />
+                    <RichText
+                      enableTags
+                      selectable
+                      value={richText}
+                      style={[a.flex_1, a.text_lg]}
+                      authorHandle={post.author.handle}
+                      shouldProxyLinks={true}
+                    />
+                  </View>
+                ) : undefined}
+                <TranslatedPost
+                  hideTranslateLink
+                  post={post}
+                  postTextStyle={[a.text_lg]}
+                />
+                {post.embed && (
+                  <View style={[a.pb_2xs, userStyle('wsky-post__embed')]}>
+                    <Embed
+                      embed={post.embed}
+                      moderation={moderation}
+                      viewContext={PostEmbedViewContext.ThreadHighlighted}
+                      post={post}
+                    />
+                  </View>
+                )}
+                <PostTags post={post} style={[a.pb_2xs]} />
+              </View>
             </View>
+          </GalleryBleed>
+          <View style={[{paddingHorizontal: OUTER_SPACE}]}>
+            <ReaderSeam
+              post={item.item}
+              expanded={seam.expanded}
+              hiddenReplyCount={seam.hiddenReplyCount}
+              continuationUri={seam.continuationUri}
+              href={seam.href}
+              sort={sort}
+              isThreadEnd={seam.isThreadEnd}
+              onToggle={() => onToggleSeam(item.uri)}
+              onPostSuccess={onPostSuccess}
+              threadgateRecord={threadgateRecord}
+            />
           </View>
-        </GalleryBleed>
-        <View style={[{paddingHorizontal: OUTER_SPACE}]}>
-          <ReaderSeam
-            post={item.item}
-            expanded={seam.expanded}
-            hiddenReplyCount={seam.hiddenReplyCount}
-            continuationUri={seam.continuationUri}
-            href={seam.href}
-            sort={sort}
-            isThreadEnd={seam.isThreadEnd}
-            onToggle={() => onToggleSeam(item.uri)}
-            onPostSuccess={onPostSuccess}
-            threadgateRecord={threadgateRecord}
-          />
         </View>
         {trailingReadMore && (
           <>
             <ThreadItemReadMore item={trailingReadMore} view="reader" />
-            {/* End spacer; bracket closes flush at its bottom */}
             <View style={[a.pb_lg]} />
           </>
         )}
@@ -196,12 +204,12 @@ const ThreadItemReaderSegmentInner = memo(
             - Collapsed mid-chain: bottom cap at hairline
             - Collapsed thread end: hairline, accounting for the modest spacer
             - Expanded: close above the trailing spacer
-            - Trailing read-more: close flush at the spacer bottom */}
+            - Trailing read-more: close above the continuation button */}
         <ReaderBracket
           left={READER_LINE_INDENT}
           bottom={
             trailingReadMore
-              ? 0
+              ? READER_SEAM_HEIGHT + tokens.space.lg + READER_SEAM_HEIGHT / 2
               : seam.isThreadEnd && !seam.expanded
                 ? tokens.space.sm + READER_SEAM_HEIGHT / 2
                 : seam.expanded
