@@ -30,6 +30,7 @@ import { createStaticClick, InlineLinkText } from '#/components/Link'
 import * as Toast from '#/components/Toast'
 import { Text } from '#/components/Typography'
 import { DeltasPrivatePostsToggle } from './components/PrivatePostsToggle'
+import { PrivatePostPlayground } from './components/PrivatePostPlayground'
 
 export function DeltaPrivatePostSettingsScreen() {
   const t = useTheme()
@@ -50,12 +51,14 @@ export function DeltaPrivatePostSettingsScreen() {
   const [isResyncing, setIsResyncing] = useState(false)
 
   const onResync = async () => {
-    if (!appViewURL || isResyncing) return
+    const pdsUrl = currentAccount?.pdsUrl ?? currentAccount?.service
+    if (!appViewURL || !pdsUrl || isResyncing) return
     setIsResyncing(true)
     try {
-      await forcePrivatePostsResync({ agent, appViewURL, appViewDID })
+      await forcePrivatePostsResync({agent, pdsUrl, appViewURL, appViewDID})
       Toast.show(l`Private posts synced`, { type: 'success' })
     } catch (error) {
+      console.log("privatepost sync err:",error)
       Toast.show(
         error instanceof Error ? error.message : l`Private posts sync failed`,
         { type: 'error' },
@@ -239,6 +242,7 @@ export function DeltaPrivatePostSettingsScreen() {
               </View>
             </View>
           )}
+          <PrivatePostPlayground/>
         </View>
       </Layout.Content>
     </Layout.Screen>

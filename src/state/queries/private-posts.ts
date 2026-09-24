@@ -42,14 +42,15 @@ export const RQKEY_POST = (
 
 export function usePrivatePostsModStatus() {
   const agent = useAgent()
+  const {currentAccount} = useSession()
   const [appViewDID] = usePrivatePostsAppViewDID()
   const appViewURL = usePrivatePostsAppViewURL()
 
   return useQuery<PrivatePostsModStatus>({
-    enabled: !!agent.session && !!appViewURL,
+    enabled: !!currentAccount && !!appViewURL,
     staleTime: STALE.MINUTES.FIVE,
     queryKey: RQKEY_MOD_STATUS(
-      agent.session?.did ?? '',
+      currentAccount?.did ?? '',
       appViewDID,
       appViewURL,
     ),
@@ -64,13 +65,14 @@ export function usePrivatePostsModStatus() {
 
 export function usePrivatePostsState() {
   const agent = useAgent()
+  const {currentAccount} = useSession()
   const [appViewDID] = usePrivatePostsAppViewDID()
   const appViewURL = usePrivatePostsAppViewURL()
 
   return useQuery<PrivatePostsState>({
-    enabled: !!agent.session && !!appViewURL,
+    enabled: !!currentAccount && !!appViewURL,
     staleTime: STALE.MINUTES.FIVE,
-    queryKey: RQKEY_STATE(agent.session?.did ?? '', appViewDID, appViewURL),
+    queryKey: RQKEY_STATE(currentAccount?.did ?? '', appViewDID, appViewURL),
     queryFn: () =>
       getPrivatePostsState({
         agent,
@@ -85,7 +87,7 @@ export function usePrivatePostAvailability(
   enabled: boolean,
 ) {
   const agent = useAgent()
-  const {accounts} = useSession()
+  const {accounts, currentAccount} = useSession()
   const {createEphemeralAgent} = useSessionApi()
   const [appViewDID] = usePrivatePostsAppViewDID()
   const appViewURL = usePrivatePostsAppViewURL()
@@ -96,7 +98,7 @@ export function usePrivatePostAvailability(
     staleTime: STALE.MINUTES.FIVE,
     queryKey: RQKEY_AVAILABILITY(accountDid ?? '', appViewDID, appViewURL),
     queryFn: async () => {
-      const isCurrentAccount = agent.session?.did === accountDid
+      const isCurrentAccount = currentAccount?.did === accountDid
       const selectedAgent = isCurrentAccount
         ? agent
         : await createEphemeralAgent(account!)
@@ -127,13 +129,18 @@ export function usePrivatePost(
   cid: string | undefined,
 ) {
   const agent = useAgent()
+  const {currentAccount} = useSession()
   const privatePostsEnabled = usePrivatePostsEnabled()
   const [appViewDID] = usePrivatePostsAppViewDID()
   const appViewURL = usePrivatePostsAppViewURL()
 
   return useQuery<PrivatePost>({
     enabled:
-      privatePostsEnabled && !!uri && !!cid && !!agent.session && !!appViewURL,
+      privatePostsEnabled &&
+      !!uri &&
+      !!cid &&
+      !!currentAccount &&
+      !!appViewURL,
     staleTime: STALE.MINUTES.FIVE,
     queryKey: RQKEY_POST(uri ?? '', cid ?? '', appViewDID, appViewURL),
     queryFn: () =>

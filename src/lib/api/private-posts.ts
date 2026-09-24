@@ -41,8 +41,9 @@ export type PrivatePostsState = Record<string, unknown>
 export type PrivatePost = {
   createdAt?: string
   descriptionFacets?: app.bsky.richtext.facet.Main[]
-  error?: string
-  text?: string
+  error?: "PostBanned" | "AccountBanned" | string
+  text?: string,
+  postBanReason?: string
 }
 
 async function getPrivatePostsServiceAuthToken({
@@ -122,10 +123,12 @@ async function createSpaceDpopProof(
 
 export async function registerPrivatePostsAppView({
   agent,
+  pdsUrl,
   appViewURL,
   appViewDID,
 }: {
   agent: AtpAgentType
+  pdsUrl: string
   appViewURL: string
   appViewDID: string
 }) {
@@ -147,8 +150,6 @@ export async function registerPrivatePostsAppView({
   })
   const publicJwk = await exportJWK(publicKey)
   const privateJwk = await exportJWK(privateKey)
-  const pdsUrl = directAgent.pdsUrl ?? directAgent.serviceUrl
-
   const credentialUrl = new URL(
     '/xrpc/com.atproto.space.getSpaceCredential',
     pdsUrl,
@@ -224,14 +225,16 @@ export async function registerPrivatePostsAppView({
 
 export async function forcePrivatePostsResync({
   agent,
+  pdsUrl,
   appViewURL,
   appViewDID,
 }: {
   agent: AtpAgentType
+  pdsUrl: string
   appViewURL: string
   appViewDID: string
 }) {
-  await registerPrivatePostsAppView({agent, appViewURL, appViewDID})
+  await registerPrivatePostsAppView({agent, pdsUrl, appViewURL, appViewDID})
   const directAgent = pdsAgent(agent)
   const space = `at://${agent.assertDid}/space/party.tenna.private.space/self`
   const latest = await xrpc(

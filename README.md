@@ -27,7 +27,6 @@ Moderation:
 
 Misc:
 - Big warning on stuff that has to do with AI (too much work to remove)
-- Private posts via embeds + atproto permissioned data
 
 App:
 - Native iOS via GitHub Actions (sideload)
@@ -35,7 +34,7 @@ App:
 - Push Notifications on Android
 
 New features:
-- Private posts via ATProto spaces
+- Private posts via ATProto spaces & Embeds!
 
 ### TODO: Kris
 

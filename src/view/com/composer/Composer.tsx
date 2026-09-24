@@ -1459,6 +1459,7 @@ export const ComposePost = ({
         setPublishingStage(l`Syncing private posts…`)
         await forcePrivatePostsResync({
           agent: currentAgent,
+          pdsUrl: currentAccount!.pdsUrl ?? currentAccount!.service,
           appViewURL: privatePostsAppViewURL!,
           appViewDID: privatePostsAppViewDID,
         })
