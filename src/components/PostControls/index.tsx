@@ -38,7 +38,6 @@ import * as userActionHistory from '#/state/userActionHistory'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {EphemeralAccountSwitcherFromScope} from '#/components/EphemeralAccountSwitcher'
 import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
-import {Reply as Bubble} from '#/components/icons/Reply'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
 import * as Toast from '#/components/Toast'
@@ -54,6 +53,7 @@ import {
   PostControlButtonText,
 } from './PostControlButton'
 import {PostMenuButton} from './PostMenu'
+import {getReplyIcon} from './ReplyIcon'
 import {RepostButton} from './RepostButton'
 import {ShareMenuButton} from './ShareMenu'
 
@@ -451,7 +451,9 @@ function PostControlsInner({
           'Accessibility label for the reply button, verb form followed by number of replies and noun form',
       })}
       big={big}>
-      <PostControlButtonIcon icon={Bubble} />
+      <PostControlButtonIcon
+        icon={getReplyIcon(post.replyCount ?? 0, isReplyGatedPost)}
+      />
       <MetricCountLabel
         display={replyMetricsDisplay}
         count={post.replyCount ?? 0}
