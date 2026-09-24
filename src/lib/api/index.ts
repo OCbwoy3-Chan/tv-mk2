@@ -16,6 +16,7 @@ import {isNetworkError} from '#/lib/strings/errors'
 import {
   parseMarkdownLinks,
   shortenLinks,
+  stripAngleBracketedFacets,
   stripInvalidMentions,
 } from '#/lib/strings/rich-text-manip'
 import {logger} from '#/logger'
@@ -259,6 +260,8 @@ async function resolveRT(appviewClient: Client, richtext: RichText) {
       (a, b) => a.index.byteStart - b.index.byteStart,
     ) as typeof rt.facets
   }
+
+  rt = stripAngleBracketedFacets(rt, {removeBrackets: true})
 
   if (rt.facets?.length === 0) {
     delete rt.facets

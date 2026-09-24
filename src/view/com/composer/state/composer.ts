@@ -8,7 +8,11 @@ import {MAX_TAGS} from '#/lib/constants'
 import {type VideoTelemetry} from '#/lib/media/video/telemetry'
 import {type SelfLabel} from '#/lib/moderation'
 import {insertMentionAt} from '#/lib/strings/mention-manip'
-import {parseMarkdownLinks, shortenLinks} from '#/lib/strings/rich-text-manip'
+import {
+  parseMarkdownLinks,
+  shortenLinks,
+  stripAngleBracketedFacets,
+} from '#/lib/strings/rich-text-manip'
 import {
   isBskyPostUrl,
   postUriToRelativePath,
@@ -748,6 +752,7 @@ export function createComposerState({
    */
   if (initText) {
     initRichText.detectFacetsWithoutResolution()
+    stripAngleBracketedFacets(initRichText)
     const detectedExtUris = new Map<string, LinkFacetMatch>()
     const detectedPostUris = new Map<string, LinkFacetMatch>()
     if (initRichText.facets) {
@@ -797,6 +802,7 @@ export function createComposerState({
   } else if (initMention) {
     // highlight the mention
     initRichText.detectFacetsWithoutResolution()
+    stripAngleBracketedFacets(initRichText)
   }
 
   return {
@@ -841,10 +847,13 @@ const MARKDOWN_LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/
  * `[text](url)` to display text before measuring.
  */
 function getShortenedLength(rt: RichText) {
-  if (!MARKDOWN_LINK_RE.test(rt.text)) {
-    return shortenLinks(rt).graphemeLength
+  const measuredRt = stripAngleBracketedFacets(rt.clone(), {
+    removeBrackets: true,
+  })
+  if (!MARKDOWN_LINK_RE.test(measuredRt.text)) {
+    return shortenLinks(measuredRt).graphemeLength
   }
-  const {text} = parseMarkdownLinks(rt.text)
+  const {text} = parseMarkdownLinks(measuredRt.text)
   const newRt = new RichText({text})
   newRt.detectFacetsWithoutResolution()
   return shortenLinks(newRt).graphemeLength

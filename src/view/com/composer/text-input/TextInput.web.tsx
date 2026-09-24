@@ -31,6 +31,7 @@ import {splitGraphemes} from 'unicode-segmenter/grapheme'
 
 import {useColorSchemeStyle} from '#/lib/hooks/useColorSchemeStyle'
 import {blobToDataUri, isUriImage} from '#/lib/media/util'
+import {stripAngleBracketedFacets} from '#/lib/strings/rich-text-manip'
 import {useActorAutocompleteFn} from '#/state/queries/actor-autocomplete'
 import {
   type LinkFacetMatch,
@@ -399,6 +400,8 @@ export function TextInput({
             (a, b) => a.index.byteStart - b.index.byteStart,
           ) as typeof newRt.facets
         }
+
+        stripAngleBracketedFacets(newRt)
 
         /*
          * TipTap owns the editable DOM, so its transaction has already made

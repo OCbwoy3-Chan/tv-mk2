@@ -20,6 +20,7 @@ import {IMAGE_SIZE_CONFIG_POSTS} from '#/lib/constants'
 import {downloadAndResize} from '#/lib/media/manip'
 import {isUriImage} from '#/lib/media/util'
 import {getMentionAt, insertMentionAt} from '#/lib/strings/mention-manip'
+import {stripAngleBracketedFacets} from '#/lib/strings/rich-text-manip'
 import {useTheme} from '#/lib/ThemeContext'
 import {
   type LinkFacetMatch,
@@ -165,6 +166,7 @@ export function TextInput({
         ) as typeof newRt.facets
       }
 
+      stripAngleBracketedFacets(newRt)
       setRichText(newRt)
 
       // NOTE: BinaryFiddler

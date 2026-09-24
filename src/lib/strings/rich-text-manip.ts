@@ -1,5 +1,5 @@
 import {AppBskyRichtextFacet} from '@atproto/api'
-import {type RichText, UnicodeString} from '@bsky/sdk/richtext'
+import {RichText, UnicodeString} from '@bsky/sdk/richtext'
 
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -96,6 +96,86 @@ export function stripInvalidMentions(rt: RichText): RichText {
       return true
     })
   }
+  return rt
+}
+
+/** Remove link and mention facets inside angle brackets. Optionally remove the brackets too. */
+export function stripAngleBracketedFacets(
+  rt: RichText,
+  {removeBrackets = false}: {removeBrackets?: boolean} = {},
+): RichText {
+  const enclosedRanges: {byteStart: number; byteEnd: number}[] = []
+  const removableRanges: {byteStart: number; byteEnd: number}[] = []
+  for (const match of rt.text.matchAll(/<[^<>\n]+>/g)) {
+    const range = {
+      byteStart: rt.unicodeText.utf16IndexToUtf8Index(match.index + 1),
+      byteEnd: rt.unicodeText.utf16IndexToUtf8Index(
+        match.index + match[0].length - 1,
+      ),
+    }
+    enclosedRanges.push(range)
+
+    if (removeBrackets) {
+      const content = match[0].slice(1, -1).trim()
+      const candidate = new RichText({text: content})
+      candidate.detectFacetsWithoutResolution()
+      const parsed = parseMarkdownLinks(content)
+      if (
+        rt.facets?.some(
+          facet =>
+            facet.index.byteStart >= range.byteStart &&
+            facet.index.byteEnd <= range.byteEnd &&
+            facet.features.some(
+              feature =>
+                AppBskyRichtextFacet.isLink(feature) ||
+                AppBskyRichtextFacet.isMention(feature),
+            ),
+        ) ||
+        candidate.facets?.some(
+          facet =>
+            facet.index.byteStart === 0 &&
+            facet.index.byteEnd === candidate.length &&
+            facet.features.some(
+              feature =>
+                AppBskyRichtextFacet.isLink(feature) ||
+                AppBskyRichtextFacet.isMention(feature),
+            ),
+        ) ||
+        (parsed.facets.length === 1 &&
+          parsed.facets[0].index.byteStart === 0 &&
+          parsed.facets[0].index.byteEnd ===
+            new UnicodeString(parsed.text).length)
+      ) {
+        removableRanges.push(range)
+      }
+    }
+  }
+
+  if (rt.facets?.length && enclosedRanges.length) {
+    rt.facets = rt.facets.filter(facet => {
+      if (
+        !facet.features.some(
+          feature =>
+            AppBskyRichtextFacet.isLink(feature) ||
+            AppBskyRichtextFacet.isMention(feature),
+        )
+      ) {
+        return true
+      }
+
+      return !enclosedRanges.some(
+        range =>
+          facet.index.byteStart >= range.byteStart &&
+          facet.index.byteEnd <= range.byteEnd,
+      )
+    })
+  }
+
+  for (const range of removableRanges.reverse()) {
+    rt.delete(range.byteEnd, range.byteEnd + 1)
+    rt.delete(range.byteStart - 1, range.byteStart)
+  }
+
   return rt
 }
 
