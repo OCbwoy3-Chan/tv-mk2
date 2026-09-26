@@ -30,9 +30,10 @@ import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {mergeRefs} from '#/lib/merge-refs'
 import {ScrollProvider} from '#/lib/ScrollContext'
 import {
+  applyFacetSyntax,
   parseMarkdownLinks,
+  resolveSyntaxMentions,
   shortenLinks,
-  stripAngleBracketedFacets,
   stripInvalidMentions,
 } from '#/lib/strings/rich-text-manip'
 import {
@@ -636,7 +637,8 @@ export function MessagesList({
         (a, b) => a.index.byteStart - b.index.byteStart,
       ) as typeof rt.facets
 
-      rt = stripAngleBracketedFacets(rt, {removeBrackets: true})
+      rt = applyFacetSyntax(rt, {removeSyntax: true})
+      await resolveSyntaxMentions(rt, appviewClient)
 
       rt = shortenLinks(rt, true)
       rt = stripInvalidMentions(rt)

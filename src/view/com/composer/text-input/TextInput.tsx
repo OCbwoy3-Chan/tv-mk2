@@ -20,7 +20,10 @@ import {IMAGE_SIZE_CONFIG_POSTS} from '#/lib/constants'
 import {downloadAndResize} from '#/lib/media/manip'
 import {isUriImage} from '#/lib/media/util'
 import {getMentionAt, insertMentionAt} from '#/lib/strings/mention-manip'
-import {stripAngleBracketedFacets} from '#/lib/strings/rich-text-manip'
+import {
+  applyFacetSyntax,
+  isEscapedFacetSyntax,
+} from '#/lib/strings/rich-text-manip'
 import {useTheme} from '#/lib/ThemeContext'
 import {
   type LinkFacetMatch,
@@ -125,6 +128,7 @@ export function TextInput({
       const regex = /\[([^\]]+)\]\s*\(([^)]+)\)/g
       let match
       while ((match = regex.exec(newText)) !== null) {
+        if (isEscapedFacetSyntax(newText, match.index)) continue
         const [fullMatch, _linkText, linkUrl] = match
         const matchStart = match.index
         const matchEnd = matchStart + fullMatch.length
@@ -166,7 +170,7 @@ export function TextInput({
         ) as typeof newRt.facets
       }
 
-      stripAngleBracketedFacets(newRt)
+      applyFacetSyntax(newRt)
       setRichText(newRt)
 
       // NOTE: BinaryFiddler

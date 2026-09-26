@@ -31,7 +31,10 @@ import {splitGraphemes} from 'unicode-segmenter/grapheme'
 
 import {useColorSchemeStyle} from '#/lib/hooks/useColorSchemeStyle'
 import {blobToDataUri, isUriImage} from '#/lib/media/util'
-import {stripAngleBracketedFacets} from '#/lib/strings/rich-text-manip'
+import {
+  applyFacetSyntax,
+  isEscapedFacetSyntax,
+} from '#/lib/strings/rich-text-manip'
 import {useActorAutocompleteFn} from '#/state/queries/actor-autocomplete'
 import {
   type LinkFacetMatch,
@@ -360,6 +363,7 @@ export function TextInput({
         const regex = /\[([^\]]+)\]\s*\(([^)]+)\)/g
         let match
         while ((match = regex.exec(newText)) !== null) {
+          if (isEscapedFacetSyntax(newText, match.index)) continue
           const [fullMatch, _linkText, linkUrl] = match
           const matchStart = match.index
           const matchEnd = matchStart + fullMatch.length
@@ -401,7 +405,7 @@ export function TextInput({
           ) as typeof newRt.facets
         }
 
-        stripAngleBracketedFacets(newRt)
+        applyFacetSyntax(newRt)
 
         /*
          * TipTap owns the editable DOM, so its transaction has already made

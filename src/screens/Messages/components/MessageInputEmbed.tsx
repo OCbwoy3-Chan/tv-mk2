@@ -12,7 +12,7 @@ import {
   type CommonNavigatorParams,
   type NavigationProp,
 } from '#/lib/routes/types'
-import {stripAngleBracketedFacets} from '#/lib/strings/rich-text-manip'
+import {applyFacetSyntax} from '#/lib/strings/rich-text-manip'
 import {
   convertBskyAppUrlIfNeeded,
   getChatInviteCodeFromUrl,
@@ -102,7 +102,7 @@ export function useExtractEmbedFromFacets(
 ) {
   const rt = new RichTextAPI({text: message})
   rt.detectFacetsWithoutResolution()
-  stripAngleBracketedFacets(rt)
+  applyFacetSyntax(rt)
 
   let uriFromFacet: string | undefined
 

@@ -144,6 +144,7 @@ import {TagsBtn} from '#/view/com/composer/tags/TagsBtn'
 // TODO: Prevent naming components that coincide with RN primitives
 // due to linting false positives
 import {TextInput} from '#/view/com/composer/text-input/TextInput'
+import {TextSyntaxHelp} from '#/view/com/composer/TextSyntaxHelp'
 import {ThreadgateBtn} from '#/view/com/composer/threadgate/ThreadgateBtn'
 import {SubtitleDialogBtn} from '#/view/com/composer/videos/SubtitleDialog'
 import {VideoEmbedRedraft} from '#/view/com/composer/videos/VideoEmbedRedraft'
@@ -2283,6 +2284,7 @@ function ComposerTopBar({
             <Trans>Cancel</Trans>
           </ButtonText>
         </Button>
+        <TextSyntaxHelp />
         <View style={a.flex_1} />
         {isPublishing ? (
           <>
@@ -2870,11 +2872,13 @@ function ComposerFooter({
             <PlusIcon size="lg" />
           </Button>
         )}
-        <PostLanguageSelect
-          currentLanguages={currentLanguages}
-          onSelectLanguage={onSelectLanguage}
-          nudgeAt={languageNudgeAt}
-        />
+        <View style={[a.flex_row, a.align_center]}>
+          <PostLanguageSelect
+            currentLanguages={currentLanguages}
+            onSelectLanguage={onSelectLanguage}
+            nudgeAt={languageNudgeAt}
+          />
+        </View>
         <CharProgress
           count={post.shortenedGraphemeLength}
           style={{width: 65}}

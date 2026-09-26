@@ -9,9 +9,9 @@ import {type VideoTelemetry} from '#/lib/media/video/telemetry'
 import {type SelfLabel} from '#/lib/moderation'
 import {insertMentionAt} from '#/lib/strings/mention-manip'
 import {
+  applyFacetSyntax,
   parseMarkdownLinks,
   shortenLinks,
-  stripAngleBracketedFacets,
 } from '#/lib/strings/rich-text-manip'
 import {
   isBskyPostUrl,
@@ -752,7 +752,7 @@ export function createComposerState({
    */
   if (initText) {
     initRichText.detectFacetsWithoutResolution()
-    stripAngleBracketedFacets(initRichText)
+    applyFacetSyntax(initRichText)
     const detectedExtUris = new Map<string, LinkFacetMatch>()
     const detectedPostUris = new Map<string, LinkFacetMatch>()
     if (initRichText.facets) {
@@ -802,7 +802,7 @@ export function createComposerState({
   } else if (initMention) {
     // highlight the mention
     initRichText.detectFacetsWithoutResolution()
-    stripAngleBracketedFacets(initRichText)
+    applyFacetSyntax(initRichText)
   }
 
   return {
@@ -847,14 +847,22 @@ const MARKDOWN_LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/
  * `[text](url)` to display text before measuring.
  */
 function getShortenedLength(rt: RichText) {
-  const measuredRt = stripAngleBracketedFacets(rt.clone(), {
-    removeBrackets: true,
-  })
-  if (!MARKDOWN_LINK_RE.test(measuredRt.text)) {
-    return shortenLinks(measuredRt).graphemeLength
-  }
-  const {text} = parseMarkdownLinks(measuredRt.text)
-  const newRt = new RichText({text})
-  newRt.detectFacetsWithoutResolution()
-  return shortenLinks(newRt).graphemeLength
+  const parsed = MARKDOWN_LINK_RE.test(rt.text)
+    ? parseMarkdownLinks(rt.text)
+    : {text: rt.text, facets: []}
+  const measuredRt = new RichText({text: parsed.text})
+  measuredRt.detectFacetsWithoutResolution()
+  measuredRt.facets = [
+    ...(measuredRt.facets ?? []).filter(
+      facet =>
+        !parsed.facets.some(
+          markdown =>
+            facet.index.byteStart < markdown.index.byteEnd &&
+            facet.index.byteEnd > markdown.index.byteStart,
+        ),
+    ),
+    ...(parsed.facets as unknown as NonNullable<typeof measuredRt.facets>),
+  ]
+  applyFacetSyntax(measuredRt, {removeSyntax: true})
+  return shortenLinks(measuredRt, true).graphemeLength
 }

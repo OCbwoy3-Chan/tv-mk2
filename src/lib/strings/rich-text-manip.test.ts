@@ -1,86 +1,117 @@
+import {type Client} from '@atproto/lex'
 import {RichText} from '@bsky/sdk/richtext'
 
-import {parseMarkdownLinks, stripAngleBracketedFacets} from './rich-text-manip'
+import {
+  applyFacetSyntax,
+  parseMarkdownLinks,
+  resolveSyntaxMentions,
+} from './rich-text-manip'
 
-describe('stripAngleBracketedFacets', () => {
-  it('removes links and mentions enclosed in angle brackets', () => {
-    const text =
-      '🌟 < https://inside.example.com > https://outside.example.com < @inside.test > @outside.test'
-    const rt = new RichText({text})
-    rt.detectFacetsWithoutResolution()
-    const detected = rt.facets?.map(facet =>
-      rt.unicodeText.slice(facet.index.byteStart, facet.index.byteEnd),
+function prepare(text: string, removeSyntax = true) {
+  const parsed = parseMarkdownLinks(text)
+  const rt = new RichText({text: parsed.text})
+  rt.detectFacetsWithoutResolution()
+  rt.facets = [
+    ...(rt.facets ?? []).filter(
+      facet =>
+        !parsed.facets.some(
+          markdown =>
+            facet.index.byteStart < markdown.index.byteEnd &&
+            facet.index.byteEnd > markdown.index.byteStart,
+        ),
+    ),
+    ...(parsed.facets as unknown as NonNullable<typeof rt.facets>),
+  ]
+  return applyFacetSyntax(rt, {removeSyntax})
+}
+
+function facetTexts(rt: RichText) {
+  return rt.facets?.map(facet =>
+    rt.unicodeText.slice(facet.index.byteStart, facet.index.byteEnd),
+  )
+}
+
+describe('facet syntax', () => {
+  it('uses a backslash to keep a link or handle plain', () => {
+    const rt = prepare(
+      '🌟 \\file.com \\@person.test https://outside.example.com',
     )
-    expect(detected).toContain('https://inside.example.com')
-    expect(detected).toContain('@inside.test')
 
-    stripAngleBracketedFacets(rt)
-
-    expect(rt.text).toBe(text)
-    expect(
-      rt.facets?.map(facet =>
-        rt.unicodeText.slice(facet.index.byteStart, facet.index.byteEnd),
-      ),
-    ).toEqual(['https://outside.example.com', '@outside.test'])
+    expect(rt.text).toBe('🌟 file.com @person.test https://outside.example.com')
+    expect(facetTexts(rt)).toEqual(['https://outside.example.com'])
   })
 
-  it('removes a facet directly between brackets but keeps tag facets', () => {
-    const rt = new RichText({
-      text: '<example.com> #topic',
-      facets: [
-        {
-          index: {byteStart: 1, byteEnd: 12},
-          features: [
-            {$type: 'app.bsky.richtext.facet#link', uri: 'https://example.com'},
-          ],
-        },
-        {
-          index: {byteStart: 14, byteEnd: 20},
-          features: [{$type: 'app.bsky.richtext.facet#tag', tag: 'topic'}],
-        },
-      ],
-    })
+  it('collapses two backslashes to one literal backslash', () => {
+    const rt = prepare('\\\\file.com')
 
-    stripAngleBracketedFacets(rt)
+    expect(rt.text).toBe('\\file.com')
+    expect(facetTexts(rt)).toEqual([])
+  })
 
+  it('keeps an angle-enclosed link and handle faceted and removes the brackets', () => {
+    const rt = prepare('🌟 <example.com>! <@person.test>, <ordinary text>')
+
+    expect(rt.text).toBe('🌟 example.com! @person.test, <ordinary text>')
+    expect(facetTexts(rt)).toEqual(['example.com', '@person.test'])
     expect(rt.facets?.map(facet => facet.features[0].$type)).toEqual([
-      'app.bsky.richtext.facet#tag',
+      'app.bsky.richtext.facet#link',
+      'app.bsky.richtext.facet#mention',
     ])
   })
 
-  it('removes the brackets when publishing while preserving other facet offsets', () => {
-    const rt = new RichText({
-      text: '🌟 <https://inside.example.com> <@inside.test> https://outside.example.com <plain>',
-    })
-    rt.detectFacetsWithoutResolution()
+  it('leaves the punctuation inside brackets outside the link facet', () => {
+    const rt = prepare('<https://example.com/path.>')
 
-    stripAngleBracketedFacets(rt, {removeBrackets: true})
-
-    expect(rt.text).toBe(
-      '🌟 https://inside.example.com @inside.test https://outside.example.com <plain>',
-    )
-    expect(
-      rt.facets?.map(facet =>
-        rt.unicodeText.slice(facet.index.byteStart, facet.index.byteEnd),
-      ),
-    ).toEqual(['https://outside.example.com'])
+    expect(rt.text).toBe('https://example.com/path.')
+    expect(facetTexts(rt)).toEqual(['https://example.com/path'])
   })
 
-  it('removes parsed markdown links inside angle brackets', () => {
-    const parsed = parseMarkdownLinks('<[label](https://example.com)>')
-    const rt = new RichText({text: parsed.text})
-    rt.facets = [
-      {
-        index: parsed.facets[0].index,
-        features: [
-          {$type: 'app.bsky.richtext.facet#link', uri: 'https://example.com'},
-        ],
-      },
-    ]
+  it('leaves ordinary angle-bracketed text alone', () => {
+    const rt = prepare('<example.com notes>')
 
-    stripAngleBracketedFacets(rt, {removeBrackets: true})
+    expect(rt.text).toBe('<example.com notes>')
+    expect(facetTexts(rt)).toEqual([])
+  })
 
-    expect(rt.text).toBe('label')
-    expect(rt.facets).toEqual([])
+  it('lets a backslash escape the angle syntax', () => {
+    const rt = prepare('\\<example.com>')
+
+    expect(rt.text).toBe('<example.com>')
+    expect(facetTexts(rt)).toEqual([])
+  })
+
+  it('escapes masked markdown links without linking their destination', () => {
+    const rt = prepare('\\[label](example.com)')
+
+    expect(rt.text).toBe('[label](example.com)')
+    expect(facetTexts(rt)).toEqual([])
+  })
+
+  it('lets a doubled backslash precede a masked link', () => {
+    const rt = prepare('\\\\[label](example.com)')
+
+    expect(rt.text).toBe('\\label')
+    expect(facetTexts(rt)).toEqual(['label'])
+  })
+
+  it('preserves angle brackets in the editor while faceting their contents', () => {
+    const rt = prepare('<example.com>', false)
+
+    expect(rt.text).toBe('<example.com>')
+    expect(facetTexts(rt)).toEqual(['example.com'])
+  })
+
+  it('resolves an angle-enclosed handle before posting', async () => {
+    const rt = prepare('<@person.test>')
+    const client = {
+      call: jest.fn().mockResolvedValue({did: 'did:plc:person'}),
+    } as unknown as Client
+
+    await resolveSyntaxMentions(rt, client)
+
+    expect(rt.facets?.[0].features[0]).toMatchObject({
+      $type: 'app.bsky.richtext.facet#mention',
+      did: 'did:plc:person',
+    })
   })
 })

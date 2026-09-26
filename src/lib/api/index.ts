@@ -14,9 +14,10 @@ import {IMAGE_SIZE_CONFIG_POSTS} from '#/lib/constants'
 import {MAX_TAGS} from '#/lib/constants'
 import {isNetworkError} from '#/lib/strings/errors'
 import {
+  applyFacetSyntax,
   parseMarkdownLinks,
+  resolveSyntaxMentions,
   shortenLinks,
-  stripAngleBracketedFacets,
   stripInvalidMentions,
 } from '#/lib/strings/rich-text-manip'
 import {logger} from '#/logger'
@@ -261,7 +262,8 @@ async function resolveRT(appviewClient: Client, richtext: RichText) {
     ) as typeof rt.facets
   }
 
-  rt = stripAngleBracketedFacets(rt, {removeBrackets: true})
+  rt = applyFacetSyntax(rt, {removeSyntax: true})
+  await resolveSyntaxMentions(rt, appviewClient)
 
   if (rt.facets?.length === 0) {
     delete rt.facets
