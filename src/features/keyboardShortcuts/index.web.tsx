@@ -405,10 +405,12 @@ export function KeyboardShortcuts() {
         outline-offset: -2px !important;
         scroll-margin-top: 64px;
       }
-      [data-keyboard-navigation-scope][data-keyboard-navigation-selected="true"] {
+      [data-keyboard-navigation-scope][data-keyboard-navigation-selected="true"],
+      [data-keyboard-navigation-warning][data-keyboard-navigation-selected="true"] {
         outline: none !important;
       }
-      [data-keyboard-navigation-scope][data-keyboard-navigation-selected="true"]::after {
+      [data-keyboard-navigation-scope][data-keyboard-navigation-selected="true"]::after,
+      [data-keyboard-navigation-warning][data-keyboard-navigation-selected="true"]::after {
         content: '';
         position: absolute;
         inset: 0;

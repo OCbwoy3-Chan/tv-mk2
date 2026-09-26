@@ -143,6 +143,13 @@ function ContentHiderActive({
       style={[a.overflow_hidden, style]}>
       <ModerationDetailsDialog control={control} modcause={blur} />
       <Button
+        style={[a.rounded_sm, gtMobile && a.mt_xs]}
+        {...{
+          dataSet: {
+            keyboardNavigationItem: 'true',
+            keyboardNavigationWarning: 'true',
+          },
+        }}
         onPress={e => {
           e.preventDefault()
           e.stopPropagation()
@@ -172,7 +179,7 @@ function ContentHiderActive({
               a.gap_xs,
               a.rounded_sm,
               t.atoms.bg_contrast_25,
-              gtMobile && [a.gap_sm, a.py_lg, a.mt_xs, a.px_xl],
+              gtMobile && [a.gap_sm, a.py_lg, a.px_xl],
               (state.hovered || state.pressed) && t.atoms.bg_contrast_50,
             ]}>
             <desc.icon

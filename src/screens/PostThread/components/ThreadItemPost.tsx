@@ -320,7 +320,16 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
           }}
           disabled={overrides?.moderation === true}
           modui={moderation.ui('contentList')}
-          hiderStyle={[a.pl_0, a.pr_2xs, a.bg_transparent]}
+          hiderStyle={[
+            a.bg_transparent,
+            {
+              marginHorizontal: -horizontalPadding,
+              paddingLeft: horizontalPadding,
+              paddingRight: horizontalPadding + a.pr_2xs.paddingRight,
+              marginBottom: -bottomPadding,
+              paddingBottom: a.py_md.paddingBottom + bottomPadding,
+            },
+          ]}
           iconSize={avatarSize}
           iconStyles={[a.mr_xs]}
           profile={post.author}

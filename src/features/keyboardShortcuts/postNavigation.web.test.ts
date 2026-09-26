@@ -588,3 +588,49 @@ it('opens a chat message embed without following links in the message text', () 
   message.querySelector('[data-keyboard-navigation-embed]')!.remove()
   expect(getPostMediaTargets(message)).toEqual([])
 })
+
+it('navigates standalone warnings without adding targets inside posts', () => {
+  document.body.replaceChildren()
+  const warning = createPost({top: 20})
+  delete warning.dataset.keyboardNavigationPost
+  warning.dataset.keyboardNavigationItem = 'true'
+  warning.dataset.keyboardNavigationWarning = 'true'
+  const post = createPost({top: 100})
+  const nestedWarning = createPost({top: 150})
+  delete nestedWarning.dataset.keyboardNavigationPost
+  nestedWarning.dataset.keyboardNavigationItem = 'true'
+  nestedWarning.dataset.keyboardNavigationWarning = 'true'
+  post.appendChild(nestedWarning)
+  const nestedPost = createPost({top: 200})
+  post.appendChild(nestedPost)
+
+  expect(getNavigablePosts()).toEqual([warning, post])
+  nestedWarning.setAttribute('aria-hidden', 'true')
+  expect(getNavigablePosts()).toEqual([warning, post])
+})
+
+it('reveals an embed warning before opening the quoted post', () => {
+  document.body.replaceChildren()
+  const post = createPost({top: 20})
+  post.innerHTML = `
+    <div data-keyboard-navigation-embed>
+      <div data-keyboard-navigation-embed-target="quote">
+        <button role="button" data-keyboard-navigation-warning="true">Show</button>
+      </div>
+    </div>
+  `
+  const container = post.querySelector('[data-keyboard-navigation-embed-target]')!
+  const warning = container.querySelector('button')!
+  const onOpen = jest.fn()
+  warning.addEventListener('click', () => {
+    const quote = document.createElement('button')
+    quote.dataset.testid = 'quotedPostOpenBtn'
+    quote.addEventListener('click', onOpen)
+    container.appendChild(quote)
+  })
+
+  expect(openPostMediaTarget(getPostMediaTargets(post)[0])).toBe(true)
+  expect(onOpen).not.toHaveBeenCalled()
+  expect(openPostMediaTarget(getPostMediaTargets(post)[0])).toBe(true)
+  expect(onOpen).toHaveBeenCalledTimes(1)
+})
