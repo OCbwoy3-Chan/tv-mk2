@@ -112,23 +112,26 @@ let reducer = (state: State, action: Action): State => {
         return state
       }
       const existingAccount = state.accounts.find(a => a.did === accountDid)
-      if (
-        !existingAccount ||
-        JSON.stringify(existingAccount) === JSON.stringify(refreshedAccount)
-      ) {
+      if (!existingAccount) return state
+      const updatedAccount = refreshedAccount
+        ? {
+            ...refreshedAccount,
+            ...(existingAccount.addedAt !== undefined
+              ? {addedAt: existingAccount.addedAt}
+              : {}),
+            ...(existingAccount.lastActiveAt !== undefined
+              ? {lastActiveAt: existingAccount.lastActiveAt}
+              : {}),
+          }
+        : undefined
+      if (JSON.stringify(existingAccount) === JSON.stringify(updatedAccount)) {
         return state
       }
       return {
         accounts: state.accounts.map(a => {
           if (a.did === accountDid) {
-            if (refreshedAccount) {
-              return {
-                ...refreshedAccount,
-                ...(a.addedAt !== undefined ? {addedAt: a.addedAt} : {}),
-                ...(a.lastActiveAt !== undefined
-                  ? {lastActiveAt: a.lastActiveAt}
-                  : {}),
-              }
+            if (updatedAccount) {
+              return updatedAccount
             } else {
               return {
                 ...a,
@@ -149,11 +152,19 @@ let reducer = (state: State, action: Action): State => {
     }
     case 'switched-to-account': {
       const {newAccount, newBundle} = action
+      const existingAccount = state.accounts.find(a => a.did === newAccount.did)
+      const now = new Date().toISOString()
+      const mergedAccount = {
+        ...newAccount,
+        addedAt: existingAccount?.addedAt ?? newAccount.addedAt ?? now,
+        lastActiveAt: now,
+      }
       return {
-        accounts: [
-          newAccount,
-          ...state.accounts.filter(a => a.did !== newAccount.did),
-        ],
+        accounts: existingAccount
+          ? state.accounts.map(a =>
+              a.did === newAccount.did ? mergedAccount : a,
+            )
+          : [mergedAccount, ...state.accounts],
         currentBundleState: {
           did: newAccount.did,
           bundle: newBundle,

@@ -6,6 +6,7 @@ import {jwtDecode} from 'jwt-decode'
 import {agentToSessionAccountOrThrow} from '../agent'
 import {type Action, getInitialState, reducer, type State} from '../reducer'
 import {sessionDataToSessionAccount} from '../session-core'
+import {sortAccountItems} from '../sorting'
 import {type SessionAccount} from '../types'
 
 jest.mock('jwt-decode', () => ({
@@ -67,6 +68,83 @@ function makeAccount(
 }
 
 describe('session', () => {
+  it('preserves custom and date-added order when switching accounts', () => {
+    const accounts = ['charlie', 'alice', 'bob'].map((name, index) => ({
+      ...makeAccount(`https://${name}.com`, {
+        active: true,
+        did: `${name}-did`,
+        handle: `${name}.test`,
+        accessJwt: `${name}-access`,
+        refreshJwt: `${name}-refresh`,
+      }),
+      addedAt: `2026-01-0${index + 1}T00:00:00.000Z`,
+      lastActiveAt: '2026-01-01T00:00:00.000Z',
+    }))
+    const beforeSwitch = Date.now()
+    const state = run(getInitialState(accounts), [
+      {type: 'reordered-accounts', accounts},
+      {
+        type: 'switched-to-account',
+        newBundle: makeBundle('https://alice.com'),
+        newAccount: makeAccount('https://alice.com', {
+          active: true,
+          did: 'alice-did',
+          handle: 'alice.test',
+          accessJwt: 'new-access',
+          refreshJwt: 'new-refresh',
+        }),
+      },
+    ])
+
+    const handles = (sortBy: Parameters<typeof sortAccountItems>[1]) =>
+      sortAccountItems(state.accounts, sortBy, false).map(a => a.handle)
+    expect(handles('custom')).toEqual([
+      'charlie.test',
+      'alice.test',
+      'bob.test',
+    ])
+    expect(handles('dateAdded')).toEqual([
+      'bob.test',
+      'alice.test',
+      'charlie.test',
+    ])
+    expect(handles('dateModified')).toEqual([
+      'alice.test',
+      'charlie.test',
+      'bob.test',
+    ])
+    expect(handles('alphabetical')).toEqual([
+      'alice.test',
+      'bob.test',
+      'charlie.test',
+    ])
+    expect(state.accounts[1].addedAt).toBe(accounts[1].addedAt)
+    expect(Date.parse(state.accounts[1].lastActiveAt!)).toBeGreaterThanOrEqual(
+      beforeSwitch,
+    )
+    expect(state.accounts[1].refreshJwt).toBe('new-refresh')
+    expect(state.needsPersist).toBe(true)
+  })
+
+  it('records when a new account is added and activated', () => {
+    const beforeLogin = Date.now()
+    const state = reducer(getInitialState([]), {
+      type: 'switched-to-account',
+      newBundle: makeBundle('https://alice.com'),
+      newAccount: makeAccount('https://alice.com', {
+        active: true,
+        did: 'alice-did',
+        handle: 'alice.test',
+        accessJwt: 'access',
+        refreshJwt: 'refresh',
+      }),
+    })
+    expect(Date.parse(state.accounts[0].addedAt!)).toBeGreaterThanOrEqual(
+      beforeLogin,
+    )
+    expect(state.accounts[0].lastActiveAt).toBe(state.accounts[0].addedAt)
+  })
+
   it('does not throw when accessJwt is malformed', () => {
     mockedJwtDecode.mockImplementationOnce(() => {
       throw new Error('Invalid token specified: missing part #2')
@@ -325,29 +403,14 @@ describe('session', () => {
       },
     ])
     expect(state.accounts.length).toBe(2)
-    // Alice should float upwards.
-    expect(state.accounts[0].did).toBe('alice-did')
-    expect(state.accounts[0].handle).toBe('alice-updated.test')
+    // Switching preserves the saved account order.
+    expect(state.accounts[1].did).toBe('alice-did')
+    expect(state.accounts[1].handle).toBe('alice-updated.test')
     expect(state.currentBundleState.did).toBe('alice-did')
     expect(state.currentBundleState.bundle).toBe(aliceBundle2)
     expect(printState(state)).toMatchInlineSnapshot(`
       {
         "accounts": [
-          {
-            "accessJwt": "alice-access-jwt-2",
-            "active": true,
-            "did": "alice-did",
-            "email": undefined,
-            "emailAuthFactor": false,
-            "emailConfirmed": false,
-            "handle": "alice-updated.test",
-            "isSelfHosted": true,
-            "pdsUrl": undefined,
-            "refreshJwt": "alice-refresh-jwt-2",
-            "service": "https://alice.com/",
-            "signupQueued": false,
-            "status": undefined,
-          },
           {
             "accessJwt": "bob-access-jwt-1",
             "active": true,
@@ -360,6 +423,21 @@ describe('session', () => {
             "pdsUrl": undefined,
             "refreshJwt": "bob-refresh-jwt-1",
             "service": "https://bob.com/",
+            "signupQueued": false,
+            "status": undefined,
+          },
+          {
+            "accessJwt": "alice-access-jwt-2",
+            "active": true,
+            "did": "alice-did",
+            "email": undefined,
+            "emailAuthFactor": false,
+            "emailConfirmed": false,
+            "handle": "alice-updated.test",
+            "isSelfHosted": true,
+            "pdsUrl": undefined,
+            "refreshJwt": "alice-refresh-jwt-2",
+            "service": "https://alice.com/",
             "signupQueued": false,
             "status": undefined,
           },
@@ -413,21 +491,6 @@ describe('session', () => {
             "status": undefined,
           },
           {
-            "accessJwt": "alice-access-jwt-2",
-            "active": true,
-            "did": "alice-did",
-            "email": undefined,
-            "emailAuthFactor": false,
-            "emailConfirmed": false,
-            "handle": "alice-updated.test",
-            "isSelfHosted": true,
-            "pdsUrl": undefined,
-            "refreshJwt": "alice-refresh-jwt-2",
-            "service": "https://alice.com/",
-            "signupQueued": false,
-            "status": undefined,
-          },
-          {
             "accessJwt": "bob-access-jwt-1",
             "active": true,
             "did": "bob-did",
@@ -439,6 +502,21 @@ describe('session', () => {
             "pdsUrl": undefined,
             "refreshJwt": "bob-refresh-jwt-1",
             "service": "https://bob.com/",
+            "signupQueued": false,
+            "status": undefined,
+          },
+          {
+            "accessJwt": "alice-access-jwt-2",
+            "active": true,
+            "did": "alice-did",
+            "email": undefined,
+            "emailAuthFactor": false,
+            "emailConfirmed": false,
+            "handle": "alice-updated.test",
+            "isSelfHosted": true,
+            "pdsUrl": undefined,
+            "refreshJwt": "alice-refresh-jwt-2",
+            "service": "https://alice.com/",
             "signupQueued": false,
             "status": undefined,
           },
@@ -489,21 +567,6 @@ describe('session', () => {
           {
             "accessJwt": undefined,
             "active": true,
-            "did": "alice-did",
-            "email": undefined,
-            "emailAuthFactor": false,
-            "emailConfirmed": false,
-            "handle": "alice-updated.test",
-            "isSelfHosted": true,
-            "pdsUrl": undefined,
-            "refreshJwt": undefined,
-            "service": "https://alice.com/",
-            "signupQueued": false,
-            "status": undefined,
-          },
-          {
-            "accessJwt": undefined,
-            "active": true,
             "did": "bob-did",
             "email": undefined,
             "emailAuthFactor": false,
@@ -513,6 +576,21 @@ describe('session', () => {
             "pdsUrl": undefined,
             "refreshJwt": undefined,
             "service": "https://bob.com/",
+            "signupQueued": false,
+            "status": undefined,
+          },
+          {
+            "accessJwt": undefined,
+            "active": true,
+            "did": "alice-did",
+            "email": undefined,
+            "emailAuthFactor": false,
+            "emailConfirmed": false,
+            "handle": "alice-updated.test",
+            "isSelfHosted": true,
+            "pdsUrl": undefined,
+            "refreshJwt": undefined,
+            "service": "https://alice.com/",
             "signupQueued": false,
             "status": undefined,
           },
@@ -1811,7 +1889,10 @@ function run(initialState: State, actions: Action[]): State {
 
 function printState(state: State) {
   return {
-    accounts: state.accounts,
+    // Sorting timestamps are asserted separately from the auth snapshots.
+    accounts: state.accounts.map(
+      ({addedAt, lastActiveAt, ...account}) => account,
+    ),
     currentBundleState: {
       bundle: {service: state.currentBundleState.bundle.service},
       did: state.currentBundleState.did,
