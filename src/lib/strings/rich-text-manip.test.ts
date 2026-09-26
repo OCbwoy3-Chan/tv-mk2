@@ -41,6 +41,13 @@ describe('facet syntax', () => {
     expect(facetTexts(rt)).toEqual(['https://outside.example.com'])
   })
 
+  it('uses a backslash to keep hashtags and cashtags plain', () => {
+    const rt = prepare('🌟 \\#topic \\$TSLA #linked $AAPL')
+
+    expect(rt.text).toBe('🌟 #topic $TSLA #linked $AAPL')
+    expect(facetTexts(rt)).toEqual(['#linked', '$AAPL'])
+  })
+
   it('collapses two backslashes to one literal backslash', () => {
     const rt = prepare('\\\\file.com')
 
@@ -56,6 +63,17 @@ describe('facet syntax', () => {
     expect(rt.facets?.map(facet => facet.features[0].$type)).toEqual([
       'app.bsky.richtext.facet#link',
       'app.bsky.richtext.facet#mention',
+    ])
+  })
+
+  it('facets angle-enclosed hashtags and cashtags', () => {
+    const rt = prepare('prefix<#topic.> and <$TSLA>!')
+
+    expect(rt.text).toBe('prefix#topic. and $TSLA!')
+    expect(facetTexts(rt)).toEqual(['#topic', '$TSLA'])
+    expect(rt.facets?.map(facet => facet.features[0].$type)).toEqual([
+      'app.bsky.richtext.facet#tag',
+      'app.bsky.richtext.facet#tag',
     ])
   })
 
@@ -77,6 +95,13 @@ describe('facet syntax', () => {
     const rt = prepare('\\<example.com>')
 
     expect(rt.text).toBe('<example.com>')
+    expect(facetTexts(rt)).toEqual([])
+  })
+
+  it('lets a backslash escape enclosed tags', () => {
+    const rt = prepare('\\<#topic> \\<$TSLA>')
+
+    expect(rt.text).toBe('<#topic> <$TSLA>')
     expect(facetTexts(rt)).toEqual([])
   })
 

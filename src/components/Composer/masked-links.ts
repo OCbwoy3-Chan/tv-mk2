@@ -1,7 +1,8 @@
 import {type TapperFacet} from '@bsky.app/tapper'
+import {CASHTAG_REGEX} from '@bsky/sdk/richtext'
 
 import {
-  getEnclosedLinkOrMention,
+  getEnclosedFacet,
   isEscapedFacetSyntax,
   isInsideEscapedMarkdownLink,
 } from '#/lib/strings/rich-text-manip'
@@ -16,8 +17,9 @@ export const maskedLinkFacet = {
     !isEscapedFacetSyntax(match.input ?? '', match.index ?? 0),
 }
 
-const angleFeature = (value: string) =>
-  getEnclosedLinkOrMention(value)?.features[0]
+const angleFeature = (value: string) => getEnclosedFacet(value)?.features[0]
+
+export const cashtagFacet = CASHTAG_REGEX
 
 export const angleLinkFacet = {
   pattern: /<([^<>\n]+)>/g,
@@ -31,6 +33,13 @@ export const angleMentionFacet = {
   validate: (match: RegExpMatchArray) =>
     !isEscapedFacetSyntax(match.input ?? '', match.index ?? 0) &&
     bsky.isType(app.bsky.richtext.facet.mention, angleFeature(match[1])),
+}
+
+export const angleTagFacet = {
+  pattern: /<([^<>\n]+)>/g,
+  validate: (match: RegExpMatchArray) =>
+    !isEscapedFacetSyntax(match.input ?? '', match.index ?? 0) &&
+    bsky.isType(app.bsky.richtext.facet.tag, angleFeature(match[1])),
 }
 
 export function escapeAwareFacet(

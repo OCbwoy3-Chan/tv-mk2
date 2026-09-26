@@ -3,8 +3,8 @@ import {RichText} from '@bsky/sdk/richtext'
 
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
-import {getEnclosedLinkOrMention} from './rich-text-manip'
-import {linkRequiresWarning, toShortUrl} from './url-helpers'
+import {getEnclosedFacet} from './rich-text-manip'
+import {linkRequiresWarning} from './url-helpers'
 
 export function richTextToString(rt: RichText, loose: boolean): string {
   const {text, facets} = rt
@@ -33,46 +33,68 @@ export function richTextToString(rt: RichText, loose: boolean): string {
   return result
 }
 
-/**
- * Serializes rich text into markdown-link syntax without changing a link's
- * visible label. This preserves even same-domain labels instead of replacing
- * them with the destination URL.
- */
-export function richTextToStringPreservingLinks(rt: RichText): string {
-  return serializeRichTextPreservingLinks(rt, false)
-}
-
-/** Keep link facets and escape plain text that would gain a facet on repost. */
+/** Preserve a post's text and facets when copying or redrafting it. */
 export function richTextToRedraftString(rt: RichText): string {
-  return serializeRichTextPreservingLinks(rt, true)
-}
+  if (!rt.facets?.length) return escapeUnfacetedText(rt.text)
 
-function serializeRichTextPreservingLinks(
-  rt: RichText,
-  escapeUnfaceted: boolean,
-): string {
-  if (!rt.facets?.length) {
-    return escapeUnfaceted ? escapeUnfacetedText(rt.text) : rt.text
-  }
-
+  const detected = new RichText({text: rt.text})
+  detected.detectFacetsWithoutResolution()
   let result = ''
 
   for (const segment of rt.segments()) {
-    const link = segment.link
-    if (link && bsky.matches(app.bsky.richtext.facet.link, link)) {
-      result +=
-        segment.text === link.uri || segment.text === toShortUrl(link.uri)
-          ? link.uri
-          : `[${segment.text}](${link.uri})`
-    } else {
-      result +=
-        escapeUnfaceted && !segment.facet
-          ? escapeUnfacetedText(segment.text)
-          : segment.text
+    const facet = segment.facet
+    if (!facet) {
+      result += escapeUnfacetedText(segment.text)
+      continue
     }
+
+    const automatic = detected.facets?.some(
+      current =>
+        current.index.byteStart === facet.index.byteStart &&
+        current.index.byteEnd === facet.index.byteEnd &&
+        sharesFeature(facet, current),
+    )
+    if (automatic) {
+      result += segment.text
+      continue
+    }
+
+    const enclosed = getEnclosedFacet(segment.text)
+    if (enclosed && sharesFeature(facet, enclosed)) {
+      result += `<${segment.text}>`
+      continue
+    }
+
+    const link = facet.features.find(AppBskyRichtextFacet.isLink)
+    result += link ? `[${segment.text}](${link.uri})` : segment.text
   }
 
   return result
+}
+
+function sharesFeature(
+  original: AppBskyRichtextFacet.Main,
+  detected: AppBskyRichtextFacet.Main,
+): boolean {
+  return original.features.some(feature =>
+    detected.features.some(candidate => {
+      if (AppBskyRichtextFacet.isLink(feature)) {
+        return (
+          AppBskyRichtextFacet.isLink(candidate) &&
+          candidate.uri === feature.uri
+        )
+      }
+      if (AppBskyRichtextFacet.isTag(feature)) {
+        return (
+          AppBskyRichtextFacet.isTag(candidate) && candidate.tag === feature.tag
+        )
+      }
+      return (
+        AppBskyRichtextFacet.isMention(feature) &&
+        AppBskyRichtextFacet.isMention(candidate)
+      )
+    }),
+  )
 }
 
 function escapeUnfacetedText(text: string): string {
@@ -85,7 +107,7 @@ function escapeUnfacetedText(text: string): string {
   }
 
   for (const match of text.matchAll(/<([^<>\n]+)>/g)) {
-    if (!getEnclosedLinkOrMention(match[1])) continue
+    if (!getEnclosedFacet(match[1])) continue
     escapedStarts.add(match.index)
     syntaxRanges.push({start: match.index, end: match.index + match[0].length})
   }
@@ -93,15 +115,6 @@ function escapeUnfacetedText(text: string): string {
   const detected = new RichText({text})
   detected.detectFacetsWithoutResolution()
   for (const facet of detected.facets ?? []) {
-    if (
-      !facet.features.some(
-        feature =>
-          AppBskyRichtextFacet.isLink(feature) ||
-          AppBskyRichtextFacet.isMention(feature),
-      )
-    ) {
-      continue
-    }
     const start = detected.unicodeText.slice(0, facet.index.byteStart).length
     if (
       !syntaxRanges.some(range => start >= range.start && start < range.end)

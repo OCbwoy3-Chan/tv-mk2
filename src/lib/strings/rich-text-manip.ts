@@ -101,14 +101,6 @@ export function stripInvalidMentions(rt: RichText): RichText {
   return rt
 }
 
-function hasLinkOrMention(facet: {features: {$type?: string}[]}): boolean {
-  return facet.features.some(
-    feature =>
-      AppBskyRichtextFacet.isLink(feature) ||
-      AppBskyRichtextFacet.isMention(feature),
-  )
-}
-
 /** True when the character at index is preceded by an odd backslash run. */
 export function isEscapedFacetSyntax(text: string, index: number): boolean {
   let backslashes = 0
@@ -136,24 +128,22 @@ export function isInsideEscapedMarkdownLink(
   return false
 }
 
-function firstLinkOrMention(text: string) {
+function firstDetectedFacet(text: string) {
   const candidate = new RichText({text})
   candidate.detectFacetsWithoutResolution()
-  return candidate.facets?.find(
-    facet => facet.index.byteStart === 0 && hasLinkOrMention(facet),
-  )
+  return candidate.facets?.find(facet => facet.index.byteStart === 0)
 }
 
-/** Detect a link or handle that fills angle brackets, allowing trailing punctuation. */
-export function getEnclosedLinkOrMention(text: string) {
+/** Detect a facet that fills angle brackets, allowing trailing punctuation. */
+export function getEnclosedFacet(text: string) {
   const trimmed = text.trim()
-  const facet = firstLinkOrMention(trimmed)
+  const facet = firstDetectedFacet(trimmed)
   if (!facet) return undefined
   const trailing = new UnicodeString(trimmed).slice(facet.index.byteEnd)
   return /^[\p{P}]*$/u.test(trailing) ? facet : undefined
 }
 
-/** Apply backslash escapes and angle link syntax to detected facets. */
+/** Apply backslash escapes and angle syntax to detected facets. */
 export function applyFacetSyntax(
   rt: RichText,
   {removeSyntax = false}: {removeSyntax?: boolean} = {},
@@ -175,7 +165,7 @@ export function applyFacetSyntax(
       const rest = text.slice(end)
       const markdown = /^\[[^\]]+\]\(([^)]+)\)/.exec(rest)
       const angle = /^<[^<>\n]+>/.exec(rest)
-      const detected = firstLinkOrMention(rest)
+      const detected = firstDetectedFacet(rest)
       const length =
         markdown?.[0].length ??
         angle?.[0].length ??
@@ -213,14 +203,14 @@ export function applyFacetSyntax(
     const content = match[0].slice(1, -1)
     const trimmed = content.trim()
     const contentStart = match.index + 1 + content.indexOf(trimmed)
-    const facet = getEnclosedLinkOrMention(trimmed)
+    const facet = getEnclosedFacet(trimmed)
     const contentByteStart = toByte(contentStart)
     const contentByteEnd = toByte(contentStart + trimmed.length)
     const existing = rt.facets?.some(
       current =>
         current.index.byteStart === contentByteStart &&
         current.index.byteEnd === contentByteEnd &&
-        hasLinkOrMention(current),
+        current.features.length > 0,
     )
     if (!facet && !existing) continue
 

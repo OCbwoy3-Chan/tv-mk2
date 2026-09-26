@@ -43,6 +43,8 @@ import {IS_IOS, IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
 import {
   angleLinkFacet,
   angleMentionFacet,
+  angleTagFacet,
+  cashtagFacet,
   escapeAwareFacet,
   maskedLinkFacet,
   normalizeComposerLink,
@@ -145,11 +147,13 @@ export function Composer({
         ? {
             mention: escapeAwareFacet(facets.mention),
             tag: escapeAwareFacet(facets.tag),
+            cashtag: escapeAwareFacet(cashtagFacet),
             url: escapeAwareFacet(facets.url),
           }
         : {
             mention: escapeAwareFacet(facets.mention),
             tag: escapeAwareFacet(facets.tag),
+            cashtag: escapeAwareFacet(cashtagFacet),
             url: escapeAwareFacet(facets.url),
             emoji: escapeAwareFacet(facets.emoji),
           }),
@@ -157,6 +161,7 @@ export function Composer({
         ? {
             angleLink: angleLinkFacet,
             angleMention: angleMentionFacet,
+            angleTag: angleTagFacet,
             maskedLink: maskedLinkFacet,
           }
         : {}),
@@ -434,6 +439,8 @@ export function Composer({
         activeFacet.type !== 'url' &&
         activeFacet.type !== 'angleLink' &&
         activeFacet.type !== 'angleMention' &&
+        activeFacet.type !== 'angleTag' &&
+        activeFacet.type !== 'cashtag' &&
         activeFacet.type !== 'maskedLink' && (
           <AutocompleteInner
             inverted={autocompletePlacement?.startsWith('top')}

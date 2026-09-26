@@ -11,9 +11,9 @@ export function TextSyntaxHelp() {
   const label = l`Text formatting help`
   const slash = String.fromCharCode(92)
   const help = [
-    l`${slash} keeps links and handles plain.`,
-    l`<...> sets a facet’s boundary.`,
-    l`[label](url) makes a masked link.`,
+    l`[label](url) makes a masked link`,
+    l`${slash}... keeps facets like links, hashtags, and mentions plain`,
+    l`<...> contains a facet`,
   ].join('\n')
 
   return (

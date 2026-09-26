@@ -3,6 +3,8 @@ import {facets, Tapper} from '@bsky.app/tapper'
 import {
   angleLinkFacet,
   angleMentionFacet,
+  angleTagFacet,
+  cashtagFacet,
   escapeAwareFacet,
   maskedLinkFacet,
   normalizeComposerLink,
@@ -16,10 +18,12 @@ function createTapper() {
     facets: {
       mention: escapeAwareFacet(facets.mention),
       tag: escapeAwareFacet(facets.tag),
+      cashtag: escapeAwareFacet(cashtagFacet),
       url: escapeAwareFacet(facets.url),
       emoji: escapeAwareFacet(facets.emoji),
       angleLink: angleLinkFacet,
       angleMention: angleMentionFacet,
+      angleTag: angleTagFacet,
       maskedLink: maskedLinkFacet,
     },
   })
@@ -118,6 +122,31 @@ describe('composer masked link facets', () => {
   it('does not highlight an escaped angle link', () => {
     const tapper = createTapper()
     tapper.handleTextChange('\\<example.com>')
+
+    expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
+  })
+
+  it('highlights enclosed hashtags and cashtags', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('<#topic> <$TSLA>')
+
+    expect(
+      tapper.nodes.filter(node => node.type === 'facet').map(node => node.raw),
+    ).toEqual(['<#topic>', '<$TSLA>'])
+  })
+
+  it('highlights a plain cashtag', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('$TSLA')
+
+    expect(
+      tapper.nodes.filter(node => node.type === 'facet').map(node => node.raw),
+    ).toEqual(['$TSLA'])
+  })
+
+  it('keeps escaped hashtags and cashtags plain', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('\\#topic \\$TSLA \\<#other> \\<$AAPL>')
 
     expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
   })

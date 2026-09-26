@@ -21,8 +21,9 @@ import {Plugin, PluginKey} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
 
 import {
-  getEnclosedLinkOrMention,
+  getEnclosedFacet,
   isEscapedFacetSyntax,
+  isInsideEscapedMarkdownLink,
 } from '#/lib/strings/rich-text-manip'
 import {isValidDomain} from '#/lib/strings/url-helpers'
 
@@ -49,6 +50,7 @@ function getDecorations(doc: ProsemirrorNode) {
       const markdownRegex = /\[([^\]]+)\]\s*\(([^)]+)\)/g
       let markdownMatch
       while ((markdownMatch = markdownRegex.exec(textContent)) !== null) {
+        if (isEscapedFacetSyntax(textContent, markdownMatch.index)) continue
         const from = markdownMatch.index
         const to = from + markdownMatch[0].length
         decorations.push(
@@ -63,7 +65,7 @@ function getDecorations(doc: ProsemirrorNode) {
 
         const content = match[1]
         const trimmed = content.trim()
-        const facet = getEnclosedLinkOrMention(trimmed)
+        const facet = getEnclosedFacet(trimmed)
         if (!facet) continue
 
         const contentStart = match.index + 1 + content.indexOf(trimmed)
@@ -80,6 +82,7 @@ function getDecorations(doc: ProsemirrorNode) {
 
       // regular links
       iterateUris(textContent, (from, to) => {
+        if (isInsideEscapedMarkdownLink(textContent, from, to)) return
         decorations.push(
           Decoration.inline(pos + from, pos + to, {
             class: 'autolink',
