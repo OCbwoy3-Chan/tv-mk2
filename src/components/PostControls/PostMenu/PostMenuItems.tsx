@@ -32,7 +32,10 @@ import {
   type CommonNavigatorParams,
   type NavigationProp,
 } from '#/lib/routes/types'
-import {richTextToStringPreservingLinks} from '#/lib/strings/rich-text-helpers'
+import {
+  richTextToRedraftString,
+  richTextToStringPreservingLinks,
+} from '#/lib/strings/rich-text-helpers'
 import {toShareUrl} from '#/lib/strings/url-helpers'
 import {useTranslate} from '#/lib/translation'
 import {getPostLanguageTags} from '#/locale/helpers'
@@ -387,7 +390,7 @@ let PostMenuItems = ({
     }
 
     openComposer({
-      text: richTextToStringPreservingLinks(richText),
+      text: richTextToRedraftString(richText),
       tags: record.tags,
       imageUris,
       videoUri,

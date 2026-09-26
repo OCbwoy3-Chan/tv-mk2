@@ -14,12 +14,16 @@
  * the facet-set.
  */
 
-import {URL_REGEX} from '@bsky/sdk/richtext'
+import {UnicodeString, URL_REGEX} from '@bsky/sdk/richtext'
 import {Mark} from '@tiptap/core'
 import {type Node as ProsemirrorNode} from '@tiptap/pm/model'
 import {Plugin, PluginKey} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
 
+import {
+  getEnclosedLinkOrMention,
+  isEscapedFacetSyntax,
+} from '#/lib/strings/rich-text-manip'
 import {isValidDomain} from '#/lib/strings/url-helpers'
 
 export const LinkDecorator = Mark.create({
@@ -47,6 +51,26 @@ function getDecorations(doc: ProsemirrorNode) {
       while ((markdownMatch = markdownRegex.exec(textContent)) !== null) {
         const from = markdownMatch.index
         const to = from + markdownMatch[0].length
+        decorations.push(
+          Decoration.inline(pos + from, pos + to, {
+            class: 'autolink',
+          }),
+        )
+      }
+
+      for (const match of textContent.matchAll(/<([^<>\n]+)>/g)) {
+        if (isEscapedFacetSyntax(textContent, match.index)) continue
+
+        const content = match[1]
+        const trimmed = content.trim()
+        const facet = getEnclosedLinkOrMention(trimmed)
+        if (!facet) continue
+
+        const contentStart = match.index + 1 + content.indexOf(trimmed)
+        const unicode = new UnicodeString(trimmed)
+        const from =
+          contentStart + unicode.slice(0, facet.index.byteStart).length
+        const to = contentStart + unicode.slice(0, facet.index.byteEnd).length
         decorations.push(
           Decoration.inline(pos + from, pos + to, {
             class: 'autolink',

@@ -1,6 +1,10 @@
 import {RichText} from '@bsky/sdk/richtext'
 
-import {richTextToStringPreservingLinks} from './rich-text-helpers'
+import {
+  richTextToRedraftString,
+  richTextToStringPreservingLinks,
+} from './rich-text-helpers'
+import {applyFacetSyntax, parseMarkdownLinks} from './rich-text-manip'
 import {toShortUrl} from './url-helpers'
 
 describe('richTextToStringPreservingLinks', () => {
@@ -73,4 +77,46 @@ it('restores an ordinary truncated URL without masked-link syntax', () => {
     ],
   })
   expect(richTextToStringPreservingLinks(rt)).toBe(uri)
+})
+
+describe('richTextToRedraftString', () => {
+  it('escapes plain links, handles, and syntax without changing posted text', () => {
+    const text =
+      '🌟 example.com @person.test \\example.org [label](site.test) <foo.com>'
+    const redraft = richTextToRedraftString(new RichText({text}))
+
+    expect(redraft).toBe(
+      '🌟 \\example.com \\@person.test \\\\example.org \\[label](site.test) \\<foo.com>',
+    )
+
+    const parsed = parseMarkdownLinks(redraft)
+    const repost = new RichText({text: parsed.text})
+    repost.detectFacetsWithoutResolution()
+    applyFacetSyntax(repost, {removeSyntax: true})
+
+    expect(repost.text).toBe(text)
+    expect(repost.facets).toBeUndefined()
+  })
+
+  it('preserves existing link facets while escaping adjacent plain links', () => {
+    const text = 'example.com and docs.example'
+    const richText = new RichText({
+      text,
+      facets: [
+        {
+          index: {byteStart: 16, byteEnd: 28},
+          features: [
+            {
+              $type: 'app.bsky.richtext.facet#link',
+              uri: 'https://docs.example/guide',
+            },
+          ],
+        },
+      ],
+    })
+
+    expect(richTextToRedraftString(richText)).toBe(
+      '\\example.com and [docs.example](https://docs.example/guide)',
+    )
+  })
 })
