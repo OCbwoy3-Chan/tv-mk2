@@ -4,93 +4,52 @@ import {
   DEFAULT_APPVIEW_AUDIENCE,
   hasOAuthAppViewScope,
   hasOAuthPermission,
-  OPTIONAL_OAUTH_SCOPES,
 } from '../oauth-config'
 
-describe('OAuth permission configuration', () => {
-  it('requests app permission sets without account-management access', () => {
-    const scopes = buildOAuthScope().split(' ')
-    expect(scopes).toContain(
-      `include:app.bsky.authFullApp?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
-    )
-    expect(scopes).toContain('include:app.witchsky.theme.authFull')
-    expect(
-      scopes.some(scope => scope.startsWith('repo:app.witchsky.theme.')),
-    ).toBe(false)
-    expect(scopes.some(scope => scope.startsWith('transition:'))).toBe(false)
-    for (const scope of Object.values(OPTIONAL_OAUTH_SCOPES))
-      expect(scopes).not.toContain(scope)
-    expect(scopes).not.toContain('repo:*')
-  })
+const prodScope =
+  'atproto transition:generic transition:email transition:chat.bsky'
 
-  it('maps permission sets to the selected services and advertises optional access', () => {
-    const appview = 'did:web:blacksky.app#bsky_appview'
-    const chat = 'did:web:chat.example.com#bsky_chat'
+it.each([false, true])(
+  'preserves prod client identity and scopes (native=%s)',
+  native => {
     const metadata = createOAuthMetadata({
-      baseUrl: 'https://canary.witchsky.app',
-      appview,
-      chat,
+      baseUrl: 'https://witchsky.app',
+      native,
     })
-    const url = new URL(metadata.client_id)
-    expect(url.searchParams.get('appview')).toBe(appview)
-    expect(url.searchParams.get('chat')).toBe(chat)
+    expect(metadata.client_id).toBe(
+      `https://witchsky.app/oauth-client-metadata${native ? '-native' : ''}.json`,
+    )
+    expect(metadata.scope).toBe(prodScope)
     expect(metadata.redirect_uris).toEqual([
-      'https://canary.witchsky.app/auth/web/callback',
+      native
+        ? 'app.witchsky:/auth/callback'
+        : 'https://witchsky.app/auth/web/callback',
     ])
-    expect(metadata.scope).toContain(
-      `include:app.bsky.authFullApp?aud=${encodeURIComponent(appview)}`,
-    )
-    expect(metadata.scope).toContain(
-      `include:chat.bsky.authFullChatClient?aud=${encodeURIComponent(chat)}`,
-    )
-    for (const method of [
-      'chat.bsky.convo.getUnreadCounts',
-      'chat.bsky.group.updateJoinRequestsRead',
-      'chat.bsky.notification.getPreferences',
-      'chat.bsky.notification.putPreferences',
-    ]) {
-      expect(metadata.scope.split(' ')).toContain(
-        `rpc:${method}?aud=${encodeURIComponent(chat)}`,
-      )
-    }
-    for (const method of [
-      'app.bsky.actor.getPreferences',
-      'app.bsky.actor.putPreferences',
-    ]) {
-      expect(metadata.scope.split(' ')).toContain(
-        `rpc:${method}?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
-      )
-      expect(buildOAuthScope().split(' ')).not.toContain(
-        `rpc:${method}?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
-      )
-    }
-    expect(metadata.scope).toContain(OPTIONAL_OAUTH_SCOPES.email)
-    expect(buildOAuthScope(appview, chat, ['handle'])).toContain(
-      OPTIONAL_OAUTH_SCOPES.handle,
-    )
-    expect(buildOAuthScope(appview, chat, ['handle'])).not.toContain(
-      OPTIONAL_OAUTH_SCOPES.email,
-    )
-  })
+  },
+)
 
-  it('keeps the native callback fixed and rejects malformed audiences', () => {
-    expect(
-      createOAuthMetadata({baseUrl: 'https://witchsky.app', native: true})
-        .redirect_uris,
-    ).toEqual(['app.witchsky:/auth/callback'])
-    for (const appview of [
-      '*',
-      'did:web:example.com',
-      'did:web:example.com#bsky_appview identity:*',
-    ]) {
-      expect(() =>
-        createOAuthMetadata({baseUrl: 'https://witchsky.app', appview}),
-      ).toThrow()
-    }
-  })
+it('uses the same client and grant across AppViews and permission requests', () => {
+  const baseUrl = 'https://canary.witchsky.app'
+  const appview = 'did:web:api.blacksky.community#bsky_appview'
+  const chat = 'did:web:chat.example.com#bsky_chat'
+  expect(createOAuthMetadata({baseUrl, appview, chat})).toEqual(
+    createOAuthMetadata({baseUrl}),
+  )
+  expect(buildOAuthScope(appview, chat, ['handle', 'email'])).toBe(prodScope)
 })
 
-it('recognizes normalized grants without confusing read access with management', () => {
+it('accepts saved prod grants without requiring reauthorization', () => {
+  expect(hasOAuthPermission(prodScope, 'handle')).toBe(true)
+  expect(hasOAuthPermission(prodScope, 'email')).toBe(true)
+  expect(hasOAuthAppViewScope(prodScope, DEFAULT_APPVIEW_AUDIENCE)).toBe(true)
+  expect(
+    hasOAuthAppViewScope(prodScope, 'did:web:custom.example#bsky_appview'),
+  ).toBe(true)
+  expect(hasOAuthPermission('atproto', 'handle')).toBe(false)
+  expect(hasOAuthPermission('atproto transition:generic', 'email')).toBe(false)
+})
+
+it('still recognizes existing granular grants', () => {
   expect(
     hasOAuthPermission('atproto account?attr=email&action=manage', 'email'),
   ).toBe(true)
@@ -98,68 +57,21 @@ it('recognizes normalized grants without confusing read access with management',
   expect(hasOAuthPermission('atproto identity?attr=handle', 'handle')).toBe(
     true,
   )
-  expect(hasOAuthPermission('atproto identity:*', 'handle')).toBe(true)
+  const scope = `rpc:app.bsky.notification.listNotifications?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`
+  expect(hasOAuthAppViewScope(scope, DEFAULT_APPVIEW_AUDIENCE)).toBe(true)
   expect(
-    hasOAuthPermission('atproto transition:generic transition:email', 'handle'),
+    hasOAuthAppViewScope(scope, 'did:web:custom.example#bsky_appview'),
   ).toBe(false)
 })
 
-it('rejects a saved account grant for another appview', () => {
-  const blacksky = 'did:web:api.blacksky.community#bsky_appview'
-  expect(hasOAuthAppViewScope(buildOAuthScope(), blacksky)).toBe(false)
-  expect(hasOAuthAppViewScope(buildOAuthScope(blacksky), blacksky)).toBe(true)
-  expect(hasOAuthAppViewScope('transition:generic', blacksky)).toBe(true)
-})
-
-it('recognizes expanded PDS grants with positional or named methods', () => {
-  const aud = encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)
-  for (const method of [
-    'rpc:app.bsky.notification.listNotifications',
-    'rpc?lxm=app.bsky.notification.listNotifications',
+it('rejects malformed service audiences', () => {
+  for (const appview of [
+    '*',
+    'did:web:example.com',
+    'did:web:example.com#bsky_appview identity:*',
   ]) {
-    const scope = `${method}${method.includes('?') ? '&' : '?'}aud=${aud}`
-    expect(hasOAuthAppViewScope(scope, DEFAULT_APPVIEW_AUDIENCE)).toBe(true)
-    expect(
-      hasOAuthAppViewScope(scope, 'did:web:api.eurosky.network#bsky_appview'),
-    ).toBe(false)
+    expect(() =>
+      createOAuthMetadata({baseUrl: 'https://witchsky.app', appview}),
+    ).toThrow()
   }
-})
-
-it('grants only legacy Bluesky search for Blacksky outage fallback', () => {
-  const grant = `rpc:app.bsky.feed.searchPosts?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`
-  expect(
-    buildOAuthScope('did:web:api.blacksky.community#bsky_appview').split(' '),
-  ).toContain(grant)
-  expect(
-    buildOAuthScope('did:web:custom.example#bsky_appview').split(' '),
-  ).not.toContain(grant)
-})
-
-it.each([
-  DEFAULT_APPVIEW_AUDIENCE,
-  'did:web:api.blacksky.community#bsky_appview',
-])('grants draft and suggestion operations for %s', appview => {
-  const scopes = buildOAuthScope(appview).split(' ')
-  for (const method of [
-    'app.bsky.draft.getDrafts',
-    'app.bsky.draft.createDraft',
-    'app.bsky.draft.updateDraft',
-    'app.bsky.draft.deleteDraft',
-    'app.bsky.unspecced.getSuggestedOnboardingUsers',
-    'app.bsky.unspecced.getSuggestedUsersForDiscover',
-    'app.bsky.unspecced.getSuggestedUsersForExplore',
-    'app.bsky.unspecced.getSuggestedUsersForSeeMore',
-  ]) {
-    expect(scopes).toContain(`rpc:${method}?aud=${encodeURIComponent(appview)}`)
-  }
-  expect(scopes).toContain(
-    'repo:app.bsky.actor.contentVisibilityDeclaration?action=create&action=update',
-  )
-  expect(scopes.some(scope => scope.includes('app.bsky.ageassurance.'))).toBe(
-    false,
-  )
-  expect(scopes.some(scope => scope.includes('cocore'))).toBe(false)
-  expect(scopes).toContain(
-    'repo:app.bsky.graph.verification?action=create&action=delete',
-  )
 })

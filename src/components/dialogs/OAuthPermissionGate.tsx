@@ -70,7 +70,7 @@ export function OAuthPermissionGate({
     setPending(true)
     setError('')
     try {
-      // Retain previously approved optional access, never transition scopes.
+      // Older granular grants can still request the production transition grant.
       const permissions = (
         Object.keys(OPTIONAL_OAUTH_SCOPES) as OAuthPermission[]
       ).filter(

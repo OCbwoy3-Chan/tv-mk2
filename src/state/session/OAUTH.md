@@ -1,72 +1,33 @@
-# OAuth permissions
+# OAuth session compatibility
 
 `oauth-config.ts` is the shared source for client metadata and scope strings.
 `pnpm oauth:generate` refreshes the checked-in metadata used by the Go server;
-web builds generate it automatically for both hosting outputs. Deploy the web
-metadata before distributing native clients that request new scopes.
+web builds generate it automatically for both hosting outputs.
 
-Initial sign-in requests `app.bsky.authFullApp`,
-`chat.bsky.authFullChatClient`, and `app.witchsky.theme.authFull`, plus media
-uploads and moderation reports. Draft CRUD and the newer suggested-user RPCs
-are granted explicitly for the selected AppView because the published app set
-omits them. Draft grants also cover cloud settings sync. Content-visibility
-preferences need create/update access to their declaration record; issuing and
-revoking verifications need create/delete access to verification records. Existing
-sessions need to authorize again after the updated metadata is deployed.
-No supplemental age-assurance permissions are requested. New chat RPCs missing from the published set
-are requested individually with the selected chat audience. The first two sets inherit the selected service
-DID and fragment. Custom audiences are encoded into the metadata URL and served
-by the Pages Functions or Go handler. Keep both handlers enabled when hosting.
+Witchsky uses the production grant:
+`atproto transition:generic transition:email transition:chat.bsky`.
+Web and native keep the original metadata URLs without audience query parameters.
+Custom AppViews change request routing, not the OAuth client identity or grant.
+Loopback development also retains prod's root redirect and client-ID encoding.
+Do not rename or clear the SDK session store when deploying main over prod.
+The browser SDK continues to own IndexedDB tokens and DPoP keys; the account
+list continues to identify these sessions by DID and `isOauthSession`.
 
-Email verification and handle dialogs request extra access explicitly, retaining
-previously approved optional permissions. Web authorization uses a popup to preserve the
-open action; native authorization uses the platform auth-session helpers.
-App-password management, email updates, email 2FA, and deactivation require
-password authentication because the PDS rejects OAuth credentials for those
-endpoints, regardless of scope. Password reset uses unauthenticated requests to
-the hosting service; it must not forward DPoP credentials through an entryway.
+Existing transition grants satisfy AppView and handle/email permission checks.
+Granular grants remain readable; missing permissions can be recovered using the
+same in-place authorization UI, which now requests the production scope.
+App-password management, email updates, email 2FA, and deactivation still use
+password authentication where the PDS requires it.
 
-The theme permission set is published under `witchsky.app` as
-`app.witchsky.theme.authFull`. Its four record collections must stay in sync with
-`lexicons/app/witchsky/theme/authFull.json`. Update the published schema when
-adding theme record types; never place account or blob permissions in the set.
-Resolution failures must be fixed at publication/discovery rather than expanding
-the permission set into separate consent entries.
+Keep the newer login behavior: web popups, native auth browsers (including the
+Android deep-link completion fix), shared callback completion, per-account
+restore serialization, cross-tab DPoP refresh, and ephemeral-error Login actions.
+Ephemeral login updates the saved account and retries the pending action without
+replacing the active account, navigation, scroll position, or draft.
+Never impose a fetch deadline on a one-use refresh-token exchange.
 
-Preferences stay on the PDS. Bluesky's PDS checks getPreferences and
-putPreferences against its default Bluesky audience; proxying those calls to
-Blacksky returns 501. Custom AppView sign-ins therefore add these two
-Bluesky-audience RPC grants alongside the selected AppView permission set.
-Blacksky sign-ins additionally grant `app.bsky.feed.searchPosts` for the Bluesky
-audience so searches can fall back when Blacksky returns its upstream 502 error.
-Existing sessions need a new sign-in to receive this grant. Search pagination
-keeps the provider that supplied the first page; cursors never cross providers.
-
-The app permission set includes video methods with inheritAud. That grants them
-for the selected AppView, not the DID-only video-service audience used by
-getServiceAuth. The separate getUploadLimits grant covers that service request.
-
-The published chat set currently omits getUnreadCounts, updateJoinRequestsRead,
-and notification getPreferences/putPreferences. Their narrow supplemental RPC
-grants produce the PDS's additional generic “Chat” consent entry. They can be
-removed once the published set includes these methods.
-
-AppView switching on web opens a popup directly from the confirmation gesture.
-The source page stays active so navigating to authorization cannot freeze a
-document holding the account's OAuth Web Lock. The popup inherits the target
-metadata through session storage. After consent, the parent checks the account
-and audience, applies routing, and constructs the authenticated agent.
-Cancellation leaves routing unchanged. After a grant is replaced, loading
-failures retain the new routing so retries use the matching audience.
-Callbacks share one exchange between startup and the route; bare callback URLs
-do not restore an unrelated session. Legacy redirect callbacks remain supported.
-
-Session restores serialize per account, allowing other accounts to proceed
-independently. Browser OAuth uses the SDK's standard transport and storage.
-Do not impose a fetch deadline on a one-use refresh token exchange.
-
-OAuth account updates from other tabs must not be interpreted as
-password-session logout events.
+The notes below describe historical testing of the granular-scope implementation,
+not live verification of the restored production grant.
 
 ## Live verification (2026-09-06)
 

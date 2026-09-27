@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"strings"
 	"testing"
 
 	"github.com/labstack/echo/v4"
@@ -33,19 +32,11 @@ func TestOAuthMetadata(t *testing.T) {
 		if err := json.Unmarshal(rec.Body.Bytes(), &metadata); err != nil {
 			t.Fatal(err)
 		}
-		if metadata.ClientID != target {
+		if metadata.ClientID != "https://canary.witchsky.app"+filename {
 			t.Fatalf("wrong client ID: %s", metadata.ClientID)
 		}
-		if !strings.Contains(metadata.Scope, "include:app.bsky.authFullApp?aud="+url.QueryEscape(audience)) {
-			t.Fatal("missing selected audience")
-		}
-		for _, method := range []string{"app.bsky.actor.getPreferences", "app.bsky.actor.putPreferences"} {
-			if !strings.Contains(metadata.Scope, "rpc:"+method+"?aud="+url.QueryEscape("did:web:api.bsky.app#bsky_appview")) {
-				t.Fatal("missing PDS preference audience")
-			}
-		}
-		if strings.Contains(metadata.Scope, "transition:") {
-			t.Fatal("legacy scopes remain")
+		if metadata.Scope != "atproto transition:generic transition:email transition:chat.bsky" {
+			t.Fatal("production scopes changed")
 		}
 		redirect := "https://canary.witchsky.app/auth/web/callback"
 		if native {

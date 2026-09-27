@@ -1,6 +1,6 @@
 import {createOAuthMetadata} from '../../src/state/session/oauth-config'
 
-/** Audiences only affect permissions, never callback destinations or branding. */
+/** Keep production metadata stable even when routing uses a custom AppView. */
 export function oauthMetadataResponse(request: Request, native: boolean) {
   const url = new URL(request.url)
   try {

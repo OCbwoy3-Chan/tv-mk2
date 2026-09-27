@@ -2,18 +2,11 @@
   "client_id": "https://witchsky.app/oauth-client-metadata.json",
   "client_name": "Witchsky",
   "client_uri": "https://witchsky.app",
-  "redirect_uris": [
-    "https://witchsky.app/auth/web/callback"
-  ],
-  "scope": "atproto include:app.bsky.authFullApp?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview rpc:app.bsky.draft.getDrafts?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview rpc:app.bsky.draft.createDraft?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview rpc:app.bsky.draft.updateDraft?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview rpc:app.bsky.draft.deleteDraft?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview rpc:app.bsky.unspecced.getSuggestedOnboardingUsers?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview rpc:app.bsky.unspecced.getSuggestedUsersForDiscover?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview rpc:app.bsky.unspecced.getSuggestedUsersForExplore?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview rpc:app.bsky.unspecced.getSuggestedUsersForSeeMore?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview repo:app.bsky.actor.contentVisibilityDeclaration?action=create&action=update repo:app.bsky.graph.verification?action=create&action=delete include:chat.bsky.authFullChatClient?aud=did%3Aweb%3Aapi.bsky.chat%23bsky_chat rpc:chat.bsky.convo.getUnreadCounts?aud=did%3Aweb%3Aapi.bsky.chat%23bsky_chat rpc:chat.bsky.group.updateJoinRequestsRead?aud=did%3Aweb%3Aapi.bsky.chat%23bsky_chat rpc:chat.bsky.notification.getPreferences?aud=did%3Aweb%3Aapi.bsky.chat%23bsky_chat rpc:chat.bsky.notification.putPreferences?aud=did%3Aweb%3Aapi.bsky.chat%23bsky_chat include:app.witchsky.theme.authFull blob:image/* blob:video/* rpc:com.atproto.repo.uploadBlob?aud=* rpc:app.bsky.video.getUploadLimits?aud=* rpc:com.atproto.moderation.createReport?aud=* identity:handle account:email?action=manage",
+  "redirect_uris": ["https://witchsky.app/auth/web/callback"],
+  "scope": "atproto transition:generic transition:email transition:chat.bsky",
   "token_endpoint_auth_method": "none",
-  "response_types": [
-    "code"
-  ],
-  "grant_types": [
-    "authorization_code",
-    "refresh_token"
-  ],
+  "response_types": ["code"],
+  "grant_types": ["authorization_code", "refresh_token"],
   "application_type": "web",
   "dpop_bound_access_tokens": true
 }

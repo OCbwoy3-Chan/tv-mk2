@@ -132,3 +132,17 @@ it('gives standalone permission prompts a proper dialog surface', async () => {
   await screen.findByText('Continue to authorization')
   expect(screen.getByTestId('permission-dialog-surface')).toBeTruthy()
 })
+
+it('opens the action for a saved production grant without asking for consent', async () => {
+  mockRestore.mockResolvedValue({
+    getTokenInfo: () =>
+      Promise.resolve({
+        scope:
+          'atproto transition:generic transition:email transition:chat.bsky',
+      }),
+  })
+  showGate()
+  await screen.findByText('handle editor')
+  expect(mockReauthenticate).not.toHaveBeenCalled()
+  expect(screen.queryByText('Continue to authorization')).toBeNull()
+})
