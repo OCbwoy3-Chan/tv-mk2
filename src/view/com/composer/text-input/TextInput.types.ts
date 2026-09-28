@@ -33,6 +33,7 @@ export type TextInputProps = {
   canAddPost: boolean
   canMovePostUp: boolean
   canMovePostDown: boolean
+  onBackspaceEmpty: () => boolean
   onAddPost: () => void
   onFocusPost: (direction: 'up' | 'down') => void
   onMovePost: (direction: 'up' | 'down') => void

@@ -2148,6 +2148,13 @@ let ComposerPost = memo(function ComposerPost({
           canAddPost={canAddPost}
           canMovePostUp={canMovePostUp}
           canMovePostDown={canMovePostDown}
+          onBackspaceEmpty={() => {
+            if (!canRemovePost || isFirstPost || !isEmptyPost(post)) {
+              return false
+            }
+            dispatch({type: 'remove_post', postId: post.id})
+            return true
+          }}
           onAddPost={onAddPost}
           onMovePost={onMovePost}
           onFocusPost={direction =>

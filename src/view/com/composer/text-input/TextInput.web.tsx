@@ -69,6 +69,7 @@ export function TextInput({
   canAddPost,
   canMovePostUp,
   canMovePostDown,
+  onBackspaceEmpty,
   onAddPost,
   onMovePost,
   onFocusPost,
@@ -79,6 +80,8 @@ export function TextInput({
   const modeClass = useColorSchemeStyle('ProseMirror-light', 'ProseMirror-dark')
 
   const [isDropping, setIsDropping] = useState(false)
+  const onBackspaceEmptyRef = useRef(onBackspaceEmpty)
+  onBackspaceEmptyRef.current = onBackspaceEmpty
   const autocompleteRef = useRef<AutocompleteRef>(null)
   const threadShortcutState = useRef({
     canAddPost,
@@ -311,6 +314,16 @@ export function TextInput({
             event.code === 'Backspace' &&
             !(event.metaKey || event.altKey || event.ctrlKey)
           ) {
+            if (
+              !event.isComposing &&
+              !view.composing &&
+              !event.repeat &&
+              view.state.doc.childCount === 1 &&
+              view.state.doc.firstChild?.content.size === 0 &&
+              onBackspaceEmptyRef.current()
+            ) {
+              return true
+            }
             const isNotSelection = view.state.selection.empty
             if (isNotSelection) {
               const cursorPosition = view.state.selection.$anchor.pos
@@ -463,7 +476,7 @@ export function TextInput({
 
   useImperativeHandle(ref, () => ({
     focus: () => {
-      editor?.chain().focus()
+      editor?.chain().focus().run()
     },
     blur: () => {
       editor?.chain().blur()

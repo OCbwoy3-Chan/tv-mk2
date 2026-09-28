@@ -54,6 +54,7 @@ export function TextInput({
   canAddPost: _canAddPost,
   canMovePostUp: _canMovePostUp,
   canMovePostDown: _canMovePostDown,
+  onBackspaceEmpty,
   onAddPost: _onAddPost,
   onMovePost: _onMovePost,
   onFocusPost: _onFocusPost,
@@ -312,6 +313,11 @@ export function TextInput({
           ref={textInput}
           onChangeText={(newText: string) => void onChangeText(newText)}
           onSelectionChange={onSelectionChange}
+          onKeyPress={({nativeEvent}) => {
+            if (nativeEvent.key === 'Backspace' && prevText.current === '') {
+              onBackspaceEmpty()
+            }
+          }}
           placeholder={placeholder}
           placeholderTextColor={t.atoms.text_contrast_low.color}
           keyboardAppearance={theme.colorScheme}
