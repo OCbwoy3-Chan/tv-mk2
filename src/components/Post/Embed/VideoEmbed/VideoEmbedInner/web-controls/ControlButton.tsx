@@ -6,6 +6,7 @@ import {atoms as a, useTheme, web} from '#/alf'
 
 export function ControlButton({
   testID,
+  disabled = false,
   active,
   activeLabel,
   inactiveLabel,
@@ -14,6 +15,7 @@ export function ControlButton({
   onPress,
 }: {
   testID?: string
+  disabled?: boolean
   active: boolean
   activeLabel: string
   inactiveLabel: string
@@ -26,6 +28,8 @@ export function ControlButton({
   return (
     <PressableWithHover
       testID={testID}
+      disabled={disabled}
+      accessibilityState={{disabled}}
       accessibilityRole="button"
       accessibilityLabel={active ? activeLabel : inactiveLabel}
       accessibilityHint=""
