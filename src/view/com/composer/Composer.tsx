@@ -293,7 +293,7 @@ export const ComposePost = ({
   recoveredState,
   activeAccountDid: initialActiveAccountDid,
   openAccountSwitcher = false,
-  replyTo,
+  replyTo: initialReplyTo,
   onPost,
   onPostSuccess,
   quote: initQuote,
@@ -308,6 +308,7 @@ export const ComposePost = ({
 }: Props & {
   cancelRef?: RefObject<CancelRef | null>
 }) => {
+  const [replyTo, setReplyTo] = useState(initialReplyTo)
   const {accounts, currentAccount} = useSession()
   const t = useTheme()
   const ax = useAnalytics()
@@ -863,6 +864,40 @@ export const ComposePost = ({
         draftId: draftSummary.id,
       })
 
+      let restoredReplyTo: ComposerOpts['replyTo']
+      const replyToUri = (draftSummary.draft as {replyToUri?: unknown})
+        .replyToUri
+      if (replyToUri !== undefined) {
+        try {
+          if (
+            typeof replyToUri !== 'string' ||
+            !replyToUri.startsWith('at://')
+          ) {
+            throw new Error('Invalid draft reply target')
+          }
+          const {posts} = await client.call(app.bsky.feed.getPosts, {
+            uris: [replyToUri as AtUriString],
+          })
+          const target = posts[0]
+          if (!target || !bsky.isType(app.bsky.feed.post, target.record)) {
+            throw new Error('Draft reply target unavailable')
+          }
+          restoredReplyTo = {
+            uri: target.uri,
+            cid: target.cid,
+            text: target.record.text,
+            langs: target.record.langs,
+            author: target.author,
+            embed: target.embed,
+          }
+        } catch {
+          setError(
+            l`Could not load the post this draft replies to. Please try again later.`,
+          )
+          return
+        }
+      }
+
       // Load local media files for the draft
       const {loadedMedia} = await loadDraftMedia(draftSummary.draft)
 
@@ -880,6 +915,10 @@ export const ComposePost = ({
         draftSummary.draft,
         loadedMedia,
       )
+
+      setError('')
+      setReplyTo(restoredReplyTo)
+      setReplyToLanguages(restoredReplyTo?.langs ?? [])
 
       // Dispatch restore action (this also sets draftId in state)
       composerDispatch({
@@ -914,7 +953,7 @@ export const ComposePost = ({
         void restoreVideo(postId, videoInfo)
       }
     },
-    [composerDispatch, restoreVideo, ax],
+    [composerDispatch, restoreVideo, ax, client, l],
   )
 
   const [publishOnUpload, setPublishOnUpload] = useState(false)
@@ -965,6 +1004,7 @@ export const ComposePost = ({
       const result = await saveDraft({
         composerState,
         existingDraftId: composerState.draftId,
+        replyToUri: replyTo?.uri,
       })
       composerDispatch({type: 'mark_saved', draftId: result.draftId})
 
@@ -993,6 +1033,7 @@ export const ComposePost = ({
     }
   }, [
     saveDraft,
+    replyTo,
     composerState,
     composerDispatch,
     onClose,
@@ -1013,6 +1054,7 @@ export const ComposePost = ({
       const result = await saveDraft({
         composerState,
         existingDraftId: composerState.draftId,
+        replyToUri: replyTo?.uri,
       })
       composerDispatch({type: 'mark_saved', draftId: result.draftId})
       return {success: true}
@@ -1022,6 +1064,7 @@ export const ComposePost = ({
     }
   }, [
     saveDraft,
+    replyTo,
     composerState,
     composerDispatch,
     validateDraftTextOrError,
@@ -1065,6 +1108,8 @@ export const ComposePost = ({
 
   // Clear the composer (discard current content)
   const handleClearComposer = useCallback(() => {
+    setReplyTo(undefined)
+    setReplyToLanguages([])
     composerDispatch({
       type: 'clear',
       initInteractionSettings: preferences?.postInteractionSettings,
@@ -1848,63 +1893,52 @@ export const ComposePost = ({
           {!IS_WEBFooterSticky && footer}
         </View>
 
-        {replyTo ? (
-          <Prompt.Basic
-            control={discardPromptControl}
-            title={l`Discard draft?`}
-            description=""
-            confirmButtonCta={l`Discard`}
-            confirmButtonColor="negative"
-            onConfirm={handleDiscard}
-          />
-        ) : (
-          <Prompt.Outer control={discardPromptControl}>
-            <Prompt.Content>
-              <Prompt.TitleText>
-                {allPostsWithinLimit ? (
-                  composerState.draftId ? (
-                    <Trans>Save changes?</Trans>
-                  ) : (
-                    <Trans>Save draft?</Trans>
-                  )
+        <Prompt.Outer control={discardPromptControl}>
+          <Prompt.Content>
+            <Prompt.TitleText>
+              {allPostsWithinLimit ? (
+                composerState.draftId ? (
+                  <Trans>Save changes?</Trans>
                 ) : (
-                  <Trans>Discard post?</Trans>
-                )}
-              </Prompt.TitleText>
-              <Prompt.DescriptionText>
-                {allPostsWithinLimit ? (
-                  composerState.draftId ? (
-                    <Trans>
-                      You have unsaved changes to this draft, would you like to
-                      save them?
-                    </Trans>
-                  ) : (
-                    <Trans>
-                      Would you like to save this as a draft to edit later?
-                    </Trans>
-                  )
-                ) : (
-                  <Trans>You can only save drafts up to 1000 characters.</Trans>
-                )}
-              </Prompt.DescriptionText>
-            </Prompt.Content>
-            <Prompt.Actions>
-              {allPostsWithinLimit && (
-                <Prompt.Action
-                  cta={composerState.draftId ? l`Save changes` : l`Save draft`}
-                  onPress={() => void handleSaveDraft()}
-                  color="primary"
-                />
+                  <Trans>Save draft?</Trans>
+                )
+              ) : (
+                <Trans>Discard post?</Trans>
               )}
-              <Prompt.Cancel cta={l`Keep editing`} />
+            </Prompt.TitleText>
+            <Prompt.DescriptionText>
+              {allPostsWithinLimit ? (
+                composerState.draftId ? (
+                  <Trans>
+                    You have unsaved changes to this draft, would you like to
+                    save them?
+                  </Trans>
+                ) : (
+                  <Trans>
+                    Would you like to save this as a draft to edit later?
+                  </Trans>
+                )
+              ) : (
+                <Trans>You can only save drafts up to 1000 characters.</Trans>
+              )}
+            </Prompt.DescriptionText>
+          </Prompt.Content>
+          <Prompt.Actions>
+            {allPostsWithinLimit && (
               <Prompt.Action
-                cta={l`Discard`}
-                onPress={handleDiscard}
-                color="negative_subtle"
+                cta={composerState.draftId ? l`Save changes` : l`Save draft`}
+                onPress={() => void handleSaveDraft()}
+                color="primary"
               />
-            </Prompt.Actions>
-          </Prompt.Outer>
-        )}
+            )}
+            <Prompt.Cancel cta={l`Keep editing`} />
+            <Prompt.Action
+              cta={l`Discard`}
+              onPress={handleDiscard}
+              color="negative_subtle"
+            />
+          </Prompt.Actions>
+        </Prompt.Outer>
 
         <Prompt.Basic
           control={emptyPostsPromptControl}
@@ -2297,18 +2331,16 @@ function ComposerTopBar({
           </>
         ) : (
           <>
-            {!isReply && (
-              <DraftsButton
-                onSelectDraft={onSelectDraft}
-                onSaveDraft={onSaveDraft}
-                onDiscard={onDiscard}
-                isEmpty={isEmpty}
-                isDirty={isDirty}
-                isEditingDraft={isEditingDraft}
-                canSaveDraft={canSaveDraft}
-                textLength={textLength}
-              />
-            )}
+            <DraftsButton
+              onSelectDraft={onSelectDraft}
+              onSaveDraft={onSaveDraft}
+              onDiscard={onDiscard}
+              isEmpty={isEmpty}
+              isDirty={isDirty}
+              isEditingDraft={isEditingDraft}
+              canSaveDraft={canSaveDraft}
+              textLength={textLength}
+            />
             <Button
               testID="composerPublishBtn"
               label={

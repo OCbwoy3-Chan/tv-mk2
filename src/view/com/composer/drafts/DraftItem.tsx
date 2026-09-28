@@ -1,8 +1,8 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {View} from 'react-native'
 import * as VideoThumbnails from 'expo-video-thumbnails'
-import {msg, plural} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
+import {plural} from '@lingui/core/macro'
+import {useLingui} from '@lingui/react/macro'
 
 import * as device from '#/lib/deviceName'
 import {logger} from '#/view/com/composer/drafts/state/logger'
@@ -13,6 +13,7 @@ import {CirclePlus_Stroke2_Corner0_Rounded as CirclePlusIcon} from '#/components
 import {type Props as SVGIconProps} from '#/components/icons/common'
 import {DotGrid3x1_Stroke2_Corner0_Rounded as DotsIcon} from '#/components/icons/DotGrid'
 import {CloseQuote_Stroke2_Corner0_Rounded as CloseQuoteIcon} from '#/components/icons/Quote'
+import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {Warning_Stroke2_Corner0_Rounded as WarningIcon} from '#/components/icons/Warning'
 import * as MediaPreview from '#/components/MediaPreview'
 import {Pressable} from '#/components/Pressable'
@@ -32,16 +33,19 @@ export function DraftItem({
   onSelect: (draft: DraftSummary) => void
   onDelete: (draft: DraftSummary) => void
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const t = useTheme()
   const discardPromptControl = Prompt.usePromptControl()
   const post = draft.posts[0]
+  const isReply =
+    typeof (draft.draft as {replyToUri?: unknown}).replyToUri === 'string'
 
   const mediaExistsOnOtherDevice =
     !draft.meta.isOriginatingDevice && draft.meta.hasMissingMedia
   const mediaIsMissing =
     draft.meta.isOriginatingDevice && draft.meta.hasMissingMedia
   const hasMetadata =
+    isReply ||
     draft.meta.replyCount > 0 ||
     mediaExistsOnOtherDevice ||
     draft.meta.hasQuotes
@@ -67,8 +71,8 @@ export function DraftItem({
       <View style={[a.relative]}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={_(msg`Open draft`)}
-          accessibilityHint={_(msg`Opens this draft in the composer`)}
+          accessibilityLabel={l`Open draft`}
+          accessibilityHint={l`Opens this draft in the composer`}
           onPress={() => onSelect(draft)}
           style={({pressed, hovered}) => [
             a.rounded_md,
@@ -127,13 +131,11 @@ export function DraftItem({
                     icon={WarningIcon}
                     text={
                       isUnknownDevice
-                        ? _(msg`Media stored on another device`)
-                        : _(
-                            msg({
-                              message: `Media stored on ${draft.draft.deviceName}`,
-                              comment: `Example: "Media stored on John's iPhone"`,
-                            }),
-                          )
+                        ? l`Media stored on another device`
+                        : l({
+                            message: `Media stored on ${draft.draft.deviceName}`,
+                            comment: `Example: "Media stored on John's iPhone"`,
+                          })
                     }
                   />
                 )}
@@ -141,13 +143,22 @@ export function DraftItem({
                   <DraftMetadataTag
                     display="warning"
                     icon={WarningIcon}
-                    text={_(msg`Missing media`)}
+                    text={l`Missing media`}
+                  />
+                )}
+                {isReply && (
+                  <DraftMetadataTag
+                    icon={ReplyIcon}
+                    text={l({
+                      message: 'Reply',
+                      comment: 'A draft that replies to another post.',
+                    })}
                   />
                 )}
                 {draft.meta.hasQuotes && (
                   <DraftMetadataTag
                     icon={CloseQuoteIcon}
-                    text={_(msg`Quote post`)}
+                    text={l`Quote post`}
                   />
                 )}
                 {draft.meta.replyCount > 0 && (
@@ -200,7 +211,7 @@ export function DraftItem({
             },
           ]}>
           <Button
-            label={_(msg`More options`)}
+            label={l`More options`}
             hitSlop={8}
             onPress={e => {
               e.stopPropagation()
@@ -249,10 +260,10 @@ export function DraftItem({
 
       <Prompt.Basic
         control={discardPromptControl}
-        title={_(msg`Discard draft?`)}
-        description={_(msg`This draft will be permanently deleted.`)}
+        title={l`Discard draft?`}
+        description={l`This draft will be permanently deleted.`}
         onConfirm={handleDelete}
-        confirmButtonCta={_(msg`Discard`)}
+        confirmButtonCta={l`Discard`}
         confirmButtonColor="negative"
       />
     </>

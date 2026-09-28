@@ -83,6 +83,7 @@ function parseVideoMimeType(localRefPath: string): string {
 export async function composerStateToDraft(
   clients: LinkResolvers,
   state: ComposerState,
+  replyToUri?: string,
 ): Promise<{
   draft: app.bsky.draft.defs.Draft
   localRefPaths: Map<string, string>
@@ -100,6 +101,8 @@ export async function composerStateToDraft(
     deviceId: getDeviceId(),
     deviceName: getDeviceName().slice(0, 100), // max length of 100 in lex
     posts,
+    // Preserve the reply target in an extra field until the draft lexicon supports it.
+    ...(replyToUri ? {replyToUri} : {}),
     threadgateAllow: threadgateAllowUISettingToAllowRecordValue(
       state.thread.threadgate,
     ),
