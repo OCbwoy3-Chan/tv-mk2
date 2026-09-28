@@ -51,6 +51,8 @@ describe('persisted schema helpers', () => {
     expect(normalizeData(parsed!).notificationsTabBadgeDisplay).toBe('exact')
     expect(normalizeData(parsed!).chatsTabBadgeDisplay).toBe('exact')
     expect(normalizeData(parsed!).altTextAiProvider).toBe('none')
+    expect(normalizeData(parsed!).forceAltTextEnabled).toBe(false)
+    expect(normalizeData(parsed!).requireAltTextEnabled).toBe(true)
   })
 
   it('preserves external embed prefs when defaults object is empty', () => {

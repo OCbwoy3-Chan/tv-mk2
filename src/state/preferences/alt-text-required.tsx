@@ -21,7 +21,24 @@ const setContext = createContext<SetContext>(
 )
 setContext.displayName = 'AltTextRequiredSetContext'
 
+const forceStateContext = createContext(false)
+const forceSetContext = createContext<(value: boolean) => void>(() => {})
+
 export function Provider({children}: PropsWithChildren<{}>) {
+  const [forceEnabled, setForceEnabled] = useState(
+    persisted.get('forceAltTextEnabled') ?? false,
+  )
+  const setForceEnabledWrapped = (value: boolean) => {
+    setForceEnabled(value)
+    void persisted.write('forceAltTextEnabled', value)
+  }
+
+  useEffect(() => {
+    return persisted.onUpdate('forceAltTextEnabled', value => {
+      setForceEnabled(value ?? false)
+    })
+  }, [])
+
   const [state, setState] = useState(persisted.get('requireAltTextEnabled'))
 
   const setStateWrapped = useCallback(
@@ -44,7 +61,11 @@ export function Provider({children}: PropsWithChildren<{}>) {
   return (
     <stateContext.Provider value={state}>
       <setContext.Provider value={setStateWrapped}>
-        {children}
+        <forceStateContext.Provider value={forceEnabled}>
+          <forceSetContext.Provider value={setForceEnabledWrapped}>
+            {children}
+          </forceSetContext.Provider>
+        </forceStateContext.Provider>
       </setContext.Provider>
     </stateContext.Provider>
   )
@@ -56,4 +77,12 @@ export function useRequireAltTextEnabled() {
 
 export function useSetRequireAltTextEnabled() {
   return useContext(setContext)
+}
+
+export function useForceAltTextEnabled() {
+  return useContext(forceStateContext)
+}
+
+export function useSetForceAltTextEnabled() {
+  return useContext(forceSetContext)
 }

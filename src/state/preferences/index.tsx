@@ -77,7 +77,9 @@ export {
   useSetAlsoLikedFeedEnabled,
 } from './also-liked-feed-enabled'
 export {
+  useForceAltTextEnabled,
   useRequireAltTextEnabled,
+  useSetForceAltTextEnabled,
   useSetRequireAltTextEnabled,
 } from './alt-text-required'
 export {useAutoplayDisabled, useSetAutoplayDisabled} from './autoplay'

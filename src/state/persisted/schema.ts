@@ -207,6 +207,7 @@ const schema = z.object({
      */
     appLanguage: z.string(),
   }),
+  forceAltTextEnabled: z.boolean().optional(),
   requireAltTextEnabled: z.boolean(), // should move to server
   largeAltBadgeEnabled: z.boolean().optional(),
   externalEmbeds: z
@@ -439,6 +440,7 @@ export const defaults: Schema = {
       deviceLanguageCodes[0],
     ]),
   },
+  forceAltTextEnabled: false,
   requireAltTextEnabled: true,
   largeAltBadgeEnabled: false,
   externalEmbeds: {},

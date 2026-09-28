@@ -89,7 +89,10 @@ import {
   createComposerImage,
   pasteImage,
 } from '#/state/gallery'
-import {useRequireAltTextEnabled} from '#/state/preferences'
+import {
+  useForceAltTextEnabled,
+  useRequireAltTextEnabled,
+} from '#/state/preferences'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   fromPostLanguages,
@@ -329,6 +332,7 @@ export const ComposePost = ({
   const isComposerOpen = !!useComposerState()
   const showEphemeralError = useEphemeralAccountError()
   const {t: l, i18n} = useLingui()
+  const forceAltTextEnabled = useForceAltTextEnabled()
   const requireAltTextEnabled = useRequireAltTextEnabled()
 
   const langPrefs = useLanguagePrefs()
@@ -1178,7 +1182,7 @@ export const ComposePost = ({
 
   // eslint-disable-next-line react-hooks/preserve-manual-memoization -- restored memoization
   const missingAltError = useMemo(() => {
-    if (!requireAltTextEnabled) {
+    if (!requireAltTextEnabled && !forceAltTextEnabled) {
       return
     }
 
@@ -1227,7 +1231,7 @@ export const ComposePost = ({
       )
     }
     return messages.join(' ') || undefined
-  }, [thread, requireAltTextEnabled, l])
+  }, [thread, requireAltTextEnabled, forceAltTextEnabled, l])
 
   // Subscribe to the resolve-link cache for any link URIs in the thread so we
   // can detect chat invites that resolved to no preview (revoked/expired) and
@@ -1248,6 +1252,7 @@ export const ComposePost = ({
   )
 
   const canPost =
+    !(forceAltTextEnabled && missingAltError) &&
     !hasUnavailableChatInvite &&
     thread.posts.some(post => !isEmptyPost(post)) &&
     thread.posts.every(

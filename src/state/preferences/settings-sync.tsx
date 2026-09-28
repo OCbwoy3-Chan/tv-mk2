@@ -35,6 +35,7 @@ export const THEME_PREFS_KEYS = [
 export const SYNCED_PREFS_KEYS = [
   'languagePrefs',
   'requireAltTextEnabled',
+  'forceAltTextEnabled',
   'largeAltBadgeEnabled',
   'externalEmbeds',
   'hiddenPosts',
