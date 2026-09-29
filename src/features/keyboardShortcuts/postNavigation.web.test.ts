@@ -11,6 +11,7 @@ import {
   getPostActivityShortcut,
   getPostAuthorRoute,
   getPostMediaTargets,
+  getRevealedPostWarning,
   openPostMediaTarget,
   setPostSelected,
   switchPageTab,
@@ -173,6 +174,69 @@ it('activates the video play control and then focuses the player', () => {
   expect(clickPostAction(post, 'media')).toBe(true)
   expect(document.activeElement).toBe(video)
   expect(click).toHaveBeenCalledTimes(1)
+})
+
+it('keeps video focus after the media picker restores focus to the post', () => {
+  jest.useFakeTimers()
+  try {
+    const post = createPost({top: 20})
+    post.tabIndex = -1
+    post.innerHTML = `
+      <div data-keyboard-navigation-embed-target="media">
+        <div data-testid="postVideoFocusTarget" tabindex="-1">
+          <button data-testid="postMediaOpenBtn">Play</button>
+        </div>
+      </div>
+      <div data-keyboard-navigation-embed-target="quote">
+        <button data-testid="quotedPostOpenBtn">Quote</button>
+      </div>
+    `
+    const player = post.querySelector<HTMLElement>(
+      '[data-testid="postVideoFocusTarget"]',
+    )!
+    const targets = getPostMediaTargets(post)
+    expect(targets).toHaveLength(2)
+    const play = jest.fn()
+    targets[0].control.addEventListener('click', play)
+
+    // Dialog.close runs the chosen action before Radix restores trigger focus.
+    setTimeout(() => openPostMediaTarget(targets[0]))
+    setTimeout(() => post.focus())
+    jest.advanceTimersByTime(1)
+    expect(document.activeElement).toBe(post)
+    jest.runAllTimers()
+    expect(document.activeElement).toBe(player)
+    expect(play).toHaveBeenCalledTimes(1)
+  } finally {
+    jest.useRealTimers()
+  }
+})
+
+it('focuses the video even when playback replaces the clicked control', () => {
+  jest.useFakeTimers()
+  try {
+    const post = createPost({top: 20})
+    post.innerHTML = `
+      <div data-testid="postVideoFocusTarget" tabindex="-1">
+        <button data-testid="postMediaOpenBtn">Play</button>
+      </div>
+    `
+    const player = post.querySelector<HTMLElement>(
+      '[data-testid="postVideoFocusTarget"]',
+    )!
+    const play = player.querySelector('button')!
+    play.addEventListener('click', () => play.remove())
+
+    expect(clickPostAction(post, 'media')).toBe(true)
+    expect(document.activeElement).toBe(player)
+    player.remove()
+    const focus = jest.spyOn(player, 'focus')
+    jest.runAllTimers()
+    expect(focus).not.toHaveBeenCalled()
+    focus.mockRestore()
+  } finally {
+    jest.useRealTimers()
+  }
 })
 
 it('uses the external player control so consent can be requested before playback', () => {
@@ -642,6 +706,90 @@ it('reveals an embed warning before opening the quoted post', () => {
   expect(openPostMediaTarget(getPostMediaTargets(post)[0])).toBe(true)
   expect(onOpen).toHaveBeenCalledTimes(1)
   expect(onDetails).not.toHaveBeenCalled()
+})
+
+it.each(['postMediaOpenBtn', 'postEmbedOpenBtn', 'quotedPostOpenBtn'])(
+  'opens %s from the selected label after revealing its content',
+  testID => {
+    const container = document.createElement('div')
+    const warning = document.createElement('button')
+    warning.dataset.keyboardNavigationWarning = 'true'
+    warning.setAttribute('aria-expanded', 'false')
+    container.appendChild(warning)
+    document.body.appendChild(container)
+    const onOpen = jest.fn()
+    warning.addEventListener('click', () => {
+      warning.setAttribute('aria-expanded', 'true')
+      const attachment = document.createElement('button')
+      attachment.dataset.testid = testID
+      attachment.addEventListener('click', onOpen)
+      container.appendChild(attachment)
+    })
+
+    expect(clickPostAction(warning, 'media')).toBe(true)
+    expect(onOpen).not.toHaveBeenCalled()
+    expect(clickPostAction(warning, 'media')).toBe(true)
+    expect(onOpen).toHaveBeenCalledTimes(1)
+    expect(warning.getAttribute('aria-expanded')).toBe('true')
+  },
+)
+
+it('recovers the revealed post when its selected warning is replaced', () => {
+  document.body.replaceChildren()
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const warning = createPost({top: 20})
+  delete warning.dataset.keyboardNavigationPost
+  warning.dataset.keyboardNavigationItem = 'true'
+  warning.dataset.keyboardNavigationWarning = 'true'
+  container.appendChild(warning)
+  const unrelated = createPost({top: 0})
+
+  expect(getRevealedPostWarning(warning, container)).toBeUndefined()
+  const revealed = createPost({top: 20})
+  container.replaceChildren(revealed)
+  expect(getRevealedPostWarning(warning, container)).toBe(revealed)
+  revealed.remove()
+  expect(getRevealedPostWarning(warning, container)).toBeUndefined()
+  expect(unrelated.isConnected).toBe(true)
+})
+
+it('opens revealed media from a stale chooser target without collapsing its label', () => {
+  const post = createPost({top: 20})
+  post.innerHTML = `
+    <div data-keyboard-navigation-embed-target="media">
+      <button data-keyboard-navigation-warning="true" aria-expanded="false">Show</button>
+    </div>
+  `
+  const warning = post.querySelector<HTMLButtonElement>('button')!
+  const target = getPostMediaTargets(post)[0]
+  const onWarning = jest.fn()
+  warning.addEventListener('click', onWarning)
+  warning.setAttribute('aria-expanded', 'true')
+  const media = document.createElement('button')
+  media.dataset.testid = 'postMediaOpenBtn'
+  const onOpen = jest.fn()
+  media.addEventListener('click', onOpen)
+  warning.parentElement!.appendChild(media)
+
+  expect(openPostMediaTarget(target)).toBe(true)
+  expect(onOpen).toHaveBeenCalledTimes(1)
+  expect(onWarning).not.toHaveBeenCalled()
+})
+
+it('never collapses a revealed label when no attachment is available', () => {
+  const container = document.createElement('div')
+  const warning = document.createElement('button')
+  warning.dataset.keyboardNavigationWarning = 'true'
+  container.appendChild(warning)
+  document.body.appendChild(container)
+  const target = getPostMediaTargets(warning)[0]
+  warning.setAttribute('aria-expanded', 'true')
+  const onWarning = jest.fn()
+  warning.addEventListener('click', onWarning)
+
+  expect(openPostMediaTarget(target)).toBe(false)
+  expect(onWarning).not.toHaveBeenCalled()
 })
 
 it.each(['quotedPostOpenBtn', 'postMediaOpenBtn', 'postEmbedOpenBtn'])(
