@@ -13,7 +13,7 @@ import {DropdownMenu} from 'radix-ui'
 import {userStyle} from '#/lib/userstyles'
 import {useA11y} from '#/state/a11y'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {atoms as a, flatten, flattenToCSS, useTheme, web} from '#/alf'
+import {atoms as a, flatten, flattenToCSS, tokens, useTheme, web} from '#/alf'
 import type * as Dialog from '#/components/Dialog'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {
@@ -510,7 +510,9 @@ export function ItemRadio({selected}: {selected: boolean}) {
         <View
           style={[
             a.absolute,
-            enableSquareButtons ? a.rounded_sm : a.rounded_full,
+            enableSquareButtons
+              ? {borderRadius: tokens.borderRadius.sm - 3}
+              : a.rounded_full,
             {height: 14, width: 14},
             selected
               ? {

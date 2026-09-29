@@ -18,7 +18,7 @@ import {Trans, useLingui} from '@lingui/react/macro'
 import flattenReactChildren from 'react-keyed-flatten-children'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {atoms as a, useTheme} from '#/alf'
+import {atoms as a, tokens, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
@@ -410,7 +410,9 @@ export function ItemRadio({selected}: {selected: boolean}) {
         <View
           style={[
             a.absolute,
-            enableSquareButtons ? a.rounded_sm : a.rounded_full,
+            enableSquareButtons
+              ? {borderRadius: tokens.borderRadius.sm - 3}
+              : a.rounded_full,
             {height: 14, width: 14},
             selected
               ? {
