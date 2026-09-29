@@ -583,6 +583,11 @@ let PostFeed = ({
   )
 
   const feedItems: FeedRow[] = useMemo(() => {
+    const isFeed =
+      feedType === 'following' || feedType === 'feedgen' || feedType === 'list'
+    const filterUnreplyablePosts = isFeed && hideUnreplyablePosts
+    const filterQuotesOfBlockedAccounts = isFeed && hideQuotesOfBlockedAccounts
+
     // wraps a slice item, and replaces it with a showLessFollowup item
     // if the user has pressed show less on it
     const sliceItem = (row: Extract<FeedRow, {type: 'sliceItem'}>) => {
@@ -639,7 +644,7 @@ let PostFeed = ({
           for (const page of data.pages) {
             for (const slice of page.slices) {
               if (
-                hideQuotesOfBlockedAccounts &&
+                filterQuotesOfBlockedAccounts &&
                 slice.items.some(item => quotesBlockedAccount(item.post.embed))
               )
                 continue
@@ -695,14 +700,14 @@ let PostFeed = ({
         } else {
           for (const page of data?.pages) {
             const visibleSlices =
-              hideUnreplyablePosts || hideQuotesOfBlockedAccounts
+              filterUnreplyablePosts || filterQuotesOfBlockedAccounts
                 ? page.slices.filter(
                     slice =>
                       !slice.items.some(
                         item =>
-                          (hideUnreplyablePosts &&
+                          (filterUnreplyablePosts &&
                             item.post.viewer?.replyDisabled === true) ||
-                          (hideQuotesOfBlockedAccounts &&
+                          (filterQuotesOfBlockedAccounts &&
                             quotesBlockedAccount(item.post.embed)),
                       ),
                   )
