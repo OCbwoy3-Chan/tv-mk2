@@ -215,8 +215,8 @@ function DialogInner({
         updates: {
           displayName: displayName.trimEnd(),
           description: description.trimEnd(),
-          pronouns: pronouns.trimEnd().toLowerCase(),
-          website: website.trimEnd() as UriString,
+          pronouns: pronouns.trim().toLowerCase() || undefined,
+          website: (website.trim() || undefined) as UriString | undefined,
         },
         newUserAvatar,
         newUserBanner,
@@ -473,7 +473,7 @@ function DialogInner({
           </TextField.LabelText>
           <View style={[a.w_full, a.relative]}>
             <TextField.Root isInvalid={websiteTooLong || websiteInvalidFormat}>
-              {website && <TextField.Icon icon={Globe} />}
+              <TextField.Icon icon={Globe} />
               <Dialog.Input
                 inputRef={websiteInputRef}
                 defaultValue={website}
@@ -528,6 +528,14 @@ function DialogInner({
               </View>
             )}
           </View>
+          {/^http:\/\//i.test(website.trim()) && (
+            <Admonition type="warning" style={a.mt_sm}>
+              <Trans>
+                HTTP links may not appear on your profile. Use HTTPS if your
+                website supports it.
+              </Trans>
+            </Admonition>
+          )}
           {websiteTooLong && (
             <Text
               style={[
@@ -551,7 +559,7 @@ function DialogInner({
                 {color: t.palette.negative_400},
               ]}>
               <Trans>
-                Website must be a valid URI (e.g., https://bsky.app)
+                Website must be a valid URI (e.g. https://twelvemen.neocities.org/)
               </Trans>
             </Text>
           )}
