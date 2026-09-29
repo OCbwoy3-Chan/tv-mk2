@@ -351,6 +351,7 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
 
   const {refs, floatingStyles, isPositioned} = useFloating({
     open: isVisible,
+    placement: props.align === 'start' ? 'bottom-start' : 'bottom',
     middleware: floatingMiddlewares,
     whileElementsMounted: autoUpdate,
   })

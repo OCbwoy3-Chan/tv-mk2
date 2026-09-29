@@ -5,4 +5,5 @@ export type ProfileHoverCardProps = ViewStyleProp & {
   did: string
   disable?: boolean
   inline?: boolean
+  align?: 'center' | 'start'
 }

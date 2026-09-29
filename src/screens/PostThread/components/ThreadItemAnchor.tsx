@@ -454,7 +454,10 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   a.align_start,
                   hideDisplayNames && a.justify_center,
                 ]}>
-                <ProfileHoverCard did={post.author.did} style={[a.w_full]}>
+                <ProfileHoverCard
+                  did={post.author.did}
+                  align="start"
+                  style={[a.w_full]}>
                   <View
                     style={[
                       a.flex_row,
