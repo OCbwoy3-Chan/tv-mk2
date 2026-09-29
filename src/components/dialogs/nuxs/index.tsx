@@ -27,14 +27,11 @@ import {
 } from '#/components/dialogs/nuxs/InviteFriendsAnnouncement'
 import {isSnoozed, snooze, unsnooze} from '#/components/dialogs/nuxs/snoozing'
 import {type EnabledCheckProps} from '#/components/dialogs/nuxs/utils'
-<<<<<<< HEAD
 import { TennaPartyNativeAppNux } from '#/components/tenna/NativeAppNux'
-=======
 import {
   enabled as isWitchskyUpdateAnnouncementEnabled,
   WitchskyUpdateAnnouncement,
 } from '#/components/dialogs/nuxs/WitchskyUpdateAnnouncement'
->>>>>>> 0496b23253676f399cdb9ed65e81ec16df40b989
 import {useAnalytics} from '#/analytics'
 import {useGeolocation} from '#/geolocation'
 import {type app} from '#/lexicons'
