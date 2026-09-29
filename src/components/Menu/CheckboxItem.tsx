@@ -24,11 +24,11 @@ export function CheckboxItemText({
         setSelected(value)
         onChange(value)
       }}
-      style={[a.flex_1, a.justify_between]}>
+      style={[a.flex_1, a.gap_sm]}>
+      <Toggle.Checkbox />
       <Toggle.LabelText style={[a.flex_1, a.text_md]}>
         {children}
       </Toggle.LabelText>
-      <Toggle.Checkbox />
     </Toggle.Item>
   )
 }

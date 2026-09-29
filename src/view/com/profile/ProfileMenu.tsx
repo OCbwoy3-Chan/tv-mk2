@@ -38,7 +38,7 @@ import {useDialogControl} from '#/components/Dialog'
 import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {UserAddRemoveListsDialog} from '#/components/dialogs/lists/UserAddRemoveListsDialog'
 import {StarterPackDialog} from '#/components/dialogs/StarterPackDialog'
-import {At_Stroke2_Corner0_Rounded as AtIcon} from '#/components/icons/At'
+import {ArrowShareRight_Stroke2_Corner2_Rounded as ShareIcon} from '#/components/icons/ArrowShareRight'
 import {ChainLink_Stroke2_Corner0_Rounded as ChainLinkIcon} from '#/components/icons/ChainLink'
 import {ChevronRight_Stroke2_Corner0_Rounded as ChevronRightIcon} from '#/components/icons/Chevron'
 import {CircleCheck_Stroke2_Corner0_Rounded as CircleCheckIcon} from '#/components/icons/CircleCheck'
@@ -64,6 +64,7 @@ import {BlueskyIcon} from '#/components/icons/services/Bluesky'
 import {PDSlsIcon} from '#/components/icons/services/PDSls'
 import {SkyTraceIcon} from '#/components/icons/services/SkyTrace'
 import {SpeakerVolumeFull_Stroke2_Corner0_Rounded as UnmuteIcon} from '#/components/icons/Speaker'
+import {SquareArrowTopRight_Stroke2_Corner0_Rounded as ExternalIcon} from '#/components/icons/SquareArrowTopRight'
 import {StarterPack_Stroke2_Corner0_Rounded as StarterPackIcon} from '#/components/icons/StarterPack'
 import * as Menu from '#/components/Menu'
 import {CheckboxItemText} from '#/components/Menu/CheckboxItem'
@@ -162,10 +163,6 @@ let ProfileMenu = ({
     void shareUrl(toShareUrlBsky(makeProfileLink(profile)))
   }, [profile])
 
-  const onPressShareHandle = useCallback(() => {
-    void shareText(profile.handle)
-  }, [profile.handle])
-
   const onPressCopy = useCallback(async () => {
     const url = toShareUrl(makeProfileLink(profile))
     if (IS_IOS) {
@@ -185,11 +182,6 @@ let ProfileMenu = ({
     }
     Toast.show(l`Copied to clipboard`, {type: 'success'})
   }, [l, profile])
-
-  const onPressCopyHandle = useCallback(async () => {
-    await ExpoClipboard.setStringAsync(profile.handle)
-    Toast.show(l`Copied to clipboard`, {type: 'success'})
-  }, [l, profile.handle])
 
   const onPressCopyAtprotoExplorer = useCallback(
     async (url: string) => {
@@ -451,33 +443,17 @@ let ProfileMenu = ({
             </Menu.Item>
 
             <Menu.Submenu
-              label={l`Share`}
+              label={l`Share link`}
               trigger={
                 <>
+                  <Menu.ItemIcon icon={ShareIcon} />
                   <Menu.ItemText>
-                    <Trans>Share</Trans>
+                    <Trans>Share link</Trans>
                   </Menu.ItemText>
                   <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
                 </>
               }>
               <Menu.Group>
-                <Menu.Item
-                  testID="profileHeaderDropdownShareHandleBtn"
-                  label={l`Handle`}
-                  onPress={() => {
-                    shareOrWarn(() => {
-                      if (IS_WEB || copyLinksRef.current) {
-                        void onPressCopyHandle()
-                      } else {
-                        onPressShareHandle()
-                      }
-                    })
-                  }}>
-                  <Menu.ItemText>
-                    <Trans>Handle</Trans>
-                  </Menu.ItemText>
-                  <Menu.ItemIcon icon={AtIcon} position="right" />
-                </Menu.Item>
                 <Menu.Item
                   testID="profileHeaderDropdownShareBlueskyBtn"
                   label={l`Bluesky`}
@@ -536,11 +512,12 @@ let ProfileMenu = ({
               </Menu.Group>
             </Menu.Submenu>
             <Menu.Submenu
-              label={l`Open`}
+              label={l`Open with`}
               trigger={
                 <>
+                  <Menu.ItemIcon icon={ExternalIcon} />
                   <Menu.ItemText>
-                    <Trans>Open</Trans>
+                    <Trans>Open with</Trans>
                   </Menu.ItemText>
                   <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
                 </>

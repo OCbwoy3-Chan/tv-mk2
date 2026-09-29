@@ -29,6 +29,7 @@ import {
   useMenuContext,
   useMenuItemContext,
 } from '#/components/Menu/context'
+import {leadingIcons} from '#/components/Menu/leadingIcons'
 import {
   type ContextType,
   type GroupProps,
@@ -288,7 +289,7 @@ export function Item({
       ]}>
       <ItemContext.Provider
         value={{disabled: Boolean(rest.disabled), destructive}}>
-        {children}
+        {leadingIcons(children, ItemIcon)}
       </ItemContext.Provider>
     </Pressable>
   )
@@ -365,12 +366,12 @@ export function ItemText({children, style}: ItemTextProps) {
   )
 }
 
-export function ItemIcon({icon: Comp, fill}: ItemIconProps) {
+export function ItemIcon({icon: Comp, position = 'left', fill}: ItemIconProps) {
   const t = useTheme()
   const {disabled, destructive} = useMenuItemContext()
-  return (
+  const icon = (
     <Comp
-      size="lg"
+      width={position === 'right' ? 12 : 22}
       fill={
         fill
           ? fill({disabled})
@@ -381,6 +382,11 @@ export function ItemIcon({icon: Comp, fill}: ItemIconProps) {
               : t.atoms.text_contrast_medium.color
       }
     />
+  )
+  return position === 'right' ? (
+    <View style={[a.align_center, {width: 24, flexShrink: 0}]}>{icon}</View>
+  ) : (
+    icon
   )
 }
 
