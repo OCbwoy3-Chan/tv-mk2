@@ -127,9 +127,13 @@ function CantSubscribePrompt({
         <Prompt.TitleText>Unable to subscribe</Prompt.TitleText>
         <Prompt.DescriptionText>
           <Trans>
+            We're sorry! You are crazy AS FUCK!
+            You're already subscibed to 200 of them, what more do you want?
+          </Trans>
+          {/* <Trans>
             We're sorry! You can only subscribe to twenty labelers, and you've
             reached your limit of twenty.
-          </Trans>
+          </Trans> */}
         </Prompt.DescriptionText>
       </Prompt.Content>
       <Prompt.Actions>

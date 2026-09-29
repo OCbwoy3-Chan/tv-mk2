@@ -12,7 +12,6 @@ import {
   follow,
   muteActor,
   unmuteActor,
-  upsertProfile,
 } from '@bsky/sdk'
 import {
   type InfiniteData,
@@ -27,6 +26,7 @@ import chunk from 'lodash.chunk'
 import {uploadBlob} from '#/lib/api'
 import {until} from '#/lib/async/until'
 import {useToggleMutationQueue} from '#/lib/hooks/useToggleMutationQueue'
+import {isRecordNotFoundError} from '#/lib/xrpc-error'
 import {updateProfileShadow} from '#/state/cache/profile-shadow'
 import {type Shadow} from '#/state/cache/types'
 import {type ImageMeta} from '#/state/gallery'
@@ -188,40 +188,67 @@ export function useProfileUpdateMutation() {
           newUserBanner.mime,
         )
       }
-      await pdsClient.call(upsertProfile, async existing => {
-        let next: Un$Typed<app.bsky.actor.profile.Main> = existing || {}
-        if (typeof updates === 'function') {
-          next = updates(next)
-        } else {
+      const existingRecord = await pdsClient
+        .call(com.atproto.repo.getRecord, {
+          repo: pdsClient.assertDid,
+          collection: 'app.bsky.actor.profile',
+          rkey: 'self',
+        })
+        .catch(error => {
+          if (isRecordNotFoundError(error)) return undefined
+          throw error
+        })
+
+      const existingValue = existingRecord?.value
+      const existing =
+        existingValue && typeof existingValue === 'object'
+          ? (existingValue as Un$Typed<app.bsky.actor.profile.Main>)
+          : undefined
+      let next: Un$Typed<app.bsky.actor.profile.Main> = existing || {}
+      if (typeof updates === 'function') {
+        next = updates(next)
+      } else {
+        if ('displayName' in updates) {
           next.displayName = updates.displayName || undefined
+        }
+        if ('description' in updates) {
           next.description = updates.description || undefined
-          if ('pinnedPost' in updates) {
-            next.pinnedPost = updates.pinnedPost
-          }
-          if ('pronouns' in updates) {
-            next.pronouns = updates.pronouns?.trim() || undefined
-          }
-          if ('website' in updates) {
-            if (updates['website'] && updates['website'].length !== 0) {
-              next.website = updates.website
-            } else {
-              next.website = undefined
-            }
+        }
+        if ('pinnedPost' in updates) {
+          next.pinnedPost = updates.pinnedPost
+        }
+        if ('pronouns' in updates) {
+          next.pronouns = updates.pronouns?.trim() || undefined
+        }
+        if ('website' in updates) {
+          if (updates['website'] && updates['website'].length !== 0) {
+            next.website = updates.website
+          } else {
+            next.website = undefined
           }
         }
-        if (newUserAvatarPromise) {
-          const res = await newUserAvatarPromise
-          next.avatar = res.blob
-        } else if (newUserAvatar === null) {
-          next.avatar = undefined
-        }
-        if (newUserBannerPromise) {
-          const res = await newUserBannerPromise
-          next.banner = res.blob
-        } else if (newUserBanner === null) {
-          next.banner = undefined
-        }
-        return next
+      }
+      if (newUserAvatarPromise) {
+        const res = await newUserAvatarPromise
+        next.avatar = res.blob
+      } else if (newUserAvatar === null) {
+        next.avatar = undefined
+      }
+      if (newUserBannerPromise) {
+        const res = await newUserBannerPromise
+        next.banner = res.blob
+      } else if (newUserBanner === null) {
+        next.banner = undefined
+      }
+      await pdsClient.call(com.atproto.repo.putRecord, {
+        repo: pdsClient.assertDid,
+        collection: 'app.bsky.actor.profile',
+        rkey: 'self',
+        record: {
+          $type: 'app.bsky.actor.profile',
+          ...next,
+        },
+        swapRecord: existingRecord?.cid,
       })
       await whenAppViewReady(
         appviewClient,
