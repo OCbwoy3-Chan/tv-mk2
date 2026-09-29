@@ -45,7 +45,11 @@ export async function hasWorkingHandleLink(
     DNS_RECORD_TYPES.map(type => hasDnsAnswers(handle, type, signal)),
   )
 
-  signal?.throwIfAborted()
+  if (signal?.aborted) {
+    throw Object.assign(new Error('Handle link check aborted'), {
+      name: 'AbortError',
+    })
+  }
 
   return results.some(
     result => result.status === 'fulfilled' && Boolean(result.value),
