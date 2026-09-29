@@ -1,4 +1,5 @@
 import {type StyleProp, View, type ViewStyle} from 'react-native'
+import {Trans} from '@lingui/react/macro'
 
 import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -7,16 +8,18 @@ import {Text} from '#/components/Typography'
 
 export function PronounPill({
   pronouns,
+  showLabel = false,
   style,
 }: {
   pronouns?: string
+  showLabel?: boolean
   style?: StyleProp<ViewStyle>
 }) {
   const t = useTheme()
   const square = useEnableSquareButtons()
   const label = sanitizePronouns(pronouns ?? '')
   if (!label) return null
-  return (
+  const pill = (
     <View
       style={[
         t.atoms.bg_contrast_50,
@@ -34,5 +37,15 @@ export function PronounPill({
         {label}
       </Text>
     </View>
+  )
+  return showLabel ? (
+    <View style={[a.flex_row, a.align_center, a.flex_shrink, a.gap_xs]}>
+      {pill}
+      <Text style={t.atoms.text_contrast_medium}>
+        <Trans>pronouns</Trans>
+      </Text>
+    </View>
+  ) : (
+    pill
   )
 }

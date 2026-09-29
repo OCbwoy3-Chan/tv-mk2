@@ -57,6 +57,7 @@ import {
 } from '#/components/KnownFollowers'
 import {Link} from '#/components/Link'
 import * as Prompt from '#/components/Prompt'
+import {PronounPill} from '#/components/PronounPill'
 import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
 import * as Tooltip from '#/components/Tooltip'
@@ -205,7 +206,11 @@ let ProfileHeaderStandard = ({
                 profile={profile}
                 moderation={moderation}
               />
-              <ProfileHeaderHandle profile={profile} verticalPadding={2} />
+              <ProfileHeaderHandle
+                profile={profile}
+                showPronouns={false}
+                verticalPadding={2}
+              />
             </View>
             {!isPlaceholderProfile && !isBlockedUser && (
               <View style={a.gap_md}>
@@ -238,24 +243,34 @@ let ProfileHeaderStandard = ({
             style={[
               a.flex_row,
               a.flex_wrap,
+              a.align_center,
               {gap: 10},
               a.pt_md,
               // Keep above Followed by / tabs so the join-date tooltip paints correctly
               web({position: 'relative', zIndex: 2}),
             ]}>
+            <PronounPill pronouns={profile.pronouns} showLabel />
             {websiteFormatted && (
               <Link
                 to={sanitizeWebsiteForLink(website ?? '')}
                 label={_(msg({message: `Visit ${websiteFormatted}`}))}
-                style={[a.flex_row, a.align_center, a.gap_xs]}>
+                style={[
+                  a.flex_row,
+                  a.align_center,
+                  a.gap_xs,
+                  {maxWidth: '100%'},
+                ]}>
                 {({hovered}) => (
                   <>
                     <Globe
                       width={tokens.space.lg}
-                      style={{color: t.palette.primary_500}}
+                      style={{color: t.palette.primary_500, flexShrink: 0}}
                     />
                     <Text
+                      numberOfLines={1}
+                      ellipsizeMode="middle"
                       style={[
+                        a.flex_shrink,
                         {color: t.palette.primary_500},
                         hovered && a.underline,
                       ]}>

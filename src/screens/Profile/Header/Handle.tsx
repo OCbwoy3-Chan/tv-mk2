@@ -23,12 +23,14 @@ export function ProfileHeaderHandle({
   profile,
   disableTaps,
   disableAuxiliaryTaps,
+  showPronouns = true,
   onLinkPress,
   verticalPadding = 0,
 }: {
   profile: Shadow<app.bsky.actor.defs.ProfileViewDetailed>
   disableTaps?: boolean
   disableAuxiliaryTaps?: boolean
+  showPronouns?: boolean
   onLinkPress?: (e: GestureResponderEvent) => void | false
   verticalPadding?: number
 }) {
@@ -173,7 +175,7 @@ export function ProfileHeaderHandle({
               )}
             </View>
           ))}
-        <PronounPill pronouns={pronouns} />
+        {showPronouns && <PronounPill pronouns={pronouns} />}
       </View>
     </View>
   )
