@@ -2780,7 +2780,7 @@ function ComposerFooter({
 
   const enableSquareButtons = useEnableSquareButtons()
 
-  if (media?.type === 'images') {
+  if (media?.type === 'images' || media?.type === 'gallery') {
     isMediaSelectionDisabled = isMaxImages
     selectedAssetsCount = images.length
   } else if (media?.type === 'video') {
