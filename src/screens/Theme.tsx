@@ -431,7 +431,7 @@ function ThemePageMenu({
           </Button>
         )}
       </Menu.Trigger>
-      <Menu.Outer style={{minWidth: 190}}>
+      <Menu.Outer>
         {currentAccount && (
           <Menu.Item
             label={savedRecordUri ? _(msg`Unsave theme`) : _(msg`Save theme`)}

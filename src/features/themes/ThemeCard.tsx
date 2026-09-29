@@ -138,7 +138,7 @@ function ThemeCardMenu({
           </Button>
         )}
       </Menu.Trigger>
-      <Menu.Outer style={{minWidth: 210}}>
+      <Menu.Outer>
         <Menu.Item
           label={_(msg`Use theme`)}
           disabled={selected}

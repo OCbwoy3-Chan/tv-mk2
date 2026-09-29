@@ -426,7 +426,7 @@ let ProfileMenu = ({
           }}
         </Menu.Trigger>
 
-        <Menu.Outer style={{minWidth: 170}}>
+        <Menu.Outer>
           <Menu.Group>
             <Menu.Item
               testID="profileHeaderDropdownCopyLinkBtn"
