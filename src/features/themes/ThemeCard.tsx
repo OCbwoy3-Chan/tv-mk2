@@ -1,7 +1,5 @@
 import {View} from 'react-native'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 
 import {type NavigationProp} from '#/lib/routes/types'
@@ -26,11 +24,17 @@ export function ThemeCard({
   selected,
   selectedSetName,
   savedRecordUri,
+  onPress,
+  label,
+  showMenu = true,
 }: {
   theme: ThemeView
   selected?: boolean
   selectedSetName?: string
   savedRecordUri?: string
+  onPress?: () => void
+  label?: string
+  showMenu?: boolean
 }) {
   const t = useTheme()
   const {gtMobile} = useBreakpoints()
@@ -68,19 +72,22 @@ export function ThemeCard({
         colorSets={colorSets}
         special={Boolean(theme.record.special)}
         variantCount={colorSets.length}
-        label={theme.record.name}
+        label={label ?? theme.record.name}
         hideLabel
         selected={selected}
-        onPress={() =>
-          navigation.navigate('Theme', {
-            name: theme.author,
-            rkey: themeRkey(theme.uri),
-          })
+        onPress={
+          onPress ??
+          (() =>
+            navigation.navigate('Theme', {
+              name: theme.author,
+              rkey: themeRkey(theme.uri),
+            }))
         }
       />
       <View style={[a.flex_row, a.align_center, a.gap_sm]}>
         <View style={[a.flex_1]}>
           <Text
+            emoji
             numberOfLines={1}
             ellipsizeMode="tail"
             style={[a.text_lg, a.font_semi_bold]}>
@@ -88,6 +95,7 @@ export function ThemeCard({
           </Text>
           {theme.record.description ? (
             <Text
+              emoji
               numberOfLines={1}
               ellipsizeMode="tail"
               style={[a.text_sm, t.atoms.text_contrast_medium]}>
@@ -95,12 +103,14 @@ export function ThemeCard({
             </Text>
           ) : null}
         </View>
-        <ThemeCardMenu
-          theme={theme}
-          colorSetName={colorSet.name}
-          savedRecordUri={savedRecordUri}
-          selected={selected}
-        />
+        {showMenu && (
+          <ThemeCardMenu
+            theme={theme}
+            colorSetName={colorSet.name}
+            savedRecordUri={savedRecordUri}
+            selected={selected}
+          />
+        )}
       </View>
     </View>
   )
@@ -117,19 +127,22 @@ function ThemeCardMenu({
   savedRecordUri?: string
   selected?: boolean
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const navigation = useNavigation<NavigationProp>()
   const {currentAccount} = useSession()
+  const isOwn = Boolean(
+    currentAccount && theme.uri.startsWith(`at://${currentAccount.did}/`),
+  )
   const applyTheme = useApplyTheme()
   const saveTheme = useSaveTheme()
   const unsaveTheme = useUnsaveTheme()
   return (
     <Menu.Root>
-      <Menu.Trigger label={_(msg`Open theme actions`)}>
+      <Menu.Trigger label={l`Open theme actions`}>
         {({props}) => (
           <Button
             {...props}
-            label={_(msg`Open theme actions`)}
+            label={l`Open theme actions`}
             size="small"
             variant="solid"
             color="secondary"
@@ -140,7 +153,7 @@ function ThemeCardMenu({
       </Menu.Trigger>
       <Menu.Outer>
         <Menu.Item
-          label={_(msg`Use theme`)}
+          label={l`Use theme`}
           disabled={selected}
           onPress={() => applyTheme(theme, colorSetName)}>
           <Menu.ItemText>
@@ -150,7 +163,7 @@ function ThemeCardMenu({
         </Menu.Item>
         {currentAccount && (
           <Menu.Item
-            label={savedRecordUri ? _(msg`Unsave theme`) : _(msg`Save theme`)}
+            label={savedRecordUri ? l`Unsave theme` : l`Save theme`}
             onPress={() => {
               if (savedRecordUri) {
                 unsaveTheme.mutate(savedRecordUri)
@@ -167,9 +180,9 @@ function ThemeCardMenu({
             />
           </Menu.Item>
         )}
-        {currentAccount && (
+        {currentAccount && !isOwn && (
           <Menu.Item
-            label={_(msg`Remix theme`)}
+            label={l`Remix theme`}
             onPress={() =>
               navigation.navigate('ThemeEditor', {
                 remix: {
@@ -185,8 +198,21 @@ function ThemeCardMenu({
             <Menu.ItemIcon icon={PencilIcon} position="right" />
           </Menu.Item>
         )}
+        {isOwn && (
+          <Menu.Item
+            testID="editThemeMenuItem"
+            label={l`Edit theme`}
+            onPress={() =>
+              navigation.navigate('ThemeEditor', {rkey: themeRkey(theme.uri)})
+            }>
+            <Menu.ItemText>
+              <Trans>Edit</Trans>
+            </Menu.ItemText>
+            <Menu.ItemIcon icon={PencilIcon} position="right" />
+          </Menu.Item>
+        )}
         <Menu.Item
-          label={_(msg`Share theme`)}
+          label={l`Share theme`}
           onPress={() =>
             void shareUrl(themeShareUrl(theme.author, themeRkey(theme.uri)))
           }>

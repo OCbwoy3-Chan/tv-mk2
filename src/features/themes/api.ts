@@ -1,10 +1,19 @@
 import {useCallback, useEffect, useState} from 'react'
 import {AtUri} from '@atproto/api'
 import {TID} from '@atproto/common-web'
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
+import {
+  type InfiniteData,
+  type QueryKey,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 import {useConstellationInstance} from '#/state/preferences/constellation-instance'
 import {useSlingshotInstance} from '#/state/preferences/slingshot-instance'
+import {STALE} from '#/state/queries'
+import {createQueryKey} from '#/state/queries/util'
 import {useAgent, useSession} from '#/state/session'
 import {pdsAgent} from '#/state/session/agent'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
@@ -140,7 +149,7 @@ async function getTheme(
       return {
         uri: response.data.uri,
         cid: response.data.cid,
-        author: repo,
+        author: themeAuthor(response.data.uri),
         record: response.data.value,
         source: 'own',
       }
@@ -282,6 +291,52 @@ export function useThemeRecord(repo?: string, rkey?: string) {
   })
 }
 
+type AccountThemesPage = {items: ThemeView[]; cursor?: string}
+
+const useAccountThemesQueryKey = 'witchsky-account-themes'
+
+export function useAccountThemesQuery() {
+  const agent = useAgent()
+  const {currentAccount} = useSession()
+  return useInfiniteQuery<
+    AccountThemesPage,
+    Error,
+    InfiniteData<AccountThemesPage>,
+    QueryKey,
+    string | undefined
+  >({
+    queryKey: createQueryKey(useAccountThemesQueryKey, {
+      repo: currentAccount?.did,
+    }),
+    enabled: Boolean(currentAccount),
+    staleTime: STALE.MINUTES.ONE,
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: page => page.cursor,
+    queryFn: async ({pageParam}) => {
+      const response = await pdsAgent(agent).com.atproto.repo.listRecords({
+        repo: agent.assertDid,
+        collection: THEME_COLLECTION,
+        limit: 100,
+        reverse: true,
+        cursor: pageParam,
+      })
+      const items: ThemeView[] = []
+      for (const item of response.data.records) {
+        if (!isThemeRecord(item.value) || !isSupportedTheme(item.value))
+          continue
+        items.push({
+          uri: item.uri,
+          cid: item.cid,
+          author: agent.assertDid,
+          record: item.value,
+          source: 'own',
+        })
+      }
+      return {items, cursor: response.data.cursor}
+    },
+  })
+}
+
 export function useThemeLibrary() {
   const agent = useAgent()
   const {currentAccount} = useSession()
@@ -376,8 +431,33 @@ export function usePublishTheme() {
       })
       return result.data
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({queryKey: ['witchsky-theme-library']}),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({queryKey: ['witchsky-theme-library']}),
+        queryClient.invalidateQueries({queryKey: [useAccountThemesQueryKey]}),
+        queryClient.invalidateQueries({queryKey: ['witchsky-theme']}),
+      ])
+    },
+  })
+}
+
+export function useDeleteTheme() {
+  const agent = useAgent()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (rkey: string) =>
+      pdsAgent(agent).com.atproto.repo.deleteRecord({
+        repo: agent.assertDid,
+        collection: THEME_COLLECTION,
+        rkey,
+      }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({queryKey: ['witchsky-theme-library']}),
+        queryClient.invalidateQueries({queryKey: [useAccountThemesQueryKey]}),
+        queryClient.invalidateQueries({queryKey: ['witchsky-theme']}),
+      ])
+    },
   })
 }
 

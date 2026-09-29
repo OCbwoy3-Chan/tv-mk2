@@ -1,26 +1,33 @@
 import {useEffect, useMemo, useState} from 'react'
 import {Pressable, View} from 'react-native'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {type CommonNavigatorParams} from '#/lib/routes/types'
-import {useSession} from '#/state/session'
+import {useAgent, useSession} from '#/state/session'
 import {useThemePrefs} from '#/state/shell'
+import {PairedThemePicker} from '#/screens/Settings/AppearanceSettings/PairedThemePicker'
 import {atoms as a, useTheme} from '#/alf'
 import {useMaterialYouPalette} from '#/alf/util/materialYou'
-import {Button, ButtonText} from '#/components/Button'
+import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import * as Dialog from '#/components/Dialog'
 import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as TextField from '#/components/forms/TextField'
+import {Trash_Stroke2_Corner0_Rounded as TrashIcon} from '#/components/icons/Trash'
 import * as Layout from '#/components/Layout'
+import * as Prompt from '#/components/Prompt'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
-import {usePublishTheme, useThemeRecord} from '#/features/themes/api'
+import {
+  useDeleteTheme,
+  usePublishTheme,
+  useThemeRecord,
+} from '#/features/themes/api'
 import {DEFAULT_ACTIVE_THEME, FEATURED_THEMES} from '#/features/themes/catalog'
 import {resolveHueRecord} from '#/features/themes/hue'
 import {resolveMaterialYouRecord} from '#/features/themes/materialYou'
 import {ThemePreview} from '#/features/themes/ThemePreview'
+import {resolveThemeReference} from '#/features/themes/themeReference'
 import {
   getColorSet,
   getColorSets,
@@ -94,7 +101,8 @@ function editableRecord(source: ThemeRecord): ThemeRecord {
 }
 
 export function ThemeEditorScreen({route, navigation}: Props) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
+  const agent = useAgent()
   const t = useTheme()
   const materialPalette = useMaterialYouPalette()
   const {currentAccount} = useSession()
@@ -124,6 +132,13 @@ export function ThemeEditorScreen({route, navigation}: Props) {
       : (route.params.remix?.rkey ?? route.params.rkey),
   )
   const publish = usePublishTheme()
+  const deleteTheme = useDeleteTheme()
+  const deletePrompt = Prompt.usePromptControl()
+  const pairPicker = Dialog.useDialogControl()
+  const isEditing = Boolean(route.params.rkey && !route.params.remix)
+  const [saving, setSaving] = useState(false)
+  const busy = saving || publish.isPending || deleteTheme.isPending
+  const canEdit = !isEditing || Boolean(existing.data)
   const [record, setRecord] = useState(() =>
     initialRecord(
       activeTheme[initialMode].record,
@@ -232,12 +247,26 @@ export function ThemeEditorScreen({route, navigation}: Props) {
   }
 
   const save = async () => {
-    if (!valid || !currentAccount) {
-      setError(_(msg`Enter valid colors for the base theme and its overrides.`))
+    if (!valid || !currentAccount || !canEdit || busy) {
+      setError(l`Enter valid colors for the base theme and its overrides.`)
       return
     }
     setError(undefined)
+    setSaving(true)
     try {
+      let recommendedPair: string | undefined
+      try {
+        recommendedPair = await resolveThemeReference(
+          record.recommendedPair ?? '',
+          async handle => {
+            const response = await agent.resolveHandle({handle})
+            return response.data.did
+          },
+        )
+      } catch {
+        setError(l`Enter a valid theme link or AT URI for the paired theme.`)
+        return
+      }
       const now = new Date().toISOString()
       const result = await publish.mutateAsync({
         rkey: route.params.remix ? undefined : route.params.rkey,
@@ -246,6 +275,7 @@ export function ThemeEditorScreen({route, navigation}: Props) {
           $type: 'app.witchsky.theme.colors',
           name: record.name.trim(),
           description: record.description?.trim() || undefined,
+          recommendedPair,
           updatedAt: now,
         },
       })
@@ -255,8 +285,21 @@ export function ThemeEditorScreen({route, navigation}: Props) {
       })
     } catch (cause) {
       setError(
-        cause instanceof Error ? cause.message : _(msg`Could not save theme.`),
+        cause instanceof Error ? cause.message : l`Could not save theme.`,
       )
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const remove = async () => {
+    if (!isEditing || !route.params.rkey || !canEdit || busy) return
+    setError(undefined)
+    try {
+      await deleteTheme.mutateAsync(route.params.rkey)
+      navigation.replace('ThemeGallery', {mode: record.mode})
+    } catch {
+      setError(l`Could not delete theme. Please try again.`)
     }
   }
 
@@ -269,7 +312,20 @@ export function ThemeEditorScreen({route, navigation}: Props) {
             <Trans>Theme editor</Trans>
           </Layout.Header.TitleText>
         </Layout.Header.Content>
-        <Layout.Header.Slot />
+        <Layout.Header.Slot>
+          {isEditing && (
+            <Button
+              testID="deleteThemeButton"
+              label={l`Delete theme`}
+              size="small"
+              color="negative_subtle"
+              shape="square"
+              disabled={busy || !canEdit}
+              onPress={deletePrompt.open}>
+              <ButtonIcon icon={TrashIcon} size="sm" />
+            </Button>
+          )}
+        </Layout.Header.Slot>
       </Layout.Header.Outer>
       <Layout.Content contentContainerStyle={[a.py_lg, a.pb_5xl]}>
         <View style={[a.px_xl, a.gap_xl]}>
@@ -278,7 +334,7 @@ export function ThemeEditorScreen({route, navigation}: Props) {
               <Trans>Theme name</Trans>
             </Text>
             <TextField.Input
-              label={_(msg`Theme name`)}
+              label={l`Theme name`}
               value={record.name}
               onChangeText={name => setRecord(current => ({...current, name}))}
             />
@@ -287,17 +343,17 @@ export function ThemeEditorScreen({route, navigation}: Props) {
             </Text>
             <SegmentedControl.Root
               type="radio"
-              label={_(msg`Light or dark mode`)}
+              label={l`Light or dark mode`}
               value={record.mode}
               onChange={(mode: ThemeMode) =>
                 setRecord(current => ({...current, mode}))
               }>
-              <SegmentedControl.Item label={_(msg`Light`)} value="light">
+              <SegmentedControl.Item label={l`Light`} value="light">
                 <SegmentedControl.ItemText>
                   <Trans>Light</Trans>
                 </SegmentedControl.ItemText>
               </SegmentedControl.Item>
-              <SegmentedControl.Item label={_(msg`Dark`)} value="dark">
+              <SegmentedControl.Item label={l`Dark`} value="dark">
                 <SegmentedControl.ItemText>
                   <Trans>Dark</Trans>
                 </SegmentedControl.ItemText>
@@ -307,7 +363,7 @@ export function ThemeEditorScreen({route, navigation}: Props) {
               <Trans>Description</Trans>
             </Text>
             <TextField.Input
-              label={_(msg`Description`)}
+              label={l`Description`}
               value={record.description ?? ''}
               multiline
               onChangeText={description =>
@@ -330,7 +386,7 @@ export function ThemeEditorScreen({route, navigation}: Props) {
                 </Text>
               </View>
               <Button
-                label={_(msg`Add subtheme`)}
+                label={l`Add subtheme`}
                 size="small"
                 color="secondary"
                 onPress={addSet}>
@@ -344,7 +400,7 @@ export function ThemeEditorScreen({route, navigation}: Props) {
                 <Pressable
                   key={`${set.name}-${index}`}
                   accessibilityRole="button"
-                  accessibilityLabel={_(msg`Edit ${set.name} subtheme`)}
+                  accessibilityLabel={l`Edit ${set.name} subtheme`}
                   accessibilityHint=""
                   onPress={() => setSelectedIndex(index)}
                   style={[
@@ -379,11 +435,7 @@ export function ThemeEditorScreen({route, navigation}: Props) {
                     )}
                   </Text>
                   <TextField.Input
-                    label={
-                      selectedIndex === 0
-                        ? _(msg`Base name`)
-                        : _(msg`Variant name`)
-                    }
+                    label={selectedIndex === 0 ? l`Base name` : l`Variant name`}
                     value={selected.name}
                     onChangeText={updateSelectedName}
                   />
@@ -457,7 +509,7 @@ export function ThemeEditorScreen({route, navigation}: Props) {
 
               {canDelete && (
                 <Button
-                  label={_(msg`Delete subtheme`)}
+                  label={l`Delete subtheme`}
                   size="small"
                   color="negative_subtle"
                   onPress={() => {
@@ -478,17 +530,32 @@ export function ThemeEditorScreen({route, navigation}: Props) {
           )}
 
           <View style={[a.gap_sm]}>
-            <Text style={[a.text_lg, a.font_bold]}>
-              <Trans>Paired theme</Trans>
-            </Text>
+            <View style={[a.flex_row, a.align_center, a.justify_between]}>
+              <Text style={[a.text_lg, a.font_bold]}>
+                <Trans>Paired theme</Trans>
+              </Text>
+              <Button
+                testID="searchPairedThemeButton"
+                label={l`Search your themes`}
+                size="small"
+                color="secondary"
+                disabled={busy || !currentAccount}
+                onPress={pairPicker.open}>
+                <ButtonText>
+                  <Trans>Search</Trans>
+                </ButtonText>
+              </Button>
+            </View>
             <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
               <Trans>
                 Optional. After publishing a theme for the opposite appearance
-                mode, paste its AT URI here so people can use the two together.
+                mode, paste its Witchsky link or AT URI here so people can use
+                the two together.
               </Trans>
             </Text>
             <TextField.Input
-              label={_(msg`Opposite-mode theme AT URI`)}
+              testID="pairedThemeInput"
+              label={l`Opposite-mode theme link or AT URI`}
               value={record.recommendedPair ?? ''}
               autoCapitalize="none"
               autoCorrect={false}
@@ -505,21 +572,32 @@ export function ThemeEditorScreen({route, navigation}: Props) {
             <Text style={[{color: t.palette.negative_500}]}>{error}</Text>
           )}
           <Button
-            label={_(msg`Publish theme`)}
+            label={l`Publish theme`}
             size="large"
             color="primary"
-            disabled={publish.isPending}
+            disabled={busy || !canEdit}
             onPress={() => void save()}>
             <ButtonText>
-              {publish.isPending ? (
-                <Trans>Saving…</Trans>
-              ) : (
-                <Trans>Publish theme</Trans>
-              )}
+              {saving ? <Trans>Saving…</Trans> : <Trans>Publish theme</Trans>}
             </ButtonText>
           </Button>
         </View>
       </Layout.Content>
+      <Prompt.Basic
+        control={deletePrompt}
+        title={l`Delete theme?`}
+        description={l`This will delete your published theme. This action cannot be undone.`}
+        confirmButtonCta={l`Delete`}
+        confirmButtonColor="negative"
+        onConfirm={() => void remove()}
+      />
+      <PairedThemePicker
+        control={pairPicker}
+        mode={record.mode === 'light' ? 'dark' : 'light'}
+        onSelect={recommendedPair =>
+          setRecord(current => ({...current, recommendedPair}))
+        }
+      />
     </Layout.Screen>
   )
 }

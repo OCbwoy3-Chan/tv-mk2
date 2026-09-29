@@ -50,6 +50,7 @@ import {
   isHueTheme,
   isMaterialYouTheme,
   THEME_COLLECTION,
+  themeAuthor,
   type ThemeView,
 } from '#/features/themes/types'
 import {themeShareUrl} from '#/features/themes/urls'
@@ -158,9 +159,7 @@ export function ThemeScreen({route, navigation}: Props) {
   const companionMode = theme?.record.mode === 'dark' ? 'light' : 'dark'
   const creatorHandle = creator.data?.handle ?? theme?.author
   const isOwn = Boolean(
-    currentAccount &&
-    (theme?.author === currentAccount.did ||
-      route.params.name === currentAccount.handle),
+    currentAccount && themeAuthor(rawTheme?.uri ?? '') === currentAccount.did,
   )
 
   return (
@@ -464,6 +463,7 @@ function ThemePageMenu({
         )}
         {isOwn && (
           <Menu.Item
+            testID="editThemeMenuItem"
             label={_(msg`Edit theme`)}
             onPress={() => navigation.navigate('ThemeEditor', {rkey})}>
             <Menu.ItemText>
