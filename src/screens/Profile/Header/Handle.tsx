@@ -24,6 +24,7 @@ export function ProfileHeaderHandle({
   disableTaps,
   disableAuxiliaryTaps,
   showPronouns = true,
+  truncate = false,
   onLinkPress,
   verticalPadding = 0,
 }: {
@@ -31,6 +32,7 @@ export function ProfileHeaderHandle({
   disableTaps?: boolean
   disableAuxiliaryTaps?: boolean
   showPronouns?: boolean
+  truncate?: boolean
   onLinkPress?: (e: GestureResponderEvent) => void | false
   verticalPadding?: number
 }) {
@@ -108,7 +110,14 @@ export function ProfileHeaderHandle({
         </View>
       ) : undefined}
       <View
-        style={[a.flex_row, a.flex_wrap, a.flex_shrink, a.align_center, {gap: 6}]}>
+        style={[
+          a.flex_row,
+          !truncate && a.flex_wrap,
+          a.flex_shrink,
+          a.align_center,
+          {gap: 6},
+          truncate && {minWidth: 0},
+        ]}>
         {!hideDisplayNames &&
           (invalidHandle ? (
             <Text emoji numberOfLines={1} style={handleTextStyle}>
@@ -175,7 +184,12 @@ export function ProfileHeaderHandle({
               )}
             </View>
           ))}
-        {showPronouns && <PronounPill pronouns={pronouns} />}
+        {showPronouns && (
+          <PronounPill
+            pronouns={pronouns}
+            style={truncate ? {flexShrink: 0, maxWidth: '45%'} : undefined}
+          />
+        )}
       </View>
     </View>
   )
