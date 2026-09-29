@@ -441,21 +441,21 @@ module.exports = function (_config) {
           {
             ios: {
               backgroundColor: '#fefbfb',
-              image: './assets/splash/witchsky.png',
+              image: './assets/logo.png',
               resizeMode: 'contain',
               dark: {
                 backgroundColor: '#281c1c',
-                image: './assets/splash/witchsky.png',
+                image: './assets/logo.png',
                 resizeMode: 'contain',
               },
             },
             android: {
               backgroundColor: '#fefbfb',
-              image: './assets/splash/witchsky.png',
+              image: './assets/logo.png',
               imageWidth: 102, // even division of 306px
               dark: {
                 backgroundColor: '#281c1c',
-                image: './assets/splash/witchsky.png',
+                image: './assets/logo.png',
                 imageWidth: 102,
               },
             },

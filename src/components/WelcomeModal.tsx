@@ -157,11 +157,11 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                 <View style={[a.align_center, {minWidth: 200}]}>
                   <Text
                     style={[
-                      a.text_md,
+                      a.text_sm,
                       a.text_center,
                       {color: 'rgb(58, 50, 50)', lineHeight: 24},
                     ]}>
-                    <Trans>enjoy this forked bsky &lt;3 - kris</Trans>
+                    <Trans>Unofficial. All mentions of Witchsky and Bluesky are purely informative and are not endorsed.</Trans>
                   </Text>
                 </View>
               </View>

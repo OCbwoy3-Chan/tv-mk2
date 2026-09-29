@@ -8,7 +8,7 @@ Get the app itself:
 
 - **Web: [tenna.party](https://tenna.party)**
 - **iOS: [native builds are avaiable here via github actions](https://github.com/OCbwoy3-Chan/tv-mk2/actions) (unsigned, for sideloading)**
-- **Android: [native builds are avaiable here via obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/OCbwoy3-Chan/tv-mk2/actions) and [github actions](https://github.com/OCbwoy3-Chan/tv-mk2/actions)** (use gh)
+- **Android: there are builds on obtainium**
 
 **PLEASE NOTE THAT ANDROID SUPPORT IS NOT MY #1 PRIORITY RIGHT NOW AS I DO NOT OWN AN ANDROID OF MY OWN NOR EMULATE ONE BECAUSE I'M AN IPHONE PERSON**
 

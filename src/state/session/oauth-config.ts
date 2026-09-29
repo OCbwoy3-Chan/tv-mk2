@@ -1,7 +1,9 @@
 /** Shared by clients, metadata generation, and the metadata HTTP handlers. */
 export const DEFAULT_APPVIEW_AUDIENCE = 'did:web:api.bsky.app#bsky_appview'
 export const DEFAULT_CHAT_AUDIENCE = 'did:web:api.bsky.chat#bsky_chat'
-export const NATIVE_REDIRECT_URI = 'app.tennaparty:/auth/callback'
+
+export const NATIVE_REDIRECT_URI = 'party.tenna:/auth/callback' // ios
+export const ANDROID_REDIRECT_URI = 'app.tennaparty:/auth/callback' // android
 
 /** Keep the prod grant and client identity so stored sessions can refresh. */
 export const OAUTH_SCOPE =
