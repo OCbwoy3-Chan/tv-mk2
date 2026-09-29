@@ -47,7 +47,7 @@ export interface ComposerOpts {
   openAccountSwitcher?: boolean
   activeAccountDid?: string
   replyTo?: ComposerOptsPostRef
-  onPost?: (postUri: string | undefined) => void
+  onPost?: (postUri: string | undefined, data?: OnPostSuccessData) => void
   onPostSuccess?: (data: OnPostSuccessData) => void
   quote?: app.bsky.feed.defs.PostView
   mention?: string // handle of user to mention
