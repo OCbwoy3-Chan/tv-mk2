@@ -334,6 +334,8 @@ export const ComposePost = ({
   const {t: l, i18n} = useLingui()
   const forceAltTextEnabled = useForceAltTextEnabled()
   const requireAltTextEnabled = useRequireAltTextEnabled()
+  const omitViaField = useOmitViaField()
+  const tidSuffix = useTidSuffix()
 
   const langPrefs = useLanguagePrefs()
   const setLangPrefs = useLanguagePrefsApi()
@@ -1414,6 +1416,8 @@ export const ComposePost = ({
             : client,
           chatClient: postingAgent ? buildChatClient(postingAgent) : chatClient,
           pdsClient: postingPdsClient,
+          omitViaField,
+          tidSuffix,
         })
       ).uris[0]
 

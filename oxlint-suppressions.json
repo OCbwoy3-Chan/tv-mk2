@@ -913,11 +913,6 @@
       "count": 1
     }
   },
-  "src/view/com/composer/Composer.tsx": {
-    "no-unused-vars": {
-      "count": 2
-    }
-  },
   "src/view/com/composer/drafts/DraftItem.tsx": {
     "typescript/await-thenable": {
       "count": 2
