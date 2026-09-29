@@ -159,6 +159,7 @@ function ContentHiderActive({
             control.open()
           }
         }}
+        accessibilityState={{expanded: override}}
         label={desc.name}
         accessibilityHint={
           modui.noOverride

@@ -292,6 +292,7 @@ export function KeyboardShortcuts() {
     if (
       action === 'media' &&
       (selected.dataset.keyboardNavigationPost ||
+        selected.dataset.keyboardNavigationWarning ||
         selected.dataset.keyboardNavigationScope === 'messages')
     ) {
       const targets = getPostMediaTargets(selected)
