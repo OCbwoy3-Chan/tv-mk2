@@ -17,6 +17,10 @@ import {
   useSetHideFeedsPromoTab,
 } from '#/state/preferences/hide-feeds-promo-tab'
 import {
+  useHideQuotesOfBlockedAccounts,
+  useSetHideQuotesOfBlockedAccounts,
+} from '#/state/preferences/hide-quotes-of-blocked-accounts'
+import {
   useHideUnreplyablePosts,
   useSetHideUnreplyablePosts,
 } from '#/state/preferences/hide-unreplyable-posts'
@@ -37,6 +41,7 @@ import {Eye_Stroke2_Corner2_Rounded as EyeIcon} from '#/components/icons/Eye'
 import {EyeSlash_Stroke2_Corner0_Rounded as EyeSlashIcon} from '#/components/icons/EyeSlash'
 import {PencilLine_Stroke2_Corner2_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
+import {CloseQuote_Stroke2_Corner1_Rounded as QuoteIcon} from '#/components/icons/Quote'
 import {Reply as ReplyIcon} from '#/components/icons/Reply'
 import {TimesLarge_Stroke2_Corner0_Rounded as TimesIcon} from '#/components/icons/Times'
 import {RunesScreenLayout} from './components/RunesScreenLayout'
@@ -64,6 +69,9 @@ export function RunesUsabilityFeedSettingsScreen() {
 
   const hideUnreplyablePosts = useHideUnreplyablePosts()
   const setHideUnreplyablePosts = useSetHideUnreplyablePosts()
+
+  const hideQuotesOfBlockedAccounts = useHideQuotesOfBlockedAccounts()
+  const setHideQuotesOfBlockedAccounts = useSetHideQuotesOfBlockedAccounts()
 
   return (
     <RunesScreenLayout titleText={l`Feeds`}>
@@ -166,14 +174,20 @@ export function RunesUsabilityFeedSettingsScreen() {
           <Toggle.Platform />
         </SettingsList.Item>
       </Toggle.Item>
-      <SettingsList.Item>
-        <Admonition type="info" style={[a.flex_1]}>
-          <Trans>
-            Hides posts from feeds where replies are disabled (e.g. due to
-            postgates or other restrictions). Does not affect thread views.
-          </Trans>
-        </Admonition>
-      </SettingsList.Item>
+      <Toggle.Item
+        testID="hideQuotesOfBlockedAccountsToggle"
+        name="hide_quotes_of_blocked_accounts"
+        label={l`Hide posts quoting blocked accounts`}
+        value={hideQuotesOfBlockedAccounts}
+        onChange={setHideQuotesOfBlockedAccounts}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={QuoteIcon} />
+          <SettingsList.ItemText>
+            <Trans>Hide posts quoting blocked accounts</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
     </RunesScreenLayout>
   )
 }

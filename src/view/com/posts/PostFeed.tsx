@@ -27,6 +27,7 @@ import {DISCOVER_FEED_URI, KNOWN_SHUTDOWN_FEEDS} from '#/lib/constants'
 import {useBottomBarOffset} from '#/lib/hooks/useBottomBarOffset'
 import {useInitialNumToRender} from '#/lib/hooks/useInitialNumToRender'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
+import {quotesBlockedAccount} from '#/lib/quotesBlockedAccount'
 import {isNetworkError} from '#/lib/strings/errors'
 import {userStyle} from '#/lib/userstyles'
 import {logger} from '#/logger'
@@ -39,6 +40,7 @@ import {
 } from '#/state/pds-viewability'
 import {useDisableComposerPrompt} from '#/state/preferences/disable-composer-prompt'
 import {useDisableInfiniteScroll} from '#/state/preferences/disable-infinite-scroll'
+import {useHideQuotesOfBlockedAccounts} from '#/state/preferences/hide-quotes-of-blocked-accounts'
 import {useHideUnreplyablePosts} from '#/state/preferences/hide-unreplyable-posts'
 import {useRepostCarouselEnabled} from '#/state/preferences/repost-carousel-enabled'
 import {useTrendingSettings} from '#/state/preferences/trending'
@@ -560,6 +562,7 @@ let PostFeed = ({
 
   const repostCarouselEnabled = useRepostCarouselEnabled()
   const hideUnreplyablePosts = useHideUnreplyablePosts()
+  const hideQuotesOfBlockedAccounts = useHideQuotesOfBlockedAccounts()
   const disableComposerPrompt = useDisableComposerPrompt()
 
   if (feedType === 'following') {
@@ -635,6 +638,11 @@ let PostFeed = ({
           }[] = []
           for (const page of data.pages) {
             for (const slice of page.slices) {
+              if (
+                hideQuotesOfBlockedAccounts &&
+                slice.items.some(item => quotesBlockedAccount(item.post.embed))
+              )
+                continue
               const item = slice.items.find(
                 item => item.uri === slice.feedPostUri,
               )
@@ -686,30 +694,22 @@ let PostFeed = ({
           }
         } else {
           for (const page of data?.pages) {
-            let slices = useRepostCarousel
-              ? groupReposts(page.slices)
-              : (page.slices as FeedPostSliceOrGroup[])
-
-            // Filter out posts that cannot be replied to if the setting is enabled
-            if (hideUnreplyablePosts) {
-              slices = slices.filter(slice => {
-                if (slice.isRepostSlice) {
-                  // For repost slices, filter the inner slices
-                  slice.slices = slice.slices.filter(innerSlice => {
-                    // Check if any item in the slice has replyDisabled
-                    return !innerSlice.items.some(
-                      item => item.post.viewer?.replyDisabled === true,
-                    )
-                  })
-                  return slice.slices.length > 0
-                } else {
-                  // For regular slices, check if any item has replyDisabled
-                  return !slice.items.some(
-                    item => item.post.viewer?.replyDisabled === true,
+            const visibleSlices =
+              hideUnreplyablePosts || hideQuotesOfBlockedAccounts
+                ? page.slices.filter(
+                    slice =>
+                      !slice.items.some(
+                        item =>
+                          (hideUnreplyablePosts &&
+                            item.post.viewer?.replyDisabled === true) ||
+                          (hideQuotesOfBlockedAccounts &&
+                            quotesBlockedAccount(item.post.embed)),
+                      ),
                   )
-                }
-              })
-            }
+                : page.slices
+            const slices = useRepostCarousel
+              ? groupReposts(visibleSlices)
+              : (visibleSlices as FeedPostSliceOrGroup[])
 
             for (const slice of slices) {
               sliceIndex++
@@ -930,6 +930,7 @@ let PostFeed = ({
     trendingIndices,
     disableComposerPrompt,
     hideUnreplyablePosts,
+    hideQuotesOfBlockedAccounts,
   ])
 
   // events

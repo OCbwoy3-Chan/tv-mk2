@@ -102,6 +102,7 @@ export const SYNCED_PREFS_KEYS = [
   'plcDirectory',
   'plcDirectoryCustom',
   'hideUnreplyablePosts',
+  'hideQuotesOfBlockedAccounts',
   'pdsLabel',
   'faviconService',
   'postReplacement',

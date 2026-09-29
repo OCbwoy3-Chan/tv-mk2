@@ -31,6 +31,7 @@ import {Provider as GoLinksProvider} from './go-links-enabled'
 import {Provider as HiddenPostsProvider} from './hidden-posts'
 import {Provider as HideDisplayNamesProvider} from './hide-display-names'
 import {Provider as HideFeedsPromoTabProvider} from './hide-feeds-promo-tab'
+import {Provider as HideQuotesOfBlockedAccountsProvider} from './hide-quotes-of-blocked-accounts'
 import {Provider as HideScaryFollowButtonsProvider} from './hide-scary-follow-buttons.tsx'
 import {Provider as HideSimilarAccountsRecommProvider} from './hide-similar-accounts-recommendations'
 import {Provider as HideUnreplyablePostsProvider} from './hide-unreplyable-posts'
@@ -225,9 +226,11 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                     <TidSuffixProvider>
                                                                                                                                       <SlingshotInstanceProvider>
                                                                                                                                         <DisableInfiniteScrollProvider>
-                                                                                                                                          {
-                                                                                                                                            children
-                                                                                                                                          }
+                                                                                                                                          <HideQuotesOfBlockedAccountsProvider>
+                                                                                                                                            {
+                                                                                                                                              children
+                                                                                                                                            }
+                                                                                                                                          </HideQuotesOfBlockedAccountsProvider>
                                                                                                                                         </DisableInfiniteScrollProvider>
                                                                                                                                       </SlingshotInstanceProvider>
                                                                                                                                     </TidSuffixProvider>
