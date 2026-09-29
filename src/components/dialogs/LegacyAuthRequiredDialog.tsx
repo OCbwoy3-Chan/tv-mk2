@@ -1,6 +1,6 @@
 import {useRef, useState} from 'react'
 import {View} from 'react-native'
-import {ComAtprotoServerCreateSession} from '@atproto/api'
+import {LexAuthFactorError} from '@atproto/lex-password-session'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {cleanError, isNetworkError} from '#/lib/strings/errors'
@@ -68,10 +68,7 @@ export function LegacyAuthRequiredDialogContent({
     } catch (err) {
       setIsProcessing(false)
       const errMsg = String(err)
-      if (
-        err instanceof
-        ComAtprotoServerCreateSession.AuthFactorTokenRequiredError
-      ) {
+      if (err instanceof LexAuthFactorError) {
         setNeeds2fa(true)
         return
       }
@@ -94,7 +91,7 @@ export function LegacyAuthRequiredDialogContent({
         )
       } else {
         logger.warn('Failed to switch to password session', {error: errMsg})
-        setError(cleanError(errMsg))
+        setError(cleanError(err))
       }
     }
   }
