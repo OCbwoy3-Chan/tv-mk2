@@ -829,14 +829,14 @@ let PostMenuItems = ({
           </>
         )}
 
-        {videoEmbed && (IS_NATIVE || videoEmbed.presentation === 'gif') && (
+        {videoEmbed && (
           <>
             <Menu.Group>
               <Menu.Item
                 testID="postDropdownDownloadVideoBtn"
-                label={l`Download Video`}
+                label={l`Download video`}
                 onPress={() => void onPressDownloadVideo()}>
-                <Menu.ItemText>{l`Download Video`}</Menu.ItemText>
+                <Menu.ItemText>{l`Download video`}</Menu.ItemText>
                 <Menu.ItemIcon icon={Download} position="right" />
               </Menu.Item>
             </Menu.Group>
