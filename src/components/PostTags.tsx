@@ -2,6 +2,7 @@ import {useState} from 'react'
 import {Pressable, type StyleProp, View, type ViewStyle} from 'react-native'
 import {type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api'
 
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {RichTextTag} from '#/components/RichTextTag'
 
@@ -16,7 +17,6 @@ export function PostTags({
   post: AppBskyFeedDefs.PostView
   style?: StyleProp<ViewStyle>
 }) {
-  
   const tags = getOutlineTags(post)
 
   if (!tags.length) {
@@ -41,6 +41,7 @@ export function PostTags({
 
 function PostTag({tag, authorHandle}: {tag: string; authorHandle: string}) {
   const t = useTheme()
+  const square = useEnableSquareButtons()
   const [hovered, setHovered] = useState(false)
   return (
     <Pressable
@@ -48,7 +49,7 @@ function PostTag({tag, authorHandle}: {tag: string; authorHandle: string}) {
       onHoverIn={() => setHovered(true)}
       onHoverOut={() => setHovered(false)}
       style={({pressed}) => [
-        a.rounded_full,
+        square ? a.rounded_xs : a.rounded_full,
         hovered || pressed ? t.atoms.bg_contrast_50 : t.atoms.bg_contrast_25,
         {paddingHorizontal: 6, paddingVertical: 3},
       ]}>
