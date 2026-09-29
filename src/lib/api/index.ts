@@ -15,7 +15,9 @@ import {MAX_TAGS} from '#/lib/constants'
 import {parsePrivatePostLink} from '#/lib/private-post-link'
 import {isNetworkError} from '#/lib/strings/errors'
 import {
+  applyFacetSyntax,
   parseMarkdownLinks,
+  resolveSyntaxMentions,
   shortenLinks,
   stripInvalidMentions,
 } from '#/lib/strings/rich-text-manip'
@@ -284,6 +286,9 @@ export async function resolveRT(appviewClient: Client, richtext: RichText) {
       (a, b) => a.index.byteStart - b.index.byteStart,
     ) as typeof rt.facets
   }
+
+  rt = applyFacetSyntax(rt, {removeSyntax: true})
+  await resolveSyntaxMentions(rt, appviewClient)
 
   if (rt.facets?.length === 0) {
     delete rt.facets

@@ -53,7 +53,9 @@ export function isPostVisible(element: HTMLElement) {
 }
 
 export function getNavigablePosts() {
-  const items = Array.from(document.querySelectorAll<HTMLElement>(POST_SELECTOR))
+  const items = Array.from(
+    document.querySelectorAll<HTMLElement>(POST_SELECTOR),
+  )
     .filter(isRendered)
     .filter(
       element =>
@@ -173,9 +175,10 @@ export function getPostMediaTargets(element: HTMLElement): PostMediaTarget[] {
   const selectors = [
     '[data-testid="quotedPostOpenBtn"]',
     '[data-testid="postMediaOpenBtn"]',
-    '.wsky-post__media [role="button"]',
     '[data-keyboard-navigation-embed] iframe',
     '[data-testid="postEmbedOpenBtn"]',
+    '[data-keyboard-navigation-warning]:not([aria-expanded="true"])',
+    '.wsky-post__media [role="button"]',
     '[data-keyboard-navigation-embed] a[href], [data-keyboard-navigation-embed] [role="link"], [data-keyboard-navigation-embed] [role="button"]',
   ]
   for (const container of containers) {
@@ -185,6 +188,9 @@ export function getPostMediaTargets(element: HTMLElement): PostMediaTarget[] {
       ).find(
         candidate =>
           isControlAvailable(candidate) &&
+          !candidate.closest('[aria-hidden="true"], [inert]') &&
+          (!candidate.hasAttribute('data-keyboard-navigation-warning') ||
+            candidate.getAttribute('aria-expanded') !== 'true') &&
           (!boundaries.length ||
             candidate.closest(EMBED_TARGET_SELECTOR) === container),
       )
@@ -205,7 +211,21 @@ export function getPostMediaTargets(element: HTMLElement): PostMediaTarget[] {
       break
     }
   }
-  return targets
+  if (targets.length) return targets
+
+  const warnings = [
+    ...(element.matches('[data-keyboard-navigation-warning]') ? [element] : []),
+    ...element.querySelectorAll<HTMLElement>(
+      '[data-keyboard-navigation-warning]',
+    ),
+  ].filter(
+    control =>
+      control.getAttribute('aria-expanded') !== 'true' &&
+      !control.closest('[aria-hidden="true"], [inert]') &&
+      !control.closest('[data-testid="quotedPostOpenBtn"]') &&
+      isControlAvailable(control),
+  )
+  return warnings.map(control => ({kind: 'embed', control}))
 }
 
 function isControlAvailable(control: HTMLElement) {

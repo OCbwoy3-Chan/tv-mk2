@@ -1,8 +1,10 @@
-import {type RichText} from '@bsky/sdk/richtext'
+import {AppBskyRichtextFacet} from '@atproto/api'
+import {RichText} from '@bsky/sdk/richtext'
 
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
-import {linkRequiresWarning, toShortUrl} from './url-helpers'
+import {getEnclosedFacet} from './rich-text-manip'
+import {linkRequiresWarning} from './url-helpers'
 
 export function richTextToString(rt: RichText, loose: boolean): string {
   const {text, facets} = rt
@@ -31,29 +33,100 @@ export function richTextToString(rt: RichText, loose: boolean): string {
   return result
 }
 
-/**
- * Serializes rich text into markdown-link syntax without changing a link's
- * visible label. This preserves even same-domain labels instead of replacing
- * them with the destination URL.
- */
-export function richTextToStringPreservingLinks(rt: RichText): string {
-  if (!rt.facets?.length) {
-    return rt.text
-  }
+/** Preserve a post's text and facets when copying or redrafting it. */
+export function richTextToRedraftString(rt: RichText): string {
+  if (!rt.facets?.length) return escapeUnfacetedText(rt.text)
 
+  const detected = new RichText({text: rt.text})
+  detected.detectFacetsWithoutResolution()
   let result = ''
 
   for (const segment of rt.segments()) {
-    const link = segment.link
-    if (link && bsky.matches(app.bsky.richtext.facet.link, link)) {
-      result +=
-        segment.text === link.uri || segment.text === toShortUrl(link.uri)
-          ? link.uri
-          : `[${segment.text}](${link.uri})`
-    } else {
+    const facet = segment.facet
+    if (!facet) {
+      result += escapeUnfacetedText(segment.text)
+      continue
+    }
+
+    const automatic = detected.facets?.some(
+      current =>
+        current.index.byteStart === facet.index.byteStart &&
+        current.index.byteEnd === facet.index.byteEnd &&
+        sharesFeature(facet, current),
+    )
+    if (automatic) {
       result += segment.text
+      continue
+    }
+
+    const enclosed = getEnclosedFacet(segment.text)
+    if (enclosed && sharesFeature(facet, enclosed)) {
+      result += `<${segment.text}>`
+      continue
+    }
+
+    const link = facet.features.find(AppBskyRichtextFacet.isLink)
+    result += link ? `[${segment.text}](${link.uri})` : segment.text
+  }
+
+  return result
+}
+
+function sharesFeature(
+  original: AppBskyRichtextFacet.Main,
+  detected: AppBskyRichtextFacet.Main,
+): boolean {
+  return original.features.some(feature =>
+    detected.features.some(candidate => {
+      if (AppBskyRichtextFacet.isLink(feature)) {
+        return (
+          AppBskyRichtextFacet.isLink(candidate) &&
+          candidate.uri === feature.uri
+        )
+      }
+      if (AppBskyRichtextFacet.isTag(feature)) {
+        return (
+          AppBskyRichtextFacet.isTag(candidate) && candidate.tag === feature.tag
+        )
+      }
+      return (
+        AppBskyRichtextFacet.isMention(feature) &&
+        AppBskyRichtextFacet.isMention(candidate)
+      )
+    }),
+  )
+}
+
+function escapeUnfacetedText(text: string): string {
+  const escapedStarts = new Set<number>()
+  const syntaxRanges: {start: number; end: number}[] = []
+
+  for (const match of text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)) {
+    escapedStarts.add(match.index)
+    syntaxRanges.push({start: match.index, end: match.index + match[0].length})
+  }
+
+  for (const match of text.matchAll(/<([^<>\n]+)>/g)) {
+    if (!getEnclosedFacet(match[1])) continue
+    escapedStarts.add(match.index)
+    syntaxRanges.push({start: match.index, end: match.index + match[0].length})
+  }
+
+  const detected = new RichText({text})
+  detected.detectFacetsWithoutResolution()
+  for (const facet of detected.facets ?? []) {
+    const start = detected.unicodeText.slice(0, facet.index.byteStart).length
+    if (
+      !syntaxRanges.some(range => start >= range.start && start < range.end)
+    ) {
+      escapedStarts.add(start)
     }
   }
 
+  let result = ''
+  for (let i = 0; i < text.length; i++) {
+    if (escapedStarts.has(i) || text[i] === '\\') result += '\\'
+    result += text[i]
+  }
   return result
 }

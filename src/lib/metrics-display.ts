@@ -1,6 +1,8 @@
 import {type I18n} from '@lingui/core'
 import {z} from 'zod'
 
+import {formatCount} from '#/view/com/util/numeric/format'
+
 const countsMetricsDisplayValues = [
   'hidden',
   'lite',
@@ -133,12 +135,7 @@ export function formatCountsMetricNumber(
   if (mode === 'exact') {
     return i18n.number(count)
   }
-  const isOver10k = count >= 10_000
-  return i18n.number(count, {
-    notation: 'compact',
-    maximumFractionDigits: isOver10k ? 0 : 1,
-    roundingMode: 'trunc',
-  })
+  return formatCount(i18n, count)
 }
 
 export function isFollowedByMetricHidden(

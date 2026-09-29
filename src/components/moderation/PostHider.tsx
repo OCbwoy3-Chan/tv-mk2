@@ -80,10 +80,19 @@ export function PostHider({
 
   return !override ? (
     <Pressable
+      testID={testID}
+      {...{
+        dataSet: {
+          keyboardNavigationItem: 'true',
+          keyboardNavigationWarning: 'true',
+        },
+      }}
       onPress={() => {
         if (!modui.noOverride) {
           LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
           setOverride(v => !v)
+        } else {
+          control.open()
         }
       }}
       accessibilityRole="button"
@@ -161,6 +170,5 @@ const styles = StyleSheet.create({
   child: {
     borderWidth: 0,
     borderTopWidth: 0,
-    borderRadius: 8,
   },
 })

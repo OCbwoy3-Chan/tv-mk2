@@ -144,9 +144,11 @@ export function useSaveDraftMutation() {
     mutationFn: async ({
       composerState,
       existingDraftId,
+      replyToUri,
     }: {
       composerState: ComposerState
       existingDraftId?: string
+      replyToUri?: string
     }): Promise<{
       draftId: string
       localRefPaths: Map<string, string>
@@ -156,6 +158,7 @@ export function useSaveDraftMutation() {
       const {draft: apiDraft, localRefPaths} = await composerStateToDraft(
         {appviewClient: client, chatClient},
         composerState,
+        replyToUri,
       )
       const draft = apiDraft
 

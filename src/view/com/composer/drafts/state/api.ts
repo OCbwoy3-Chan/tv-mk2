@@ -12,7 +12,7 @@ import {MAX_TAGS} from '#/lib/constants'
 import {getDeviceName} from '#/lib/deviceName'
 import {getImageDim} from '#/lib/media/manip'
 import {mimeToExt} from '#/lib/media/video/util'
-import {shortenLinks} from '#/lib/strings/rich-text-manip'
+import {applyFacetSyntax, shortenLinks} from '#/lib/strings/rich-text-manip'
 import {type ComposerImage} from '#/state/gallery'
 import {threadgateAllowUISettingToAllowRecordValue} from '#/state/queries/threadgate/util'
 import {
@@ -83,6 +83,7 @@ function parseVideoMimeType(localRefPath: string): string {
 export async function composerStateToDraft(
   clients: LinkResolvers,
   state: ComposerState,
+  replyToUri?: string,
 ): Promise<{
   draft: app.bsky.draft.defs.Draft
   localRefPaths: Map<string, string>
@@ -100,6 +101,8 @@ export async function composerStateToDraft(
     deviceId: getDeviceId(),
     deviceName: getDeviceName().slice(0, 100), // max length of 100 in lex
     posts,
+    // Preserve the reply target in an extra field until the draft lexicon supports it.
+    ...(replyToUri ? {replyToUri} : {}),
     threadgateAllow: threadgateAllowUISettingToAllowRecordValue(
       state.thread.threadgate,
     ),
@@ -531,6 +534,7 @@ export async function draftToComposerPosts(
     draft.posts.map(async (post, index) => {
       const richtext = new RichText({text: post.text || ''})
       richtext.detectFacetsWithoutResolution()
+      applyFacetSyntax(richtext)
 
       const embed: EmbedDraft = {
         quote: undefined,
@@ -660,7 +664,9 @@ export async function draftToComposerPosts(
       return {
         id: `draft-post-${index}`,
         richtext,
-        shortenedGraphemeLength: shortenLinks(richtext).graphemeLength,
+        shortenedGraphemeLength: shortenLinks(
+          applyFacetSyntax(richtext.clone(), {removeSyntax: true}),
+        ).graphemeLength,
         labels,
         tags,
         embed,

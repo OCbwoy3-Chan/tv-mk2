@@ -28,9 +28,10 @@ import {type app} from '#/lexicons'
 import {useActiveVideoWeb} from './ActiveVideoWebContext'
 import {useVideoDownload} from './useVideoDownload'
 import * as VideoFallback from './VideoEmbedInner/VideoFallback'
+import {usePictureInPicture} from './VideoEmbedInner/web-controls/usePictureInPicture'
 
 const noop = () => {}
-const MIN_CARD_WIDTH = 280
+const MIN_CARD_WIDTH = 320
 
 export function VideoEmbed({
   embed,
@@ -321,7 +322,17 @@ function ViewportObserver({
 export const OnlyNearScreen = ({children}: {children: React.ReactNode}) => {
   const nearScreen = useContext(NearScreenContext)
 
-  return nearScreen ? children : null
+  const ref = useRef<HTMLDivElement>(null)
+  const pictureInPictureElement = usePictureInPicture()
+  const keepMounted =
+    pictureInPictureElement !== null &&
+    !!ref.current?.contains(pictureInPictureElement)
+
+  return (
+    <div ref={ref} style={{display: 'contents'}}>
+      {nearScreen || keepMounted ? children : null}
+    </div>
+  )
 }
 
 function VideoError({

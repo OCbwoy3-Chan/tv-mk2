@@ -33,6 +33,7 @@ import {Provider as HiddenPostsProvider} from './hidden-posts'
 import {Provider as HideBetaBadgeProvider} from "./hide-beta-badge.tsx"
 import {Provider as HideDisplayNamesProvider} from './hide-display-names'
 import {Provider as HideFeedsPromoTabProvider} from './hide-feeds-promo-tab'
+import {Provider as HideQuotesOfBlockedAccountsProvider} from './hide-quotes-of-blocked-accounts'
 import {Provider as HideOwnTennaBadgeProvider} from "./hide-own-tennabadge.tsx"
 import {Provider as HideScaryFollowButtonsProvider} from './hide-scary-follow-buttons.tsx'
 import {Provider as HideSimilarAccountsRecommProvider} from './hide-similar-accounts-recommendations'
@@ -82,7 +83,9 @@ export {
   useSetAlsoLikedFeedEnabled,
 } from './also-liked-feed-enabled'
 export {
+  useForceAltTextEnabled,
   useRequireAltTextEnabled,
+  useSetForceAltTextEnabled,
   useSetRequireAltTextEnabled,
 } from './alt-text-required'
 export { useAtprotoRkeySettings, useSetAtprotoRkeySettings } from './atproto-rkey-settings'
@@ -237,10 +240,12 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                             <AtprotoRkeySettingsProvider>
                                                                                                                                               <PrivatePostsEnabledProvider>
                                                                                                                                                 <DisableInfiniteScrollProvider>
-                                                                                                                                                 {
-                                                                                                                                                    children
-                                                                                                                                                  }
-                                                                                                                                               </DisableInfiniteScrollProvider>
+                                                                                                                                                 <HideQuotesOfBlockedAccountsProvider>
+                                                                                                                                                    {
+                                                                                                                                                      children
+                                                                                                                                                    }
+                                                                                                                                                 </HideQuotesOfBlockedAccountsProvider>
+                                                                                                                                                </DisableInfiniteScrollProvider>
                                                                                                                                               </PrivatePostsEnabledProvider>
                                                                                                                                             </AtprotoRkeySettingsProvider>
                                                                                                                                           </TidSuffixProvider>

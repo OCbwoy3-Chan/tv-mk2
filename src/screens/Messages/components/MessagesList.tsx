@@ -30,7 +30,9 @@ import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {mergeRefs} from '#/lib/merge-refs'
 import {ScrollProvider} from '#/lib/ScrollContext'
 import {
+  applyFacetSyntax,
   parseMarkdownLinks,
+  resolveSyntaxMentions,
   shortenLinks,
   stripInvalidMentions,
 } from '#/lib/strings/rich-text-manip'
@@ -634,6 +636,9 @@ export function MessagesList({
       ].sort(
         (a, b) => a.index.byteStart - b.index.byteStart,
       ) as typeof rt.facets
+
+      rt = applyFacetSyntax(rt, {removeSyntax: true})
+      await resolveSyntaxMentions(rt, appviewClient)
 
       rt = shortenLinks(rt, true)
       rt = stripInvalidMentions(rt)

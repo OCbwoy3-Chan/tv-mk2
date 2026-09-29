@@ -1,8 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {type GestureResponderEvent, Pressable, View} from 'react-native'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 import type Hls from 'hls.js'
 
 import {formatTime} from '#/lib/media/video/formatTime'
@@ -17,8 +15,10 @@ import {
   ArrowsDiagonalOut_Stroke2_Corner0_Rounded as ArrowsOutIcon,
 } from '#/components/icons/ArrowsDiagonal'
 import {Pause_Filled_Corner0_Rounded as PauseIcon} from '#/components/icons/Pause'
+import {PictureInPicture_Stroke2_Corner2_Rounded as PictureInPictureIcon} from '#/components/icons/PictureInPicture'
 import {Play_Filled_Corner0_Rounded as PlayIcon} from '#/components/icons/Play'
 import {Loader} from '#/components/Loader'
+import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {IS_WEB_MOBILE_IOS, IS_WEB_TOUCH_DEVICE} from '#/env'
 import {GifPresentationControls} from '../../GifPresentationControls'
@@ -27,6 +27,7 @@ import {TimeIndicator} from '../TimeIndicator'
 import {ControlButton} from './ControlButton'
 import {Scrubber} from './Scrubber'
 import {SettingsMenu} from './SettingsMenu'
+import {usePictureInPicture} from './usePictureInPicture'
 import {useVideoElement} from './utils'
 import {VolumeControl} from './VolumeControl'
 
@@ -74,6 +75,10 @@ export function Controls({
     error,
     canPlay,
   } = useVideoElement(videoRef)
+  const pictureInPictureElement = usePictureInPicture()
+  const isPictureInPicture =
+    pictureInPictureElement !== null &&
+    pictureInPictureElement === videoRef.current
   const [playbackSpeed] = useVideoPlaybackSpeed()
   useEffect(() => {
     const video = videoRef.current
@@ -89,7 +94,7 @@ export function Controls({
   }, [videoRef, playbackSpeed, isGif])
 
   const t = useTheme()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const subtitlesEnabled = useSubtitlesEnabled()
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [selectedSubtitle, setSelectedSubtitle] = useState(0)
@@ -134,16 +139,27 @@ export function Controls({
 
   // pause + unfocus when another video is active
   useEffect(() => {
-    if (!active) {
+    if (
+      (!active && !isPictureInPicture) ||
+      (pictureInPictureElement && !isPictureInPicture && !isGif)
+    ) {
       pause()
       setFocused(false)
     }
-  }, [active, pause, setFocused])
+  }, [
+    active,
+    pause,
+    setFocused,
+    isPictureInPicture,
+    pictureInPictureElement,
+    isGif,
+  ])
 
   // autoplay/pause based on visibility
   const isWithinMessage = useIsWithinMessage()
   const autoplayDisabled = useAutoplayDisabled() || isWithinMessage
   useEffect(() => {
+    if (isPictureInPicture || (pictureInPictureElement && !isGif)) return
     if (active) {
       // GIFs play immediately, videos wait until onScreen
       if (onScreen || isGif) {
@@ -152,7 +168,16 @@ export function Controls({
         pause()
       }
     }
-  }, [onScreen, pause, active, play, autoplayDisabled, isGif])
+  }, [
+    onScreen,
+    pause,
+    active,
+    play,
+    autoplayDisabled,
+    isGif,
+    isPictureInPicture,
+    pictureInPictureElement,
+  ])
 
   // use minimal quality when not focused
   useEffect(() => {
@@ -177,11 +202,17 @@ export function Controls({
 
   // clicking on any button should focus the player, if it's not already focused
   const drawFocus = useCallback(() => {
+    if (
+      document.pictureInPictureElement &&
+      document.pictureInPictureElement !== videoRef.current
+    ) {
+      void document.exitPictureInPicture().catch(() => {})
+    }
     if (!active) {
       setActive()
     }
     setFocused(true)
-  }, [active, setActive, setFocused])
+  }, [active, setActive, setFocused, videoRef])
 
   const playingBeforeClickRef = useRef<boolean | null>(null)
   const emptySpaceRef = useRef<HTMLDivElement>(null)
@@ -227,6 +258,21 @@ export function Controls({
     drawFocus()
     togglePlayPause()
   }, [drawFocus, togglePlayPause])
+
+  const onPressPictureInPicture = async () => {
+    const video = videoRef.current
+    if (!video) return
+    try {
+      if (document.pictureInPictureElement === video) {
+        await document.exitPictureInPicture()
+      } else {
+        await video.requestPictureInPicture()
+        drawFocus()
+      }
+    } catch {
+      Toast.show(l`Unable to change picture-in-picture mode. Please try again.`)
+    }
+  }
 
   const onPressFullscreen = useCallback(() => {
     drawFocus()
@@ -460,10 +506,10 @@ export function Controls({
           onPointerLeave={onPointerLeaveEmptySpace}
           accessibilityLabel={
             !focused
-              ? _(msg`Unmute video`)
+              ? l`Unmute video`
               : playing
-                ? _(msg`Pause video`)
-                : _(msg`Play video`)
+                ? l`Pause video`
+                : l`Play video`
           }
           accessibilityHint=""
           style={[
@@ -512,8 +558,8 @@ export function Controls({
           ]}>
           <ControlButton
             active={playing}
-            activeLabel={_(msg`Pause`)}
-            inactiveLabel={_(msg`Play`)}
+            activeLabel={l`Pause`}
+            inactiveLabel={l`Play`}
             activeIcon={PauseIcon}
             inactiveIcon={PlayIcon}
             onPress={onPressPlayPause}
@@ -536,6 +582,21 @@ export function Controls({
             onEndHover={onVolumeEndHover}
             drawFocus={drawFocus}
           />
+          {typeof document !== 'undefined' &&
+            document.pictureInPictureEnabled && (
+              <ControlButton
+                testID="videoPictureInPictureButton"
+                disabled={!canPlay}
+                active={isPictureInPicture}
+                activeLabel={l`Exit picture-in-picture`}
+                inactiveLabel={l`Enter picture-in-picture`}
+                activeIcon={PictureInPictureIcon}
+                inactiveIcon={PictureInPictureIcon}
+                onPress={() => {
+                  void onPressPictureInPicture()
+                }}
+              />
+            )}
           <SettingsMenu
             hlsRef={hlsRef}
             open={settingsOpen}
@@ -550,8 +611,8 @@ export function Controls({
           {!IS_WEB_MOBILE_IOS && (
             <ControlButton
               active={isFullscreen}
-              activeLabel={_(msg`Exit fullscreen`)}
-              inactiveLabel={_(msg`Enter fullscreen`)}
+              activeLabel={l`Exit fullscreen`}
+              inactiveLabel={l`Enter fullscreen`}
               activeIcon={ArrowsInIcon}
               inactiveIcon={ArrowsOutIcon}
               onPress={onPressFullscreen}

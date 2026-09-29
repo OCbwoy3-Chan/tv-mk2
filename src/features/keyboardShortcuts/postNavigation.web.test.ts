@@ -588,3 +588,133 @@ it('opens a chat message embed without following links in the message text', () 
   message.querySelector('[data-keyboard-navigation-embed]')!.remove()
   expect(getPostMediaTargets(message)).toEqual([])
 })
+
+it('navigates standalone warnings without adding targets inside posts', () => {
+  document.body.replaceChildren()
+  const warning = createPost({top: 20})
+  delete warning.dataset.keyboardNavigationPost
+  warning.dataset.keyboardNavigationItem = 'true'
+  warning.dataset.keyboardNavigationWarning = 'true'
+  const post = createPost({top: 100})
+  const nestedWarning = createPost({top: 150})
+  delete nestedWarning.dataset.keyboardNavigationPost
+  nestedWarning.dataset.keyboardNavigationItem = 'true'
+  nestedWarning.dataset.keyboardNavigationWarning = 'true'
+  post.appendChild(nestedWarning)
+  const nestedPost = createPost({top: 200})
+  post.appendChild(nestedPost)
+
+  expect(getNavigablePosts()).toEqual([warning, post])
+  nestedWarning.setAttribute('aria-hidden', 'true')
+  expect(getNavigablePosts()).toEqual([warning, post])
+})
+
+it('reveals an embed warning before opening the quoted post', () => {
+  document.body.replaceChildren()
+  const post = createPost({top: 20})
+  post.innerHTML = `
+    <div data-keyboard-navigation-embed>
+      <div data-keyboard-navigation-embed-target="quote">
+        <button role="button" data-keyboard-navigation-warning="true">Show</button>
+        <button role="button" data-testid="warningDetails">Learn more</button>
+      </div>
+    </div>
+  `
+  const container = post.querySelector(
+    '[data-keyboard-navigation-embed-target]',
+  )!
+  const warning = container.querySelector('button')!
+  const onDetails = jest.fn()
+  container
+    .querySelector('[data-testid="warningDetails"]')!
+    .addEventListener('click', onDetails)
+  const onOpen = jest.fn()
+  warning.addEventListener('click', () => {
+    warning.setAttribute('aria-expanded', 'true')
+    const quote = document.createElement('button')
+    quote.dataset.testid = 'quotedPostOpenBtn'
+    quote.addEventListener('click', onOpen)
+    container.appendChild(quote)
+  })
+
+  expect(openPostMediaTarget(getPostMediaTargets(post)[0])).toBe(true)
+  expect(onOpen).not.toHaveBeenCalled()
+  expect(openPostMediaTarget(getPostMediaTargets(post)[0])).toBe(true)
+  expect(onOpen).toHaveBeenCalledTimes(1)
+  expect(onDetails).not.toHaveBeenCalled()
+})
+
+it.each(['quotedPostOpenBtn', 'postMediaOpenBtn', 'postEmbedOpenBtn'])(
+  'opens %s before an unrelated post warning',
+  testID => {
+    document.body.replaceChildren()
+    const post = createPost({top: 20})
+    post.innerHTML = `
+      <button data-keyboard-navigation-warning="true" aria-expanded="false">Show</button>
+      <div data-keyboard-navigation-embed-target="media">
+        <button data-testid="${testID}">Open attachment</button>
+      </div>
+    `
+    const warning = post.querySelector<HTMLButtonElement>(
+      '[data-keyboard-navigation-warning]',
+    )!
+    const attachment = post.querySelector<HTMLButtonElement>(
+      `[data-testid="${testID}"]`,
+    )!
+    const onOpen = jest.fn()
+    const onWarning = jest.fn()
+    attachment.addEventListener('click', onOpen)
+    warning.addEventListener('click', onWarning)
+
+    expect(getPostMediaTargets(post).map(target => target.control)).toEqual([
+      attachment,
+    ])
+    expect(clickPostAction(post, 'media')).toBe(true)
+    expect(onOpen).toHaveBeenCalledTimes(1)
+    expect(onWarning).not.toHaveBeenCalled()
+
+    attachment.remove()
+    expect(clickPostAction(post, 'media')).toBe(true)
+    expect(onWarning).toHaveBeenCalledTimes(1)
+  },
+)
+
+it('opens standalone warnings, including warnings that only show details', () => {
+  const warning = document.createElement('button')
+  warning.dataset.keyboardNavigationWarning = 'true'
+  document.body.appendChild(warning)
+  const onOpen = jest.fn()
+  warning.addEventListener('click', onOpen)
+
+  expect(clickPostAction(warning, 'media')).toBe(true)
+  expect(onOpen).toHaveBeenCalledTimes(1)
+  warning.disabled = true
+  expect(clickPostAction(warning, 'media')).toBe(false)
+})
+
+it('ignores revealed and hidden warnings inside embeds', () => {
+  const post = createPost({top: 20})
+  post.innerHTML = `
+    <div data-keyboard-navigation-embed>
+      <button role="button" data-keyboard-navigation-warning="true" aria-expanded="true">Hide</button>
+      <div aria-hidden="true">
+        <button data-keyboard-navigation-warning="true">Show</button>
+      </div>
+    </div>
+  `
+  expect(getPostMediaTargets(post)).toEqual([])
+})
+
+it('opens a revealed quote before reaching warnings inside that quote', () => {
+  const post = createPost({top: 20})
+  post.innerHTML = `
+    <div data-keyboard-navigation-embed-target="quote">
+      <div data-testid="quotedPostOpenBtn">
+        <button data-keyboard-navigation-warning="true">Show quoted media</button>
+      </div>
+    </div>
+  `
+  expect(getPostMediaTargets(post).map(target => target.control)).toEqual([
+    post.querySelector('[data-testid="quotedPostOpenBtn"]'),
+  ])
+})

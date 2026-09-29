@@ -604,8 +604,6 @@ func (srv *Server) oauthClientMetadata(c echo.Context, native bool) error {
 		scheme = "http"
 	}
 	baseURL := fmt.Sprintf("%s://%s", scheme, c.Request().Host)
-	query := url.Values{}
-	scope := metadata["scope"].(string)
 	for _, entry := range []struct{ param, fallback string }{
 		{"appview", "did:web:api.bsky.app#bsky_appview"},
 		{"chat", "did:web:api.bsky.chat#bsky_chat"},
@@ -617,22 +615,9 @@ func (srv *Server) oauthClientMetadata(c echo.Context, native bool) error {
 		if !oauthAudiencePattern.MatchString(audience) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid OAuth service audience")
 		}
-		query.Set(entry.param, audience)
-		scope = strings.ReplaceAll(scope, url.QueryEscape(entry.fallback), url.QueryEscape(audience))
-		if entry.param == "appview" {
-			// PDS-hosted preferences retain the default Bluesky audience.
-			for _, method := range []string{"app.bsky.actor.getPreferences", "app.bsky.actor.putPreferences"} {
-				scope += " rpc:" + method + "?aud=" + url.QueryEscape(entry.fallback)
-			}
-		}
 	}
-	clientID := baseURL + "/" + filename
-	if len(query) > 0 {
-		clientID += "?" + query.Encode()
-	}
-	metadata["client_id"] = clientID
+	metadata["client_id"] = baseURL + "/" + filename
 	metadata["client_uri"] = baseURL
-	metadata["scope"] = scope
 	if !native {
 		metadata["redirect_uris"] = []string{baseURL + "/auth/web/callback"}
 	}

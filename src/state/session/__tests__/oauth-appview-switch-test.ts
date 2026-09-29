@@ -84,7 +84,7 @@ it('opens a popup immediately and leaves source routing intact until consent', a
   )
   const switching = startAppViewSwitch(account, selection, login)
   expect(signIn).toHaveBeenCalledWith(account, {
-    scope: expect.stringContaining(encodeURIComponent(selection.did)),
+    scope: buildOAuthScope(),
     display: 'popup',
   })
   expect(JSON.parse(values.get('oauth_appview_switch')!)).toMatchObject({
@@ -124,7 +124,7 @@ it('rejects the wrong account before changing routing', async () => {
 it('rejects a grant that omitted the selected AppView', async () => {
   signIn.mockResolvedValue({
     ...session,
-    getTokenInfo: () => Promise.resolve({scope: buildOAuthScope()}),
+    getTokenInfo: () => Promise.resolve({scope: 'atproto'}),
   })
   await expect(startAppViewSwitch(account, selection, login)).rejects.toThrow(
     'Please authorize',
@@ -225,7 +225,10 @@ it.each([
 })
 
 it('reports a missing grant without starting OAuth or changing routing', async () => {
-  jest.mocked(restoreOAuthSession).mockResolvedValue(session as never)
+  jest.mocked(restoreOAuthSession).mockResolvedValue({
+    ...session,
+    getTokenInfo: () => Promise.resolve({scope: 'atproto'}),
+  } as never)
   expect(await ensureAppViewAccess(account)).toBe(false)
   expect(signIn).not.toHaveBeenCalled()
   expect(device.set).not.toHaveBeenCalled()
@@ -250,4 +253,11 @@ it('stops waiting on a stuck browser lock without launching authorization', asyn
   } finally {
     jest.useRealTimers()
   }
+})
+
+it('resumes a production transition grant on a custom AppView without login', async () => {
+  jest.mocked(restoreOAuthSession).mockResolvedValue(session as never)
+  await expect(ensureAppViewAccess(account)).resolves.toBe(true)
+  expect(signIn).not.toHaveBeenCalled()
+  expect(device.set).not.toHaveBeenCalled()
 })

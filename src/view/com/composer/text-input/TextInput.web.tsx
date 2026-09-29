@@ -31,6 +31,10 @@ import {splitGraphemes} from 'unicode-segmenter/grapheme'
 
 import {useColorSchemeStyle} from '#/lib/hooks/useColorSchemeStyle'
 import {blobToDataUri, isUriImage} from '#/lib/media/util'
+import {
+  applyFacetSyntax,
+  isEscapedFacetSyntax,
+} from '#/lib/strings/rich-text-manip'
 import {useActorAutocompleteFn} from '#/state/queries/actor-autocomplete'
 import {
   type LinkFacetMatch,
@@ -65,6 +69,7 @@ export function TextInput({
   canAddPost,
   canMovePostUp,
   canMovePostDown,
+  onBackspaceEmpty,
   onAddPost,
   onMovePost,
   onFocusPost,
@@ -75,6 +80,8 @@ export function TextInput({
   const modeClass = useColorSchemeStyle('ProseMirror-light', 'ProseMirror-dark')
 
   const [isDropping, setIsDropping] = useState(false)
+  const onBackspaceEmptyRef = useRef(onBackspaceEmpty)
+  onBackspaceEmptyRef.current = onBackspaceEmpty
   const autocompleteRef = useRef<AutocompleteRef>(null)
   const threadShortcutState = useRef({
     canAddPost,
@@ -307,6 +314,16 @@ export function TextInput({
             event.code === 'Backspace' &&
             !(event.metaKey || event.altKey || event.ctrlKey)
           ) {
+            if (
+              !event.isComposing &&
+              !view.composing &&
+              !event.repeat &&
+              view.state.doc.childCount === 1 &&
+              view.state.doc.firstChild?.content.size === 0 &&
+              onBackspaceEmptyRef.current()
+            ) {
+              return true
+            }
             const isNotSelection = view.state.selection.empty
             if (isNotSelection) {
               const cursorPosition = view.state.selection.$anchor.pos
@@ -359,6 +376,7 @@ export function TextInput({
         const regex = /\[([^\]]+)\]\s*\(([^)]+)\)/g
         let match
         while ((match = regex.exec(newText)) !== null) {
+          if (isEscapedFacetSyntax(newText, match.index)) continue
           const [fullMatch, _linkText, linkUrl] = match
           const matchStart = match.index
           const matchEnd = matchStart + fullMatch.length
@@ -399,6 +417,8 @@ export function TextInput({
             (a, b) => a.index.byteStart - b.index.byteStart,
           ) as typeof newRt.facets
         }
+
+        applyFacetSyntax(newRt)
 
         /*
          * TipTap owns the editable DOM, so its transaction has already made
@@ -456,7 +476,7 @@ export function TextInput({
 
   useImperativeHandle(ref, () => ({
     focus: () => {
-      editor?.chain().focus()
+      editor?.chain().focus().run()
     },
     blur: () => {
       editor?.chain().blur()

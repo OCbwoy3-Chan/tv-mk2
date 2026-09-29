@@ -24,6 +24,8 @@ import {type Node as ProsemirrorNode} from '@tiptap/pm/model'
 import {Plugin, PluginKey} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
 
+import {isInsideEscapedMarkdownLink} from '#/lib/strings/rich-text-manip'
+
 function getDecorations(doc: ProsemirrorNode) {
   const decorations: Decoration[] = []
 
@@ -43,6 +45,11 @@ function getDecorations(doc: ProsemirrorNode) {
         const [trailingPunc = ''] = tag.match(TRAILING_PUNCTUATION_REGEX) || []
         const matchedFrom = match.index + matchedString.indexOf(tag)
         const matchedTo = matchedFrom + (tag.length - trailingPunc.length)
+        if (
+          isInsideEscapedMarkdownLink(textContent, matchedFrom - 1, matchedTo)
+        ) {
+          continue
+        }
 
         /*
          * The match is exclusive of `#` so we need to adjust the start of the
@@ -68,6 +75,9 @@ function getDecorations(doc: ProsemirrorNode) {
         // Calculate positions: leading char + $ + ticker
         const matchedFrom = match.index + leading.length
         const matchedTo = matchedFrom + 1 + ticker.length // +1 for $
+        if (isInsideEscapedMarkdownLink(textContent, matchedFrom, matchedTo)) {
+          continue
+        }
 
         const start = pos + matchedFrom
         const end = pos + matchedTo

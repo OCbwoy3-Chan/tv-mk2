@@ -21,8 +21,8 @@ export function getWebOAuthClient(
     )
   ) {
     const port = window.location.port ? `:${window.location.port}` : ''
-    const redirectUri = `http://127.0.0.1${port}/auth/web/callback`
-    metadata.client_id = `http://localhost?${new URLSearchParams({redirect_uri: redirectUri, scope: metadata.scope})}`
+    const redirectUri = `http://127.0.0.1${port}/`
+    metadata.client_id = `http://localhost?redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(metadata.scope)}`
     metadata.redirect_uris = [redirectUri]
   }
   let client = clients.get(metadata.client_id)

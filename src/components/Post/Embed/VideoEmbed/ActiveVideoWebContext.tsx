@@ -50,6 +50,8 @@ export function Provider({children}: {children: React.ReactNode}) {
   const sendViewPosition = useCallback(
     (viewId: string, y: number) => {
       if (IS_NATIVE) return
+      // Scrolling must not replace the video playing in the floating window.
+      if (document.pictureInPictureElement) return
 
       if (viewId === activeViewIdRef.current) {
         activeViewLocationRef.current = y

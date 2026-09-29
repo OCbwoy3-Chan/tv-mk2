@@ -1,8 +1,11 @@
 /** Shared by clients, metadata generation, and the metadata HTTP handlers. */
 export const DEFAULT_APPVIEW_AUDIENCE = 'did:web:api.bsky.app#bsky_appview'
 export const DEFAULT_CHAT_AUDIENCE = 'did:web:api.bsky.chat#bsky_chat'
-export const NATIVE_REDIRECT_URI = 'party.tenna:/auth/callback'
-export const ANDROID_REDIRECT_URI = 'app.tennaparty:/auth/callback'
+export const NATIVE_REDIRECT_URI = 'app.tennaparty:/auth/callback'
+
+/** Keep the prod grant and client identity so stored sessions can refresh. */
+export const OAUTH_SCOPE =
+  'atproto transition:generic transition:email transition:chat.bsky'
 
 export const OPTIONAL_OAUTH_SCOPES = {
   handle: 'identity:handle',
@@ -12,7 +15,14 @@ export type OAuthPermission = keyof typeof OPTIONAL_OAUTH_SCOPES
 
 /** Servers may normalize positional parameters or percent encoding. */
 export function hasOAuthPermission(scope: string, permission: OAuthPermission) {
-  return scope.split(' ').some(value => {
+  const scopes = scope.split(' ')
+  if (
+    scopes.includes('transition:generic') &&
+    (permission === 'handle' || scopes.includes('transition:email'))
+  ) {
+    return true
+  }
+  return scopes.some(value => {
     const [name, query] = value.split('?')
     const [resource, positional] = name.split(':')
     const params = new URLSearchParams(query)
@@ -54,62 +64,13 @@ export function hasOAuthAppViewScope(scope: string, audience: string) {
   })
 }
 
+/** Audiences and optional permissions no longer partition the production grant. */
 export function buildOAuthScope(
-  appview = DEFAULT_APPVIEW_AUDIENCE,
-  chat = DEFAULT_CHAT_AUDIENCE,
-  permissions: OAuthPermission[] = [],
+  _appview = DEFAULT_APPVIEW_AUDIENCE,
+  _chat = DEFAULT_CHAT_AUDIENCE,
+  _permissions: OAuthPermission[] = [],
 ) {
-  return [
-    'atproto',
-    `include:app.bsky.authFullApp?aud=${encodeURIComponent(appview)}`,
-    // These newer methods are missing from the published app permission set.
-    ...[
-      'app.bsky.draft.getDrafts',
-      'app.bsky.draft.createDraft',
-      'app.bsky.draft.updateDraft',
-      'app.bsky.draft.deleteDraft',
-      'app.bsky.unspecced.getSuggestedOnboardingUsers',
-      'app.bsky.unspecced.getSuggestedUsersForDiscover',
-      'app.bsky.unspecced.getSuggestedUsersForExplore',
-      'app.bsky.unspecced.getSuggestedUsersForSeeMore',
-    ].map(method => `rpc:${method}?aud=${encodeURIComponent(appview)}`),
-    'repo:app.bsky.actor.contentVisibilityDeclaration?action=create&action=update',
-    'repo:app.bsky.graph.verification?action=create&action=delete',
-    // Preferences live on the PDS under its default Bluesky audience. Sending
-    // them to Blacksky reaches an unimplemented endpoint instead of that store.
-    ...(appview === DEFAULT_APPVIEW_AUDIENCE
-      ? []
-      : ['app.bsky.actor.getPreferences', 'app.bsky.actor.putPreferences'].map(
-          method =>
-            `rpc:${method}?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
-        )),
-    // Blacksky's search proxy can be unavailable independently of the AppView.
-    ...(appview === 'did:web:api.blacksky.community#bsky_appview'
-      ? [
-          `rpc:app.bsky.feed.searchPosts?aud=${encodeURIComponent(DEFAULT_APPVIEW_AUDIENCE)}`,
-        ]
-      : []),
-    `include:chat.bsky.authFullChatClient?aud=${encodeURIComponent(chat)}`,
-    // These newer methods are not yet in the published chat permission set.
-    ...[
-      'chat.bsky.convo.getUnreadCounts',
-      'chat.bsky.group.updateJoinRequestsRead',
-      'chat.bsky.notification.getPreferences',
-      'chat.bsky.notification.putPreferences',
-    ].map(method => `rpc:${method}?aud=${encodeURIComponent(chat)}`),
-    'include:app.witchsky.theme.authFull',
-    'blob:image/*',
-    'blob:video/*',
-    // Video processing uploads blobs back to the user's PDS.
-    'rpc:com.atproto.repo.uploadBlob?aud=*',
-    // The video service uses DID-only JWT audiences, not DID service references.
-    'rpc:app.bsky.video.getUploadLimits?aud=*',
-    // Reports can be sent to any of the user's selected labelers.
-    'rpc:com.atproto.moderation.createReport?aud=*',
-    'include:party.tenna.app.permissions2',
-    'include:party.tenna.private.privateVesselPermissions',
-    ...permissions.map(permission => OPTIONAL_OAUTH_SCOPES[permission]),
-  ].join(' ')
+  return OAUTH_SCOPE
 }
 
 export function createOAuthMetadata({
@@ -141,9 +102,6 @@ export function createOAuthMetadata({
       : '/oauth-client-metadata.json',
     baseUrl,
   )
-  if (appview !== DEFAULT_APPVIEW_AUDIENCE)
-    clientId.searchParams.set('appview', appview)
-  if (chat !== DEFAULT_CHAT_AUDIENCE) clientId.searchParams.set('chat', chat)
   return {
     client_id: clientId.href,
     client_name: clientName,

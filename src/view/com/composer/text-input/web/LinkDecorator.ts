@@ -14,12 +14,17 @@
  * the facet-set.
  */
 
-import {URL_REGEX} from '@bsky/sdk/richtext'
+import {UnicodeString, URL_REGEX} from '@bsky/sdk/richtext'
 import {Mark} from '@tiptap/core'
 import {type Node as ProsemirrorNode} from '@tiptap/pm/model'
 import {Plugin, PluginKey} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
 
+import {
+  getEnclosedFacet,
+  isEscapedFacetSyntax,
+  isInsideEscapedMarkdownLink,
+} from '#/lib/strings/rich-text-manip'
 import {isValidDomain} from '#/lib/strings/url-helpers'
 
 export const LinkDecorator = Mark.create({
@@ -45,6 +50,7 @@ function getDecorations(doc: ProsemirrorNode) {
       const markdownRegex = /\[([^\]]+)\]\s*\(([^)]+)\)/g
       let markdownMatch
       while ((markdownMatch = markdownRegex.exec(textContent)) !== null) {
+        if (isEscapedFacetSyntax(textContent, markdownMatch.index)) continue
         const from = markdownMatch.index
         const to = from + markdownMatch[0].length
         decorations.push(
@@ -54,8 +60,29 @@ function getDecorations(doc: ProsemirrorNode) {
         )
       }
 
+      for (const match of textContent.matchAll(/<([^<>\n]+)>/g)) {
+        if (isEscapedFacetSyntax(textContent, match.index)) continue
+
+        const content = match[1]
+        const trimmed = content.trim()
+        const facet = getEnclosedFacet(trimmed)
+        if (!facet) continue
+
+        const contentStart = match.index + 1 + content.indexOf(trimmed)
+        const unicode = new UnicodeString(trimmed)
+        const from =
+          contentStart + unicode.slice(0, facet.index.byteStart).length
+        const to = contentStart + unicode.slice(0, facet.index.byteEnd).length
+        decorations.push(
+          Decoration.inline(pos + from, pos + to, {
+            class: 'autolink',
+          }),
+        )
+      }
+
       // regular links
       iterateUris(textContent, (from, to) => {
+        if (isInsideEscapedMarkdownLink(textContent, from, to)) return
         decorations.push(
           Decoration.inline(pos + from, pos + to, {
             class: 'autolink',

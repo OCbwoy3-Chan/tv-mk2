@@ -32,7 +32,7 @@ import {
   type CommonNavigatorParams,
   type NavigationProp,
 } from '#/lib/routes/types'
-import {richTextToStringPreservingLinks} from '#/lib/strings/rich-text-helpers'
+import {richTextToRedraftString} from '#/lib/strings/rich-text-helpers'
 import {toShareUrl} from '#/lib/strings/url-helpers'
 import {useTranslate} from '#/lib/translation'
 import {getPostLanguageTags} from '#/locale/helpers'
@@ -387,7 +387,7 @@ let PostMenuItems = ({
     }
 
     openComposer({
-      text: richTextToStringPreservingLinks(richText),
+      text: richTextToRedraftString(richText),
       tags: record.tags,
       imageUris,
       videoUri,
@@ -471,7 +471,7 @@ let PostMenuItems = ({
   }
 
   const onCopyPostText = () => {
-    const str = richTextToStringPreservingLinks(richText)
+    const str = richTextToRedraftString(richText)
 
     void Clipboard.setStringAsync(str)
     Toast.show(l`Copied to clipboard`, {

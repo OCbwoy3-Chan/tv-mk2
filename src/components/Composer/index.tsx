@@ -40,7 +40,15 @@ import {
 } from '#/components/forms/AutosizedTextarea'
 import {Span, Text} from '#/components/Typography'
 import {IS_IOS, IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
-import {maskedLinkFacet, normalizeComposerLink} from './masked-links'
+import {
+  angleLinkFacet,
+  angleMentionFacet,
+  angleTagFacet,
+  cashtagFacet,
+  escapeAwareFacet,
+  maskedLinkFacet,
+  normalizeComposerLink,
+} from './masked-links'
 
 type TextInputInstance = React.ComponentRef<typeof TextInput>
 type ViewInstance = React.ComponentRef<typeof View>
@@ -137,12 +145,26 @@ export function Composer({
     facets: {
       ...(disableEmojiFacets
         ? {
-            mention: facets.mention,
-            tag: facets.tag,
-            url: facets.url,
+            mention: escapeAwareFacet(facets.mention),
+            tag: escapeAwareFacet(facets.tag),
+            cashtag: escapeAwareFacet(cashtagFacet),
+            url: escapeAwareFacet(facets.url),
           }
-        : facets),
-      ...(enableMaskedLinks ? {maskedLink: maskedLinkFacet} : {}),
+        : {
+            mention: escapeAwareFacet(facets.mention),
+            tag: escapeAwareFacet(facets.tag),
+            cashtag: escapeAwareFacet(cashtagFacet),
+            url: escapeAwareFacet(facets.url),
+            emoji: escapeAwareFacet(facets.emoji),
+          }),
+      ...(enableMaskedLinks
+        ? {
+            angleLink: angleLinkFacet,
+            angleMention: angleMentionFacet,
+            angleTag: angleTagFacet,
+            maskedLink: maskedLinkFacet,
+          }
+        : {}),
     },
   })
   const sift = useSift({
@@ -415,6 +437,10 @@ export function Composer({
 
       {activeFacet &&
         activeFacet.type !== 'url' &&
+        activeFacet.type !== 'angleLink' &&
+        activeFacet.type !== 'angleMention' &&
+        activeFacet.type !== 'angleTag' &&
+        activeFacet.type !== 'cashtag' &&
         activeFacet.type !== 'maskedLink' && (
           <AutocompleteInner
             inverted={autocompletePlacement?.startsWith('top')}

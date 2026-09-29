@@ -1,12 +1,32 @@
 import {facets, Tapper} from '@bsky.app/tapper'
 
-import {maskedLinkFacet, normalizeComposerLink} from './masked-links'
+import {
+  angleLinkFacet,
+  angleMentionFacet,
+  angleTagFacet,
+  cashtagFacet,
+  escapeAwareFacet,
+  maskedLinkFacet,
+  normalizeComposerLink,
+} from './masked-links'
 
 const postUrl =
   'https://witchsky.app/profile/did:plc:7ztoas5m6664r5bwab56byec/post/3muqcpj5o3c23'
 
 function createTapper() {
-  return new Tapper({facets: {...facets, maskedLink: maskedLinkFacet}})
+  return new Tapper({
+    facets: {
+      mention: escapeAwareFacet(facets.mention),
+      tag: escapeAwareFacet(facets.tag),
+      cashtag: escapeAwareFacet(cashtagFacet),
+      url: escapeAwareFacet(facets.url),
+      emoji: escapeAwareFacet(facets.emoji),
+      angleLink: angleLinkFacet,
+      angleMention: angleMentionFacet,
+      angleTag: angleTagFacet,
+      maskedLink: maskedLinkFacet,
+    },
+  })
 }
 
 describe('composer masked link facets', () => {
@@ -65,5 +85,69 @@ describe('composer masked link facets', () => {
         range: {start: 0, end: 20},
       }).value,
     ).toBe('https://example.com')
+  })
+
+  it('leaves an escaped masked link and its URL as plain text', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('\\[label](example.com)')
+
+    expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
+  })
+
+  it('treats a doubled backslash as literal before a masked link', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('\\\\[label](example.com)')
+
+    expect(
+      tapper.nodes.filter(node => node.type === 'facet').map(node => node.raw),
+    ).toEqual(['[label](example.com)'])
+  })
+
+  it('highlights a link inside angle brackets and commits its URL', () => {
+    const tapper = createTapper()
+    const committed = jest.fn()
+    tapper.on('facetCommitted', facet =>
+      committed(normalizeComposerLink(facet)),
+    )
+    tapper.handleTextChange('<example.com>!')
+
+    expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([
+      expect.objectContaining({raw: '<example.com>', facetType: 'angleLink'}),
+    ])
+    expect(committed).toHaveBeenCalledWith(
+      expect.objectContaining({type: 'url', value: 'https://example.com'}),
+    )
+  })
+
+  it('does not highlight an escaped angle link', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('\\<example.com>')
+
+    expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
+  })
+
+  it('highlights enclosed hashtags and cashtags', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('<#topic> <$TSLA>')
+
+    expect(
+      tapper.nodes.filter(node => node.type === 'facet').map(node => node.raw),
+    ).toEqual(['<#topic>', '<$TSLA>'])
+  })
+
+  it('highlights a plain cashtag', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('$TSLA')
+
+    expect(
+      tapper.nodes.filter(node => node.type === 'facet').map(node => node.raw),
+    ).toEqual(['$TSLA'])
+  })
+
+  it('keeps escaped hashtags and cashtags plain', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('\\#topic \\$TSLA \\<#other> \\<$AAPL>')
+
+    expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
   })
 })

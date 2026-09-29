@@ -4,8 +4,10 @@ import { type NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import { type CommonNavigatorParams } from '#/lib/routes/types'
 import {
+  useForceAltTextEnabled,
   useHapticsDisabled,
   useRequireAltTextEnabled,
+  useSetForceAltTextEnabled,
   useSetHapticsDisabled,
   useSetRequireAltTextEnabled,
 } from '#/state/preferences'
@@ -34,6 +36,8 @@ type Props = NativeStackScreenProps<
 export function AccessibilitySettingsScreen({ }: Props) {
   const { t: l } = useLingui()
   const t = useTheme()
+  const forceAltTextEnabled = useForceAltTextEnabled()
+  const setForceAltTextEnabled = useSetForceAltTextEnabled()
   const requireAltTextEnabled = useRequireAltTextEnabled()
   const setRequireAltTextEnabled = useSetRequireAltTextEnabled()
   const hapticsDisabled = useHapticsDisabled()
@@ -74,6 +78,18 @@ export function AccessibilitySettingsScreen({ }: Props) {
               style={[a.w_full]}>
               <Toggle.LabelText style={[a.flex_1]}>
                 <Trans>Warn before posting without alt text</Trans>
+              </Toggle.LabelText>
+              <Toggle.Platform />
+            </Toggle.Item>
+            <Toggle.Item
+              name="force_alt_text"
+              testID="forceAltTextToggle"
+              label={l`Force alt text`}
+              value={forceAltTextEnabled}
+              onChange={setForceAltTextEnabled}
+              style={[a.w_full]}>
+              <Toggle.LabelText style={[a.flex_1]}>
+                <Trans>Requre alt text before posting</Trans>
               </Toggle.LabelText>
               <Toggle.Platform />
             </Toggle.Item>

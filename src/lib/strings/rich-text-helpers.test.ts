@@ -1,9 +1,10 @@
 import {RichText} from '@bsky/sdk/richtext'
 
-import {richTextToStringPreservingLinks} from './rich-text-helpers'
+import {richTextToRedraftString} from './rich-text-helpers'
+import {applyFacetSyntax, parseMarkdownLinks} from './rich-text-manip'
 import {toShortUrl} from './url-helpers'
 
-describe('richTextToStringPreservingLinks', () => {
+describe('richTextToRedraftString', () => {
   it('preserves the visible labels of multiple masked links', () => {
     const text = 'first and docs and third'
     const richText = new RichText({
@@ -39,7 +40,7 @@ describe('richTextToStringPreservingLinks', () => {
       ],
     })
 
-    expect(richTextToStringPreservingLinks(richText)).toBe(
+    expect(richTextToRedraftString(richText)).toBe(
       '[first](https://one.example/destination) and [docs](https://docs.example/other-page) and [third](https://three.example/destination)',
     )
   })
@@ -56,11 +57,11 @@ describe('richTextToStringPreservingLinks', () => {
       ],
     })
 
-    expect(richTextToStringPreservingLinks(richText)).toBe(uri)
+    expect(richTextToRedraftString(richText)).toBe(uri)
   })
 })
 
-it('restores an ordinary truncated URL without masked-link syntax', () => {
+it('preserves the label and destination of a truncated URL', () => {
   const uri = 'https://example.com/a/long/path/to/a/page'
   const text = toShortUrl(uri)
   const rt = new RichText({
@@ -72,5 +73,99 @@ it('restores an ordinary truncated URL without masked-link syntax', () => {
       },
     ],
   })
-  expect(richTextToStringPreservingLinks(rt)).toBe(uri)
+  expect(richTextToRedraftString(rt)).toBe(`[${text}](${uri})`)
+})
+
+describe('richTextToRedraftString', () => {
+  it('escapes plain links, handles, and syntax without changing posted text', () => {
+    const text =
+      '🌟 example.com @person.test #topic $TSLA \\example.org [label](site.test) <foo.com> <#other> <$AAPL>'
+    const redraft = richTextToRedraftString(new RichText({text}))
+
+    expect(redraft).toBe(
+      '🌟 \\example.com \\@person.test \\#topic \\$TSLA \\\\example.org \\[label](site.test) \\<foo.com> \\<#other> \\<$AAPL>',
+    )
+
+    const parsed = parseMarkdownLinks(redraft)
+    const repost = new RichText({text: parsed.text})
+    repost.detectFacetsWithoutResolution()
+    applyFacetSyntax(repost, {removeSyntax: true})
+
+    expect(repost.text).toBe(text)
+    expect(repost.facets).toBeUndefined()
+  })
+
+  it('preserves existing link facets while escaping adjacent plain links', () => {
+    const text = 'example.com and docs.example'
+    const richText = new RichText({
+      text,
+      facets: [
+        {
+          index: {byteStart: 16, byteEnd: 28},
+          features: [
+            {
+              $type: 'app.bsky.richtext.facet#link',
+              uri: 'https://docs.example/guide',
+            },
+          ],
+        },
+      ],
+    })
+
+    expect(richTextToRedraftString(richText)).toBe(
+      '\\example.com and [docs.example](https://docs.example/guide)',
+    )
+  })
+
+  it('restores angle syntax for facets that need a boundary', () => {
+    const text = 'x#topic y$TSLA zexample.com'
+    const original = new RichText({
+      text,
+      facets: [
+        {
+          index: {byteStart: 1, byteEnd: 7},
+          features: [{$type: 'app.bsky.richtext.facet#tag', tag: 'topic'}],
+        },
+        {
+          index: {byteStart: 9, byteEnd: 14},
+          features: [{$type: 'app.bsky.richtext.facet#tag', tag: '$TSLA'}],
+        },
+        {
+          index: {byteStart: 16, byteEnd: 27},
+          features: [
+            {$type: 'app.bsky.richtext.facet#link', uri: 'https://example.com'},
+          ],
+        },
+      ],
+    })
+    const redraft = richTextToRedraftString(original)
+
+    expect(redraft).toBe('x<#topic> y<$TSLA> z<example.com>')
+
+    const repost = new RichText({text: redraft})
+    repost.detectFacetsWithoutResolution()
+    applyFacetSyntax(repost, {removeSyntax: true})
+
+    expect(repost.text).toBe(text)
+    expect(repost.facets?.map(facet => facet.index)).toEqual(
+      original.facets?.map(facet => facet.index),
+    )
+  })
+
+  it('restores angle syntax for a mention inside a word', () => {
+    const text = 'x@person.test'
+    const original = new RichText({
+      text,
+      facets: [
+        {
+          index: {byteStart: 1, byteEnd: text.length},
+          features: [
+            {$type: 'app.bsky.richtext.facet#mention', did: 'did:plc:person'},
+          ],
+        },
+      ],
+    })
+
+    expect(richTextToRedraftString(original)).toBe('x<@person.test>')
+  })
 })

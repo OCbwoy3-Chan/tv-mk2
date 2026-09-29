@@ -10,9 +10,18 @@ export function isEphemeralAuthError(error: unknown): boolean {
     cause?: unknown
   }
   if (value.status === 401) return true
+  /*
+   * OAuth SDK session errors inherit name = 'Error', so matching their class
+   * names alone misses missing/invalid sessions. Match their messages too.
+   */
   const text = [value.error, value.code, value.name, value.message].join(' ')
   return (
-    /ScopeMissing|Missing required scope|TokenInvalid|TokenExpired|TokenRevoked|invalid_grant|InvalidToken|ExpiredToken|AuthRequired|AuthenticationRequired|SessionNotFound|Session not found|Unknown session|No session|Expected an active session|authorize this account for the selected app server/i.test(text) ||
+    /ScopeMissing|Missing required scope|TokenInvalid|TokenExpired|TokenRevoked|TokenRefreshError|invalid_grant|InvalidToken|ExpiredToken|AuthRequired|AuthenticationRequired|SessionNotFound|Session not found|Unknown session|No session|Expected an active session|authorize this account for the selected app server/i.test(
+      text,
+    ) ||
+    /^(?:The session was (?:deleted by another process|revoked)|The session for ".+" (?:is invalid|was successfully revoked)|No refresh token available|Stored session sub mismatch|Token set sub mismatch)$/.test(
+      value.message ?? '',
+    ) ||
     (value.cause !== error && isEphemeralAuthError(value.cause))
   )
 }
