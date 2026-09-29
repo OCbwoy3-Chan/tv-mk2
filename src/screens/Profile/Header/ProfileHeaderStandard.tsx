@@ -205,7 +205,7 @@ let ProfileHeaderStandard = ({
                 profile={profile}
                 moderation={moderation}
               />
-              <ProfileHeaderHandle profile={profile} />
+              <ProfileHeaderHandle profile={profile} verticalPadding={2} />
             </View>
             {!isPlaceholderProfile && !isBlockedUser && (
               <View style={a.gap_md}>
