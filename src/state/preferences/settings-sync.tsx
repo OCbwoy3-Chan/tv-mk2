@@ -91,6 +91,7 @@ export const SYNCED_PREFS_KEYS = [
   'disableVerifyEmailReminder',
   'showViaClient',
   'hideDisplayNames',
+  'replyIconIndicators',
   'sixSevenCelebration',
   'deerVerification',
   'thumbnailFormat',

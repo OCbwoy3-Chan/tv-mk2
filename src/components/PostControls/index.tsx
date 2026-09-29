@@ -53,7 +53,7 @@ import {
   PostControlButtonText,
 } from './PostControlButton'
 import {PostMenuButton} from './PostMenu'
-import {getReplyIcon} from './ReplyIcon'
+import {useReplyIcon} from './ReplyIcon'
 import {RepostButton} from './RepostButton'
 import {ShareMenuButton} from './ShareMenu'
 
@@ -132,6 +132,7 @@ function PostControlsInner({
   const replyMetricsDisplay = useReplyMetricsDisplay()
   const quotesMetricsDisplay = useQuotesMetricsDisplay()
   const formatPostStatCount = useFormatPostStatCount(likesMetricsDisplay)
+  const ReplyIcon = useReplyIcon(post.replyCount ?? 0, isReplyGatedPost)
 
   const [hasLikeIconBeenToggled, setHasLikeIconBeenToggled] = useState(false)
 
@@ -451,9 +452,7 @@ function PostControlsInner({
           'Accessibility label for the reply button, verb form followed by number of replies and noun form',
       })}
       big={big}>
-      <PostControlButtonIcon
-        icon={getReplyIcon(post.replyCount ?? 0, isReplyGatedPost)}
-      />
+      <PostControlButtonIcon icon={ReplyIcon} />
       <MetricCountLabel
         display={replyMetricsDisplay}
         count={post.replyCount ?? 0}

@@ -11,7 +11,9 @@ import {
   useAlsoLikedCollapseByDefault,
   useAlsoLikedFeedEnabled,
   useCompactPosts,
+  useReplyIconIndicators,
   useSetCompactPosts,
+  useSetReplyIconIndicators,
 } from '#/state/preferences'
 import {
   useDownloadFormat,
@@ -52,6 +54,7 @@ import {Image_Stroke1_Corner0_Rounded as ImageIcon} from '#/components/icons/Ima
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
 import {UFO_Stroke2_Corner0_Rounded as UfoIcon} from '#/components/icons/UFO'
 import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
+import {getReplyIcon} from '#/components/PostControls/ReplyIcon'
 import * as Select from '#/components/Select'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
@@ -68,6 +71,8 @@ export function RunesDisplaySettingsScreen() {
 
   const showViaClient = useShowViaClient()
   const setShowViaClient = useSetShowViaClient()
+  const replyIconIndicators = useReplyIconIndicators()
+  const setReplyIconIndicators = useSetReplyIconIndicators()
 
   const sixSevenCelebration = useSixSevenCelebration()
   const setSixSevenCelebration = useSetSixSevenCelebration()
@@ -122,6 +127,19 @@ export function RunesDisplaySettingsScreen() {
           <SettingsList.ItemIcon icon={WindowIcon} />
           <SettingsList.ItemText>
             <Trans>Show client used to post</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="reply_icon_indicators"
+        label={l`Reply icon indicators`}
+        value={replyIconIndicators ?? true}
+        onChange={value => setReplyIconIndicators(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={getReplyIcon(3, false)} />
+          <SettingsList.ItemText>
+            <Trans>Reply icon indicators</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

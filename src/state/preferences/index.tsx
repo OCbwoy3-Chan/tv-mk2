@@ -49,6 +49,7 @@ import {Provider as OpenRouterProvider} from './openrouter'
 import {Provider as PdsLabelProvider} from './pds-label'
 import {Provider as PlcDirectoryProvider} from './plc-directory'
 import {Provider as PostNameReplacementProvider} from './post-name-replacement.tsx'
+import {Provider as ReplyIconIndicatorsProvider} from './reply-icon-indicators'
 import {Provider as RepostCarouselProvider} from './repost-carousel-enabled'
 import {Provider as SettingsSyncProvider} from './settings-sync'
 import {Provider as ShowAvatarFollowButtonProvider} from './show-avatar-follow-button'
@@ -134,6 +135,10 @@ export {
   usePlcDirectory,
   useSetPlcDirectory,
 } from './plc-directory'
+export {
+  useReplyIconIndicators,
+  useSetReplyIconIndicators,
+} from './reply-icon-indicators'
 export {
   useSetSettingsSyncEnabled,
   useSettingsSyncEnabled,
@@ -227,9 +232,11 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                       <SlingshotInstanceProvider>
                                                                                                                                         <DisableInfiniteScrollProvider>
                                                                                                                                           <HideQuotesOfBlockedAccountsProvider>
-                                                                                                                                            {
-                                                                                                                                              children
-                                                                                                                                            }
+                                                                                                                                            <ReplyIconIndicatorsProvider>
+                                                                                                                                              {
+                                                                                                                                                children
+                                                                                                                                              }
+                                                                                                                                            </ReplyIconIndicatorsProvider>
                                                                                                                                           </HideQuotesOfBlockedAccountsProvider>
                                                                                                                                         </DisableInfiniteScrollProvider>
                                                                                                                                       </SlingshotInstanceProvider>
