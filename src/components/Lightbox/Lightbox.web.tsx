@@ -333,6 +333,7 @@ function LightboxGallery({
               label={l`Download formats`}
               trigger={
                 <>
+                  <Menu.ItemIcon icon={DownloadIcon} />
                   <Menu.ItemText>
                     <Trans>Download formats</Trans>
                   </Menu.ItemText>

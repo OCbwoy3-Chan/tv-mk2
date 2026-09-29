@@ -3,6 +3,7 @@ import type zod from 'zod'
 import {type BaseNux} from '#/state/queries/nuxs/types'
 
 export enum Nux {
+  WitchskyUpdate202609 = 'WitchskyUpdate202609',
   NeueTypography = 'NeueTypography',
   ExploreInterestsCard = 'ExploreInterestsCard',
   InitialVerificationAnnouncement = 'InitialVerificationAnnouncement',
@@ -29,6 +30,10 @@ export enum Nux {
 export const nuxNames = new Set(Object.values(Nux))
 
 export type AppNux = BaseNux<
+  | {
+      id: Nux.WitchskyUpdate202609
+      data: undefined
+    }
   | {
       id: Nux.NeueTypography
       data: undefined
@@ -92,6 +97,7 @@ export type AppNux = BaseNux<
 >
 
 export const NuxSchemas: Record<Nux, zod.ZodObject<any> | undefined> = {
+  [Nux.WitchskyUpdate202609]: undefined,
   [Nux.NeueTypography]: undefined,
   [Nux.ExploreInterestsCard]: undefined,
   [Nux.InitialVerificationAnnouncement]: undefined,

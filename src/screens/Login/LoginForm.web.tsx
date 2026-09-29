@@ -1,9 +1,6 @@
 import {useRef, useState} from 'react'
 import {Keyboard, Pressable, type TextInput, View} from 'react-native'
-import {
-  ComAtprotoServerCreateSession,
-  type ComAtprotoServerDescribeServer,
-} from '@atproto/api'
+import {LexAuthFactorError} from '@atproto/lex-password-session'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {DEFAULT_SERVICE, HITSLOP_10, HITSLOP_20} from '#/lib/constants'
@@ -36,6 +33,7 @@ import {Ticket_Stroke2_Corner0_Rounded as TicketIcon} from '#/components/icons/T
 import {createStaticClick, InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
+import {type com} from '#/lexicons'
 import {AppServerButton} from './components/AppServerDialog'
 import {ConfirmHostingProviderDialog} from './components/ConfirmHostingProviderDialog'
 import {HandleAutocompleteInput} from './components/HandleAutocompleteInput'
@@ -43,7 +41,7 @@ import {HostingProviderDialog} from './components/HostingProviderDialog'
 import {useEphemeralLogin} from './EphemeralLoginContext'
 import {FormContainer} from './FormContainer'
 
-type ServiceDescription = ComAtprotoServerDescribeServer.OutputSchema
+type ServiceDescription = com.atproto.server.describeServer.$OutputBody
 
 type LoginMode = 'oauth' | 'legacy'
 
@@ -378,10 +376,7 @@ function LegacyLoginFields({
     } catch (err) {
       const errMsg = String(err)
       setIsProcessing(false)
-      if (
-        err instanceof
-        ComAtprotoServerCreateSession.AuthFactorTokenRequiredError
-      ) {
+      if (err instanceof LexAuthFactorError) {
         setIsAuthFactorTokenNeeded(true)
       } else {
         onAttemptFailed()
@@ -406,7 +401,7 @@ function LegacyLoginFields({
           )
         } else {
           logger.warn('Failed to login', {error: errMsg})
-          setError(cleanError(errMsg))
+          setError(cleanError(err))
         }
       }
     }

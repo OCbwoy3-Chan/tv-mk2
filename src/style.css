@@ -213,6 +213,21 @@ input:focus {
   outline: none;
 }
 
+/* Keep the trailing column aligned with a smaller gap than the leading icons. */
+.wsky-menu__trailing-icon,
+.wsky-menu:has(.wsky-menu__trailing-icon)
+  .wsky-menu__item:not(:has(.wsky-menu__trailing-icon))::after {
+  margin-inline-start: -6px;
+}
+
+/* Reserve the chevron column on every row so the longest label sets its edge. */
+.wsky-menu:has(.wsky-menu__trailing-icon)
+  .wsky-menu__item:not(:has(.wsky-menu__trailing-icon))::after {
+  content: '';
+  flex: 0 0 12px;
+  width: 12px;
+}
+
 /* Spinner component */
 @keyframes rotate {
   0% {

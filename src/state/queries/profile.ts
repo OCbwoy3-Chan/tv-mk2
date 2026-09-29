@@ -199,7 +199,7 @@ export function useProfileUpdateMutation() {
             next.pinnedPost = updates.pinnedPost
           }
           if ('pronouns' in updates) {
-            next.pronouns = updates.pronouns
+            next.pronouns = updates.pronouns?.trim() || undefined
           }
           if ('website' in updates) {
             if (updates['website'] && updates['website'].length !== 0) {
@@ -251,8 +251,8 @@ export function useProfileUpdateMutation() {
               return true
             }
             return (
-              fresh.displayName === updates.displayName &&
-              fresh.description === updates.description
+              (fresh.displayName || '') === (updates.displayName || '') &&
+              (fresh.description || '') === (updates.description || '')
             )
           }),
       )

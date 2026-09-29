@@ -27,7 +27,14 @@ import {
 } from '#/components/dialogs/nuxs/InviteFriendsAnnouncement'
 import {isSnoozed, snooze, unsnooze} from '#/components/dialogs/nuxs/snoozing'
 import {type EnabledCheckProps} from '#/components/dialogs/nuxs/utils'
+<<<<<<< HEAD
 import { TennaPartyNativeAppNux } from '#/components/tenna/NativeAppNux'
+=======
+import {
+  enabled as isWitchskyUpdateAnnouncementEnabled,
+  WitchskyUpdateAnnouncement,
+} from '#/components/dialogs/nuxs/WitchskyUpdateAnnouncement'
+>>>>>>> 0496b23253676f399cdb9ed65e81ec16df40b989
 import {useAnalytics} from '#/analytics'
 import {useGeolocation} from '#/geolocation'
 import {type app} from '#/lexicons'
@@ -41,6 +48,10 @@ const queuedNuxs: {
   id: Nux
   enabled?: (props: EnabledCheckProps) => boolean
 }[] = [
+  {
+    id: Nux.WitchskyUpdate202609,
+    enabled: isWitchskyUpdateAnnouncementEnabled,
+  },
   {
     id: Nux.GroupChatsAnnouncement,
     enabled: isGroupChatsAnnouncementEnabled,
@@ -199,6 +210,7 @@ function Inner({
 
   return (
     <Context.Provider value={ctx}>
+      {activeNux === Nux.WitchskyUpdate202609 && <WitchskyUpdateAnnouncement />}
       {/*For example, activeNux === Nux.NeueTypography && <NeueTypography />*/}
       {activeNux === Nux.GroupChatsAnnouncement && <GroupChatsAnnouncement />}
       {activeNux === Nux.TennaPartyNativeAppAnnouncement_Android && <TennaPartyNativeAppNux />}

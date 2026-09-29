@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, it, jest} from '@jest/globals'
 
-import {hasWorkingHandleLink} from '../handle-link'
+import {hasWorkingHandleLink} from '#/state/queries/handle-link'
 
 describe('handle link DNS checks', () => {
   beforeEach(() => {
@@ -56,5 +56,29 @@ describe('handle link DNS checks', () => {
       } as Response)
 
     await expect(hasWorkingHandleLink('alice.example')).resolves.toBe(false)
+  })
+
+  it('supports native abort signals without throwIfAborted', async () => {
+    const controller = new AbortController()
+    Object.defineProperty(controller.signal, 'throwIfAborted', {value: undefined})
+    jest.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({Answer: [{data: '192.0.2.1'}]}),
+    } as Response)
+
+    await expect(
+      hasWorkingHandleLink('alice.example', controller.signal),
+    ).resolves.toBe(true)
+  })
+
+  it('rejects cancelled native DNS checks', async () => {
+    const controller = new AbortController()
+    Object.defineProperty(controller.signal, 'throwIfAborted', {value: undefined})
+    jest.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Cancelled'))
+    controller.abort()
+
+    await expect(
+      hasWorkingHandleLink('alice.example', controller.signal),
+    ).rejects.toMatchObject({name: 'AbortError'})
   })
 })

@@ -81,7 +81,7 @@ export const RepostButton = ({
               )
             }}
           </Menu.Trigger>
-          <Menu.Outer style={{minWidth: 170}}>
+          <Menu.Outer>
             <Menu.Item
               label={
                 isReposted

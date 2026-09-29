@@ -351,6 +351,7 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
 
   const {refs, floatingStyles, isPositioned} = useFloating({
     open: isVisible,
+    placement: props.align === 'start' ? 'bottom-start' : 'bottom',
     middleware: floatingMiddlewares,
     whileElementsMounted: autoUpdate,
   })
@@ -644,10 +645,12 @@ function Inner({
 
       <View style={[a.pb_sm, a.flex_1]}>
         <Link to={profileURL} label={_(msg`View profile`)} onPress={hide}>
-          <View style={[a.flex_row, a.align_center, a.pt_md, a.pb_xs]}>
+          <View
+            style={[a.flex_row, a.flex_1, a.align_center, a.pt_md, a.pb_xs]}>
             <Text
               numberOfLines={1}
               style={[
+                a.flex_shrink,
                 a.text_lg,
                 a.leading_snug,
                 a.font_semi_bold,
@@ -671,6 +674,7 @@ function Inner({
 
         <ProfileHeaderHandle
           profile={profileShadow}
+          truncate
           disableAuxiliaryTaps
           onLinkPress={hide}
         />

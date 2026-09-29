@@ -327,7 +327,9 @@ export function SettingsScreen({}: Props) {
                         <Menu.ItemText>
                           <Trans>Reverse order</Trans>
                         </Menu.ItemText>
-                        <Menu.ItemIcon icon={ReverseIcon} position="right" />
+                        <View>
+                          <Menu.ItemIcon icon={ReverseIcon} />
+                        </View>
                       </Menu.Item>
                     </Menu.Outer>
                   </Menu.Root>

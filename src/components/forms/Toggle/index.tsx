@@ -16,6 +16,7 @@ import {
   native,
   platform,
   type TextStyleProp,
+  tokens,
   useTheme,
   type ViewStyleProp,
 } from '#/alf'
@@ -518,7 +519,9 @@ export function Switch() {
           }),
         ).easing(Easing.inOut(Easing.cubic))}
         style={[
-          enableSquareButtons ? a.rounded_sm : a.rounded_full,
+          enableSquareButtons
+            ? {borderRadius: tokens.borderRadius.sm - 3}
+            : a.rounded_full,
           {
             backgroundColor:
               selected && !isInvalid && !disabled

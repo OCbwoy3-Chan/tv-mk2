@@ -605,7 +605,7 @@ function OverflowMenu({
             </Button>
           )}
         </Menu.Trigger>
-        <Menu.Outer style={{minWidth: 170}}>
+        <Menu.Outer>
           {isOwn ? (
             <>
               <Menu.Item

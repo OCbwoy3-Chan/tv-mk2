@@ -13,7 +13,7 @@ import {DropdownMenu} from 'radix-ui'
 import {userStyle} from '#/lib/userstyles'
 import {useA11y} from '#/state/a11y'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {atoms as a, flatten, flattenToCSS, useTheme, web} from '#/alf'
+import {atoms as a, flatten, flattenToCSS, tokens, useTheme, web} from '#/alf'
 import type * as Dialog from '#/components/Dialog'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {
@@ -22,6 +22,7 @@ import {
   useMenuContext,
   useMenuItemContext,
 } from '#/components/Menu/context'
+import {leadingIcons} from '#/components/Menu/leadingIcons'
 import {
   type ContextType,
   type GroupProps,
@@ -300,11 +301,11 @@ export function Item({
         style={flatten([
           a.flex_row,
           a.align_center,
-          a.gap_lg,
+          a.gap_md,
           a.py_sm,
           a.rounded_xs,
           a.overflow_hidden,
-          {minHeight: 32, paddingHorizontal: 10},
+          {minHeight: 32, paddingHorizontal: 8},
           web({outline: 0}),
           (hovered || focused) &&
             !rest.disabled && [
@@ -321,7 +322,7 @@ export function Item({
         })}>
         <ItemContext.Provider
           value={{disabled: Boolean(rest.disabled), destructive}}>
-          {children}
+          {leadingIcons(children, ItemIcon)}
         </ItemContext.Provider>
       </Pressable>
     </DropdownMenu.Item>
@@ -380,11 +381,11 @@ export function Submenu({children, label, trigger, style}: SubmenuProps) {
           style={flatten([
             a.flex_row,
             a.align_center,
-            a.gap_lg,
+            a.gap_md,
             a.py_sm,
             a.rounded_xs,
             a.overflow_hidden,
-            {minHeight: 32, paddingHorizontal: 10},
+            {minHeight: 32, paddingHorizontal: 8},
             web({outline: 0}),
             (hovered || focused) && [
               web({outline: '0 !important'}),
@@ -467,16 +468,14 @@ export function ItemIcon({icon: Comp, position = 'left', fill}: ItemIconProps) {
   return (
     <View
       style={[
-        position === 'left' && {
-          marginLeft: -2,
-        },
-        position === 'right' && {
-          marginRight: -2,
-          marginLeft: 12,
-        },
+        position === 'right' && [
+          userStyle('wsky-menu__trailing-icon'),
+          a.align_center,
+          {width: 12, flexShrink: 0},
+        ],
       ]}>
       <Comp
-        size="md"
+        width={position === 'right' ? 12 : 18}
         fill={
           fill
             ? fill({disabled})
@@ -511,7 +510,9 @@ export function ItemRadio({selected}: {selected: boolean}) {
         <View
           style={[
             a.absolute,
-            enableSquareButtons ? a.rounded_sm : a.rounded_full,
+            enableSquareButtons
+              ? {borderRadius: tokens.borderRadius.sm - 3}
+              : a.rounded_full,
             {height: 14, width: 14},
             selected
               ? {

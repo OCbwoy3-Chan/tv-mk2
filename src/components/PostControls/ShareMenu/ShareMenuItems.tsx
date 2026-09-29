@@ -2,9 +2,7 @@ import {memo, useMemo, useRef} from 'react'
 import * as ExpoClipboard from 'expo-clipboard'
 import {AtUri} from '@atproto/syntax'
 import {isIOS} from '@bsky.app/alf'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
 
@@ -24,6 +22,7 @@ import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {useDialogControl} from '#/components/Dialog'
 import {SendViaChatDialog} from '#/components/dms/dialogs/ShareViaChatDialog'
+import {ArrowShareRight_Stroke2_Corner2_Rounded as ShareIcon} from '#/components/icons/ArrowShareRight'
 import {ChainLink_Stroke2_Corner0_Rounded as ChainLinkIcon} from '#/components/icons/ChainLink'
 import {ChevronRight_Stroke2_Corner0_Rounded as ChevronRightIcon} from '#/components/icons/Chevron'
 import {Clipboard_Stroke2_Corner2_Rounded as ClipboardIcon} from '#/components/icons/Clipboard'
@@ -47,7 +46,7 @@ let ShareMenuItems = ({
 }: ShareMenuItemsProps): React.ReactNode => {
   const ax = useAnalytics()
   const {hasSession} = useSession()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const navigation = useNavigation<NavigationProp>()
   const sendViaChatControl = useDialogControl()
   const [devModeEnabled] = useDevMode()
@@ -88,7 +87,7 @@ let ShareMenuItems = ({
     } else {
       await ExpoClipboard.setStringAsync(url)
     }
-    Toast.show(_(msg`Copied to clipboard`), {
+    Toast.show(l`Copied to clipboard`, {
       type: 'success',
     })
     onShareProp()
@@ -103,7 +102,7 @@ let ShareMenuItems = ({
     } else {
       await ExpoClipboard.setStringAsync(url)
     }
-    Toast.show(_(msg`Copied to clipboard`), {
+    Toast.show(l`Copied to clipboard`, {
       type: 'success',
     })
     onShareProp()
@@ -120,7 +119,7 @@ let ShareMenuItems = ({
     } else {
       await ExpoClipboard.setStringAsync(atprotoExplorerUrl)
     }
-    Toast.show(_(msg`Copied to clipboard`), {
+    Toast.show(l`Copied to clipboard`, {
       type: 'success',
     })
     onShareProp()
@@ -182,7 +181,7 @@ let ShareMenuItems = ({
             </Menu.ContainerItem>
             <Menu.Item
               testID="postDropdownSendViaDMBtn"
-              label={_(msg`Send via chat`)}
+              label={l`Send via chat`}
               onPress={() => {
                 ax.metric('share:press:openDmSearch', {})
                 sendViaChatControl.open()
@@ -198,7 +197,7 @@ let ShareMenuItems = ({
         <Menu.Group>
           <Menu.Item
             testID="postDropdownCopyLinkBtn"
-            label={_(msg`Copy link to post`)}
+            label={l`Copy link to post`}
             onPress={onCopyLink}>
             <Menu.ItemText>
               <Trans>Copy link to post</Trans>
@@ -207,11 +206,12 @@ let ShareMenuItems = ({
           </Menu.Item>
 
           <Menu.Submenu
-            label={_(msg`Share`)}
+            label={l`Share link`}
             trigger={
               <>
+                <Menu.ItemIcon icon={ShareIcon} />
                 <Menu.ItemText>
-                  <Trans>Share</Trans>
+                  <Trans>Share link</Trans>
                 </Menu.ItemText>
                 <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
               </>
@@ -219,7 +219,7 @@ let ShareMenuItems = ({
             <Menu.Group>
               <Menu.Item
                 testID="postDropdownShareBlueskyBtn"
-                label={_(msg`Bluesky`)}
+                label={l`Bluesky`}
                 onPress={() => {
                   if (copyLinksRef.current) {
                     void onCopyLinkBsky()
@@ -252,7 +252,7 @@ let ShareMenuItems = ({
               </Menu.Item>
               <Menu.ContainerItem>
                 <CheckboxItemText
-                  label={_(msg`Copy instead of opening the share sheet`)}
+                  label={l`Copy instead of opening the share sheet`}
                   initialValue={copyLinksRef.current}
                   onChange={value => {
                     copyLinksRef.current = value
@@ -264,11 +264,12 @@ let ShareMenuItems = ({
           </Menu.Submenu>
 
           <Menu.Submenu
-            label={_(msg`Open`)}
+            label={l`Open with`}
             trigger={
               <>
+                <Menu.ItemIcon icon={ExternalIcon} />
                 <Menu.ItemText>
-                  <Trans>Open</Trans>
+                  <Trans>Open with</Trans>
                 </Menu.ItemText>
                 <Menu.ItemIcon icon={ChevronRightIcon} position="right" />
               </>
@@ -277,7 +278,7 @@ let ShareMenuItems = ({
               {isBridgedPost && (
                 <Menu.Item
                   testID="postDropdownOpenOriginalPost"
-                  label={_(msg`Original post`)}
+                  label={l`Original post`}
                   onPress={onOpenOriginalPost}>
                   <Menu.ItemText>
                     <Trans>Original post</Trans>
@@ -299,7 +300,7 @@ let ShareMenuItems = ({
               </Menu.Item>
               <Menu.Item
                 testID="postDropdownOpenInSkythread"
-                label={_(msg`Skythread`)}
+                label={l`Skythread`}
                 onPress={onOpenPostInSkythread}>
                 <Menu.ItemText>
                   <Trans>Skythread</Trans>
@@ -326,7 +327,7 @@ let ShareMenuItems = ({
           <Menu.Group>
             <Menu.Item
               testID="postAtUriShareBtn"
-              label={_(msg`Share post at:// URI`)}
+              label={l`Share post at:// URI`}
               onPress={onShareATURI}>
               <Menu.ItemText>
                 <Trans>Share post at:// URI</Trans>
@@ -335,7 +336,7 @@ let ShareMenuItems = ({
             </Menu.Item>
             <Menu.Item
               testID="postAuthorDIDShareBtn"
-              label={_(msg`Share author DID`)}
+              label={l`Share author DID`}
               onPress={onShareAuthorDID}>
               <Menu.ItemText>
                 <Trans>Share author DID</Trans>
