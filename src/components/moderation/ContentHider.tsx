@@ -159,7 +159,7 @@ function ContentHiderActive({
             control.open()
           }
         }}
-        accessibilityState={{expanded: override}}
+        aria-expanded={override}
         label={desc.name}
         accessibilityHint={
           modui.noOverride

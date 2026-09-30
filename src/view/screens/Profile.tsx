@@ -3,7 +3,6 @@ import {StyleSheet} from 'react-native'
 import {SafeAreaView} from 'react-native-safe-area-context'
 import {ScrollForwarderView} from 'react-native-scroll-forwarder'
 import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
-import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -12,6 +11,7 @@ import {useQueryClient} from '@tanstack/react-query'
 
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {useRequireEmailVerification} from '#/lib/hooks/useRequireEmailVerification'
+import {useRichText} from '#/lib/hooks/useRichText'
 import {useSetTitle} from '#/lib/hooks/useSetTitle'
 import {
   type CommonNavigatorParams,
@@ -32,7 +32,7 @@ import {useLabelerInfoQuery} from '#/state/queries/labeler'
 import {resetProfilePostsQueries} from '#/state/queries/post-feed'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
-import {useAppviewClient, useSession} from '#/state/session'
+import {useSession} from '#/state/session'
 import {ProfileFeedgens} from '#/view/com/feeds/ProfileFeedgens'
 import {ProfileLists} from '#/view/com/lists/ProfileLists'
 import {PagerWithHeader} from '#/view/com/pager/PagerWithHeader'
@@ -624,40 +624,6 @@ function ProfileScreenLoaded({
       )}
     </ScreenHider>
   )
-}
-
-function useRichText(text: string): [RichTextAPI, boolean] {
-  /*
-   * Facet/mention resolution is an appview job - it resolves handles through
-   * the appview, and the public fallback keeps it working when logged out.
-   */
-  const client = useAppviewClient()
-  const [prevText, setPrevText] = useState(text)
-  const [rawRT, setRawRT] = useState(() => new RichTextAPI({text}))
-  const [resolvedRT, setResolvedRT] = useState<RichTextAPI | null>(null)
-  if (text !== prevText) {
-    setPrevText(text)
-    setRawRT(new RichTextAPI({text}))
-    setResolvedRT(null)
-    // This will queue an immediate re-render
-  }
-  useEffect(() => {
-    let ignore = false
-    async function resolveRTFacets() {
-      // new each time
-      const resolvedRT = new RichTextAPI({text})
-      await resolvedRT.detectFacets(client)
-      if (!ignore) {
-        setResolvedRT(resolvedRT)
-      }
-    }
-    void resolveRTFacets()
-    return () => {
-      ignore = true
-    }
-  }, [text, client])
-  const isResolving = resolvedRT === null
-  return [resolvedRT ?? rawRT, isResolving]
 }
 
 const styles = StyleSheet.create({

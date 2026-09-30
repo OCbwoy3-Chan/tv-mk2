@@ -1552,7 +1552,9 @@ export const ComposePost = ({
             langs: currentLanguages,
             omitViaField,
             tidSuffix,
-          })
+            omitViaField,
+            tidSuffix,
+        })
         ).uris[0]
       }
 
@@ -1721,14 +1723,14 @@ export const ComposePost = ({
           bsky.isType(app.bsky.unspecced.defs.threadItemPost, anchor?.value) &&
           anchor.value.post.quoteCount !== initQuote.quoteCount
         ) {
-          onPost?.(postUri)
+          onPost?.(postUri, postSuccessData)
           onPostSuccess?.(postSuccessData)
           return true
         }
         return false
       })
     } else {
-      onPost?.(postUri)
+      onPost?.(postUri, postSuccessData)
       onPostSuccess?.(postSuccessData)
     }
     onClose()

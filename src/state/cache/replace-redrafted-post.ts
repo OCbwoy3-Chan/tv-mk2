@@ -1,17 +1,64 @@
-import {type QueryClient} from '@tanstack/react-query'
+import {type InfiniteData, type QueryClient} from '@tanstack/react-query'
 
+import {retry} from '#/lib/async/retry'
+import {type FeedPageUnselected} from '#/state/queries/post-feed'
 import {type app} from '#/lexicons'
 
-/** Replaces visible post slots without changing their order or quoted records. */
+/** Waits for the replacement before deleting the original or updating its slots. */
+export async function completeRedraftedPost({
+  queryClient,
+  uri,
+  replacement,
+  getPost,
+  deletePost,
+}: {
+  queryClient: QueryClient
+  uri: string
+  replacement?: app.bsky.feed.defs.PostView
+  getPost: () => Promise<app.bsky.feed.defs.PostView>
+  deletePost: () => Promise<void>
+}) {
+  const post = replacement ?? (await retry(5, () => true, getPost, 1000))
+  await deletePost()
+  replaceRedraftedPost(queryClient, uri, post)
+}
+
+/** Removes old feed entries, replacing the first slot when it is the old post. */
 export function replaceRedraftedPost(
   queryClient: QueryClient,
   uri: string,
   replacement: app.bsky.feed.defs.PostView,
 ) {
+  queryClient.setQueriesData<InfiniteData<FeedPageUnselected>>(
+    {queryKey: ['post-feed']},
+    data => {
+      if (!data) return data
+      const hasReplacement = data.pages.some(page =>
+        page.feed.some(item => item.post.uri === replacement.uri),
+      )
+      let hasPostsAbove = false
+      let changed = false
+      const pages = data.pages.map(page => {
+        let pageChanged = false
+        const feed = page.feed.flatMap(item => {
+          const isOriginal = item.post.uri === uri
+          const replace = isOriginal && !hasPostsAbove && !hasReplacement
+          hasPostsAbove = true
+          if (!isOriginal) return [item]
+          pageChanged = true
+          return replace ? [{...item, post: replacement}] : []
+        })
+        if (!pageChanged) return page
+        changed = true
+        return {...page, feed}
+      })
+      return changed ? {...data, pages} : data
+    },
+  )
   queryClient.setQueriesData(
     {
       predicate: query =>
-        ['post-feed', 'search-posts', 'post-quotes', 'post-thread-v2'].includes(
+        ['search-posts', 'post-quotes', 'post-thread-v2'].includes(
           String(query.queryKey[0]),
         ),
     },

@@ -6,7 +6,7 @@ import {useLingui} from '@lingui/react'
 
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {useShowAvatarFollowButton} from '#/state/preferences/show-avatar-follow-button'
 import {useSession} from '#/state/session'
 import * as Toast from '#/view/com/util/Toast'
@@ -31,7 +31,7 @@ export function AviFollowButton({
   const t = useTheme()
   const profile = useProfileShadow(author)
   const showAvatarFollowButton = useShowAvatarFollowButton()
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const confirmFollow = useConfirmFollow()
   const {follow} = useFollowMethods({
     profile,
     logContext: 'AvatarButton',
@@ -52,7 +52,11 @@ export function AviFollowButton({
   }
 
   function onPress() {
-    onConfirm()
+    if (confirmFollow) {
+      promptControl.open()
+    } else {
+      onConfirm()
+    }
   }
 
   if (!hasSession || !showAvatarFollowButton) {
@@ -115,7 +119,7 @@ export function AviFollowButton({
           </View>
         </Button>
       )}
-      {confirmFollowUnfollow && (
+      {confirmFollow && (
         <FollowConfirmationDialog
           control={promptControl}
           displayName={name}

@@ -39,14 +39,28 @@ export function restoreLinks(
   return parts.join('')
 }
 
-export function shortenLinks(rt: RichText, preserveLabels = false): RichText {
+export function shortenLinks(
+  rt: RichText,
+  preserveLabels = false,
+  preserveFacets: readonly AppBskyRichtextFacet.Main[] = [],
+): RichText {
   if (!rt.facets?.length) {
     return rt
   }
+  /** Remember explicit labels before cloning loses their facet identities. */
+  const preservedStarts = new Set(
+    rt.facets
+      .filter(facet => preserveFacets.includes(facet))
+      .map(facet => facet.index.byteStart),
+  )
   rt = rt.clone()
   // enumerate the link facets
   if (rt.facets) {
+    const preserved = new Set(
+      rt.facets.filter(facet => preservedStarts.has(facet.index.byteStart)),
+    )
     for (const facet of rt.facets) {
+      if (preserved.has(facet)) continue
       const isLink = !!facet.features.find(f =>
         bsky.isType(app.bsky.richtext.facet.link, f),
       )
@@ -71,6 +85,21 @@ export function shortenLinks(rt: RichText, preserveLabels = false): RichText {
 
       // insert the shorten URL
       rt.insert(byteStart, shortened.utf16)
+      /*
+       * The SDK shifts facets by UTF-16 length when inserting, but facet
+       * offsets are UTF-8 bytes. Correct that shift before removing the URL.
+       */
+      const missingBytes = shortened.length - shortened.utf16.length
+      if (missingBytes) {
+        for (const current of rt.facets) {
+          if (current.index.byteStart >= byteStart) {
+            current.index.byteStart += missingBytes
+            current.index.byteEnd += missingBytes
+          } else if (current.index.byteEnd > byteStart) {
+            current.index.byteEnd += missingBytes
+          }
+        }
+      }
       // update the facet to cover the new shortened URL
       facet.index.byteStart = byteStart
       facet.index.byteEnd = byteStart + shortened.length

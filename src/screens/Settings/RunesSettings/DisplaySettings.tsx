@@ -11,7 +11,9 @@ import {
   useAlsoLikedCollapseByDefault,
   useAlsoLikedFeedEnabled,
   useCompactPosts,
+  useReplyIconIndicators,
   useSetCompactPosts,
+  useSetReplyIconIndicators,
 } from '#/state/preferences'
 import {
   useDownloadFormat,
@@ -29,6 +31,10 @@ import {
   usePostReplacement,
   useSetPostReplacement,
 } from '#/state/preferences/post-name-replacement'
+import {
+  useSetShowPostTags,
+  useShowPostTags,
+} from '#/state/preferences/show-post-tags'
 import {
   useSetShowViaClient,
   useShowViaClient,
@@ -50,8 +56,10 @@ import {Celebrate_Stroke2_Corner0_Rounded as CelebrateIcon} from '#/components/i
 import {Heart2_Stroke2_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
 import {Image_Stroke1_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
+import {Tag_Stroke2_Corner2_Rounded as TagIcon} from '#/components/icons/Tag'
 import {UFO_Stroke2_Corner0_Rounded as UfoIcon} from '#/components/icons/UFO'
 import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
+import {getReplyIcon} from '#/components/PostControls/ReplyIcon'
 import * as Select from '#/components/Select'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
@@ -66,8 +74,13 @@ export function RunesDisplaySettingsScreen() {
   const compactPosts = useCompactPosts()
   const setCompactPosts = useSetCompactPosts()
 
+  const showPostTags = useShowPostTags()
+  const setShowPostTags = useSetShowPostTags()
+
   const showViaClient = useShowViaClient()
   const setShowViaClient = useSetShowViaClient()
+  const replyIconIndicators = useReplyIconIndicators()
+  const setReplyIconIndicators = useSetReplyIconIndicators()
 
   const sixSevenCelebration = useSixSevenCelebration()
   const setSixSevenCelebration = useSetSixSevenCelebration()
@@ -114,6 +127,20 @@ export function RunesDisplaySettingsScreen() {
         </SettingsList.Item>
       </Toggle.Item>
       <Toggle.Item
+        testID="showPostTagsToggle"
+        name="show_post_tags"
+        label={l`Show tags beneath posts`}
+        value={showPostTags}
+        onChange={setShowPostTags}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={TagIcon} />
+          <SettingsList.ItemText>
+            <Trans>Show tags beneath posts</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
         name="show_via_client"
         label={l`Show client used to post`}
         value={showViaClient}
@@ -122,6 +149,19 @@ export function RunesDisplaySettingsScreen() {
           <SettingsList.ItemIcon icon={WindowIcon} />
           <SettingsList.ItemText>
             <Trans>Show client used to post</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="reply_icon_indicators"
+        label={l`Reply icon indicators`}
+        value={replyIconIndicators ?? true}
+        onChange={value => setReplyIconIndicators(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={getReplyIcon(3, false)} />
+          <SettingsList.ItemText>
+            <Trans>Reply icon indicators</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

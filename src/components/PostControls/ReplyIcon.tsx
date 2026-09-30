@@ -1,6 +1,8 @@
 import Svg, {Ellipse, Path} from 'react-native-svg'
 
+import {useReplyIconIndicators} from '#/state/preferences/reply-icon-indicators'
 import {type Props, useCommonSVGProps} from '#/components/icons/common'
+import {Reply as Bubble} from '#/components/icons/Reply'
 
 const replyIcons = [false, true].map(restricted =>
   Array.from({length: 4}, (_, dotCount) => {
@@ -40,8 +42,17 @@ const replyIcons = [false, true].map(restricted =>
   }),
 )
 
-/** Stable icon components for each reply count and restriction state. */
+/**
+ * Indicator artwork for a reply count and gate state. Ignores the
+ * `replyIconIndicators` pref, so use {@link useReplyIcon} instead - the settings
+ * row is the one caller that wants the artwork regardless.
+ */
 export function getReplyIcon(replyCount: number, restricted: boolean) {
   const dotCount = Math.min(3, Math.max(0, Math.floor(replyCount)))
   return replyIcons[restricted ? 1 : 0][dotCount]
+}
+
+export function useReplyIcon(replyCount: number, restricted: boolean) {
+  const indicators = useReplyIconIndicators() ?? true
+  return indicators ? getReplyIcon(replyCount, restricted) : Bubble
 }

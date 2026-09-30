@@ -5,6 +5,7 @@ import {
   applyFacetSyntax,
   parseMarkdownLinks,
   resolveSyntaxMentions,
+  shortenLinks,
 } from './rich-text-manip'
 
 function prepare(text: string, removeSyntax = true) {
@@ -32,6 +33,72 @@ function facetTexts(rt: RichText) {
 }
 
 describe('facet syntax', () => {
+  it('preserves an explicit full URL label while shortening ordinary URLs', () => {
+    const uri =
+      'https://full-link.example/a-really-long-link-that-would-normally-be-truncated'
+    const parsed = parseMarkdownLinks(
+      `[${uri}](${uri}) and https://example.com/another-long-path`,
+    )
+    const rt = new RichText({text: parsed.text})
+    rt.detectFacetsWithoutResolution()
+    rt.facets = [
+      ...(rt.facets ?? []).filter(facet => facet.index.byteStart > uri.length),
+      ...parsed.facets,
+    ] as typeof rt.facets
+    applyFacetSyntax(rt, {removeSyntax: true})
+    const shortened = shortenLinks(rt, true, parsed.facets)
+
+    expect(shortened.text).toBe(`${uri} and example.com/another-long...`)
+    expect(facetTexts(shortened)).toEqual([uri, 'example.com/another-long...'])
+    expect(shortened.graphemeLength).toBe(shortened.text.length)
+  })
+
+  it('preserves theme labels and byte ranges when posting masked links', () => {
+    const labels = ['Mocha', 'Macchiato', 'Frappé', 'Latte']
+    const uris = labels.map(
+      (_, index) =>
+        `https://witchsky.app/profile/did:plc:themes/theme/${index}`,
+    )
+    const input = `enjoy :3\n\n\n${labels
+      .map((label, index) => `[${label}](${uris[index]})`)
+      .join('\n')}`
+    const cleaned = new RichText({text: input}, {cleanNewlines: true})
+    const rt = shortenLinks(prepare(cleaned.text), true)
+
+    expect(rt.text).toBe('enjoy :3\n\nMocha\nMacchiato\nFrappé\nLatte')
+    expect(facetTexts(rt)).toEqual(labels)
+    expect(rt.facets?.map(facet => facet.features[0])).toEqual(
+      uris.map(uri => ({$type: 'app.bsky.richtext.facet#link', uri})),
+    )
+  })
+
+  it('keeps UTF-8 facet ranges when shortening a Unicode link label', () => {
+    const rt = prepare(
+      '[Frappé](example.com/frappe)\n[Latte](example.com/latte)',
+    )
+    const shortened = shortenLinks(rt)
+
+    expect(shortened.text).toBe('Frappé\nLatte')
+    expect(facetTexts(shortened)).toEqual(['Frappé', 'Latte'])
+    expect(facetTexts(rt)).toEqual(['Frappé', 'Latte'])
+  })
+
+  it('keeps later tags and masked links aligned after shortening a Unicode URL', () => {
+    const rt = prepare(
+      'https://example.com/é #topic [🦋](example.com/butterfly)',
+    )
+    const shortened = shortenLinks(rt, true)
+
+    expect(shortened.text).toBe('example.com/%C3%A9 #topic 🦋')
+    expect(facetTexts(shortened)).toEqual([
+      'example.com/%C3%A9',
+      '#topic',
+      '🦋',
+    ])
+    expect(rt.text).toBe('https://example.com/é #topic 🦋')
+    expect(facetTexts(rt)).toEqual(['https://example.com/é', '#topic', '🦋'])
+  })
+
   it('uses a backslash to keep a link or handle plain', () => {
     const rt = prepare(
       '🌟 \\file.com \\@person.test https://outside.example.com',

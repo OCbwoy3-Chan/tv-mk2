@@ -69,7 +69,7 @@ import {
   useFeedFeedback,
   useFeedFeedbackContext,
 } from '#/state/feed-feedback'
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useFeedInfo} from '#/state/queries/feed'
@@ -876,12 +876,15 @@ function Overlay({
     profile,
     logContext: 'ImmersiveVideo',
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({
+    profile,
+    onAuthenticated: onSelectEphemeralAccount,
+  })
   const hasAlternateAccounts = useMemo(
     () => accounts.some(account => account.did !== currentAccount?.did),
     [accounts, currentAccount?.did],
   )
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const confirmFollow = useConfirmFollow()
   const hideDisplayNames = useHideDisplayNames()
   const authorPrimaryName = getAuthorPrimaryName(post.author, {
     hideDisplayNames,
@@ -902,17 +905,18 @@ function Overlay({
   }, [queueUnfollow])
 
   const handleFollow = useCallback(() => {
-    void executeFollow()
-  }, [confirmFollowUnfollow, executeFollow, promptControl])
-
-  const handleUnfollow = useCallback(() => {
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('unfollow')
+    if (confirmFollow) {
+      setConfirmationAction('follow')
       promptControl.open()
     } else {
-      void executeUnfollow()
+      void executeFollow()
     }
-  }, [confirmFollowUnfollow, executeUnfollow, promptControl])
+  }, [confirmFollow, executeFollow, promptControl])
+
+  const handleUnfollow = useCallback(() => {
+    setConfirmationAction('unfollow')
+    promptControl.open()
+  }, [confirmFollow, executeUnfollow, promptControl])
 
   const onConfirm = useCallback(() => {
     if (pendingEphemeralAccount) {
@@ -1039,21 +1043,18 @@ function Overlay({
                         title={l`Follow as`}
                         triggerBehavior="longPress"
                         onSelectAccount={account => {
-                          if (confirmFollowUnfollow) {
-                            setPendingEphemeralAccount(account)
-                            void (async () => {
-                              const action =
-                                await getEphemeralFollowAction(account)
-                              if (!action) {
-                                setPendingEphemeralAccount(null)
-                                return
-                              }
+                          void (async () => {
+                            const action =
+                              await getEphemeralFollowAction(account)
+                            if (!action) return
+                            if (action === 'unfollow' || confirmFollow) {
+                              setPendingEphemeralAccount(account)
                               setConfirmationAction(action)
                               promptControl.open()
-                            })()
-                          } else {
-                            void onSelectEphemeralAccount(account)
-                          }
+                            } else {
+                              void onSelectEphemeralAccount(account)
+                            }
+                          })()
                         }}
                         renderTrigger={({triggerProps}) => (
                           <Button
@@ -1177,15 +1178,13 @@ function Overlay({
           */}
         </Hider.Content>
       </Hider.Outer>
-      {confirmFollowUnfollow && (
-        <FollowConfirmationDialog
-          control={promptControl}
-          displayName={authorPrimaryName}
-          handle={post.author.handle}
-          actionType={confirmationAction}
-          onConfirm={onConfirm}
-        />
-      )}
+      <FollowConfirmationDialog
+        control={promptControl}
+        displayName={authorPrimaryName}
+        handle={post.author.handle}
+        actionType={confirmationAction}
+        onConfirm={onConfirm}
+      />
     </>
   )
 }

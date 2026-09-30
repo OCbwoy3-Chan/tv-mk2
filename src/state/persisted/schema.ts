@@ -312,7 +312,8 @@ const schema = z.object({
   showGermDmButton: z.boolean().optional(),
   showClearskyProfileLink: z.boolean().optional(),
   showStandardLabelerProfile: z.boolean().optional(),
-  confirmFollowUnfollow: z.boolean().optional(),
+  confirmFollow: z.boolean().optional(),
+  showPostTags: z.boolean().optional(),
   discoverContextEnabled: z.boolean().optional(),
   compactPosts: z.boolean().optional(),
   enableSquareAvatars: z.boolean().optional(),
@@ -322,6 +323,7 @@ const schema = z.object({
   disableVerifyEmailReminder: z.boolean().optional(),
   showViaClient: z.boolean().optional(),
   hideDisplayNames: z.boolean().optional(),
+  replyIconIndicators: z.boolean().optional(),
   sixSevenCelebration: z.boolean().optional(),
   deerVerification: z
     .object({
@@ -515,7 +517,8 @@ export const defaults: Schema = {
   showGermDmButton: false,
   showClearskyProfileLink: false,
   showStandardLabelerProfile: true,
-  confirmFollowUnfollow: true,
+  confirmFollow: false,
+  showPostTags: true,
   discoverContextEnabled: false,
   compactPosts: false,
   enableSquareAvatars: false,
@@ -525,6 +528,7 @@ export const defaults: Schema = {
   disableVerifyEmailReminder: false,
   showViaClient: true,
   hideDisplayNames: false,
+  replyIconIndicators: true,
   sixSevenCelebration: true,
   deerVerification: {
     enabled: false,

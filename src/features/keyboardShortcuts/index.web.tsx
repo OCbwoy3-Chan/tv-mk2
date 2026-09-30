@@ -25,6 +25,7 @@ import {
   getPostAuthorRoute,
   getPostHref,
   getPostMediaTargets,
+  getRevealedPostWarning,
   isPostVisible,
   openPostMediaTarget,
   type PostAction,
@@ -90,6 +91,7 @@ export function KeyboardShortcuts() {
   const mediaDialogControl = Dialog.useDialogControl()
   const [mediaTargets, setMediaTargets] = useState<PostMediaTarget[]>([])
   const selectedPostRef = useRef<HTMLElement | null>(null)
+  const selectedWarningContainerRef = useRef<HTMLElement | null>(null)
   const originalTabIndexRef = useRef<string | null>(null)
   const pendingChordRef = useRef<string | null>(null)
   const chordTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -120,6 +122,7 @@ export function KeyboardShortcuts() {
     if (document.activeElement === selected) selected.blur()
 
     selectedPostRef.current = null
+    selectedWarningContainerRef.current = null
     originalTabIndexRef.current = null
     if (updateAnnouncement) setAnnouncement('')
     return true
@@ -130,6 +133,9 @@ export function KeyboardShortcuts() {
 
     clearSelection()
     selectedPostRef.current = post
+    selectedWarningContainerRef.current = post.dataset.keyboardNavigationWarning
+      ? post.parentElement
+      : null
     originalTabIndexRef.current = post.getAttribute('tabindex')
     setPostSelected(post, true)
     post.setAttribute('tabindex', '-1')
@@ -178,6 +184,16 @@ export function KeyboardShortcuts() {
 
   const getSelectedVisiblePost = () => {
     const selected = selectedPostRef.current
+    if (selected) {
+      const revealed = getRevealedPostWarning(
+        selected,
+        selectedWarningContainerRef.current,
+      )
+      if (revealed && isPostVisible(revealed)) {
+        selectPost(revealed, false)
+        return revealed
+      }
+    }
     return selected && isPostVisible(selected) ? selected : null
   }
 

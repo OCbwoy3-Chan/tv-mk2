@@ -35,6 +35,7 @@ import {
 } from '#/lib/api/feed-manip'
 import {DISCOVER_FEED_URI} from '#/lib/constants'
 import {logger} from '#/logger'
+import {useNoDiscoverFallback} from '#/state/preferences/no-discover-fallback'
 import {STALE} from '#/state/queries'
 import {DEFAULT_LOGGED_OUT_PREFERENCES} from '#/state/queries/preferences/const'
 import {useAppviewClient, useSession} from '#/state/session'
@@ -147,6 +148,7 @@ export function usePostFeedQuery(
 ) {
   const feedTuners = useFeedTuners(feedDesc)
   const moderationOpts = useModerationOpts()
+  const noDiscoverFallback = useNoDiscoverFallback()
   const {data: preferences} = usePreferencesQuery()
   /**
    * Load bearing: we need to await AA state or risk FOUC. This marginally
@@ -161,7 +163,8 @@ export function usePostFeedQuery(
     preferences?.savedFeeds?.findIndex(
       f => f.pinned && f.value === 'following',
     ) ?? -1
-  const enableFollowingToDiscoverFallback = followingPinnedIndex === 0
+  const enableFollowingToDiscoverFallback =
+    followingPinnedIndex === 0 && !noDiscoverFallback
   const {hasSession} = useSession()
   const client = useAppviewClient()
   const lastRun = useRef<{
@@ -199,7 +202,11 @@ export function usePostFeedQuery(
     enabled,
     staleTime: STALE.INFINITY,
     ...getPostFeedPaginationOptions(params?.paginated ?? false),
-    queryKey: RQKEY(feedDesc, params),
+    /* Switching fallback modes must discard the cached pagination API. */
+    queryKey:
+      feedDesc === 'following'
+        ? [...RQKEY(feedDesc, params), enableFollowingToDiscoverFallback]
+        : RQKEY(feedDesc, params),
     async queryFn({
       pageParam,
       signal,

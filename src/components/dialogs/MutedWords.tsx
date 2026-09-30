@@ -28,9 +28,9 @@ import {useGlobalDialogsControlContext} from '#/components/dialogs/Context'
 import {Divider} from '#/components/Divider'
 import * as Toggle from '#/components/forms/Toggle'
 import {useFormatDistance} from '#/components/hooks/dates'
-import {Hashtag_Stroke2_Corner0_Rounded as Hashtag} from '#/components/icons/Hashtag'
 import {PageText_Stroke2_Corner0_Rounded as PageText} from '#/components/icons/PageText'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
+import {Tag_Stroke2_Corner2_Rounded as TagIcon} from '#/components/icons/Tag'
 import {TimesLarge_Stroke2_Corner0_Rounded as X} from '#/components/icons/Times'
 import {Loader} from '#/components/Loader'
 import * as Menu from '#/components/Menu'
@@ -294,7 +294,7 @@ function MutedWordsInner() {
                       <Trans>Tags only</Trans>
                     </Toggle.LabelText>
                   </View>
-                  <Hashtag size="sm" />
+                  <TagIcon size="sm" />
                 </TargetToggle>
               </Toggle.Item>
             </View>

@@ -164,6 +164,13 @@ const EMBED_TARGET_SELECTOR = '[data-keyboard-navigation-embed-target]'
 
 /** Collect top-level attachments without reaching into a quoted post's embeds. */
 export function getPostMediaTargets(element: HTMLElement): PostMediaTarget[] {
+  if (
+    element.dataset.keyboardNavigationWarning &&
+    element.getAttribute('aria-expanded') === 'true' &&
+    element.parentElement
+  ) {
+    element = element.parentElement
+  }
   const boundaries = Array.from(
     element.querySelectorAll<HTMLElement>(EMBED_TARGET_SELECTOR),
   ).filter(boundary => {
@@ -228,6 +235,15 @@ export function getPostMediaTargets(element: HTMLElement): PostMediaTarget[] {
   return warnings.map(control => ({kind: 'embed', control}))
 }
 
+/** A post warning is replaced by the revealed post when its label is opened. */
+export function getRevealedPostWarning(
+  warning: HTMLElement,
+  container: HTMLElement | null,
+) {
+  if (warning.isConnected || !warning.dataset.keyboardNavigationWarning) return
+  return getNavigablePosts().find(post => container?.contains(post))
+}
+
 function isControlAvailable(control: HTMLElement) {
   return (
     control.getAttribute('aria-disabled') !== 'true' &&
@@ -236,15 +252,32 @@ function isControlAvailable(control: HTMLElement) {
 }
 
 /** Use the actual control so playback and external-media consent work as usual. */
-export function openPostMediaTarget({control}: PostMediaTarget) {
+export function openPostMediaTarget({control}: PostMediaTarget): boolean {
   if (!control.isConnected || !isControlAvailable(control)) return false
+  if (
+    control.dataset.keyboardNavigationWarning &&
+    control.getAttribute('aria-expanded') === 'true'
+  ) {
+    const targets = getPostMediaTargets(control)
+    return targets.length === 1 ? openPostMediaTarget(targets[0]) : false
+  }
   if (control.tagName === 'IFRAME') {
     control.focus()
   } else {
+    const player = control.closest<HTMLElement>(
+      '[data-testid="postVideoFocusTarget"]',
+    )
     control.click()
-    control
-      .closest<HTMLElement>('[data-testid="postVideoFocusTarget"]')
-      ?.focus({preventScroll: true})
+    if (player) {
+      player.focus({preventScroll: true})
+      /*
+       * The picker's focus scope restores its trigger in a timeout after
+       * closing. Focus again after that cleanup and React's playback updates.
+       */
+      requestAnimationFrame(() => {
+        if (player.isConnected) player.focus({preventScroll: true})
+      })
+    }
   }
   return true
 }

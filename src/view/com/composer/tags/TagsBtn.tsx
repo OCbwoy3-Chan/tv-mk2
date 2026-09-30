@@ -14,8 +14,8 @@ import {atoms as a, useTheme, web} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
 import {TinyChevronBottom_Stroke2_Corner0_Rounded as TinyChevronIcon} from '#/components/icons/Chevron'
-import {Hashtag_Stroke2_Corner0_Rounded as Hashtag} from '#/components/icons/Hashtag'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
+import {Tag_Stroke2_Corner2_Rounded as TagIcon} from '#/components/icons/Tag'
 import {TimesLarge_Stroke2_Corner0_Rounded as X} from '#/components/icons/Times'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
@@ -66,7 +66,7 @@ export function TagsBtn({
         }}
         label={l`Tags`}
         accessibilityHint={l`Opens a dialog to add tags to your post`}>
-        <ButtonIcon icon={Hashtag} />
+        <ButtonIcon icon={TagIcon} />
         <ButtonText numberOfLines={1} maxFontSizeMultiplier={2}>
           {hasTags ? (
             plural(tags.length, {

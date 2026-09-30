@@ -16,7 +16,7 @@ import {
   toAtprotoExplorerUrl,
   useAtprotoExplorer,
 } from '#/state/preferences/atproto-explorer'
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {
   useDeerVerificationEnabled,
   useDeerVerificationTrusted,
@@ -305,7 +305,7 @@ let ProfileMenu = ({
     }
   }, [ax, profile.viewer?.blocking, l, queueUnblock, queueBlock])
 
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const confirmFollow = useConfirmFollow()
   const followPromptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] = useState<
     'follow' | 'unfollow'
@@ -342,17 +342,18 @@ let ProfileMenu = ({
   }, [l, ax, queueUnfollow])
 
   const onPressFollowAccount = useCallback(() => {
-    void executeFollow()
-  }, [confirmFollowUnfollow, executeFollow, followPromptControl])
-
-  const onPressUnfollowAccount = useCallback(() => {
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('unfollow')
+    if (confirmFollow) {
+      setConfirmationAction('follow')
       followPromptControl.open()
     } else {
-      void executeUnfollow()
+      void executeFollow()
     }
-  }, [confirmFollowUnfollow, executeUnfollow, followPromptControl])
+  }, [confirmFollow, executeFollow, followPromptControl])
+
+  const onPressUnfollowAccount = useCallback(() => {
+    setConfirmationAction('unfollow')
+    followPromptControl.open()
+  }, [confirmFollow, executeUnfollow, followPromptControl])
 
   const onConfirmFollowAction = useCallback(() => {
     if (confirmationAction === 'follow') {
@@ -853,17 +854,13 @@ let ProfileMenu = ({
         onBlock={blockAccount}
       />
 
-      {confirmFollowUnfollow && (
-        <FollowConfirmationDialog
-          control={followPromptControl}
-          displayName={sanitizeDisplayName(
-            profile.displayName || profile.handle,
-          )}
-          handle={profile.handle}
-          actionType={confirmationAction}
-          onConfirm={onConfirmFollowAction}
-        />
-      )}
+      <FollowConfirmationDialog
+        control={followPromptControl}
+        displayName={sanitizeDisplayName(profile.displayName || profile.handle)}
+        handle={profile.handle}
+        actionType={confirmationAction}
+        onConfirm={onConfirmFollowAction}
+      />
 
       <Prompt.Basic
         control={loggedOutWarningPromptControl}

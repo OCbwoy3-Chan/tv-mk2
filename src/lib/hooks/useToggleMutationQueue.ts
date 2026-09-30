@@ -9,6 +9,8 @@ type Task<TServerState> = {
 type TaskQueue<TServerState> = {
   activeTask: Task<TServerState> | null
   queuedTask: Task<TServerState> | null
+  /** Keep server-confirmed state between drains, before React rerenders. */
+  confirmedState: TServerState
 }
 
 function AbortError() {
@@ -34,7 +36,14 @@ export function useToggleMutationQueue<TServerState>({
   const [queue] = useState<TaskQueue<TServerState>>({
     activeTask: null,
     queuedTask: null,
+    confirmedState: initialState,
   })
+
+  useEffect(() => {
+    if (!queue.activeTask) {
+      queue.confirmedState = initialState
+    }
+  }, [initialState, queue])
 
   async function processQueue() {
     if (queue.activeTask) {
@@ -42,31 +51,34 @@ export function useToggleMutationQueue<TServerState>({
       // It will handle any newly added tasks, so we should exit early.
       return
     }
-    // To avoid relying on the rendered state, capture it once at the start.
-    // From that point on, and until the queue is drained, we'll use the real server state.
-    let confirmedState: TServerState = initialState
+    let previousTaskSucceeded = false
     try {
       while (queue.queuedTask) {
         const prevTask = queue.activeTask
         const nextTask = queue.queuedTask
         queue.activeTask = nextTask
         queue.queuedTask = null
-        if (prevTask?.isOn === nextTask.isOn) {
+        if (previousTaskSucceeded && prevTask?.isOn === nextTask.isOn) {
           // Skip multiple requests to update to the same value in a row.
-          prevTask.reject(new (AbortError as any)())
+          nextTask.resolve(queue.confirmedState)
           continue
         }
         try {
           // The state received from the server feeds into the next task.
           // This lets us queue deletions of not-yet-created resources.
-          confirmedState = await runMutation(confirmedState, nextTask.isOn)
-          nextTask.resolve(confirmedState)
+          queue.confirmedState = await runMutation(
+            queue.confirmedState,
+            nextTask.isOn,
+          )
+          previousTaskSucceeded = true
+          nextTask.resolve(queue.confirmedState)
         } catch (e) {
+          previousTaskSucceeded = false
           nextTask.reject(e)
         }
       }
     } finally {
-      onSuccess(confirmedState)
+      onSuccess(queue.confirmedState)
       queue.activeTask = null
       queue.queuedTask = null
     }

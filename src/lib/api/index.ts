@@ -264,9 +264,10 @@ export async function resolveRT(appviewClient: Client, richtext: RichText) {
     .replace(/^(\s*\n)+/, '')
     // Trim any trailing whitespace.
     .trimEnd()
-  const {text: parsedText, facets: markdownFacets} =
-    parseMarkdownLinks(trimmedText)
-  let rt = new RichText({text: parsedText}, {cleanNewlines: true})
+  const {text: parsedText, facets: markdownFacets} = parseMarkdownLinks(
+    new RichText({text: trimmedText}, {cleanNewlines: true}).text,
+  )
+  let rt = new RichText({text: parsedText})
   await rt.detectFacets(appviewClient)
 
   if (markdownFacets.length > 0) {
@@ -294,7 +295,7 @@ export async function resolveRT(appviewClient: Client, richtext: RichText) {
     delete rt.facets
   }
 
-  rt = shortenLinks(rt)
+  rt = shortenLinks(rt, true, markdownFacets)
   rt = stripInvalidMentions(rt)
   return rt
 }

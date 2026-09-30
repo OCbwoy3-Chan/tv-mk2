@@ -39,7 +39,7 @@ import {getPostLanguageTags} from '#/locale/helpers'
 import {logger} from '#/logger'
 import {type Shadow} from '#/state/cache/post-shadow'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {replaceRedraftedPost} from '#/state/cache/replace-redrafted-post'
+import {completeRedraftedPost} from '#/state/cache/replace-redrafted-post'
 import {useFeedFeedbackContext} from '#/state/feed-feedback'
 import {
   useHiddenPosts,
@@ -391,13 +391,23 @@ let PostMenuItems = ({
       tags: record.tags,
       imageUris,
       videoUri,
-      onPost: newUri => {
+      onPost: (newUri, data) => {
         if (!newUri) return
         void (async () => {
           try {
-            const replacement = await getPost({uri: newUri})
-            await deletePostMutate({uri: postUri})
-            replaceRedraftedPost(queryClient, postUri, replacement)
+            const published = data?.posts.find(item => item.uri === newUri)
+            await completeRedraftedPost({
+              queryClient,
+              uri: postUri,
+              replacement: bsky.isType(
+                app.bsky.unspecced.defs.threadItemPost,
+                published?.value,
+              )
+                ? published.value.post
+                : undefined,
+              getPost: () => getPost({uri: newUri}),
+              deletePost: () => deletePostMutate({uri: postUri}),
+            })
             const route = getCurrentRoute(navigation.getState())
             if (route.name === 'PostThread') {
               const params = route.params as CommonNavigatorParams['PostThread']
@@ -819,14 +829,14 @@ let PostMenuItems = ({
           </>
         )}
 
-        {videoEmbed && (IS_NATIVE || videoEmbed.presentation === 'gif') && (
+        {videoEmbed && (
           <>
             <Menu.Group>
               <Menu.Item
                 testID="postDropdownDownloadVideoBtn"
-                label={l`Download Video`}
+                label={l`Download video`}
                 onPress={() => void onPressDownloadVideo()}>
-                <Menu.ItemText>{l`Download Video`}</Menu.ItemText>
+                <Menu.ItemText>{l`Download video`}</Menu.ItemText>
                 <Menu.ItemIcon icon={Download} position="right" />
               </Menu.Item>
             </Menu.Group>

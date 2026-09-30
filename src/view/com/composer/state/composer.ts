@@ -897,5 +897,5 @@ function getShortenedLength(rt: RichText) {
     ...(parsed.facets as unknown as NonNullable<typeof measuredRt.facets>),
   ]
   applyFacetSyntax(measuredRt, {removeSyntax: true})
-  return shortenLinks(measuredRt, true).graphemeLength
+  return shortenLinks(measuredRt, true, parsed.facets).graphemeLength
 }

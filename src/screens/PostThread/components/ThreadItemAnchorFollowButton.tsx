@@ -7,7 +7,7 @@ import {useNavigation} from '@react-navigation/native'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {logger} from '#/logger'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   useProfileFollowMutationQueue,
@@ -86,8 +86,11 @@ function PostThreadFollowBtnLoaded({
     profile,
     logContext: 'PostThreadItem',
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const getEphemeralFollowAction = useEphemeralFollowIntent({
+    profile,
+    onAuthenticated: onSelectEphemeralAccount,
+  })
+  const confirmFollow = useConfirmFollow()
   const promptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] = useState<
     'follow' | 'unfollow'
@@ -183,22 +186,23 @@ function PostThreadFollowBtnLoaded({
   const onPress = useCallback(() => {
     if (!isFollowing) {
       requireAuth(() => {
-        void executeFollow()
+        if (confirmFollow) {
+          setConfirmationAction('follow')
+          promptControl.open()
+        } else {
+          void executeFollow()
+        }
       })
     } else {
       requireAuth(() => {
-        if (confirmFollowUnfollow) {
-          setConfirmationAction('unfollow')
-          promptControl.open()
-        } else {
-          void executeUnfollow()
-        }
+        setConfirmationAction('unfollow')
+        promptControl.open()
       })
     }
   }, [
     isFollowing,
     requireAuth,
-    confirmFollowUnfollow,
+    confirmFollow,
     executeFollow,
     executeUnfollow,
     promptControl,
@@ -251,20 +255,17 @@ function PostThreadFollowBtnLoaded({
           title={_(msg`Follow as`)}
           triggerBehavior="longPress"
           onSelectAccount={account => {
-            if (confirmFollowUnfollow) {
-              setPendingEphemeralAccount(account)
-              void (async () => {
-                const action = await getEphemeralFollowAction(account)
-                if (!action) {
-                  setPendingEphemeralAccount(null)
-                  return
-                }
+            void (async () => {
+              const action = await getEphemeralFollowAction(account)
+              if (!action) return
+              if (action === 'unfollow' || confirmFollow) {
+                setPendingEphemeralAccount(account)
                 setConfirmationAction(action)
                 promptControl.open()
-              })()
-            } else {
-              void onSelectEphemeralAccount(account)
-            }
+              } else {
+                void onSelectEphemeralAccount(account)
+              }
+            })()
           }}
           renderTrigger={({triggerProps}) =>
             renderFollowButton(triggerProps.onLongPress)
@@ -273,17 +274,13 @@ function PostThreadFollowBtnLoaded({
       ) : (
         renderFollowButton()
       )}
-      {confirmFollowUnfollow && (
-        <FollowConfirmationDialog
-          control={promptControl}
-          displayName={sanitizeDisplayName(
-            profile.displayName || profile.handle,
-          )}
-          handle={profile.handle}
-          actionType={confirmationAction}
-          onConfirm={onConfirm}
-        />
-      )}
+      <FollowConfirmationDialog
+        control={promptControl}
+        displayName={sanitizeDisplayName(profile.displayName || profile.handle)}
+        handle={profile.handle}
+        actionType={confirmationAction}
+        onConfirm={onConfirm}
+      />
     </>
   )
 }

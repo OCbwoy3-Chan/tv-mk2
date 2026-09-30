@@ -6,7 +6,7 @@ import {isBlockedOrBlocking} from '#/lib/moderation/blocked-and-muted'
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
 import {logger} from '#/logger'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useRemoveFromGroupChat} from '#/state/queries/messages/remove-from-group'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
@@ -55,7 +55,7 @@ export function Member({
 
   const [queueFollow] = useProfileFollowMutationQueue(profile, 'GroupChat')
   const requireAuth = useRequireAuth()
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const confirmFollow = useConfirmFollow()
   const promptControl = Prompt.usePromptControl()
 
   const removeMemberPrompt = Prompt.usePromptControl()
@@ -85,7 +85,13 @@ export function Member({
     })
   }
 
-  const handleFollow = () => executeFollow()
+  const handleFollow = () => {
+    if (confirmFollow) {
+      promptControl.open()
+    } else {
+      executeFollow()
+    }
+  }
 
   const onConfirmFollow = () => {
     executeFollow()
@@ -200,7 +206,7 @@ export function Member({
         )}
         {statusBadge}
       </View>
-      {confirmFollowUnfollow && (
+      {confirmFollow && (
         <FollowConfirmationDialog
           control={promptControl}
           displayName={displayName}
