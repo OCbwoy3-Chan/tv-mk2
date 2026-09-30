@@ -9,29 +9,29 @@ import {
 
 import * as persisted from '#/state/persisted'
 
-type StateContext = persisted.Schema['confirmFollowUnfollow']
-type SetContext = (v: persisted.Schema['confirmFollowUnfollow']) => void
+type StateContext = persisted.Schema['confirmFollow']
+type SetContext = (v: persisted.Schema['confirmFollow']) => void
 
 const stateContext = createContext<StateContext>(
-  persisted.defaults.confirmFollowUnfollow,
+  persisted.defaults.confirmFollow,
 )
 const setContext = createContext<SetContext>(
-  (_: persisted.Schema['confirmFollowUnfollow']) => {},
+  (_: persisted.Schema['confirmFollow']) => {},
 )
 
 export function Provider({children}: PropsWithChildren<{}>) {
-  const [state, setState] = useState(persisted.get('confirmFollowUnfollow'))
+  const [state, setState] = useState(persisted.get('confirmFollow'))
 
   const setStateWrapped = useCallback(
-    (confirmFollowUnfollow: persisted.Schema['confirmFollowUnfollow']) => {
-      setState(confirmFollowUnfollow)
-      void persisted.write('confirmFollowUnfollow', confirmFollowUnfollow)
+    (confirmFollow: persisted.Schema['confirmFollow']) => {
+      setState(confirmFollow)
+      void persisted.write('confirmFollow', confirmFollow)
     },
     [setState],
   )
 
   useEffect(() => {
-    return persisted.onUpdate('confirmFollowUnfollow', nextValue => {
+    return persisted.onUpdate('confirmFollow', nextValue => {
       setState(nextValue)
     })
   }, [setStateWrapped])
@@ -45,10 +45,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
   )
 }
 
-export function useConfirmFollowUnfollow() {
-  return true
+export function useConfirmFollow() {
+  return useContext(stateContext) ?? false
 }
 
-export function useSetConfirmFollowUnfollow() {
+export function useSetConfirmFollow() {
   return useContext(setContext)
 }

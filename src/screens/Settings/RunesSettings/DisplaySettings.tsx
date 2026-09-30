@@ -32,6 +32,10 @@ import {
   useSetPostReplacement,
 } from '#/state/preferences/post-name-replacement'
 import {
+  useSetShowPostTags,
+  useShowPostTags,
+} from '#/state/preferences/show-post-tags'
+import {
   useSetShowViaClient,
   useShowViaClient,
 } from '#/state/preferences/show-via-client'
@@ -52,6 +56,7 @@ import {Celebrate_Stroke2_Corner0_Rounded as CelebrateIcon} from '#/components/i
 import {Heart2_Stroke2_Corner0_Rounded as HeartIcon} from '#/components/icons/Heart2'
 import {Image_Stroke1_Corner0_Rounded as ImageIcon} from '#/components/icons/Image'
 import {Pencil_Stroke2_Corner0_Rounded as PencilIcon} from '#/components/icons/Pencil'
+import {Tag_Stroke2_Corner2_Rounded as TagIcon} from '#/components/icons/Tag'
 import {UFO_Stroke2_Corner0_Rounded as UfoIcon} from '#/components/icons/UFO'
 import {Window_Stroke2_Corner2_Rounded as WindowIcon} from '#/components/icons/Window'
 import {getReplyIcon} from '#/components/PostControls/ReplyIcon'
@@ -68,6 +73,9 @@ export function RunesDisplaySettingsScreen() {
   const alsoLikedCollapseByDefault = useAlsoLikedCollapseByDefault()
   const compactPosts = useCompactPosts()
   const setCompactPosts = useSetCompactPosts()
+
+  const showPostTags = useShowPostTags()
+  const setShowPostTags = useSetShowPostTags()
 
   const showViaClient = useShowViaClient()
   const setShowViaClient = useSetShowViaClient()
@@ -114,6 +122,20 @@ export function RunesDisplaySettingsScreen() {
           <SettingsList.ItemIcon icon={UfoIcon} />
           <SettingsList.ItemText>
             <Trans>Compact posts</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        testID="showPostTagsToggle"
+        name="show_post_tags"
+        label={l`Show tags beneath posts`}
+        value={showPostTags}
+        onChange={setShowPostTags}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={TagIcon} />
+          <SettingsList.ItemText>
+            <Trans>Show tags beneath posts</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

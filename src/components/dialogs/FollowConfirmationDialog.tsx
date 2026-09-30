@@ -1,7 +1,7 @@
 import {type GestureResponderEvent} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import * as Prompt from '#/components/Prompt'
 
 export type FollowActionType = 'follow' | 'unfollow'
@@ -22,9 +22,9 @@ export function FollowConfirmationDialog({
   onConfirm,
 }: FollowConfirmationDialogProps) {
   const {t: l} = useLingui()
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const confirmFollow = useConfirmFollow()
 
-  if (!confirmFollowUnfollow) {
+  if (actionType === 'follow' && !confirmFollow) {
     return null
   }
 

@@ -21,7 +21,7 @@ import {
 import {logger} from '#/logger'
 import {type Shadow, useProfileShadow} from '#/state/cache/profile-shadow'
 import {useShowGermDmButton} from '#/state/preferences'
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {useHideScaryFollowButtons} from '#/state/preferences/hide-scary-follow-buttons'
 import {useFollowedByMetricsDisplay} from '#/state/preferences/metrics-display-preference'
 import {useShowFollowedByOnOwnProfile} from '#/state/preferences/show-followed-by-on-own-profile'
@@ -399,7 +399,7 @@ export function HeaderStandardButtons({
   const inviteFriendsControl = useDialogControl()
   const unblockPromptControl = Prompt.usePromptControl()
   const hideScaryFollowButtons = useHideScaryFollowButtons()
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const confirmFollow = useConfirmFollow()
   const followPromptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] = useState<
     'follow' | 'unfollow'
@@ -413,7 +413,10 @@ export function HeaderStandardButtons({
     onFollow,
     onUnfollow,
   })
-  const getEphemeralFollowAction = useEphemeralFollowIntent({profile, onAuthenticated: onSelectEphemeralAccount})
+  const getEphemeralFollowAction = useEphemeralFollowIntent({
+    profile,
+    onAuthenticated: onSelectEphemeralAccount,
+  })
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )
@@ -469,29 +472,12 @@ export function HeaderStandardButtons({
 
   const onPressFollow = () => {
     playHaptic()
-    const displayNameOrHandle = profile.displayName || profile.handle
-    requireAuth(async () => {
-      try {
-        await queueFollow()
-        if (onFollow) {
-          onFollow()
-        }
-        Toast.show(
-          _(
-            msg`Following ${sanitizeDisplayName(
-              displayNameOrHandle,
-              moderation.ui('displayName'),
-            )}`,
-          ),
-        )
-      } catch (err) {
-        const e = err as Error
-        if (e?.name !== 'AbortError') {
-          logger.error('Failed to follow', {message: String(e)})
-          Toast.show(_(msg`There was an issue! ${e.toString()}`), {
-            type: 'error',
-          })
-        }
+    requireAuth(() => {
+      if (confirmFollow) {
+        setConfirmationAction('follow')
+        followPromptControl.open()
+      } else {
+        void executeFollow()
       }
     })
   }
@@ -626,20 +612,17 @@ export function HeaderStandardButtons({
                 title={_(msg`Follow as`)}
                 triggerBehavior="longPress"
                 onSelectAccount={account => {
-                  if (confirmFollowUnfollow) {
-                    setPendingEphemeralAccount(account)
-                    void (async () => {
-                      const action = await getEphemeralFollowAction(account)
-                      if (!action) {
-                        setPendingEphemeralAccount(null)
-                        return
-                      }
+                  void (async () => {
+                    const action = await getEphemeralFollowAction(account)
+                    if (!action) return
+                    if (action === 'unfollow' || confirmFollow) {
+                      setPendingEphemeralAccount(account)
                       setConfirmationAction(action)
                       followPromptControl.open()
-                    })()
-                  } else {
-                    void onSelectEphemeralAccount(account)
-                  }
+                    } else {
+                      void onSelectEphemeralAccount(account)
+                    }
+                  })()
                 }}
                 renderTrigger={({triggerProps}) => (
                   <Button
@@ -733,18 +716,16 @@ export function HeaderStandardButtons({
         confirmButtonCta={_(msg`Unblock`)}
         confirmButtonColor="negative"
       />
-      {confirmFollowUnfollow && (
-        <FollowConfirmationDialog
-          control={followPromptControl}
-          displayName={sanitizeDisplayName(
-            profile.displayName || profile.handle,
-            moderation.ui('displayName'),
-          )}
-          handle={profile.handle}
-          actionType={confirmationAction}
-          onConfirm={onConfirmFollowAction}
-        />
-      )}
+      <FollowConfirmationDialog
+        control={followPromptControl}
+        displayName={sanitizeDisplayName(
+          profile.displayName || profile.handle,
+          moderation.ui('displayName'),
+        )}
+        handle={profile.handle}
+        actionType={confirmationAction}
+        onConfirm={onConfirmFollowAction}
+      />
     </>
   )
 }

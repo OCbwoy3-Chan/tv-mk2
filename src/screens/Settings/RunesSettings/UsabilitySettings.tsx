@@ -2,6 +2,10 @@ import {Trans, useLingui} from '@lingui/react/macro'
 
 import {useGoLinksEnabled, useSetGoLinksEnabled} from '#/state/preferences'
 import {
+  useConfirmFollow,
+  useSetConfirmFollow,
+} from '#/state/preferences/confirm-follow'
+import {
   useDisableVerifyEmailReminder,
   useSetDisableVerifyEmailReminder,
 } from '#/state/preferences/disable-verify-email-reminder'
@@ -14,6 +18,7 @@ import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import * as Toggle from '#/components/forms/Toggle'
 import {ArrowShareRight_Stroke2_Corner2_Rounded as ArrowShareRightIcon} from '#/components/icons/ArrowShareRight'
+import {CircleQuestion_Stroke2_Corner2_Rounded as CircleQuestionIcon} from '#/components/icons/CircleQuestion'
 import {Envelope_Stroke2_Corner2_Rounded as EnvelopeIcon} from '#/components/icons/Envelope'
 import {Newspaper_Stroke2_Corner2_Rounded as NewspaperIcon} from '#/components/icons/Newspaper'
 import {PersonGroup_Stroke2_Corner2_Rounded as PersonGroupIcon} from '#/components/icons/Person'
@@ -22,6 +27,9 @@ import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesUsabilitySettingsScreen() {
   const {t: l} = useLingui()
+
+  const confirmFollow = useConfirmFollow()
+  const setConfirmFollow = useSetConfirmFollow()
 
   const goLinksEnabled = useGoLinksEnabled()
   const setGoLinksEnabled = useSetGoLinksEnabled()
@@ -59,6 +67,20 @@ export function RunesUsabilitySettingsScreen() {
           <SettingsList.ItemIcon icon={ArrowShareRightIcon} />
           <SettingsList.ItemText>
             <Trans>Redirect through go.bsky.app</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        testID="confirmFollowToggle"
+        name="confirm_follow"
+        label={l`Confirm before following`}
+        value={confirmFollow}
+        onChange={setConfirmFollow}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={CircleQuestionIcon} />
+          <SettingsList.ItemText>
+            <Trans>Confirm before following</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

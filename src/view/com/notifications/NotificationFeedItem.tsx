@@ -41,7 +41,7 @@ import {niceDate} from '#/lib/strings/time'
 import {s} from '#/lib/styles'
 import {logger} from '#/logger'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {type FeedNotification} from '#/state/queries/notifications/feed'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
@@ -1082,7 +1082,7 @@ function FollowBackButton({
     profileShadow,
     'ProfileCard',
   )
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const confirmFollow = useConfirmFollow()
   const promptControl = Prompt.usePromptControl()
   const [confirmationAction, setConfirmationAction] = useState<
     'follow' | 'unfollow'
@@ -1123,19 +1123,20 @@ function FollowBackButton({
     e.preventDefault()
     e.stopPropagation()
 
-    void executeFollow()
+    if (confirmFollow) {
+      setConfirmationAction('follow')
+      promptControl.open()
+    } else {
+      void executeFollow()
+    }
   }
 
   const onPressUnfollow = (e: GestureResponderEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('unfollow')
-      promptControl.open()
-    } else {
-      void executeUnfollow()
-    }
+    setConfirmationAction('unfollow')
+    promptControl.open()
   }
 
   const onConfirm = () => {
@@ -1194,15 +1195,13 @@ function FollowBackButton({
           </ButtonText>
         </Button>
       )}
-      {confirmFollowUnfollow && (
-        <FollowConfirmationDialog
-          control={promptControl}
-          displayName={authorName}
-          handle={profile.handle}
-          actionType={confirmationAction}
-          onConfirm={onConfirm}
-        />
-      )}
+      <FollowConfirmationDialog
+        control={promptControl}
+        displayName={authorName}
+        handle={profile.handle}
+        actionType={confirmationAction}
+        onConfirm={onConfirm}
+      />
     </View>
   )
 }

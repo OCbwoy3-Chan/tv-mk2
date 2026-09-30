@@ -29,6 +29,25 @@ describe('persisted schema helpers', () => {
     expect(parsed?.material3Style).toBe('TONAL_SPOT')
   })
 
+  it('defaults follow confirmation off even when legacy confirmation was enabled', () => {
+    const parsed = tryParse(
+      JSON.stringify({...partialState, confirmFollowUnfollow: true}),
+    )
+
+    expect(parsed).toBeDefined()
+    expect(normalizeData(parsed!).confirmFollow).toBe(false)
+  })
+
+  it('preserves an explicit follow confirmation preference', () => {
+    const parsed = tryParse(
+      JSON.stringify({...partialState, confirmFollow: true}),
+    )
+    const raw = tryStringify(normalizeData(parsed!))
+
+    expect(raw).toBeDefined()
+    expect(tryParse(raw!)?.confirmFollow).toBe(true)
+  })
+
   it('preserves hydrated defaults on later writes', () => {
     const hydrated = tryParse(JSON.stringify(partialState))
     const raw = tryStringify(hydrated!)

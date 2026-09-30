@@ -30,7 +30,7 @@ import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {
@@ -519,7 +519,7 @@ function Inner({
     profile: profileShadow,
     logContext: 'ProfileHoverCard',
   })
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const confirmFollow = useConfirmFollow()
   const hideDisplayNames = useHideDisplayNames()
   const authorPrimaryName = getAuthorPrimaryName(profile, {
     hideDisplayNames,
@@ -555,10 +555,21 @@ function Inner({
 
   const enableSquareButtons = useEnableSquareButtons()
 
-  const handleFollow = useCallback(() => follow(), [follow])
+  const handleFollow = () => {
+    if (confirmFollow && onRequestFollowConfirmation) {
+      onRequestFollowConfirmation({
+        actionType: 'follow',
+        onConfirm: follow,
+        displayName: authorPrimaryName,
+        handle: profile.handle,
+      })
+    } else {
+      follow()
+    }
+  }
 
   const handleUnfollow = useCallback(() => {
-    if (confirmFollowUnfollow && onRequestFollowConfirmation) {
+    if (onRequestFollowConfirmation) {
       onRequestFollowConfirmation({
         actionType: 'unfollow',
         onConfirm: unfollow,
@@ -569,7 +580,7 @@ function Inner({
       unfollow()
     }
   }, [
-    confirmFollowUnfollow,
+    confirmFollow,
     unfollow,
     onRequestFollowConfirmation,
     authorPrimaryName,

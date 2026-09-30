@@ -17,7 +17,7 @@ import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {useConfirmFollowUnfollow} from '#/state/preferences/confirm-follow-unfollow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useShowFollowsYouBadge} from '#/state/preferences/show-follows-you-badge'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
@@ -524,7 +524,7 @@ export function FollowButtonInner({
   const hasAlternateAccounts = accounts.some(
     account => account.did !== currentAccount?.did,
   )
-  const confirmFollowUnfollow = useConfirmFollowUnfollow()
+  const confirmFollow = useConfirmFollow()
   const hideDisplayNames = useHideDisplayNames()
   const authorName = getAuthorPrimaryName(profile, {
     hideDisplayNames,
@@ -571,18 +571,19 @@ export function FollowButtonInner({
   const onPressFollow = (e: GestureResponderEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    void executeFollow(e)
+    if (confirmFollow) {
+      setConfirmationAction('follow')
+      promptControl.open()
+    } else {
+      void executeFollow(e)
+    }
   }
 
   const onPressUnfollow = (e: GestureResponderEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (confirmFollowUnfollow) {
-      setConfirmationAction('unfollow')
-      promptControl.open()
-    } else {
-      void executeUnfollow(e)
-    }
+    setConfirmationAction('unfollow')
+    promptControl.open()
   }
 
   const onConfirm = (e: GestureResponderEvent) => {
@@ -664,20 +665,17 @@ export function FollowButtonInner({
           title={l`Follow as`}
           triggerBehavior="longPress"
           onSelectAccount={account => {
-            if (confirmFollowUnfollow) {
-              setPendingEphemeralAccount(account)
-              void (async () => {
-                const action = await getEphemeralFollowAction(account)
-                if (!action) {
-                  setPendingEphemeralAccount(null)
-                  return
-                }
+            void (async () => {
+              const action = await getEphemeralFollowAction(account)
+              if (!action) return
+              if (action === 'unfollow' || confirmFollow) {
+                setPendingEphemeralAccount(account)
                 setConfirmationAction(action)
                 promptControl.open()
-              })()
-            } else {
-              void onSelectEphemeralAccount(account)
-            }
+              } else {
+                void onSelectEphemeralAccount(account)
+              }
+            })()
           }}
           renderTrigger={({triggerProps}) =>
             renderFollowButton(triggerProps.onLongPress)
@@ -686,15 +684,13 @@ export function FollowButtonInner({
       ) : (
         renderFollowButton()
       )}
-      {confirmFollowUnfollow && (
-        <FollowConfirmationDialog
-          control={promptControl}
-          displayName={authorName}
-          handle={profile.handle}
-          actionType={confirmationAction}
-          onConfirm={onConfirm}
-        />
-      )}
+      <FollowConfirmationDialog
+        control={promptControl}
+        displayName={authorName}
+        handle={profile.handle}
+        actionType={confirmationAction}
+        onConfirm={onConfirm}
+      />
     </View>
   )
 }

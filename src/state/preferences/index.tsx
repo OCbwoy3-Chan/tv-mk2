@@ -9,7 +9,7 @@ import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
 import {Provider as AutoplayProvider} from './autoplay'
 import {Provider as CompactAccountSwitcherProvider} from './compact-account-switcher'
 import {Provider as CompactPostsProvider} from './compact-posts'
-import {Provider as ConfirmFollowUnfollowProvider} from './confirm-follow-unfollow'
+import {Provider as ConfirmFollowProvider} from './confirm-follow'
 import {Provider as ConstellationProvider} from './constellation-enabled'
 import {Provider as ConstellationInstanceProvider} from './constellation-instance'
 import {Provider as DeerVerificationProvider} from './deer-verification'
@@ -58,6 +58,7 @@ import {Provider as ShowFollowsYouBadgeProvider} from './show-follows-you-badge'
 import {Provider as ShowGermDmButtonProvider} from './show-germ-dm-button'
 import {Provider as ShowLinkInHandleProvider} from './show-link-in-handle'
 import {Provider as ShowLinkInHandleOnlyOnWorkingLinksProvider} from './show-link-in-handle-only-on-working-links'
+import {Provider as ShowPostTagsProvider} from './show-post-tags'
 import {Provider as ShowStandardLabelerProfileProvider} from './show-standard-labeler-profile'
 import {Provider as ShowViaClientProvider} from './show-via-client'
 import {Provider as SixSevenCelebrationProvider} from './six-seven-celebration'
@@ -86,10 +87,7 @@ export {
 } from './alt-text-required'
 export {useAutoplayDisabled, useSetAutoplayDisabled} from './autoplay'
 export {useCompactPosts, useSetCompactPosts} from './compact-posts'
-export {
-  useConfirmFollowUnfollow,
-  useSetConfirmFollowUnfollow,
-} from './confirm-follow-unfollow'
+export {useConfirmFollow, useSetConfirmFollow} from './confirm-follow'
 export {
   useDisableComposerPrompt,
   useSetDisableComposerPrompt,
@@ -151,6 +149,7 @@ export {
   useSetShowGermDmButton,
   useShowGermDmButton,
 } from './show-germ-dm-button'
+export {useSetShowPostTags, useShowPostTags} from './show-post-tags'
 export {
   useSetShowStandardLabelerProfile,
   useShowStandardLabelerProfile,
@@ -210,7 +209,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                           <ShowStandardLabelerProfileProvider>
                                                                                             <HideSimilarAccountsRecommProvider>
                                                                                               <HideScaryFollowButtonsProvider>
-                                                                                                <ConfirmFollowUnfollowProvider>
+                                                                                                <ConfirmFollowProvider>
                                                                                                   <HideUnreplyablePostsProvider>
                                                                                                     <CompactPostsProvider>
                                                                                                       <EnableSquareAvatarsProvider>
@@ -233,9 +232,11 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                         <DisableInfiniteScrollProvider>
                                                                                                                                           <HideQuotesOfBlockedAccountsProvider>
                                                                                                                                             <ReplyIconIndicatorsProvider>
-                                                                                                                                              {
-                                                                                                                                                children
-                                                                                                                                              }
+                                                                                                                                              <ShowPostTagsProvider>
+                                                                                                                                                {
+                                                                                                                                                  children
+                                                                                                                                                }
+                                                                                                                                              </ShowPostTagsProvider>
                                                                                                                                             </ReplyIconIndicatorsProvider>
                                                                                                                                           </HideQuotesOfBlockedAccountsProvider>
                                                                                                                                         </DisableInfiniteScrollProvider>
@@ -258,7 +259,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                       </EnableSquareAvatarsProvider>
                                                                                                     </CompactPostsProvider>
                                                                                                   </HideUnreplyablePostsProvider>
-                                                                                                </ConfirmFollowUnfollowProvider>
+                                                                                                </ConfirmFollowProvider>
                                                                                               </HideScaryFollowButtonsProvider>
                                                                                             </HideSimilarAccountsRecommProvider>
                                                                                           </ShowStandardLabelerProfileProvider>

@@ -3,6 +3,7 @@ import {Pressable, type StyleProp, View, type ViewStyle} from 'react-native'
 import {type AppBskyFeedDefs, AppBskyFeedPost} from '@atproto/api'
 
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useShowPostTags} from '#/state/preferences/show-post-tags'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {RichTextTag} from '#/components/RichTextTag'
 
@@ -17,9 +18,10 @@ export function PostTags({
   post: AppBskyFeedDefs.PostView
   style?: StyleProp<ViewStyle>
 }) {
+  const showPostTags = useShowPostTags()
   const tags = getOutlineTags(post)
 
-  if (!tags.length) {
+  if (!showPostTags || !tags.length) {
     return null
   }
 
