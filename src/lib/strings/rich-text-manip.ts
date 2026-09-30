@@ -71,6 +71,21 @@ export function shortenLinks(rt: RichText, preserveLabels = false): RichText {
 
       // insert the shorten URL
       rt.insert(byteStart, shortened.utf16)
+      /*
+       * The SDK shifts facets by UTF-16 length when inserting, but facet
+       * offsets are UTF-8 bytes. Correct that shift before removing the URL.
+       */
+      const missingBytes = shortened.length - shortened.utf16.length
+      if (missingBytes) {
+        for (const current of rt.facets) {
+          if (current.index.byteStart >= byteStart) {
+            current.index.byteStart += missingBytes
+            current.index.byteEnd += missingBytes
+          } else if (current.index.byteEnd > byteStart) {
+            current.index.byteEnd += missingBytes
+          }
+        }
+      }
       // update the facet to cover the new shortened URL
       facet.index.byteStart = byteStart
       facet.index.byteEnd = byteStart + shortened.length
