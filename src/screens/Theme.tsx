@@ -7,6 +7,7 @@ import {Trans} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
+import {useRichText} from '#/lib/hooks/useRichText'
 import {
   type CommonNavigatorParams,
   type NavigationProp,
@@ -16,7 +17,7 @@ import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
-import {atoms as a, useTheme} from '#/alf'
+import {atoms as a, platform, useTheme} from '#/alf'
 import {useMaterialYouPalette} from '#/alf/util/materialYou'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {Slider} from '#/components/forms/Slider'
@@ -28,6 +29,7 @@ import * as Layout from '#/components/Layout'
 import {InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import * as Menu from '#/components/Menu'
+import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {
@@ -98,6 +100,7 @@ export function ThemeScreen({route, navigation}: Props) {
       record: resolveHueRecord(materialRecord, selectedHue),
     }
   }, [material3Accent, materialPalette, rawTheme, selectedHue])
+  const [descriptionRT] = useRichText(theme?.record.description ?? '')
   const creator = useProfileQuery({did: theme?.author})
   const library = useThemeLibrary()
   const applyTheme = useApplyTheme()
@@ -250,7 +253,14 @@ export function ThemeScreen({route, navigation}: Props) {
                   </Text>
                 </View>
                 {theme.record.description && (
-                  <Text style={[a.text_md]}>{theme.record.description}</Text>
+                  <RichText
+                    testID="themeDescription"
+                    style={[a.text_md]}
+                    selectable={platform({android: false, default: true})}
+                    value={descriptionRT}
+                    enableTags
+                    authorHandle={creatorHandle}
+                  />
                 )}
                 {companion && validCompanion && (
                   <Button
