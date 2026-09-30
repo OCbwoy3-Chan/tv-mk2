@@ -640,7 +640,7 @@ export function MessagesList({
       rt = applyFacetSyntax(rt, {removeSyntax: true})
       await resolveSyntaxMentions(rt, appviewClient)
 
-      rt = shortenLinks(rt, true)
+      rt = shortenLinks(rt, true, parsed.facets)
       rt = stripInvalidMentions(rt)
 
       if (!hasScrolled) {

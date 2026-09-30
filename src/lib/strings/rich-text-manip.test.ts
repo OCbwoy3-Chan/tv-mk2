@@ -33,6 +33,26 @@ function facetTexts(rt: RichText) {
 }
 
 describe('facet syntax', () => {
+  it('preserves an explicit full URL label while shortening ordinary URLs', () => {
+    const uri =
+      'https://full-link.example/a-really-long-link-that-would-normally-be-truncated'
+    const parsed = parseMarkdownLinks(
+      `[${uri}](${uri}) and https://example.com/another-long-path`,
+    )
+    const rt = new RichText({text: parsed.text})
+    rt.detectFacetsWithoutResolution()
+    rt.facets = [
+      ...(rt.facets ?? []).filter(facet => facet.index.byteStart > uri.length),
+      ...parsed.facets,
+    ] as typeof rt.facets
+    applyFacetSyntax(rt, {removeSyntax: true})
+    const shortened = shortenLinks(rt, true, parsed.facets)
+
+    expect(shortened.text).toBe(`${uri} and example.com/another-long...`)
+    expect(facetTexts(shortened)).toEqual([uri, 'example.com/another-long...'])
+    expect(shortened.graphemeLength).toBe(shortened.text.length)
+  })
+
   it('preserves theme labels and byte ranges when posting masked links', () => {
     const labels = ['Mocha', 'Macchiato', 'Frappé', 'Latte']
     const uris = labels.map(

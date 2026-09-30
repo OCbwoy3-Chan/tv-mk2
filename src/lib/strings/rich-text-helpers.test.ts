@@ -1,7 +1,11 @@
 import {RichText} from '@bsky/sdk/richtext'
 
 import {richTextToRedraftString} from './rich-text-helpers'
-import {applyFacetSyntax, parseMarkdownLinks} from './rich-text-manip'
+import {
+  applyFacetSyntax,
+  parseMarkdownLinks,
+  shortenLinks,
+} from './rich-text-manip'
 import {toShortUrl} from './url-helpers'
 
 describe('richTextToRedraftString', () => {
@@ -45,8 +49,8 @@ describe('richTextToRedraftString', () => {
     )
   })
 
-  it('does not wrap a link whose text is already its destination', () => {
-    const uri = 'https://example.com/page'
+  it('preserves a full URL label as an explicit masked link', () => {
+    const uri = 'https://example.com/a/long/path/to/a/page'
     const richText = new RichText({
       text: uri,
       facets: [
@@ -57,11 +61,20 @@ describe('richTextToRedraftString', () => {
       ],
     })
 
-    expect(richTextToRedraftString(richText)).toBe(uri)
+    expect(richTextToRedraftString(richText)).toBe(`[${uri}](${uri})`)
+
+    const parsed = parseMarkdownLinks(richTextToRedraftString(richText))
+    const repost = new RichText({
+      text: parsed.text,
+      facets: parsed.facets as unknown as NonNullable<RichText['facets']>,
+    })
+    const shortened = shortenLinks(repost, true, parsed.facets)
+    expect(shortened.text).toBe(uri)
+    expect(shortened.facets).toEqual(richText.facets)
   })
 })
 
-it('preserves the label and destination of a truncated URL', () => {
+it('restores a normally truncated URL without masked syntax', () => {
   const uri = 'https://example.com/a/long/path/to/a/page'
   const text = toShortUrl(uri)
   const rt = new RichText({
@@ -73,7 +86,13 @@ it('preserves the label and destination of a truncated URL', () => {
       },
     ],
   })
-  expect(richTextToRedraftString(rt)).toBe(`[${text}](${uri})`)
+  expect(richTextToRedraftString(rt)).toBe(uri)
+
+  const repost = new RichText({text: richTextToRedraftString(rt)})
+  repost.detectFacetsWithoutResolution()
+  const shortened = shortenLinks(repost, true)
+  expect(shortened.text).toBe(text)
+  expect(shortened.facets).toEqual(rt.facets)
 })
 
 describe('richTextToRedraftString', () => {

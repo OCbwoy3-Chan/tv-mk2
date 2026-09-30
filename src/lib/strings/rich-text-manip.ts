@@ -39,14 +39,28 @@ export function restoreLinks(
   return parts.join('')
 }
 
-export function shortenLinks(rt: RichText, preserveLabels = false): RichText {
+export function shortenLinks(
+  rt: RichText,
+  preserveLabels = false,
+  preserveFacets: readonly AppBskyRichtextFacet.Main[] = [],
+): RichText {
   if (!rt.facets?.length) {
     return rt
   }
+  /** Remember explicit labels before cloning loses their facet identities. */
+  const preservedStarts = new Set(
+    rt.facets
+      .filter(facet => preserveFacets.includes(facet))
+      .map(facet => facet.index.byteStart),
+  )
   rt = rt.clone()
   // enumerate the link facets
   if (rt.facets) {
+    const preserved = new Set(
+      rt.facets.filter(facet => preservedStarts.has(facet.index.byteStart)),
+    )
     for (const facet of rt.facets) {
+      if (preserved.has(facet)) continue
       const isLink = !!facet.features.find(f =>
         bsky.isType(app.bsky.richtext.facet.link, f),
       )

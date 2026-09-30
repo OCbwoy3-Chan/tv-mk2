@@ -4,7 +4,7 @@ import {RichText} from '@bsky/sdk/richtext'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {getEnclosedFacet} from './rich-text-manip'
-import {linkRequiresWarning} from './url-helpers'
+import {linkRequiresWarning, toShortUrl} from './url-helpers'
 
 export function richTextToString(rt: RichText, loose: boolean): string {
   const {text, facets} = rt
@@ -48,6 +48,20 @@ export function richTextToRedraftString(rt: RichText): string {
       continue
     }
 
+    const link = facet.features.find(AppBskyRichtextFacet.isLink)
+    if (
+      link &&
+      segment.text === toShortUrl(link.uri) &&
+      /(^|\s|\()$/.test(rt.unicodeText.slice(0, facet.index.byteStart))
+    ) {
+      result += link.uri
+      continue
+    }
+    if (link && segment.text === link.uri) {
+      result += `[${segment.text}](${link.uri})`
+      continue
+    }
+
     const automatic = detected.facets?.some(
       current =>
         current.index.byteStart === facet.index.byteStart &&
@@ -65,7 +79,6 @@ export function richTextToRedraftString(rt: RichText): string {
       continue
     }
 
-    const link = facet.features.find(AppBskyRichtextFacet.isLink)
     result += link ? `[${segment.text}](${link.uri})` : segment.text
   }
 

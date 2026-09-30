@@ -270,7 +270,7 @@ async function resolveRT(appviewClient: Client, richtext: RichText) {
     delete rt.facets
   }
 
-  rt = shortenLinks(rt, true)
+  rt = shortenLinks(rt, true, markdownFacets)
   rt = stripInvalidMentions(rt)
   return rt
 }
