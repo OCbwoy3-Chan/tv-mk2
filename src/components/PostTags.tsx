@@ -77,6 +77,9 @@ function getOutlineTags(post: AppBskyFeedDefs.PostView): string[] {
   }
   const tags = post.record.tags
   return Array.isArray(tags)
-    ? tags.filter((tag): tag is string => typeof tag === 'string')
+    ? tags.filter(
+        (tag): tag is string =>
+          typeof tag === 'string' && tag !== 'anisota',
+      )
     : []
 }
