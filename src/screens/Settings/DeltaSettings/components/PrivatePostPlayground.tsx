@@ -6,21 +6,28 @@ import { Text } from '#/components/Typography'
 import { Button } from "#/components/Button";
 import { useAgent } from "#/state/session";
 import { isSpacesCompatiblePDS } from "#/lib/spaces";
+import { usePrivatePostsAppViewDID, usePrivatePostsAppViewURL } from "#/state/preferences/private-posts-appview";
 
 export function PrivatePostPlayground() {
     const t = useTheme();
     const agent = useAgent();
+
+    const [appviewDid] = usePrivatePostsAppViewDID();
+    const appviewUrl = usePrivatePostsAppViewURL();
+
     return <View style={[a.gap_xl]}>
         <View style={[a.gap_sm]}>
             <Text style={[a.text_2xl, a.font_bold]}>
-                <Trans>Private posts debug</Trans>
+                privatevessel debug
             </Text>
         </View>
         <Admonition type="warning">
-            <Trans>
-                Super unstable, do not use!
-            </Trans>
+            check inspect element console for result
         </Admonition>
+        <Text>
+            privatevessel did: {appviewDid}<br/>
+            privatevessel url: {appviewUrl}
+        </Text>
         <Button onPress={async()=>{
             try {
                 const r = await isSpacesCompatiblePDS(agent)
@@ -28,8 +35,8 @@ export function PrivatePostPlayground() {
             } catch(a_) {
                 console.log(a_)
             }
-        }} style={[t.atoms.bg_contrast_50, a.rounded_lg, a.p_sm]} label="check spaces compatibility">
-            <Text>check spaces compatibility</Text>
+        }} style={[t.atoms.bg_contrast_50, a.rounded_lg, a.p_sm]} label="check isSpacesCompatiblePDS">
+            <Text>check isSpacesCompatiblePDS</Text>
         </Button>
     </View>
 }

@@ -142,6 +142,13 @@ export function DesktopRightNav({routeName}: {routeName: string}) {
           style={[t.atoms.text_contrast_medium]}>
           {_(msg`Fluxer`)}
         </InlineLinkText>
+        <Text style={[t.atoms.text_contrast_low]}>{' ∙ '}</Text>
+        <InlineLinkText
+          label={_(msg`Join the tenna.party Discord server`)}
+          to={"https://discord.gg/QxvWh6eFwA"}
+          style={[t.atoms.text_contrast_medium]}>
+          {_(msg`Discord`)}
+        </InlineLinkText>
       </Text>
 
       {logoVariant === 'kawaii' && (

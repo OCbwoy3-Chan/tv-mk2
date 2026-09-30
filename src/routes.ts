@@ -55,7 +55,6 @@ export const router = new Router<AllNavigatableRoutes>({
   PreferencesThreads: '/settings/threads',
   PreferencesExternalEmbeds: '/settings/external-embeds',
   AccessibilitySettings: '/settings/accessibility',
-  AIPreferencesSettings: '/settings/deltas/ai',
   DeltaSettings: '/settings/deltas',
   DeltaBadgeSettings: '/settings/deltas/badges',
   DeltaPrivatePostSettings: '/settings/deltas/private-posts',

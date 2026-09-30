@@ -97,10 +97,6 @@ export function DeltaPrivatePostSettingsScreen() {
             <Trans>
               Bluesky may choose to suspend or ban your account if the majority
               of your posts are private, as it may trip their spam filters.
-            </Trans>{' '}
-            <Trans>
-              This isn't actually confirmed, might need to ask someone at
-              Bluesky about this, it's better to be safe than sorry.
             </Trans>
           </Admonition>
           <DeltasPrivatePostsToggle />
@@ -120,31 +116,18 @@ export function DeltaPrivatePostSettingsScreen() {
               <Trans>Infrastructure settings</Trans>
             </InlineLinkText>
           </Text>
-          {privatePostsEnabled && (
-            <Admonition type="warning">
-              <Trans>Do not post anything that violates Bluesky's TOS.</Trans>{' '}
+          {(currentAccount?.isOauthSession === true || (privatePostsEnabled && !isSpacesCompatiblePDS)) && <Admonition type="error">
+            {currentAccount?.isOauthSession === true && (
+                <Trans>
+                  OAuth sessions are not supported.
+                </Trans>
+            )}{" "}
+            {privatePostsEnabled && !isSpacesCompatiblePDS && (
               <Trans>
-                Embeds in private posts will NOT be supported because people
-                will use them post GTA 6 leaks.
+                Your PDS does not support atproto spaces.
               </Trans>
-            </Admonition>
-          )}
-          {currentAccount?.isOauthSession === true && (
-            <Admonition type="error">
-              <Trans>
-                OAuth sessions are not currently supported for private posts.
-                Please log in with a password to use this feature.
-              </Trans>
-            </Admonition>
-          )}
-          {privatePostsEnabled && !isSpacesCompatiblePDS && (
-            <Admonition type="error">
-              <Trans>
-                You are unable to make private posts, as your PDS does not
-                support ATProto Spaces. You can still read them.
-              </Trans>
-            </Admonition>
-          )}
+            )}
+          </Admonition>}
           {privatePostModFetchState === 'success' &&
             privatePostModState?.isBanned === true && (
               <AdmonitionOuter type="error">
