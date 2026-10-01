@@ -8,6 +8,7 @@ import {
 import {signInNative} from '#/state/session/oauth-native-sign-in'
 import {getOAuthScope} from '#/state/session/oauth-scopes'
 import {getWebOAuthClient} from '#/state/session/oauth-web-client'
+import {getWebOAuthDisplay} from '#/state/session/oauth-web-display'
 import {Login} from '#/screens/Login'
 import {EphemeralLoginContext} from '#/screens/Login/EphemeralLoginContext'
 import {IS_WEB} from '#/env'
@@ -30,7 +31,7 @@ export function EphemeralLoginHost() {
             const session = IS_WEB
               ? await getWebOAuthClient().signIn(identifier, {
                   scope,
-                  display: 'popup',
+                  display: getWebOAuthDisplay(),
                 })
               : await signInNative(identifier, {scope})
             await request.submit({

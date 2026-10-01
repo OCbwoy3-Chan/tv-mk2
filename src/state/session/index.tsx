@@ -30,6 +30,7 @@ import {pickExpiryRescueCandidate} from './expiry-rescue'
 import {signInNative} from './oauth-native-sign-in'
 import {getOAuthScope} from './oauth-scopes'
 import {getWebOAuthClient} from './oauth-web-client'
+import {getWebOAuthDisplay} from './oauth-web-display'
 import {type Action, getInitialState, reducer, type State} from './reducer'
 import {
   type ActiveSessionBundle,
@@ -488,7 +489,10 @@ export function Provider({children}: PropsWithChildren<{}>) {
       if (options?.directOAuth) {
         const scope = options.scope ?? getOAuthScope()
         const authorization = IS_WEB
-          ? getWebOAuthClient().signIn(account.did, {scope, display: 'popup'})
+          ? getWebOAuthClient().signIn(account.did, {
+              scope,
+              display: getWebOAuthDisplay(),
+            })
           : signInNative(account.did, {scope})
         return authorization.then(oauthSession =>
           authenticate(
