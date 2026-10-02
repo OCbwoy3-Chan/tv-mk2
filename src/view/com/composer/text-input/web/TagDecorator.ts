@@ -24,14 +24,14 @@ import {type Node as ProsemirrorNode} from '@tiptap/pm/model'
 import {Plugin, PluginKey} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
 
-import {isInsideEscapedMarkdownLink} from '#/lib/strings/rich-text-manip'
+import {isInsideEscapedFacetSyntax} from '#/lib/strings/rich-text-manip'
 
 function getDecorations(doc: ProsemirrorNode) {
   const decorations: Decoration[] = []
 
   doc.descendants((node, pos) => {
     if (node.isText && node.text) {
-      const regex = TAG_REGEX
+      const regex = new RegExp(TAG_REGEX)
       const textContent = node.textContent
 
       // Detect hashtags
@@ -46,7 +46,7 @@ function getDecorations(doc: ProsemirrorNode) {
         const matchedFrom = match.index + matchedString.indexOf(tag)
         const matchedTo = matchedFrom + (tag.length - trailingPunc.length)
         if (
-          isInsideEscapedMarkdownLink(textContent, matchedFrom - 1, matchedTo)
+          isInsideEscapedFacetSyntax(textContent, matchedFrom - 1, matchedTo)
         ) {
           continue
         }
@@ -75,7 +75,7 @@ function getDecorations(doc: ProsemirrorNode) {
         // Calculate positions: leading char + $ + ticker
         const matchedFrom = match.index + leading.length
         const matchedTo = matchedFrom + 1 + ticker.length // +1 for $
-        if (isInsideEscapedMarkdownLink(textContent, matchedFrom, matchedTo)) {
+        if (isInsideEscapedFacetSyntax(textContent, matchedFrom, matchedTo)) {
           continue
         }
 

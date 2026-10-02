@@ -9,6 +9,44 @@ import {
 import {toShortUrl} from './url-helpers'
 
 describe('richTextToRedraftString', () => {
+  it.each([
+    'https://breezewiki.com/starwars/wiki/67_(disambiguation)',
+    'https://example.com/a(b(c)d',
+  ] as const)(
+    'preserves a masked destination containing parentheses: %s',
+    uri => {
+      const original = new RichText({
+        text: 'page',
+        facets: [
+          {
+            index: {byteStart: 0, byteEnd: 4},
+            features: [{$type: 'app.bsky.richtext.facet#link', uri}],
+          },
+        ],
+      })
+      const redraft = richTextToRedraftString(original)
+
+      expect(redraft).toBe(`[page](<${uri}>)`)
+      expect(parseMarkdownLinks(redraft)).toEqual({
+        text: original.text,
+        facets: original.facets,
+      })
+    },
+  )
+
+  it('round trips an unfaceted masked link containing parentheses', () => {
+    const text = '[page](<https://example.com/a(b)>)'
+    const redraft = richTextToRedraftString(new RichText({text}))
+    const parsed = parseMarkdownLinks(redraft)
+    const repost = new RichText({text: parsed.text})
+    repost.detectFacetsWithoutResolution()
+    applyFacetSyntax(repost, {removeSyntax: true})
+
+    expect(redraft).toBe('\\[page](\\<https://example.com/a(b)>)')
+    expect(repost.text).toBe(text)
+    expect(repost.facets).toBeUndefined()
+  })
+
   it('preserves the visible labels of multiple masked links', () => {
     const text = 'first and docs and third'
     const richText = new RichText({

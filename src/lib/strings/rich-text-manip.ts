@@ -5,6 +5,12 @@ import {RichText, UnicodeString} from '@bsky/sdk/richtext'
 
 import {app, com} from '#/lexicons'
 import * as bsky from '#/types/bsky'
+import {
+  ESCAPED_MARKDOWN_LINK_PATTERN,
+  getMarkdownLinkHighlightRanges,
+  MARKDOWN_LINK_PATTERN,
+  normalizeMarkdownLinkDestination,
+} from './markdown-links'
 import {toShortUrl} from './url-helpers'
 
 export function restoreLinks(
@@ -139,13 +145,13 @@ export function isEscapedFacetSyntax(text: string, index: number): boolean {
   return backslashes % 2 === 1
 }
 
-/** Whether a detected editor facet sits inside an escaped masked link. */
-export function isInsideEscapedMarkdownLink(
+/** Escaped syntax protects automatic facets; independent angle syntax opts back in. */
+export function isInsideEscapedFacetSyntax(
   text: string,
   start: number,
   end: number,
 ): boolean {
-  for (const match of text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)) {
+  for (const match of text.matchAll(/<[^<>\n]+>/g)) {
     if (
       isEscapedFacetSyntax(text, match.index) &&
       start >= match.index &&
@@ -154,7 +160,73 @@ export function isInsideEscapedMarkdownLink(
       return true
     }
   }
+  for (const match of text.matchAll(ESCAPED_MARKDOWN_LINK_PATTERN)) {
+    if (
+      isEscapedFacetSyntax(text, match.index) &&
+      start >= match.index &&
+      end <= match.index + match[0].length
+    ) {
+      return getEscapedMarkdownProtectionRanges(
+        text,
+        match.index,
+        match.index + match[0].length,
+      ).some(range => start >= range.start && end <= range.end)
+    }
+  }
   return false
+}
+
+/** Preserve independently unescaped angle facets inside a literal Markdown wrapper. */
+function getEscapedMarkdownProtectionRanges(
+  text: string,
+  start: number,
+  end: number,
+): {start: number; end: number}[] {
+  const ranges: {start: number; end: number}[] = []
+  let cursor = start
+  for (const match of text.slice(start, end).matchAll(/<([^<>\n]+)>/g)) {
+    const angleStart = start + match.index
+    if (isEscapedFacetSyntax(text, angleStart) || !getEnclosedFacet(match[1])) {
+      continue
+    }
+    ranges.push({start: cursor, end: angleStart})
+    cursor = angleStart + match[0].length
+  }
+  ranges.push({start: cursor, end})
+  return ranges
+}
+
+/** Merge masked link highlights into editor facets without rewriting the text. */
+export function applyMarkdownLinkFacets(rt: RichText): RichText {
+  const markdownFacets: AppBskyRichtextFacet.Main[] = []
+  const ranges: {start: number; end: number}[] = []
+  for (const match of rt.text.matchAll(MARKDOWN_LINK_PATTERN)) {
+    if (isEscapedFacetSyntax(rt.text, match.index)) continue
+    const toByte = (offset: number) =>
+      rt.unicodeText.utf16IndexToUtf8Index(match.index + offset)
+    ranges.push({start: toByte(0), end: toByte(match[0].length)})
+    const uri = normalizeMarkdownLinkDestination(match[1])
+    for (const range of getMarkdownLinkHighlightRanges(match[0], match[1])) {
+      markdownFacets.push({
+        index: {byteStart: toByte(range.start), byteEnd: toByte(range.end)},
+        features: [{$type: 'app.bsky.richtext.facet#link', uri}],
+      })
+    }
+  }
+  if (markdownFacets.length) {
+    rt.facets = [
+      ...(rt.facets ?? []).filter(
+        facet =>
+          !ranges.some(
+            range =>
+              facet.index.byteStart < range.end &&
+              facet.index.byteEnd > range.start,
+          ),
+      ),
+      ...markdownFacets,
+    ].sort((a, b) => a.index.byteStart - b.index.byteStart) as typeof rt.facets
+  }
+  return rt
 }
 
 function firstDetectedFacet(text: string) {
@@ -192,7 +264,9 @@ export function applyFacetSyntax(
     }
     if ((end - start) % 2 === 1) {
       const rest = text.slice(end)
-      const markdown = /^\[[^\]]+\]\(([^)]+)\)/.exec(rest)
+      const markdown = new RegExp(
+        `^${ESCAPED_MARKDOWN_LINK_PATTERN.source}`,
+      ).exec(rest)
       const angle = /^<[^<>\n]+>/.exec(rest)
       const detected = firstDetectedFacet(rest)
       const length =
@@ -202,7 +276,15 @@ export function applyFacetSyntax(
           ? new UnicodeString(rest).slice(0, detected.index.byteEnd).length
           : undefined)
       if (length) {
-        protectedRanges.push({start: toByte(end), end: toByte(end + length)})
+        const ranges = markdown
+          ? getEscapedMarkdownProtectionRanges(text, end, end + length)
+          : [{start: end, end: end + length}]
+        protectedRanges.push(
+          ...ranges.map(range => ({
+            start: toByte(range.start),
+            end: toByte(range.end),
+          })),
+        )
         deletionPoints.push(end - 1)
       }
     }
@@ -312,7 +394,7 @@ export function parseMarkdownLinks(text: string): {
   text: string
   facets: AppBskyRichtextFacet.Main[]
 } {
-  const regex = /\[([^\]]+)\]\(([^)]+)\)/g
+  const regex = new RegExp(MARKDOWN_LINK_PATTERN)
   let match
   let newText = ''
   let lastIndex = 0
@@ -320,20 +402,14 @@ export function parseMarkdownLinks(text: string): {
 
   while ((match = regex.exec(text)) !== null) {
     if (isEscapedFacetSyntax(text, match.index)) continue
-    const [fullMatch, linkText, linkUrl] = match
+    const [fullMatch, linkUrl] = match
+    const linkText = fullMatch.slice(1, fullMatch.indexOf(']'))
     const matchStart = match.index
     newText += text.slice(lastIndex, matchStart)
     const startByte = new UnicodeString(newText).length
     newText += linkText
     const endByte = new UnicodeString(newText).length
-    let validUrl = linkUrl
-    if (
-      !validUrl.startsWith('http://') &&
-      !validUrl.startsWith('https://') &&
-      !validUrl.startsWith('mailto:')
-    ) {
-      validUrl = `https://${validUrl}`
-    }
+    const validUrl = normalizeMarkdownLinkDestination(linkUrl)
 
     facets.push({
       index: {

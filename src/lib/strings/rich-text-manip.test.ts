@@ -3,6 +3,7 @@ import {RichText} from '@bsky/sdk/richtext'
 
 import {
   applyFacetSyntax,
+  applyMarkdownLinkFacets,
   parseMarkdownLinks,
   resolveSyntaxMentions,
   shortenLinks,
@@ -33,6 +34,127 @@ function facetTexts(rt: RichText) {
 }
 
 describe('facet syntax', () => {
+  it.each(['!', '?', '?!', '.)*', '!)*', ', next'])(
+    'keeps punctuation outside masked editor and posted facets: %s',
+    suffix => {
+      const masked = '[with masked links](like.so)'
+      const text = `(*text ${masked}${suffix}`
+      const editor = new RichText({text})
+      editor.detectFacetsWithoutResolution()
+      applyMarkdownLinkFacets(editor)
+      applyFacetSyntax(editor)
+
+      expect(facetTexts(editor)).toEqual([masked])
+      const posted = prepare(text)
+      expect(posted.text).toBe(`(*text with masked links${suffix}`)
+      expect(facetTexts(posted)).toEqual(['with masked links'])
+    },
+  )
+  it('highlights complete editor destinations while leaving both angle brackets plain', () => {
+    const uri = 'https://breezewiki.com/starwars/wiki/67_(disambiguation)'
+    const text = `🌟 [this](<${uri}>) is a [test](<${uri}>)`
+    const rt = new RichText({text})
+    rt.detectFacetsWithoutResolution()
+    applyMarkdownLinkFacets(rt)
+    applyFacetSyntax(rt)
+
+    expect(rt.text).toBe(text)
+    expect(facetTexts(rt)).toEqual(['[this](', uri, ')', '[test](', uri, ')'])
+    expect(rt.facets?.flatMap(facet => facet.features)).toEqual(
+      Array.from({length: 6}, () => ({
+        $type: 'app.bsky.richtext.facet#link',
+        uri,
+      })),
+    )
+    expect(
+      Array.from(rt.segments())
+        .filter(segment => !segment.facet)
+        .map(segment => segment.text),
+    ).toEqual(['🌟 ', '<', '>', ' is a ', '<', '>'])
+  })
+
+  it.each([
+    'https://breezewiki.com/starwars/wiki/67_(disambiguation)',
+    '<https://breezewiki.com/starwars/wiki/67_(disambiguation)>',
+    'https://breezewiki.com/starwars/wiki/67_\\(disambiguation\\)',
+    '<https://breezewiki.com/starwars/wiki/67\\_(disambiguation)>',
+  ])('preserves parentheses in a masked destination: %s', destination => {
+    const rt = prepare(`🌟 [page](${destination}) and [next](example.com)`)
+
+    expect(rt.text).toBe('🌟 page and next')
+    expect(facetTexts(rt)).toEqual(['page', 'next'])
+    expect(rt.facets?.map(facet => facet.index)).toEqual([
+      {byteStart: 5, byteEnd: 9},
+      {byteStart: 14, byteEnd: 18},
+    ])
+    expect(rt.facets?.[0].features[0]).toMatchObject({
+      uri: 'https://breezewiki.com/starwars/wiki/67_(disambiguation)',
+    })
+  })
+
+  it('allows unbalanced and nested parentheses inside angle destinations', () => {
+    const uri = 'https://example.com/a(b(c)d'
+    const rt = prepare(`[page](<${uri}>)`)
+
+    expect(rt.text).toBe('page')
+    expect(rt.facets?.[0].features[0]).toMatchObject({uri})
+  })
+
+  it('keeps the editor support for spaces before a masked destination', () => {
+    const rt = prepare('[page] (<https://example.com/a(b)>)')
+
+    expect(rt.text).toBe('page')
+    expect(rt.facets?.[0].features[0]).toMatchObject({
+      uri: 'https://example.com/a(b)',
+    })
+  })
+
+  it('does not truncate an incomplete masked destination at an inner parenthesis', () => {
+    const text = '[page](https://example.com/a(b)'
+    expect(parseMarkdownLinks(text)).toEqual({text, facets: []})
+  })
+
+  it.each(['https://example.com/a(b)', '\\<https://example.com/a(b)>'])(
+    'escapes the complete masked destination: %s',
+    destination => {
+      const rt = prepare(`\\[page](${destination}) https://outside.example.com`)
+
+      expect(rt.text).toBe(
+        `[page](${destination.replace('\\<', '<')}) https://outside.example.com`,
+      )
+      expect(facetTexts(rt)).toEqual(['https://outside.example.com'])
+    },
+  )
+
+  it.each(['', ' '])(
+    'preserves an independent angle link in an escaped wrapper, padded with %j',
+    padding => {
+      const uri = 'https://breezewiki.com/starwars/wiki/67_(disambiguation)'
+      const input = `🌟 \\[${uri}](<${padding}${uri}${padding}>)`
+      const rt = prepare(input)
+
+      expect(rt.text).toBe(`🌟 [${uri}](${padding}${uri}${padding})`)
+      expect(facetTexts(rt)).toEqual([uri])
+      expect(rt.facets?.[0].features[0]).toMatchObject({uri})
+    },
+  )
+
+  it('escapes a spaced angle link at its own opening delimiter', () => {
+    const rt = prepare('\\[page](\\< https://example.com/a(b) >)')
+
+    expect(rt.text).toBe('[page](< https://example.com/a(b) >)')
+    expect(facetTexts(rt)).toEqual([])
+  })
+
+  it('trims padding inside an active masked destination', () => {
+    const rt = prepare('[page](< https://example.com/a(b) >)')
+
+    expect(rt.text).toBe('page')
+    expect(rt.facets?.[0].features[0]).toMatchObject({
+      uri: 'https://example.com/a(b)',
+    })
+  })
+
   it('preserves an explicit full URL label while shortening ordinary URLs', () => {
     const uri =
       'https://full-link.example/a-really-long-link-that-would-normally-be-truncated'

@@ -30,6 +30,99 @@ function createTapper() {
 }
 
 describe('composer masked link facets', () => {
+  it.each(['!', '?', '?!', '.)*', '!)*', ', next'])(
+    'leaves punctuation after a masked link plain: %s',
+    suffix => {
+      const tapper = createTapper()
+      const masked = '[with masked links](like.so)'
+      tapper.handleTextChange(`(*text ${masked}${suffix}`)
+
+      expect(
+        tapper.nodes
+          .filter(node => node.type === 'facet')
+          .map(node => node.raw),
+      ).toEqual([masked])
+      expect(tapper.nodes.at(-1)).toMatchObject({type: 'text', raw: suffix})
+    },
+  )
+  it.each([
+    'https://breezewiki.com/starwars/wiki/67_(disambiguation)',
+    '<https://breezewiki.com/starwars/wiki/67_(disambiguation)>',
+    'https://breezewiki.com/starwars/wiki/67_\\(disambiguation\\)',
+    '<https://example.com/a(b(c)d>',
+  ])(
+    'highlights and commits the complete masked destination: %s',
+    destination => {
+      const tapper = createTapper()
+      const committed = jest.fn()
+      tapper.on('facetCommitted', facet =>
+        committed(normalizeComposerLink(facet)),
+      )
+      const text = `[page](${destination})`
+      for (let i = 1; i <= text.length; i++)
+        tapper.handleTextChange(text.slice(0, i))
+
+      expect(tapper.nodes).toEqual([
+        expect.objectContaining({
+          facetType: 'maskedLink',
+          raw: text,
+          value: destination,
+          start: 0,
+          end: text.length,
+        }),
+      ])
+      tapper.handleTextChange(`${text} `)
+      expect(committed).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          type: 'url',
+          value: destination.includes('breezewiki')
+            ? 'https://breezewiki.com/starwars/wiki/67_(disambiguation)'
+            : 'https://example.com/a(b(c)d',
+        }),
+      )
+    },
+  )
+
+  it.each(['https://example.com/a(b)', '\\<https://example.com/a(b)>'])(
+    'keeps an escaped masked destination plain: %s',
+    destination => {
+      const tapper = createTapper()
+      tapper.handleTextChange(`\\[page](${destination})`)
+
+      expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
+    },
+  )
+
+  it.each(['', ' '])(
+    'allows an independent angle link inside an escaped wrapper, padded with %j',
+    padding => {
+      const uri = 'https://breezewiki.com/starwars/wiki/67_(disambiguation)'
+      const tapper = createTapper()
+      const committed = jest.fn()
+      tapper.on('facetCommitted', facet =>
+        committed(normalizeComposerLink(facet)),
+      )
+      tapper.handleTextChange(`\\[${uri}](<${padding}${uri}${padding}>)`)
+
+      expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([
+        expect.objectContaining({
+          facetType: 'angleLink',
+          raw: `<${padding}${uri}${padding}>`,
+        }),
+      ])
+      expect(committed).toHaveBeenLastCalledWith(
+        expect.objectContaining({type: 'url', value: uri}),
+      )
+    },
+  )
+
+  it('keeps the contents of an independently escaped, spaced angle link plain', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('\\< https://example.com/a(b) >')
+
+    expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
+  })
+
   it('highlights the complete expression and commits only its destination', () => {
     const tapper = createTapper()
     const committed = jest.fn()
