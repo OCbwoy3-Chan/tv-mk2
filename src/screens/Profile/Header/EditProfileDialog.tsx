@@ -301,7 +301,9 @@ function DialogInner({
           !dirty ||
           isUpdatingProfile ||
           displayNameTooLong ||
-          descriptionTooLong
+          descriptionTooLong ||
+          websiteTooLong ||
+          websiteInvalidFormat
         }
         size="small"
         color="primary"
@@ -322,6 +324,8 @@ function DialogInner({
       isUpdatingProfile,
       displayNameTooLong,
       descriptionTooLong,
+      websiteTooLong,
+      websiteInvalidFormat,
       enableSquareButtons,
     ],
   )
@@ -494,7 +498,7 @@ function DialogInner({
                 defaultValue={website}
                 onChangeText={setWebsite}
                 label={l`EditWebsite`}
-                placeholder={l`URL`}
+                placeholder={l`https://example.com`}
                 testID="editProfileWebsiteInput"
                 autoCapitalize="none"
                 keyboardType="url"
@@ -543,14 +547,6 @@ function DialogInner({
               </View>
             )}
           </View>
-          {/^http:\/\//i.test(website.trim()) && (
-            <Admonition type="warning" style={a.mt_sm}>
-              <Trans>
-                HTTP links may not appear on your profile. Use HTTPS if your
-                website supports it.
-              </Trans>
-            </Admonition>
-          )}
           {websiteTooLong && (
             <Text
               style={[
@@ -574,7 +570,7 @@ function DialogInner({
                 {color: t.palette.negative_400},
               ]}>
               <Trans>
-                Website must be a valid URI (e.g.
+                Website must be a valid HTTPS URL (e.g.
                 https://twelvemen.neocities.org/)
               </Trans>
             </Text>

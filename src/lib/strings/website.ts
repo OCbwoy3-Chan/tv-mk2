@@ -1,5 +1,4 @@
 import {sanitizeUrl} from '@braintree/sanitize-url'
-import * as URI from 'uri-js'
 
 export function sanitizeWebsiteForDisplay(website: string): string {
   return website.replace(/^https?:\/\//i, '').replace(/\/$/, '')
@@ -17,6 +16,14 @@ export function isValidWebsiteFormat(website: string): boolean {
     return true
   }
 
-  const parsedWebsite = URI.parse(trimmedWebsite)
-  return !parsedWebsite.error && !!parsedWebsite.scheme
+  if (!/^https:\/\/[^/\\\s]/i.test(trimmedWebsite)) {
+    return false
+  }
+
+  try {
+    const parsedWebsite = new URL(trimmedWebsite)
+    return parsedWebsite.protocol === 'https:' && !!parsedWebsite.hostname
+  } catch {
+    return false
+  }
 }
