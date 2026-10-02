@@ -6,7 +6,9 @@ import {RichText, UnicodeString} from '@bsky/sdk/richtext'
 import {app, com} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {
+  ESCAPED_MARKDOWN_LINK_PATTERN,
   getMarkdownLinkHighlightRanges,
+  MARKDOWN_ESCAPE_PATTERN,
   MARKDOWN_LINK_PATTERN,
   normalizeMarkdownLinkDestination,
 } from './markdown-links'
@@ -144,13 +146,13 @@ export function isEscapedFacetSyntax(text: string, index: number): boolean {
   return backslashes % 2 === 1
 }
 
-/** Whether a detected editor facet sits inside an escaped masked link. */
-export function isInsideEscapedMarkdownLink(
+/** Escaped syntax protects automatic facets; independent angle syntax opts back in. */
+export function isInsideEscapedFacetSyntax(
   text: string,
   start: number,
   end: number,
 ): boolean {
-  for (const match of text.matchAll(MARKDOWN_LINK_PATTERN)) {
+  for (const match of text.matchAll(/<[^<>\n]+>/g)) {
     if (
       isEscapedFacetSyntax(text, match.index) &&
       start >= match.index &&
@@ -159,7 +161,40 @@ export function isInsideEscapedMarkdownLink(
       return true
     }
   }
+  for (const match of text.matchAll(ESCAPED_MARKDOWN_LINK_PATTERN)) {
+    if (
+      isEscapedFacetSyntax(text, match.index) &&
+      start >= match.index &&
+      end <= match.index + match[0].length
+    ) {
+      return getEscapedMarkdownProtectionRanges(
+        text,
+        match.index,
+        match.index + match[0].length,
+      ).some(range => start >= range.start && end <= range.end)
+    }
+  }
   return false
+}
+
+/** Preserve independently unescaped angle facets inside a literal Markdown wrapper. */
+function getEscapedMarkdownProtectionRanges(
+  text: string,
+  start: number,
+  end: number,
+): {start: number; end: number}[] {
+  const ranges: {start: number; end: number}[] = []
+  let cursor = start
+  for (const match of text.slice(start, end).matchAll(/<([^<>\n]+)>/g)) {
+    const angleStart = start + match.index
+    if (isEscapedFacetSyntax(text, angleStart) || !getEnclosedFacet(match[1])) {
+      continue
+    }
+    ranges.push({start: cursor, end: angleStart})
+    cursor = angleStart + match[0].length
+  }
+  ranges.push({start: cursor, end})
+  return ranges
 }
 
 /** Merge masked link highlights into editor facets without rewriting the text. */
@@ -215,6 +250,52 @@ export function applyFacetSyntax(
   rt: RichText,
   {removeSyntax = false}: {removeSyntax?: boolean} = {},
 ): RichText {
+  const deletionPoints = collectFacetSyntax(rt)
+  if (removeSyntax) {
+    for (const index of deletionPoints.sort((a, b) => b - a)) {
+      const byte = rt.unicodeText.utf16IndexToUtf8Index(index)
+      rt.delete(byte, byte + 1)
+    }
+  }
+  return rt
+}
+
+/** UTF-16 positions of escape backslashes and angle delimiters removed on posting. */
+export function getFacetSyntaxRemovalIndices(rt: RichText): Set<number> {
+  const preview = rt.clone()
+  applyMarkdownLinkFacets(preview)
+  const indices = new Set(collectFacetSyntax(preview))
+  for (const match of rt.text.matchAll(MARKDOWN_LINK_PATTERN)) {
+    if (isEscapedFacetSyntax(rt.text, match.index)) continue
+    const destinationStart = match.index + match[0].length - match[1].length - 1
+    for (const escape of match[1].matchAll(MARKDOWN_ESCAPE_PATTERN)) {
+      indices.add(destinationStart + escape.index)
+    }
+  }
+  return indices
+}
+
+/** Split editor text at removed syntax without changing its text or offsets. */
+export function splitFacetSyntax(
+  text: string,
+  start: number,
+  removalIndices: ReadonlySet<number>,
+): {text: string; removed: boolean}[] {
+  const segments: {text: string; removed: boolean}[] = []
+  for (let index = 0; index < text.length; index++) {
+    const removed = removalIndices.has(start + index)
+    const last = segments.at(-1)
+    if (last?.removed === removed) {
+      last.text += text[index]
+    } else {
+      segments.push({text: text[index], removed})
+    }
+  }
+  return segments
+}
+
+/** Collect removed syntax while applying its effect to the detected facets. */
+function collectFacetSyntax(rt: RichText): number[] {
   const text = rt.text
   const toByte = (index: number) => rt.unicodeText.utf16IndexToUtf8Index(index)
   const protectedRanges: {start: number; end: number}[] = []
@@ -230,7 +311,9 @@ export function applyFacetSyntax(
     }
     if ((end - start) % 2 === 1) {
       const rest = text.slice(end)
-      const markdown = new RegExp(`^${MARKDOWN_LINK_PATTERN.source}`).exec(rest)
+      const markdown = new RegExp(
+        `^${ESCAPED_MARKDOWN_LINK_PATTERN.source}`,
+      ).exec(rest)
       const angle = /^<[^<>\n]+>/.exec(rest)
       const detected = firstDetectedFacet(rest)
       const length =
@@ -240,7 +323,15 @@ export function applyFacetSyntax(
           ? new UnicodeString(rest).slice(0, detected.index.byteEnd).length
           : undefined)
       if (length) {
-        protectedRanges.push({start: toByte(end), end: toByte(end + length)})
+        const ranges = markdown
+          ? getEscapedMarkdownProtectionRanges(text, end, end + length)
+          : [{start: end, end: end + length}]
+        protectedRanges.push(
+          ...ranges.map(range => ({
+            start: toByte(range.start),
+            end: toByte(range.end),
+          })),
+        )
         deletionPoints.push(end - 1)
       }
     }
@@ -304,14 +395,7 @@ export function applyFacetSyntax(
     deletionPoints.push(match.index, match.index + match[0].length - 1)
   }
 
-  if (removeSyntax) {
-    for (const index of deletionPoints.sort((a, b) => b - a)) {
-      const byte = toByte(index)
-      rt.delete(byte, byte + 1)
-    }
-  }
-
-  return rt
+  return deletionPoints
 }
 
 /** Resolve handles added by angle link syntax after automatic facet detection. */

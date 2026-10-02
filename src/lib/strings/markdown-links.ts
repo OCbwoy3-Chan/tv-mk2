@@ -1,12 +1,28 @@
+const labelPattern = String.raw`\[[^\]]+\][ \t]*\(`
+const angleDestinationPattern = String.raw`<[^<>\r\n]+>`
+const bareDestinationPattern = String.raw`(?:\\.|[^\\()<>\r\n]|\((?:\\.|[^\\()<>\r\n])*\))+`
+
 /** Angle destinations protect parentheses; bare destinations allow balanced pairs. */
-export const MARKDOWN_LINK_PATTERN =
-  /\[[^\]]+\][ \t]*\((<[^<>\r\n]+>|(?:\\.|[^\\()<>\r\n]|\((?:\\.|[^\\()<>\r\n])*\))+)\)/g
+export const MARKDOWN_LINK_PATTERN = new RegExp(
+  `${labelPattern}(${angleDestinationPattern}|${bareDestinationPattern})\\)`,
+  'g',
+)
+
+/** Escaped wrappers may also contain an independently escaped angle destination. */
+export const ESCAPED_MARKDOWN_LINK_PATTERN = new RegExp(
+  `${labelPattern}(${String.raw`\\*`}${angleDestinationPattern}|${bareDestinationPattern})\\)`,
+  'g',
+)
+
+/** Punctuation escapes decoded in masked link destinations. */
+export const MARKDOWN_ESCAPE_PATTERN =
+  /\\([!"#$%&'()*+,\-./:;<=>?@[\]\\^_`{|}~])/g
 
 /** Remove destination delimiters and Markdown punctuation escapes. */
 export function normalizeMarkdownLinkDestination(destination: string): string {
   const uri = (
-    destination.startsWith('<') ? destination.slice(1, -1) : destination
-  ).replace(/\\([!"#$%&'()*+,\-./:;<=>?@[\]\\^_`{|}~])/g, '$1')
+    destination.startsWith('<') ? destination.slice(1, -1).trim() : destination
+  ).replace(MARKDOWN_ESCAPE_PATTERN, '$1')
   return /^(https?:\/\/|mailto:)/.test(uri) ? uri : `https://${uri}`
 }
 

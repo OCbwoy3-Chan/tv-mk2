@@ -30,6 +30,21 @@ function createTapper() {
 }
 
 describe('composer masked link facets', () => {
+  it.each(['!', '?', '?!', '.)*', '!)*', ', next'])(
+    'leaves punctuation after a masked link plain: %s',
+    suffix => {
+      const tapper = createTapper()
+      const masked = '[with masked links](like.so)'
+      tapper.handleTextChange(`(*text ${masked}${suffix}`)
+
+      expect(
+        tapper.nodes
+          .filter(node => node.type === 'facet')
+          .map(node => node.raw),
+      ).toEqual([masked])
+      expect(tapper.nodes.at(-1)).toMatchObject({type: 'text', raw: suffix})
+    },
+  )
   it.each([
     'https://breezewiki.com/starwars/wiki/67_(disambiguation)',
     '<https://breezewiki.com/starwars/wiki/67_(disambiguation)>',
@@ -68,7 +83,7 @@ describe('composer masked link facets', () => {
     },
   )
 
-  it.each(['https://example.com/a(b)', '<https://example.com/a(b)>'])(
+  it.each(['https://example.com/a(b)', '\\<https://example.com/a(b)>'])(
     'keeps an escaped masked destination plain: %s',
     destination => {
       const tapper = createTapper()
@@ -77,6 +92,36 @@ describe('composer masked link facets', () => {
       expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
     },
   )
+
+  it.each(['', ' '])(
+    'allows an independent angle link inside an escaped wrapper, padded with %j',
+    padding => {
+      const uri = 'https://breezewiki.com/starwars/wiki/67_(disambiguation)'
+      const tapper = createTapper()
+      const committed = jest.fn()
+      tapper.on('facetCommitted', facet =>
+        committed(normalizeComposerLink(facet)),
+      )
+      tapper.handleTextChange(`\\[${uri}](<${padding}${uri}${padding}>)`)
+
+      expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([
+        expect.objectContaining({
+          facetType: 'angleLink',
+          raw: `<${padding}${uri}${padding}>`,
+        }),
+      ])
+      expect(committed).toHaveBeenLastCalledWith(
+        expect.objectContaining({type: 'url', value: uri}),
+      )
+    },
+  )
+
+  it('keeps the contents of an independently escaped, spaced angle link plain', () => {
+    const tapper = createTapper()
+    tapper.handleTextChange('\\< https://example.com/a(b) >')
+
+    expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
+  })
 
   it('highlights the complete expression and commits only its destination', () => {
     const tapper = createTapper()

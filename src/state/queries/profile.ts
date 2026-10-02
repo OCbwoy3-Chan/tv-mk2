@@ -1,5 +1,10 @@
 import {useCallback} from 'react'
-import {type Client, type Un$Typed} from '@atproto/lex'
+import {
+  type Client,
+  getBlobCidString,
+  toBase64,
+  type Un$Typed,
+} from '@atproto/lex'
 import {
   type AtIdentifierString,
   AtUri,
@@ -25,11 +30,13 @@ import chunk from 'lodash.chunk'
 
 import {uploadBlob} from '#/lib/api'
 import {until} from '#/lib/async/until'
+import {IMAGE_SIZE_CONFIG_2K_1MB} from '#/lib/constants'
 import {useToggleMutationQueue} from '#/lib/hooks/useToggleMutationQueue'
+import {getImageDim} from '#/lib/media/manip'
 import {isRecordNotFoundError} from '#/lib/xrpc-error'
 import {updateProfileShadow} from '#/state/cache/profile-shadow'
 import {type Shadow} from '#/state/cache/types'
-import {type ImageMeta} from '#/state/gallery'
+import {compressImage, type ImageMeta} from '#/state/gallery'
 import {STALE} from '#/state/queries'
 import {resetProfilePostsQueries} from '#/state/queries/post-feed'
 import {RQKEY as PROFILE_FOLLOWS_RQKEY} from '#/state/queries/profile-follows'
@@ -42,7 +49,7 @@ import {useAppviewClient, usePdsClient, useSession} from '#/state/session'
 import * as userActionHistory from '#/state/userActionHistory'
 import {useAnalytics} from '#/analytics'
 import {type Metrics, toClout} from '#/analytics/metrics'
-import {app} from '#/lexicons'
+import {app, com} from '#/lexicons'
 import type * as bsky from '#/types/bsky'
 import {
   ProgressGuideAction,
@@ -188,67 +195,82 @@ export function useProfileUpdateMutation() {
           newUserBanner.mime,
         )
       }
-      const existingRecord = await pdsClient
-        .call(com.atproto.repo.getRecord, {
-          repo: pdsClient.assertDid,
-          collection: 'app.bsky.actor.profile',
-          rkey: 'self',
-        })
-        .catch(error => {
-          if (isRecordNotFoundError(error)) return undefined
-          throw error
-        })
-
-      const existingValue = existingRecord?.value
-      const existing =
-        existingValue && typeof existingValue === 'object'
-          ? (existingValue as Un$Typed<app.bsky.actor.profile.Main>)
-          : undefined
-      let next: Un$Typed<app.bsky.actor.profile.Main> = existing || {}
-      if (typeof updates === 'function') {
-        next = updates(next)
-      } else {
-        if ('displayName' in updates) {
+      await pdsClient.call(upsertProfile, async existing => {
+        let next: Un$Typed<app.bsky.actor.profile.Main> = existing || {}
+        /* The SDK discards profiles whose existing WebP blobs fail validation. */
+        if (!existing) {
+          const record = await pdsClient
+            .call(com.atproto.repo.getRecord, {
+              repo: profile.did,
+              collection: app.bsky.actor.profile.$type,
+              rkey: 'self',
+            })
+            .catch(error => {
+              if (isRecordNotFoundError(error)) return undefined
+              throw error
+            })
+          next = record?.value || {}
+        }
+        if (typeof updates === 'function') {
+          next = updates(next)
+        } else {
           next.displayName = updates.displayName || undefined
         }
         if ('description' in updates) {
           next.description = updates.description || undefined
-        }
-        if ('pinnedPost' in updates) {
-          next.pinnedPost = updates.pinnedPost
-        }
-        if ('pronouns' in updates) {
-          next.pronouns = updates.pronouns?.trim() || undefined
-        }
-        if ('website' in updates) {
-          if (updates['website'] && updates['website'].length !== 0) {
-            next.website = updates.website
-          } else {
-            next.website = undefined
+          if ('pinnedPost' in updates) {
+            next.pinnedPost = updates.pinnedPost
+          }
+          if ('pronouns' in updates) {
+            next.pronouns = updates.pronouns?.trim() || undefined
+          }
+          if ('website' in updates) {
+            if (updates['website'] && updates['website'].length !== 0) {
+              next.website = updates.website
+            } else {
+              next.website = undefined
+            }
           }
         }
-      }
-      if (newUserAvatarPromise) {
-        const res = await newUserAvatarPromise
-        next.avatar = res.blob
-      } else if (newUserAvatar === null) {
-        next.avatar = undefined
-      }
-      if (newUserBannerPromise) {
-        const res = await newUserBannerPromise
-        next.banner = res.blob
-      } else if (newUserBanner === null) {
-        next.banner = undefined
-      }
-      await pdsClient.call(com.atproto.repo.putRecord, {
-        repo: pdsClient.assertDid,
-        collection: 'app.bsky.actor.profile',
-        rkey: 'self',
-        record: {
-          $type: 'app.bsky.actor.profile',
-          ...next,
-        },
-        swapRecord: existingRecord?.cid,
+        if (newUserAvatarPromise) {
+          const res = await newUserAvatarPromise
+          next.avatar = res.blob
+        } else if (newUserAvatar === null) {
+          next.avatar = undefined
+        }
+        if (newUserBannerPromise) {
+          const res = await newUserBannerPromise
+          next.banner = res.blob
+        } else if (newUserBanner === null) {
+          next.banner = undefined
+        }
+        for (const field of ['avatar', 'banner'] as const) {
+          const blob = next[field]
+          if (blob?.mimeType !== 'image/webp') continue
+          const cid = getBlobCidString(blob)
+          if (!cid) throw new Error('Missing profile image CID')
+          const bytes = await pdsClient.call(com.atproto.sync.getBlob, {
+            did: profile.did,
+            cid,
+          })
+          const path = `data:image/webp;base64,${toBase64(bytes)}`
+          const image = await compressImage(
+            {
+              alt: '',
+              source: {
+                id: cid,
+                path,
+                mime: 'image/webp',
+                ...(await getImageDim(path)),
+              },
+            },
+            IMAGE_SIZE_CONFIG_2K_1MB,
+          )
+          next[field] = (
+            await uploadBlob(pdsClient, image.path, image.mime)
+          ).blob
+        }
+        return next
       })
       await whenAppViewReady(
         appviewClient,

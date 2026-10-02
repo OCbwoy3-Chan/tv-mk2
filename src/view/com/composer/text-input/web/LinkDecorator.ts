@@ -14,7 +14,7 @@
  * the facet-set.
  */
 
-import {UnicodeString, URL_REGEX} from '@bsky/sdk/richtext'
+import {RichText, UnicodeString, URL_REGEX} from '@bsky/sdk/richtext'
 import {Mark} from '@tiptap/core'
 import {type Node as ProsemirrorNode} from '@tiptap/pm/model'
 import {Plugin, PluginKey} from '@tiptap/pm/state'
@@ -26,8 +26,9 @@ import {
 } from '#/lib/strings/markdown-links'
 import {
   getEnclosedFacet,
+  getFacetSyntaxRemovalIndices,
   isEscapedFacetSyntax,
-  isInsideEscapedMarkdownLink,
+  isInsideEscapedFacetSyntax,
 } from '#/lib/strings/rich-text-manip'
 import {isValidDomain} from '#/lib/strings/url-helpers'
 
@@ -43,19 +44,36 @@ export const LinkDecorator = Mark.create({
   },
 })
 
-/** Link highlights in the web post editor, excluding angle delimiters. */
+/** Link highlights and dimmed syntax in the web post editor. */
 export function getLinkDecorations(doc: ProsemirrorNode) {
   const decorations: Decoration[] = []
 
   doc.descendants((node, pos) => {
     if (node.isText && node.text) {
       const textContent = node.textContent
+      const maskedRanges: {from: number; to: number}[] = []
+      const richtext = new RichText({text: textContent})
+      richtext.detectFacetsWithoutResolution()
+      for (const index of getFacetSyntaxRemovalIndices(richtext)) {
+        decorations.push(
+          Decoration.inline(
+            pos + index,
+            pos + index + 1,
+            {class: 'composer-syntax'},
+            {removedSyntax: true},
+          ),
+        )
+      }
 
       // markdown links [text](url)
       const markdownRegex = new RegExp(MARKDOWN_LINK_PATTERN)
       let markdownMatch
       while ((markdownMatch = markdownRegex.exec(textContent)) !== null) {
         if (isEscapedFacetSyntax(textContent, markdownMatch.index)) continue
+        maskedRanges.push({
+          from: markdownMatch.index,
+          to: markdownMatch.index + markdownMatch[0].length,
+        })
         for (const range of getMarkdownLinkHighlightRanges(
           markdownMatch[0],
           markdownMatch[1],
@@ -73,7 +91,7 @@ export function getLinkDecorations(doc: ProsemirrorNode) {
       for (const match of textContent.matchAll(/<([^<>\n]+)>/g)) {
         if (
           isEscapedFacetSyntax(textContent, match.index) ||
-          isInsideEscapedMarkdownLink(
+          isInsideEscapedFacetSyntax(
             textContent,
             match.index,
             match.index + match[0].length,
@@ -101,7 +119,14 @@ export function getLinkDecorations(doc: ProsemirrorNode) {
 
       // regular links
       iterateUris(textContent, (from, to) => {
-        if (isInsideEscapedMarkdownLink(textContent, from, to)) return
+        /*
+         * Automatic URLs can swallow the closing parenthesis and punctuation.
+         * The explicit masked link already supplies the correct highlight.
+         */
+        if (maskedRanges.some(range => from < range.to && to > range.from)) {
+          return
+        }
+        if (isInsideEscapedFacetSyntax(textContent, from, to)) return
         decorations.push(
           Decoration.inline(pos + from, pos + to, {
             class: 'autolink',
@@ -139,7 +164,7 @@ function linkDecorator() {
 
 function iterateUris(str: string, cb: (from: number, to: number) => void) {
   let match
-  const re = URL_REGEX
+  const re = new RegExp(URL_REGEX)
   while ((match = re.exec(str))) {
     let uri = match[2]
     if (!uri.startsWith('http')) {

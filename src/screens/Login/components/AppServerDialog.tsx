@@ -383,6 +383,9 @@ function AppServerDialogInner({
   const pdsProbe = useServiceQuery(shouldProbePds ? normalizedCustomUrl : '')
   const looksLikePds = hasPdsInDidDoc || (shouldProbePds && pdsProbe.isSuccess)
 
+  const isBadPlatform =
+    bskyAppViewService?.serviceEndpoint === 'https://appview.wsocial.eu'
+
   const customIsValid =
     preset !== 'custom' ||
     (!!normalizedCustomUrl &&
@@ -521,6 +524,16 @@ function AppServerDialogInner({
                   </Text>
                 </View>
               )}
+            {isBadPlatform && (
+              <View style={[a.mt_sm]}>
+                <Admonition type="warning">
+                  <Trans>
+                    This AppView belongs to a bad platform, it might have mandatory
+                    ID verification or serious trust and safety concerns.
+                  </Trans>
+                </Admonition>
+              </View>
+            )}
             {!!normalizedCustomUrl &&
               !!derivedDid &&
               !doc.isLoading &&

@@ -4,8 +4,8 @@ import {RichText} from '@bsky/sdk/richtext'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {
+  ESCAPED_MARKDOWN_LINK_PATTERN,
   formatMarkdownLinkDestination,
-  MARKDOWN_LINK_PATTERN,
 } from './markdown-links'
 import {getEnclosedFacet} from './rich-text-manip'
 import {linkRequiresWarning, toShortUrl} from './url-helpers'
@@ -124,7 +124,7 @@ function escapeUnfacetedText(text: string): string {
   const escapedStarts = new Set<number>()
   const syntaxRanges: {start: number; end: number}[] = []
 
-  for (const match of text.matchAll(MARKDOWN_LINK_PATTERN)) {
+  for (const match of text.matchAll(ESCAPED_MARKDOWN_LINK_PATTERN)) {
     escapedStarts.add(match.index)
     syntaxRanges.push({start: match.index, end: match.index + match[0].length})
   }

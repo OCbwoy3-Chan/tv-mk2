@@ -8,7 +8,7 @@ import {
 import {
   getEnclosedFacet,
   isEscapedFacetSyntax,
-  isInsideEscapedMarkdownLink,
+  isInsideEscapedFacetSyntax,
 } from '#/lib/strings/rich-text-manip'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -25,14 +25,11 @@ export const maskedLinkFacet = {
 
 const angleFeature = (value: string) => getEnclosedFacet(value)?.features[0]
 
-/** Escaping a masked link also protects angle syntax inside its destination. */
+/** Angle facets are escaped at their own opening delimiter. */
 function isUnescapedAngleFacet(match: RegExpMatchArray): boolean {
   const text = match.input ?? ''
   const start = match.index ?? 0
-  return (
-    !isEscapedFacetSyntax(text, start) &&
-    !isInsideEscapedMarkdownLink(text, start, start + match[0].length)
-  )
+  return !isEscapedFacetSyntax(text, start)
 }
 
 export const cashtagFacet = CASHTAG_REGEX
@@ -71,7 +68,7 @@ export function escapeAwareFacet(
         : 0
       const start = (match.index ?? 0) + boundaryLength
       return (
-        !isInsideEscapedMarkdownLink(
+        !isInsideEscapedFacetSyntax(
           match.input ?? '',
           start,
           start + match[0].length - boundaryLength,

@@ -10,6 +10,7 @@ import {useSession} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import * as Dialog from '#/components/Dialog'
 import {Text} from '#/components/Typography'
+import {handleOverlayNavigation} from '#/features/keyboardShortcuts/overlayNavigation.web'
 import {goBack, navigate} from '#/Navigation'
 import {router} from '#/routes'
 import {listenOpenKeyboardShortcuts} from './events'
@@ -449,6 +450,10 @@ export function KeyboardShortcuts() {
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
+      if (enabled && handleOverlayNavigation(event)) {
+        clearChord()
+        return
+      }
       const target = event.target
       if (!(target instanceof Element) || shouldIgnoreTarget(target)) {
         clearChord()

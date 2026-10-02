@@ -42,7 +42,7 @@ describe('richTextToRedraftString', () => {
     repost.detectFacetsWithoutResolution()
     applyFacetSyntax(repost, {removeSyntax: true})
 
-    expect(redraft).toBe(`\\${text}`)
+    expect(redraft).toBe('\\[page](\\<https://example.com/a(b)>)')
     expect(repost.text).toBe(text)
     expect(repost.facets).toBeUndefined()
   })
