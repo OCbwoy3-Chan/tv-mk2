@@ -6,6 +6,8 @@ import {type Device, device} from '#/storage'
 export type MutableTextStyle = {-readonly [K in keyof TextStyle]: TextStyle[K]}
 
 const WEB_FONT_FAMILIES = `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"`
+/** Keep the text font first so Noto's digit mappings only handle emoji keycaps. */
+const WEB_EMOJI_FONT = `var(--noto-emoji-font, "__disabledNotoEmoji")`
 
 /*
  * DEBUG: Uncomment to test if fonts are actually being applied on Android.
@@ -122,7 +124,7 @@ export function applyFonts(
 
     if (IS_WEB) {
       // fallback families only supported on web
-      style.fontFamily += `, ${WEB_FONT_FAMILIES}`
+      style.fontFamily += `, ${WEB_EMOJI_FONT}, ${WEB_FONT_FAMILIES}`
     }
 
     /**
@@ -144,7 +146,9 @@ export function applyFonts(
     } else {
       // fallback families only supported on web
       if (IS_WEB) {
-        style.fontFamily = style.fontFamily || WEB_FONT_FAMILIES
+        style.fontFamily =
+          style.fontFamily ||
+          `system-ui, ${WEB_EMOJI_FONT}, ${WEB_FONT_FAMILIES}`
       }
     }
     /**

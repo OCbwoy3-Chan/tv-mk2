@@ -6,6 +6,7 @@ import {
 } from 'react-native'
 import createEmojiRegex from 'emoji-regex'
 
+import {NOTO_EMOJI_FONT} from '#/lib/notoEmojiFont'
 import {UITextView} from '#/platform/ui-text-view'
 import {
   type Alf,
@@ -14,7 +15,7 @@ import {
   flatten,
   type MutableTextStyle,
 } from '#/alf'
-import {IS_IOS, IS_NATIVE} from '#/env'
+import {IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
 
 /**
  * Ensures that `lineHeight` defaults to a relative value of `1`, or applies
@@ -88,8 +89,11 @@ export function renderChildrenWithEmoji(
   children: React.ReactNode,
   props: Omit<TextProps, 'children'> = {},
   emoji: boolean,
+  useNotoColorEmoji = false,
 ) {
-  if (!IS_IOS || !emoji) {
+  // Browser font fallback covers nested text and editable text on one baseline.
+  if (IS_WEB) return children
+  if (!useNotoColorEmoji && (!IS_IOS || !emoji)) {
     return children
   }
   return Children.map(children, child => {
@@ -106,7 +110,16 @@ export function renderChildrenWithEmoji(
       emojis[index] ? (
         <UITextView
           {...props}
-          style={[props?.style, {fontFamily: 'System'}]}
+          style={[
+            props?.style,
+            {
+              fontFamily: useNotoColorEmoji ? NOTO_EMOJI_FONT : 'System',
+              ...(useNotoColorEmoji && {
+                fontWeight: 'normal',
+                fontStyle: 'normal',
+              }),
+            },
+          ]}
           key={index}>
           {emojis[index]}
         </UITextView>

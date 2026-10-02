@@ -5,6 +5,7 @@ import {lh, s} from '#/lib/styles'
 import {type TypographyVariant, useTheme} from '#/lib/ThemeContext'
 import {logger} from '#/logger'
 import {UITextView} from '#/platform/ui-text-view'
+import {useNotoColorEmojiFont} from '#/state/preferences/noto-color-emoji'
 import {applyFonts, type MutableTextStyle, useAlf} from '#/alf'
 import {
   childHasEmoji,
@@ -47,6 +48,7 @@ function Text_DEPRECATED({
 }: React.PropsWithChildren<CustomTextProps>) {
   const theme = useTheme()
   const {fonts} = useAlf()
+  const useNotoColorEmoji = useNotoColorEmojiFont()
 
   if (__DEV__) {
     if (!emoji && childHasEmoji(children)) {
@@ -98,7 +100,12 @@ function Text_DEPRECATED({
 
   return (
     <UITextView {...textProps}>
-      {renderChildrenWithEmoji(children, textProps, emoji ?? false)}
+      {renderChildrenWithEmoji(
+        children,
+        textProps,
+        emoji ?? false,
+        useNotoColorEmoji,
+      )}
     </UITextView>
   )
 }
