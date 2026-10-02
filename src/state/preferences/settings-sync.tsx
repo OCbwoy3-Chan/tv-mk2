@@ -9,6 +9,7 @@ import {type PropsWithChildren} from 'react'
 
 import * as persisted from '#/state/persisted'
 import {type Schema} from '#/state/persisted/schema'
+import {PLATFORM_SYNCED_PREFS_KEYS} from '#/state/preferences/platform-synced-prefs'
 
 // ---------------------------------------------------------------------------
 // Synced keys allowlist
@@ -87,6 +88,7 @@ export const SYNCED_PREFS_KEYS = [
   'compactPosts',
   'enableSquareAvatars',
   'enableSquareButtons',
+  ...PLATFORM_SYNCED_PREFS_KEYS,
   'useCompactAccountSwitcher',
   'autoCompactAccountSwitcher',
   'disableVerifyEmailReminder',

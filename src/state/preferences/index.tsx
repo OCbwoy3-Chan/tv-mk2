@@ -44,6 +44,7 @@ import {Provider as LargeAltBadgeProvider} from './large-alt-badge'
 import {Provider as LoadSmallPNGsProvider} from './load-small-pngs'
 import {MetricsDisplayPreferencesProvider} from './metrics-display-preference'
 import {Provider as NoDiscoverProvider} from './no-discover-fallback'
+import {Provider as NotoColorEmojiProvider} from './noto-color-emoji'
 import {Provider as OmitViaFieldProvider} from './omit-via-field'
 import {Provider as OpenRouterProvider} from './openrouter'
 import {Provider as PdsLabelProvider} from './pds-label'
@@ -233,9 +234,11 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                           <HideQuotesOfBlockedAccountsProvider>
                                                                                                                                             <ReplyIconIndicatorsProvider>
                                                                                                                                               <ShowPostTagsProvider>
-                                                                                                                                                {
-                                                                                                                                                  children
-                                                                                                                                                }
+                                                                                                                                                <NotoColorEmojiProvider>
+                                                                                                                                                  {
+                                                                                                                                                    children
+                                                                                                                                                  }
+                                                                                                                                                </NotoColorEmojiProvider>
                                                                                                                                               </ShowPostTagsProvider>
                                                                                                                                             </ReplyIconIndicatorsProvider>
                                                                                                                                           </HideQuotesOfBlockedAccountsProvider>
