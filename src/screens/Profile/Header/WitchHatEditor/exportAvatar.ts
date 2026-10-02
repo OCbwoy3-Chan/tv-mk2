@@ -1,5 +1,6 @@
 import {type RefObject} from 'react'
 import {type View} from 'react-native'
+import {type Client} from '@atproto/lex'
 
 import {compressImage, type ImageMeta} from '#/state/gallery'
 import {
@@ -14,6 +15,7 @@ export async function exportAvatar({
   avatar: string
   placement: HatPlacement
   color: string
+  pdsClient: Client
 }): Promise<ImageMeta> {
   const {captureRef} = await import('react-native-view-shot')
   const path = await captureRef(previewRef, {
