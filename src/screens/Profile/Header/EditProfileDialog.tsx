@@ -3,9 +3,7 @@ import {useRef} from 'react'
 import {View} from 'react-native'
 import {Pressable} from 'react-native'
 import {type UriString} from '@atproto/syntax'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Plural, Trans} from '@lingui/react/macro'
+import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {
   HITSLOP_10,
@@ -27,6 +25,9 @@ import {
   getSquareAvatarRadius,
 } from '#/view/com/util/UserAvatar'
 import {UserBanner} from '#/view/com/util/UserBanner'
+import {Logo} from '#/view/icons/Logo'
+import {WitchHatEditor} from '#/screens/Profile/Header/WitchHatEditor'
+import {isOctober} from '#/screens/Profile/Header/WitchHatEditor/utils'
 import {atoms as a, useTheme} from '#/alf'
 import * as tokens from '#/alf/tokens'
 import {Admonition} from '#/components/Admonition'
@@ -55,7 +56,7 @@ export function EditProfileDialog({
   control: Dialog.DialogControlProps
   onUpdate?: () => void
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const cancelControl = Dialog.useDialogControl()
   const [dirty, setDirty] = useState(false)
 
@@ -93,10 +94,10 @@ export function EditProfileDialog({
 
       <Prompt.Basic
         control={cancelControl}
-        title={_(msg`Discard changes?`)}
-        description={_(msg`Are you sure you want to discard your changes?`)}
+        title={l`Discard changes?`}
+        description={l`Are you sure you want to discard your changes?`}
         onConfirm={() => control.close()}
-        confirmButtonCta={_(msg`Discard`)}
+        confirmButtonCta={l`Discard`}
         confirmButtonColor="negative"
       />
     </Dialog.Outer>
@@ -114,7 +115,7 @@ function DialogInner({
   setDirty: (dirty: boolean) => void
   onPressCancel: () => void
 }) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const t = useTheme()
   const control = Dialog.useDialogContext()
   const enableSquareButtons = useEnableSquareButtons()
@@ -128,6 +129,7 @@ function DialogInner({
     isPending: isUpdatingProfile,
   } = useProfileUpdateMutation()
   const [imageError, setImageError] = useState('')
+  const witchHatControl = Dialog.useDialogControl()
   const initialDisplayName = profile.displayName || ''
   const [displayName, setDisplayName] = useState(initialDisplayName)
   const initialDescription = profile.description || ''
@@ -222,7 +224,7 @@ function DialogInner({
         newUserBanner,
       })
       control.close(() => onUpdate?.())
-      Toast.show(_(msg({message: 'Profile updated', context: 'toast'})))
+      Toast.show(l({message: 'Profile updated', context: 'toast'}))
     } catch (e: any) {
       logger.error('Failed to update user profile', {message: String(e)})
     }
@@ -238,7 +240,7 @@ function DialogInner({
     newUserAvatar,
     newUserBanner,
     setImageError,
-    _,
+    l,
   ])
 
   const displayNameTooLong = isOverMaxGraphemeCount({
@@ -259,10 +261,10 @@ function DialogInner({
     maxCount: MAX_DESCRIPTION,
   })
 
-  const cancelButton = useCallback(
-    () => (
+  const cancelButton = () => (
+    <View style={[a.flex_row, a.align_center, a.gap_2xs]}>
       <Button
-        label={_(msg`Cancel`)}
+        label={l`Cancel`}
         onPress={onPressCancel}
         size="small"
         color="primary"
@@ -273,14 +275,27 @@ function DialogInner({
           <Trans>Cancel</Trans>
         </ButtonText>
       </Button>
-    ),
-    [onPressCancel, _, enableSquareButtons],
+      {isOctober() && (
+        <Button
+          label={l`Add a witch hat to your avatar`}
+          accessibilityHint={l`Choose an avatar photo first, then position the witch hat`}
+          onPress={() => witchHatControl.open()}
+          disabled={!userAvatar || isUpdatingProfile}
+          size="tiny"
+          color="secondary"
+          style={[enableSquareButtons ? a.rounded_sm : a.rounded_full]}
+          testID="editProfileWitchHatBtn">
+          <ButtonText>+</ButtonText>
+          <Logo allowVariants={false} width={18} height={18} />
+        </Button>
+      )}
+    </View>
   )
 
   const saveButton = useCallback(
     () => (
       <Button
-        label={_(msg`Save`)}
+        label={l`Save`}
         onPress={onPressSave}
         disabled={
           !dirty ||
@@ -300,7 +315,7 @@ function DialogInner({
       </Button>
     ),
     [
-      _,
+      l,
       t,
       dirty,
       onPressSave,
@@ -313,14 +328,16 @@ function DialogInner({
 
   return (
     <Dialog.ScrollableInner
-      label={_(msg`Edit profile`)}
+      label={l`Edit profile`}
       style={[a.overflow_hidden]}
       contentContainerStyle={[a.px_0, a.pt_0]}
       header={
-        <Dialog.Header renderLeft={cancelButton} renderRight={saveButton}>
-          <Dialog.HeaderText>
+        <Dialog.Header style={a.px_sm}>
+          {cancelButton()}
+          <Dialog.HeaderText style={[a.flex_1, a.px_sm]}>
             <Trans>Edit profile</Trans>
           </Dialog.HeaderText>
+          {saveButton()}
         </Dialog.Header>
       }>
       <View style={[a.relative]}>
@@ -366,8 +383,8 @@ function DialogInner({
             <Dialog.Input
               defaultValue={displayName}
               onChangeText={setDisplayName}
-              label={_(msg`Display name`)}
-              placeholder={_(msg`e.g. Alice Lastname`)}
+              label={l`Display name`}
+              placeholder={l`e.g. Alice Lastname`}
               testID="editProfileDisplayNameInput"
             />
           </TextField.Root>
@@ -395,12 +412,10 @@ function DialogInner({
                 You are verified. You will lose your verification status if you
                 change your display name.{' '}
                 <InlineLinkText
-                  label={_(
-                    msg({
-                      message: `Learn more`,
-                      context: `english-only-resource`,
-                    }),
-                  )}
+                  label={l({
+                    message: `Learn more`,
+                    context: `english-only-resource`,
+                  })}
                   to={urls.website.blog.initialVerificationAnnouncement}>
                   <Trans context="english-only-resource">Learn more.</Trans>
                 </InlineLinkText>
@@ -417,8 +432,8 @@ function DialogInner({
               defaultValue={description}
               onChangeText={setDescription}
               multiline
-              label={_(msg`Description`)}
-              placeholder={_(msg`Tell us a bit about yourself`)}
+              label={l`Description`}
+              placeholder={l`Tell us a bit about yourself`}
               testID="editProfileDescriptionInput"
             />
           </TextField.Root>
@@ -446,8 +461,8 @@ function DialogInner({
             <Dialog.Input
               defaultValue={pronouns}
               onChangeText={setPronouns}
-              label={_(msg`Pronouns`)}
-              placeholder={_(msg`e.g. she/her`)}
+              label={l`Pronouns`}
+              placeholder={l`e.g. she/her`}
               testID="editProfilePronounsInput"
             />
           </TextField.Root>
@@ -478,8 +493,8 @@ function DialogInner({
                 inputRef={websiteInputRef}
                 defaultValue={website}
                 onChangeText={setWebsite}
-                label={_(msg`EditWebsite`)}
-                placeholder={_(msg`URL`)}
+                label={l`EditWebsite`}
+                placeholder={l`URL`}
                 testID="editProfileWebsiteInput"
                 autoCapitalize="none"
                 keyboardType="url"
@@ -507,8 +522,8 @@ function DialogInner({
                 <Pressable
                   testID="clearWebsiteBtn"
                   onPress={onClearWebsite}
-                  accessibilityLabel={_(msg`Clear website`)}
-                  accessibilityHint={_(msg`Removes the website URL`)}
+                  accessibilityLabel={l`Clear website`}
+                  accessibilityHint={l`Removes the website URL`}
                   hitSlop={HITSLOP_10}
                   style={[
                     a.flex_row,
@@ -559,12 +574,20 @@ function DialogInner({
                 {color: t.palette.negative_400},
               ]}>
               <Trans>
-                Website must be a valid URI (e.g. https://twelvemen.neocities.org/)
+                Website must be a valid URI (e.g.
+                https://twelvemen.neocities.org/)
               </Trans>
             </Text>
           )}
         </View>
       </View>
+      {isOctober() && userAvatar && (
+        <WitchHatEditor
+          avatar={userAvatar}
+          control={witchHatControl}
+          onSave={onSelectNewAvatar}
+        />
+      )}
     </Dialog.ScrollableInner>
   )
 }
