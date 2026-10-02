@@ -9,7 +9,6 @@ import {
 } from 'react'
 import {StyleSheet, View} from 'react-native'
 import Animated, {FadeIn, FadeOut} from 'react-native-reanimated'
-import {type AppBskyRichtextFacet, UnicodeString} from '@atproto/api'
 import {RichText} from '@bsky/sdk/richtext'
 import {Trans} from '@lingui/react/macro'
 import {getSchema} from '@tiptap/core'
@@ -31,9 +30,10 @@ import {splitGraphemes} from 'unicode-segmenter/grapheme'
 
 import {useColorSchemeStyle} from '#/lib/hooks/useColorSchemeStyle'
 import {blobToDataUri, isUriImage} from '#/lib/media/util'
+import {formatMarkdownLinkDestination} from '#/lib/strings/markdown-links'
 import {
   applyFacetSyntax,
-  isEscapedFacetSyntax,
+  applyMarkdownLinkFacets,
 } from '#/lib/strings/rich-text-manip'
 import {useActorAutocompleteFn} from '#/state/queries/actor-autocomplete'
 import {
@@ -249,7 +249,7 @@ export function TextInput({
 
                 if (selectedText) {
                   // Create markdown-style link: [selectedText](url)
-                  const markdownLink = `[${selectedText}](${pastedText})`
+                  const markdownLink = `[${selectedText}](${formatMarkdownLinkDestination(pastedText)})`
                   const {from, to} = selection
 
                   view.dispatch(
@@ -372,52 +372,7 @@ export function TextInput({
         const newRt = new RichText({text: newText})
         newRt.detectFacetsWithoutResolution()
 
-        const markdownFacets: AppBskyRichtextFacet.Main[] = []
-        const regex = /\[([^\]]+)\]\s*\(([^)]+)\)/g
-        let match
-        while ((match = regex.exec(newText)) !== null) {
-          if (isEscapedFacetSyntax(newText, match.index)) continue
-          const [fullMatch, _linkText, linkUrl] = match
-          const matchStart = match.index
-          const matchEnd = matchStart + fullMatch.length
-          const prefix = newText.slice(0, matchStart)
-          const matchStr = newText.slice(matchStart, matchEnd)
-          const byteStart = new UnicodeString(prefix).length
-          const byteEnd = byteStart + new UnicodeString(matchStr).length
-
-          let validUrl = linkUrl
-          if (
-            !validUrl.startsWith('http://') &&
-            !validUrl.startsWith('https://') &&
-            !validUrl.startsWith('mailto:')
-          ) {
-            validUrl = `https://${validUrl}`
-          }
-
-          markdownFacets.push({
-            index: {byteStart, byteEnd},
-            features: [{$type: 'app.bsky.richtext.facet#link', uri: validUrl}],
-          })
-        }
-
-        if (markdownFacets.length > 0) {
-          const nonOverlapping = (newRt.facets || []).filter(f => {
-            return !markdownFacets.some(mf => {
-              return (
-                (f.index.byteStart >= mf.index.byteStart &&
-                  f.index.byteStart < mf.index.byteEnd) ||
-                (f.index.byteEnd > mf.index.byteStart &&
-                  f.index.byteEnd <= mf.index.byteEnd) ||
-                (mf.index.byteStart >= f.index.byteStart &&
-                  mf.index.byteStart < f.index.byteEnd)
-              )
-            })
-          })
-          newRt.facets = [...nonOverlapping, ...markdownFacets].sort(
-            (a, b) => a.index.byteStart - b.index.byteStart,
-          ) as typeof newRt.facets
-        }
-
+        applyMarkdownLinkFacets(newRt)
         applyFacetSyntax(newRt)
 
         /*

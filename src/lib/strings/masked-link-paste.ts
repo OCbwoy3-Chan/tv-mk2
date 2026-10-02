@@ -1,3 +1,5 @@
+import {formatMarkdownLinkDestination} from '#/lib/strings/markdown-links'
+
 /** Recognize a URL replacing selected text, including pastes shorter than the label. */
 export function maskPastedLink(
   previous: string,
@@ -10,7 +12,8 @@ export function maskPastedLink(
   if (!next.startsWith(before) || !next.endsWith(after)) return next
   const inserted = next.slice(start, next.length - after.length).trim()
   const label = previous.slice(start, end)
-  if (!inserted || /[\s()]/.test(inserted) || /[\]\n]/.test(label)) return next
+  if (!inserted || /[\s<>\\]/.test(inserted) || /[\]\n]/.test(label))
+    return next
   try {
     const url = new URL(
       inserted.includes('://') ? inserted : `https://${inserted}`,
@@ -23,5 +26,6 @@ export function maskPastedLink(
   } catch {
     return next
   }
-  return `${before}[${label}](${inserted})${after}`
+  const destination = formatMarkdownLinkDestination(inserted)
+  return `${before}[${label}](${destination})${after}`
 }

@@ -1,7 +1,6 @@
 import {type GestureResponderEvent} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
-import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import * as Prompt from '#/components/Prompt'
 
 export type FollowActionType = 'follow' | 'unfollow'
@@ -22,12 +21,6 @@ export function FollowConfirmationDialog({
   onConfirm,
 }: FollowConfirmationDialogProps) {
   const {t: l} = useLingui()
-  const confirmFollow = useConfirmFollow()
-
-  if (actionType === 'follow' && !confirmFollow) {
-    return null
-  }
-
   const isFollowing = actionType === 'follow'
   const title = isFollowing
     ? l({

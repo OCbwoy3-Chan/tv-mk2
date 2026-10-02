@@ -6,6 +6,7 @@ import {restoreOAuthSession} from './oauth-client-adapter'
 import {buildOAuthScope, hasOAuthAppViewScope} from './oauth-config'
 import {getOAuthAudiences} from './oauth-scopes'
 import {getWebOAuthClient} from './oauth-web-client'
+import {getWebOAuthDisplay} from './oauth-web-display'
 
 type Selection = {did?: string; url?: string}
 type PendingSwitch = {
@@ -28,7 +29,7 @@ function applySelection(selection: Selection) {
   device.set(['customAppViewUrl'], selection.url)
 }
 
-/** Keep the source document active until the new grant is ready. */
+/** Use a popup when the source document can remain active during consent. */
 export async function startAppViewSwitch(
   account: string,
   selection: Selection,
@@ -41,8 +42,9 @@ export async function startAppViewSwitch(
   audiences.appview = selection.did
     ? `${selection.did}#bsky_appview`
     : 'did:web:api.bsky.app#bsky_appview'
+  const display = getWebOAuthDisplay()
   const pending: PendingSwitch = {
-    mode: 'popup',
+    mode: display === 'popup' ? 'popup' : undefined,
     account,
     state: crypto.randomUUID(),
     selection,
@@ -60,7 +62,8 @@ export async function startAppViewSwitch(
   try {
     const session = await getWebOAuthClient(audiences).signIn(account, {
       scope: buildOAuthScope(audiences.appview, audiences.chat),
-      display: 'popup',
+      display,
+      ...(display === 'page' ? {state: pending.state} : {}),
     })
     if (session.did !== account) {
       throw new Error('Unexpected OAuth account or AppView switch')

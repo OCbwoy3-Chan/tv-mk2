@@ -7,9 +7,11 @@ import {nanoid} from 'nanoid/non-secure'
 import {MAX_TAGS} from '#/lib/constants'
 import {type VideoTelemetry} from '#/lib/media/video/telemetry'
 import {type SelfLabel} from '#/lib/moderation'
+import {MARKDOWN_LINK_PATTERN} from '#/lib/strings/markdown-links'
 import {insertMentionAt} from '#/lib/strings/mention-manip'
 import {
   applyFacetSyntax,
+  applyMarkdownLinkFacets,
   parseMarkdownLinks,
   shortenLinks,
 } from '#/lib/strings/rich-text-manip'
@@ -778,6 +780,7 @@ export function createComposerState({
    */
   if (initText) {
     initRichText.detectFacetsWithoutResolution()
+    applyMarkdownLinkFacets(initRichText)
     applyFacetSyntax(initRichText)
     const detectedExtUris = new Map<string, LinkFacetMatch>()
     const detectedPostUris = new Map<string, LinkFacetMatch>()
@@ -828,6 +831,7 @@ export function createComposerState({
   } else if (initMention) {
     // highlight the mention
     initRichText.detectFacetsWithoutResolution()
+    applyMarkdownLinkFacets(initRichText)
     applyFacetSyntax(initRichText)
   }
 
@@ -871,7 +875,7 @@ export function createComposerState({
   }
 }
 
-const MARKDOWN_LINK_RE = /\[([^\]]+)\]\(([^)]+)\)/
+const MARKDOWN_LINK_RE = new RegExp(MARKDOWN_LINK_PATTERN.source)
 
 /**
  * Grapheme length for the char counter. TextInput already ran

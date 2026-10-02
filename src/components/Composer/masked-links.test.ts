@@ -30,6 +30,54 @@ function createTapper() {
 }
 
 describe('composer masked link facets', () => {
+  it.each([
+    'https://breezewiki.com/starwars/wiki/67_(disambiguation)',
+    '<https://breezewiki.com/starwars/wiki/67_(disambiguation)>',
+    'https://breezewiki.com/starwars/wiki/67_\\(disambiguation\\)',
+    '<https://example.com/a(b(c)d>',
+  ])(
+    'highlights and commits the complete masked destination: %s',
+    destination => {
+      const tapper = createTapper()
+      const committed = jest.fn()
+      tapper.on('facetCommitted', facet =>
+        committed(normalizeComposerLink(facet)),
+      )
+      const text = `[page](${destination})`
+      for (let i = 1; i <= text.length; i++)
+        tapper.handleTextChange(text.slice(0, i))
+
+      expect(tapper.nodes).toEqual([
+        expect.objectContaining({
+          facetType: 'maskedLink',
+          raw: text,
+          value: destination,
+          start: 0,
+          end: text.length,
+        }),
+      ])
+      tapper.handleTextChange(`${text} `)
+      expect(committed).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          type: 'url',
+          value: destination.includes('breezewiki')
+            ? 'https://breezewiki.com/starwars/wiki/67_(disambiguation)'
+            : 'https://example.com/a(b(c)d',
+        }),
+      )
+    },
+  )
+
+  it.each(['https://example.com/a(b)', '<https://example.com/a(b)>'])(
+    'keeps an escaped masked destination plain: %s',
+    destination => {
+      const tapper = createTapper()
+      tapper.handleTextChange(`\\[page](${destination})`)
+
+      expect(tapper.nodes.filter(node => node.type === 'facet')).toEqual([])
+    },
+  )
+
   it('highlights the complete expression and commits only its destination', () => {
     const tapper = createTapper()
     const committed = jest.fn()

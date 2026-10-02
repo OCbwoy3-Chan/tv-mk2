@@ -89,7 +89,7 @@ export function AccessibilitySettingsScreen({ }: Props) {
               onChange={setForceAltTextEnabled}
               style={[a.w_full]}>
               <Toggle.LabelText style={[a.flex_1]}>
-                <Trans>Requre alt text before posting</Trans>
+                <Trans>Require alt text before posting</Trans>
               </Toggle.LabelText>
               <Toggle.Platform />
             </Toggle.Item>

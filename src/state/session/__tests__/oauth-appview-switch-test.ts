@@ -99,6 +99,24 @@ it('opens a popup immediately and leaves source routing intact until consent', a
   expect(values.size).toBe(0)
 })
 
+it('redirects installed PWAs and completes the app server switch on return', async () => {
+  window.matchMedia = jest.fn().mockReturnValue({matches: true})
+  signIn.mockReturnValueOnce(new Promise(() => {}))
+  void startAppViewSwitch(account, selection, login)
+  expect(signIn).toHaveBeenCalledWith(account, {
+    scope: buildOAuthScope(),
+    display: 'page',
+    state: 'switch-state',
+  })
+  expect(JSON.parse(values.get('oauth_appview_switch')!).mode).toBeUndefined()
+  expect(device.set).not.toHaveBeenCalled()
+  window.location.hash = '#state=switch-state&code=authorization-code'
+  initCallback.mockResolvedValueOnce({state: 'switch-state', session})
+  await expect(completeWebOAuth(login)).resolves.toBe(true)
+  expect(device.set).toHaveBeenCalledWith(['customAppViewDid'], selection.did)
+  expect(login).toHaveBeenCalledWith(session)
+})
+
 it.each(['access_denied', 'cancelled'])(
   'preserves routing after %s',
   async reason => {

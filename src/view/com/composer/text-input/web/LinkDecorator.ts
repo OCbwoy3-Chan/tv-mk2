@@ -21,6 +21,10 @@ import {Plugin, PluginKey} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
 
 import {
+  getMarkdownLinkHighlightRanges,
+  MARKDOWN_LINK_PATTERN,
+} from '#/lib/strings/markdown-links'
+import {
   getEnclosedFacet,
   isEscapedFacetSyntax,
   isInsideEscapedMarkdownLink,
@@ -39,7 +43,8 @@ export const LinkDecorator = Mark.create({
   },
 })
 
-function getDecorations(doc: ProsemirrorNode) {
+/** Link highlights in the web post editor, excluding angle delimiters. */
+export function getLinkDecorations(doc: ProsemirrorNode) {
   const decorations: Decoration[] = []
 
   doc.descendants((node, pos) => {
@@ -47,21 +52,35 @@ function getDecorations(doc: ProsemirrorNode) {
       const textContent = node.textContent
 
       // markdown links [text](url)
-      const markdownRegex = /\[([^\]]+)\]\s*\(([^)]+)\)/g
+      const markdownRegex = new RegExp(MARKDOWN_LINK_PATTERN)
       let markdownMatch
       while ((markdownMatch = markdownRegex.exec(textContent)) !== null) {
         if (isEscapedFacetSyntax(textContent, markdownMatch.index)) continue
-        const from = markdownMatch.index
-        const to = from + markdownMatch[0].length
-        decorations.push(
-          Decoration.inline(pos + from, pos + to, {
-            class: 'autolink',
-          }),
-        )
+        for (const range of getMarkdownLinkHighlightRanges(
+          markdownMatch[0],
+          markdownMatch[1],
+        )) {
+          decorations.push(
+            Decoration.inline(
+              pos + markdownMatch.index + range.start,
+              pos + markdownMatch.index + range.end,
+              {class: 'autolink'},
+            ),
+          )
+        }
       }
 
       for (const match of textContent.matchAll(/<([^<>\n]+)>/g)) {
-        if (isEscapedFacetSyntax(textContent, match.index)) continue
+        if (
+          isEscapedFacetSyntax(textContent, match.index) ||
+          isInsideEscapedMarkdownLink(
+            textContent,
+            match.index,
+            match.index + match[0].length,
+          )
+        ) {
+          continue
+        }
 
         const content = match[1]
         const trimmed = content.trim()
@@ -100,10 +119,10 @@ function linkDecorator() {
     key: new PluginKey('link-decorator'),
 
     state: {
-      init: (_, {doc}) => getDecorations(doc),
+      init: (_, {doc}) => getLinkDecorations(doc),
       apply: (transaction, decorationSet) => {
         if (transaction.docChanged) {
-          return getDecorations(transaction.doc)
+          return getLinkDecorations(transaction.doc)
         }
         return decorationSet.map(transaction.mapping, transaction.doc)
       },
