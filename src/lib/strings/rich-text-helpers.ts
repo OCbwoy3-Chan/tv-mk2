@@ -3,6 +3,10 @@ import {RichText} from '@bsky/sdk/richtext'
 
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
+import {
+  formatMarkdownLinkDestination,
+  MARKDOWN_LINK_PATTERN,
+} from './markdown-links'
 import {getEnclosedFacet} from './rich-text-manip'
 import {linkRequiresWarning, toShortUrl} from './url-helpers'
 
@@ -24,7 +28,11 @@ export function richTextToString(rt: RichText, loose: boolean): string {
 
       const requiresWarning = linkRequiresWarning(href, text)
 
-      result += !requiresWarning ? href : loose ? `[${text}](${href})` : text
+      result += !requiresWarning
+        ? href
+        : loose
+          ? `[${text}](${formatMarkdownLinkDestination(href)})`
+          : text
     } else {
       result += segment.text
     }
@@ -58,7 +66,7 @@ export function richTextToRedraftString(rt: RichText): string {
       continue
     }
     if (link && segment.text === link.uri) {
-      result += `[${segment.text}](${link.uri})`
+      result += `[${segment.text}](${formatMarkdownLinkDestination(link.uri)})`
       continue
     }
 
@@ -79,7 +87,9 @@ export function richTextToRedraftString(rt: RichText): string {
       continue
     }
 
-    result += link ? `[${segment.text}](${link.uri})` : segment.text
+    result += link
+      ? `[${segment.text}](${formatMarkdownLinkDestination(link.uri)})`
+      : segment.text
   }
 
   return result
@@ -114,12 +124,19 @@ function escapeUnfacetedText(text: string): string {
   const escapedStarts = new Set<number>()
   const syntaxRanges: {start: number; end: number}[] = []
 
-  for (const match of text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)) {
+  for (const match of text.matchAll(MARKDOWN_LINK_PATTERN)) {
     escapedStarts.add(match.index)
     syntaxRanges.push({start: match.index, end: match.index + match[0].length})
   }
 
   for (const match of text.matchAll(/<([^<>\n]+)>/g)) {
+    if (
+      syntaxRanges.some(
+        range => match.index >= range.start && match.index < range.end,
+      )
+    ) {
+      continue
+    }
     if (!getEnclosedFacet(match[1])) continue
     escapedStarts.add(match.index)
     syntaxRanges.push({start: match.index, end: match.index + match[0].length})

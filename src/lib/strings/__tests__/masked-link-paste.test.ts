@@ -21,9 +21,18 @@ describe('maskPastedLink', () => {
     'replacement text',
     '',
     'javascript://example.com',
-    'https://example.com/a(b)',
+    '<https://example.com>',
   ])('leaves ordinary or unsupported replacements alone: %s', next => {
     expect(maskPastedLink('label', next, {start: 0, end: 5})).toBe(next)
+  })
+
+  it.each([
+    'https://breezewiki.com/starwars/wiki/67_(disambiguation)',
+    'https://example.com/a(b(c)d',
+  ])('protects a pasted URL containing parentheses: %s', uri => {
+    expect(maskPastedLink('page', uri, {start: 0, end: 4})).toBe(
+      `[page](<${uri}>)`,
+    )
   })
 
   it('leaves insertion without a selection alone', () => {
