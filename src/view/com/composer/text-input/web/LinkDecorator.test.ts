@@ -31,7 +31,12 @@ describe('post editor link highlighting', () => {
     const uri = 'https://breezewiki.com/starwars/wiki/67_(disambiguation)'
     const text = `[this](<${uri}>) is a [test](<${uri}>)`
     const doc = schema.node('doc', null, schema.text(text))
-    const decorations = getLinkDecorations(doc).find()
+    const decorations = getLinkDecorations(doc)
+      .find()
+      .filter(
+        decoration =>
+          !(decoration.spec as {removedSyntax?: boolean}).removedSyntax,
+      )
     const highlighted = (index: number) =>
       decorations.some(range => index >= range.from && index < range.to)
 
@@ -57,7 +62,10 @@ describe('post editor link highlighting', () => {
       null,
       schema.text('\\[page](\\<https://example.com/a(b)>)'),
     )
-    expect(getLinkDecorations(doc).find()).toEqual([])
+    const decorations = getLinkDecorations(doc).find()
+    expect(decorations).toHaveLength(2)
+    expect(decorations[0]).toMatchObject({from: 0, to: 1})
+    expect(decorations[0].spec).toEqual({removedSyntax: true})
   })
 
   it.each(['', ' '])(
@@ -67,7 +75,10 @@ describe('post editor link highlighting', () => {
       const text = `\\[${uri}](<${padding}${uri}${padding}>)`
       const doc = schema.node('doc', null, schema.text(text))
       const decorations = getLinkDecorations(doc).find()
-      const links = decorations
+      const links = decorations.filter(
+        decoration =>
+          !(decoration.spec as {removedSyntax?: boolean}).removedSyntax,
+      )
       const destinationStart = text.lastIndexOf(uri)
       const labelStart = text.indexOf(uri)
 
@@ -83,13 +94,42 @@ describe('post editor link highlighting', () => {
       expect(
         links.some(range => labelStart >= range.from && labelStart < range.to),
       ).toBe(false)
+      const dimmed = decorations.filter(
+        decoration =>
+          (decoration.spec as {removedSyntax?: boolean}).removedSyntax,
+      )
+      expect(dimmed.map(range => text.slice(range.from, range.to))).toEqual([
+        '\\',
+        '<',
+        '>',
+      ])
     },
   )
 
   it('leaves a separately escaped spaced angle link unhighlighted', () => {
     const text = '\\< https://example.com/a(b) >'
     const doc = schema.node('doc', null, schema.text(text))
-    expect(getLinkDecorations(doc).find()).toEqual([])
+    const decorations = getLinkDecorations(doc).find()
+    expect(decorations).toHaveLength(1)
+    expect(decorations[0].spec).toEqual({removedSyntax: true})
+  })
+
+  it('dims both angle delimiters and an escaping backslash without changing the text', () => {
+    const text = '🌟 <example.com> \\#topic'
+    const doc = schema.node('doc', null, schema.text(text))
+    const dimmed = getLinkDecorations(doc)
+      .find()
+      .filter(
+        decoration =>
+          (decoration.spec as {removedSyntax?: boolean}).removedSyntax,
+      )
+
+    expect(dimmed.map(range => text.slice(range.from, range.to))).toEqual([
+      '<',
+      '>',
+      '\\',
+    ])
+    expect(doc.textContent).toBe(text)
   })
 
   it('keeps literal angle brackets and backslashes at full opacity', () => {

@@ -14,11 +14,15 @@ export const ESCAPED_MARKDOWN_LINK_PATTERN = new RegExp(
   'g',
 )
 
+/** Punctuation escapes decoded in masked link destinations. */
+export const MARKDOWN_ESCAPE_PATTERN =
+  /\\([!"#$%&'()*+,\-./:;<=>?@[\]\\^_`{|}~])/g
+
 /** Remove destination delimiters and Markdown punctuation escapes. */
 export function normalizeMarkdownLinkDestination(destination: string): string {
   const uri = (
     destination.startsWith('<') ? destination.slice(1, -1).trim() : destination
-  ).replace(/\\([!"#$%&'()*+,\-./:;<=>?@[\]\\^_`{|}~])/g, '$1')
+  ).replace(MARKDOWN_ESCAPE_PATTERN, '$1')
   return /^(https?:\/\/|mailto:)/.test(uri) ? uri : `https://${uri}`
 }
 

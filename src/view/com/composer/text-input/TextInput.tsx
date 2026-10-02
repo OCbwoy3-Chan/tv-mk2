@@ -23,6 +23,7 @@ import {getMentionAt, insertMentionAt} from '#/lib/strings/mention-manip'
 import {
   applyFacetSyntax,
   applyMarkdownLinkFacets,
+  getFacetSyntaxRemovalIndices,
 } from '#/lib/strings/rich-text-manip'
 import {useTheme} from '#/lib/ThemeContext'
 import {
@@ -31,6 +32,7 @@ import {
 } from '#/view/com/composer/text-input/text-input-util'
 import {atoms as a, useAlf, utils} from '#/alf'
 import {normalizeTextStyles} from '#/alf/typography'
+import {SyntaxText} from '#/components/Composer/SyntaxText'
 import {IS_ANDROID} from '#/env'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -241,7 +243,11 @@ export function TextInput({
   }, [t, fonts])
 
   const textDecorated = useMemo(() => {
+    const removalIndices = getFacetSyntaxRemovalIndices(richtext)
+    let start = 0
     return Array.from(richtext.segments()).map((segment, i) => {
+      const segmentStart = start
+      start += segment.text.length
       return (
         <RNText
           key={i}
@@ -254,7 +260,12 @@ export function TextInput({
               marginTop: -1,
             },
           ]}>
-          {segment.text}
+          <SyntaxText
+            text={segment.text}
+            start={segmentStart}
+            removalIndices={removalIndices}
+            color={segment.facet ? t.atoms.text_link.color : t.atoms.text.color}
+          />
         </RNText>
       )
     })

@@ -125,6 +125,9 @@ img {
 .ProseMirror .autolink {
   color: var(--mention-color, #ed5345);
 }
+.ProseMirror .composer-syntax {
+  opacity: 0.5;
+}
 /* OLLIE: TODO -- this is not accessible */
 /* Remove focus state on inputs */
 .ProseMirror-focused {

@@ -8,6 +8,7 @@ import * as bsky from '#/types/bsky'
 import {
   ESCAPED_MARKDOWN_LINK_PATTERN,
   getMarkdownLinkHighlightRanges,
+  MARKDOWN_ESCAPE_PATTERN,
   MARKDOWN_LINK_PATTERN,
   normalizeMarkdownLinkDestination,
 } from './markdown-links'
@@ -249,6 +250,52 @@ export function applyFacetSyntax(
   rt: RichText,
   {removeSyntax = false}: {removeSyntax?: boolean} = {},
 ): RichText {
+  const deletionPoints = collectFacetSyntax(rt)
+  if (removeSyntax) {
+    for (const index of deletionPoints.sort((a, b) => b - a)) {
+      const byte = rt.unicodeText.utf16IndexToUtf8Index(index)
+      rt.delete(byte, byte + 1)
+    }
+  }
+  return rt
+}
+
+/** UTF-16 positions of escape backslashes and angle delimiters removed on posting. */
+export function getFacetSyntaxRemovalIndices(rt: RichText): Set<number> {
+  const preview = rt.clone()
+  applyMarkdownLinkFacets(preview)
+  const indices = new Set(collectFacetSyntax(preview))
+  for (const match of rt.text.matchAll(MARKDOWN_LINK_PATTERN)) {
+    if (isEscapedFacetSyntax(rt.text, match.index)) continue
+    const destinationStart = match.index + match[0].length - match[1].length - 1
+    for (const escape of match[1].matchAll(MARKDOWN_ESCAPE_PATTERN)) {
+      indices.add(destinationStart + escape.index)
+    }
+  }
+  return indices
+}
+
+/** Split editor text at removed syntax without changing its text or offsets. */
+export function splitFacetSyntax(
+  text: string,
+  start: number,
+  removalIndices: ReadonlySet<number>,
+): {text: string; removed: boolean}[] {
+  const segments: {text: string; removed: boolean}[] = []
+  for (let index = 0; index < text.length; index++) {
+    const removed = removalIndices.has(start + index)
+    const last = segments.at(-1)
+    if (last?.removed === removed) {
+      last.text += text[index]
+    } else {
+      segments.push({text: text[index], removed})
+    }
+  }
+  return segments
+}
+
+/** Collect removed syntax while applying its effect to the detected facets. */
+function collectFacetSyntax(rt: RichText): number[] {
   const text = rt.text
   const toByte = (index: number) => rt.unicodeText.utf16IndexToUtf8Index(index)
   const protectedRanges: {start: number; end: number}[] = []
@@ -348,14 +395,7 @@ export function applyFacetSyntax(
     deletionPoints.push(match.index, match.index + match[0].length - 1)
   }
 
-  if (removeSyntax) {
-    for (const index of deletionPoints.sort((a, b) => b - a)) {
-      const byte = toByte(index)
-      rt.delete(byte, byte + 1)
-    }
-  }
-
-  return rt
+  return deletionPoints
 }
 
 /** Resolve handles added by angle link syntax after automatic facet detection. */

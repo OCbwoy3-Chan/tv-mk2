@@ -14,7 +14,7 @@
  * the facet-set.
  */
 
-import {UnicodeString, URL_REGEX} from '@bsky/sdk/richtext'
+import {RichText, UnicodeString, URL_REGEX} from '@bsky/sdk/richtext'
 import {Mark} from '@tiptap/core'
 import {type Node as ProsemirrorNode} from '@tiptap/pm/model'
 import {Plugin, PluginKey} from '@tiptap/pm/state'
@@ -26,6 +26,7 @@ import {
 } from '#/lib/strings/markdown-links'
 import {
   getEnclosedFacet,
+  getFacetSyntaxRemovalIndices,
   isEscapedFacetSyntax,
   isInsideEscapedFacetSyntax,
 } from '#/lib/strings/rich-text-manip'
@@ -43,7 +44,7 @@ export const LinkDecorator = Mark.create({
   },
 })
 
-/** Link highlights in the web post editor, excluding angle delimiters. */
+/** Link highlights and dimmed syntax in the web post editor. */
 export function getLinkDecorations(doc: ProsemirrorNode) {
   const decorations: Decoration[] = []
 
@@ -51,6 +52,18 @@ export function getLinkDecorations(doc: ProsemirrorNode) {
     if (node.isText && node.text) {
       const textContent = node.textContent
       const maskedRanges: {from: number; to: number}[] = []
+      const richtext = new RichText({text: textContent})
+      richtext.detectFacetsWithoutResolution()
+      for (const index of getFacetSyntaxRemovalIndices(richtext)) {
+        decorations.push(
+          Decoration.inline(
+            pos + index,
+            pos + index + 1,
+            {class: 'composer-syntax'},
+            {removedSyntax: true},
+          ),
+        )
+      }
 
       // markdown links [text](url)
       const markdownRegex = new RegExp(MARKDOWN_LINK_PATTERN)

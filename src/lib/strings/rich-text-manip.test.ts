@@ -4,9 +4,11 @@ import {RichText} from '@bsky/sdk/richtext'
 import {
   applyFacetSyntax,
   applyMarkdownLinkFacets,
+  getFacetSyntaxRemovalIndices,
   parseMarkdownLinks,
   resolveSyntaxMentions,
   shortenLinks,
+  splitFacetSyntax,
 } from './rich-text-manip'
 
 function prepare(text: string, removeSyntax = true) {
@@ -50,6 +52,51 @@ describe('facet syntax', () => {
       expect(facetTexts(posted)).toEqual(['with masked links'])
     },
   )
+  it.each([
+    '<example.com>',
+    '🌟 <@person.test> <#topic> <$TSLA>',
+    '\\example.com \\#topic \\$TSLA',
+    '\\\\example.com',
+    '\\\\\\example.com',
+    '\\<example.com>',
+    '\\[page](<https://example.com/a(b)>)',
+    '<ordinary text> \\ordinary',
+  ])('dims exactly the facet syntax removed when posting: %s', text => {
+    const rt = new RichText({text})
+    rt.detectFacetsWithoutResolution()
+    const indices = getFacetSyntaxRemovalIndices(rt)
+    const segments = splitFacetSyntax(text, 0, indices)
+    const posted = applyFacetSyntax(rt.clone(), {removeSyntax: true})
+
+    expect(segments.map(segment => segment.text).join('')).toBe(text)
+    expect(
+      segments
+        .filter(segment => !segment.removed)
+        .map(segment => segment.text)
+        .join(''),
+    ).toBe(posted.text)
+    expect(
+      [...indices].every(index => ['\\', '<', '>'].includes(text[index])),
+    ).toBe(true)
+    expect(rt.text).toBe(text)
+  })
+
+  it('dims masked destination escapes and angle delimiters at the correct Unicode offsets', () => {
+    const text = '🌟 [page](<https://example.com/a\\(b\\)>)'
+    const rt = new RichText({text})
+    rt.detectFacetsWithoutResolution()
+    const indices = getFacetSyntaxRemovalIndices(rt)
+    const segments = splitFacetSyntax(text.slice(3), 3, indices)
+
+    expect(
+      segments.filter(segment => segment.removed).map(segment => segment.text),
+    ).toEqual(['<', '\\', '\\', '>'])
+    expect(segments.map(segment => segment.text).join('')).toBe(text.slice(3))
+    expect(parseMarkdownLinks(text).facets[0].features[0]).toMatchObject({
+      uri: 'https://example.com/a(b)',
+    })
+  })
+
   it('highlights complete editor destinations while leaving both angle brackets plain', () => {
     const uri = 'https://breezewiki.com/starwars/wiki/67_(disambiguation)'
     const text = `🌟 [this](<${uri}>) is a [test](<${uri}>)`
@@ -131,6 +178,12 @@ describe('facet syntax', () => {
     padding => {
       const uri = 'https://breezewiki.com/starwars/wiki/67_(disambiguation)'
       const input = `🌟 \\[${uri}](<${padding}${uri}${padding}>)`
+      const editor = new RichText({text: input})
+      editor.detectFacetsWithoutResolution()
+      const indices = getFacetSyntaxRemovalIndices(editor)
+      expect([...indices].map(index => input[index]).sort()).toEqual(
+        ['<', '>', '\\'].sort(),
+      )
       const rt = prepare(input)
 
       expect(rt.text).toBe(`🌟 [${uri}](${padding}${uri}${padding})`)

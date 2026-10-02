@@ -15,9 +15,11 @@ import {
   type TapperFacet,
   useTapper,
 } from '@bsky.app/tapper'
+import {RichText} from '@bsky/sdk/richtext'
 
 import {mergeRefs} from '#/lib/merge-refs'
 import {maskPastedLink} from '#/lib/strings/masked-link-paste'
+import {getFacetSyntaxRemovalIndices} from '#/lib/strings/rich-text-manip'
 import {
   atoms as a,
   type TextStyleProp,
@@ -49,6 +51,7 @@ import {
   maskedLinkFacet,
   normalizeComposerLink,
 } from './masked-links'
+import {SyntaxText} from './SyntaxText'
 
 type TextInputInstance = React.ComponentRef<typeof TextInput>
 type ViewInstance = React.ComponentRef<typeof View>
@@ -316,22 +319,27 @@ export function Composer({
     void sift.updatePosition()
   }
 
+  const syntaxRichText = new RichText({text: tapper.state.text})
+  syntaxRichText.detectFacetsWithoutResolution()
+  const removalIndices = getFacetSyntaxRemovalIndices(syntaxRichText)
+  const syntaxColor =
+    typeof textStyle.color === 'string' ? textStyle.color : t.atoms.text.color
   const textContent = (
     <Text style={[textStyle, web({whiteSpace: 'pre-wrap'})]}>
       {tapper.state.nodes.map((node, i) => {
         switch (node.type) {
           case 'text':
-            return <Span key={i}>{node.value}</Span>
+            return (
+              <SyntaxText
+                key={i}
+                text={node.value}
+                start={node.start}
+                removalIndices={removalIndices}
+                color={syntaxColor}
+              />
+            )
           case 'trigger':
           case 'facet': {
-            const angleStart =
-              node.facetType === 'maskedLink' && node.value.startsWith('<')
-                ? node.raw.length - node.value.length - 1
-                : node.facetType?.startsWith('angle')
-                  ? 0
-                  : -1
-            const angleEnd =
-              node.raw.length - (node.facetType === 'maskedLink' ? 2 : 1)
             return (
               <Span
                 key={i}
@@ -341,17 +349,12 @@ export function Composer({
                     color: t.atoms.text_link.color,
                   }
                 }>
-                {angleStart >= 0 ? (
-                  <>
-                    {node.raw.slice(0, angleStart)}
-                    <Span style={t.atoms.text}>{node.raw[angleStart]}</Span>
-                    {node.raw.slice(angleStart + 1, angleEnd)}
-                    <Span style={t.atoms.text}>{node.raw[angleEnd]}</Span>
-                    {node.raw.slice(angleEnd + 1)}
-                  </>
-                ) : (
-                  node.raw
-                )}
+                <SyntaxText
+                  text={node.raw}
+                  start={node.start}
+                  removalIndices={removalIndices}
+                  color={syntaxColor}
+                />
               </Span>
             )
           }
