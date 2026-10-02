@@ -10,7 +10,7 @@ import {
 } from '#/lib/constants'
 import {device} from '#/storage'
 
-export type AppViewPresetId = 'bluesky' | 'blacksky' | 'custom'
+export type AppViewPresetId = 'bluesky' | 'blacksky' | 'eurosky' | 'custom'
 
 export type AppViewPreset = {
   id: AppViewPresetId
@@ -49,6 +49,12 @@ export const APPVIEW_PRESETS: Record<
     title: 'Blacksky',
     url: 'https://api.blacksky.community',
     did: 'did:web:api.blacksky.community',
+  },
+  eurosky: {
+    id: 'eurosky',
+    title: 'Eurosky',
+    url: 'https://api.eurosky.network',
+    did: 'did:web:api.eurosky.network',
   },
 }
 
@@ -151,6 +157,13 @@ export function getActiveAppViewPreset(
   }
 
   if (
+    did === APPVIEW_PRESETS.eurosky.did ||
+    normalizedUrl === normalizeAppViewUrl(APPVIEW_PRESETS.eurosky.url)
+  ) {
+    return 'eurosky'
+  }
+
+  if (
     (!did || did === PUBLIC_APPVIEW_DID) &&
     (!normalizedUrl ||
       normalizedUrl === normalizeAppViewUrl(APPVIEW_PRESETS.bluesky.url))
@@ -174,6 +187,9 @@ export function getActiveAppViewTitle(
   }
   if (preset === 'blacksky') {
     return APPVIEW_PRESETS.blacksky.title
+  }
+  if (preset === 'eurosky') {
+    return APPVIEW_PRESETS.eurosky.title
   }
   if (url) {
     try {

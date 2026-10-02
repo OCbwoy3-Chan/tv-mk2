@@ -403,6 +403,12 @@ function AppServerDialogInner({
             url: APPVIEW_PRESETS.blacksky.url,
           }
         }
+        if (preset === 'eurosky') {
+          return {
+            did: APPVIEW_PRESETS.eurosky.did,
+            url: APPVIEW_PRESETS.eurosky.url,
+          }
+        }
         if (!customIsValid || !derivedDid) {
           return 'invalid'
         }
@@ -472,6 +478,12 @@ function AppServerDialogInner({
             value="blacksky"
             label={l`Blacksky`}>
             <SegmentedControl.ItemText>{l`Blacksky`}</SegmentedControl.ItemText>
+          </SegmentedControl.Item>
+          <SegmentedControl.Item
+            testID="appServerEuroskyBtn"
+            value="eurosky"
+            label={l`Eurosky`}>
+            <SegmentedControl.ItemText>{l`Eurosky`}</SegmentedControl.ItemText>
           </SegmentedControl.Item>
           <SegmentedControl.Item
             testID="appServerCustomBtn"
