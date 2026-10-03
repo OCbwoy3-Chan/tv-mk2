@@ -109,8 +109,9 @@ export function PrivatePostBtn({
                 size="small"
                 label={_(msg`Save post visibility`)}
                 onPress={() => {
-                  onChange(draft)
-                  control.close()
+                  control.close(() => {
+                    onChange(draft)
+                  })
                 }}>
                 <ButtonText>
                   <Trans>Save</Trans>

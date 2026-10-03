@@ -1,15 +1,11 @@
 import {type AtpAgent as AtpAgentType} from '@atproto/api'
 import {xrpc} from '@atproto/lex'
-import {
-  base64url,
-  exportJWK,
-  generateKeyPair,
-  type JWK,
-  type KeyLike,
-  SignJWT,
-} from 'jose'
-import {sha256} from 'js-sha256'
 
+import {
+  createSpaceDpopProof,
+  encodeBase64url,
+  generateDpopKey,
+} from '#/lib/api/private-posts-crypto'
 import {
   createPrivateRecord,
   getDelegationToken,
@@ -100,27 +96,6 @@ async function callPrivatePostsAppView({
   return body
 }
 
-async function createSpaceDpopProof(
-  method: string,
-  url: URL,
-  accessToken: string,
-  privateKey: KeyLike,
-  publicJwk: JWK,
-  includeAth = true,
-) {
-  const digest = new Uint8Array(sha256.arrayBuffer(accessToken))
-  const claims: Record<string, unknown> = {
-    htm: method,
-    htu: url.toString(),
-    iat: Math.floor(Date.now() / 1000),
-    jti: crypto.randomUUID(),
-  }
-  if (includeAth) claims.ath = base64url.encode(digest)
-  return new SignJWT(claims)
-    .setProtectedHeader({typ: 'dpop+jwt', alg: 'ES256', jwk: publicJwk})
-    .sign(privateKey)
-}
-
 export async function registerPrivatePostsAppView({
   agent,
   pdsUrl,
@@ -145,11 +120,7 @@ export async function registerPrivatePostsAppView({
       params: {space},
     },
   )
-  const {privateKey, publicKey} = await generateKeyPair('ES256', {
-    extractable: true,
-  })
-  const publicJwk = await exportJWK(publicKey)
-  const privateJwk = await exportJWK(privateKey)
+  const dpopKey = await generateDpopKey()
   const credentialUrl = new URL(
     '/xrpc/com.atproto.space.getSpaceCredential',
     pdsUrl,
@@ -159,14 +130,13 @@ export async function registerPrivatePostsAppView({
     headers: {
       'content-type': 'application/json',
       authorization: `Bearer ${delegation.body.token}`,
-      DPoP: await createSpaceDpopProof(
-        'POST',
-        credentialUrl,
-        delegation.body.token,
-        privateKey,
-        publicJwk,
-        false,
-      ),
+      DPoP: await createSpaceDpopProof({
+        method: 'POST',
+        url: credentialUrl,
+        accessToken: delegation.body.token,
+        key: dpopKey,
+        includeAth: false,
+      }),
     },
     body: JSON.stringify({space}),
   })
@@ -183,13 +153,12 @@ export async function registerPrivatePostsAppView({
     headers: {
       'content-type': 'application/json',
       authorization: `DPoP ${credential}`,
-      DPoP: await createSpaceDpopProof(
-        'POST',
-        notifyUrl,
-        credential,
-        privateKey,
-        publicJwk,
-      ),
+      DPoP: await createSpaceDpopProof({
+        method: 'POST',
+        url: notifyUrl,
+        accessToken: credential,
+        key: dpopKey,
+      }),
     },
     body: JSON.stringify({space, service: appViewDID}),
   })
@@ -214,7 +183,11 @@ export async function registerPrivatePostsAppView({
       'content-type': 'application/json',
       authorization: `Bearer ${appViewAuth}`,
     },
-    body: JSON.stringify({space, credential, dpopPrivateJwk: privateJwk}),
+    body: JSON.stringify({
+      space,
+      credential,
+      dpopPrivateJwk: dpopKey.privateJwk,
+    }),
   })
   if (!registrationResponse.ok) {
     throw new Error(
@@ -263,7 +236,7 @@ export async function forcePrivatePostsResync({
         space,
         repo: agent.assertDid,
         rev: latest.body.commit.rev,
-        hash: base64url.encode(latest.body.commit.hash),
+        hash: encodeBase64url(latest.body.commit.hash),
       }),
     },
   )

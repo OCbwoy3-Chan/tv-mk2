@@ -1537,6 +1537,7 @@ export const ComposePost = ({
           await apilib.post(queryClient, {
             ...postingClients,
             thread: wrapper,
+            replyTo: replyTo?.uri,
             onStateChange: setPublishingStage,
             omitViaField,
             tidSuffix,
@@ -2906,7 +2907,7 @@ function ComposerPills({
             })
           }}
         />
-        {!isReply && canSelectPrivatePost && (
+        {canSelectPrivatePost && (
           <PrivatePostBtn
             value={postVisibility}
             enabled
