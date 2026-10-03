@@ -4,9 +4,7 @@ import Animated, {
   LayoutAnimationConfig,
   LinearTransition,
 } from 'react-native-reanimated'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 
 import {
   type CommonNavigatorParams,
@@ -26,6 +24,10 @@ import {
 } from '#/state/preferences/hide-display-names'
 import {useKawaiiMode, useSetKawaiiMode} from '#/state/preferences/kawaii'
 import {
+  useNotoColorEmoji,
+  useSetNotoColorEmoji,
+} from '#/state/preferences/noto-color-emoji'
+import {
   useRepostCarouselEnabled,
   useSetRepostCarouselEnabled,
 } from '#/state/preferences/repost-carousel-enabled'
@@ -38,6 +40,7 @@ import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as Toggle from '#/components/forms/Toggle'
 import {At_Stroke2_Corner0_Rounded as AtIcon} from '#/components/icons/At'
 import {type Props as SVGIconProps} from '#/components/icons/common'
+import {EmojiSmile_Stroke2_Corner0_Rounded as EmojiIcon} from '#/components/icons/Emoji'
 import {Person_Stroke2_Corner0_Rounded as PersonIcon} from '#/components/icons/Person'
 import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
 import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
@@ -60,10 +63,12 @@ import { SettingsListItem as AppIconButton } from './AppIconSettings/SettingsLis
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AppearanceSettings'>
 
 export function AppearanceSettingsScreen({}: Props) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const t = useTheme()
   const {fonts} = useAlf()
   const {currentAccount} = useSession()
+  const notoColorEmoji = useNotoColorEmoji()
+  const setNotoColorEmoji = useSetNotoColorEmoji()
 
   const {activeTheme} = useThemePrefs()
   const {setActiveTheme} = useSetThemePrefs()
@@ -171,12 +176,10 @@ export function AppearanceSettingsScreen({}: Props) {
                       <Trans>Dark theme update available</Trans>
                     )
                   }
-                  subtitleText={_(
-                    msg`Preview the creator's latest colors before applying them.`,
-                  )}
+                  subtitleText={l`Preview the creator's latest colors before applying them.`}
                 />
                 <Button
-                  label={_(msg`Keep current theme colors`)}
+                  label={l`Keep current theme colors`}
                   size="small"
                   color="secondary"
                   onPress={() => {
@@ -202,7 +205,7 @@ export function AppearanceSettingsScreen({}: Props) {
                   </ButtonText>
                 </Button>
                 <Button
-                  label={_(msg`Preview theme update`)}
+                  label={l`Preview theme update`}
                   size="small"
                   color="primary"
                   onPress={() =>
@@ -222,24 +225,22 @@ export function AppearanceSettingsScreen({}: Props) {
               <SettingsList.Divider />
 
               <AppearanceToggleButtonGroup
-                title={_(msg`Font`)}
-                description={_(
-                  msg`For the best experience, we recommend using the theme font.`,
-                )}
+                title={l`Font`}
+                description={l`For the best experience, we recommend using the theme font.`}
                 icon={Aa}
                 items={[
                   {
-                    label: _(msg`System`),
+                    label: l`System`,
                     name: 'system',
                   },
                   {
-                    label: _(msg`Theme`),
+                    label: l`Theme`,
                     name: 'theme',
                   },
                   ...(IS_ANDROID
                     ? [
                         {
-                          label: _(msg`Google Sans`),
+                          label: l`Google Sans`,
                           name: 'material' as 'system' | 'theme' | 'material',
                         },
                       ]
@@ -250,19 +251,19 @@ export function AppearanceSettingsScreen({}: Props) {
               />
 
               <AppearanceToggleButtonGroup
-                title={_(msg`Font size`)}
+                title={l`Font size`}
                 icon={TextSize}
                 items={[
                   {
-                    label: _(msg`Smaller`),
+                    label: l`Smaller`,
                     name: '-1',
                   },
                   {
-                    label: _(msg`Default`),
+                    label: l`Default`,
                     name: '0',
                   },
                   {
-                    label: _(msg`Larger`),
+                    label: l`Larger`,
                     name: '1',
                   },
                 ]}
@@ -280,8 +281,23 @@ export function AppearanceSettingsScreen({}: Props) {
               )}
 
               <Toggle.Item
+                name="noto_color_emoji"
+                testID="notoColorEmojiToggle"
+                label={l`Use Noto Color Emoji 😀 🥰`}
+                value={notoColorEmoji}
+                onChange={setNotoColorEmoji}>
+                <SettingsList.Item>
+                  <SettingsList.ItemIcon icon={EmojiIcon} />
+                  <SettingsList.ItemText emoji>
+                    {l`Use Noto Color Emoji 😀 🥰`}
+                  </SettingsList.ItemText>
+                  <Toggle.Platform />
+                </SettingsList.Item>
+              </Toggle.Item>
+
+              <Toggle.Item
                 name="hide_display_names"
-                label={_(msg`Hide display names`)}
+                label={l`Hide display names`}
                 value={hideDisplayNames}
                 onChange={value => setHideDisplayNames(value)}>
                 <SettingsList.Item>
@@ -295,7 +311,7 @@ export function AppearanceSettingsScreen({}: Props) {
 
               <Toggle.Item
                 name="repost_carousel"
-                label={_(msg`Combine reposts into a horizontal carousel`)}
+                label={l`Combine reposts into a horizontal carousel`}
                 value={repostCarouselEnabled}
                 onChange={value => setRepostCarouselEnabled(value)}>
                 <SettingsList.Item>
@@ -311,7 +327,7 @@ export function AppearanceSettingsScreen({}: Props) {
 
               <Toggle.Item
                 name="kawaii_mode"
-                label={_(msg`Enable kawaii logo`)}
+                label={l`Enable kawaii logo`}
                 value={kawaiiMode}
                 onChange={value => setKawaiiMode(value)}>
                 <SettingsList.Item>
@@ -324,7 +340,7 @@ export function AppearanceSettingsScreen({}: Props) {
               </Toggle.Item>
               <Toggle.Item
                 name="enable_square_avatars"
-                label={_(msg`Enable square avatars`)}
+                label={l`Enable square avatars`}
                 value={enableSquareAvatars}
                 onChange={value => setEnableSquareAvatars(value)}>
                 <SettingsList.Item>
@@ -337,7 +353,7 @@ export function AppearanceSettingsScreen({}: Props) {
               </Toggle.Item>
               <Toggle.Item
                 name="enable_square_buttons"
-                label={_(msg`Enable square buttons`)}
+                label={l`Enable square buttons`}
                 value={enableSquareButtons}
                 onChange={value => setEnableSquareButtons(value)}>
                 <SettingsList.Item>
@@ -369,7 +385,7 @@ export function AppearanceSettingsScreen({}: Props) {
               <Trans>Testing update · {preview.seconds}s</Trans>
             </Text>
             <Button
-              label={_(msg`Revert theme update`)}
+              label={l`Revert theme update`}
               size="small"
               color="secondary"
               onPress={() => {
@@ -381,7 +397,7 @@ export function AppearanceSettingsScreen({}: Props) {
               </ButtonText>
             </Button>
             <Button
-              label={_(msg`Apply theme update`)}
+              label={l`Apply theme update`}
               size="small"
               color="primary"
               onPress={() => {

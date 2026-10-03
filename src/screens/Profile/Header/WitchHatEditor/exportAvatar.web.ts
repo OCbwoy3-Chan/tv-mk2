@@ -1,28 +1,29 @@
 import {type RefObject} from 'react'
 import {type View} from 'react-native'
+import {type Client} from '@atproto/lex'
+import {isValidDid} from '@atproto/syntax'
 
-import {modifyImageFormat} from '#/lib/media/util'
 import {type ImageMeta} from '#/state/gallery'
 import {LOGO_PATH, LOGO_VIEW_BOX} from '#/view/icons/Logo'
 import {
   AVATAR_SIZE,
   type HatPlacement,
 } from '#/screens/Profile/Header/WitchHatEditor/utils'
+import getBlob from '#/lexicons/com/atproto/sync/getBlob'
 
 export async function exportAvatar({
   avatar,
   placement,
   color,
+  pdsClient,
 }: {
   previewRef: RefObject<React.ElementRef<typeof View> | null>
   avatar: string
   placement: HatPlacement
   color: string
+  pdsClient: Client
 }): Promise<ImageMeta> {
-  /* Decode remote avatars locally so the canvas remains origin-clean. */
-  const response = await fetch(modifyImageFormat(avatar, 'original'))
-  if (!response.ok) throw new Error(`Image download failed: ${response.status}`)
-  const url = URL.createObjectURL(await response.blob())
+  const url = URL.createObjectURL(await downloadAvatar(avatar, pdsClient))
   try {
     const image = await loadImage(url)
     const hat = await loadImage(
@@ -79,6 +80,29 @@ export async function exportAvatar({
   } finally {
     URL.revokeObjectURL(url)
   }
+}
+
+async function downloadAvatar(
+  avatar: string,
+  pdsClient: Client,
+): Promise<Blob> {
+  const url = new URL(avatar)
+  const match = url.pathname.match(
+    /^\/img\/[^/]+\/plain\/(did:[^/]+)\/([^/@]+)(?:@[^/]+)?$/,
+  )
+  if (match) {
+    const did = decodeURIComponent(match[1])
+    if (!isValidDid(did)) throw new Error('Invalid avatar DID')
+    /* The CDN is not CORS-enabled. The account client targets its own PDS. */
+    const bytes = await pdsClient.call(getBlob, {
+      did,
+      cid: match[2],
+    })
+    return new Blob([bytes])
+  }
+  const response = await fetch(avatar)
+  if (!response.ok) throw new Error(`Image download failed: ${response.status}`)
+  return response.blob()
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {

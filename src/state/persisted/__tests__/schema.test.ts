@@ -48,6 +48,17 @@ describe('persisted schema helpers', () => {
     expect(tryParse(raw!)?.confirmFollow).toBe(true)
   })
 
+  it('defaults Noto Color Emoji off and preserves an enabled preference', () => {
+    const existing = tryParse(JSON.stringify(partialState))
+    expect(normalizeData(existing!).useNotoColorEmoji).toBe(false)
+
+    const enabled = tryParse(
+      JSON.stringify({...partialState, useNotoColorEmoji: true}),
+    )
+    const raw = tryStringify(normalizeData(enabled!))
+    expect(tryParse(raw!)?.useNotoColorEmoji).toBe(true)
+  })
+
   it('preserves hydrated defaults on later writes', () => {
     const hydrated = tryParse(JSON.stringify(partialState))
     const raw = tryStringify(hydrated!)

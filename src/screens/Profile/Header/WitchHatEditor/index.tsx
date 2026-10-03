@@ -5,6 +5,7 @@ import {Trans, useLingui} from '@lingui/react/macro'
 
 import {logger} from '#/logger'
 import {type ImageMeta} from '#/state/gallery'
+import {usePdsClient} from '#/state/session'
 import {LOGO_PATH, LOGO_VIEW_BOX} from '#/view/icons/Logo'
 import {DragArea} from '#/screens/Profile/Header/WitchHatEditor/DragArea'
 import {EditorSlider} from '#/screens/Profile/Header/WitchHatEditor/EditorSlider'
@@ -67,6 +68,7 @@ function EditorInner({
 }) {
   const {t: l} = useLingui()
   const t = useTheme()
+  const pdsClient = usePdsClient()
   const previewRef = useRef<React.ElementRef<typeof View>>(null)
   const [previewSize, setPreviewSize] = useState(0)
   const [placement, setPlacement] = useState(INITIAL_HAT_PLACEMENT)
@@ -89,7 +91,13 @@ function EditorInner({
     setSaving(true)
     setError('')
     try {
-      const image = await exportAvatar({previewRef, avatar, placement, color})
+      const image = await exportAvatar({
+        previewRef,
+        avatar,
+        placement,
+        color,
+        pdsClient,
+      })
       onSave(image)
     } catch (e) {
       logger.error('Failed to export witch hat avatar', {safeMessage: e})
@@ -139,9 +147,7 @@ function EditorInner({
         </Dialog.Header>
       }>
       <Text style={a.text_center}>
-        <Trans>
-          Drag the hat and adjust its size &amp; rotation!
-        </Trans>
+        <Trans>Drag the hat and adjust its size &amp; rotation!</Trans>
       </Text>
       <View style={[a.relative, a.w_full, a.self_center, {maxWidth: 320}]}>
         <View

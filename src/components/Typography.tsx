@@ -1,5 +1,6 @@
 import {logger} from '#/logger'
 import {UITextView} from '#/platform/ui-text-view'
+import {useNotoColorEmojiFont} from '#/state/preferences/noto-color-emoji'
 import {
   atoms as a,
   native,
@@ -35,6 +36,7 @@ export function Text({
   ...rest
 }: TextProps) {
   const {fonts, flags} = useAlf()
+  const useNotoColorEmoji = useNotoColorEmojiFont()
   const t = useTheme()
   const s = normalizeTextStyles(
     [
@@ -78,7 +80,12 @@ export function Text({
 
   return (
     <UITextView {...shared}>
-      {renderChildrenWithEmoji(children, shared, emoji ?? false)}
+      {renderChildrenWithEmoji(
+        children,
+        shared,
+        emoji ?? false,
+        useNotoColorEmoji,
+      )}
     </UITextView>
   )
 }

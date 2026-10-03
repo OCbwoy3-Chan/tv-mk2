@@ -87,6 +87,7 @@ export const SYNCED_PREFS_KEYS = [
   'compactPosts',
   'enableSquareAvatars',
   'enableSquareButtons',
+  'useNotoColorEmoji',
   'useCompactAccountSwitcher',
   'autoCompactAccountSwitcher',
   'disableVerifyEmailReminder',
