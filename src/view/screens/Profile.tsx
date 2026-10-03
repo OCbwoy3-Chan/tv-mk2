@@ -214,8 +214,7 @@ function ProfileScreenLoaded({
 
   const description = profile.description ?? ''
   const hasDescription = description !== ''
-  const [descriptionRT, isResolvingDescriptionRT] = useRichText(description)
-  const showPlaceholder = isPlaceholderProfile || isResolvingDescriptionRT
+  const [descriptionRT] = useRichText(description)
   const moderation = useMemo(
     () => moderateProfile(profile, moderationOpts),
     [profile, moderationOpts],
@@ -390,7 +389,7 @@ function ProfileScreenLoaded({
           descriptionRT={hasDescription ? descriptionRT : null}
           moderationOpts={moderationOpts}
           hideBackButton={hideBackButton}
-          isPlaceholderProfile={showPlaceholder}
+          isPlaceholderProfile={isPlaceholderProfile}
           setMinimumHeight={setMinimumHeight}
         />
       </ScrollForwarderView>
@@ -405,7 +404,8 @@ function ProfileScreenLoaded({
       modui={moderation.ui('profileView')}>
       <PagerWithHeader
         testID="profilePager"
-        isHeaderReady={!showPlaceholder}
+        /* Bio mentions resolve in the background without delaying posts or tabs. */
+        isHeaderReady={!isPlaceholderProfile}
         items={sectionTitles}
         onPageSelected={onPageSelected}
         onCurrentPageSelected={onCurrentPageSelected}
