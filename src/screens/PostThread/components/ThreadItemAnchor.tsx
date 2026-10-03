@@ -560,6 +560,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                 />
                 {htmlSegments?.length || richText?.text ? (
                   <RichText
+                    enableEmojiDetails
                     enableTags
                     selectable
                     value={richText}
