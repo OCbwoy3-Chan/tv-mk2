@@ -44,6 +44,11 @@ import {
   type LinkFacetMatch,
   suggestLinkCardUri,
 } from '#/view/com/composer/text-input/text-input-util'
+import {
+  type BluemojiItem,
+  type BluemojiRef,
+  getBluemojiInsertionName,
+} from '#/features/bluemoji/util'
 import {type Gif} from '#/features/gifPicker/types'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -100,6 +105,7 @@ export type EmbedDraft = {
 }
 
 export type PostDraft = {
+  bluemoji?: Record<string, BluemojiRef>
   id: string
   richtext: RichText
   labels: SelfLabel[]
@@ -118,6 +124,7 @@ export type PostDraft = {
 }
 
 export type PostAction =
+  | {type: 'register_bluemoji'; item: BluemojiItem}
   | {type: 'update_richtext'; richtext: RichText}
   | {type: 'update_labels'; labels: SelfLabel[]}
   | {
@@ -805,6 +812,19 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
         embed: {
           ...state.embed,
           media: nextMedia,
+        },
+      }
+    }
+    case 'register_bluemoji': {
+      return {
+        ...state,
+        bluemoji: {
+          ...state.bluemoji,
+          [getBluemojiInsertionName(action.item, state.bluemoji)]: {
+            did: action.item.did,
+            name: action.item.record.name,
+            record: {uri: action.item.uri, cid: action.item.cid},
+          },
         },
       }
     }
