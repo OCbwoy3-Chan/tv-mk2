@@ -12,8 +12,6 @@ import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {STALE} from '#/state/queries'
 import {DEFAULT_LOGGED_OUT_PREFERENCES} from '#/state/queries/preferences'
 import {useAppviewClient} from '#/state/session'
-import {useAgent, useSession} from '#/state/session'
-import {createPublicAgent} from '#/state/session/agent'
 import {
   type AutocompleteApi,
   type AutocompleteItem,
@@ -40,18 +38,10 @@ export function useAutocomplete({
   showSearchFallback?: boolean
 }): AutocompleteApi {
   const client = useAppviewClient()
-  const {hasSession} = useSession()
-  const sessionAgent = useAgent()
   const [appViewDid] = useCustomAppViewDid()
   const [appViewUrl] = useCustomAppViewUrl()
   const moderationOpts = useModerationOpts()
   const emojiSearch = useEmojiSearch()
-
-  /*
-   * While logged out, the session agent is created once at startup and does not
-   * pick up App server changes from the login dialog. Rebuild a guest agent
-   * from persisted AppView settings whenever that selection changes.
-   */
 
   const query = useQuery({
     staleTime: STALE.MINUTES.ONE,
@@ -62,6 +52,7 @@ export function useAutocomplete({
         query: q,
         appViewDid,
         appViewUrl,
+        limit,
       },
     ],
     async queryFn() {
@@ -114,7 +105,14 @@ export function useAutocomplete({
       },
       [q, moderationOpts],
     ),
-    placeholderData: keepPreviousData,
+    placeholderData: (previousData, previousQuery) => {
+      const previousSelection = previousQuery?.queryKey[1] as
+        {appViewDid?: string; appViewUrl?: string} | undefined
+      return previousSelection?.appViewDid === appViewDid &&
+        previousSelection?.appViewUrl === appViewUrl
+        ? keepPreviousData(previousData)
+        : undefined
+    },
   })
 
   const items = useMemo(() => {

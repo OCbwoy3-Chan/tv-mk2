@@ -61,6 +61,7 @@ export type {SessionAccount} from '#/state/session/types'
 import {type AtpAgent} from '@atproto/api'
 
 import {clearPersistedQueryStorage} from '#/lib/persisted-query-storage'
+import {useCustomAppViewUrl} from '#/state/preferences/custom-appview-did'
 import {
   type SessionAccount,
   type SessionApiContext,
@@ -1002,6 +1003,7 @@ export function useSessionApi() {
  * a second credential manager.
  */
 export function useAgent(): AtpAgent {
+  const [appViewUrl] = useCustomAppViewUrl()
   const bundle = useContext(BundleContext)
   if (!bundle) {
     throw Error('useAgent() must be below <SessionProvider>.')
@@ -1018,7 +1020,7 @@ export function useAgent(): AtpAgent {
 
     const agent = new LegacyAgent(null, bundle.session)
     return agent as unknown as AtpAgent
-  }, [bundle])
+  }, [bundle, appViewUrl])
 }
 
 export function useRequireAuth() {
@@ -1040,15 +1042,18 @@ export function useRequireAuth() {
 }
 
 /**
- * Client for appview reads. Logged out, this is the bundle's public client,
- * which dispatches unauthenticated against the public appview.
+ * Client for appview reads. The logged-out client follows the selected app
+ * server even when it changes before login.
  */
 export function useAppviewClient(): Client {
+  const [appViewUrl] = useCustomAppViewUrl()
   const bundle = useContext(BundleContext)
   if (!bundle) {
     throw Error('useAppviewClient() must be below <SessionProvider>.')
   }
-  return bundle.appviewClient
+  return bundle.session || 'oauthAgent' in bundle
+    ? bundle.appviewClient
+    : getPublicAppviewClient(appViewUrl)
 }
 
 /**
@@ -1082,7 +1087,9 @@ export function useChatClient(): Client {
  */
 export function useMaybePdsClient(): Client | null {
   const bundle = useContext(BundleContext)
-  return bundle?.session ? bundle.pdsClient : null
+  return bundle && (bundle.session || 'oauthAgent' in bundle)
+    ? bundle.pdsClient
+    : null
 }
 
 /**
@@ -1090,12 +1097,15 @@ export function useMaybePdsClient(): Client | null {
  */
 export function useMaybeChatClient(): Client | null {
   const bundle = useContext(BundleContext)
-  return bundle?.session ? bundle.chatClient : null
+  return bundle && (bundle.session || 'oauthAgent' in bundle)
+    ? bundle.chatClient
+    : null
 }
 
 /**
  * The unauthenticated client for public appview reads.
  */
 export function usePublicAppviewClient(): Client {
-  return getPublicAppviewClient()
+  const [appViewUrl] = useCustomAppViewUrl()
+  return getPublicAppviewClient(appViewUrl)
 }

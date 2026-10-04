@@ -121,3 +121,45 @@ test('a previous bio lookup cannot replace the current bio', async () => {
       ?.did,
   ).toBe('did:plc:bob')
 })
+
+test('changing app servers clears resolved mentions and ignores the previous lookup', async () => {
+  const first = deferred<{did: string}>()
+  call.mockReturnValue(first.promise)
+  const {result, rerender} = renderHook(() => useRichText('@alice.test'))
+
+  const next = deferred<{did: string}>()
+  const nextCall = jest.fn().mockReturnValue(next.promise)
+  jest.mocked(useAppviewClient).mockReturnValue({call: nextCall} as never)
+  rerender({})
+
+  await act(async () => {
+    first.resolve({did: 'did:plc:old'})
+    await first.promise
+  })
+  expect(result.current[1]).toBe(true)
+
+  await act(async () => {
+    next.resolve({did: 'did:plc:new'})
+    await next.promise
+  })
+  expect(result.current[1]).toBe(false)
+  expect(
+    Array.from(result.current[0].segments()).find(segment => segment.mention)
+      ?.mention?.did,
+  ).toBe('did:plc:new')
+
+  const third = deferred<{did: string}>()
+  jest.mocked(useAppviewClient).mockReturnValue({
+    call: jest.fn().mockReturnValue(third.promise),
+  } as never)
+  rerender({})
+  expect(result.current[1]).toBe(true)
+  expect(
+    Array.from(result.current[0].segments()).find(segment => segment.mention)
+      ?.mention?.did,
+  ).toBe('alice.test')
+  await act(async () => {
+    third.resolve({did: 'did:plc:third'})
+    await third.promise
+  })
+})

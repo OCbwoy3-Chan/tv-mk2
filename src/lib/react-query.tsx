@@ -14,6 +14,7 @@ import {
 
 import {createPersistedQueryStorage} from '#/lib/persisted-query-storage'
 import {listenNetworkConfirmed, listenNetworkLost} from '#/state/events'
+import {readCustomAppViewUrl} from '#/state/preferences/custom-appview-did'
 import {isQueryPersisted} from '#/state/queries/util'
 import * as env from '#/env'
 import {IS_NATIVE, IS_WEB} from '#/env'
@@ -31,10 +32,13 @@ async function checkIsOnline(): Promise<boolean> {
     setTimeout(() => {
       controller.abort()
     }, 15e3)
-    const res = await fetch(`${PUBLIC_BSKY_SERVICE}/xrpc/_health`, {
-      cache: 'no-store',
-      signal: controller.signal,
-    })
+    const res = await fetch(
+      new URL('/xrpc/_health', readCustomAppViewUrl() || PUBLIC_BSKY_SERVICE),
+      {
+        cache: 'no-store',
+        signal: controller.signal,
+      },
+    )
     const json = await res.json()
     if (json.version) {
       return true

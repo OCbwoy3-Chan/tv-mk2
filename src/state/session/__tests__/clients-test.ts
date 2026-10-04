@@ -517,3 +517,31 @@ it('sends password reset requests directly to the account service without OAuth 
     spy.mockRestore()
   }
 })
+
+it.each(['did:web:api.blacksky.community', 'did:web:api.eurosky.network'])(
+  'routes mention lookup and autocomplete through %s',
+  async did => {
+    const previous = device.get(['customAppViewDid'])
+    try {
+      device.set(['customAppViewDid'], did)
+      const fetchMock = makeMockFetch({
+        'com.atproto.identity.resolveHandle': () => json({did: DID}),
+        'app.bsky.actor.searchActorsTypeahead': () =>
+          json({actors: [PROFILE_BODY]}),
+      })
+      const client = buildAppviewClient(makeSession(fetchMock))
+      await client.call(com.atproto.identity.resolveHandle, {handle: HANDLE})
+      await client.call(app.bsky.actor.searchActorsTypeahead, {q: HANDLE})
+      for (const nsid of [
+        'com.atproto.identity.resolveHandle',
+        'app.bsky.actor.searchActorsTypeahead',
+      ]) {
+        expect(headersFor(fetchMock, nsid).get('atproto-proxy')).toBe(
+          `${did}#bsky_appview`,
+        )
+      }
+    } finally {
+      device.set(['customAppViewDid'], previous)
+    }
+  },
+)

@@ -132,12 +132,11 @@ export function getUnauthenticatedThrowingClient(): Client {
 const publicLexClients = new Map<string, Client>()
 
 /**
- * The unauthenticated {@link Client} for public reads, pointed at the public
- * appview.
+ * The unauthenticated {@link Client} for public reads on the selected appview.
  *
- * A single module-level instance: there is no session to scope it to, so it
- * lives for the lifetime of the process, and its identity is therefore stable
- * enough for a React Query key. Requests go through {@link networkAwareFetch} so
+ * Cached per service URL for stable identity. Hooks pass their subscribed URL
+ * explicitly so React Compiler tracks server changes; non-React callers read
+ * the persisted selection by default. Requests go through {@link networkAwareFetch} so
  * public reads feed the app's reachability signal like authenticated ones do.
  *
  * Like the session appview client, it carries the class-wide
@@ -147,8 +146,10 @@ const publicLexClients = new Map<string, Client>()
  * this client's first request, and `createPublicSessionBundle` runs it while
  * building the bundle.
  */
-export function getPublicAppviewClient(): Client {
-  const service = readCustomAppViewUrl() || PUBLIC_BSKY_SERVICE
+export function getPublicAppviewClient(
+  appViewUrl = readCustomAppViewUrl(),
+): Client {
+  const service = appViewUrl || PUBLIC_BSKY_SERVICE
   let client = publicLexClients.get(service)
   if (!client) {
     client = createLexClient({service, fetch: networkAwareFetch})

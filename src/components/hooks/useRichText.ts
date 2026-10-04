@@ -13,7 +13,9 @@ export function useRichText(text: string): [RichTextAPI, boolean] {
    * fallback keeps mentions working on logged-out surfaces.
    */
   const client = useAppviewClient()
-  if (text !== prevText) {
+  const [prevClient, setPrevClient] = useState(client)
+  if (text !== prevText || client !== prevClient) {
+    setPrevClient(client)
     setPrevText(text)
     setRawRT(createRawRichText(text))
     setResolvedRT(null)
