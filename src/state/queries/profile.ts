@@ -16,6 +16,7 @@ import {
   deleteFollow,
   follow,
   muteActor,
+  upsertProfile,
   unmuteActor,
 } from '@bsky/sdk'
 import {
