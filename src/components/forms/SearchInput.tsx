@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import {useCallback, useEffect, useRef} from 'react'
 import {type TextInput, View} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
@@ -33,7 +33,7 @@ export function SearchInput({
 }: Props) {
   const t = useTheme()
   const {t: l} = useLingui()
-  const showClear = value && value.length > 0
+  const showClear = Boolean(value && value.length > 0)
   const internalRef = useRef<React.ComponentRef<typeof TextInput>>(null)
 
   useEffect(() => {
@@ -43,6 +43,13 @@ export function SearchInput({
     })
   }, [hotkey])
 
+  /* Sift stores its input in state, so ref reattachments can trigger a loop. */
+  const inputRef = useCallback(
+    (node: React.ComponentRef<typeof TextInput> | null) =>
+      mergeRefs([internalRef, ref])(node),
+    [internalRef, ref],
+  )
+
   const enableSquareButtons = useEnableSquareButtons()
 
   return (
@@ -50,13 +57,7 @@ export function SearchInput({
       <TextField.Root>
         <TextField.Icon icon={MagnifyingGlassIcon} />
         <TextField.Input
-          /*
-           * Deferred into the callback: React Compiler only special-cases the
-           * `ref` prop, so a merged ref built during render and handed to
-           * `inputRef` reads as accessing a ref. `mergeRefs` already returns a
-           * fresh function per render, so this adds no identity churn.
-           */
-          inputRef={node => mergeRefs([internalRef, ref])(node)}
+          inputRef={inputRef}
           label={label || l`Search`}
           value={value}
           placeholder={l`Search`}

@@ -286,6 +286,14 @@ export function createInput(Component: typeof TextInput) {
       [rest.multiline],
     )
 
+    const rootInputRef = ctx.inputRef
+    /* Keep stateful consumer refs attached while focus or value changes. */
+    const inputRefs = useCallback(
+      (node: React.ComponentRef<typeof TextInput> | null) =>
+        mergeRefs([rootInputRef, inputRef, attachTabHandler])(node),
+      [rootInputRef, inputRef, attachTabHandler],
+    )
+
     if (!withinRoot) {
       return (
         <Root isInvalid={isInvalid}>
@@ -301,8 +309,6 @@ export function createInput(Component: typeof TextInput) {
       )
     }
 
-    const refs = mergeRefs([ctx.inputRef, inputRef!].filter(Boolean))
-    const inputRefs = mergeRefs([refs, attachTabHandler])
     const multilineWebProps =
       IS_WEB && rest.multiline ? {'data-field-sizing-content': ''} : {}
 
