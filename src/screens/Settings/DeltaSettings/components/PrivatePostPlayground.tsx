@@ -25,7 +25,7 @@ export function PrivatePostPlayground() {
             check inspect element console for result
         </Admonition>
         <Text>
-            privatevessel did: {appviewDid}<br/>
+            privatevessel did: {appviewDid}{"\n"}
             privatevessel url: {appviewUrl}
         </Text>
         <Button onPress={async()=>{
