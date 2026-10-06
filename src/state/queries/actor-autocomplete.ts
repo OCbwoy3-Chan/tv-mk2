@@ -4,6 +4,10 @@ import {keepPreviousData, useQuery, useQueryClient} from '@tanstack/react-query'
 
 import {isJustAMute, moduiContainsHideableOffense} from '#/lib/moderation'
 import {logger} from '#/logger'
+import {
+  useCustomAppViewDid,
+  useCustomAppViewUrl,
+} from '#/state/preferences/custom-appview-did'
 import {STALE} from '#/state/queries'
 import {useAppviewClient} from '#/state/session'
 import {app} from '#/lexicons'
@@ -25,6 +29,8 @@ export function useActorAutocompleteQuery(
 ) {
   const moderationOpts = useModerationOpts()
   const client = useAppviewClient()
+  const [appViewDid] = useCustomAppViewDid()
+  const [appViewUrl] = useCustomAppViewUrl()
 
   prefix = prefix.toLowerCase().trim()
   if (prefix.endsWith('.')) {
@@ -34,7 +40,7 @@ export function useActorAutocompleteQuery(
 
   return useQuery<app.bsky.actor.defs.ProfileViewBasic[]>({
     staleTime: STALE.MINUTES.ONE,
-    queryKey: RQKEY(prefix || ''),
+    queryKey: [...RQKEY(prefix), {appViewDid, appViewUrl, limit: limit || 8}],
     async queryFn() {
       const data = prefix
         ? await client.call(app.bsky.actor.searchActorsTypeahead, {
@@ -54,7 +60,15 @@ export function useActorAutocompleteQuery(
       },
       [prefix, moderationOpts],
     ),
-    placeholderData: maintainData ? keepPreviousData : undefined,
+    placeholderData: (previousData, previousQuery) => {
+      const previousSelection = previousQuery?.queryKey[2] as
+        {appViewDid?: string; appViewUrl?: string} | undefined
+      return maintainData &&
+        previousSelection?.appViewDid === appViewDid &&
+        previousSelection?.appViewUrl === appViewUrl
+        ? keepPreviousData(previousData)
+        : undefined
+    },
   })
 }
 
@@ -63,6 +77,8 @@ export function useActorAutocompleteFn() {
   const queryClient = useQueryClient()
   const moderationOpts = useModerationOpts()
   const client = useAppviewClient()
+  const [appViewDid] = useCustomAppViewDid()
+  const [appViewUrl] = useCustomAppViewUrl()
 
   return useCallback(
     async ({query: rawQuery, limit = 8}: {query: string; limit?: number}) => {
@@ -72,12 +88,17 @@ export function useActorAutocompleteFn() {
         try {
           res = await queryClient.fetchQuery({
             staleTime: STALE.MINUTES.ONE,
-            queryKey: RQKEY(query || ''),
-            queryFn: () =>
-              client.call(app.bsky.actor.searchActorsTypeahead, {
-                q: query,
-                limit,
-              }),
+            queryKey: [...RQKEY(query), {appViewDid, appViewUrl, limit}],
+            queryFn: async () => {
+              const data = await client.call(
+                app.bsky.actor.searchActorsTypeahead,
+                {
+                  q: query,
+                  limit,
+                },
+              )
+              return data.actors
+            },
           })
         } catch (e) {
           logger.error('useActorSearch: searchActorsTypeahead failed', {
@@ -88,11 +109,11 @@ export function useActorAutocompleteFn() {
 
       return computeSuggestions({
         q: query,
-        searched: res?.actors,
+        searched: res,
         moderationOpts: moderationOpts || DEFAULT_MOD_OPTS,
       })
     },
-    [queryClient, moderationOpts, client],
+    [queryClient, moderationOpts, client, appViewDid, appViewUrl],
   )
 }
 

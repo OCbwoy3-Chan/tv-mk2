@@ -5,7 +5,7 @@ import {useAppviewClient} from '#/state/session'
 
 export function useRichText(text: string): [RichTextAPI, boolean] {
   const [prevText, setPrevText] = useState(text)
-  const [rawRT, setRawRT] = useState(() => new RichTextAPI({text}))
+  const [rawRT, setRawRT] = useState(() => createRawRichText(text))
   const [resolvedRT, setResolvedRT] = useState<RichTextAPI | null>(null)
   /*
    * Facet/mention resolution is an appview job - it resolves handles via
@@ -13,18 +13,25 @@ export function useRichText(text: string): [RichTextAPI, boolean] {
    * fallback keeps mentions working on logged-out surfaces.
    */
   const client = useAppviewClient()
-  if (text !== prevText) {
+  const [prevClient, setPrevClient] = useState(client)
+  if (text !== prevText || client !== prevClient) {
+    setPrevClient(client)
     setPrevText(text)
-    setRawRT(new RichTextAPI({text}))
+    setRawRT(createRawRichText(text))
     setResolvedRT(null)
     // This will queue an immediate re-render
   }
   useEffect(() => {
     let ignore = false
     async function resolveRTFacets() {
-      // new each time
-      const resolvedRT = new RichTextAPI({text})
-      await resolvedRT.detectFacets(client)
+      /* Keep the visible facets immutable while mentions resolve. */
+      const resolvedRT = createRawRichText(text)
+      try {
+        await resolvedRT.detectFacets(client)
+      } catch {
+        /* A failed lookup must not leave consumers waiting indefinitely. */
+        resolvedRT.detectFacetsWithoutResolution()
+      }
       if (!ignore) {
         setResolvedRT(resolvedRT)
       }
@@ -34,6 +41,15 @@ export function useRichText(text: string): [RichTextAPI, boolean] {
       ignore = true
     }
   }, [text, client])
-  const isResolving = resolvedRT === null
+  const isResolving =
+    resolvedRT === null &&
+    Array.from(rawRT.segments()).some(segment => !!segment.mention)
   return [resolvedRT ?? rawRT, isResolving]
+}
+
+/** Detect links and tags immediately so mention lookups do not change layout. */
+function createRawRichText(text: string) {
+  const rt = new RichTextAPI({text})
+  rt.detectFacetsWithoutResolution()
+  return rt
 }

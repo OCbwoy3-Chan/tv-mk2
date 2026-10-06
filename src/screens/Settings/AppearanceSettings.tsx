@@ -57,6 +57,7 @@ import {
   type ThemeView,
 } from '#/features/themes/types'
 import {ThemeQuickSelector} from './AppearanceSettings/ThemeQuickSelector'
+import {NotoColorEmojiToggle} from './components/NotoColorEmojiToggle'
 import * as SettingsList from './components/SettingsList'
 import { SettingsListItem as AppIconButton } from './AppIconSettings/SettingsListItem'
 
@@ -273,27 +274,7 @@ export function AppearanceSettingsScreen({}: Props) {
 
               <SettingsList.Divider />
 
-              {IS_NATIVE && (
-                <>
-                  <AppIconButton/>
-                  <SettingsList.Divider />
-                </>
-              )}
-
-              <Toggle.Item
-                name="noto_color_emoji"
-                testID="notoColorEmojiToggle"
-                label={l`Use Noto Color Emoji 😀 🥰`}
-                value={notoColorEmoji}
-                onChange={setNotoColorEmoji}>
-                <SettingsList.Item>
-                  <SettingsList.ItemIcon icon={EmojiIcon} />
-                  <SettingsList.ItemText emoji>
-                    {l`Use Noto Color Emoji 😀 🥰`}
-                  </SettingsList.ItemText>
-                  <Toggle.Platform />
-                </SettingsList.Item>
-              </Toggle.Item>
+              <NotoColorEmojiToggle />
 
               <Toggle.Item
                 name="hide_display_names"

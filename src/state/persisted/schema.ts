@@ -252,6 +252,7 @@ const schema = z.object({
 
   // deer
   goLinksEnabled: z.boolean().optional(),
+  pasteToLinkEnabled: z.boolean().optional(),
   constellationEnabled: z.boolean().optional(),
   directFetchRecords: z.boolean().optional(),
   ignoredAppLabelers: z.array(z.string()).optional(),
@@ -482,6 +483,7 @@ export const defaults: Schema = {
 
   // deer
   goLinksEnabled: true,
+  pasteToLinkEnabled: false,
   constellationEnabled: true,
   directFetchRecords: true,
   ignoredAppLabelers: [],
@@ -522,8 +524,8 @@ export const defaults: Schema = {
   showPostTags: true,
   discoverContextEnabled: false,
   compactPosts: false,
-  enableSquareAvatars: false,
-  enableSquareButtons: false,
+  enableSquareAvatars: true,
+  enableSquareButtons: true,
   useNotoColorEmoji: false,
   useCompactAccountSwitcher: false,
   autoCompactAccountSwitcher: true,

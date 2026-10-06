@@ -2,7 +2,7 @@ import {
   isNotoEmojiFontLoaded,
   loadNotoEmojiFont,
   setNotoEmojiFontEnabled,
-} from './index.web'
+} from './index'
 
 jest.mock(
   '../../../assets/fonts/noto-color-emoji/WitchskyNotoColorEmoji.woff2',

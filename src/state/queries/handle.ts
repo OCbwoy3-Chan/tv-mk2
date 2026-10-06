@@ -2,6 +2,10 @@ import {useCallback} from 'react'
 import {type DidString, type HandleString} from '@atproto/syntax'
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 
+import {
+  useCustomAppViewDid,
+  useCustomAppViewUrl,
+} from '#/state/preferences/custom-appview-did'
 import {STALE} from '#/state/queries'
 import {useAppviewClient, usePdsClient} from '#/state/session'
 import {app, com} from '#/lexicons'
@@ -17,13 +21,18 @@ const fetchDidQueryKey = (handleOrDid: string) => [didQueryKeyRoot, handleOrDid]
 export function useFetchHandle() {
   const queryClient = useQueryClient()
   const client = useAppviewClient()
+  const [appViewDid] = useCustomAppViewDid()
+  const [appViewUrl] = useCustomAppViewUrl()
 
   return useCallback(
     async (handleOrDid: string) => {
       if (handleOrDid.startsWith('did:')) {
         const data = await queryClient.fetchQuery({
           staleTime: STALE.MINUTES.FIVE,
-          queryKey: fetchHandleQueryKey(handleOrDid),
+          queryKey: [
+            ...fetchHandleQueryKey(handleOrDid),
+            {appViewDid, appViewUrl},
+          ],
           queryFn: () =>
             client.call(app.bsky.actor.getProfile, {
               actor: handleOrDid as DidString,
@@ -33,7 +42,7 @@ export function useFetchHandle() {
       }
       return handleOrDid
     },
-    [queryClient, client],
+    [queryClient, client, appViewDid, appViewUrl],
   )
 }
 
@@ -62,12 +71,14 @@ export function useUpdateHandleMutation(opts?: {
 export function useFetchDid() {
   const queryClient = useQueryClient()
   const client = useAppviewClient()
+  const [appViewDid] = useCustomAppViewDid()
+  const [appViewUrl] = useCustomAppViewUrl()
 
   return useCallback(
     async (handleOrDid: string) => {
       return queryClient.fetchQuery({
         staleTime: STALE.INFINITY,
-        queryKey: fetchDidQueryKey(handleOrDid),
+        queryKey: [...fetchDidQueryKey(handleOrDid), {appViewDid, appViewUrl}],
         queryFn: async () => {
           let identifier = handleOrDid
           if (!identifier.startsWith('did:')) {
@@ -80,6 +91,6 @@ export function useFetchDid() {
         },
       })
     },
-    [queryClient, client],
+    [queryClient, client, appViewDid, appViewUrl],
   )
 }

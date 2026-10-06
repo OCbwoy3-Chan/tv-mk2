@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import {type TextInput, View} from 'react-native'
 import {useSift} from '@bsky.app/sift'
 
@@ -79,6 +79,11 @@ export function SearchAutocompleteInput({
    */
   const {setAnchor} = sift.refs
   const {ref: inputAnchorRef, ...comboboxProps} = sift.targetProps
+  const mergedInputRef = useCallback(
+    (node: React.ComponentRef<typeof TextInput> | null) =>
+      mergeRefs([ref, inputAnchorRef, inputRef])(node),
+    [ref, inputAnchorRef, inputRef],
+  )
 
   return (
     <View
@@ -95,7 +100,7 @@ export function SearchAutocompleteInput({
       <SearchInput
         {...rest}
         {...comboboxProps}
-        ref={mergeRefs([ref, inputAnchorRef, inputRef])}
+        ref={mergedInputRef}
         value={value}
         onChangeText={text => {
           setDismissed(false)

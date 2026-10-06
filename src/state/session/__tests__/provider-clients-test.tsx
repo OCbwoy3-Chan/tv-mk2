@@ -87,13 +87,15 @@ import {
   useSessionApi,
 } from '#/state/session'
 import {type SessionApiContext} from '#/state/session/types'
+import {device} from '#/storage'
 import {
   buildAppviewClient,
   buildChatClient,
   buildPdsClient,
+  getPublicAppviewClient,
   getUnauthenticatedThrowingClient,
 } from '../clients'
-import {type SessionBundle} from '../session-core'
+import {type OAuthSessionBundle, type SessionBundle} from '../session-core'
 import {sessionAccountToSessionData} from '../session-data'
 import {asFetch, makeAccount, makeMockFetch} from './mock-fetch'
 
@@ -152,6 +154,42 @@ beforeEach(() => {
 })
 
 describe('client hooks while logged out', () => {
+  it('follows app server URL changes without logging in', () => {
+    const previous = device.get(['customAppViewUrl'])
+    const listeners = new Set<() => void>()
+    const subscription = jest
+      .spyOn(device, 'addOnValueChangedListener')
+      .mockImplementation((keys, notify) => {
+        if (keys.includes('customAppViewUrl')) listeners.add(notify)
+        return {
+          remove: () => {
+            listeners.delete(notify)
+          },
+        }
+      })
+    const {clients} = renderClients()
+    const initialClient = clients().appview
+    try {
+      act(() => {
+        device.set(['customAppViewUrl'], 'https://api.blacksky.community')
+        listeners.forEach(notify => notify())
+      })
+      expect(clients().appview).not.toBe(initialClient)
+      expect(clients().appview).toBe(getPublicAppviewClient())
+      act(() => {
+        device.set(['customAppViewUrl'], 'https://api.eurosky.network')
+        listeners.forEach(notify => notify())
+      })
+      expect(clients().appview).toBe(getPublicAppviewClient())
+    } finally {
+      act(() => {
+        device.set(['customAppViewUrl'], previous)
+        listeners.forEach(notify => notify())
+      })
+      subscription.mockRestore()
+    }
+  })
+
   it('serves the public client for appview reads', () => {
     const {clients} = renderClients()
     expect(clients().appview).toBeDefined()
@@ -176,7 +214,12 @@ describe('client hooks while logged out', () => {
 describe('client hooks with a session', () => {
   it('uses the OAuth bundle factory for an OAuth callback', async () => {
     const account = makeAccount({isOauthSession: true})
-    const bundle = makeBundle(account)
+    const clientsBundle = makeBundle(account)
+    const bundle: OAuthSessionBundle = {
+      ...clientsBundle,
+      session: null,
+      oauthAgent: {} as OAuthSessionBundle['oauthAgent'],
+    }
     const oauthSession = {} as never
     const {api, clients} = renderClients()
 
@@ -196,6 +239,8 @@ describe('client hooks with a session', () => {
     expect(mockOAuthLogin).toHaveBeenCalledWith(oauthSession)
     expect(mockLogin).not.toHaveBeenCalled()
     expect(clients().appview).toBe(bundle.appviewClient)
+    expect(clients().maybePds).toBe(bundle.pdsClient)
+    expect(clients().maybeChat).toBe(bundle.chatClient)
   })
 
   it('serves every surface straight off the session bundle', async () => {

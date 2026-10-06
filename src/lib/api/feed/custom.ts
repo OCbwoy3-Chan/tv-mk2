@@ -6,6 +6,7 @@ import {
 
 import {PUBLIC_APPVIEW} from '#/lib/constants'
 import {createLexClient} from '#/lib/lexClient'
+import {readCustomAppViewUrl} from '#/state/preferences/custom-appview-did'
 import {
   getAppLanguageAsContentLanguage,
   getContentLanguages,
@@ -102,11 +103,11 @@ export class CustomFeedAPI implements FeedAPI {
   }
 }
 
-let loggedOutAppviewClient: Client | undefined
+const loggedOutAppviewClients = new Map<string, Client>()
 
 /**
  * The unauthenticated {@link Client} for logged-out feed reads, pointed at the
- * direct appview ({@link PUBLIC_APPVIEW}, `api.bsky.app`).
+ * selected app server, or the direct Bluesky appview by default.
  *
  * Deliberately NOT the public appview client (`public.api.bsky.app`): that host
  * fronts a cache which does not vary on `Accept-Language`, so it would answer a
@@ -114,15 +115,19 @@ let loggedOutAppviewClient: Client | undefined
  * appview respects the header (verified 2026-08-04), at the cost of not being
  * cached. See {@link loggedOutFetch}.
  *
- * A single module-level instance, because there is no session to scope it to.
+ * Cached per service URL, so changing the selected server changes the client.
  * Like the public chat client, it uses plain `fetch` rather than
  * `networkAwareFetch`, matching the ad-hoc fetch it replaces: this read has its
  * own failure handling and should not move the app-wide network signal.
  */
 function getLoggedOutAppviewClient(): Client {
-  return (loggedOutAppviewClient ??= createLexClient({
-    service: PUBLIC_APPVIEW,
-  }))
+  const service = readCustomAppViewUrl() || PUBLIC_APPVIEW
+  let client = loggedOutAppviewClients.get(service)
+  if (!client) {
+    client = createLexClient({service})
+    loggedOutAppviewClients.set(service, client)
+  }
+  return client
 }
 
 /*
