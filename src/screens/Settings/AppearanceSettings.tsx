@@ -26,7 +26,7 @@ import {useKawaiiMode, useSetKawaiiMode} from '#/state/preferences/kawaii'
 import {
   useNotoColorEmoji,
   useSetNotoColorEmoji,
-} from '#/state/preferences/noto-color-emoji'
+} from '#/state/preferences/noto-color-emoji-context'
 import {
   useRepostCarouselEnabled,
   useSetRepostCarouselEnabled,

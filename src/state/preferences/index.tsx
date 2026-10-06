@@ -132,11 +132,6 @@ export {
 export { useImageCdnHost, useSetImageCdnHost } from './image-cdn-host'
 export { useLabelDefinitions } from './label-defs'
 export { useLanguagePrefs, useLanguagePrefsApi } from './languages'
-export {
-  useNotoColorEmoji,
-  useNotoColorEmojiFont,
-  useSetNotoColorEmoji,
-} from './noto-color-emoji'
 export { useOmitViaField, useSetOmitViaField } from './omit-via-field'
 export {
   useOpenRouterApiKey,
