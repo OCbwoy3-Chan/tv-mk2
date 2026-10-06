@@ -164,6 +164,14 @@ export function DesktopRightNav({routeName}: {routeName: string}) {
         </Text>
       )}
 
+      {logoVariant === "twitter" && (
+        <Text style={[t.atoms.text_contrast_medium, {marginTop: 12}]}>
+          <Trans>
+            Fuck Elon Musk
+          </Trans>
+        </Text>
+      )}
+
       {!hasSession && leftNavMinimal && (
         <View style={[a.w_full, {height: 32}]}>
           <AppLanguageDropdown />

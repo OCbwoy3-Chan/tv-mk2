@@ -485,8 +485,8 @@ function AppServerDialogInner({
           <SegmentedControl.Item
             testID="appServerEuroskyBtn"
             value="eurosky"
-            label={l`Eurosky`}>
-            <SegmentedControl.ItemText>{l`Eurosky`}</SegmentedControl.ItemText>
+            label={l`Mu`}>
+            <SegmentedControl.ItemText>{l`Mu`}</SegmentedControl.ItemText>
           </SegmentedControl.Item>
           <SegmentedControl.Item
             testID="appServerCustomBtn"

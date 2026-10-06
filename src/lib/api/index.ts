@@ -44,6 +44,8 @@ import {computeCid} from './computeCid'
 import {reuseGalleryImageBlob} from './resolve-gallery'
 import {uploadBlob} from './upload-blob'
 
+import * as persisted from '#/state/persisted'
+
 export {uploadBlob}
 
 interface PostOpts {
@@ -98,11 +100,14 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
   const did = opts.pdsClient.assertDid
   const writes: com.atproto.repo.applyWrites.$InputBody['writes'] = []
   const uris: string[] = []
+
+  const isTwitter = persisted.get('twitterEasterEgg')
+
   const via = IS_WEB
-    ? 'tenna.party'
+    ? (isTwitter ? 'Twitter Web App' : 'tenna.party')
     : IS_IOS
-      ? 'tenna.party iOS'
-      : 'tenna.party for Android'
+      ? (isTwitter ? 'Twitter for iPhone' : 'tenna.party iOS')
+      : (isTwitter ? 'Twitter for Android' : 'tenna.party for Android')
 
   let now = new Date()
   let tid: TID | undefined

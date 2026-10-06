@@ -487,6 +487,12 @@ module.exports = function (_config) {
               android: './assets/app-icons/android_icon_liquid_glass_o.png',
               prerendered: true,
             },
+            twitter_liquid_glass: {
+              ios: './assets/app-icons/ios_icon_twitter_liquid_glass.png',
+              android:
+                './assets/app-icons/android_icon_twitter_liquid_glass.png',
+              prerendered: true,
+            },
             liquid_glass_bluesky: {
               ios: './assets/app-icons/ios_icon_bluesky_liquid_glass.png',
               android:

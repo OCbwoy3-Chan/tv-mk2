@@ -6,7 +6,7 @@ import * as Layout from '#/components/Layout'
 import { Separator } from '#/components/Select'
 import { Text } from '#/components/Typography'
 import { DeltasBetaBadgeToggle } from './components/BetaBadgeToggle'
-import { DeltasJapanLogoToggle } from './components/JapanLogoToggle'
+import { DeltasJapanLogoToggle } from './components/TwitterEasterEggToggle'
 import { TennaQuickLinks } from './components/QuickLinks'
 
 export function DeltaSettingsScreen() {

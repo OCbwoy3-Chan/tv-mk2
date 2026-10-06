@@ -5,6 +5,7 @@ import * as persisted from '#/state/persisted'
 // Helper to apply the replacement to a single string
 function replaceInString(text: string): string {
   const {postName, postsName, enabled} = persisted.get('postReplacement')
+  const twitterEnabled = persisted.get('twitterEasterEgg')
   if (!enabled) return text
 
   const singular = postName?.length ? postName : 'skeet'
@@ -13,6 +14,24 @@ function replaceInString(text: string): string {
   // Capitalize first letter for proper noun replacements
   const singularCapitalized = singular[0].toUpperCase() + singular.slice(1)
   const pluralCapitalized = plural[0].toUpperCase() + plural.slice(1)
+
+  if (twitterEnabled === true) {
+    return text
+      .replaceAll('JARONA', 'TWEET')  
+      .replaceAll('jarona', 'tweet')
+      .replaceAll('jaronas', 'tweets')
+      .replaceAll('Jarona', 'Tweet')
+      .replaceAll('jarona', 'tweet')
+      .replaceAll('Bluesky', 'Twitter')
+      .replaceAll('bluesky', 'twitter')
+      .replaceAll('tenna.party', 'Twitter')
+      .replaceAll('New post', 'Tweet')
+      .replaceAll('new post', 'tweet')
+      .replaceAll('Posts', 'Tweets')
+      .replaceAll('posts', 'tweets')
+      .replaceAll('Post', 'Tweet')
+      .replaceAll('post', 'tweet')
+  }
 
   return text
     .replaceAll('Posts', pluralCapitalized)

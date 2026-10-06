@@ -52,7 +52,7 @@ export const APPVIEW_PRESETS: Record<
   },
   eurosky: {
     id: 'eurosky',
-    title: 'Eurosky',
+    title: 'Mu',
     url: 'https://api.eurosky.network',
     did: 'did:web:api.eurosky.network',
   },

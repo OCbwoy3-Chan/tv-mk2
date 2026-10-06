@@ -5,6 +5,7 @@ import {Provider as AlsoLikedFeedProvider} from './also-liked-feed-enabled'
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
 import {Provider as AtprotoExplorerProvider} from './atproto-explorer'
 import {Provider as AtprotoRkeySettingsProvider} from "./atproto-rkey-settings.tsx"
+import {Provider as TwitterEasterEggProvider} from "./twitter-easteregg.tsx"
 import {Provider as AutoCompactAccountSwitcherProvider} from './auto-compact-account-switcher'
 import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
 import {Provider as AutoplayProvider} from './autoplay'
@@ -255,9 +256,11 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                                       <ShowPostTagsProvider>
                                                                                                                                                        <NotoColorEmojiProvider>
                                                                                                                                                           <PasteToLinkEnabledProvider>
-                                                                                                                                                            {
-                                                                                                                                                              children
-                                                                                                                                                            }
+                                                                                                                                                            <TwitterEasterEggProvider>
+                                                                                                                                                              {
+                                                                                                                                                                children
+                                                                                                                                                              }
+                                                                                                                                                            </TwitterEasterEggProvider>
                                                                                                                                                         </PasteToLinkEnabledProvider>
                                                                                                                                                        </NotoColorEmojiProvider>
                                                                                                                                                       </ShowPostTagsProvider>

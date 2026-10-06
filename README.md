@@ -18,7 +18,7 @@ Fun:
 - Brand new settings Page: Settings -> Deltas
 - New fun self-badge system: Character + kin selector.
 - Enhanced composer Custom TID option ([there's one in witchsky too but it's suffix only](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow))
-- Option to enable Japan-exclusive logo (TODO: REMAKE THIS)
+- Twitter mode (we argue they abandoned that bird in america)
 
 Moderation:
 - 200 max labeler limit (its way too much)
@@ -27,6 +27,8 @@ Moderation:
 
 Misc:
 - Big warning on stuff that has to do with AI (too much work to remove)
+- Eurosky / [Mu](https://mu.social) AppView option
+- Declared [W Social](https://wsocial.eu) as a bad platform
 
 App:
 - Native iOS via GitHub Actions (sideload)
@@ -38,6 +40,7 @@ New features:
 
 ### TODO: Kris
 
+- [ ] Larp mode preset (needs larproto - self contained bluesky infrastructure for larping)
 - [ ] Ensure compliance with brand new https://github.com/bluesky-social/social-app/blob/main/ASSETS.md (impossible, just have witchsky do it instead)
 - [ ] Replace the Butterfly and make a custom Japan logo (just tenna's head with football field texture i guess)
 - [ ] Native Labeler integrations
