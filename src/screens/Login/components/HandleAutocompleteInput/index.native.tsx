@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react'
+import {useMemo, useRef, useState} from 'react'
 import {type TextInput, TouchableOpacity, View} from 'react-native'
 import {ScrollView} from 'react-native-gesture-handler'
 import {useLingui} from '@lingui/react/macro'
@@ -53,6 +53,11 @@ export function HandleAutocompleteInput({
     null,
   )
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  /* Keep consumer refs attached when typing or opening suggestions. */
+  const mergedInputRef = useMemo(
+    () => mergeRefs([internalInputRef, inputRef]),
+    [internalInputRef, inputRef],
+  )
 
   const trimmed = text.trim()
   const showResults = showAutocomplete && active && trimmed.length > 0
@@ -117,7 +122,7 @@ export function HandleAutocompleteInput({
           testID={testID}
           label={label}
           placeholder={placeholder}
-          inputRef={mergeRefs([internalInputRef, inputRef])}
+          inputRef={mergedInputRef}
           autoCapitalize="none"
           autoFocus={autoFocus}
           autoCorrect={false}

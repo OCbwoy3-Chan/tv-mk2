@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react'
+import {useMemo, useRef, useState} from 'react'
 import {View} from 'react-native'
 import {useSift} from '@bsky.app/sift'
 import {useLingui} from '@lingui/react/macro'
@@ -106,6 +106,11 @@ export function HandleAutocompleteInput({
   }
 
   const {ref: siftInputRef, ...siftA11yProps} = sift.targetProps
+  /* Sift stores the input in state, so ref churn can trigger an update loop. */
+  const mergedInputRef = useMemo(
+    () => mergeRefs([siftInputRef, inputRef]),
+    [siftInputRef, inputRef],
+  )
 
   return (
     <View
@@ -119,7 +124,7 @@ export function HandleAutocompleteInput({
           testID={testID}
           label={label}
           placeholder={placeholder}
-          inputRef={mergeRefs([siftInputRef, inputRef])}
+          inputRef={mergedInputRef}
           {...siftA11yProps}
           autoCapitalize="none"
           autoFocus={autoFocus}

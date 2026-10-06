@@ -33,6 +33,7 @@ import {
 } from '#/state/preferences/repost-carousel-enabled'
 import {useSession} from '#/state/session'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
+import {SettingsListItem as AppIconButton} from '#/screens/Settings/AppIconSettings/SettingsListItem'
 import {ItemTextWithSubtitle} from '#/screens/Settings/NotificationSettings/components/ItemTextWithSubtitle'
 import {type Alf, atoms as a, native, useAlf, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
@@ -59,7 +60,6 @@ import {
 import {ThemeQuickSelector} from './AppearanceSettings/ThemeQuickSelector'
 import {NotoColorEmojiToggle} from './components/NotoColorEmojiToggle'
 import * as SettingsList from './components/SettingsList'
-import { SettingsListItem as AppIconButton } from './AppIconSettings/SettingsListItem'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AppearanceSettings'>
 
@@ -160,6 +160,8 @@ export function AppearanceSettingsScreen({}: Props) {
         <Layout.Content>
           <SettingsList.Container>
             <ThemeQuickSelector />
+
+            {IS_NATIVE && <AppIconButton />}
 
             {availableUpdate && !preview && (
               <SettingsList.Item style={[a.gap_md]}>
