@@ -1,17 +1,121 @@
 import {describe, expect, it} from '@jest/globals'
 
 import {
+  convertBskyAppUrlIfNeeded,
   getChatInviteCodeFromUrl,
+  isBskyAppUrl,
+  isBskyCustomFeedUrl,
+  isBskyListUrl,
+  isBskyPostUrl,
+  isBskyStarterPackUrl,
+  isBskyStartUrl,
+  isExternalUrl,
+  isHttpUrl,
   isPossiblyAUrl,
   isTrustedUrl,
   linkRequiresWarning,
   splitApexDomain,
-} from '../../../src/lib/strings/url-helpers'
+} from '#/lib/strings/url-helpers'
+
+describe.each(['mu.social', 'blacksky.community', 'northsky.app'])(
+  '%s content links',
+  host => {
+    const origin = `https://${host}`
+
+    it.each([
+      '/profile/example.test',
+      '/profile/example.test/post/3abc',
+      '/profile/example.test/feed/3abc',
+      '/profile/example.test/lists/3abc',
+      '/starter-pack/example.test/3abc',
+      '/profile/example.test/theme/3abc',
+      '/search?q=witchsky',
+    ])('keeps %s in app navigation', path => {
+      const url = `${origin}${path}`
+      expect(isBskyAppUrl(url)).toBe(true)
+      expect(isExternalUrl(url)).toBe(false)
+      expect(convertBskyAppUrlIfNeeded(url)).toBe(path)
+      expect(linkRequiresWarning(url, 'View content')).toBe(false)
+      expect(linkRequiresWarning(url, 'example.com')).toBe(true)
+    })
+
+    it('recognizes records, starter packs, and chat invites', () => {
+      expect(isBskyPostUrl(`${origin}/profile/example.test/post/3abc`)).toBe(
+        true,
+      )
+      expect(
+        isBskyCustomFeedUrl(`${origin}/profile/example.test/feed/3abc`),
+      ).toBe(true)
+      expect(isBskyListUrl(`${origin}/profile/example.test/lists/3abc`)).toBe(
+        true,
+      )
+      expect(isBskyStartUrl(`${origin}/start/example.test/3abc`)).toBe(true)
+      expect(
+        isBskyStarterPackUrl(`${origin}/starter-pack/example.test/3abc`),
+      ).toBe(true)
+      expect(
+        convertBskyAppUrlIfNeeded(`${origin}/start/example.test/3abc`),
+      ).toBe('/starter-pack/example.test/3abc')
+      expect(getChatInviteCodeFromUrl(`${origin}/chat/abcdefg`)).toBe('abcdefg')
+    })
+
+    it('preserves query parameters and keeps RSS and about pages external', () => {
+      expect(
+        convertBskyAppUrlIfNeeded(`${origin}/search?q=witchsky&sort=latest`),
+      ).toBe('/search?q=witchsky&sort=latest')
+      expect(isExternalUrl(`${origin}/profile/example.test/rss`)).toBe(true)
+      expect(isExternalUrl(`${origin}/about/privacy`)).toBe(true)
+      expect(convertBskyAppUrlIfNeeded(`${origin}/about/privacy`)).toBe(
+        `${origin}/about/privacy`,
+      )
+    })
+
+    it.each([
+      `https://${host}.example.com/profile/example.test`,
+      `https://${host}@example.com/profile/example.test`,
+    ])('keeps lookalike host %s external and untrusted', url => {
+      expect(isBskyAppUrl(url)).toBe(false)
+      expect(isExternalUrl(url)).toBe(true)
+      expect(isTrustedUrl(url)).toBe(false)
+      expect(convertBskyAppUrlIfNeeded(url)).toBe(url)
+    })
+  },
+)
+
+describe('URL schemes', () => {
+  it.each<[string, boolean, boolean]>([
+    ['https://example.com', true, true],
+    ['http://example.com', true, true],
+    ['HTTPS://example.com', true, true],
+    ['https://witchsky.app/profile/example.test', false, true],
+    ['https://bsky.app/profile/example.test', false, true],
+    ['https://deer.social/profile/example.test', false, true],
+    ['/profile/example.test', false, false],
+    ['/profile/example.test/rss', true, false],
+    ['#', false, false],
+    ['example.com', false, false],
+    ['https-page', false, false],
+    ['spotify://track/123', true, false],
+    ['SPOTIFY://track/123', true, false],
+    ['custom+app.v2-test://open/item', true, false],
+    ['mailto:hello@example.com', true, false],
+    ['tel:+15551234567', true, false],
+  ])('%s: external=%s, http=%s', (url, external, http) => {
+    expect(isExternalUrl(url)).toBe(external)
+    expect(isHttpUrl(url)).toBe(http)
+  })
+})
 
 describe('linkRequiresWarning', () => {
   type Case = [string, string, boolean]
 
   const cases: Case[] = [
+    ['spotify://track/123', 'spotify://track/123', false],
+    ['spotify://track/123', 'example.com', true],
+    ['tel:+15551234567', 'tel:+15551234567', false],
+    ['tel:+15551234567', 'example.com', true],
+    ['mailto:hello@example.com', 'mailto:hello@example.com', false],
+    ['mailto:hello@example.com', 'example.com', true],
     ['http://example.com', 'http://example.com', false],
     ['http://example.com', 'example.com', false],
     ['http://example.com', 'example.com/page', false],

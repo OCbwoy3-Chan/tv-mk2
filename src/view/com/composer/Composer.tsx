@@ -83,6 +83,7 @@ import {createVideoTelemetry} from '#/lib/media/video/telemetry'
 import {mimeToExt} from '#/lib/media/video/util'
 import {useCallOnce} from '#/lib/once'
 import {type NavigationProp} from '#/lib/routes/types'
+import {getShapeStyle} from '#/lib/shapes'
 import {isSpacesCompatiblePDS} from '#/lib/spaces'
 import {cleanError} from '#/lib/strings/errors'
 import {colors} from '#/lib/styles'
@@ -142,8 +143,8 @@ import {
 import {isEphemeralAuthError} from '#/state/session/ephemeral-auth'
 import {useComposerControls, useComposerState} from '#/state/shell/composer'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
-import {AtprotoBtn} from '#/view/com/composer/AtprotoBtn'
 import {saveRecovery} from '#/state/shell/composer/recovery'
+import {AtprotoBtn} from '#/view/com/composer/AtprotoBtn'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
 import {DraftsButton} from '#/view/com/composer/drafts/DraftsButton'
@@ -518,7 +519,7 @@ export const ComposePost = ({
         initInteractionSettings: preferences?.postInteractionSettings,
         initVideoUri,
         initAtprotoRkey,
-      initTags,
+        initTags,
       }),
   )
 
@@ -1553,9 +1554,7 @@ export const ComposePost = ({
             langs: currentLanguages,
             omitViaField,
             tidSuffix,
-            omitViaField,
-            tidSuffix,
-        })
+          })
         ).uris[0]
       }
 
@@ -2263,7 +2262,11 @@ let ComposerPost = memo(function ComposerPost({
               {...triggerProps}
               style={[
                 a.transition_color,
-                enableSquareButtons ? a.rounded_sm : a.rounded_full,
+                getShapeStyle(
+                  enableSquareButtons,
+                  a.rounded_sm,
+                  a.rounded_full,
+                ),
                 a.self_start,
               ]}>
               <UserAvatar

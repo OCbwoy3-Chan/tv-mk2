@@ -24,30 +24,25 @@ import {
 } from '#/state/preferences/hide-display-names'
 import {useKawaiiMode, useSetKawaiiMode} from '#/state/preferences/kawaii'
 import {
-  useNotoColorEmoji,
-  useSetNotoColorEmoji,
-} from '#/state/preferences/noto-color-emoji-context'
-import {
   useRepostCarouselEnabled,
   useSetRepostCarouselEnabled,
 } from '#/state/preferences/repost-carousel-enabled'
 import {useSession} from '#/state/session'
 import {useSetThemePrefs, useThemePrefs} from '#/state/shell'
 import {SettingsListItem as AppIconButton} from '#/screens/Settings/AppIconSettings/SettingsListItem'
+import {AppearanceToggleButtonGroup} from '#/screens/Settings/components/AppearanceToggleButtonGroup'
+import {EmojiFontControl} from '#/screens/Settings/components/EmojiFontControl'
+import {ShapeSlider} from '#/screens/Settings/components/ShapeSlider'
 import {ItemTextWithSubtitle} from '#/screens/Settings/NotificationSettings/components/ItemTextWithSubtitle'
 import {type Alf, atoms as a, native, useAlf, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
-import * as SegmentedControl from '#/components/forms/SegmentedControl'
 import * as Toggle from '#/components/forms/Toggle'
 import {At_Stroke2_Corner0_Rounded as AtIcon} from '#/components/icons/At'
-import {type Props as SVGIconProps} from '#/components/icons/common'
-import {EmojiSmile_Stroke2_Corner0_Rounded as EmojiIcon} from '#/components/icons/Emoji'
-import {Person_Stroke2_Corner0_Rounded as PersonIcon} from '#/components/icons/Person'
 import {Repost_Stroke2_Corner3_Rounded as RepostIcon} from '#/components/icons/Repost'
+import {Shapes_Stroke2_Corner0_Rounded as CornersIcon} from '#/components/icons/Shapes'
 import {Sparkle_Stroke2_Corner0_Rounded as SparkleIcon} from '#/components/icons/Sparkle'
 import {TextSize_Stroke2_Corner0_Rounded as TextSize} from '#/components/icons/TextSize'
 import {TitleCase_Stroke2_Corner0_Rounded as Aa} from '#/components/icons/TitleCase'
-import {Window_Stroke2_Corner2_Rounded as SquareIcon} from '#/components/icons/Window'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
 import {IS_ANDROID, IS_NATIVE} from '#/env'
@@ -58,7 +53,6 @@ import {
   type ThemeView,
 } from '#/features/themes/types'
 import {ThemeQuickSelector} from './AppearanceSettings/ThemeQuickSelector'
-import {NotoColorEmojiToggle} from './components/NotoColorEmojiToggle'
 import * as SettingsList from './components/SettingsList'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AppearanceSettings'>
@@ -68,8 +62,6 @@ export function AppearanceSettingsScreen({}: Props) {
   const t = useTheme()
   const {fonts} = useAlf()
   const {currentAccount} = useSession()
-  const notoColorEmoji = useNotoColorEmoji()
-  const setNotoColorEmoji = useSetNotoColorEmoji()
 
   const {activeTheme} = useThemePrefs()
   const {setActiveTheme} = useSetThemePrefs()
@@ -274,9 +266,9 @@ export function AppearanceSettingsScreen({}: Props) {
                 onChange={onChangeFontScale}
               />
 
-              <SettingsList.Divider />
+              <EmojiFontControl />
 
-              <NotoColorEmojiToggle />
+              <SettingsList.Divider />
 
               <Toggle.Item
                 name="hide_display_names"
@@ -321,32 +313,30 @@ export function AppearanceSettingsScreen({}: Props) {
                   <Toggle.Platform />
                 </SettingsList.Item>
               </Toggle.Item>
-              <Toggle.Item
-                name="enable_square_avatars"
-                label={l`Enable square avatars`}
-                value={enableSquareAvatars}
-                onChange={value => setEnableSquareAvatars(value)}>
-                <SettingsList.Item>
-                  <SettingsList.ItemIcon icon={PersonIcon} />
-                  <SettingsList.ItemText>
-                    <Trans>Enable square avatars</Trans>
-                  </SettingsList.ItemText>
-                  <Toggle.Platform />
-                </SettingsList.Item>
-              </Toggle.Item>
-              <Toggle.Item
-                name="enable_square_buttons"
-                label={l`Enable square buttons`}
-                value={enableSquareButtons}
-                onChange={value => setEnableSquareButtons(value)}>
-                <SettingsList.Item>
-                  <SettingsList.ItemIcon icon={SquareIcon} />
-                  <SettingsList.ItemText>
-                    <Trans>Enable square buttons</Trans>
-                  </SettingsList.ItemText>
-                  <Toggle.Platform />
-                </SettingsList.Item>
-              </Toggle.Item>
+              <SettingsList.Divider />
+
+              <SettingsList.Item style={a.pb_2xs}>
+                <SettingsList.ItemIcon icon={CornersIcon} />
+                <Text
+                  accessibilityRole="header"
+                  style={[a.text_lg, a.font_bold]}>
+                  <Trans>Corners</Trans>
+                </Text>
+              </SettingsList.Item>
+              <SettingsList.Item style={[a.align_start, a.gap_lg]}>
+                <ShapeSlider
+                  label={l`Avatars`}
+                  value={enableSquareAvatars}
+                  onChange={setEnableSquareAvatars}
+                  testID="avatarShapeSlider"
+                />
+                <ShapeSlider
+                  label={l`Buttons`}
+                  value={enableSquareButtons}
+                  onChange={setEnableSquareButtons}
+                  testID="buttonShapeSlider"
+                />
+              </SettingsList.Item>
             </Animated.View>
           </SettingsList.Container>
         </Layout.Content>
@@ -395,61 +385,5 @@ export function AppearanceSettingsScreen({}: Props) {
         )}
       </Layout.Screen>
     </LayoutAnimationConfig>
-  )
-}
-
-export function AppearanceToggleButtonGroup<T extends string>({
-  title,
-  description,
-  icon: Icon,
-  items,
-  value,
-  onChange,
-}: {
-  title: string
-  description?: string
-  icon: React.ComponentType<SVGIconProps>
-  items: {
-    label: string
-    name: T
-  }[]
-  value: T
-  onChange: (value: T) => void
-}) {
-  const t = useTheme()
-  return (
-    <>
-      <SettingsList.Group contentContainerStyle={[a.gap_sm]} iconInset={false}>
-        <SettingsList.ItemIcon icon={Icon} />
-        <SettingsList.ItemText>{title}</SettingsList.ItemText>
-        {description && (
-          <Text
-            style={[
-              a.text_sm,
-              a.leading_snug,
-              t.atoms.text_contrast_medium,
-              a.w_full,
-            ]}>
-            {description}
-          </Text>
-        )}
-        <SegmentedControl.Root
-          type="radio"
-          label={title}
-          value={value}
-          onChange={onChange}>
-          {items.map(item => (
-            <SegmentedControl.Item
-              key={item.name}
-              label={item.label}
-              value={item.name}>
-              <SegmentedControl.ItemText>
-                {item.label}
-              </SegmentedControl.ItemText>
-            </SegmentedControl.Item>
-          ))}
-        </SegmentedControl.Root>
-      </SettingsList.Group>
-    </>
   )
 }

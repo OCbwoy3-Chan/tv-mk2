@@ -6,7 +6,10 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
+import {type DownloadableImage} from '#/lib/media/downloadFilename'
 import {type Dimensions} from '#/lib/media/types'
+import {getShapeRadius, SHARP_CORNERS} from '#/lib/shapes'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   applyImageTransforms,
   useImageCdnHost,
@@ -18,12 +21,11 @@ import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import {ImageContextMenu} from '#/components/Post/Embed/ImageContextMenu'
 import {type PostEmbedViewContext} from '#/components/Post/Embed/types'
 import {Text} from '#/components/Typography'
-import {type app} from '#/lexicons'
 
 type EventFunction = (index: number) => void
 
 interface Props {
-  images: app.bsky.embed.images.ViewImage[]
+  images: DownloadableImage[]
   index: number
   onPress?: (
     index: number,
@@ -51,6 +53,8 @@ export function GalleryItem({
   containerRefs,
   thumbDimsRef,
 }: Props) {
+  const shapePreference = useEnableSquareButtons()
+
   const t = useTheme()
   const {_} = useLingui()
   const largeAltBadge = useLargeAltBadgeEnabled()
@@ -75,9 +79,14 @@ export function GalleryItem({
     <View style={a.flex_1} ref={containerRefs[index]} collapsable={false}>
       <ImageContextMenu
         fullsizeUri={image.fullsize}
+        downloadName={image.downloadName}
         thumbUri={image.thumb}
         aspectRatio={aspect}
-        borderRadius={tokens.borderRadius.md}
+        borderRadius={getShapeRadius(
+          shapePreference,
+          tokens.borderRadius.md,
+          tokens.borderRadius.md,
+        )}
         onPreviewPress={openLightboxAtIndex}
         style={a.flex_1}>
         <Pressable
@@ -141,6 +150,7 @@ export function GalleryItem({
                 padding: 6,
               },
             ],
+            shapePreference === 'sharp' && SHARP_CORNERS,
           ]}>
           <Text
             style={[a.font_bold, largeAltBadge ? a.text_xs : {fontSize: 8}]}>

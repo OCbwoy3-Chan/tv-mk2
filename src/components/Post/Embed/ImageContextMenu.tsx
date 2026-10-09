@@ -4,6 +4,7 @@ import {useLingui} from '@lingui/react/macro'
 
 import {shareImageModal} from '#/lib/media/manip'
 import {useSaveImageToMediaLibrary} from '#/lib/media/save-image'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useFullsizeFormat} from '#/state/preferences/fullsize-format'
 import {
   applyImageTransforms,
@@ -25,6 +26,7 @@ import {IS_IOS} from '#/env'
  */
 export function ImageContextMenu({
   fullsizeUri,
+  downloadName,
   thumbUri,
   aspectRatio,
   borderRadius,
@@ -32,6 +34,7 @@ export function ImageContextMenu({
   style,
   children,
 }: {
+  downloadName?: string
   fullsizeUri: string
   /** Thumbnail URL. Used as an instant placeholder in the native preview
    *  while the fullsize loads, so there's no black flash on first peek. */
@@ -43,6 +46,8 @@ export function ImageContextMenu({
   style?: StyleProp<ViewStyle>
   children: ReactNode
 }) {
+  const shapePreference = useEnableSquareButtons()
+
   const {t: l} = useLingui()
   const saveImage = useSaveImageToMediaLibrary()
   const imageCdnHost = useImageCdnHost()
@@ -54,7 +59,7 @@ export function ImageContextMenu({
   }
 
   const handleSave = () => {
-    void saveImage(fullsizeUri)
+    void saveImage(fullsizeUri, undefined, downloadName)
   }
   const handleShare = () => {
     void shareImageModal({uri: fullsizeUri})
@@ -67,7 +72,7 @@ export function ImageContextMenu({
           type: 'image',
           uri: applyImageTransforms(fullsizeUri, {
             imageCdnHost,
-            format: fullsizeFormat ?? 'webp',
+            format: fullsizeFormat ?? 'default',
           }),
           thumbUri: thumbUri
             ? applyImageTransforms(thumbUri, {
@@ -77,7 +82,7 @@ export function ImageContextMenu({
             : undefined,
           aspectRatio: aspectRatio && aspectRatio > 0 ? aspectRatio : 1,
         }}
-        borderRadius={borderRadius}
+        borderRadius={shapePreference === 'sharp' ? 0 : borderRadius}
         onPreviewPress={onPreviewPress}>
         {children}
       </PeekMenu.Trigger>

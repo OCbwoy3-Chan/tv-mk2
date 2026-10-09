@@ -317,9 +317,9 @@ const schema = z.object({
   showPostTags: z.boolean().optional(),
   discoverContextEnabled: z.boolean().optional(),
   compactPosts: z.boolean().optional(),
-  enableSquareAvatars: z.boolean().optional(),
-  enableSquareButtons: z.boolean().optional(),
-  useNotoColorEmoji: z.boolean().optional(),
+  enableSquareAvatars: z.union([z.boolean(), z.literal('sharp')]).optional(),
+  enableSquareButtons: z.union([z.boolean(), z.literal('sharp')]).optional(),
+  emojiFont: z.enum(['system', 'noto', 'twemoji']).optional(),
   useCompactAccountSwitcher: z.boolean().optional(),
   autoCompactAccountSwitcher: z.boolean().optional(),
   disableVerifyEmailReminder: z.boolean().optional(),
@@ -340,6 +340,8 @@ const schema = z.object({
   highQualityImages: z.boolean().optional(),
   thumbnailFormat: z.string().optional(),
   fullsizeFormat: z.string().optional(),
+  /** Tracks the one-time migration from WebP defaults to app server formats. */
+  imageFormatDefaultsVersion: z.number().optional(),
   downloadFormat: z.string().optional(),
   loadAsPngs: z.boolean().optional(),
   imageCdnHost: z.string().optional(),
@@ -486,7 +488,7 @@ export const defaults: Schema = {
   goLinksEnabled: true,
   pasteToLinkEnabled: false,
   constellationEnabled: true,
-  directFetchRecords: true,
+  directFetchRecords: false,
   ignoredAppLabelers: [],
   noDiscoverFallback: false,
   repostCarouselEnabled: false,
@@ -527,7 +529,7 @@ export const defaults: Schema = {
   compactPosts: false,
   enableSquareAvatars: true,
   enableSquareButtons: true,
-  useNotoColorEmoji: false,
+  emojiFont: 'system',
   useCompactAccountSwitcher: false,
   autoCompactAccountSwitcher: true,
   disableVerifyEmailReminder: false,
@@ -542,8 +544,9 @@ export const defaults: Schema = {
     trusted: [],
   },
   highQualityImages: false,
-  thumbnailFormat: 'webp',
-  fullsizeFormat: 'webp',
+  thumbnailFormat: 'default',
+  fullsizeFormat: 'default',
+  imageFormatDefaultsVersion: 1,
   downloadFormat: 'original',
   loadAsPngs: true,
   plcDirectory: 'https://plc.directory',
@@ -609,6 +612,12 @@ export function tryParse(rawData: string): Schema | undefined {
   const parsed = schema.safeParse(objData)
   if (parsed.success) {
     let data = parsed.data
+    if (
+      data.emojiFont === undefined &&
+      (objData as {useNotoColorEmoji?: boolean}).useNotoColorEmoji === true
+    ) {
+      data = {...data, emojiFont: 'noto'}
+    }
     if (
       (objData as {noAppLabelers?: boolean}).noAppLabelers &&
       !data.ignoredAppLabelers?.length

@@ -16,8 +16,8 @@ import {
   deleteFollow,
   follow,
   muteActor,
-  upsertProfile,
   unmuteActor,
+  upsertProfile,
 } from '@bsky/sdk'
 import {
   type InfiniteData,

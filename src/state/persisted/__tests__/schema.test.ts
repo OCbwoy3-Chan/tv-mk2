@@ -22,11 +22,77 @@ describe('persisted schema helpers', () => {
     },
   }
 
+  it('preserves tenna.party settings while migrating upstream emoji and shapes', () => {
+    const preferences = {
+      privatePostsEnabled: true,
+      hideOwnTennaBadge: true,
+      twitterEasterEgg: true,
+      hideBetaBadge: false,
+      customPostRkeysEnabled: true,
+      atprotoRkeyGenerationDefault: 'prefix',
+      atprotoRkeyPrefixDefault: 'tenna',
+      atprotoRkeySuffixDefault: 'meow',
+      pasteToLinkEnabled: true,
+    }
+    const parsed = tryParse(
+      JSON.stringify({
+        ...partialState,
+        ...preferences,
+        useNotoColorEmoji: true,
+        enableSquareButtons: true,
+        enableSquareAvatars: false,
+      }),
+    )
+    const restored = normalizeData(
+      tryParse(tryStringify(normalizeData(parsed!))!)!,
+    )
+    expect(restored).toEqual(
+      expect.objectContaining({
+        ...preferences,
+        emojiFont: 'noto',
+        enableSquareButtons: true,
+        enableSquareAvatars: false,
+      }),
+    )
+  })
+
   it('applies schema defaults when reading partial data', () => {
     const parsed = tryParse(JSON.stringify(partialState))
 
     expect(parsed?.material3Accent).toBe('#ee6300')
     expect(parsed?.material3Style).toBe('TONAL_SPOT')
+  })
+
+  it.each([false, true, 'sharp'] as const)(
+    'preserves the %s button and avatar shapes across restarts',
+    shape => {
+      const parsed = tryParse(
+        JSON.stringify({
+          ...partialState,
+          enableSquareButtons: shape,
+          enableSquareAvatars: shape,
+        }),
+      )
+      const raw = tryStringify(normalizeData(parsed!))
+      const restored = normalizeData(tryParse(raw!)!)
+      expect(restored.enableSquareButtons).toBe(shape)
+      expect(restored.enableSquareAvatars).toBe(shape)
+      expect(restored.requireAltTextEnabled).toBe(true)
+    },
+  )
+
+  it('stores button and avatar shapes independently', () => {
+    const parsed = tryParse(
+      JSON.stringify({
+        ...partialState,
+        enableSquareButtons: 'sharp',
+        enableSquareAvatars: false,
+      }),
+    )
+    const raw = tryStringify(normalizeData(parsed!))
+    const restored = normalizeData(tryParse(raw!)!)
+    expect(restored.enableSquareButtons).toBe('sharp')
+    expect(restored.enableSquareAvatars).toBe(false)
   })
 
   it('defaults follow confirmation off even when legacy confirmation was enabled', () => {
@@ -48,16 +114,34 @@ describe('persisted schema helpers', () => {
     expect(tryParse(raw!)?.confirmFollow).toBe(true)
   })
 
-  it('defaults Noto Color Emoji off and preserves an enabled preference', () => {
+  it('defaults to system emoji and migrates the legacy Noto preference', () => {
     const existing = tryParse(JSON.stringify(partialState))
-    expect(normalizeData(existing!).useNotoColorEmoji).toBe(false)
+    expect(normalizeData(existing!).emojiFont).toBe('system')
 
     const enabled = tryParse(
       JSON.stringify({...partialState, useNotoColorEmoji: true}),
     )
-    const raw = tryStringify(normalizeData(enabled!))
-    expect(tryParse(raw!)?.useNotoColorEmoji).toBe(true)
+    expect(normalizeData(enabled!).emojiFont).toBe('noto')
+    expect(enabled).not.toHaveProperty('useNotoColorEmoji')
+    expect(tryStringify(normalizeData(enabled!))).not.toContain(
+      'useNotoColorEmoji',
+    )
   })
+
+  it.each(['system', 'noto', 'twemoji'] as const)(
+    'preserves %s emoji across restarts and overrides the legacy Noto preference',
+    emojiFont => {
+      const parsed = tryParse(
+        JSON.stringify({
+          ...partialState,
+          useNotoColorEmoji: true,
+          emojiFont,
+        }),
+      )
+      const raw = tryStringify(normalizeData(parsed!))
+      expect(normalizeData(tryParse(raw!)!).emojiFont).toBe(emojiFont)
+    },
+  )
 
   it('preserves hydrated defaults on later writes', () => {
     const hydrated = tryParse(JSON.stringify(partialState))
@@ -93,6 +177,80 @@ describe('persisted schema helpers', () => {
       normalizeData({...parsed!, externalEmbeds: {youtube: 'show'}})
         .externalEmbeds,
     ).toEqual({youtube: 'show'})
+  })
+
+  it('defaults absent image formats to the app server formats', () => {
+    const parsed = tryParse(JSON.stringify(partialState))
+    const normalized = normalizeData(parsed!)
+
+    expect(defaults.thumbnailFormat).toBe('default')
+    expect(defaults.fullsizeFormat).toBe('default')
+    expect(normalized.thumbnailFormat).toBe('default')
+    expect(normalized.fullsizeFormat).toBe('default')
+    expect(normalized.downloadFormat).toBe('original')
+  })
+
+  it('migrates saved WebP formats to app server defaults', () => {
+    const parsed = tryParse(
+      JSON.stringify({
+        ...partialState,
+        thumbnailFormat: 'webp',
+        fullsizeFormat: 'webp',
+      }),
+    )
+    const normalized = normalizeData(parsed!)
+
+    expect(normalized.thumbnailFormat).toBe('default')
+    expect(normalized.fullsizeFormat).toBe('default')
+    expect(normalized.imageFormatDefaultsVersion).toBe(1)
+  })
+
+  it.each([
+    ['webp', 'png', 'default', 'png'],
+    ['original', 'webp', 'original', 'default'],
+    ['avif', 'jpeg', 'avif', 'jpeg'],
+  ])(
+    'preserves explicit formats when migrating %s thumbnails and %s full-size images',
+    (thumbnailFormat, fullsizeFormat, expectedThumbnail, expectedFullsize) => {
+      const parsed = tryParse(
+        JSON.stringify({...partialState, thumbnailFormat, fullsizeFormat}),
+      )
+      const normalized = normalizeData(parsed!)
+
+      expect(normalized.thumbnailFormat).toBe(expectedThumbnail)
+      expect(normalized.fullsizeFormat).toBe(expectedFullsize)
+    },
+  )
+
+  it('preserves legacy high-quality PNG preferences', () => {
+    const parsed = tryParse(
+      JSON.stringify({...partialState, highQualityImages: true}),
+    )
+    const normalized = normalizeData(parsed!)
+
+    expect(normalized.thumbnailFormat).toBe('png')
+    expect(normalized.fullsizeFormat).toBe('png')
+  })
+
+  it('preserves WebP selections made after the default migration across restarts', () => {
+    const parsed = tryParse(
+      JSON.stringify({
+        ...partialState,
+        thumbnailFormat: 'webp',
+        fullsizeFormat: 'webp',
+      }),
+    )
+    const migrated = normalizeData(parsed!)
+    const selected = normalizeData({
+      ...migrated,
+      thumbnailFormat: 'webp',
+      fullsizeFormat: 'webp',
+    })
+    const raw = tryStringify(selected)
+    const restarted = normalizeData(tryParse(raw!)!)
+
+    expect(restarted.thumbnailFormat).toBe('webp')
+    expect(restarted.fullsizeFormat).toBe('webp')
   })
 
   it('migrates legacy disable metrics booleans to display modes', () => {

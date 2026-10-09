@@ -23,6 +23,7 @@ import {
 } from '#/lib/strings/rich-text-manip'
 import {logger} from '#/logger'
 import {compressImage} from '#/state/gallery'
+import * as persisted from '#/state/persisted'
 import {
   fetchResolveGifQuery,
   fetchResolveLinkQuery,
@@ -43,8 +44,6 @@ import {createGIFDescription} from '../gif-alt-text'
 import {computeCid} from './computeCid'
 import {reuseGalleryImageBlob} from './resolve-gallery'
 import {uploadBlob} from './upload-blob'
-
-import * as persisted from '#/state/persisted'
 
 export {uploadBlob}
 
@@ -104,10 +103,16 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
   const isTwitter = persisted.get('twitterEasterEgg')
 
   const via = IS_WEB
-    ? (isTwitter ? 'Twitter Web App' : 'tenna.party')
+    ? isTwitter
+      ? 'Twitter Web App'
+      : 'tenna.party'
     : IS_IOS
-      ? (isTwitter ? 'Twitter for iPhone' : 'tenna.party iOS')
-      : (isTwitter ? 'Twitter for Android' : 'tenna.party for Android')
+      ? isTwitter
+        ? 'Twitter for iPhone'
+        : 'tenna.party iOS'
+      : isTwitter
+        ? 'Twitter for Android'
+        : 'tenna.party for Android'
 
   let now = new Date()
   let tid: TID | undefined

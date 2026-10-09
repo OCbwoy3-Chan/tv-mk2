@@ -176,13 +176,13 @@ function ShellInner() {
   useLayoutEffect(() => {
     upsertHeadLink({
       rel: 'icon',
-      href: "https://tenna.party/favicon.ico",
+      href: 'https://tenna.party/favicon.ico',
       type: 'image/vnd.microsoft.icon', // more like microslop
       sizes: 'any',
     })
     upsertHeadLink({
       rel: 'shortcut icon',
-      href: "https://tenna.party/favicon.ico",
+      href: 'https://tenna.party/favicon.ico',
       type: 'image/vnd.microsoft.icon', // more like microslop
     })
   }, [t.palette.contrast_1000, t.palette.primary_500])

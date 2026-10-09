@@ -384,7 +384,8 @@
     "modulePathIgnorePatterns": [
       "__tests__/.*/__mocks__",
       "__e2e__/.*",
-      "bskylink/.*"
+      "bskylink/.*",
+      "local-android-sdk/.*"
     ],
     "coveragePathIgnorePatterns": [
       "<rootDir>/node_modules/",

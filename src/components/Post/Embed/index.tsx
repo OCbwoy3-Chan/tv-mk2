@@ -11,8 +11,10 @@ import {useQueryClient} from '@tanstack/react-query'
 
 import {parsePrivatePostLink} from '#/lib/private-post-link'
 import {makeProfileLink} from '#/lib/routes/links'
+import {SHARP_CORNERS} from '#/lib/shapes'
 import {getChatInviteCodeFromUrl} from '#/lib/strings/url-helpers'
 import {useDirectFetchRecords} from '#/state/preferences/direct-fetch-records'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useDirectFetchEmbedRecord} from '#/state/queries/direct-fetch-record'
 import {unstableCacheProfileView} from '#/state/queries/profile'
@@ -47,7 +49,7 @@ import {ModeratedFeedEmbed} from './FeedEmbed'
 import {ImageEmbed} from './ImageEmbed'
 import {ModeratedListEmbed} from './ListEmbed'
 import {PostPlaceholder as PostPlaceholderText} from './PostPlaceholder'
-import { PrivatePostEmbed } from './PrivatePostEmbed'
+import {PrivatePostEmbed} from './PrivatePostEmbed'
 import {type CommonProps, type EmbedProps, PostEmbedViewContext} from './types'
 import {VideoEmbed} from './VideoEmbed'
 
@@ -153,7 +155,16 @@ function MediaEmbed({
     case 'link': {
       const privatePostLink = parsePrivatePostLink(embed.view.external.uri)
       if (privatePostLink) {
-        return <PrivatePostEmbed style={[]} numberOfLines={undefined} textOnly={false} author={rest.post?.author.did} {...privatePostLink} viewContext={rest.viewContext} />
+        return (
+          <PrivatePostEmbed
+            style={[]}
+            numberOfLines={undefined}
+            textOnly={false}
+            author={rest.post?.author.did}
+            {...privatePostLink}
+            viewContext={rest.viewContext}
+          />
+        )
       }
 
       if (isThemeEmbed(embed.view.external)) {
@@ -456,6 +467,8 @@ export function QuoteEmbed({
   visibilityLabel?: string
   linkDisabled?: boolean
 }) {
+  const shapePreference = useEnableSquareButtons()
+
   const moderationOpts = useModerationOpts()
   const quote = useMemo<$Typed<app.bsky.feed.defs.PostView>>(
     () => ({
@@ -557,7 +570,13 @@ export function QuoteEmbed({
         onPointerLeave={linkDisabled ? undefined : onPointerLeave}>
         <ContentHider
           modui={moderation?.ui('contentList')}
-          style={[a.rounded_md, a.border, t.atoms.border_contrast_low, style]}
+          style={[
+            a.rounded_md,
+            a.border,
+            t.atoms.border_contrast_low,
+            style,
+            shapePreference === 'sharp' && SHARP_CORNERS,
+          ]}
           activeStyle={[a.p_md, a.pt_sm]}
           childContainerStyle={[a.pt_sm]}>
           {({active}) => (
@@ -566,7 +585,10 @@ export function QuoteEmbed({
                 <SubtleHover
                   native
                   hover={hover || pressed}
-                  style={[a.rounded_md]}
+                  style={[
+                    a.rounded_md,
+                    shapePreference === 'sharp' && SHARP_CORNERS,
+                  ]}
                 />
               )}
               {linkDisabled ? (

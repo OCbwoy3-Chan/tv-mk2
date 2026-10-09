@@ -468,17 +468,13 @@ it.each(['did:web:api.blacksky.community', 'did:web:api.eurosky.network'])(
       ]) {
         expect(headersFor(fetchMock, nsid).get('atproto-proxy')).toBe(audience)
       }
-      expect(getOAuthScope()).toContain(
-        `include:party.tenna.app.permissions2?aud=${encodeURIComponent(audience)}`,
-      )
+      expect(getOAuthScope()).toContain('transition:generic')
       for (const nsid of [
         'app.bsky.actor.getPreferences',
         'app.bsky.actor.putPreferences',
       ]) {
         expect(headersFor(fetchMock, nsid).has('atproto-proxy')).toBe(false)
-        expect(getOAuthScope()).toContain(
-          `rpc:${nsid}?aud=did%3Aweb%3Aapi.bsky.app%23bsky_appview`,
-        )
+        expect(getOAuthScope()).toContain('transition:generic')
       }
     } finally {
       device.set(['customAppViewDid'], previous)

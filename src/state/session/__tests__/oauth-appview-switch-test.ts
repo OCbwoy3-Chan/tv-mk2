@@ -108,7 +108,10 @@ it('redirects installed PWAs and completes the app server switch on return', asy
     display: 'page',
     state: 'switch-state',
   })
-  expect(JSON.parse(values.get('oauth_appview_switch')!).mode).toBeUndefined()
+  const savedSwitch: Record<string, unknown> = JSON.parse(
+    values.get('oauth_appview_switch')!,
+  )
+  expect(savedSwitch.mode).toBeUndefined()
   expect(device.set).not.toHaveBeenCalled()
   window.location.hash = '#state=switch-state&code=authorization-code'
   initCallback.mockResolvedValueOnce({state: 'switch-state', session})

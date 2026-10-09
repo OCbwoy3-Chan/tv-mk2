@@ -13,6 +13,7 @@ import {useNavigation} from '@react-navigation/native'
 import {BACK_HITSLOP} from '#/lib/constants'
 import {useHaptics} from '#/lib/haptics'
 import {type NavigationProp} from '#/lib/routes/types'
+import {getShapeStyle} from '#/lib/shapes'
 import {userStyle} from '#/lib/userstyles'
 import {type Shadow} from '#/state/cache/types'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
@@ -94,6 +95,7 @@ let ProfileHeaderShell = ({
       openLightbox({
         images: [
           {
+            downloadName: `${profile.handle}-${type === 'image' ? 'banner' : 'avatar'}`,
             uri: applyImageTransforms(uri, {
               imageCdnHost,
               format: fullsizeFormat,
@@ -130,6 +132,7 @@ let ProfileHeaderShell = ({
     },
     [
       openLightbox,
+      profile.handle,
       imageCdnHost,
       fullsizeFormat,
       thumbnailFormat,
@@ -225,7 +228,11 @@ let ProfileHeaderShell = ({
                     style={[
                       a.align_center,
                       a.justify_center,
-                      enableSquareButtons ? a.rounded_sm : a.rounded_full,
+                      getShapeStyle(
+                        enableSquareButtons,
+                        a.rounded_sm,
+                        a.rounded_full,
+                      ),
                       {
                         width: 31,
                         height: 31,
@@ -304,8 +311,11 @@ let ProfileHeaderShell = ({
               },
               (enableSquareAvatars || profile.associated?.labeler) && {
                 borderRadius:
-                  getSquareAvatarRadius(live.isActive ? 88 : 90) +
-                  (live.isActive ? 3 : 2),
+                  getSquareAvatarRadius(
+                    live.isActive ? 88 : 90,
+                    enableSquareAvatars,
+                  ) +
+                  (enableSquareAvatars === 'sharp' ? 0 : live.isActive ? 3 : 2),
               },
             ]}>
             <Animated.View ref={aviRef} collapsable={false}>

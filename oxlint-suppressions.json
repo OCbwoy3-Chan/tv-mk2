@@ -70,7 +70,7 @@
   },
   "src/components/Autocomplete/useAutocomplete/index.ts": {
     "no-unused-vars": {
-      "count": 3
+      "count": 1
     }
   },
   "src/components/Composer/index.tsx": {
@@ -447,10 +447,10 @@
   },
   "src/lib/hooks/useToggleMutationQueue.ts": {
     "typescript/no-explicit-any": {
-      "count": 2
+      "count": 1
     },
     "typescript/no-unsafe-call": {
-      "count": 2
+      "count": 1
     }
   },
   "src/lib/hooks/useWebScrollRestoration.ts": {

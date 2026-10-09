@@ -123,10 +123,10 @@ import {setNavigationMetadata} from '#/analytics/metadata'
 import {IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
 import {router} from '#/routes'
 import {Referrer} from '../modules/expo-bluesky-swiss-army'
-import { DeltaSettingsScreen } from './screens/Settings/DeltaSettings'
-import { DeltaBadgeSettingsScreen } from './screens/Settings/DeltaSettings/BadgeSettings'
-import { DeltaModLabelSettingsScreen } from './screens/Settings/DeltaSettings/ModLabelSettings'
-import { DeltaPrivatePostSettingsScreen } from './screens/Settings/DeltaSettings/PrivatePostSettings'
+import {DeltaSettingsScreen} from './screens/Settings/DeltaSettings'
+import {DeltaBadgeSettingsScreen} from './screens/Settings/DeltaSettings/BadgeSettings'
+import {DeltaModLabelSettingsScreen} from './screens/Settings/DeltaSettings/ModLabelSettings'
+import {DeltaPrivatePostSettingsScreen} from './screens/Settings/DeltaSettings/PrivatePostSettings'
 
 function deferredNamedScreen<
   Name extends string,
@@ -1195,6 +1195,9 @@ const LINKING = {
     'https://witchsky.app',
     'https://tenna.party',
     'https://deer.social',
+    'https://mu.social',
+    'https://blacksky.community',
+    'https://northsky.app',
   ],
 
   getPathFromState(state: State) {

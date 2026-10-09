@@ -3,7 +3,7 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
 import {type AppIconSet} from '#/screens/Settings/AppIconSettings/types'
-import { IOS_MAJOR_VERSION, IS_IOS } from '#/env'
+import {IOS_MAJOR_VERSION, IS_IOS} from '#/env'
 
 export function useAppIconSets() {
   const {_} = useLingui()
@@ -38,11 +38,11 @@ export function useAppIconSets() {
           )
         },
       },
-    ].filter(a=>!!a) satisfies AppIconSet[]
+    ].filter(a => !!a) satisfies AppIconSet[]
 
     const liquidGlass = [
       {
-        id: 'liquid_glass_r' as AppIconSet['id'],
+        id: 'liquid_glass_r',
         name: _(
           msg({
             context: 'Name of app icon variant',
@@ -61,7 +61,7 @@ export function useAppIconSets() {
         },
       },
       {
-        id: 'liquid_glass_o' as AppIconSet['id'],
+        id: 'liquid_glass_o',
         name: _(
           msg({
             context: 'Name of app icon variant',
@@ -80,7 +80,7 @@ export function useAppIconSets() {
         },
       },
       {
-        id: 'liquid_glass_bluesky' as AppIconSet['id'],
+        id: 'liquid_glass_bluesky',
         name: _(
           msg({
             context: 'Name of app icon variant',
@@ -99,7 +99,7 @@ export function useAppIconSets() {
         },
       },
       {
-        id: 'twitter_liquid_glass' as AppIconSet['id'],
+        id: 'twitter_liquid_glass',
         name: _(
           msg({
             context: 'Name of app icon variant',
@@ -121,7 +121,7 @@ export function useAppIconSets() {
 
     const testFlight = [
       {
-        id: 'testflight' as AppIconSet['id'],
+        id: 'testflight',
         name: _(
           msg({context: 'Name of app icon variant', message: 'TestFlight'}),
         ),
@@ -135,7 +135,7 @@ export function useAppIconSets() {
         },
       },
       {
-        id: 'bluesky_testflight' as AppIconSet['id'],
+        id: 'bluesky_testflight',
         name: _(
           msg({
             context: 'Name of app icon variant',

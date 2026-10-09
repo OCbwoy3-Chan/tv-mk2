@@ -1,11 +1,11 @@
-import { type PropsWithChildren } from 'react'
+import {type PropsWithChildren} from 'react'
 
+import {Provider as EmojiFontProvider} from '#/state/preferences/emoji-font'
 import {Provider as AlsoLikedCollapseByDefaultProvider} from './also-liked-collapse-by-default'
 import {Provider as AlsoLikedFeedProvider} from './also-liked-feed-enabled'
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
 import {Provider as AtprotoExplorerProvider} from './atproto-explorer'
-import {Provider as AtprotoRkeySettingsProvider} from "./atproto-rkey-settings.tsx"
-import {Provider as TwitterEasterEggProvider} from "./twitter-easteregg.tsx"
+import {Provider as AtprotoRkeySettingsProvider} from './atproto-rkey-settings.tsx'
 import {Provider as AutoCompactAccountSwitcherProvider} from './auto-compact-account-switcher'
 import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
 import {Provider as AutoplayProvider} from './autoplay'
@@ -31,11 +31,11 @@ import {Provider as FaviconServiceProvider} from './favicon-service'
 import {Provider as FullsizeFormatProvider} from './fullsize-format'
 import {Provider as GoLinksProvider} from './go-links-enabled'
 import {Provider as HiddenPostsProvider} from './hidden-posts'
-import {Provider as HideBetaBadgeProvider} from "./hide-beta-badge.tsx"
+import {Provider as HideBetaBadgeProvider} from './hide-beta-badge.tsx'
 import {Provider as HideDisplayNamesProvider} from './hide-display-names'
 import {Provider as HideFeedsPromoTabProvider} from './hide-feeds-promo-tab'
+import {Provider as HideOwnTennaBadgeProvider} from './hide-own-tennabadge.tsx'
 import {Provider as HideQuotesOfBlockedAccountsProvider} from './hide-quotes-of-blocked-accounts'
-import {Provider as HideOwnTennaBadgeProvider} from "./hide-own-tennabadge.tsx"
 import {Provider as HideScaryFollowButtonsProvider} from './hide-scary-follow-buttons.tsx'
 import {Provider as HideSimilarAccountsRecommProvider} from './hide-similar-accounts-recommendations'
 import {Provider as HideUnreplyablePostsProvider} from './hide-unreplyable-posts'
@@ -48,15 +48,14 @@ import {Provider as LargeAltBadgeProvider} from './large-alt-badge'
 import {Provider as LoadSmallPNGsProvider} from './load-small-pngs'
 import {MetricsDisplayPreferencesProvider} from './metrics-display-preference'
 import {Provider as NoDiscoverProvider} from './no-discover-fallback'
-import {Provider as NotoColorEmojiProvider} from './noto-color-emoji'
 import {Provider as OmitViaFieldProvider} from './omit-via-field'
 import {Provider as OpenRouterProvider} from './openrouter'
 import {Provider as PasteToLinkEnabledProvider} from './paste-to-link-enabled'
 import {Provider as PdsLabelProvider} from './pds-label'
 import {Provider as PlcDirectoryProvider} from './plc-directory'
 import {Provider as PostNameReplacementProvider} from './post-name-replacement.tsx'
+import {Provider as PrivatePostsEnabledProvider} from './private-posts-enabled.tsx'
 import {Provider as ReplyIconIndicatorsProvider} from './reply-icon-indicators'
-import {Provider as PrivatePostsEnabledProvider} from "./private-posts-enabled.tsx"
 import {Provider as RepostCarouselProvider} from './repost-carousel-enabled'
 import {Provider as SettingsSyncProvider} from './settings-sync'
 import {Provider as ShowAvatarFollowButtonProvider} from './show-avatar-follow-button'
@@ -75,9 +74,9 @@ import {Provider as ThumbnailFormatProvider} from './thumbnail-format'
 import {Provider as TidSuffixProvider} from './tid-suffix'
 import {Provider as TranslationServicePreferenceProvider} from './translation-service-preference'
 import {Provider as TrendingSettingsProvider} from './trending'
+import {Provider as TwitterEasterEggProvider} from './twitter-easteregg.tsx'
 import {Provider as UseHandleInLinksProvider} from './use-handle-in-links'
 import {Provider as UsedStarterPacksProvider} from './used-starter-packs'
-
 
 export {
   useAlsoLikedCollapseByDefault,
@@ -93,9 +92,12 @@ export {
   useSetForceAltTextEnabled,
   useSetRequireAltTextEnabled,
 } from './alt-text-required'
-export { useAtprotoRkeySettings, useSetAtprotoRkeySettings } from './atproto-rkey-settings'
-export { useAutoplayDisabled, useSetAutoplayDisabled } from './autoplay'
-export { useCompactPosts, useSetCompactPosts } from './compact-posts'
+export {
+  useAtprotoRkeySettings,
+  useSetAtprotoRkeySettings,
+} from './atproto-rkey-settings'
+export {useAutoplayDisabled, useSetAutoplayDisabled} from './autoplay'
+export {useCompactPosts, useSetCompactPosts} from './compact-posts'
 export {useConfirmFollow, useSetConfirmFollow} from './confirm-follow'
 export {
   useCustomPostRkeysEnabled,
@@ -105,7 +107,7 @@ export {
   useDisableComposerPrompt,
   useSetDisableComposerPrompt,
 } from './disable-composer-prompt'
-export { useHapticsDisabled, useSetHapticsDisabled } from './disable-haptics'
+export {useHapticsDisabled, useSetHapticsDisabled} from './disable-haptics'
 export {
   useDisableTopOfFeedButton,
   useSetDisableTopOfFeedButton,
@@ -118,10 +120,10 @@ export {
   useExternalEmbedsPrefs,
   useSetExternalEmbedPref,
 } from './external-embeds-prefs'
-export { useFaviconService, useSetFaviconService } from './favicon-service'
-export { useGoLinksEnabled, useSetGoLinksEnabled } from './go-links-enabled'
-export { useHiddenPosts, useHiddenPostsApi } from './hidden-posts'
-export { useHideDisplayNames, useSetHideDisplayNames } from './hide-display-names'
+export {useFaviconService, useSetFaviconService} from './favicon-service'
+export {useGoLinksEnabled, useSetGoLinksEnabled} from './go-links-enabled'
+export {useHiddenPosts, useHiddenPostsApi} from './hidden-posts'
+export {useHideDisplayNames, useSetHideDisplayNames} from './hide-display-names'
 export {
   useHideFeedsPromoTab,
   useSetHideFeedsPromoTab,
@@ -130,10 +132,10 @@ export {
   useHideScaryFollowButtons,
   useSetHideScaryFollowButtons,
 } from './hide-scary-follow-buttons'
-export { useImageCdnHost, useSetImageCdnHost } from './image-cdn-host'
-export { useLabelDefinitions } from './label-defs'
-export { useLanguagePrefs, useLanguagePrefsApi } from './languages'
-export { useOmitViaField, useSetOmitViaField } from './omit-via-field'
+export {useImageCdnHost, useSetImageCdnHost} from './image-cdn-host'
+export {useLabelDefinitions} from './label-defs'
+export {useLanguagePrefs, useLanguagePrefsApi} from './languages'
+export {useOmitViaField, useSetOmitViaField} from './omit-via-field'
 export {
   useOpenRouterApiKey,
   useOpenRouterConfigured,
@@ -178,7 +180,7 @@ export {
   useTranslationServicePreference,
 } from './translation-service-preference'
 
-export function Provider({ children }: PropsWithChildren<{}>) {
+export function Provider({children}: PropsWithChildren<{}>) {
   return (
     <SettingsSyncProvider>
       <LanguagesProvider>
@@ -251,18 +253,18 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                             <AtprotoRkeySettingsProvider>
                                                                                                                                               <PrivatePostsEnabledProvider>
                                                                                                                                                 <DisableInfiniteScrollProvider>
-                                                                                                                                                 <HideQuotesOfBlockedAccountsProvider>
+                                                                                                                                                  <HideQuotesOfBlockedAccountsProvider>
                                                                                                                                                     <ReplyIconIndicatorsProvider>
                                                                                                                                                       <ShowPostTagsProvider>
-                                                                                                                                                       <NotoColorEmojiProvider>
+                                                                                                                                                        <EmojiFontProvider>
                                                                                                                                                           <PasteToLinkEnabledProvider>
                                                                                                                                                             <TwitterEasterEggProvider>
                                                                                                                                                               {
                                                                                                                                                                 children
                                                                                                                                                               }
                                                                                                                                                             </TwitterEasterEggProvider>
-                                                                                                                                                        </PasteToLinkEnabledProvider>
-                                                                                                                                                       </NotoColorEmojiProvider>
+                                                                                                                                                          </PasteToLinkEnabledProvider>
+                                                                                                                                                        </EmojiFontProvider>
                                                                                                                                                       </ShowPostTagsProvider>
                                                                                                                                                     </ReplyIconIndicatorsProvider>
                                                                                                                                                   </HideQuotesOfBlockedAccountsProvider>

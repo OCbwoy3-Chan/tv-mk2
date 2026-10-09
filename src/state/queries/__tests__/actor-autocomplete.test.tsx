@@ -6,6 +6,7 @@ import {
   useActorAutocompleteQuery,
 } from '#/state/queries/actor-autocomplete'
 import {useAppviewClient} from '#/state/session'
+import {useAutocomplete} from '#/components/Autocomplete/useAutocomplete'
 import {device} from '#/storage'
 
 jest.mock('#/state/queries/preferences', () => ({
@@ -17,6 +18,10 @@ jest.mock('@bsky/sdk/moderation', () => ({
 jest.mock('#/state/session', () => ({useAppviewClient: jest.fn()}))
 jest.mock('#/state/preferences/moderation-opts', () => ({
   useModerationOpts: () => undefined,
+}))
+
+jest.mock('#/components/Autocomplete/useAutocomplete/useEmojiSearch', () => ({
+  useEmojiSearch: () => () => [],
 }))
 
 const profile = {did: 'did:plc:alice', handle: 'alice.test'}
@@ -39,7 +44,7 @@ function setup() {
     }),
     {wrapper: Wrapper},
   )
-  return {call, queryClient, ...hook}
+  return {call, queryClient, Wrapper, ...hook}
 }
 
 test('query and imperative autocomplete share the same cached result shape', async () => {
@@ -73,4 +78,26 @@ test('autocomplete refetches on server changes without showing old suggestions',
     })
     queryClient.clear()
   }
+})
+
+test('search and sign-in suggestions use the selected AppView while typing', async () => {
+  const {call, queryClient, Wrapper, unmount: unmountComposer} = setup()
+  const {result, rerender, unmount} = renderHook(
+    ({query}: {query: string}) => useAutocomplete({type: 'profile', query}),
+    {wrapper: Wrapper, initialProps: {query: ''}},
+  )
+  for (const query of ['a', 'al', 'ali', 'alice']) {
+    rerender({query})
+    await waitFor(() => expect(result.current.isFetching).toBe(false))
+    expect(result.current.items).toEqual([
+      {key: profile.did, type: 'profile', value: '@alice.test', profile},
+    ])
+    expect(call).toHaveBeenLastCalledWith(expect.anything(), {
+      q: query,
+      limit: 8,
+    })
+  }
+  unmount()
+  unmountComposer()
+  queryClient.clear()
 })

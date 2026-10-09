@@ -130,13 +130,7 @@ function escapeUnfacetedText(text: string): string {
   }
 
   for (const match of text.matchAll(/<([^<>\n]+)>/g)) {
-    if (
-      syntaxRanges.some(
-        range => match.index >= range.start && match.index < range.end,
-      )
-    ) {
-      continue
-    }
+    // Angle destinations need their own escape inside literal Markdown links.
     if (!getEnclosedFacet(match[1])) continue
     escapedStarts.add(match.index)
     syntaxRanges.push({start: match.index, end: match.index + match[0].length})

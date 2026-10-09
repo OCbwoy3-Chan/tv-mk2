@@ -13,6 +13,9 @@ const BSKY_TRUSTED_HOSTS = [
   'witchsky\\.app',
   'witchsky\\.social',
   'deer\\.social',
+  'mu\\.social',
+  'blacksky\\.community',
+  'northsky\\.app',
   'bsky\\.app',
   'bsky\\.social',
   'blueskyweb\\.xyz',
@@ -28,7 +31,7 @@ const BSKY_TRUSTED_HOSTS = [
 const TRUSTED_REGEX = new RegExp(
   `^(http(s)?://(([\\w-]+\\.)?${BSKY_TRUSTED_HOSTS.join(
     '|([\\w-]+\\.)?',
-  )})|/|#)`,
+  )})(?=[:/?#]|$)|/|#)`,
 )
 const TLD_SET = new Set(TLDs)
 
@@ -152,8 +155,13 @@ export function isBskyAppUrl(url: string): boolean {
     url.startsWith('https://bsky.app/') ||
     url.startsWith('https://tenna.party/') ||
     (url.startsWith('https://deer.social/') &&
-      !url.startsWith('https://deer.social/about'))
-      
+      !url.startsWith('https://deer.social/about')) ||
+    (url.startsWith('https://mu.social/') &&
+      !url.startsWith('https://mu.social/about')) ||
+    (url.startsWith('https://blacksky.community/') &&
+      !url.startsWith('https://blacksky.community/about')) ||
+    (url.startsWith('https://northsky.app/') &&
+      !url.startsWith('https://northsky.app/about'))
   )
 }
 
@@ -166,9 +174,13 @@ export function isBskyRSSUrl(url: string): boolean {
 }
 
 export function isExternalUrl(url: string): boolean {
-  const external = !isBskyAppUrl(url) && url.startsWith('http')
+  const external = !isBskyAppUrl(url) && /^[a-z][a-z0-9+.-]*:/i.test(url)
   const rss = isBskyRSSUrl(url)
   return external || rss
+}
+
+export function isHttpUrl(url: string): boolean {
+  return /^https?:\/\//i.test(url)
 }
 
 export function isTrustedUrl(url: string): boolean {
@@ -343,6 +355,9 @@ export function linkRequiresWarning(uri: string, label: string) {
   }
 
   const host = urip.hostname.toLowerCase()
+  if (!host) {
+    return uri !== label
+  }
   if (isTrustedUrl(uri)) {
     // if this is a link to internal content, warn if it represents itself as a URL to another app
     return !!labelDomain && labelDomain !== host && isPossiblyAUrl(labelDomain)

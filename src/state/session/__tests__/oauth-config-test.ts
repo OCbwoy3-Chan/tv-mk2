@@ -20,11 +20,11 @@ it.each([false, true])(
       `https://tenna.party/oauth-client-metadata${native ? '-native' : ''}.json`,
     )
     expect(metadata.scope).toBe(prodScope)
-    expect(metadata.redirect_uris).toEqual([
+    expect(metadata.redirect_uris).toEqual(
       native
-        ? 'app.tennaparty:/auth/callback'
-        : 'https://tenna.party/auth/web/callback',
-    ])
+        ? ['party.tenna:/auth/callback', 'app.tennaparty:/auth/callback']
+        : ['https://tenna.party/auth/web/callback'],
+    )
   },
 )
 

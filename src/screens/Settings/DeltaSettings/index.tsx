@@ -1,17 +1,17 @@
-import { View } from 'react-native'
-import { Trans } from '@lingui/react/macro'
+import {View} from 'react-native'
+import {Trans} from '@lingui/react/macro'
 
-import { atoms as a, useBreakpoints, useTheme } from '#/alf'
+import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import * as Layout from '#/components/Layout'
-import { Separator } from '#/components/Select'
-import { Text } from '#/components/Typography'
-import { DeltasBetaBadgeToggle } from './components/BetaBadgeToggle'
-import { DeltasJapanLogoToggle } from './components/TwitterEasterEggToggle'
-import { TennaQuickLinks } from './components/QuickLinks'
+import {Separator} from '#/components/Select'
+import {Text} from '#/components/Typography'
+import {DeltasBetaBadgeToggle} from './components/BetaBadgeToggle'
+import {TennaQuickLinks} from './components/QuickLinks'
+import {DeltasJapanLogoToggle} from './components/TwitterEasterEggToggle'
 
 export function DeltaSettingsScreen() {
-  const t = useTheme();
-  const { gtMobile } = useBreakpoints()
+  const t = useTheme()
+  const {gtMobile} = useBreakpoints()
 
   return (
     <Layout.Screen>
@@ -44,11 +44,10 @@ export function DeltaSettingsScreen() {
               a.w_full,
               a.rounded_md,
               a.overflow_hidden,
-              t.atoms.bg_contrast_25
-            ]}
-          >
+              t.atoms.bg_contrast_25,
+            ]}>
             <DeltasJapanLogoToggle />
-            <Separator/>
+            <Separator />
             <DeltasBetaBadgeToggle />
           </View>
         </View>

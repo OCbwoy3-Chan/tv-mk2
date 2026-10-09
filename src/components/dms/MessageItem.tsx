@@ -28,6 +28,7 @@ import {Trans, useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
 import {createSanitizedDisplayName} from '#/lib/moderation/create-sanitized-display-name'
+import {getShapeRadius, getShapeStyle} from '#/lib/shapes'
 import {useMaybeProfileShadow} from '#/state/cache/profile-shadow'
 import {type ConvoItem} from '#/state/messages/convo/types'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -243,7 +244,7 @@ let MessageItem = ({
     (isInMiddleOfCluster || isLastInCluster)
 
   const pendingColor = t.palette.primary_300
-  const borderRadius = enableSquareButtons ? 4 : 18
+  const borderRadius = getShapeRadius(enableSquareButtons, 4, 18)
 
   const displayNameInset = enableSquareButtons
     ? a.ml_sm.marginLeft
@@ -526,98 +527,95 @@ let MessageItem = ({
                 {displayName}
               </Text>
             ) : null}
-              <View style={[a.relative]}>
-                <ActionsWrapper
-                  isFromSelf={isFromSelf}
-                  message={message}
-                  senderProfile={profile}
-                  moderationOpts={moderationOpts}>
-                  {bsky.isType(app.bsky.embed.record.view, message.embed) && (
-                    <MessageItemEmbed
-                      embed={message.embed}
-                      isFromSelf={isFromSelf}
-                      isGroupChat={isGroupChat}
-                      squaredBottomCorner={
-                        squaredBottomCorner || hasEmbedAndText
-                      }
-                      squaredTopCorner={squaredTopCorner}
-                      highlightSV={highlightSV}
-                    />
-                  )}
-                  {bsky.isType(
-                    chat.bsky.embed.joinLink.view,
-                    message.embed,
-                  ) && (
-                    <MessageItemInviteEmbed
-                      embed={message.embed}
-                      isFromSelf={isFromSelf}
-                      isGroupChat={isGroupChat}
-                      squaredBottomCorner={
-                        squaredBottomCorner || hasEmbedAndText
-                      }
-                      squaredTopCorner={squaredTopCorner}
-                      highlightSV={highlightSV}
-                    />
-                  )}
-                  {rt.text.length > 0 && (
-                    <Animated.View
-                      accessibilityHint={l`Double tap or long press the message to add a reaction`}
-                      style={[
-                        !isFromSelf && isGroupChat && a.ml_sm,
-                        !isEmojiOnly && [
-                          enableSquareButtons ? a.rounded_sm : a.rounded_xl,
-                          a.py_sm,
-                          a.px_md,
-                          a.max_w_full,
-                          {
-                            marginTop: hasEmbedAndText
-                              ? CLUSTERED_MESSAGE_GAP
-                              : 0,
-                          },
-                          isFromSelf ? a.self_end : a.self_start,
-                          borderRadiusStyle,
-                          highlightStyle,
-                        ],
-                      ]}>
-                      {replyTo && !isEmojiOnly ? (
-                        <ReplyQuote
-                          replyTo={replyTo}
-                          isFromSelf={isFromSelf}
-                          relatedProfiles={relatedProfiles}
-                          onPress={onPressReplyTo}
-                        />
-                      ) : null}
-                      <RichText
-                        value={rt}
-                        style={[
-                          a.text_md,
-                          isFromSelf && {
-                            color: accentForeground(t, t.palette.primary_500),
-                          },
-                          // Emoji-only: add top leading to avoid clipping the
-                          // glyph, then pull the bottom up by the same amount so
-                          // the glyph bottom-aligns with the avatar instead of
-                          // sitting above its line-box baseline.
-                          isEmojiOnly && [
-                            a.leading_tight,
-                            // Visually align bottom of the emoji with the avatar
-                            !isFromSelf &&
-                              platform({
-                                android: {marginTop: a.mt_2xs.marginTop},
-                                default: {marginBottom: -a.mb_sm.marginBottom},
-                              }),
-                          ],
-                        ]}
-                        interactiveStyle={a.underline}
-                        enableTags
-                        emojiMultiplier={3}
-                        shouldProxyLinks={true}
+            <View style={[a.relative]}>
+              <ActionsWrapper
+                isFromSelf={isFromSelf}
+                message={message}
+                senderProfile={profile}
+                moderationOpts={moderationOpts}>
+                {bsky.isType(app.bsky.embed.record.view, message.embed) && (
+                  <MessageItemEmbed
+                    embed={message.embed}
+                    isFromSelf={isFromSelf}
+                    isGroupChat={isGroupChat}
+                    squaredBottomCorner={squaredBottomCorner || hasEmbedAndText}
+                    squaredTopCorner={squaredTopCorner}
+                    highlightSV={highlightSV}
+                  />
+                )}
+                {bsky.isType(chat.bsky.embed.joinLink.view, message.embed) && (
+                  <MessageItemInviteEmbed
+                    embed={message.embed}
+                    isFromSelf={isFromSelf}
+                    isGroupChat={isGroupChat}
+                    squaredBottomCorner={squaredBottomCorner || hasEmbedAndText}
+                    squaredTopCorner={squaredTopCorner}
+                    highlightSV={highlightSV}
+                  />
+                )}
+                {rt.text.length > 0 && (
+                  <Animated.View
+                    accessibilityHint={l`Double tap or long press the message to add a reaction`}
+                    style={[
+                      !isFromSelf && isGroupChat && a.ml_sm,
+                      !isEmojiOnly && [
+                        getShapeStyle(
+                          enableSquareButtons,
+                          a.rounded_sm,
+                          a.rounded_xl,
+                        ),
+                        a.py_sm,
+                        a.px_md,
+                        a.max_w_full,
+                        {
+                          marginTop: hasEmbedAndText
+                            ? CLUSTERED_MESSAGE_GAP
+                            : 0,
+                        },
+                        isFromSelf ? a.self_end : a.self_start,
+                        borderRadiusStyle,
+                        highlightStyle,
+                      ],
+                    ]}>
+                    {replyTo && !isEmojiOnly ? (
+                      <ReplyQuote
+                        replyTo={replyTo}
+                        isFromSelf={isFromSelf}
+                        relatedProfiles={relatedProfiles}
+                        onPress={onPressReplyTo}
                       />
-                    </Animated.View>
-                  )}
-                </ActionsWrapper>
-                {appliedReactions}
-              </View>
+                    ) : null}
+                    <RichText
+                      value={rt}
+                      style={[
+                        a.text_md,
+                        isFromSelf && {
+                          color: accentForeground(t, t.palette.primary_500),
+                        },
+                        // Emoji-only: add top leading to avoid clipping the
+                        // glyph, then pull the bottom up by the same amount so
+                        // the glyph bottom-aligns with the avatar instead of
+                        // sitting above its line-box baseline.
+                        isEmojiOnly && [
+                          a.leading_tight,
+                          // Visually align bottom of the emoji with the avatar
+                          !isFromSelf &&
+                            platform({
+                              android: {marginTop: a.mt_2xs.marginTop},
+                              default: {marginBottom: -a.mb_sm.marginBottom},
+                            }),
+                        ],
+                      ]}
+                      interactiveStyle={a.underline}
+                      enableTags
+                      emojiMultiplier={3}
+                      shouldProxyLinks={true}
+                    />
+                  </Animated.View>
+                )}
+              </ActionsWrapper>
+              {appliedReactions}
+            </View>
           </View>
         </View>
         {isLastInCluster && (
@@ -868,7 +866,7 @@ function ReplyQuote({
       onPress={onPress}
       style={[
         a.mb_xs,
-        enableSquareButtons ? a.rounded_sm : a.rounded_md,
+        getShapeStyle(enableSquareButtons, a.rounded_sm, a.rounded_md),
         a.p_sm,
         // The padding above is a little loose, so we tighten it up here.
         {paddingTop: tokens.space.sm - 2},

@@ -1,21 +1,21 @@
-import { useState } from 'react'
-import { View } from 'react-native'
-import { Trans, useLingui } from '@lingui/react/macro'
+import {useState} from 'react'
+import {View} from 'react-native'
+import {Trans, useLingui} from '@lingui/react/macro'
 
-import { forcePrivatePostsResync } from '#/lib/api/private-posts'
-import { useNavigationDeduped } from '#/lib/hooks/useNavigationDeduped'
+import {forcePrivatePostsResync} from '#/lib/api/private-posts'
+import {useNavigationDeduped} from '#/lib/hooks/useNavigationDeduped'
 import {
   usePrivatePostsAppViewDID,
   usePrivatePostsAppViewURL,
 } from '#/state/preferences/private-posts-appview'
-import { usePrivatePostsEnabled } from '#/state/preferences/private-posts-enabled'
+import {usePrivatePostsEnabled} from '#/state/preferences/private-posts-enabled'
 import {
   usePrivatePostsModStatus,
   usePrivatePostsState,
 } from '#/state/queries/private-posts'
-import { useSpacesCompatiblePDS } from '#/state/queries/spaces'
-import { useAgent, useSession } from '#/state/session'
-import { atoms as a, useTheme } from '#/alf'
+import {useSpacesCompatiblePDS} from '#/state/queries/spaces'
+import {useAgent, useSession} from '#/state/session'
+import {atoms as a, useTheme} from '#/alf'
 import {
   Admonition,
   Content as AdmonitionContent,
@@ -24,13 +24,13 @@ import {
   Row as AdmonitionRow,
   Text as AdmonitionText,
 } from '#/components/Admonition'
-import { Button, ButtonText } from '#/components/Button'
+import {Button, ButtonText} from '#/components/Button'
 import * as Layout from '#/components/Layout'
-import { createStaticClick, InlineLinkText } from '#/components/Link'
+import {createStaticClick, InlineLinkText} from '#/components/Link'
 import * as Toast from '#/components/Toast'
-import { Text } from '#/components/Typography'
-import { DeltasPrivatePostsToggle } from './components/PrivatePostsToggle'
-import { PrivatePostPlayground } from './components/PrivatePostPlayground'
+import {Text} from '#/components/Typography'
+import {PrivatePostPlayground} from './components/PrivatePostPlayground'
+import {DeltasPrivatePostsToggle} from './components/PrivatePostsToggle'
 
 export function DeltaPrivatePostSettingsScreen() {
   const t = useTheme()
@@ -38,14 +38,14 @@ export function DeltaPrivatePostSettingsScreen() {
   const isSpacesCompatiblePDS = useSpacesCompatiblePDS(
     privatePostsEnabled === true,
   )
-  const { status: privatePostModFetchState, data: privatePostModState } =
+  const {status: privatePostModFetchState, data: privatePostModState} =
     usePrivatePostsModStatus()
-  const { status: privatePostStateFetchState, data: privatePostState } =
+  const {status: privatePostStateFetchState, data: privatePostState} =
     usePrivatePostsState()
   const navigation = useNavigationDeduped()
-  const { t: l } = useLingui()
+  const {t: l} = useLingui()
   const agent = useAgent()
-  const { currentAccount } = useSession()
+  const {currentAccount} = useSession()
   const [appViewDID] = usePrivatePostsAppViewDID()
   const appViewURL = usePrivatePostsAppViewURL()
   const [isResyncing, setIsResyncing] = useState(false)
@@ -56,12 +56,12 @@ export function DeltaPrivatePostSettingsScreen() {
     setIsResyncing(true)
     try {
       await forcePrivatePostsResync({agent, pdsUrl, appViewURL, appViewDID})
-      Toast.show(l`Private posts synced`, { type: 'success' })
+      Toast.show(l`Private posts synced`, {type: 'success'})
     } catch (error) {
-      console.log("privatepost sync err:",error)
+      console.log('privatepost sync err:', error)
       Toast.show(
         error instanceof Error ? error.message : l`Private posts sync failed`,
-        { type: 'error' },
+        {type: 'error'},
       )
     } finally {
       setIsResyncing(false)
@@ -105,7 +105,7 @@ export function DeltaPrivatePostSettingsScreen() {
               t.atoms.text_contrast_medium,
               a.text_sm,
               a.leading_snug,
-              { marginTop: -8 },
+              {marginTop: -8},
             ]}>
             <Trans>See also:</Trans>{' '}
             <InlineLinkText
@@ -116,18 +116,17 @@ export function DeltaPrivatePostSettingsScreen() {
               <Trans>Infrastructure settings</Trans>
             </InlineLinkText>
           </Text>
-          {(currentAccount?.isOauthSession === true || (privatePostsEnabled && !isSpacesCompatiblePDS)) && <Admonition type="error">
-            {currentAccount?.isOauthSession === true && (
-                <Trans>
-                  OAuth sessions are not supported.
-                </Trans>
-            )}{" "}
-            {privatePostsEnabled && !isSpacesCompatiblePDS && (
-              <Trans>
-                Your PDS does not support atproto spaces.
-              </Trans>
-            )}
-          </Admonition>}
+          {(currentAccount?.isOauthSession === true ||
+            (privatePostsEnabled && !isSpacesCompatiblePDS)) && (
+            <Admonition type="error">
+              {currentAccount?.isOauthSession === true && (
+                <Trans>OAuth sessions are not supported.</Trans>
+              )}{' '}
+              {privatePostsEnabled && !isSpacesCompatiblePDS && (
+                <Trans>Your PDS does not support atproto spaces.</Trans>
+              )}
+            </Admonition>
+          )}
           {privatePostModFetchState === 'success' &&
             privatePostModState?.isBanned === true && (
               <AdmonitionOuter type="error">
@@ -211,21 +210,15 @@ export function DeltaPrivatePostSettingsScreen() {
             )}
           {privatePostStateFetchState === 'success' && privatePostState && (
             <View style={[a.gap_sm]}>
-              <Text style={[a.text_md, a.font_bold]}>
-                PrivateVessel debug
-              </Text>
+              <Text style={[a.text_md, a.font_bold]}>PrivateVessel debug</Text>
               <View style={[a.p_md, a.rounded_sm, t.atoms.bg_contrast_25]}>
-                <Text
-                  style={[
-                    a.text_sm,
-                    a.leading_snug
-                  ]}>
+                <Text style={[a.text_sm, a.leading_snug]}>
                   {JSON.stringify(privatePostState, null, 2)}
                 </Text>
               </View>
             </View>
           )}
-          <PrivatePostPlayground/>
+          <PrivatePostPlayground />
         </View>
       </Layout.Content>
     </Layout.Screen>

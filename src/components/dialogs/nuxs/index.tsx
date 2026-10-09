@@ -27,11 +27,11 @@ import {
 } from '#/components/dialogs/nuxs/InviteFriendsAnnouncement'
 import {isSnoozed, snooze, unsnooze} from '#/components/dialogs/nuxs/snoozing'
 import {type EnabledCheckProps} from '#/components/dialogs/nuxs/utils'
-import { TennaPartyNativeAppNux } from '#/components/tenna/NativeAppNux'
 import {
   enabled as isWitchskyUpdateAnnouncementEnabled,
   WitchskyUpdateAnnouncement,
 } from '#/components/dialogs/nuxs/WitchskyUpdateAnnouncement'
+import {TennaPartyNativeAppNux} from '#/components/tenna/NativeAppNux'
 import {useAnalytics} from '#/analytics'
 import {useGeolocation} from '#/geolocation'
 import {type app} from '#/lexicons'
@@ -59,8 +59,8 @@ const queuedNuxs: {
   },
   {
     id: Nux.TennaPartyNativeAppAnnouncement_Android,
-    enabled: ()=>true
-  }
+    enabled: () => true,
+  },
 ]
 
 const Context = createContext<Context>({
@@ -210,8 +210,10 @@ function Inner({
       {activeNux === Nux.WitchskyUpdate202609 && <WitchskyUpdateAnnouncement />}
       {/*For example, activeNux === Nux.NeueTypography && <NeueTypography />*/}
       {activeNux === Nux.GroupChatsAnnouncement && <GroupChatsAnnouncement />}
-      {activeNux === Nux.TennaPartyNativeAppAnnouncement_Android && <TennaPartyNativeAppNux />}
-      
+      {activeNux === Nux.TennaPartyNativeAppAnnouncement_Android && (
+        <TennaPartyNativeAppNux />
+      )}
+
       {/*
         Mounted unconditionally: it gates the announcement on `activeNux`
         internally, so it can keep the invite-friends dialog mounted across

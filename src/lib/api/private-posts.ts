@@ -37,8 +37,8 @@ export type PrivatePostsState = Record<string, unknown>
 export type PrivatePost = {
   createdAt?: string
   descriptionFacets?: app.bsky.richtext.facet.Main[]
-  error?: "PostBanned" | "AccountBanned" | string
-  text?: string,
+  error?: string
+  text?: string
   postBanReason?: string
 }
 
@@ -281,9 +281,8 @@ export async function createPrivatePost({
     },
   }
   if (spaces.body.spaces.some(spaceView => spaceView.uri === space)) {
-    return (
-      await xrpc(xrpcAgent, putPrivateRecord, {params: {}, body: body})
-    ).body
+    return (await xrpc(xrpcAgent, putPrivateRecord, {params: {}, body: body}))
+      .body
   }
   return (
     await xrpc(xrpcAgent, createPrivateRecord, {

@@ -6,6 +6,7 @@ import {Trans, useLingui} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
 import {useNavigationDeduped} from '#/lib/hooks/useNavigationDeduped'
+import {getShapeRadius} from '#/lib/shapes'
 import {cleanError, isNetworkError} from '#/lib/strings/errors'
 import {logger} from '#/logger'
 import {
@@ -455,7 +456,7 @@ function AppServerDialogInner({
       style={web([
         {
           maxWidth: 400,
-          borderRadius: enableSquareButtons ? 18 : 36,
+          borderRadius: getShapeRadius(enableSquareButtons, 18, 36),
         },
       ])}>
       <View style={[a.relative, a.gap_md, a.w_full]}>
@@ -528,8 +529,9 @@ function AppServerDialogInner({
               <View style={[a.mt_sm]}>
                 <Admonition type="warning">
                   <Trans>
-                    This AppView belongs to a bad platform, it might have mandatory
-                    ID verification or serious trust and safety concerns.
+                    This AppView belongs to a bad platform, it might have
+                    mandatory ID verification or serious trust and safety
+                    concerns.
                   </Trans>
                 </Admonition>
               </View>

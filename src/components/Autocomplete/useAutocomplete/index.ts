@@ -2,6 +2,7 @@ import {useCallback, useMemo} from 'react'
 import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
 import {keepPreviousData, useQuery} from '@tanstack/react-query'
 
+import {searchActorsTypeahead} from '#/lib/api/search-actors-typeahead'
 import {isJustAMute, moduiContainsHideableOffense} from '#/lib/moderation'
 import {parseSearchLink} from '#/lib/routes/searchLink'
 import {
@@ -18,7 +19,7 @@ import {
   type AutocompleteItemType,
   type AutocompleteProfile,
 } from '#/components/Autocomplete/types'
-import {app} from '#/lexicons'
+import {type app} from '#/lexicons'
 import {useEmojiSearch} from './useEmojiSearch'
 
 const DEFAULT_MOD_OPTS = {
@@ -63,7 +64,7 @@ export function useAutocomplete({
         // Going from "foo" to "foo." should not clear matches.
         q = q.toLowerCase().trim().replace(/\.$/, '')
 
-        const data = await client.call(app.bsky.actor.searchActorsTypeahead, {
+        const data = await searchActorsTypeahead(client, {
           q,
           limit: limit || 8,
         })

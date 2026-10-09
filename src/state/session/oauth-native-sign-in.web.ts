@@ -1,7 +1,7 @@
 import {type OAuthSession} from '@atproto/oauth-client-browser'
 
-import {getWebOAuthClient} from './oauth-web-client'
 import {getOAuthScope} from './oauth-scopes'
+import {getWebOAuthClient} from './oauth-web-client'
 
 type SignInOptions = {
   scope?: string

@@ -2,6 +2,7 @@ import {useCallback} from 'react'
 import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
 import {keepPreviousData, useQuery, useQueryClient} from '@tanstack/react-query'
 
+import {searchActorsTypeahead} from '#/lib/api/search-actors-typeahead'
 import {isJustAMute, moduiContainsHideableOffense} from '#/lib/moderation'
 import {logger} from '#/logger'
 import {
@@ -10,7 +11,7 @@ import {
 } from '#/state/preferences/custom-appview-did'
 import {STALE} from '#/state/queries'
 import {useAppviewClient} from '#/state/session'
-import {app} from '#/lexicons'
+import {type app} from '#/lexicons'
 import {useModerationOpts} from '../preferences/moderation-opts'
 import {DEFAULT_LOGGED_OUT_PREFERENCES} from './preferences'
 
@@ -43,7 +44,7 @@ export function useActorAutocompleteQuery(
     queryKey: [...RQKEY(prefix), {appViewDid, appViewUrl, limit: limit || 8}],
     async queryFn() {
       const data = prefix
-        ? await client.call(app.bsky.actor.searchActorsTypeahead, {
+        ? await searchActorsTypeahead(client, {
             q: prefix,
             limit: limit || 8,
           })
@@ -90,13 +91,10 @@ export function useActorAutocompleteFn() {
             staleTime: STALE.MINUTES.ONE,
             queryKey: [...RQKEY(query), {appViewDid, appViewUrl, limit}],
             queryFn: async () => {
-              const data = await client.call(
-                app.bsky.actor.searchActorsTypeahead,
-                {
-                  q: query,
-                  limit,
-                },
-              )
+              const data = await searchActorsTypeahead(client, {
+                q: query,
+                limit,
+              })
               return data.actors
             },
           })

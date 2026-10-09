@@ -18,10 +18,13 @@ import {utils} from '@bsky.app/alf'
 import {Trans, useLingui} from '@lingui/react/macro'
 import debounce from 'lodash.debounce'
 
+import {type DownloadableImage} from '#/lib/media/downloadFilename'
 import {type Dimensions} from '#/lib/media/types'
 import {mergeRefs} from '#/lib/merge-refs'
+import {getShapeRadius, SHARP_CORNERS} from '#/lib/shapes'
 import {userStyle} from '#/lib/userstyles'
 import {useA11y} from '#/state/a11y'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   applyImageTransforms,
   useImageCdnHost,
@@ -46,13 +49,12 @@ import {PostEmbedViewContext} from '#/components/Post/Embed/types'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_ANDROID, IS_WEB} from '#/env'
-import {type app} from '#/lexicons'
 
 export * from './const'
 export * from './maybeApplyGalleryOffsetStyles'
 
 interface GalleryProps {
-  images: app.bsky.embed.images.ViewImage[]
+  images: DownloadableImage[]
   onPress?: (
     index: number,
     containerRefs: AnimatedRef<any>[],
@@ -414,7 +416,7 @@ function GalleryImage({
   onPreviewPress,
 }: {
   contentHeight: number
-  image: app.bsky.embed.images.ViewImage
+  image: DownloadableImage
   index: number
   imageCount: number
   onWidthChange: (index: number, width: number) => void
@@ -426,6 +428,8 @@ function GalleryImage({
   onPressIn?: () => void
   onPreviewPress?: () => void
 }) {
+  const shapePreference = useEnableSquareButtons()
+
   const t = useTheme()
   const {t: l} = useLingui()
   const thumbnailFormat = useThumbnailFormat()
@@ -454,9 +458,14 @@ function GalleryImage({
       aria-label={image.alt || l`Image ${index + 1} of ${imageCount}`}>
       <ImageContextMenu
         fullsizeUri={image.fullsize}
+        downloadName={image.downloadName}
         thumbUri={image.thumb}
         aspectRatio={aspectRatio}
-        borderRadius={tokens.borderRadius.md}
+        borderRadius={getShapeRadius(
+          shapePreference,
+          tokens.borderRadius.md,
+          tokens.borderRadius.md,
+        )}
         onPreviewPress={onPreviewPress}>
         <Pressable
           ref={itemRef}
@@ -486,6 +495,7 @@ function GalleryImage({
               {transitionDuration: '200ms'},
               pressed && {transform: [{scale: 0.99}]},
             ]),
+            shapePreference === 'sharp' && SHARP_CORNERS,
           ]}>
           <Image
             source={{
@@ -540,6 +550,7 @@ function GalleryImage({
                 largeAltBadge && {
                   padding: 6,
                 },
+                shapePreference === 'sharp' && SHARP_CORNERS,
               ]}>
               <Text
                 style={[
@@ -583,6 +594,7 @@ function GalleryImage({
                     largeAltBadge && {
                       padding: 6,
                     },
+                    shapePreference === 'sharp' && SHARP_CORNERS,
                   ]}>
                   <Fullscreen
                     fill={t.atoms.text_contrast_high.color}
@@ -604,6 +616,7 @@ function GalleryImage({
                     largeAltBadge && {
                       padding: 6,
                     },
+                    shapePreference === 'sharp' && SHARP_CORNERS,
                   ]}>
                   <Text
                     style={[

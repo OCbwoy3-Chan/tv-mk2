@@ -2,14 +2,16 @@ import {useRef} from 'react'
 import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {type AnimatedRef, useAnimatedRef} from 'react-native-reanimated'
 
+import {type DownloadableImage} from '#/lib/media/downloadFilename'
+import {SHARP_CORNERS} from '#/lib/shapes'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useBreakpoints} from '#/alf'
 import {type Dimensions} from '#/components/Lightbox/types'
 import {type PostEmbedViewContext} from '#/components/Post/Embed/types'
-import {type app} from '#/lexicons'
 import {GalleryItem} from './ImageLayoutGridItem'
 
 interface ImageLayoutGridProps {
-  images: app.bsky.embed.images.ViewImage[]
+  images: DownloadableImage[]
   onPress?: (
     index: number,
     containerRefs: AnimatedRef<any>[],
@@ -27,13 +29,22 @@ export function ImageLayoutGrid({
   isWithinQuote: isWithinQuoteProp,
   ...props
 }: ImageLayoutGridProps) {
+  const shapePreference = useEnableSquareButtons()
+
   const {gtMobile} = useBreakpoints()
   const isWithinQuote = isWithinQuoteProp
   const gap = isWithinQuote ? (gtMobile ? a.gap_xs : a.gap_2xs) : a.gap_xs
 
   return (
     <View style={[a.w_full, style]}>
-      <View style={[a.w_full, gap, a.rounded_md, a.overflow_hidden]}>
+      <View
+        style={[
+          a.w_full,
+          gap,
+          a.rounded_md,
+          a.overflow_hidden,
+          shapePreference === 'sharp' && SHARP_CORNERS,
+        ]}>
         <ImageLayoutGridInner
           {...props}
           gap={gap}
@@ -45,7 +56,7 @@ export function ImageLayoutGrid({
 }
 
 interface ImageLayoutGridInnerProps {
-  images: app.bsky.embed.images.ViewImage[]
+  images: DownloadableImage[]
   onPress?: (
     index: number,
     containerRefs: AnimatedRef<any>[],

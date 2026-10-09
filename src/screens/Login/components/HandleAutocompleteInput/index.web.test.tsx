@@ -10,14 +10,18 @@ jest.mock('@lingui/react', () => ({
   useLingui: () => ({_: ({message}: {message: string}) => message}),
 }))
 jest.mock('react-native', () => jest.requireActual('react-native-web'))
+jest.mock('#/state/preferences/enable-square-buttons', () => ({
+  useEnableSquareButtons: () => false,
+}))
 jest.mock('#/env', () => ({IS_WEB: true, IS_NATIVE: false}))
 jest.mock('#/lib/constants', () => ({HITSLOP_20: {}}))
 jest.mock('#/alf', () => ({
   atoms: {text_md: {fontSize: 16}, p_xs: {padding: 4}},
   useTheme: () => ({scheme: 'light', atoms: {}, palette: {}}),
   useAlf: () => ({fonts: {family: 'system', scaleMultiplier: 1}}),
-  flatten: jest.requireActual<typeof import('react-native')>('react-native-web')
-    .StyleSheet.flatten,
+  flatten:
+    jest.requireActual<typeof import('react-native')>('react-native-web')
+      .StyleSheet.flatten,
   applyFonts: () => {},
   utils: {alpha: () => undefined},
   tokens: {},
@@ -32,6 +36,9 @@ jest.mock('#/components/Typography', () => ({
 jest.mock('#/components/icons/At', () => ({
   At_Stroke2_Corner0_Rounded: () => null,
 }))
+jest.mock('#/components/Autocomplete/types', () => ({
+  profileIdentifier: (profile: {handle: string}) => profile.handle,
+}))
 jest.mock('#/components/Autocomplete', () => ({
   useAutocomplete: () => ({items: []}),
   Autocomplete: () => null,
@@ -39,9 +46,8 @@ jest.mock('#/components/Autocomplete', () => ({
 
 const mockInputAttachments = jest.fn()
 jest.mock('@bsky.app/sift', () => {
-  const {useCallback, useState} = jest.requireActual<typeof import('react')>(
-    'react',
-  )
+  const {useCallback, useState} =
+    jest.requireActual<typeof import('react')>('react')
   return {
     useSift() {
       const [input, setInput] = useState<HTMLElement | null>(null)

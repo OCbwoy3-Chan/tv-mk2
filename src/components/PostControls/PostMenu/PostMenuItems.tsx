@@ -24,6 +24,7 @@ import {useQueryClient} from '@tanstack/react-query'
 import {DISCOVER_DEBUG_DIDS} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {useOpenLink} from '#/lib/hooks/useOpenLink'
+import {getPostMediaDownloadName} from '#/lib/media/downloadFilename'
 import {saveVideoToDevice} from '#/lib/media/saveVideoToDevice'
 import {getRedraftImages} from '#/lib/redraft'
 import {getCurrentRoute} from '#/lib/routes/helpers'
@@ -112,7 +113,6 @@ import {
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
-import {IS_INTERNAL} from '#/env'
 import {IS_NATIVE} from '#/env'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -254,7 +254,20 @@ let PostMenuItems = ({
 
   const onConfirmRedraft = async () => {
     const recordEmbed = record.embed
-    const imageUris = getRedraftImages(recordEmbed, post.embed)
+    let imageUris: ComposerOpts['imageUris']
+    try {
+      imageUris = await getRedraftImages(
+        recordEmbed,
+        post.embed,
+        post.author.did,
+      )
+    } catch (error) {
+      logger.error('Failed to restore redraft images', {safeMessage: error})
+      Toast.show(l`Could not load images. Please try redrafting again.`, {
+        type: 'error',
+      })
+      return
+    }
 
     let quotePost: app.bsky.feed.defs.PostView | undefined
 
@@ -667,7 +680,10 @@ let PostMenuItems = ({
 
     Toast.show(l({message: 'Downloading video...', context: 'toast'}))
 
-    const success = await saveVideoToDevice({uri})
+    const success = await saveVideoToDevice({
+      uri,
+      downloadName: getPostMediaDownloadName(post),
+    })
 
     Toast.show(
       success
@@ -683,7 +699,10 @@ let PostMenuItems = ({
     Toast.show(l({message: 'Downloading GIF...', context: 'toast'}))
 
     let success
-    success = await saveVideoToDevice({uri: gifEmbed.external.uri})
+    success = await saveVideoToDevice({
+      uri: gifEmbed.external.uri,
+      downloadName: getPostMediaDownloadName(post),
+    })
 
     if (success)
       Toast.show(l({message: 'GIF downloaded', context: 'toast'}), {

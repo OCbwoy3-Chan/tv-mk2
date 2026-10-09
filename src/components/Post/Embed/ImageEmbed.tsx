@@ -3,8 +3,12 @@ import {View} from 'react-native'
 import {type AnimatedRef} from 'react-native-reanimated'
 import {Image} from 'expo-image'
 
+import {getPostMediaDownloadName} from '#/lib/media/downloadFilename'
 import {resolveEmbedImageUris} from '#/lib/media/embed-image-formats'
+import {getRecordImageMimeType} from '#/lib/media/recordImageMimeType'
+import {getShapeRadius} from '#/lib/shapes'
 import {userStyle} from '#/lib/userstyles'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useFullsizeFormat} from '#/state/preferences/fullsize-format'
 import {
   applyImageTransforms,
@@ -37,13 +41,15 @@ export function ImageEmbed({
 }: CommonProps & {
   embed: EmbedType<'images'> | EmbedType<'gallery'>
 }) {
+  const shapePreference = useEnableSquareButtons()
+
   const ax = useAnalytics()
   const {openLightbox} = useLightboxControls()
   const fullsizeFormat = useFullsizeFormat()
   const thumbnailFormat = useThumbnailFormat()
   const loadAsPngs = useLoadAsPngs()
   const imageCdnHost = useImageCdnHost()
-  const images: app.bsky.embed.images.ViewImage[] =
+  const rawImages: app.bsky.embed.images.ViewImage[] =
     embed.type === 'gallery'
       ? embed.view.items
           .filter(item => bsky.isType(app.bsky.embed.gallery.viewImage, item))
@@ -54,6 +60,28 @@ export function ImageEmbed({
             aspectRatio: item.aspectRatio,
           }))
       : embed.view.images
+  const images = rawImages.map((img, index) => {
+    const uris = resolveEmbedImageUris(
+      {
+        ...img,
+        mimeType: getRecordImageMimeType(img.fullsize, rest.post?.record),
+      },
+      {
+        thumbnailFormat,
+        fullsizeFormat: fullsizeFormat ?? 'default',
+        loadAsPngs: loadAsPngs ?? true,
+      },
+    )
+    return {
+      ...img,
+      downloadName: getPostMediaDownloadName(
+        rest.post,
+        rawImages.length > 1 ? index : undefined,
+      ),
+      fullsize: uris.fullsize as typeof img.fullsize,
+      thumb: uris.thumb as typeof img.thumb,
+    }
+  })
   const useExpandedLayout =
     embed.type === 'gallery'
       ? images.length > MAX_GRID_IMAGES
@@ -80,14 +108,10 @@ export function ImageEmbed({
 
   if (images.length > 0) {
     const items = images.map(img => {
-      const {fullsize, thumb} = resolveEmbedImageUris(img, {
-        thumbnailFormat,
-        fullsizeFormat: fullsizeFormat ?? 'webp',
-        loadAsPngs: loadAsPngs ?? true,
-      })
       return {
-        uri: applyImageTransforms(fullsize, {imageCdnHost}),
-        thumbUri: applyImageTransforms(thumb, {imageCdnHost}),
+        uri: applyImageTransforms(img.fullsize, {imageCdnHost}),
+        thumbUri: applyImageTransforms(img.thumb, {imageCdnHost}),
+        downloadName: img.downloadName,
         alt: img.alt,
         dimensions: img.aspectRatio ?? null,
       }
@@ -111,7 +135,11 @@ export function ImageEmbed({
           thumbRect: null,
           thumbRef: refs[i] ?? null,
           thumbDimensions: fetchedDims[i] ?? null,
-          thumbBorderRadius: tokens.borderRadius.md,
+          thumbBorderRadius: getShapeRadius(
+            shapePreference,
+            tokens.borderRadius.md,
+            tokens.borderRadius.md,
+          ),
           type: 'image',
         })),
         index,
@@ -140,9 +168,14 @@ export function ImageEmbed({
         <View style={[a.mt_sm, rest.style, userStyle('wsky-post__media')]}>
           <ImageContextMenu
             fullsizeUri={image.fullsize}
+            downloadName={image.downloadName}
             thumbUri={image.thumb}
             aspectRatio={aspect}
-            borderRadius={tokens.borderRadius.md}
+            borderRadius={getShapeRadius(
+              shapePreference,
+              tokens.borderRadius.md,
+              tokens.borderRadius.md,
+            )}
             onPreviewPress={openFromSingle}>
             <AutoSizedImage
               crop={
