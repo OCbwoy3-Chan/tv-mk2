@@ -36,7 +36,7 @@ App:
 - Push Notifications on Android
 
 New features:
-- Private posts via ATProto spaces & Embeds!
+- Private posts via ATProto spaces & Embeds! (WILL BE DEPRECATED AND REMOVED WHEN BSKY RELEASES SPACES, CUZ WHAT WAS THE POINT)
 
 ### TODO: Kris
 
