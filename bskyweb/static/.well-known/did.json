@@ -12,6 +12,11 @@
             "serviceEndpoint": "https://privateposts-api.tenna.party"
         },
         {
+            "id": "#bsky_fg",
+            "type": "BskyFeedGenerator",
+            "serviceEndpoint": "https://feeds.tenna.party"
+        },
+        {
             "id": "#privatebeta",
             "type": "AtprotoSpaceService",
             "serviceEndpoint": "http://localhost:3000"    
