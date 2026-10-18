@@ -1,7 +1,6 @@
 import {type Client} from '@atproto/lex'
-import {type AtUriString} from '@atproto/syntax'
 
-import {PROD_DEFAULT_FEED} from '#/lib/constants'
+import {DISCOVER_FEED_URI} from '#/lib/constants'
 import {type app} from '#/lexicons'
 import {CustomFeedAPI} from './custom'
 import {FollowingFeedAPI} from './following'
@@ -52,7 +51,7 @@ export class HomeFeedAPI implements FeedAPI {
     this.following = new FollowingFeedAPI({client})
     this.discover = new CustomFeedAPI({
       client,
-      feedParams: {feed: PROD_DEFAULT_FEED('whats-hot') as AtUriString},
+      feedParams: {feed: DISCOVER_FEED_URI},
     })
     this.userInterests = userInterests
   }
@@ -61,7 +60,7 @@ export class HomeFeedAPI implements FeedAPI {
     this.following = new FollowingFeedAPI({client: this.client})
     this.discover = new CustomFeedAPI({
       client: this.client,
-      feedParams: {feed: PROD_DEFAULT_FEED('whats-hot') as AtUriString},
+      feedParams: {feed: DISCOVER_FEED_URI},
       userInterests: this.userInterests,
     })
     this.usingDiscover = false

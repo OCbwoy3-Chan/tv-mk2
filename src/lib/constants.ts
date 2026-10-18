@@ -88,6 +88,9 @@ export function IS_PROD_SERVICE(url?: string) {
   return url && url !== STAGING_SERVICE && !url.startsWith(LOCAL_DEV_SERVICE)
 }
 
+export const DISCOVER_FEED_URI =
+  'at://did:web:vessel.darkworld.download/app.bsky.feed.generator/tennalings'
+
 export const PROD_DEFAULT_FEED = (rkey: string) =>
   `at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/${rkey}`
 
@@ -95,7 +98,7 @@ export const STAGING_DEFAULT_FEED = (rkey: string) =>
   `at://did:plc:yofh3kx63drvfljkibw5zuxo/app.bsky.feed.generator/${rkey}`
 
 export const PROD_FEEDS = [
-  `feedgen|${PROD_DEFAULT_FEED('whats-hot')}`,
+  `feedgen|${DISCOVER_FEED_URI}`,
   `feedgen|${PROD_DEFAULT_FEED('thevids')}`,
 ]
 
@@ -154,8 +157,6 @@ export const BSKY_FEED_OWNER_DIDS = [
 export const TRENDING_DID = 'did:plc:qrz3lhbyuxbeilrc6nekdqme'
 export const TRENDING_HANDLE = 'trending.bsky.app'
 
-export const DISCOVER_FEED_URI =
-  'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot'
 export const VIDEO_FEED_URI =
   'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/thevids'
 export const STAGING_VIDEO_FEED_URI =

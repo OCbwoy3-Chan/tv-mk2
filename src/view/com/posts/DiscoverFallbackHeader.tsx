@@ -30,7 +30,7 @@ export function DiscoverFallbackHeader() {
             We ran out of posts from your follows. Here's the latest from{' '}
             <TextLink
               type="md-medium"
-              href="/profile/bsky.app/feed/whats-hot"
+              href="/profile/did:web:vessel.darkworld.download/feed/tennalings"
               text="Discover"
               style={pal.link}
             />
