@@ -98,25 +98,6 @@ export function useAppIconSets() {
           )
         },
       },
-      {
-        id: 'twitter_liquid_glass',
-        name: _(
-          msg({
-            context: 'Name of app icon variant',
-            message: 'Twitter',
-          }),
-        ),
-        iosImage: () => {
-          return require(
-            `../../../../assets/app-icons/ios_icon_twitter_liquid_glass.png`,
-          )
-        },
-        androidImage: () => {
-          return require(
-            `../../../../assets/app-icons/android_icon_twitter_liquid_glass.png`,
-          )
-        },
-      },
     ] satisfies AppIconSet[]
 
     const testFlight = [

@@ -868,11 +868,6 @@ function ExtraLinks() {
           </Trans>
         </Text>
       )}
-      {logoVariant === 'twitter' && (
-        <Text style={[t.atoms.text_contrast_medium]}>
-          <Trans>Fuck Elon Musk</Trans>
-        </Text>
-      )}
     </View>
   )
 }

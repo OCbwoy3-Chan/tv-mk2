@@ -23,7 +23,6 @@ import {
 } from '#/lib/strings/rich-text-manip'
 import {logger} from '#/logger'
 import {compressImage} from '#/state/gallery'
-import * as persisted from '#/state/persisted'
 import {
   fetchResolveGifQuery,
   fetchResolveLinkQuery,
@@ -100,19 +99,11 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
   const writes: com.atproto.repo.applyWrites.$InputBody['writes'] = []
   const uris: string[] = []
 
-  const isTwitter = persisted.get('twitterEasterEgg')
-
   const via = IS_WEB
-    ? isTwitter
-      ? 'Twitter Web App'
-      : 'tenna.party'
+    ? 'tenna.party'
     : IS_IOS
-      ? isTwitter
-        ? 'Twitter for iPhone'
-        : 'tenna.party iOS'
-      : isTwitter
-        ? 'Twitter for Android'
-        : 'tenna.party for Android'
+      ? 'tenna.party iOS'
+      : 'tenna.party for Android'
 
   let now = new Date()
   let tid: TID | undefined

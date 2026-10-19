@@ -74,7 +74,6 @@ import {Provider as ThumbnailFormatProvider} from './thumbnail-format'
 import {Provider as TidSuffixProvider} from './tid-suffix'
 import {Provider as TranslationServicePreferenceProvider} from './translation-service-preference'
 import {Provider as TrendingSettingsProvider} from './trending'
-import {Provider as TwitterEasterEggProvider} from './twitter-easteregg.tsx'
 import {Provider as UseHandleInLinksProvider} from './use-handle-in-links'
 import {Provider as UsedStarterPacksProvider} from './used-starter-packs'
 
@@ -258,11 +257,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                                       <ShowPostTagsProvider>
                                                                                                                                                         <EmojiFontProvider>
                                                                                                                                                           <PasteToLinkEnabledProvider>
-                                                                                                                                                            <TwitterEasterEggProvider>
-                                                                                                                                                              {
-                                                                                                                                                                children
-                                                                                                                                                              }
-                                                                                                                                                            </TwitterEasterEggProvider>
+                                                                                                                                                            {children}
                                                                                                                                                           </PasteToLinkEnabledProvider>
                                                                                                                                                         </EmojiFontProvider>
                                                                                                                                                       </ShowPostTagsProvider>

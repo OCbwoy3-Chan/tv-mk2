@@ -39,7 +39,6 @@ it('preserves tenna.party native identities and custom icons', () => {
   )
   expect(icons[1]).toEqual(
     expect.objectContaining({
-      twitter_liquid_glass: expect.anything(),
       liquid_glass_r: expect.anything(),
       liquid_glass_o: expect.anything(),
       testflight: expect.anything(),

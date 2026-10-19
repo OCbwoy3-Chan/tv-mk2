@@ -26,7 +26,6 @@ describe('persisted schema helpers', () => {
     const preferences = {
       privatePostsEnabled: true,
       hideOwnTennaBadge: true,
-      twitterEasterEgg: true,
       hideBetaBadge: false,
       customPostRkeysEnabled: true,
       atprotoRkeyGenerationDefault: 'prefix',

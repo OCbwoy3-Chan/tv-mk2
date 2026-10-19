@@ -358,7 +358,6 @@ const schema = z.object({
     .optional(),
   faviconService: z.string().optional(),
   hideOwnTennaBadge: z.boolean().optional(),
-  twitterEasterEgg: z.boolean().optional(),
   hideBetaBadge: z.boolean().optional(),
   privatePostsEnabled: z.boolean().optional(),
 
@@ -558,7 +557,6 @@ export const defaults: Schema = {
   },
   faviconService: 'https://twenty-icons.com/(pds)',
   hideOwnTennaBadge: false,
-  twitterEasterEgg: false,
   hideBetaBadge: true,
   privatePostsEnabled: false,
   atprotoExplorer: {

@@ -18,7 +18,6 @@ Fun:
 - Brand new settings Page: Settings -> Deltas
 - New fun self-badge system: Character + kin selector.
 - Enhanced composer Custom TID option ([there's one in witchsky too but it's suffix only](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow))
-- Twitter mode (we argue they abandoned that bird in america)
 
 Moderation:
 - 200 max labeler limit (its way too much)
