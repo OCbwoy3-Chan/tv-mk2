@@ -339,15 +339,7 @@ export function Composer({
               />
             )
           case 'trigger':
-          case 'facet': { {
-            const angleStart =
-              node.facetType === 'maskedLink' && node.value.startsWith('<')
-                ? node.raw.length - node.value.length - 1
-                : node.facetType?.startsWith('angle')
-                  ? 0
-                  : -1
-            const angleEnd =
-              node.raw.length - (node.facetType === 'maskedLink' ? 2 : 1)
+          case 'facet': {
             return (
               <Span
                 key={i}
@@ -363,20 +355,8 @@ export function Composer({
                   removalIndices={removalIndices}
                   color={syntaxColor}
                 />
-                {angleStart >= 0 ? (
-                  <>
-                    {node.raw.slice(0, angleStart)}
-                    <Span style={t.atoms.text}>{node.raw[angleStart]}</Span>
-                    {node.raw.slice(angleStart + 1, angleEnd)}
-                    <Span style={t.atoms.text}>{node.raw[angleEnd]}</Span>
-                    {node.raw.slice(angleEnd + 1)}
-                  </>
-                ) : (
-                  node.raw
-                )}
               </Span>
             )
-          }
           }
         }
       })}
