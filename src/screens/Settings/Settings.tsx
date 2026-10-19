@@ -973,6 +973,7 @@ function AccountRow({
                 isHiddenElsewhere ? l`Hidden elsewhere` : l`Hide elsewhere`
               }
               onPress={onToggleHideElsewhere}>
+              <Menu.ItemRadio selected={isHiddenElsewhere} />
               <Menu.ItemText>
                 {isHiddenElsewhere ? (
                   <Trans>Hidden elsewhere</Trans>
@@ -980,7 +981,6 @@ function AccountRow({
                   <Trans>Hide elsewhere</Trans>
                 )}
               </Menu.ItemText>
-              <Menu.ItemRadio selected={isHiddenElsewhere} />
             </Menu.Item>
             {devModeEnabled ? (
               <Menu.Item label={l`Copy DID`} onPress={onCopyDid}>
