@@ -49,7 +49,7 @@ msgid "\"Followed by\" avatars"
 msgstr ""
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:836
+#: src/components/dms/MessageItem.tsx:841
 msgid "(blocked message hidden)"
 msgstr "(engelli mesaj gizlenmiş)"
 
@@ -64,7 +64,7 @@ msgid "(contains embedded content)"
 msgstr "(gömülü içerik içeriyor)"
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:852
+#: src/components/dms/MessageItem.tsx:857
 msgid "(deleted message)"
 msgstr "(silinmiş mesaj)"
 
@@ -79,7 +79,7 @@ msgid "(invalid chat invite link)"
 msgstr "(geçersiz sohbet davetiyesi bağlantısı)"
 
 #. A reply summary in chat
-#: src/components/dms/MessageItem.tsx:846
+#: src/components/dms/MessageItem.tsx:851
 msgid "(message sent before you joined)"
 msgstr "(siz katılmadan önce gönderilen mesaj)"
 
@@ -180,7 +180,7 @@ msgstr "{0, plural, other {# katılma talebi}}"
 
 #. placeholder {0}: reactions.length
 #. placeholder {1}: groupedReactions.map(g => g.value).join(' ')
-#: src/components/dms/MessageItem.tsx:388
+#: src/components/dms/MessageItem.tsx:393
 msgid "{0, plural, one {# person} other {# people}} reacted – {1}"
 msgstr "{0, plural, other {# kişi}} tepki verdi – {1}"
 
@@ -230,7 +230,7 @@ msgid "{0, plural, one {#mo} other {#mo}}"
 msgstr "{0, plural, other {#a}}"
 
 #. placeholder {0}: draft.meta.replyCount
-#: src/view/com/composer/drafts/DraftItem.tsx:167
+#: src/view/com/composer/drafts/DraftItem.tsx:179
 msgid "{0, plural, one {1 more post} other {# more posts}}"
 msgstr "{0, plural, other {# gönderi daha}}"
 
@@ -379,7 +379,7 @@ msgstr "50'de {0}"
 
 #. placeholder {0}: createSanitizedDisplayName(memberSender)
 #. placeholder {1}: reaction.value
-#: src/components/dms/MessageItem.tsx:383
+#: src/components/dms/MessageItem.tsx:388
 msgid "{0} reacted {1}"
 msgstr "{0} şu tepkiyi verdi: {1}"
 
@@ -911,15 +911,15 @@ msgstr "{rank}."
 msgid "{remaining, plural, one {# character remaining} other {# characters remaining}}"
 msgstr "{remaining, plural, other {# karakter kaldı}}"
 
-#: src/components/dms/MessageItem.tsx:744
+#: src/components/dms/MessageItem.tsx:749
 msgid "{replierDisplayName} replied"
 msgstr "{replierDisplayName} yanıtladı"
 
-#: src/components/dms/MessageItem.tsx:743
+#: src/components/dms/MessageItem.tsx:748
 msgid "{replierDisplayName} replied to {originalName}"
 msgstr "{replierDisplayName}, {originalName} adlı kişiye yanıt verdi"
 
-#: src/components/dms/MessageItem.tsx:741
+#: src/components/dms/MessageItem.tsx:746
 msgid "{replierDisplayName} replied to you"
 msgstr "{replierDisplayName} size yanıt verdi"
 
@@ -1164,7 +1164,7 @@ msgstr "Yeni bir kod yollandı"
 msgid "A new form of verification"
 msgstr "Yeni bir doğrulama biçimi"
 
-#: src/components/dms/MessageItem.tsx:754
+#: src/components/dms/MessageItem.tsx:759
 msgid "A reply to a message sent before you joined"
 msgstr "Siz katılmadan önce gönderilen bir mesaja yanıt"
 
@@ -1497,7 +1497,7 @@ msgid "Add more details (optional)"
 msgstr "Daha fazla detay ekle (opsiyonel)"
 
 #: src/screens/Settings/LanguageSettings.tsx:235
-#: src/screens/Settings/LanguageSettings.tsx:240
+#: src/screens/Settings/LanguageSettings.tsx:243
 msgid "Add more languages…"
 msgstr "Daha dil ekle…"
 
@@ -2863,7 +2863,7 @@ msgstr "Bluesky Social Hizmet Şartları"
 msgid "Bluesky stores your contacts as encoded data. Removing your contacts will immediately delete this data."
 msgstr "Bluesky bağlantılarınızı şifreli veri olarak tutar. Bağlantılarınızı kaldırmanız bu veriyi anında siler."
 
-#: src/screens/Settings/AppIconSettings/useAppIconSets.ts:140
+#: src/screens/Settings/AppIconSettings/useAppIconSets.ts:121
 msgctxt "Name of app icon variant"
 msgid "Bluesky TestFlight"
 msgstr ""
@@ -3230,8 +3230,8 @@ msgstr "Kullanıcı Adını Değiştir"
 msgid "Change hosting provider"
 msgstr "Yer sağlayıcıyı değiştir"
 
-#: src/screens/Settings/LanguageSettings.tsx:304
-#: src/screens/Settings/LanguageSettings.tsx:308
+#: src/screens/Settings/LanguageSettings.tsx:307
+#: src/screens/Settings/LanguageSettings.tsx:311
 msgid "Change instance"
 msgstr ""
 
@@ -3665,7 +3665,7 @@ msgstr "Bu grup sohbetinin davetiye bağlantısını görüntülemek için buray
 msgid "Click to open tag menu for {0}"
 msgstr "{0} etiket menüsünü açmak için tıklayın"
 
-#: src/components/dms/MessageItem.tsx:665
+#: src/components/dms/MessageItem.tsx:670
 msgid "Click to retry failed message"
 msgstr "İletilemeyen mesajı tekrar denemek için tıklayın"
 
@@ -4344,7 +4344,7 @@ msgstr ""
 msgid "Could not download – please try again"
 msgstr "İndirilemedi – lütfen tekrar deneyin"
 
-#: src/screens/Messages/components/MessageInputEmbed.tsx:197
+#: src/screens/Messages/components/MessageInputEmbed.tsx:200
 msgid "Could not fetch post"
 msgstr "Gönderi indirilemedi"
 
@@ -4909,7 +4909,7 @@ msgid "Deleted list"
 msgstr "Silinmiş liste"
 
 #: src/Navigation.tsx:646
-#: src/screens/Settings/DeltaSettings/index.tsx:22
+#: src/screens/Settings/DeltaSettings/index.tsx:20
 #: src/screens/Settings/Settings.tsx:501
 #: src/screens/Settings/Settings.tsx:506
 msgid "Deltas"
@@ -5064,7 +5064,7 @@ msgstr "Devre dışı"
 #: src/screens/Profile/Header/EditProfileDialog.tsx:101
 #: src/view/com/composer/Composer.tsx:2093
 #: src/view/com/composer/Composer.tsx:2405
-#: src/view/com/composer/drafts/DraftItem.tsx:266
+#: src/view/com/composer/drafts/DraftItem.tsx:280
 #: src/view/com/composer/drafts/DraftsButton.tsx:136
 msgid "Discard"
 msgstr "Sil"
@@ -5074,7 +5074,7 @@ msgstr "Sil"
 msgid "Discard changes?"
 msgstr "Değişiklikler silinsin mi?"
 
-#: src/view/com/composer/drafts/DraftItem.tsx:263
+#: src/view/com/composer/drafts/DraftItem.tsx:277
 #: src/view/com/composer/drafts/DraftsButton.tsx:102
 msgid "Discard draft?"
 msgstr "Taslak silinsin mi?"
@@ -5091,11 +5091,6 @@ msgstr "Germ DM bağlantısını kes"
 
 #: src/view/shell/desktop/RightNav.tsx:150
 msgid "Discord"
-msgstr ""
-
-#: src/lib/strings/feed-names.ts:16
-msgctxt "feed-name"
-msgid "Discover"
 msgstr ""
 
 #: src/screens/Search/Explore.tsx:446
@@ -5277,7 +5272,7 @@ msgstr "Tamam"
 msgid "Dot"
 msgstr ""
 
-#: src/components/dms/MessageItem.tsx:558
+#: src/components/dms/MessageItem.tsx:563
 msgid "Double tap or long press the message to add a reaction"
 msgstr "Bir tepki eklemek için mesaja çift dokunun ya da uzun basın"
 
@@ -5982,7 +5977,7 @@ msgstr ""
 #: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:46
 #: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:57
 #: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:86
-#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:92
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:93
 msgid "Exclude"
 msgstr "Hariç tut"
 
@@ -6039,7 +6034,7 @@ msgstr ""
 msgid "Expands or collapses post text"
 msgstr "Gönderi metnini genişletir ya da daraltır"
 
-#: src/lib/api/index.ts:636
+#: src/lib/api/index.ts:627
 msgid "Expected uri to resolve to a record"
 msgstr "URI'nin bir kayda çözümlenmesi beklendi"
 
@@ -7098,11 +7093,6 @@ msgstr "<0/> tarafından"
 msgid "From these people"
 msgstr "Bu kişilerden"
 
-#: src/view/shell/desktop/RightNav.tsx:169
-#: src/view/shell/Drawer.tsx:873
-msgid "Fuck Elon Musk"
-msgstr ""
-
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:235
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:245
 msgid "Full-size format"
@@ -7250,7 +7240,7 @@ msgstr "Birisi gönderi paylaştığında bildirim al"
 msgid "Get started"
 msgstr "Başla"
 
-#: src/components/MediaPreview.tsx:242
+#: src/components/MediaPreview.tsx:259
 #: src/components/Post/Embed/VideoEmbed/GifPresentationControls.tsx:99
 msgid "GIF"
 msgstr "GIF"
@@ -7658,7 +7648,7 @@ msgid "Hidden by your moderation settings."
 msgstr "Moderasyon ayarlarınız tarafından gizlenmiş."
 
 #: src/screens/Settings/Settings.tsx:973
-#: src/screens/Settings/Settings.tsx:978
+#: src/screens/Settings/Settings.tsx:979
 msgid "Hidden elsewhere"
 msgstr ""
 
@@ -7707,7 +7697,7 @@ msgid "Hide display names"
 msgstr ""
 
 #: src/screens/Settings/Settings.tsx:973
-#: src/screens/Settings/Settings.tsx:980
+#: src/screens/Settings/Settings.tsx:981
 msgid "Hide elsewhere"
 msgstr ""
 
@@ -7955,7 +7945,7 @@ msgstr "Bluesky'da {0} olarak yer alıyorum - gel beni bul! https://bsky.app/dow
 msgid "If alt text is long, toggles alt text expanded state"
 msgstr "Alternatif metin uzunsa, alternatif metin genişletme durumunu değiştirir"
 
-#: src/screens/Settings/LanguageSettings.tsx:252
+#: src/screens/Settings/LanguageSettings.tsx:255
 msgid "If none are selected, all languages will be shown in your feeds."
 msgstr "Eğer hiçbiri seçili değilse akışlarınızda tüm diller görünecektir."
 
@@ -8174,7 +8164,7 @@ msgstr "Gelen kutusu boş!"
 #: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:47
 #: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:58
 #: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:75
-#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:81
+#: src/screens/Search/components/AdvancedSearchDialog/FilterBlock.tsx:82
 msgid "Include"
 msgstr "Dahil et"
 
@@ -8978,7 +8968,7 @@ msgid "Likes on this post"
 msgstr "Bu gönderideki beğeniler"
 
 #: src/screens/PostThread/components/HeaderDropdown.tsx:54
-#: src/screens/PostThread/components/HeaderDropdown.tsx:59
+#: src/screens/PostThread/components/HeaderDropdown.tsx:60
 msgid "Linear"
 msgstr "Düz"
 
@@ -9392,11 +9382,11 @@ msgstr "Medya"
 
 #. Example: "Media stored on John's iPhone"
 #. placeholder {0}: draft.draft.deviceName
-#: src/view/com/composer/drafts/DraftItem.tsx:135
+#: src/view/com/composer/drafts/DraftItem.tsx:147
 msgid "Media stored on {0}"
 msgstr "{0} cihazında depolanan görsel"
 
-#: src/view/com/composer/drafts/DraftItem.tsx:134
+#: src/view/com/composer/drafts/DraftItem.tsx:146
 msgid "Media stored on another device"
 msgstr "Başka cihazda depolanan görsel"
 
@@ -9473,7 +9463,7 @@ msgctxt "toast"
 msgid "Message deleted"
 msgstr "Mesaj silindi"
 
-#: src/components/dms/MessageItem.tsx:659
+#: src/components/dms/MessageItem.tsx:664
 msgid "Message failed to send."
 msgstr "Mesaj gönderilemedi."
 
@@ -9522,7 +9512,7 @@ msgstr "Küçüklere taciz ya da kabadayılık"
 msgid "Misleading"
 msgstr "Yanıltıcı"
 
-#: src/view/com/composer/drafts/DraftItem.tsx:146
+#: src/view/com/composer/drafts/DraftItem.tsx:158
 msgid "Missing media"
 msgstr "Kayıp medya"
 
@@ -9630,7 +9620,7 @@ msgid "More languages..."
 msgstr "Diğer diller..."
 
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:171
-#: src/view/com/composer/drafts/DraftItem.tsx:214
+#: src/view/com/composer/drafts/DraftItem.tsx:226
 #: src/view/com/profile/ProfileMenu.tsx:409
 #: src/view/com/profile/ProfileMenu.tsx:415
 msgid "More options"
@@ -10016,7 +10006,7 @@ msgid "New user info dialog"
 msgstr "Yeni kullanıcı bilgisi diyaloğu"
 
 #: src/screens/PostThread/components/HeaderDropdown.tsx:116
-#: src/screens/PostThread/components/HeaderDropdown.tsx:121
+#: src/screens/PostThread/components/HeaderDropdown.tsx:122
 #: src/screens/Settings/ThreadPreferences.tsx:73
 #: src/screens/Settings/ThreadPreferences.tsx:76
 msgid "Newest replies first"
@@ -10138,7 +10128,7 @@ msgstr "Görsel yok"
 
 #: src/screens/Search/components/SearchLanguageDropdown.tsx:65
 #: src/screens/Search/components/SearchLanguageDropdown.tsx:91
-#: src/screens/Search/components/SearchLanguageDropdown.tsx:93
+#: src/screens/Search/components/SearchLanguageDropdown.tsx:94
 msgid "No language filter"
 msgstr "Dil filtresi yok"
 
@@ -10530,7 +10520,7 @@ msgid "Okay"
 msgstr "Tamam"
 
 #: src/screens/PostThread/components/HeaderDropdown.tsx:106
-#: src/screens/PostThread/components/HeaderDropdown.tsx:111
+#: src/screens/PostThread/components/HeaderDropdown.tsx:112
 #: src/screens/Settings/ThreadPreferences.tsx:65
 #: src/screens/Settings/ThreadPreferences.tsx:68
 msgid "Oldest replies first"
@@ -10701,7 +10691,7 @@ msgstr "{displayName} için sohbet üyesi seçeneklerini aç"
 msgid "Open conversation options"
 msgstr "Yazışma seçeneklerini aç"
 
-#: src/view/com/composer/drafts/DraftItem.tsx:74
+#: src/view/com/composer/drafts/DraftItem.tsx:77
 msgid "Open draft"
 msgstr "Taslağı aç"
 
@@ -11001,7 +10991,7 @@ msgstr ""
 msgid "Opens the post composer"
 msgstr "Gönderi oluşturucusunu açar"
 
-#: src/view/com/composer/drafts/DraftItem.tsx:75
+#: src/view/com/composer/drafts/DraftItem.tsx:78
 msgid "Opens this draft in the composer"
 msgstr "Bu taslağı düzenleyicide açar"
 
@@ -11751,7 +11741,7 @@ msgctxt "toast"
 msgid "Post deleted"
 msgstr "Gönderi silindi"
 
-#: src/lib/api/index.ts:261
+#: src/lib/api/index.ts:252
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "Gönderinin yollanması başarısız. Lütfen İnternet bağlantınızı kontrol edin ve tekrar deneyin."
 
@@ -11819,8 +11809,8 @@ msgstr ""
 msgid "Post restored"
 msgstr ""
 
-#: src/screens/Settings/LanguageSettings.tsx:270
-#: src/screens/Settings/LanguageSettings.tsx:291
+#: src/screens/Settings/LanguageSettings.tsx:273
+#: src/screens/Settings/LanguageSettings.tsx:294
 msgid "Post translation provider"
 msgstr ""
 
@@ -12052,7 +12042,7 @@ msgstr "GIF işleniyor..."
 msgid "Processing video..."
 msgstr "Video işleniyor..."
 
-#: src/lib/api/index.ts:82
+#: src/lib/api/index.ts:81
 msgid "Processing..."
 msgstr "İşleniyor..."
 
@@ -12213,7 +12203,7 @@ msgstr ""
 #: src/components/PostControls/RepostButton.tsx:222
 #: src/components/PostControls/RepostButton.web.tsx:112
 #: src/components/PostControls/RepostButton.web.tsx:117
-#: src/view/com/composer/drafts/DraftItem.tsx:161
+#: src/view/com/composer/drafts/DraftItem.tsx:173
 msgid "Quote post"
 msgstr "Gönderiyi alıntıla"
 
@@ -12345,7 +12335,7 @@ msgid "Read Witchsky's patches and contribute"
 msgstr ""
 
 #: src/screens/PostThread/components/HeaderDropdown.tsx:75
-#: src/screens/PostThread/components/HeaderDropdown.tsx:84
+#: src/screens/PostThread/components/HeaderDropdown.tsx:85
 msgid "Reader"
 msgstr ""
 
@@ -12546,9 +12536,9 @@ msgstr "Altyazı dosyasını kaldır"
 msgid "Remove current account from trusted verifiers"
 msgstr ""
 
-#: src/screens/Messages/components/MessageInputEmbed.tsx:231
-#: src/screens/Messages/components/MessageInputEmbed.tsx:286
-#: src/screens/Messages/components/MessageInputEmbed.tsx:341
+#: src/screens/Messages/components/MessageInputEmbed.tsx:235
+#: src/screens/Messages/components/MessageInputEmbed.tsx:292
+#: src/screens/Messages/components/MessageInputEmbed.tsx:349
 msgid "Remove embed"
 msgstr "Gömülü içeriği kaldır"
 
@@ -12775,15 +12765,15 @@ msgctxt "description"
 msgid "Replied to you"
 msgstr "Size yanıt"
 
-#: src/components/dms/MessageItem.tsx:862
+#: src/components/dms/MessageItem.tsx:867
 msgid "Replied-to message from {senderName}, tap to scroll to it"
 msgstr "{senderName} kişisinden yanıtlanan mesaj, ona kaydırmak için dokunun"
 
-#: src/components/dms/MessageItem.tsx:860
+#: src/components/dms/MessageItem.tsx:865
 msgid "Replied-to message was sent before you joined"
 msgstr "Yanıtlanan mesaj siz katılmadan önce gönderilmiş"
 
-#: src/components/dms/MessageItem.tsx:863
+#: src/components/dms/MessageItem.tsx:868
 msgid "Replied-to message, tap to scroll to it"
 msgstr "Yanıtlanan mesaj, ona kaydırmak için dokunun"
 
@@ -12814,7 +12804,7 @@ msgstr "Bu gönderi yanıtlara kapalı."
 #. A draft that replies to another post.
 #: src/components/dms/MessageContextMenu.tsx:185
 #: src/components/dms/MessageContextMenu.tsx:188
-#: src/view/com/composer/drafts/DraftItem.tsx:152
+#: src/view/com/composer/drafts/DraftItem.tsx:164
 msgid "Reply"
 msgstr "Yanıtla"
 
@@ -13458,7 +13448,7 @@ msgid "Save draft?"
 msgstr "Taslak kaydedilsin mi?"
 
 #: src/components/Lightbox/chrome/ImageMenu.tsx:130
-#: src/components/MediaPreview.tsx:299
+#: src/components/MediaPreview.tsx:321
 #: src/components/Post/Embed/ImageContextMenu.tsx:92
 #: src/components/StarterPack/ShareDialog.tsx:153
 #: src/components/StarterPack/ShareDialog.tsx:159
@@ -13602,7 +13592,7 @@ msgstr "Sola kaydır"
 msgid "Scroll right"
 msgstr "Sağa kaydır"
 
-#: src/components/dms/MessageItem.tsx:753
+#: src/components/dms/MessageItem.tsx:758
 msgid "Scroll to the message this is replying to"
 msgstr "Yanıtlanan mesaja kaydır"
 
@@ -13887,7 +13877,7 @@ msgid "Select constellation instance"
 msgstr ""
 
 #: src/screens/Settings/LanguageSettings.tsx:212
-#: src/screens/Settings/LanguageSettings.tsx:250
+#: src/screens/Settings/LanguageSettings.tsx:253
 msgid "Select content languages"
 msgstr "İçerik dillerini seç"
 
@@ -13969,7 +13959,7 @@ msgstr ""
 msgid "Select post language"
 msgstr "Gönderi dilini seçin"
 
-#: src/screens/Settings/LanguageSettings.tsx:286
+#: src/screens/Settings/LanguageSettings.tsx:289
 msgid "Select post translation provider"
 msgstr ""
 
@@ -14026,7 +14016,7 @@ msgstr "Uygulamanın kullanıcı arayüzünde hangi dili kullanacağınızı se�
 msgid "Select which languages you want your subscribed feeds to include. If none are selected, all languages will be shown."
 msgstr "Abone olduğunuz akışların hangi dilleri içermesini istediğinizi seçin. Hiçbiri seçilmezse, tüm diller gösterilir."
 
-#: src/screens/Settings/LanguageSettings.tsx:274
+#: src/screens/Settings/LanguageSettings.tsx:277
 msgid "Select which service to use when translating posts."
 msgstr ""
 
@@ -14273,7 +14263,7 @@ msgid "Sexually Suggestive"
 msgstr "Cinsel Çağrışımlı"
 
 #: src/components/Link.tsx:449
-#: src/components/MediaPreview.tsx:305
+#: src/components/MediaPreview.tsx:327
 #: src/components/Post/Embed/ImageContextMenu.tsx:96
 #: src/components/StarterPack/QrCodeDialog.tsx:196
 #: src/features/themes/ThemeCard.tsx:220
@@ -14903,7 +14893,7 @@ msgid "Someone left the group"
 msgstr "Biri gruptan çıktı"
 
 #. placeholder {0}: reaction.value
-#: src/components/dms/MessageItem.tsx:385
+#: src/components/dms/MessageItem.tsx:390
 msgid "Someone reacted {0}"
 msgstr "Birisi {0} tepkisi verdi"
 
@@ -14912,7 +14902,7 @@ msgstr "Birisi {0} tepkisi verdi"
 msgid "Someone reacted {0} to {target}"
 msgstr "Biri {target} için {0} tepkisi verdi"
 
-#: src/components/dms/MessageItem.tsx:746
+#: src/components/dms/MessageItem.tsx:751
 msgid "Someone replied"
 msgstr "Birisi yanıtladı"
 
@@ -15437,7 +15427,7 @@ msgstr "{0} tepkinizi geri almak için dokunun"
 msgid "Tap to request access to join this group chat"
 msgstr "Bu grup sohbetine katılmak için erişim talep etmek üzere dokunun"
 
-#: src/components/dms/MessageItem.tsx:669
+#: src/components/dms/MessageItem.tsx:674
 msgid "Tap to retry"
 msgstr "Yeniden denemek için dokunun"
 
@@ -15450,7 +15440,7 @@ msgstr "{0} tepkilerini görmek için dokunun"
 msgid "Tap to show all reactions"
 msgstr "Tüm tepkileri göstermek için dokunun"
 
-#: src/components/dms/MessageItem.tsx:411
+#: src/components/dms/MessageItem.tsx:416
 msgid "Tap to view reactions"
 msgstr "Tepkileri görmek için dokunun"
 
@@ -15498,6 +15488,11 @@ msgstr ""
 msgid "tenna.party is part of the <0>Atmosphere</0>—the network of apps, services, and accounts built on the AT Protocol."
 msgstr ""
 
+#: src/lib/strings/feed-names.ts:16
+msgctxt "feed-name"
+msgid "Tennalings"
+msgstr ""
+
 #: src/view/shell/desktop/RightNav.tsx:127
 #: src/view/shell/desktop/RightNav.tsx:128
 msgid "Terms"
@@ -15515,7 +15510,7 @@ msgstr "Şartlar"
 msgid "Terms of Service"
 msgstr "Hizmet Şartları"
 
-#: src/screens/Settings/AppIconSettings/useAppIconSets.ts:126
+#: src/screens/Settings/AppIconSettings/useAppIconSets.ts:107
 msgctxt "Name of app icon variant"
 msgid "TestFlight"
 msgstr ""
@@ -16098,7 +16093,7 @@ msgstr "Bu içerik, bir Bluesky hesabı olmadan görüntülenemez."
 msgid "This conversation is locked."
 msgstr "Bu yazışma kilitli."
 
-#: src/view/com/composer/drafts/DraftItem.tsx:264
+#: src/view/com/composer/drafts/DraftItem.tsx:278
 msgid "This draft will be permanently deleted."
 msgstr "Bu taslak kalıcı olarak silinecektir."
 
@@ -16450,7 +16445,7 @@ msgid "Thread Preferences"
 msgstr "Konu Tercihleri"
 
 #: src/screens/PostThread/components/HeaderDropdown.tsx:64
-#: src/screens/PostThread/components/HeaderDropdown.tsx:69
+#: src/screens/PostThread/components/HeaderDropdown.tsx:70
 msgid "Threaded"
 msgstr "Dallanmalı"
 
@@ -16571,7 +16566,7 @@ msgid "Top"
 msgstr "En öne çıkan"
 
 #: src/screens/PostThread/components/HeaderDropdown.tsx:96
-#: src/screens/PostThread/components/HeaderDropdown.tsx:101
+#: src/screens/PostThread/components/HeaderDropdown.tsx:102
 #: src/screens/Settings/ThreadPreferences.tsx:57
 #: src/screens/Settings/ThreadPreferences.tsx:60
 msgid "Top replies first"
@@ -16719,15 +16714,6 @@ msgstr ""
 #: src/features/inviteFriends/components/ThemePicker.tsx:32
 msgid "Twilight"
 msgstr "Alacakaranlık"
-
-#: src/screens/Settings/DeltaSettings/components/TwitterEasterEggToggle.tsx:44
-msgid "Twitter"
-msgstr ""
-
-#: src/screens/Settings/AppIconSettings/useAppIconSets.ts:104
-msgctxt "Name of app icon variant"
-msgid "Twitter"
-msgstr ""
 
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:89
 msgid "Two-factor authentication (2FA)"
@@ -17231,13 +17217,13 @@ msgstr ""
 msgid "Uploading GIF..."
 msgstr "GIF yükleniyor..."
 
-#: src/lib/api/index.ts:442
-#: src/lib/api/index.ts:481
+#: src/lib/api/index.ts:433
+#: src/lib/api/index.ts:472
 msgid "Uploading images..."
 msgstr "Görseller yükleniyor..."
 
-#: src/lib/api/index.ts:572
-#: src/lib/api/index.ts:596
+#: src/lib/api/index.ts:563
+#: src/lib/api/index.ts:587
 msgid "Uploading link thumbnail..."
 msgstr "Web bağlantısının görseli gönderiliyor..."
 
@@ -18815,7 +18801,7 @@ msgid "You probably want to restart the app now."
 msgstr "Şimdi uygulamayı yeniden başlatmak isteyebilirsiniz."
 
 #. placeholder {0}: reaction.value
-#: src/components/dms/MessageItem.tsx:378
+#: src/components/dms/MessageItem.tsx:383
 msgid "You reacted {0}"
 msgstr "{0} tepkisi verdiniz"
 
@@ -18829,15 +18815,15 @@ msgstr "{target} için {0} tepkisi verdiniz"
 msgid "You recently changed your birthdate"
 msgstr "Doğum tarihinizi yakın zamanda değiştirdiniz"
 
-#: src/components/dms/MessageItem.tsx:739
+#: src/components/dms/MessageItem.tsx:744
 msgid "You replied"
 msgstr "Yanıtladınız"
 
-#: src/components/dms/MessageItem.tsx:738
+#: src/components/dms/MessageItem.tsx:743
 msgid "You replied to {originalName}"
 msgstr "{originalName} kullanıcısına yanıt verdiniz"
 
-#: src/components/dms/MessageItem.tsx:736
+#: src/components/dms/MessageItem.tsx:741
 msgid "You replied to yourself"
 msgstr "Kendinize yanıt verdiniz"
 
