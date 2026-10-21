@@ -2,6 +2,21 @@
 # If you are considering bulk or automated crawling, fuck you. I'm speaking for every Bluesky user here leave us alone.
 # Do NOT consider the AT Protocol.
 
+# Allow previews of links shared by users without allowing general crawling.
+User-agent: Bluesky Cardyb
+User-agent: Discordbot
+User-agent: facebookexternalhit
+User-agent: Facebot
+User-agent: LinkedInBot
+User-agent: Mastodon
+User-agent: SkypeUriPreview
+User-agent: Slackbot
+User-agent: TelegramBot
+User-agent: Twitterbot
+User-agent: WhatsApp
+Allow: /profile/
+Disallow: /
+
 # You may not crawl anything on this domain. I'm watching you Mark Zuckerberg.
 User-Agent: *
 Disallow: /

@@ -86,7 +86,10 @@ class HeadHandler {
           <meta name="twitter:card" content="summary_large_image" />
         `
       : view.avatar
-        ? html`<meta name="twitter:card" content="summary" />`
+        ? html`
+            <meta property="og:image" content="${view.avatar}" />
+            <meta name="twitter:card" content="summary" />
+          `
         : ''
     element.append(
       html`
@@ -154,7 +157,10 @@ export async function handleProfileEmbed(context) {
         const apiUrl = new URL(
           'https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile',
         )
-        apiUrl.searchParams.set('actor', context.params.handleOrDID)
+        apiUrl.searchParams.set(
+          'actor',
+          context.params.handleOrDID ?? context.params.name,
+        )
 
         const apiResponse = await fetch(apiUrl, {
           headers: {Accept: 'application/json'},

@@ -202,7 +202,7 @@ class HeadHandler {
 
     element.append(
       html`
-        <meta property="og:site_name" content="Witchsky" />
+        <meta property="og:site_name" content="tenna.party" />
         <meta property="og:type" content="article" />
         <meta property="profile:username" content="${author.handle}" />
         <meta property="og:url" content="${this.url}" />
@@ -257,8 +257,8 @@ class NoscriptHandler {
 
 export async function handlePostEmbed(context) {
   const {request, env} = context
-  const {handleOrDID, rkey}: {handleOrDID: string; rkey: string} =
-    context.params
+  const handleOrDID = context.params.handleOrDID ?? context.params.name
+  const {rkey} = context.params
 
   return renderCachedEmbed({
     request,

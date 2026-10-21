@@ -2,7 +2,7 @@
   "version": 1,
   "include": [
     "/__embed/profile/*",
-    "/profile/*/theme/*",
+    "/profile/*",
     "/theme-og/*",
     "/oauth-client-metadata.json",
     "/oauth-client-metadata-native.json"

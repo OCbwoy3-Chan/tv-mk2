@@ -2,7 +2,7 @@ import {existsSync, readdirSync} from 'node:fs'
 import path from 'node:path'
 
 import rspack from '@rspack/core'
-import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh';
+import {ReactRefreshRspackPlugin} from '@rspack/plugin-react-refresh'
 import {sentryWebpackPlugin} from '@sentry/webpack-plugin'
 import dotenv from 'dotenv'
 import {RspackManifestPlugin} from 'rspack-manifest-plugin'
@@ -344,10 +344,10 @@ module.exports = {
     }),
     new rspack.CopyRspackPlugin({
       patterns: [
-        // Only internal crawler routes should invoke Pages Functions. A
-        // Cloudflare Transform Rule rewrites link-preview bots to /__embed.
+        // Include public link-preview routes as well as internal crawler routes.
         {from: 'web/_routes.json', to: '_routes.json'},
         {from: 'web/_headers', to: '_headers', toType: 'file'},
+        {from: 'bskyweb/static/robots.txt', to: 'robots.txt'},
         {from: 'assets/favicon.png', to: 'favicon.ico'},
         // Serve fonts at /static/fonts/ with stable names
         {from: 'web/static/fonts', to: 'static/fonts'},
@@ -424,7 +424,7 @@ module.exports = {
           dist: process.env.SENTRY_DIST,
         },
       }),
-    !isProduction && new ReactRefreshRspackPlugin()
+    !isProduction && new ReactRefreshRspackPlugin(),
   ].filter(Boolean),
 
   optimization: {
