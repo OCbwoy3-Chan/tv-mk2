@@ -63,6 +63,7 @@ import {
 import {useSession} from '#/state/session'
 import {useProgressGuide} from '#/state/shell/progress-guide'
 import {useSelectedFeed} from '#/state/shell/selected-feed'
+import {ForkDisclosure} from '#/view/com/feeds/tenna/ForkDisclosure'
 import {List, type ListRef} from '#/view/com/util/List'
 import {PostFeedLoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
 import {LoadMoreRetryBtn} from '#/view/com/util/LoadMoreRetryBtn'
@@ -192,6 +193,10 @@ type FeedRow =
     }
   | {
       type: 'liveEventFeedsAndTrendingBanner'
+      key: string
+    }
+  | {
+      type: 'tennaForkDisclosure'
       key: string
     }
 
@@ -621,6 +626,7 @@ let PostFeed = ({
         key: 'feedShutdownMsg',
       })
     }
+
     if (isFetched) {
       if (isError && isEmpty) {
         arr.push({
@@ -633,6 +639,13 @@ let PostFeed = ({
           key: 'empty',
         })
       } else if (data) {
+        if (feedKind !== 'profile') {
+          arr.push({
+            type: 'tennaForkDisclosure',
+            key: 'tennaForkDisclosure-0',
+          })
+        }
+
         let sliceIndex = -1
 
         if (isVideoFeed) {
@@ -1064,6 +1077,8 @@ let PostFeed = ({
         return <DiscoverFeedLiveEventFeedsAndTrendingBanner />
       } else if (row.type === 'composerPrompt') {
         return <ComposerPrompt />
+      } else if (row.type === 'tennaForkDisclosure') {
+        return <ForkDisclosure />
       } else if (row.type === 'interstitialTrendingVideos') {
         return <TrendingVideosInterstitial />
       } else if (row.type === 'fallbackMarker') {
