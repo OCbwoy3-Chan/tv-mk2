@@ -431,6 +431,8 @@ module.exports = {
       'process.env.APP_MANIFEST': 'undefined',
       'process.env.__SENTRY_METRO_DEV_SERVER__': 'undefined',
       'process.env.EXPO_OS': JSON.stringify('web'),
+      // Holy shit I fucking HATE React Native but here we fuckin go
+      'process.env.EXPO_SERVER': 'false',
       // Inject all EXPO_PUBLIC_* env vars
       ...expoPublicEnv,
     }),
