@@ -51,7 +51,7 @@ steps:
       case "$TANGLED_REF_NAME" in
         main) cloudflare_branch="main" ;;
         dev) cloudflare_branch="beta" ;;
-        witchsky-next) cloudflare_branch="next" ;;
+        "witchsky-next") cloudflare_branch="next" ;;
         *) echo "Refusing to deploy unexpected branch: $TANGLED_REF_NAME" >&2; exit 1 ;;
       esac
 
