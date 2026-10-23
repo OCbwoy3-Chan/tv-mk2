@@ -101,6 +101,7 @@ stats.json
 # environment variables
 .env
 .env.*
+!/.env.e2e
 
 # Local Android SDK
 local-android-sdk/

@@ -59,7 +59,7 @@ let ProfileHeaderLabeler = ({
 }: Props): React.ReactNode => {
   const profile: Shadow<app.bsky.actor.defs.ProfileViewDetailed> =
     useProfileShadow(profileUnshadowed)
-  const {currentAccount, } = useSession()
+  const {currentAccount} = useSession()
   const isSelf = currentAccount?.did === profile.did
 
   const moderation = useMemo(
@@ -97,6 +97,7 @@ let ProfileHeaderLabeler = ({
                   value={descriptionRT}
                   enableTags
                   authorHandle={profile.handle}
+                  shouldProxyLinks={true}
                 />
               </View>
             ) : undefined}
@@ -127,8 +128,8 @@ function CantSubscribePrompt({
         <Prompt.TitleText>Unable to subscribe</Prompt.TitleText>
         <Prompt.DescriptionText>
           <Trans>
-            We're sorry! You are crazy AS FUCK!
-            You're already subscibed to 200 of them, what more do you want?
+            We're sorry! You are crazy AS FUCK! You're already subscibed to 200
+            of them, what more do you want?
           </Trans>
           {/* <Trans>
             We're sorry! You can only subscribe to twenty labelers, and you've
@@ -154,7 +155,7 @@ export function LabelerLikeSection({
   const ax = useAnalytics()
   const {_} = useLingui()
   const {hasSession} = useSession()
-  const playHaptic = useHaptics()
+  const haptics = useHaptics()
   const enableSquareButtons = useEnableSquareButtons()
   const {mutateAsync: likeMod, isPending: isLikePending} = useLikeMutation()
   const {mutateAsync: unlikeMod, isPending: isUnlikePending} =
@@ -164,7 +165,7 @@ export function LabelerLikeSection({
 
   const onToggleLiked = useCallback(async () => {
     try {
-      playHaptic()
+      haptics.tap()
 
       if (likeUri) {
         await unlikeMod({uri: likeUri})
@@ -175,16 +176,16 @@ export function LabelerLikeSection({
         setLikeCount(c => c + 1)
         setLikeUri(res.uri)
       }
-    } catch (e: any) {
+    } catch (e) {
       Toast.show(
         _(
           msg`There was an issue contacting the server, please check your internet connection and try again.`,
         ),
         {type: 'error'},
       )
-      ax.logger.error(`Failed to toggle labeler like`, {message: e.message})
+      ax.logger.error(`Failed to toggle labeler like`, {safeMessage: String(e)})
     }
-  }, [ax, labeler, playHaptic, likeUri, unlikeMod, likeMod, _])
+  }, [ax, labeler, haptics, likeUri, unlikeMod, likeMod, _])
 
   if (isAppLabeler(profile.did)) {
     return null
@@ -252,9 +253,8 @@ export function LabelerSubscribeButton({
   const t = useTheme()
   const ax = useAnalytics()
   const {_} = useLingui()
-  const {hasSession} = useSession()
   const requireAuth = useRequireAuth()
-  const playHaptic = useHaptics()
+  const haptics = useHaptics()
   const {data: preferences} = usePreferencesQuery()
   const moderationOpts = useModerationOpts()
   const {
@@ -274,7 +274,7 @@ export function LabelerSubscribeButton({
 
   const onPressSubscribe = () =>
     requireAuth(async (): Promise<void> => {
-      playHaptic()
+      haptics.confirm()
       const subscribe = !isSubscribed
       const subscribeMetric = subscribe
         ? 'moderation:subscribedToLabeler'
@@ -287,13 +287,15 @@ export function LabelerSubscribeButton({
         })
 
         ax.metric(subscribeMetric, {})
-      } catch (e: any) {
+      } catch (e) {
         reset()
-        if (e.message === 'MAX_LABELERS') {
+        if (e instanceof Error && e.message === 'MAX_LABELERS') {
           cantSubscribePrompt.open()
           return
         }
-        ax.logger.error(`Failed to subscribe to labeler`, {message: e.message})
+        ax.logger.error(`Failed to subscribe to labeler`, {
+          safeMessage: String(e),
+        })
       }
     })
 
@@ -359,7 +361,7 @@ export function HeaderLabelerButtons({
 }) {
   const {_} = useLingui()
   const {currentAccount, hasSession} = useSession()
-  const playHaptic = useHaptics()
+  const haptics = useHaptics()
   const editProfileControl = useDialogControl()
 
   const isMe = currentAccount?.did === profile.did
@@ -378,7 +380,7 @@ export function HeaderLabelerButtons({
             size="small"
             color="secondary"
             onPress={() => {
-              playHaptic('Light')
+              haptics.tap()
               editProfileControl.open()
             }}
             label={_(msg`Edit profile`)}

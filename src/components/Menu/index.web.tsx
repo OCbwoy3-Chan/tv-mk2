@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
-import {DropdownMenu} from 'radix-ui'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 
 import {getShapeStyle, SHARP_CORNERS} from '#/lib/shapes'
 import {userStyle} from '#/lib/userstyles'

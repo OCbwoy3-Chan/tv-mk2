@@ -1,4 +1,4 @@
-import {useCallback, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {View} from 'react-native'
 import {moderatePost, type ModerationDecision} from '@bsky/sdk/moderation'
 import {msg} from '@lingui/core/macro'
@@ -10,7 +10,11 @@ import {usePostViewTracking} from '#/lib/hooks/usePostViewTracking'
 import {cleanError} from '#/lib/strings/errors'
 import {logger} from '#/logger'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
-import {usePostQuotesQuery} from '#/state/queries/post-quotes'
+import {
+  fetchNextNonEmptyPage,
+  type QuotesSort,
+  usePostQuotesQuery,
+} from '#/state/queries/post-quotes'
 import {useResolveUriQuery} from '#/state/queries/resolve-uri'
 import {Post} from '#/view/com/post/Post'
 import {atoms as a, useTheme} from '#/alf'
@@ -19,20 +23,6 @@ import {Text} from '#/components/Typography'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {List} from '../util/List'
-
-function renderItem({
-  item,
-  index,
-}: {
-  item: {
-    post: app.bsky.feed.defs.PostView
-    moderation: ModerationDecision
-    record: app.bsky.feed.post.Main
-  }
-  index: number
-}) {
-  return <Post post={item.post} hideTopBorder={index === 0} />
-}
 
 function keyExtractor(item: {
   post: app.bsky.feed.defs.PostView
@@ -70,17 +60,25 @@ function ExtractedQuotedPost({post}: {post: app.bsky.feed.defs.PostView}) {
 
 export function PostQuotes({
   uri,
+  quoteSort,
+  active,
   quotedPost,
-  isQuotedPostExtracted,
+  isQuotedPostExtracted = false,
 }: {
   uri: string
+  quoteSort: QuotesSort
+  /** When false (an unselected pager tab), the list doesn't fetch yet. */
+  active: boolean
   quotedPost?: app.bsky.feed.defs.PostView
-  isQuotedPostExtracted: boolean
+  isQuotedPostExtracted?: boolean
 }) {
   const {_} = useLingui()
   const initialNumToRender = useInitialNumToRender()
   const [isPTRing, setIsPTRing] = useState(false)
-  const trackPostView = usePostViewTracking('PostQuotes')
+  const trackPostView = usePostViewTracking('PostQuotes', quoteSort)
+  const pendingPostViews = useRef(
+    new Map<string, app.bsky.feed.defs.PostView>(),
+  )
 
   const {
     data: resolvedUri,
@@ -90,12 +88,16 @@ export function PostQuotes({
   const {
     data,
     isLoading: isLoadingQuotes,
+    isFetched,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
     error,
     refetch,
-  } = usePostQuotesQuery(resolvedUri?.uri)
+  } = usePostQuotesQuery(resolvedUri?.uri, {
+    quoteSort,
+    enabled: active,
+  })
 
   const moderationOpts = useModerationOpts()
 
@@ -117,6 +119,16 @@ export function PostQuotes({
       )
       .filter(item => item !== null) ?? []
 
+  useEffect(() => {
+    if (active && pendingPostViews.current.size > 0) {
+      const quoteUris = new Set(quotes.map(item => item.post.uri))
+      for (const post of pendingPostViews.current.values()) {
+        if (quoteUris.has(post.uri)) trackPostView(post)
+      }
+      pendingPostViews.current.clear()
+    }
+  }, [active, quotes, trackPostView])
+
   const onRefresh = useCallback(async () => {
     setIsPTRing(true)
     try {
@@ -130,7 +142,7 @@ export function PostQuotes({
   const onEndReached = useCallback(async () => {
     if (isFetchingNextPage || !hasNextPage || isError) return
     try {
-      await fetchNextPage()
+      await fetchNextNonEmptyPage(fetchNextPage)
     } catch (err) {
       logger.error('Failed to load more quotes', {message: err})
     }
@@ -160,7 +172,10 @@ export function PostQuotes({
   if (quotes.length < 1) {
     return (
       <ListMaybePlaceholder
-        isLoading={isLoadingUri || isLoadingQuotes}
+        // A tab that hasn't fetched yet shows loading, not "No quotes yet".
+        isLoading={
+          isLoadingUri || isLoadingQuotes || (!!resolvedUri && !isFetched)
+        }
         isError={isError}
         emptyType="results"
         emptyTitle={_(msg`No quotes yet`)}
@@ -184,7 +199,13 @@ export function PostQuotes({
       onRefresh={onRefresh}
       onEndReached={onEndReached}
       onEndReachedThreshold={4}
-      onItemSeen={item => trackPostView(item.post)}
+      onItemSeen={(item: (typeof quotes)[number]) => {
+        if (active) {
+          trackPostView(item.post)
+        } else {
+          pendingPostViews.current.set(item.post.uri, item.post)
+        }
+      }}
       ListHeaderComponent={
         isQuotedPostExtracted && quotedPost ? (
           <ExtractedQuotedPost post={quotedPost} />

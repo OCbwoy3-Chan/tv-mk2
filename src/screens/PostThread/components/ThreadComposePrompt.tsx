@@ -1,8 +1,6 @@
 import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 
 import {PressableScale} from '#/lib/custom-animations/PressableScale'
 import {useHaptics} from '#/lib/haptics'
@@ -24,8 +22,22 @@ export function ThreadComposePrompt({
   onPressCompose: () => void
   style?: StyleProp<ViewStyle>
 }) {
+  const {currentAccount} = useSession()
+  const {data: profile} = useProfileQuery({did: currentAccount?.did})
+  const {t: l} = useLingui()
   const {gtMobile} = useBreakpoints()
   const t = useTheme()
+  const haptics = useHaptics()
+  const {
+    state: hovered,
+    onIn: onHoverIn,
+    onOut: onHoverOut,
+  } = useInteractionState()
+  const {
+    state: pressed,
+    onIn: onPressIn,
+    onOut: onPressOut,
+  } = useInteractionState()
 
   useHideBottomBarBorderForScreen()
 
@@ -51,7 +63,43 @@ export function ThreadComposePrompt({
           style={[a.absolute, a.inset_0]}
         />
       )}
-      <ThreadComposePromptPill onPress={onPressCompose} />
+      <PressableScale
+        accessibilityRole="button"
+        accessibilityLabel={l`Compose reply`}
+        accessibilityHint={l`Opens composer`}
+        onPress={() => {
+          onPressCompose()
+          haptics.tap()
+        }}
+        onLongPress={ios(() => {
+          onPressCompose()
+          haptics.longPress()
+        })}
+        onHoverIn={onHoverIn}
+        onHoverOut={onHoverOut}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        // tablet and up highlights on press instead of scaling
+        targetScale={gtMobile ? 1 : undefined}
+        style={[
+          a.flex_row,
+          a.align_center,
+          a.p_sm,
+          a.gap_sm,
+          a.rounded_full,
+          (!gtMobile || hovered || pressed) && t.atoms.bg_contrast_25,
+          !gtMobile && native([a.border, t.atoms.border_contrast_low]),
+          a.transition_color,
+        ]}>
+        <UserAvatar
+          size={24}
+          avatar={profile?.avatar}
+          type={profile?.associated?.labeler ? 'labeler' : 'user'}
+        />
+        <Text style={[a.text_md, t.atoms.text_contrast_medium]}>
+          <Trans>Write your reply</Trans>
+        </Text>
+      </PressableScale>
     </View>
   )
 }
@@ -62,11 +110,11 @@ export function ThreadComposePrompt({
  */
 export function ThreadComposePromptPill({onPress}: {onPress: () => void}) {
   const t = useTheme()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const {gtMobile} = useBreakpoints()
   const {currentAccount} = useSession()
   const {data: profile} = useProfileQuery({did: currentAccount?.did})
-  const playHaptic = useHaptics()
+  const haptics = useHaptics()
   const enableSquareButtons = useEnableSquareButtons()
   const {
     state: hovered,
@@ -77,15 +125,15 @@ export function ThreadComposePromptPill({onPress}: {onPress: () => void}) {
   return (
     <PressableScale
       accessibilityRole="button"
-      accessibilityLabel={_(msg`Compose reply`)}
-      accessibilityHint={_(msg`Opens composer`)}
+      accessibilityLabel={l`Compose reply`}
+      accessibilityHint={l`Opens composer`}
       onPress={() => {
         onPress()
-        playHaptic('Light')
+        haptics.tap()
       }}
       onLongPress={ios(() => {
         onPress()
-        playHaptic('Heavy')
+        haptics.tap()
       })}
       onHoverIn={onHoverIn}
       onHoverOut={onHoverOut}

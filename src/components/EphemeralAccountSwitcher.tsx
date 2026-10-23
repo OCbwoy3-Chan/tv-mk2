@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {type GestureResponderEvent} from 'react-native'
+import {type GestureResponderEvent, type View} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
 import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
@@ -31,13 +31,13 @@ type AccountListItem = {
 }
 
 export type SwitcherTriggerProps = {
-  ref: null
-  onPress: (() => void) | undefined
+  ref: React.Ref<React.ComponentRef<typeof View>> | null
+  onPress: ((event?: GestureResponderEvent) => void) | undefined
   onLongPress?: ((event?: GestureResponderEvent) => void) | undefined
   onFocus: () => void
   onBlur: () => void
-  onPressIn: () => void
-  onPressOut: () => void
+  onPressIn?: () => void
+  onPressOut?: () => void
   accessibilityLabel: string
   accessibilityRole: 'button'
 }

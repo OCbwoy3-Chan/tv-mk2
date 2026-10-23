@@ -1,9 +1,9 @@
 import {MMKV} from 'react-native-mmkv'
 import {setPolyfills} from '@growthbook/growthbook'
-import {GrowthBook} from '@growthbook/growthbook-react'
 import {type I18n} from '@lingui/core'
 import {msg} from '@lingui/core/macro'
 
+import {createGrowthBook} from '#/analytics/features/client'
 import {Features} from '#/analytics/features/types'
 import {getNavigationMetadata, type Metadata} from '#/analytics/metadata'
 import * as env from '#/env'
@@ -31,11 +31,18 @@ setPolyfills({
  */
 export type FeatureFetchStrategy = 'prefer-low-latency' | 'prefer-fresh-gates'
 
-export const features = new GrowthBook({
+const sdkOptions = {
   apiHost: env.GROWTHBOOK_API_HOST,
   clientKey: env.GROWTHBOOK_CLIENT_KEY,
   enableDevMode: env.IS_INTERNAL,
-})
+}
+const bootstrap = undefined
+
+/**
+ * Shared SDK instance. Assumes a single active account context, with attributes
+ * supplied by AnalyticsFeaturesContext before its children evaluate features.
+ */
+export const features = createGrowthBook(sdkOptions, bootstrap)
 
 /**
  * Kept as a resolved promise so existing startup code can await it without
@@ -43,7 +50,11 @@ export const features = new GrowthBook({
  */
 export const init = Promise.resolve()
 
+let previousOverrides = '{}'
 export function setForcedFeatureValues(overrides?: Record<string, boolean>) {
+  const serialized = JSON.stringify(overrides ?? {})
+  if (serialized === previousOverrides) return
+  previousOverrides = serialized
   features.setForcedFeatures(new Map(Object.entries(overrides ?? {})))
 }
 
@@ -71,6 +82,60 @@ export function getFeatureDescription(feature: Features, i18n: I18n) {
           msg({
             message: 'Spot posts your friends and follows have liked.',
             comment: 'Description of a feature flag (Social proofing on posts)',
+          }),
+        ),
+      }
+    case Features.FollowingV2Enable:
+      // Following v2 behaviour is native-only, see `isFollowingV2Eligible`
+      if (env.IS_WEB) return null
+      return {
+        key: feature,
+        name: i18n._(
+          msg({
+            message: 'Keep your place in the Following feed',
+            comment: 'Name for a feature flag',
+          }),
+        ),
+        description: i18n._(
+          msg({
+            message:
+              'Save your position in the Following feed between sessions. New posts wait above you until you’re ready to view them.',
+            comment:
+              'Description of a feature flag (Keep your place in the Following feed)',
+          }),
+        ),
+      }
+    case Features.NotificationsV2Enable:
+      return {
+        key: feature,
+        name: i18n._(
+          msg({
+            message: 'Redesigned notifications',
+            comment: 'Name for a feature flag',
+          }),
+        ),
+        description: i18n._(
+          msg({
+            message:
+              'Notifications sorted into tabs – people you follow, followers, replies and activity.',
+            comment: 'Description of a feature flag (Redesigned notifications)',
+          }),
+        ),
+      }
+    case Features.ModerationInboxEnable:
+      return {
+        key: feature,
+        name: i18n._(
+          msg({
+            message: 'Moderation inbox',
+            comment: 'Name for a feature flag',
+          }),
+        ),
+        description: i18n._(
+          msg({
+            message:
+              'Track your reports, review moderation decisions, and submit appeals.',
+            comment: 'Description of a feature flag (Moderation inbox)',
           }),
         ),
       }
@@ -136,10 +201,27 @@ export function getTargetedFeatures(i18n: I18n) {
 }
 
 /**
+ * Whether `feature` is on for the current user because they opted in to beta
+ * features, i.e. the rule GrowthBook matched for them targets the beta user
+ * attribute, as the features listed on the Beta features screen do.
+ */
+export function isOnForBetaUser(feature: Features): boolean {
+  const result = features.evalFeature(feature)
+  if (!result.on || !result.ruleId) return false
+  const rules = features.getFeatures()[feature]?.rules
+  const rule = rules?.find(({id}) => id === result.ruleId)
+  return conditionTargetsAttribute(rule?.condition, BETA_USER_ATTRIBUTE)
+}
+
+/**
  * Converts our metadata into GrowthBook attributes and sets them. GrowthBook
  * attributes are manually configured in the GrowthBook dashboard. So these
  * values need to match exactly. Therefore, let's add them here manually to and
  * not spread them to avoid mistakes.
+ *
+ * Analytics session IDs are event metadata only, not feature targeting or
+ * experiment bucketing inputs. They are intentionally excluded from GrowthBook
+ * attributes, so session rotation does not require feature reevaluation.
  */
 export function setAttributes({
   base,
@@ -149,7 +231,6 @@ export function setAttributes({
 }: Metadata) {
   void features.setAttributes({
     deviceId: base.deviceId,
-    sessionId: base.sessionId,
     platform: base.platform,
     appVersion: base.appVersion,
     countryCode: geolocation.countryCode,

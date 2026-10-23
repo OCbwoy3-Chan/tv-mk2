@@ -1,4 +1,5 @@
 import {useCallback, useMemo, useState} from 'react'
+import {type GestureResponderEvent} from 'react-native'
 import {View} from 'react-native'
 import {
   moderateProfile,
@@ -290,7 +291,7 @@ function BaseChatItem({
   const {gtMobile} = useBreakpoints()
   const {isWithinLeftPanel} = useIsWithinSplitView()
 
-  const playHaptic = useHaptics()
+  const haptics = useHaptics()
   const queryClient = useQueryClient()
   const hasUnread =
     !selected &&
@@ -422,19 +423,31 @@ function BaseChatItem({
     setShowActions(true)
   }, [])
 
-  const onPress = useCallback(() => {
-    for (const member of convo.view.members) {
-      unstableCacheProfileView(queryClient, member)
-    }
-    precacheConvoQuery(queryClient, convo.view)
-    void decrementBadgeCount(convo.view.unreadCount)
-    ax.metric('chat:open', {logContext: 'ChatsList'})
-  }, [ax, queryClient, convo])
+  const onPress = useCallback(
+    (e: GestureResponderEvent) => {
+      for (const member of convo.view.members) {
+        unstableCacheProfileView(queryClient, member)
+      }
+      precacheConvoQuery(queryClient, convo.view)
+      void decrementBadgeCount(convo.view.unreadCount)
+      if (isDeletedAccount) {
+        e.preventDefault()
+        menuControl.open(e)
+        return false
+      } else {
+        ax.metric('chat:open', {logContext: 'ChatsList'})
+      }
+    },
+    [ax, isDeletedAccount, menuControl, queryClient, convo],
+  )
 
-  const onLongPress = useCallback(() => {
-    playHaptic()
-    menuControl.open()
-  }, [playHaptic, menuControl])
+  const onLongPress = useCallback(
+    (e: {currentTarget: GestureResponderEvent['currentTarget']}) => {
+      haptics.longPress()
+      menuControl.open({currentTarget: e.currentTarget})
+    },
+    [haptics, menuControl],
+  )
 
   const markReadAction = {
     threshold: 120,

@@ -13,7 +13,7 @@ import * as SplashScreen from 'expo-splash-screen'
 
 import {Logotype} from '#/view/icons/Logotype'
 import {atoms as a, useTheme} from '#/alf'
-import { Logomark } from './view/icons/Logomark'
+import {Logomark} from './view/icons/Logomark'
 
 export const Logo = Logomark
 
@@ -27,7 +27,7 @@ export function Splash(props: React.PropsWithChildren<Props>) {
   const intro = useSharedValue(0)
   const outroLogo = useSharedValue(0)
   const outroApp = useSharedValue(0)
-  const outroAppOpacity = useSharedValue(0)
+  const outroSplashOpacity = useSharedValue(0)
   const [isAnimationComplete, setIsAnimationComplete] = useState(false)
   const [isLayoutReady, setIsLayoutReady] = useState(false)
   const [reduceMotion, setReduceMotion] = useState<boolean | undefined>(false)
@@ -44,7 +44,7 @@ export function Splash(props: React.PropsWithChildren<Props>) {
 
     const introOpacity = interpolate(intro.get(), [0, 1], [0, 1], 'clamp')
     const outroOpacity = interpolate(
-      outroAppOpacity.get(),
+      outroSplashOpacity.get(),
       [0, 0.1, 0.2, 1],
       [1, 1, 0, 0],
       'clamp',
@@ -64,6 +64,21 @@ export function Splash(props: React.PropsWithChildren<Props>) {
     }
   })
 
+  const splashAnimation = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(
+        outroSplashOpacity.get(),
+        [0, 0.1, 0.2, 1],
+        [1, 1, 0, 0],
+        'clamp',
+      ),
+    }
+  })
+
+  /**
+   * Keep the app opaque so iOS blur/glass effects can initialize while the
+   * splash hides it.
+   */
   const appAnimation = useAnimatedStyle(() => {
     return {
       transform: [
@@ -71,12 +86,6 @@ export function Splash(props: React.PropsWithChildren<Props>) {
           scale: interpolate(outroApp.get(), [0, 1], [1.1, 1], 'clamp'),
         },
       ],
-      opacity: interpolate(
-        outroAppOpacity.get(),
-        [0, 0.1, 0.2, 1],
-        [0.02, 0.02, 1, 1], // first two values cant be 0 for the iOS blur/glass effects to work, the values obtained by trial and error
-        'clamp',
-      ),
     }
   })
 
@@ -109,7 +118,7 @@ export function Splash(props: React.PropsWithChildren<Props>) {
                     easing: Easing.inOut(Easing.cubic),
                   }),
                 )
-                outroAppOpacity.set(
+                outroSplashOpacity.set(
                   withTiming(1, {
                     duration: 1200,
                     easing: Easing.in(Easing.cubic),
@@ -121,7 +130,7 @@ export function Splash(props: React.PropsWithChildren<Props>) {
         })
         .catch(() => {})
     }
-  }, [onFinish, intro, outroLogo, outroApp, outroAppOpacity, isReady])
+  }, [onFinish, intro, outroLogo, outroApp, outroSplashOpacity, isReady])
 
   useEffect(() => {
     void AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion)
@@ -131,14 +140,21 @@ export function Splash(props: React.PropsWithChildren<Props>) {
 
   return (
     <View style={{flex: 1}} onLayout={onLayout}>
+      {isReady && (
+        <Animated.View style={[{flex: 1}, appAnimation]}>
+          {props.children}
+        </Animated.View>
+      )}
+
       {!isAnimationComplete && (
-        <View
+        <Animated.View
           style={[
             a.absolute,
             a.inset_0,
             a.align_center,
             a.justify_center,
             {backgroundColor: logoBg},
+            splashAnimation,
           ]}>
           <Logo
             fill={t.palette.primary_500}
@@ -160,31 +176,23 @@ export function Splash(props: React.PropsWithChildren<Props>) {
             ]}>
             <Logotype fill={t.palette.contrast_1000} width={90} />
           </Animated.View>
-        </View>
+        </Animated.View>
       )}
 
-      {isReady && (
-        <>
-          <Animated.View style={[{flex: 1}, appAnimation]}>
-            {props.children}
-          </Animated.View>
-
-          {!isAnimationComplete && (
-            <Animated.View
-              style={[
-                a.absolute,
-                a.inset_0,
-                logoAnimation,
-                {
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                },
-              ]}>
-              <Logo fill={logoBg} />
-            </Animated.View>
-          )}
-        </>
+      {isReady && !isAnimationComplete && (
+        <Animated.View
+          style={[
+            a.absolute,
+            a.inset_0,
+            logoAnimation,
+            {
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+          ]}>
+          <Logo fill={logoBg} />
+        </Animated.View>
       )}
     </View>
   )

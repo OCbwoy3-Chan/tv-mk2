@@ -1,0 +1,1 @@
+Sort SVG inputs before assigning font codepoints. Directory iteration differs between Windows and Linux; deterministic ordering keeps generated glyphmaps and fonts consistent across development and CI.

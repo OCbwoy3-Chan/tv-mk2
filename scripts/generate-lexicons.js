@@ -17,13 +17,27 @@ try {
     recursive: true,
     filter: file => {
       const relative = path.relative(source, file).split(path.sep).join('/')
-      return relative !== 'com/atproto/space' && relative !== 'party/tenna/private'
+      return (
+        relative !== 'com/atproto/space' && relative !== 'party/tenna/private'
+      )
     },
   })
-  execFileSync('lex', [
-    'build', '--lexicons', temporary, '--out', path.join(projectRoot, 'src/lexicons'),
-    '--clear', '--index-file', '--import-ext', '',
-  ], {stdio: 'inherit'})
+  execFileSync(
+    process.execPath,
+    [
+      path.join(projectRoot, 'node_modules', '@atproto', 'lex', 'bin', 'lex'),
+      'build',
+      '--lexicons',
+      temporary,
+      '--out',
+      path.join(projectRoot, 'src/lexicons'),
+      '--clear',
+      '--index-file',
+      '--import-ext',
+      '',
+    ],
+    {stdio: 'inherit'},
+  )
 } finally {
   fs.rmSync(temporary, {recursive: true, force: true})
 }

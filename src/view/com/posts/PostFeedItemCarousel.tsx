@@ -15,6 +15,11 @@ import {type FeedPostSlice} from '#/state/queries/post-feed'
 import {BlockDrawerGesture} from '#/view/shell/BlockDrawerGesture'
 import {atoms as a, useTheme, utils, web} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
+import {ITEM_GAP} from '#/components/Gallery/const'
+import {tween} from '#/components/Gallery/tween'
+import {useKeyboardHandlers} from '#/components/Gallery/useKeyboardHandlers'
+import {usePointerHandlers} from '#/components/Gallery/usePointerHandlers'
+import {getOffsetForIndex} from '#/components/Gallery/utils'
 import {
   ChevronBottom_Stroke2_Corner0_Rounded as ChevronBottom,
   ChevronLeft_Stroke2_Corner0_Rounded as ChevronLeft,
@@ -22,11 +27,6 @@ import {
   ChevronTop_Stroke2_Corner0_Rounded as ChevronTop,
 } from '#/components/icons/Chevron'
 import {GalleryBleed} from '#/components/images/Gallery'
-import {ITEM_GAP} from '#/components/images/Gallery/const'
-import {tween} from '#/components/images/Gallery/tween'
-import {useKeyboardHandlers} from '#/components/images/Gallery/useKeyboardHandlers'
-import {usePointerHandlers} from '#/components/images/Gallery/usePointerHandlers'
-import {getOffsetForIndex} from '#/components/images/Gallery/utils'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {PostFeedItem} from './PostFeedItem'
@@ -375,21 +375,23 @@ function RepostCarouselWeb({
    * vertical stack and stretch sibling cards to the tallest item.
    */
   useKeyboardHandlers({
-    flatListRef: scrollRef,
+    scrollRef: scrollRef,
     itemWidthsRef,
     currentIndexRef,
     scrollTo,
     onSettle,
-    imageCount: items.length,
+    itemCount: items.length,
+    resetKey: items.map(item => item.items[0]._reactKey).join('\n'),
   })
 
   usePointerHandlers({
-    flatListRef: scrollRef,
+    scrollRef: scrollRef,
     itemWidthsRef,
     currentIndexRef,
     scrollTo,
     onSettle,
-    imageCount: items.length,
+    itemCount: items.length,
+    resetKey: items.map(item => item.items[0]._reactKey).join('\n'),
   })
 
   return (

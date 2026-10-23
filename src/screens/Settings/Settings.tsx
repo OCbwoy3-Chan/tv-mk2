@@ -6,6 +6,7 @@ import {useAnimatedRef, useScrollViewOffset} from 'react-native-reanimated'
 import {setStringAsync} from 'expo-clipboard'
 import {removeNuxs} from '@bsky/sdk'
 import {moderateProfile} from '@bsky/sdk/moderation'
+import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
@@ -28,6 +29,7 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useDeleteActorDeclaration} from '#/state/queries/messages/actor-declaration'
+import {useModerationInboxUnreadCountQuery} from '#/state/queries/moderation-inbox'
 import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
 import {usePdsClient} from '#/state/session'
 import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
@@ -53,8 +55,8 @@ import {useDialogControl} from '#/components/Dialog'
 import {SwitchAccountDialog} from '#/components/dialogs/SwitchAccount'
 import {SortableList} from '#/components/DraggableList'
 import {Accessibility_Stroke2_Corner2_Rounded as AccessibilityIcon} from '#/components/icons/Accessibility'
+import {ArrowTriangleBottom_Stroke2_Corner1_Rounded} from '#/components/icons/Arrow'
 import {ArrowRotateClockwise_Stroke2_Corner0_Rounded as ReverseIcon} from '#/components/icons/ArrowRotate'
-import {ArrowTriangleBottom_Stroke2_Corner1_Rounded} from '#/components/icons/ArrowTriangle'
 import {Bell_Stroke2_Corner0_Rounded as NotificationIcon} from '#/components/icons/Bell'
 import {BubbleInfo_Stroke2_Corner2_Rounded as BubbleInfoIcon} from '#/components/icons/BubbleInfo'
 import {ChevronTop_Stroke2_Corner0_Rounded as ChevronUpIcon} from '#/components/icons/Chevron'
@@ -104,6 +106,15 @@ export function SettingsScreen({}: Props) {
   const ax = useAnalytics()
   const {t: l} = useLingui()
   const t = useTheme()
+  const isModerationInboxEnabled = ax.features.enabled(
+    ax.features.ModerationInboxEnable,
+  )
+  const unreadCountQuery = useModerationInboxUnreadCountQuery(
+    isModerationInboxEnabled,
+  )
+  const unreadCount = isModerationInboxEnabled
+    ? (unreadCountQuery.data?.unreadCounts.total ?? 0)
+    : 0
   const reducedMotion = useReducedMotion()
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOffset = useScrollViewOffset(scrollRef)
@@ -428,11 +439,22 @@ export function SettingsScreen({}: Props) {
               <Trans>Privacy and security</Trans>
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
-          <SettingsList.LinkItem to="/moderation" label={l`Moderation`}>
+          <SettingsList.LinkItem
+            to="/moderation"
+            label={l`Moderation tools`}
+            accessibilityHint={
+              unreadCount > 0
+                ? plural(unreadCount, {
+                    one: '# unread update',
+                    other: '# unread updates',
+                  })
+                : undefined
+            }>
             <SettingsList.ItemIcon icon={HandIcon} />
             <SettingsList.ItemText>
-              <Trans>Moderation and content filters</Trans>
+              <Trans>Moderation tools</Trans>
             </SettingsList.ItemText>
+            <SettingsList.BadgeCount count={unreadCount} />
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
             to="/settings/notifications"

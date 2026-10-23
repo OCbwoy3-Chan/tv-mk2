@@ -3,14 +3,14 @@ const path = require('node:path')
 const sharp = require('sharp')
 const {generateSW} = require('workbox-build')
 
-/** Builds install assets and a conservative offline app shell after Rspack. */
+/** Builds install assets and a conservative offline app shell after Metro export. */
 async function buildPwa() {
   const root = path.resolve(__dirname, '..')
-  const output = path.join(root, 'web-build')
+  const output = path.join(root, 'dist')
   const pwa = path.join(output, 'pwa')
   await fs.mkdir(pwa, {recursive: true})
   await fs.copyFile(
-    path.join(root, 'web/pwa/manifest.webmanifest'),
+    path.join(root, 'public/pwa/manifest.webmanifest'),
     path.join(pwa, 'manifest.webmanifest'),
   )
   for (const size of [180, 192, 512]) {
@@ -29,11 +29,15 @@ async function buildPwa() {
     globPatterns: [
       'pwa/**/*.{html,png,webmanifest}',
       'static/**/*.{js,css,woff2,ttf,png,jpg,webp,svg}',
+      '_expo/static/**/*.{js,css}',
+      'assets/**/*.{woff2,ttf,png,jpg,webp,svg}',
     ],
     // Download optional emoji fonts only after they are selected.
     globIgnores: [
       'static/media/WitchskyNotoColorEmoji.*.woff2',
       'static/media/WitchskyTwemoji.*.woff2',
+      '**/WitchskyNotoColorEmoji*.woff2',
+      '**/WitchskyTwemoji*.woff2',
     ],
     swDest: path.join(output, 'sw.js'),
     cacheId: 'witchsky',

@@ -17,6 +17,7 @@ export enum Nux {
   DraftsAnnouncement = 'DraftsAnnouncement',
   GroupChatsAnnouncement = 'GroupChatsAnnouncement',
   InviteFriendsAnnouncement = 'InviteFriendsAnnouncement',
+  IPadBetaAnnouncement = 'IPadBetaAnnouncement',
 
   // Tenna
   TennaPartyNativeAppAnnouncement_Android = 'TennaPartyNativeAppAnnouncement_BothOS_V1',
@@ -99,6 +100,10 @@ export type AppNux = BaseNux<
       id: Nux.TennaPartyForkDisclosure_Native
       data: undefined
     }
+  | {
+      id: Nux.IPadBetaAnnouncement
+      data: undefined
+    }
 >
 
 export const NuxSchemas: Record<Nux, zod.ZodObject<any> | undefined> = {
@@ -119,4 +124,5 @@ export const NuxSchemas: Record<Nux, zod.ZodObject<any> | undefined> = {
   [Nux.InviteFriendsAnnouncement]: undefined,
   [Nux.TennaPartyNativeAppAnnouncement_Android]: undefined,
   [Nux.TennaPartyForkDisclosure_Native]: undefined,
+  [Nux.IPadBetaAnnouncement]: undefined,
 }

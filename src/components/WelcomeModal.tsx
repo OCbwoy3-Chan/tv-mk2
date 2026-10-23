@@ -2,7 +2,8 @@ import {useEffect, useEffectEvent, useState} from 'react'
 import {View} from 'react-native'
 import {ImageBackground} from 'expo-image'
 import {Trans, useLingui} from '@lingui/react/macro'
-import {FocusGuards, FocusScope} from 'radix-ui/internal'
+import * as FocusGuards from '@radix-ui/react-focus-guards'
+import * as FocusScope from '@radix-ui/react-focus-scope'
 
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {Logo} from '#/view/icons/Logo'
@@ -161,7 +162,10 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       a.text_center,
                       {color: 'rgb(58, 50, 50)', lineHeight: 24},
                     ]}>
-                    <Trans>Unofficial. All mentions of Witchsky and Bluesky are purely informative and are not endorsed.</Trans>
+                    <Trans>
+                      Unofficial. All mentions of Witchsky and Bluesky are
+                      purely informative and are not endorsed.
+                    </Trans>
                   </Text>
                 </View>
               </View>
