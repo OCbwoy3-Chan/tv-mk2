@@ -3,7 +3,7 @@ const path = require('node:path')
 const sharp = require('sharp')
 const {generateSW} = require('workbox-build')
 
-/** Builds install assets and a conservative offline app shell after Metro export. */
+/** Builds install assets and a conservative offline app shell after the web build. */
 async function buildPwa() {
   const root = path.resolve(__dirname, '..')
   const output = path.join(root, 'dist')
@@ -29,8 +29,6 @@ async function buildPwa() {
     globPatterns: [
       'pwa/**/*.{html,png,webmanifest}',
       'static/**/*.{js,css,woff2,ttf,png,jpg,webp,svg}',
-      '_expo/static/**/*.{js,css}',
-      'assets/**/*.{woff2,ttf,png,jpg,webp,svg}',
     ],
     // Download optional emoji fonts only after they are selected.
     globIgnores: [
@@ -47,7 +45,8 @@ async function buildPwa() {
     // Activate updates after existing tabs close, preserving their bundle version.
     skipWaiting: false,
     clientsClaim: true,
-    maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+    // Keep large app bundles precached as they grow beyond 10 MiB.
+    maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
     runtimeCaching: [
       {
         // Online navigations always reach the server, including its page metadata.

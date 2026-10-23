@@ -137,6 +137,7 @@ bskyogcard/src/assets/fonts/noto-*
 .wrangler
 
 # bskyweb build output
+bskyweb/static/media/postMock.html
 bskyweb/static/media/*.webp
 bskyweb/static/media/*.jpg
 bskyweb/static/media/*.png

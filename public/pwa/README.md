@@ -6,7 +6,7 @@ PWA output into `bskyweb/static` for the Go server. Serve the complete build ove
 HTTPS (localhost also works). Development builds do not register a worker.
 
 This follows https://docs.expo.dev/guides/progressive-web-apps/ using the
-Expo Metro export and the fork's post-build asset processing.
+Rspack production build and the fork's post-build asset processing.
 
 Only build assets and a copy of the app shell are precached. Online navigation
 always reaches the server; failed navigation falls back to the shell. API
