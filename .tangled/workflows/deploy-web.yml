@@ -25,6 +25,7 @@ steps:
       case "$TANGLED_REF_NAME" in
         main) oauth_base_url="https://tenna.party" ;;
         dev) oauth_base_url="https://dev.tenna.party" ;;
+        witchsky-next) oauth_base_url="https://next.tenna.party" ;;
         *) echo "Refusing to build unexpected branch: $TANGLED_REF_NAME" >&2; exit 1 ;;
       esac
 
@@ -51,7 +52,7 @@ steps:
       case "$TANGLED_REF_NAME" in
         main) cloudflare_branch="main" ;;
         dev) cloudflare_branch="beta" ;;
-        "witchsky-next") cloudflare_branch="next" ;;
+        witchsky-next) cloudflare_branch="next" ;;
         *) echo "Refusing to deploy unexpected branch: $TANGLED_REF_NAME" >&2; exit 1 ;;
       esac
 
