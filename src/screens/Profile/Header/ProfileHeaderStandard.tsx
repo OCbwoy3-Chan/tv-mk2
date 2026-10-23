@@ -117,9 +117,6 @@ let ProfileHeaderStandard = ({
     profile.viewer?.blockedBy ||
     profile.viewer?.blockingByList
 
-  const website = profile.website
-  const websiteFormatted = sanitizeWebsiteForDisplay(website ?? '')
-
   const dateJoined = useMemo(() => {
     if (!profile.createdAt) return ''
     return formatJoinDate(profile.createdAt)
@@ -230,13 +227,6 @@ let ProfileHeaderStandard = ({
                     />
                   </View>
                 ) : undefined}
-
-                {showGermDmButton && profile.associated?.germ && (
-                  <GermButton
-                    germ={profile.associated.germ}
-                    profile={profile}
-                  />
-                )}
               </View>
             )}
           </View>
@@ -248,40 +238,11 @@ let ProfileHeaderStandard = ({
               a.align_center,
               {gap: 10},
               a.pt_md,
+              a.pb_sm,
               // Keep above Followed by / tabs so the join-date tooltip paints correctly
               web({position: 'relative', zIndex: 2}),
             ]}>
             <PronounPill pronouns={profile.pronouns} showLabel />
-            {websiteFormatted && (
-              <Link
-                to={sanitizeWebsiteForLink(website ?? '')}
-                label={_(msg({message: `Visit ${websiteFormatted}`}))}
-                style={[
-                  a.flex_row,
-                  a.align_center,
-                  a.gap_xs,
-                  {maxWidth: '100%'},
-                ]}>
-                {({hovered}) => (
-                  <>
-                    <Globe
-                      width={tokens.space.lg}
-                      style={{color: t.palette.primary_500, flexShrink: 0}}
-                    />
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode="middle"
-                      style={[
-                        a.flex_shrink,
-                        {color: t.palette.primary_500},
-                        hovered && a.underline,
-                      ]}>
-                      {websiteFormatted}
-                    </Text>
-                  </>
-                )}
-              </Link>
-            )}
             <View style={[a.flex_row, a.align_center, a.gap_xs]}>
               <CalendarDays
                 width={tokens.space.lg}

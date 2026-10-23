@@ -199,8 +199,7 @@ function DialogInner({
     description !== initialDescription ||
     userAvatar !== profile.avatar ||
     userBanner !== profile.banner ||
-    pronouns !== initialPronouns ||
-    website !== initialWebsite
+    pronouns !== initialPronouns
   const linksDirty =
     !!editedLinks &&
     !!storedLinks &&
@@ -249,10 +248,6 @@ function DialogInner({
     [setNewUserBanner, setUserBanner, setImageError],
   )
 
-  const onClearWebsite = useCallback(() => {
-    setWebsite('')
-  }, [setWebsite])
-
   const onPressSave = useCallback(async () => {
     setImageError('')
     try {
@@ -267,7 +262,6 @@ function DialogInner({
           displayName: displayName.trimEnd(),
           description: description.trimEnd(),
           pronouns: pronouns.trim().toLowerCase() || undefined,
-          website: (website.trim() || undefined) as UriString | undefined,
           ...(written && {
             links: written.refs.length ? written.refs : undefined,
           }),
@@ -293,7 +287,6 @@ function DialogInner({
     displayName,
     description,
     pronouns,
-    website,
     newUserAvatar,
     newUserBanner,
     setImageError,
@@ -314,11 +307,6 @@ function DialogInner({
     text: pronouns,
     maxCount: PRONOUNS_MAX_GRAPHEMES,
   })
-  const websiteTooLong = isOverMaxGraphemeCount({
-    text: website,
-    maxCount: WEBSITE_MAX_GRAPHEMES,
-  })
-  const websiteInvalidFormat = !isValidWebsiteFormat(website)
   const descriptionTooLong = isOverMaxGraphemeCount({
     text: description,
     maxCount: MAX_DESCRIPTION,
@@ -368,9 +356,7 @@ function DialogInner({
           !dirty ||
           isUpdatingProfile ||
           displayNameTooLong ||
-          descriptionTooLong ||
-          websiteTooLong ||
-          websiteInvalidFormat
+          descriptionTooLong
         }
         size="small"
         color="primary"
@@ -393,8 +379,6 @@ function DialogInner({
       isUpdatingProfile,
       displayNameTooLong,
       descriptionTooLong,
-      websiteTooLong,
-      websiteInvalidFormat,
       enableSquareButtons,
     ],
   )
@@ -557,95 +541,6 @@ function DialogInner({
           )}
         </View>
 
-        <View>
-          <TextField.LabelText>
-            <Trans>Website</Trans>
-          </TextField.LabelText>
-          <View style={[a.w_full, a.relative]}>
-            <TextField.Root isInvalid={websiteTooLong || websiteInvalidFormat}>
-              <TextField.Icon icon={Globe} />
-              <Dialog.Input
-                value={website}
-                onChangeText={setWebsite}
-                label={l`EditWebsite`}
-                placeholder={l`https://example.com`}
-                testID="editProfileWebsiteInput"
-                autoCapitalize="none"
-                keyboardType="url"
-                style={[
-                  website
-                    ? {
-                        paddingRight: tokens.space._5xl,
-                      }
-                    : {},
-                ]}
-              />
-            </TextField.Root>
-
-            {website && (
-              <View
-                style={[
-                  a.absolute,
-                  a.z_10,
-                  a.my_auto,
-                  a.inset_0,
-                  a.justify_center,
-                  a.pr_sm,
-                  {left: 'auto'},
-                ]}>
-                <Pressable
-                  testID="clearWebsiteBtn"
-                  onPress={onClearWebsite}
-                  accessibilityLabel={l`Clear website`}
-                  accessibilityHint={l`Removes the website URL`}
-                  hitSlop={HITSLOP_10}
-                  style={[
-                    a.flex_row,
-                    a.align_center,
-                    a.justify_center,
-                    {
-                      width: tokens.space._2xl,
-                      height: tokens.space._2xl,
-                    },
-                    a.rounded_full,
-                  ]}>
-                  <CircleX
-                    width={tokens.space.lg}
-                    style={{color: t.palette.contrast_600}}
-                  />
-                </Pressable>
-              </View>
-            )}
-          </View>
-          {websiteTooLong && (
-            <Text
-              style={[
-                a.text_sm,
-                a.mt_xs,
-                a.font_bold,
-                {color: t.palette.negative_400},
-              ]}>
-              <Plural
-                value={WEBSITE_MAX_GRAPHEMES}
-                other="Website is too long. The maximum number of characters is #."
-              />
-            </Text>
-          )}
-          {websiteInvalidFormat && (
-            <Text
-              style={[
-                a.text_sm,
-                a.mt_xs,
-                a.font_bold,
-                {color: t.palette.negative_400},
-              ]}>
-              <Trans>
-                Website must be a valid HTTPS URL (e.g.
-                https://twelvemen.neocities.org/)
-              </Trans>
-            </Text>
-          )}
-        </View>
         {linksEnabled && links && (
           <ProfileLinksEditor
             did={profile.did}
