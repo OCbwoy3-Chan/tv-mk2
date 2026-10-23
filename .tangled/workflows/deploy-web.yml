@@ -1,6 +1,6 @@
 when:
   - event: ["push"]
-    branch: ["main", "dev"]
+    branch: ["main", "dev", "witchsky-next"]
 
 engine: microvm
 image: alpine
