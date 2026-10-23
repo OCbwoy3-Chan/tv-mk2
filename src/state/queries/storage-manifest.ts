@@ -58,7 +58,14 @@ async function findStorageDraft(
 
   let cursor: string | undefined
   do {
-    const res = await agent.app.bsky.draft.getDrafts({cursor})
+    const res = await agent.app.bsky.draft.getDrafts(
+      {cursor},
+      {
+        headers: {
+          'atproto-proxy': 'did:web:api.bsky.app#bsky_appview',
+        },
+      },
+    )
     for (const draft of res.data.drafts) {
       const first = draft.draft.posts[0]?.text ?? ''
 
@@ -110,13 +117,27 @@ async function writeManifestToAgent(
   const existing = await findStorageDraft(agent, {persistDraftId})
 
   if (existing) {
-    await agent.app.bsky.draft.updateDraft({
-      draft: {id: existing.id, draft},
-    })
+    await agent.app.bsky.draft.updateDraft(
+      {
+        draft: {id: existing.id, draft},
+      },
+      {
+        headers: {
+          'atproto-proxy': 'did:web:api.bsky.app#bsky_appview',
+        },
+      },
+    )
     return existing.id
   }
 
-  const res = await agent.app.bsky.draft.createDraft({draft})
+  const res = await agent.app.bsky.draft.createDraft(
+    {draft},
+    {
+      headers: {
+        'atproto-proxy': 'did:web:api.bsky.app#bsky_appview',
+      },
+    },
+  )
   return res.data.id
 }
 
