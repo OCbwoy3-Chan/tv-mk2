@@ -1,26 +1,18 @@
 import {existsSync, readdirSync} from 'node:fs'
 import path from 'node:path'
-import {createRequire} from 'node:module'
 
 import rspack from '@rspack/core'
 import {ReactRefreshRspackPlugin} from '@rspack/plugin-react-refresh'
 import {sentryWebpackPlugin} from '@sentry/webpack-plugin'
 import dotenv from 'dotenv'
 import {RspackManifestPlugin} from 'rspack-manifest-plugin'
-import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer'
 
-import {browserslist, version} from './package.json'
+import {version} from './package.json'
 
 dotenv.config({path: path.resolve(__dirname, '.env')})
 
 const GENERATE_STATS = process.env.GENERATE_STATS === '1'
 const isProduction = process.env.NODE_ENV === 'production'
-const sentryAuthToken =
-  process.env.SENTRY_AUTH_TOKEN === 'unknown'
-    ? undefined
-    : process.env.SENTRY_AUTH_TOKEN
-const oauthRequire = createRequire(require.resolve('@atproto/oauth-client-browser'))
-const oauthClientRequire = createRequire(oauthRequire.resolve('@atproto/oauth-client'))
 
 // Collect all EXPO_PUBLIC_* env vars so they're available at build time,
 // mirroring what @expo/webpack-config does automatically.
@@ -70,7 +62,7 @@ function getTranspileModuleDirs({
   const readDirNames = (dir: string) => {
     if (!existsSync(dir)) return []
     return readdirSync(dir, {withFileTypes: true})
-      .filter(entry => entry.isDirectory() || entry.isSymbolicLink())
+      .filter(entry => entry.isDirectory())
       .map(entry => entry.name)
   }
 
@@ -124,7 +116,7 @@ module.exports = {
   },
 
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'web-build'),
     filename: isProduction
       ? 'static/js/[name].[contenthash:8].js'
       : 'static/js/[name].js',
@@ -159,13 +151,6 @@ module.exports = {
       '#': path.resolve(__dirname, 'src'),
       // React Native Web
       'react-native$': 'react-native-web',
-      // SVG's web image resolver shares React Native Web's asset registry.
-      '@react-native/assets-registry/registry':
-        'react-native-web/dist/modules/AssetRegistry',
-      // This Android-only sound module is statically imported by SVG on web.
-      '../fabric/NativeSvgSoundModule': false,
-      // Both OAuth barrels re-export this package; resolve them to one instance.
-      '@atproto/did$': oauthClientRequire.resolve('@atproto/did'),
       // Internal RN module mappings for compatibility
       'react-native/Libraries/Components/View/ViewStylePropTypes$':
         'react-native-web/dist/exports/View/ViewStylePropTypes',
@@ -207,18 +192,6 @@ module.exports = {
           fullySpecified: false,
         },
       },
-      // Published ESM also needs transforms for the supported browser versions.
-      {
-        test: /\.m?js$/,
-        include: /node_modules/,
-        exclude: [...transpileModuleDirs, ...reanimatedBabelModuleDirs],
-        use: {
-          loader: 'builtin:swc-loader',
-          options: {
-            env: {targets: browserslist.production},
-          },
-        },
-      },
       // Source files: use babel-loader for lingui macros, react-compiler, etc.
       {
         test: /\.[jt]sx?$/,
@@ -231,7 +204,6 @@ module.exports = {
             cacheDirectory: true,
             cacheCompression: false, // let rspack handle it
             sourceType: 'unambiguous',
-            caller: {name: 'babel-loader', bundler: 'webpack', platform: 'web'},
             // based on babel.config.js but optimized for web and rspack
             presets: [
               [
@@ -251,7 +223,7 @@ module.exports = {
               // omitted: react-native-dotenv (we use DefinePlugin instead)
               // omitted: module-resolver (we use rspack's built-in aliasing instead)
               !isProduction && 'react-refresh/babel',
-              'react-native-worklets/plugin', // NOTE: this plugin MUST be last
+              'react-native-reanimated/plugin', // NOTE: this plugin MUST be last
             ].filter(Boolean),
             env: {
               production: {
@@ -275,7 +247,6 @@ module.exports = {
             cacheDirectory: true,
             cacheCompression: false,
             sourceType: 'unambiguous',
-            caller: {name: 'babel-loader', bundler: 'webpack', platform: 'web'},
             presets: [
               [
                 'babel-preset-expo',
@@ -287,7 +258,7 @@ module.exports = {
                 },
               ],
             ],
-            plugins: ['react-native-worklets/plugin'],
+            plugins: ['react-native-reanimated/plugin'],
           },
         },
       },
@@ -300,7 +271,6 @@ module.exports = {
         use: {
           loader: 'swc-loader', // rspack swc-loader doesn't support flow yet
           options: {
-            env: {targets: browserslist.production},
             jsc: {
               parser: {
                 syntax: 'flow',
@@ -322,11 +292,10 @@ module.exports = {
         use: {
           loader: 'swc-loader',
           options: {
-            env: {targets: browserslist.production},
             jsc: {
               parser: {
                 syntax: 'typescript',
-                tsx: true,
+                jsx: true,
               },
               transform: {
                 react: {
@@ -342,7 +311,7 @@ module.exports = {
         test: /postMock\.html$/,
         type: 'asset/resource',
         generator: {
-          filename: 'static/media/[name][ext]',
+          filename: 'static/[name][ext]',
         },
       },
       // CSS support — imported from JS/TS files
@@ -369,25 +338,19 @@ module.exports = {
   },
 
   plugins: [
-    GENERATE_STATS &&
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'disabled',
-        generateStatsFile: true,
-        statsFilename: 'stats.json',
-      }),
     new rspack.HtmlRspackPlugin({
-      template: path.resolve(__dirname, 'public/index.html'),
+      template: path.resolve(__dirname, 'web/index.html'),
       inject: true,
     }),
     new rspack.CopyRspackPlugin({
       patterns: [
         // Include public link-preview routes as well as internal crawler routes.
-        {from: 'public/_routes.json', to: '_routes.json'},
-        {from: 'public/_headers', to: '_headers', toType: 'file'},
+        {from: 'web/_routes.json', to: '_routes.json'},
+        {from: 'web/_headers', to: '_headers', toType: 'file'},
         {from: 'bskyweb/static/robots.txt', to: 'robots.txt'},
         {from: 'assets/favicon.png', to: 'favicon.ico'},
         // Serve fonts at /static/fonts/ with stable names
-        {from: 'public/static/fonts', to: 'static/fonts'},
+        {from: 'web/static/fonts', to: 'static/fonts'},
         // Serve the global stylesheet
         {from: 'src/style.css', to: 'static/style.css'},
       ],
@@ -431,8 +394,6 @@ module.exports = {
       'process.env.APP_MANIFEST': 'undefined',
       'process.env.__SENTRY_METRO_DEV_SERVER__': 'undefined',
       'process.env.EXPO_OS': JSON.stringify('web'),
-      // Holy shit I fucking HATE React Native but here we fuckin go
-      'process.env.EXPO_SERVER': 'false',
       // Inject all EXPO_PUBLIC_* env vars
       ...expoPublicEnv,
     }),
@@ -453,15 +414,13 @@ module.exports = {
     }),
     // Sentry source maps
     isProduction &&
-      sentryAuthToken &&
+      process.env.SENTRY_AUTH_TOKEN &&
       sentryWebpackPlugin({
         org: 'blueskyweb',
         project: 'app',
-        authToken: sentryAuthToken,
+        authToken: process.env.SENTRY_AUTH_TOKEN,
         release: {
-          name:
-            process.env.SENTRY_RELEASE ||
-            `xyz.blueskyweb.app@${process.env.EXPO_PUBLIC_RELEASE_VERSION || version}`,
+          name: process.env.SENTRY_RELEASE || version,
           dist: process.env.SENTRY_DIST,
         },
       }),
@@ -494,7 +453,7 @@ module.exports = {
 
   devServer: {
     static: {
-      directory: path.resolve(__dirname, 'public'),
+      directory: path.resolve(__dirname, 'web'),
     },
     port: 19006,
     hot: true,
