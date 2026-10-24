@@ -47,6 +47,16 @@ export function TennaQuickLinks() {
         },
       ],
     },
+    {
+      title: l`Unstable`,
+      items: [
+        {
+          text: l`witchsky-next debug`,
+          path: '/settings/deltas/witchsky-next',
+          icon: ShieldCheck_Stroke2_Corner0_Rounded,
+        },
+      ],
+    },
   ]
 
   return sections.map(({title, items}, idx) => (

@@ -18,7 +18,7 @@ msgstr ""
 "X-Crowdin-File: /main/src/locale/locales/en/messages.po\n"
 "X-Crowdin-File-ID: 11\n"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:168
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:168
 msgid " Others will see this badge on your profile."
 msgstr ""
 
@@ -1149,7 +1149,7 @@ msgstr ""
 msgid "{slash}... keeps facets like links, hashtags, and mentions plain"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:77
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:87
 msgid "{text}"
 msgstr ""
 
@@ -1535,7 +1535,7 @@ msgstr "Uno dei destinatari selezionati non è seguito dal mittente."
 msgid "A small kawaii scene with no ratio on record"
 msgstr ""
 
-#: src/Navigation.tsx:894
+#: src/Navigation.tsx:903
 #: src/screens/Settings/AboutSettings.tsx:86
 #: src/screens/Settings/Settings.tsx:537
 #: src/screens/Settings/Settings.tsx:540
@@ -1589,11 +1589,11 @@ msgstr "Richiesta di adesione inoltrata: il proprietario del gruppo esaminerà l
 msgid "Accessibility"
 msgstr "Accessibilità"
 
-#: src/Navigation.tsx:662
+#: src/Navigation.tsx:663
 msgid "Accessibility Settings"
 msgstr "Impostazioni di accessibilità"
 
-#: src/Navigation.tsx:809
+#: src/Navigation.tsx:818
 #: src/screens/ModerationInbox/components/hooks/useSubjectPreviewProfile.ts:22
 #: src/screens/ModerationInbox/components/hooks/useSubjectPreviewProfile.ts:23
 #: src/screens/Settings/AccountSettings.tsx:56
@@ -1750,7 +1750,7 @@ msgstr "Attività"
 msgid "Activity from others"
 msgstr "Attività da altri"
 
-#: src/Navigation.tsx:870
+#: src/Navigation.tsx:879
 msgid "Activity notifications"
 msgstr "Notifiche attività"
 
@@ -1877,7 +1877,7 @@ msgstr "Aggiungi filtro"
 msgid "Add group chat members"
 msgstr "Aggiungi membri alla chat di gruppo"
 
-#: src/view/com/feeds/ComposerPrompt.tsx:237
+#: src/view/com/feeds/ComposerPrompt.tsx:242
 msgid "Add image"
 msgstr "Aggiungi immagine"
 
@@ -2246,7 +2246,7 @@ msgstr "Hai già un codice?"
 msgid "Already signed in as @{0}"
 msgstr "Hai già effettuato l'accesso come @{0}"
 
-#: src/Navigation.tsx:752
+#: src/Navigation.tsx:761
 #: src/screens/PostThread/components/ThreadAlsoLiked.tsx:100
 #: src/screens/Settings/RunesSettings/AlsoLikedSettings.tsx:28
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:108
@@ -2518,7 +2518,7 @@ msgstr ""
 msgid "API key"
 msgstr ""
 
-#: src/Navigation.tsx:902
+#: src/Navigation.tsx:911
 #: src/screens/Settings/AppIconSettings/index.tsx:67
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:19
 #: src/screens/Settings/AppIconSettings/SettingsListItem.tsx:24
@@ -2556,7 +2556,7 @@ msgstr "I nomi delle password per app devono essere lunghi almeno 4 caratteri"
 msgid "App passwords"
 msgstr "Password per app"
 
-#: src/Navigation.tsx:630
+#: src/Navigation.tsx:631
 #: src/screens/Settings/AppPasswords.tsx:61
 msgid "App Passwords"
 msgstr "Password per app"
@@ -2648,7 +2648,7 @@ msgstr "Contesta questa etichetta"
 msgid "Appeal under review"
 msgstr ""
 
-#: src/Navigation.tsx:778
+#: src/Navigation.tsx:787
 #: src/screens/Settings/AppearanceSettings.tsx:147
 #: src/screens/Settings/Settings.tsx:489
 #: src/screens/Settings/Settings.tsx:492
@@ -2809,7 +2809,7 @@ msgstr "Almeno 8 caratteri"
 msgid "AT Protocol FAQ"
 msgstr "FAQ sul protocollo AT"
 
-#: src/Navigation.tsx:416
+#: src/Navigation.tsx:417
 #: src/screens/Atmosphere.tsx:31
 #: src/screens/Signup/StepInfo/index.tsx:196
 #: src/view/shell/desktop/LeftNav.tsx:825
@@ -2869,7 +2869,7 @@ msgstr "Account automatizzato"
 msgid "Automatic"
 msgstr "Automatico"
 
-#: src/Navigation.tsx:702
+#: src/Navigation.tsx:711
 #: src/screens/Settings/AccessibilitySettings.tsx:117
 #: src/screens/Settings/AltTextAiSettings.tsx:62
 msgid "Automatic alt text generation"
@@ -2896,7 +2896,7 @@ msgstr ""
 msgid "Automation label"
 msgstr "Etichetta automazione"
 
-#: src/Navigation.tsx:825
+#: src/Navigation.tsx:834
 #: src/screens/Settings/AutomationLabelSettings.tsx:106
 msgid "Automation Label"
 msgstr "Etichetta automazione"
@@ -2971,7 +2971,7 @@ msgstr "Indietro"
 msgid "Back to Chats"
 msgstr "Vai ai messaggi"
 
-#: src/Navigation.tsx:722
+#: src/Navigation.tsx:731
 #: src/screens/Moderation/VerificationSettings.tsx:71
 #: src/screens/Moderation/VerificationSettings.tsx:75
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:77
@@ -3075,7 +3075,7 @@ msgstr "Beta"
 msgid "Beta Feature"
 msgstr "Funzionalità beta"
 
-#: src/Navigation.tsx:817
+#: src/Navigation.tsx:826
 #: src/screens/Notifications/index.tsx:616
 #: src/screens/Settings/BetaFeaturesSettings.tsx:142
 msgid "Beta features"
@@ -3198,7 +3198,7 @@ msgstr "Bloccato"
 msgid "Blocked accounts"
 msgstr "Account bloccati"
 
-#: src/Navigation.tsx:461
+#: src/Navigation.tsx:462
 #: src/view/screens/ModerationBlockedAccounts.tsx:92
 msgid "Blocked Accounts"
 msgstr "Account bloccati"
@@ -3477,7 +3477,6 @@ msgstr ""
 
 #. The group chat creator, in the format 'By {displayName}'.
 #. placeholder {0}: createSanitizedDisplayName( joinLinkPreview.owner, true, moderateProfile(joinLinkPreview.owner, moderationOpts).ui( 'displayName', ), )
-#. placeholder {0}: info.creatorHandle === TRENDING_HANDLE ? l`Bluesky` : sanitizeHandle(info.creatorHandle, '@')
 #. placeholder {0}: info.creatorHandle === TRENDING_HANDLE ? l`Bluesky` : sanitizeHandle(info.creatorHandle, '@')
 #: src/components/intents/GroupChatJoinDialog.tsx:400
 #: src/screens/CustomFeed/components/CustomFeedHeader.tsx:510
@@ -3801,14 +3800,14 @@ msgstr ""
 msgid "Channel"
 msgstr "Canale"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:241
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:252
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:241
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:252
 msgid "Character"
 msgstr ""
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:111
 #: src/lib/hooks/useNotificationHandler.ts:134
-#: src/Navigation.tsx:920
+#: src/Navigation.tsx:929
 #: src/view/shell/bottom-bar/BottomBar.tsx:283
 #: src/view/shell/desktop/LeftNav.tsx:838
 #: src/view/shell/Drawer.tsx:663
@@ -3868,7 +3867,7 @@ msgstr "I proprietari delle chat non possono lasciare una chat di gruppo."
 msgid "Chat recipient is not followed by the sender."
 msgstr "Destinatario della chat non seguito dal mittente."
 
-#: src/Navigation.tsx:940
+#: src/Navigation.tsx:949
 msgid "Chat request inbox"
 msgstr "Richieste di chat"
 
@@ -3878,7 +3877,7 @@ msgid "Chat requests"
 msgstr "Richieste di messaggi"
 
 #: src/components/dms/ConvoMenu.tsx:91
-#: src/Navigation.tsx:935
+#: src/Navigation.tsx:944
 #: src/screens/Messages/ChatList.tsx:99
 #: src/screens/Messages/ChatList.tsx:103
 #: src/screens/Messages/ChatList.tsx:678
@@ -4398,7 +4397,7 @@ msgstr "Modalità colore"
 msgid "Color theme"
 msgstr "Tema colore"
 
-#: src/Navigation.tsx:786
+#: src/Navigation.tsx:795
 msgid "Color Theme"
 msgstr ""
 
@@ -4420,7 +4419,7 @@ msgid "Communication sent"
 msgstr ""
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:46
-#: src/Navigation.tsx:620
+#: src/Navigation.tsx:621
 #: src/view/screens/CommunityGuidelines.tsx:28
 msgid "Community Guidelines"
 msgstr "Linee guida della community"
@@ -4439,7 +4438,7 @@ msgid "Compose a new post"
 msgstr ""
 
 #: src/lib/hotkeys/index.tsx:71
-#: src/view/com/feeds/ComposerPrompt.tsx:161
+#: src/view/com/feeds/ComposerPrompt.tsx:166
 #: src/view/shell/desktop/LeftNav.tsx:701
 msgid "Compose new post"
 msgstr "Scrivi un nuovo post"
@@ -4587,7 +4586,7 @@ msgstr "Contenuti e media"
 msgid "Content and media"
 msgstr "Contenuti e media"
 
-#: src/Navigation.tsx:878
+#: src/Navigation.tsx:887
 msgid "Content and Media"
 msgstr "Contenuti e media"
 
@@ -4878,7 +4877,7 @@ msgstr "Copia valore del record TXT"
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:41
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:108
-#: src/Navigation.tsx:625
+#: src/Navigation.tsx:626
 #: src/view/screens/CopyrightPolicy.tsx:25
 msgid "Copyright Policy"
 msgstr "Politica sul diritto d'autore"
@@ -5111,7 +5110,7 @@ msgstr "Crea un codice QR per uno starter pack"
 
 #: src/components/StarterPack/ProfileStarterPacks.tsx:206
 #: src/components/StarterPack/ProfileStarterPacks.tsx:315
-#: src/Navigation.tsx:971
+#: src/Navigation.tsx:980
 #: src/view/screens/Profile.tsx:608
 #: src/view/screens/Profile.tsx:609
 msgid "Create a Starter Pack"
@@ -5296,7 +5295,7 @@ msgstr ""
 msgid "Customization options"
 msgstr "Opzioni di personalizzazione"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:173
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:173
 msgid "Customize some of the options below and tap save to apply the label!"
 msgstr ""
 
@@ -5523,8 +5522,8 @@ msgstr "Lista eliminata"
 msgid "Deleted post"
 msgstr "Post eliminato"
 
-#: src/Navigation.tsx:670
-#: src/screens/Settings/DeltaSettings/index.tsx:20
+#: src/Navigation.tsx:671
+#: src/screens/Settings/DeltaSettings/index.tsx:21
 #: src/screens/Settings/Settings.tsx:523
 #: src/screens/Settings/Settings.tsx:528
 msgid "Deltas"
@@ -5774,7 +5773,7 @@ msgstr "Ignora questo suggerimento"
 msgid "Dismisses the QR scanner"
 msgstr "Chiude lo scanner QR"
 
-#: src/Navigation.tsx:747
+#: src/Navigation.tsx:756
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:105
 #: src/screens/Settings/RunesSettings/index.tsx:51
 #: src/screens/Settings/RunesSettings/index.tsx:54
@@ -6182,7 +6181,7 @@ msgstr "Modifica stato in diretta"
 msgid "Edit moderation list"
 msgstr "Modifica lista di moderazione"
 
-#: src/Navigation.tsx:635
+#: src/Navigation.tsx:636
 #: src/view/screens/Feeds.tsx:520
 msgid "Edit My Feeds"
 msgstr "Modifica i miei feed"
@@ -6239,7 +6238,7 @@ msgstr "Modifica lista di utenti"
 msgid "Edit who can reply"
 msgstr "Modifica chi può rispondere"
 
-#: src/Navigation.tsx:976
+#: src/Navigation.tsx:985
 msgid "Edit your Starter Pack"
 msgstr "Modifica il tuo starter pack"
 
@@ -6345,7 +6344,7 @@ msgstr "Attiva il contenuto per adulti"
 msgid "Enable app keyboard shortcuts"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:197
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:197
 msgid "Enable Badge"
 msgstr ""
 
@@ -6740,7 +6739,7 @@ msgid "Explicit sexual images."
 msgstr "Immagini sessuali esplicite."
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:109
-#: src/Navigation.tsx:1295
+#: src/Navigation.tsx:1304
 #: src/screens/Atmosphere.tsx:43
 #: src/screens/Search/Shell.tsx:572
 #: src/view/shell/desktop/LeftNav.tsx:792
@@ -6782,7 +6781,7 @@ msgstr "Media esterni"
 msgid "External media may allow websites to collect information about you and your device. No information is sent or requested until you press the \"play\" button."
 msgstr "I media esterni potrebbero consentire ai siti web di raccogliere informazioni su di te e sul tuo dispositivo. Nessuna informazione viene inviata o richiesta finché non si preme il pulsante \"Riproduci\"."
 
-#: src/Navigation.tsx:654
+#: src/Navigation.tsx:655
 #: src/screens/Settings/ExternalMediaPreferences.tsx:36
 msgid "External Media Preferences"
 msgstr "Preferenze media esterni"
@@ -6792,7 +6791,7 @@ msgstr "Preferenze media esterni"
 msgid "Extra"
 msgstr ""
 
-#: src/Navigation.tsx:762
+#: src/Navigation.tsx:771
 msgid "Extra settings"
 msgstr ""
 
@@ -7181,7 +7180,7 @@ msgstr ""
 msgid "Favicon Service URL"
 msgstr ""
 
-#: src/Navigation.tsx:767
+#: src/Navigation.tsx:776
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:192
 #: src/screens/Settings/RunesSettings/ExtraSettings.tsx:195
 #: src/screens/Settings/RunesSettings/FeatureGatesSettings.tsx:20
@@ -7196,7 +7195,7 @@ msgstr ""
 msgid "Fediverse"
 msgstr ""
 
-#: src/Navigation.tsx:565
+#: src/Navigation.tsx:566
 #: src/screens/ModerationInbox/components/ReportSubjectPreview/FeedSubjectPreview.tsx:45
 #: src/screens/ModerationInbox/components/util/reportSubjectLabel.ts:42
 msgid "Feed"
@@ -7259,8 +7258,8 @@ msgid "Feedback sent to feed operator"
 msgstr "Feedback inviato"
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:112
-#: src/Navigation.tsx:737
-#: src/Navigation.tsx:956
+#: src/Navigation.tsx:746
+#: src/Navigation.tsx:965
 #: src/screens/SavedFeeds.tsx:116
 #: src/screens/SavedFeeds.tsx:310
 #: src/screens/Search/SearchResults.tsx:111
@@ -7376,8 +7375,8 @@ msgstr "Scopri account da seguire"
 msgid "Find and invite friends"
 msgstr "Trova e invita amici"
 
-#: src/Navigation.tsx:857
-#: src/Navigation.tsx:998
+#: src/Navigation.tsx:866
+#: src/Navigation.tsx:1007
 msgid "Find Contacts"
 msgstr "Trova contatti"
 
@@ -7636,7 +7635,7 @@ msgstr "Chi segue può partecipare"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:514
+#: src/Navigation.tsx:515
 #: src/screens/Profile/KnownFollowers.tsx:74
 msgid "Followers of @{0} that you know"
 msgstr "Follower di @{0} che conosci"
@@ -7706,7 +7705,7 @@ msgstr "Stai seguendo {name}"
 msgid "Following feed preferences"
 msgstr "Preferenze del feed Seguiti"
 
-#: src/Navigation.tsx:641
+#: src/Navigation.tsx:642
 #: src/screens/Settings/FollowingFeedPreferences.tsx:57
 msgid "Following Feed Preferences"
 msgstr "Preferenze del feed Seguiti"
@@ -8201,7 +8200,7 @@ msgctxt "toast"
 msgid "Group chat name updated"
 msgstr "Nome chat di gruppo aggiornato"
 
-#: src/Navigation.tsx:925
+#: src/Navigation.tsx:934
 #: src/screens/Messages/ConversationSettings/index.tsx:110
 msgid "Group chat settings"
 msgstr "Impostazioni chat di gruppo"
@@ -8312,7 +8311,7 @@ msgstr "Attività nocive o a rischio elevato"
 msgid "Harming or endangering minors"
 msgstr "Danni o pericoli per i minori"
 
-#: src/Navigation.tsx:909
+#: src/Navigation.tsx:918
 msgid "Hashtag"
 msgstr "Hashtag"
 
@@ -8434,6 +8433,10 @@ msgstr ""
 msgid "Hide beta badge"
 msgstr ""
 
+#: src/screens/Settings/DeltaSettings/components/ComposerPromptToggle.tsx:32
+msgid "Hide composer prompt"
+msgstr ""
+
 #: src/components/dialogs/Embed.tsx:125
 msgid "Hide customization options"
 msgstr "Nascondi opzioni di personalizzazione"
@@ -8457,7 +8460,7 @@ msgstr ""
 msgid "Hide group chat updates"
 msgstr "Nascondi aggiornamenti chat di gruppo"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:221
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:221
 msgid "Hide it"
 msgstr ""
 
@@ -8610,8 +8613,8 @@ msgid "Holy Shit!"
 msgstr ""
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:108
-#: src/Navigation.tsx:1290
-#: src/Navigation.tsx:1311
+#: src/Navigation.tsx:1299
+#: src/Navigation.tsx:1320
 #: src/view/shell/bottom-bar/BottomBar.tsx:221
 #: src/view/shell/desktop/LeftNav.tsx:780
 #: src/view/shell/Drawer.tsx:637
@@ -8859,7 +8862,7 @@ msgstr "Importa contatti per trovare i tuoi amici"
 msgid "Imported on {0}"
 msgstr "Importati il {0}"
 
-#: src/Navigation.tsx:727
+#: src/Navigation.tsx:736
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:90
 #: src/screens/Settings/RunesSettings/index.tsx:37
 #: src/screens/Settings/RunesSettings/index.tsx:40
@@ -8975,7 +8978,7 @@ msgstr ""
 msgid "Increment counter"
 msgstr ""
 
-#: src/Navigation.tsx:757
+#: src/Navigation.tsx:766
 #: src/screens/Settings/RunesSettings/index.tsx:59
 #: src/screens/Settings/RunesSettings/index.tsx:62
 #: src/screens/Settings/RunesSettings/InfrastructureSettings.tsx:180
@@ -9345,11 +9348,11 @@ msgstr "Mantieni la tua posizione nel feed Seguiti"
 msgid "Keyboard shortcuts"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:277
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:277
 msgid "Kin"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:288
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:288
 msgid "Kin Type"
 msgstr ""
 
@@ -9417,7 +9420,7 @@ msgstr ""
 msgid "Language"
 msgstr "Lingua"
 
-#: src/Navigation.tsx:487
+#: src/Navigation.tsx:488
 msgid "Language Settings"
 msgstr "Impostazione delle lingue"
 
@@ -9713,8 +9716,8 @@ msgstr "Mi piace"
 msgid "Liked as @{0}"
 msgstr ""
 
-#: src/Navigation.tsx:570
-#: src/Navigation.tsx:575
+#: src/Navigation.tsx:571
+#: src/Navigation.tsx:576
 msgid "Liked by"
 msgstr "Piace a"
 
@@ -9820,7 +9823,7 @@ msgstr ""
 msgid "Links to these sites show as a green support button."
 msgstr ""
 
-#: src/Navigation.tsx:520
+#: src/Navigation.tsx:521
 #: src/screens/ModerationInbox/components/ReportSubjectPreview/ListSubjectPreview.tsx:44
 #: src/screens/ModerationInbox/components/util/reportSubjectLabel.ts:40
 msgid "List"
@@ -9922,7 +9925,7 @@ msgid "List unmuted"
 msgstr "Lista riattivata"
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:113
-#: src/Navigation.tsx:421
+#: src/Navigation.tsx:422
 #: src/view/screens/Lists.tsx:61
 #: src/view/screens/Profile.tsx:265
 #: src/view/screens/Profile.tsx:273
@@ -10111,7 +10114,7 @@ msgstr "Blocca questa chat di gruppo"
 msgid "Locked"
 msgstr "Bloccato"
 
-#: src/Navigation.tsx:600
+#: src/Navigation.tsx:601
 msgid "Log"
 msgstr "Log"
 
@@ -10352,7 +10355,7 @@ msgstr "Menzioni di queste persone"
 msgid "Menu"
 msgstr "Menu"
 
-#: src/Navigation.tsx:717
+#: src/Navigation.tsx:726
 #: src/screens/Settings/RunesSettings/index.tsx:23
 #: src/screens/Settings/RunesSettings/index.tsx:26
 #: src/screens/Settings/RunesSettings/MenusSettings.tsx:48
@@ -10418,7 +10421,7 @@ msgstr "Il messaggio è troppo lungo ({graphemeCount}/{MAX_DM_GRAPHEME_LENGTH})"
 msgid "Message options"
 msgstr "Opzioni messaggio"
 
-#: src/Navigation.tsx:1305
+#: src/Navigation.tsx:1314
 msgid "Messages"
 msgstr "Messaggi"
 
@@ -10428,7 +10431,7 @@ msgid "microcosm.blue"
 msgstr ""
 
 #: src/view/com/composer/Composer.tsx:2173
-#: src/view/com/feeds/ComposerPrompt.tsx:206
+#: src/view/com/feeds/ComposerPrompt.tsx:211
 msgid "MIKE, THE JARONA please!"
 msgstr ""
 
@@ -10448,7 +10451,7 @@ msgstr "File multimediale mancante"
 msgid "Mixed content and sizes"
 msgstr ""
 
-#: src/Navigation.tsx:436
+#: src/Navigation.tsx:437
 msgid "Mod inbox settings"
 msgstr "Impostazioni casella di moderazione"
 
@@ -10457,7 +10460,7 @@ msgstr "Impostazioni casella di moderazione"
 msgid "Model ID"
 msgstr ""
 
-#: src/Navigation.tsx:426
+#: src/Navigation.tsx:427
 #: src/screens/Moderation/index.tsx:104
 msgid "Moderation"
 msgstr "Moderazione"
@@ -10468,7 +10471,7 @@ msgstr "Dettagli sulla moderazione"
 
 #. Name for a feature flag
 #: src/analytics/features/index.ts:129
-#: src/Navigation.tsx:431
+#: src/Navigation.tsx:432
 #: src/screens/Moderation/index.tsx:303
 #: src/screens/ModerationInbox/index.tsx:98
 msgid "Moderation inbox"
@@ -10479,7 +10482,7 @@ msgstr "Casella di moderazione"
 msgid "Moderation inbox settings"
 msgstr "Impostazioni casella di moderazione"
 
-#: src/Navigation.tsx:694
+#: src/Navigation.tsx:703
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:34
 #: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:19
 msgid "Moderation labels"
@@ -10515,7 +10518,7 @@ msgstr "Lista di moderazione aggiornata"
 msgid "Moderation lists"
 msgstr "Liste di moderazione"
 
-#: src/Navigation.tsx:451
+#: src/Navigation.tsx:452
 #: src/view/screens/ModerationModlists.tsx:60
 msgid "Moderation Lists"
 msgstr "Liste di moderazione"
@@ -10528,7 +10531,7 @@ msgstr ""
 msgid "moderation settings"
 msgstr "impostazioni di moderazione"
 
-#: src/Navigation.tsx:585
+#: src/Navigation.tsx:586
 msgid "Moderation states"
 msgstr "Stato di moderazione"
 
@@ -10700,7 +10703,7 @@ msgstr "Silenziato"
 msgid "Muted accounts"
 msgstr "Account silenziati"
 
-#: src/Navigation.tsx:456
+#: src/Navigation.tsx:457
 #: src/view/screens/ModerationMutedAccounts.tsx:104
 msgid "Muted Accounts"
 msgstr "Account silenziati"
@@ -11402,7 +11405,7 @@ msgstr "Non disponibile su questa piattaforma."
 msgid "Not followed by anyone you’re following"
 msgstr "Non seguito da nessuno che segui"
 
-#: src/Navigation.tsx:406
+#: src/Navigation.tsx:407
 #: src/view/screens/Profile.tsx:159
 msgid "Not Found"
 msgstr "Non trovato"
@@ -11427,14 +11430,14 @@ msgstr "Nota: questo post è visibile solo agli utenti che hanno effettuato l'ac
 msgid "Nothing saved yet"
 msgstr "Non è stato ancora salvato nulla"
 
-#: src/Navigation.tsx:446
+#: src/Navigation.tsx:447
 #: src/screens/ModerationInbox/Notice.tsx:137
 msgid "Notice"
 msgstr "Avviso"
 
 #: src/components/dialogs/NotificationSettingsDialog.tsx:72
-#: src/Navigation.tsx:864
-#: src/Navigation.tsx:951
+#: src/Navigation.tsx:873
+#: src/Navigation.tsx:960
 #: src/screens/Notifications/index.tsx:628
 #: src/view/screens/Notifications.tsx:141
 msgid "Notification settings"
@@ -11446,8 +11449,8 @@ msgid "Notification sounds"
 msgstr "Suoni di notifica"
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:110
-#: src/Navigation.tsx:946
-#: src/Navigation.tsx:1300
+#: src/Navigation.tsx:955
+#: src/Navigation.tsx:1309
 #: src/screens/Messages/Settings.tsx:255
 #: src/screens/Notifications/ActivityList.tsx:31
 #: src/screens/Notifications/index.tsx:606
@@ -11728,7 +11731,7 @@ msgstr ""
 msgid "Open avatar creator"
 msgstr "Apri il creatore di avatar"
 
-#: src/view/com/feeds/ComposerPrompt.tsx:215
+#: src/view/com/feeds/ComposerPrompt.tsx:220
 msgid "Open camera"
 msgstr "Apri fotocamera"
 
@@ -12005,7 +12008,7 @@ msgstr "Apre la schermata per modificare il nome utente"
 msgid "Opens composer"
 msgstr "Apre il compositore"
 
-#: src/view/com/feeds/ComposerPrompt.tsx:216
+#: src/view/com/feeds/ComposerPrompt.tsx:221
 msgid "Opens device camera"
 msgstr "Apre la fotocamera del dispositivo"
 
@@ -12034,7 +12037,7 @@ msgstr "Apre la procedura per accedere al tuo account esistente di Bluesky"
 msgid "Opens full image"
 msgstr "Apre l'immagine completa"
 
-#: src/view/com/feeds/ComposerPrompt.tsx:238
+#: src/view/com/feeds/ComposerPrompt.tsx:243
 msgid "Opens image picker"
 msgstr "Apre selettore immagini"
 
@@ -12072,7 +12075,7 @@ msgstr "Apre il pannello per invitare amici e condividere il tuo profilo"
 msgid "Opens the original and edited versions of this post"
 msgstr ""
 
-#: src/view/com/feeds/ComposerPrompt.tsx:162
+#: src/view/com/feeds/ComposerPrompt.tsx:167
 msgid "Opens the post composer"
 msgstr "Apre l'editor dei post"
 
@@ -12372,14 +12375,14 @@ msgstr "Le persone seguite da {ownerName} possono chiedere di partecipare"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:507
+#: src/Navigation.tsx:508
 #: src/screens/Profile/ProfileFollows.tsx:29
 msgid "People followed by @{0}"
 msgstr "Persone seguite da @{0}"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:500
+#: src/Navigation.tsx:501
 #: src/screens/Profile/ProfileFollowers.tsx:28
 msgid "People following @{0}"
 msgstr "Persone che seguono @{0}"
@@ -12447,7 +12450,7 @@ msgstr ""
 msgid "Pet label"
 msgstr ""
 
-#: src/Navigation.tsx:833
+#: src/Navigation.tsx:842
 #: src/screens/Settings/PetLabelSettings.tsx:99
 msgid "Pet Label"
 msgstr ""
@@ -12839,10 +12842,10 @@ msgstr "Pubblicato da {name}"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:533
-#: src/Navigation.tsx:540
-#: src/Navigation.tsx:547
-#: src/Navigation.tsx:559
+#: src/Navigation.tsx:534
+#: src/Navigation.tsx:541
+#: src/Navigation.tsx:548
+#: src/Navigation.tsx:560
 #: src/screens/Post/PostLikedBy.tsx:27
 #: src/screens/Post/PostQuotes.tsx:57
 #: src/screens/Post/PostRepostedBy.tsx:27
@@ -12885,7 +12888,7 @@ msgstr "Post nascosto da te"
 msgid "Post interaction settings"
 msgstr "Gestisci interazioni post"
 
-#: src/Navigation.tsx:467
+#: src/Navigation.tsx:468
 #: src/screens/ModerationInteractionSettings/index.tsx:36
 msgid "Post Interaction Settings"
 msgstr "Impostazioni di interazione dei post"
@@ -13082,8 +13085,8 @@ msgstr "Privacy"
 msgid "Privacy and security"
 msgstr "Privacy e sicurezza"
 
-#: src/Navigation.tsx:841
-#: src/Navigation.tsx:849
+#: src/Navigation.tsx:850
+#: src/Navigation.tsx:858
 #: src/screens/Settings/ActivityPrivacySettings.tsx:41
 #: src/screens/Settings/PrivacyAndSecuritySettings.tsx:69
 msgid "Privacy and Security"
@@ -13096,7 +13099,7 @@ msgstr "Impostazioni privacy e sicurezza"
 
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:36
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:103
-#: src/Navigation.tsx:610
+#: src/Navigation.tsx:611
 #: src/screens/Settings/AboutSettings.tsx:103
 #: src/screens/Settings/AboutSettings.tsx:106
 #: src/view/screens/PrivacyPolicy.tsx:25
@@ -13118,7 +13121,7 @@ msgstr ""
 msgid "Private post"
 msgstr ""
 
-#: src/Navigation.tsx:686
+#: src/Navigation.tsx:695
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:44
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:77
 #: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:87
@@ -13182,7 +13185,7 @@ msgstr "profilo"
 msgid "Profile"
 msgstr "Profilo"
 
-#: src/Navigation.tsx:678
+#: src/Navigation.tsx:679
 #: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:19
 #: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:29
 msgid "Profile badges"
@@ -13206,7 +13209,7 @@ msgctxt "toast"
 msgid "Profile updated"
 msgstr "Profilo aggiornato"
 
-#: src/Navigation.tsx:742
+#: src/Navigation.tsx:751
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:124
 #: src/screens/Settings/RunesSettings/ProfileSettings.tsx:55
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:65
@@ -13319,7 +13322,7 @@ msgstr "Codice QR salvato nella galleria!"
 msgid "Quality"
 msgstr ""
 
-#: src/Navigation.tsx:553
+#: src/Navigation.tsx:554
 #: src/screens/Post/QuoteChain/index.tsx:42
 #: src/screens/Post/QuoteChain/index.tsx:62
 msgid "Quote chain"
@@ -14343,7 +14346,7 @@ msgstr "Richiesto"
 msgid "Requests"
 msgstr "Richieste"
 
-#: src/Navigation.tsx:930
+#: src/Navigation.tsx:939
 #: src/screens/Messages/JoinRequests.tsx:56
 #: src/screens/Messages/JoinRequests.tsx:422
 msgid "Requests to join"
@@ -14611,7 +14614,7 @@ msgstr ""
 msgid "Rounded"
 msgstr ""
 
-#: src/Navigation.tsx:710
+#: src/Navigation.tsx:719
 #: src/screens/Settings/RunesSettings/index.tsx:22
 #: src/screens/Settings/Settings.tsx:531
 #: src/screens/Settings/Settings.tsx:534
@@ -14693,7 +14696,7 @@ msgstr "Salva data di nascita"
 #: src/screens/SavedFeeds.tsx:128
 #: src/screens/SavedFeeds.tsx:318
 #: src/screens/SavedFeeds.tsx:322
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:306
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:306
 #: src/screens/Settings/Settings.tsx:408
 #: src/screens/Settings/Settings.tsx:415
 #: src/view/com/composer/Composer.tsx:2084
@@ -14701,7 +14704,7 @@ msgstr "Salva data di nascita"
 msgid "Save changes"
 msgstr "Salva modifiche"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:312
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:312
 msgid "Save Changes"
 msgstr ""
 
@@ -14798,12 +14801,12 @@ msgid "Saved Feeds"
 msgstr "Feed salvati"
 
 #: src/components/dialogs/nuxs/BookmarksAnnouncement.tsx:145
-#: src/Navigation.tsx:990
+#: src/Navigation.tsx:999
 #: src/screens/Bookmarks.tsx:70
 msgid "Saved Posts"
 msgstr "Post salvati"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:318
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:318
 msgid "Saved successfully!"
 msgstr ""
 
@@ -14817,7 +14820,7 @@ msgstr "Salvato nei tuoi feed"
 msgid "Saves"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:312
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:312
 msgid "Saving..."
 msgstr ""
 
@@ -14847,7 +14850,7 @@ msgstr "Scansiona"
 
 #: src/features/inviteFriends/InviteScannerScreen.tsx:82
 #: src/features/inviteFriends/InviteScannerScreen.web.tsx:23
-#: src/Navigation.tsx:590
+#: src/Navigation.tsx:591
 msgid "Scan QR code"
 msgstr "Scansiona codice QR"
 
@@ -14901,7 +14904,7 @@ msgstr "Cerca"
 
 #. placeholder {0}: profile.handle
 #. placeholder {0}: route.params.name
-#: src/Navigation.tsx:526
+#: src/Navigation.tsx:527
 #: src/screens/Profile/ProfileSearch.tsx:24
 #: src/screens/Profile/ProfileSearch.tsx:40
 msgid "Search @{0}'s posts"
@@ -15471,7 +15474,7 @@ msgid "Sets email for password reset"
 msgstr "Imposta l'email per la reimpostazione della password"
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:116
-#: src/Navigation.tsx:482
+#: src/Navigation.tsx:483
 #: src/screens/Settings/Settings.tsx:200
 #: src/view/shell/desktop/LeftNav.tsx:901
 #: src/view/shell/Drawer.tsx:821
@@ -15541,7 +15544,7 @@ msgctxt "toast"
 msgid "Settings saved"
 msgstr "Impostazioni aggiornate"
 
-#: src/Navigation.tsx:772
+#: src/Navigation.tsx:781
 #: src/screens/Settings/RunesSettings/index.tsx:70
 #: src/screens/Settings/RunesSettings/SettingsSyncSettings.tsx:85
 msgid "Settings sync"
@@ -15677,7 +15680,7 @@ msgstr "Condividi i tuoi contatti per trovare amici"
 msgid "Share your thoughts…"
 msgstr "Condividi le tue opinioni…"
 
-#: src/Navigation.tsx:595
+#: src/Navigation.tsx:596
 msgid "Shared Preferences Tester"
 msgstr "Test preferenze condivise"
 
@@ -16079,7 +16082,7 @@ msgstr "È richiesto l'accesso"
 msgid "Signed in as @{0}"
 msgstr "Accesso effettuato come @{0}"
 
-#: src/Navigation.tsx:411
+#: src/Navigation.tsx:412
 msgid "Signing in..."
 msgstr ""
 
@@ -16388,8 +16391,8 @@ msgstr "Avvia chat"
 msgid "Start chat with {displayName}"
 msgstr "Avvia conversazione con {displayName}"
 
-#: src/Navigation.tsx:961
-#: src/Navigation.tsx:966
+#: src/Navigation.tsx:970
+#: src/Navigation.tsx:975
 #: src/screens/ModerationInbox/components/ReportSubjectPreview/StarterPackSubjectPreview.tsx:60
 #: src/screens/ModerationInbox/components/util/reportSubjectLabel.ts:46
 #: src/screens/StarterPack/Wizard/index.tsx:192
@@ -16481,7 +16484,7 @@ msgstr "Spazio di archiviazione eliminato. Riavvia l'app."
 msgid "Stored as part of a secure code for matching with others"
 msgstr "Archiviato come parte di un codice sicuro per trovare corrispondenze con altri"
 
-#: src/Navigation.tsx:580
+#: src/Navigation.tsx:581
 #: src/screens/Settings/Settings.tsx:750
 msgid "Storybook"
 msgstr "Cronologia"
@@ -16617,7 +16620,7 @@ msgstr "Suggestivo"
 msgid "Sunlight"
 msgstr "Luce solare"
 
-#: src/Navigation.tsx:605
+#: src/Navigation.tsx:606
 #: src/view/screens/Support.tsx:25
 #: src/view/screens/Support.tsx:28
 msgid "Support"
@@ -16908,7 +16911,7 @@ msgstr "Termini"
 #: src/components/dialogs/BirthDateSettings.tsx:199
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:31
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:98
-#: src/Navigation.tsx:615
+#: src/Navigation.tsx:616
 #: src/screens/Settings/AboutSettings.tsx:95
 #: src/screens/Settings/AboutSettings.tsx:98
 #: src/view/screens/TermsOfService.tsx:25
@@ -17057,7 +17060,7 @@ msgstr ""
 msgid "The author of this thread has hidden this reply."
 msgstr "L'autore del thread ha nascosto questa risposta."
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:146
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:146
 msgid "THE BADGE"
 msgstr ""
 
@@ -17231,14 +17234,14 @@ msgid "The witch hat editor is only available in October."
 msgstr ""
 
 #: src/components/Post/Embed/ThemeEmbed/index.tsx:32
-#: src/Navigation.tsx:803
+#: src/Navigation.tsx:812
 #: src/screens/Settings/AppearanceSettings.tsx:232
 #: src/screens/Settings/AppearanceSettings/ThemeQuickSelector.tsx:96
 #: src/screens/Theme.tsx:182
 msgid "Theme"
 msgstr "Tema"
 
-#: src/Navigation.tsx:798
+#: src/Navigation.tsx:807
 #: src/screens/Settings/AppearanceSettings/ThemeEditor.tsx:316
 msgid "Theme editor"
 msgstr ""
@@ -17248,7 +17251,7 @@ msgstr ""
 msgid "Theme name"
 msgstr ""
 
-#: src/Navigation.tsx:793
+#: src/Navigation.tsx:802
 msgid "Themes"
 msgstr ""
 
@@ -17585,7 +17588,7 @@ msgstr "Questa funzione consente agli utenti di ricevere notifiche per i tuoi nu
 msgid "This feature is in beta. You can read more about repository exports in <0>this blogpost</0>."
 msgstr "Questa funzionalità è in versione beta. Puoi leggere ulteriori informazioni sulle esportazioni del repository in <0>questo post del blog</0>."
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:157
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:157
 msgid "This feature is intended for those who are a kin of or are any of the characters listed below."
 msgstr ""
 
@@ -17648,7 +17651,7 @@ msgstr "Questo link di invito è stato disabilitato."
 msgid "This invite link is invalid"
 msgstr "Questo link di invito non è valido"
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:149
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:149
 msgid "this is a tenna.party exclusive, you can't get this on witchsky 👀"
 msgstr ""
 
@@ -17719,7 +17722,7 @@ msgstr ""
 #. placeholder {1}: CHARACTERS.find(a => a.value === selectedChar)?.label ?? selectedChar
 #. placeholder {2}: CHARACTERS_FRANCHISES[selectedChar]
 #. placeholder {3}: kinType !== "s" ? " " + kinType : ", literally"
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:164
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:164
 msgid "This makes you {0}{1} {2}{3}."
 msgstr ""
 
@@ -17932,7 +17935,7 @@ msgstr "Preferenze delle discussioni"
 msgid "Threaded"
 msgstr "Thread"
 
-#: src/Navigation.tsx:648
+#: src/Navigation.tsx:649
 msgid "Threads Preferences"
 msgstr "Preferenze per le discussioni"
 
@@ -18020,7 +18023,7 @@ msgstr "Oggi"
 msgid "Toggle {label} label"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:195
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:195
 msgid "Toggle fictionkin badge"
 msgstr ""
 
@@ -18032,7 +18035,7 @@ msgstr ""
 msgid "Toggle intro"
 msgstr ""
 
-#: src/screens/Settings/DeltaSettings/FictonkinBadgeSettings.tsx:219
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:219
 msgid "Toggle seeing your own fictionkin badge"
 msgstr ""
 
@@ -18070,7 +18073,7 @@ msgstr "Popolari"
 msgid "Top replies first"
 msgstr "Prima le risposte più popolari"
 
-#: src/Navigation.tsx:914
+#: src/Navigation.tsx:923
 #: src/screens/BlackskyTopic.tsx:62
 msgid "Topic"
 msgstr "Argomento"
@@ -18609,6 +18612,10 @@ msgstr ""
 msgid "Unsnooze email reminder"
 msgstr "Riattiva l'email di promemoria"
 
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:51
+msgid "Unstable"
+msgstr ""
+
 #: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:341
 msgid "Unsubscribe"
 msgstr "Disiscriviti"
@@ -18745,7 +18752,7 @@ msgstr "Caricamento miniatura del link..."
 msgid "Uploading video..."
 msgstr "Caricamento del video..."
 
-#: src/Navigation.tsx:732
+#: src/Navigation.tsx:741
 #: src/screens/Settings/RunesSettings/index.tsx:45
 #: src/screens/Settings/RunesSettings/index.tsx:48
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:54
@@ -18962,7 +18969,7 @@ msgstr "Verifica non riuscita, riprovare."
 msgid "Verification settings"
 msgstr "Impostazioni di verifica"
 
-#: src/Navigation.tsx:475
+#: src/Navigation.tsx:476
 #: src/screens/Moderation/VerificationSettings.tsx:33
 msgid "Verification Settings"
 msgstr "Impostazioni di verifica"
@@ -19086,7 +19093,7 @@ msgstr ""
 msgid "Video failed to process"
 msgstr "Elaborazione video fallita"
 
-#: src/Navigation.tsx:982
+#: src/Navigation.tsx:991
 msgid "Video Feed"
 msgstr "Feed dei video"
 
@@ -19915,6 +19922,15 @@ msgstr ""
 #: src/screens/Settings/AppearanceSettings/shared.tsx:62
 #: src/view/com/auth/SplashScreen.web.tsx:174
 msgid "Witchsky"
+msgstr ""
+
+#: src/Navigation.tsx:687
+msgid "witchsky-next"
+msgstr ""
+
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:54
+#: src/screens/Settings/DeltaSettings/WitchskyNextBranchDebug.tsx:19
+msgid "witchsky-next debug"
 msgstr ""
 
 #: src/components/dms/AfterReportDialog.tsx:51
@@ -20778,7 +20794,7 @@ msgstr "Il tuo fornitore di hosting non supporta video così grandi. Riprova con
 msgid "Your hosting provider is detected automatically from the username you enter."
 msgstr "Il tuo fornitore di hosting viene rilevato automaticamente dal nome utente che inserisci."
 
-#: src/Navigation.tsx:886
+#: src/Navigation.tsx:895
 #: src/screens/Search/modules/ExploreInterestsCard.tsx:66
 #: src/screens/Settings/ContentAndMediaSettings.tsx:94
 #: src/screens/Settings/ContentAndMediaSettings.tsx:97
@@ -20873,7 +20889,7 @@ msgstr "Risposta inviata"
 msgid "Your repo library could not be loaded. Featured themes are still available."
 msgstr ""
 
-#: src/Navigation.tsx:441
+#: src/Navigation.tsx:442
 #: src/screens/ModerationInbox/Report.tsx:115
 msgid "Your report"
 msgstr "La tua segnalazione"

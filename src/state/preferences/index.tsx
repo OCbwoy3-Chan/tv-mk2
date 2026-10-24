@@ -32,6 +32,7 @@ import {Provider as FullsizeFormatProvider} from './fullsize-format'
 import {Provider as GoLinksProvider} from './go-links-enabled'
 import {Provider as HiddenPostsProvider} from './hidden-posts'
 import {Provider as HideBetaBadgeProvider} from './hide-beta-badge.tsx'
+import {Provider as HideComposerPromptProvider} from './hide-composer-prompt.tsx'
 import {Provider as HideDisplayNamesProvider} from './hide-display-names'
 import {Provider as HideFeedsPromoTabProvider} from './hide-feeds-promo-tab'
 import {Provider as HideOwnTennaBadgeProvider} from './hide-own-tennabadge.tsx'
@@ -122,6 +123,10 @@ export {
 export {useFaviconService, useSetFaviconService} from './favicon-service'
 export {useGoLinksEnabled, useSetGoLinksEnabled} from './go-links-enabled'
 export {useHiddenPosts, useHiddenPostsApi} from './hidden-posts'
+export {
+  useHideComposerPrompt,
+  useSetHideComposerPrompt,
+} from './hide-composer-prompt.tsx'
 export {useHideDisplayNames, useSetHideDisplayNames} from './hide-display-names'
 export {
   useHideFeedsPromoTab,
@@ -257,7 +262,11 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                                       <ShowPostTagsProvider>
                                                                                                                                                         <EmojiFontProvider>
                                                                                                                                                           <PasteToLinkEnabledProvider>
-                                                                                                                                                            {children}
+                                                                                                                                                            <HideComposerPromptProvider>
+                                                                                                                                                              {
+                                                                                                                                                                children
+                                                                                                                                                              }
+                                                                                                                                                            </HideComposerPromptProvider>
                                                                                                                                                           </PasteToLinkEnabledProvider>
                                                                                                                                                         </EmojiFontProvider>
                                                                                                                                                       </ShowPostTagsProvider>

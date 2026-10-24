@@ -73,6 +73,7 @@ export type CommonNavigatorParams = {
   AccessibilitySettings: undefined
   DeltaSettings: undefined
   DeltaBadgeSettings: undefined
+  DeltaWitchskyNextBranchSettings: undefined
   DeltaPrivatePostSettings: undefined
   DeltaLabelSettings: undefined
   AltTextAiSettings: undefined

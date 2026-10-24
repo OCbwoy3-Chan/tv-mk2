@@ -361,6 +361,7 @@ const schema = z.object({
   hideOwnTennaBadge: z.boolean().optional(),
   hideBetaBadge: z.boolean().optional(),
   privatePostsEnabled: z.boolean().optional(),
+  hideComposerPrompt: z.boolean().optional(),
 
   postReplacement: z.object({
     enabled: z.boolean().optional(),
@@ -560,6 +561,7 @@ export const defaults: Schema = {
   hideOwnTennaBadge: false,
   hideBetaBadge: true,
   privatePostsEnabled: false,
+  hideComposerPrompt: true,
   atprotoExplorer: {
     name: 'PDSls',
     url: 'https://pds.ls/(uri)',

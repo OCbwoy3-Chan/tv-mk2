@@ -67,7 +67,8 @@ export function FilterMenu({
               }}>
               <Menu.ItemText>{option.label}</Menu.ItemText>
               <Menu.ItemRadio selected={filter === option.value} />
-              <Menu.ItemText>{option.label}</Menu.ItemText>
+              {/* <Menu.ItemText>{option.label}</Menu.ItemText> */}
+              {/* bsky ui fuckup */}
             </Menu.Item>
           ))}
         </Menu.Group>

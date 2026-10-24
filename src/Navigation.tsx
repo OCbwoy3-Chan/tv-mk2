@@ -358,6 +358,7 @@ const InviteScannerScreen = deferredNamedScreen(
   'InviteScannerScreen',
 )
 import {HomeScreen} from '#/features/followingV2/home'
+import {DeltaWitchskyNextBranchDebugScreen} from './screens/Settings/DeltaSettings/WitchskyNextBranchDebug'
 
 const navigationRef = createNavigationContainerRef<AllNavigatorParams>()
 
@@ -676,6 +677,14 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
         getComponent={() => DeltaBadgeSettingsScreen}
         options={{
           title: title(msg`Profile badges`),
+          requireAuth: true,
+        }}
+      />
+      <Stack.Screen
+        name="DeltaWitchskyNextBranchSettings"
+        getComponent={() => DeltaWitchskyNextBranchDebugScreen}
+        options={{
+          title: title(msg`witchsky-next`),
           requireAuth: true,
         }}
       />

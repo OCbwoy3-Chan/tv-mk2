@@ -11,6 +11,7 @@ import {
   useVideoLibraryPermission,
 } from '#/lib/hooks/usePermissions'
 import {openCamera, openUnifiedPicker} from '#/lib/media/picker'
+import {useHideComposerPrompt} from '#/state/preferences'
 import {useCurrentAccountProfile} from '#/state/queries/useCurrentAccountProfile'
 import {MAX_GALLERY_IMAGES} from '#/view/com/composer/state/composer'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -35,6 +36,8 @@ export function ComposerPrompt() {
   const {requestPhotoAccessIfNeeded} = usePhotoLibraryPermission()
   const {requestVideoAccessIfNeeded} = useVideoLibraryPermission()
   const sheetWrapper = useSheetWrapper()
+
+  const composerPromptHidden = useHideComposerPrompt()
 
   const onPress = useCallback(() => {
     ax.metric('composerPrompt:press', {})
@@ -153,6 +156,8 @@ export function ComposerPrompt() {
   if (!profile) {
     return null
   }
+
+  if (composerPromptHidden === true) return null
 
   return (
     <Pressable

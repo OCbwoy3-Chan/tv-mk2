@@ -1,0 +1,360 @@
+import {useEffect, useState} from 'react'
+import {View} from 'react-native'
+import {Trans, useLingui} from '@lingui/react/macro'
+import {useQueryClient} from '@tanstack/react-query'
+
+import {
+  useHideOwnTennaBadge,
+  useSetHideOwnTennaBadge,
+} from '#/state/preferences/hide-own-tennabadge'
+import {RQKEY_ROOT as POST_FEED_RQKEY_ROOT} from '#/state/queries/post-feed'
+import {
+  useProfileQuery,
+  useProfileUpdateMutation,
+} from '#/state/queries/profile'
+import {postThreadQueryKeyRoot} from '#/state/queries/usePostThread/types'
+import {useSession} from '#/state/session'
+import {atoms as a, useTheme} from '#/alf'
+import {Admonition} from '#/components/Admonition'
+import {Button, ButtonText} from '#/components/Button'
+import {isDeltaLabel} from '#/components/CrackComponents/Tenna/TennaBadge'
+import * as Toggle from '#/components/forms/Toggle'
+import {Text} from '#/components/Typography'
+import {com} from '#/lexicons'
+import * as bsky from '#/types/bsky'
+
+export function FictionkinBadgeSettings() {
+  const t = useTheme()
+  const {t: l} = useLingui()
+  const queryClient = useQueryClient()
+  const {currentAccount} = useSession()
+  const {data: profile} = useProfileQuery({did: currentAccount?.did})
+  const updateProfile = useProfileUpdateMutation()
+
+  const hideTennaBadge = useHideOwnTennaBadge()
+  const setHideTennaBadge = useSetHideOwnTennaBadge()
+
+  const [selectedChar, setSelectedChar] = useState<string>('kris')
+  const [kinType, setKinType] = useState<string>('s')
+  const [isEnabled, setIsEnabled] = useState<boolean>(false)
+  const [isSaved, setIsSaved] = useState<boolean>(false)
+
+  // Initialize from existing label once profile is loaded
+  useEffect(() => {
+    if (profile) {
+      const dl = profile.labels?.find(
+        l => l.src === profile.did && isDeltaLabel(l.val).char !== '67',
+      )
+      if (dl) {
+        const p = isDeltaLabel(dl.val)
+        setSelectedChar(p.char)
+        setKinType(p.kin || 's')
+        setIsEnabled(true)
+      } else {
+        setIsEnabled(false)
+      }
+    }
+  }, [profile])
+
+  const onSave = () => {
+    if (!profile) return
+
+    setIsSaved(false)
+    const newValue = `dr-${selectedChar}-${kinType}`
+    const wasAdded = isEnabled
+
+    updateProfile.mutate(
+      {
+        profile,
+        updates: existing => {
+          const labels: com.atproto.label.defs.SelfLabels = bsky.isType(
+            com.atproto.label.defs.selfLabels,
+            existing.labels,
+          )
+            ? existing.labels
+            : {
+                $type: 'com.atproto.label.defs#selfLabels',
+                values: [],
+              }
+
+          const otherLabels = labels.values.filter(
+            l => !l.val.startsWith('dr-'),
+          )
+          if (isEnabled) {
+            labels.values = [...otherLabels, {val: newValue}]
+          } else {
+            labels.values = otherLabels
+          }
+
+          if (labels.values.length === 0) {
+            delete existing.labels
+          } else {
+            existing.labels = {
+              ...labels,
+              $type: 'com.atproto.label.defs#selfLabels',
+            }
+          }
+
+          return existing
+        },
+        checkCommitted: res => {
+          if (!res) return false
+          const exists = !!res.labels?.some(
+            l => l.val === newValue && l.src === res.did,
+          )
+          return exists === wasAdded
+        },
+      },
+      {
+        onSuccess() {
+          void queryClient.invalidateQueries({queryKey: [POST_FEED_RQKEY_ROOT]})
+          void queryClient.invalidateQueries({
+            queryKey: [postThreadQueryKeyRoot],
+          })
+          setIsSaved(true)
+        },
+      },
+    )
+  }
+
+  const CHARACTERS_FRANCHISES: {[a: string]: string} = {
+    kris: 'Deltarune',
+    susie: 'Deltarune',
+    ralsei: 'Deltarune',
+    noelle: 'Deltarune',
+    tenna: 'Deltarune',
+    flowery: 'Deltarune',
+    seth: 'Deltarune',
+    aqua: 'Deltarune',
+  }
+
+  const CHARACTERS_A_AN: {[a: string]: string} = {
+    aqua: 'an',
+  }
+
+  const CHARACTERS = [
+    {value: 'kris', label: 'Kris'},
+    {value: 'susie', label: 'Susie'},
+    {value: 'ralsei', label: 'Ralsei'},
+    {value: 'noelle', label: 'Noelle'},
+    // TODO: add these
+    // { value: 'aqua', label: 'Aqua' },
+    // { value: 'seth', label: 'Seth' },
+    // { value: 'flowery', label: 'Flowery' }
+  ]
+
+  const KINS = [
+    {value: 's', label: 'Literal'},
+    {value: 'fictive', label: 'Fictive'},
+    {value: 'fictionkin', label: 'Fictionkin'},
+  ]
+
+  const canToggle = profile && !updateProfile.isPending
+
+  return (
+    <View style={[a.p_xl, a.gap_xl]}>
+      <View style={[a.gap_sm]}>
+        <Text style={[a.text_2xl, a.font_bold]}>
+          <Trans>THE BADGE</Trans>
+        </Text>
+        <Text style={[a.text_md, a.leading_snug]}>
+          <Trans>
+            this is a tenna.party exclusive, you can't get this on witchsky 👀
+          </Trans>
+        </Text>
+      </View>
+
+      <View style={[a.gap_xl]}>
+        <Admonition type="info">
+          <Trans>
+            This feature is intended for those who are a kin of or are any of
+            the characters listed below.
+          </Trans>
+        </Admonition>
+      </View>
+
+      {isEnabled && (
+        <Text
+          style={[
+            a.text_md,
+            a.font_bold,
+            a.italic,
+            t.atoms.text_contrast_medium,
+            a.leading_snug,
+          ]}>
+          <Trans>
+            This makes you{' '}
+            {kinType !== 's'
+              ? (CHARACTERS_A_AN[selectedChar] ?? 'a') + ' '
+              : ''}
+            {CHARACTERS.find(a => a.value === selectedChar)?.label ??
+              selectedChar}{' '}
+            {CHARACTERS_FRANCHISES[selectedChar]}
+            {kinType !== 's' ? ' ' + kinType : ', literally'}.
+          </Trans>
+          {hideTennaBadge && (
+            <Trans> Others will see this badge on your profile.</Trans>
+          )}
+        </Text>
+      )}
+      {isEnabled && (
+        <Text style={[a.text_md, t.atoms.text_contrast_medium, a.leading_snug]}>
+          <Trans>
+            Customize some of the options below and tap save to apply the label!
+          </Trans>
+        </Text>
+      )}
+
+      <View
+        style={[
+          a.w_full,
+          a.p_md,
+          a.rounded_lg,
+          a.border,
+          t.atoms.border_contrast_low,
+          t.atoms.bg_contrast_50,
+        ]}>
+        <Toggle.Item
+          name="fictonkin_badge_enabled"
+          disabled={!canToggle}
+          value={isEnabled}
+          onChange={() => {
+            setIsEnabled(!isEnabled)
+            setIsSaved(false)
+          }}
+          label={l`Toggle fictionkin badge`}>
+          <Toggle.LabelText style={[a.flex_1, a.text_md, a.font_medium]}>
+            <Trans>Enable Badge</Trans>
+          </Toggle.LabelText>
+          <Toggle.Platform />
+        </Toggle.Item>
+      </View>
+
+      {isEnabled && (
+        <View
+          style={[
+            a.w_full,
+            a.p_md,
+            a.rounded_lg,
+            a.border,
+            t.atoms.border_contrast_low,
+            t.atoms.bg_contrast_50,
+          ]}>
+          <Toggle.Item
+            name="hide_fictionkin_badge"
+            value={hideTennaBadge}
+            onChange={() => {
+              setHideTennaBadge(!hideTennaBadge)
+            }}
+            label={l`Toggle seeing your own fictionkin badge`}>
+            <Toggle.LabelText style={[a.flex_1, a.text_md, a.font_medium]}>
+              <Trans>Hide it</Trans>
+            </Toggle.LabelText>
+            <Toggle.Platform />
+          </Toggle.Item>
+        </View>
+      )}
+
+      {isEnabled && (
+        <>
+          <View
+            style={[
+              a.w_full,
+              a.p_md,
+              a.rounded_lg,
+              a.border,
+              t.atoms.border_contrast_low,
+              t.atoms.bg_contrast_50,
+              a.gap_sm,
+            ]}>
+            <Text
+              style={[a.text_sm, a.font_medium, t.atoms.text_contrast_medium]}>
+              <Trans>Character</Trans>
+            </Text>
+            <Toggle.Group
+              type="radio"
+              values={[selectedChar]}
+              onChange={values => {
+                if (values[0]) {
+                  setSelectedChar(values[0])
+                  setIsSaved(false)
+                }
+              }}
+              label={l`Character`}>
+              <View style={[a.gap_sm, a.pt_xs]}>
+                {CHARACTERS.map(c => (
+                  <Toggle.Item key={c.value} name={c.value} label={c.label}>
+                    <Toggle.RadioWithLabel
+                      label={c.label}
+                      selected={selectedChar === c.value}
+                    />
+                  </Toggle.Item>
+                ))}
+              </View>
+            </Toggle.Group>
+          </View>
+
+          <View
+            style={[
+              a.w_full,
+              a.p_md,
+              a.rounded_lg,
+              a.border,
+              t.atoms.border_contrast_low,
+              t.atoms.bg_contrast_50,
+              a.gap_sm,
+            ]}>
+            <Text
+              style={[a.text_sm, a.font_medium, t.atoms.text_contrast_medium]}>
+              <Trans>Kin</Trans>
+            </Text>
+            <Toggle.Group
+              type="radio"
+              values={[kinType]}
+              onChange={values => {
+                if (values[0]) {
+                  setKinType(values[0])
+                  setIsSaved(false)
+                }
+              }}
+              label={l`Kin Type`}>
+              <View style={[a.gap_sm, a.pt_xs]}>
+                {KINS.map(r => (
+                  <Toggle.Item key={r.value} name={r.value} label={r.label}>
+                    <Toggle.RadioWithLabel
+                      label={r.label}
+                      selected={kinType === r.value}
+                    />
+                  </Toggle.Item>
+                ))}
+              </View>
+            </Toggle.Group>
+          </View>
+        </>
+      )}
+
+      <View style={[a.flex_row, a.align_center, a.gap_md]}>
+        <Button
+          label={l`Save changes`}
+          onPress={onSave}
+          color="primary"
+          size="medium"
+          disabled={!canToggle || updateProfile.isPending}>
+          <ButtonText>
+            {updateProfile.isPending ? (
+              <Trans>Saving...</Trans>
+            ) : (
+              <Trans>Save Changes</Trans>
+            )}
+          </ButtonText>
+        </Button>
+
+        {isSaved && (
+          <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
+            <Trans>Saved successfully!</Trans>
+          </Text>
+        )}
+      </View>
+    </View>
+  )
+}

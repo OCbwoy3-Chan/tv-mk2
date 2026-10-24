@@ -5,6 +5,7 @@ import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
 import {DeltasBetaBadgeToggle} from './components/BetaBadgeToggle'
+import {DeltasComposerPromptToggle} from './components/ComposerPromptToggle'
 import {TennaQuickLinks} from './components/QuickLinks'
 
 export function DeltaSettingsScreen() {
@@ -45,6 +46,8 @@ export function DeltaSettingsScreen() {
               t.atoms.bg_contrast_25,
             ]}>
             <DeltasBetaBadgeToggle />
+            <View style={[a.w_full, {height: 1}, t.atoms.bg_contrast_100]} />
+            <DeltasComposerPromptToggle />
           </View>
         </View>
       </Layout.Content>

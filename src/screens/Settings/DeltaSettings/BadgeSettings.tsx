@@ -5,7 +5,7 @@ import {atoms as a, useTheme} from '#/alf'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
 import {CustomLabelToggle} from './components/CustomLabelToggle'
-import { FictionkinBadgeSettings } from './FictonkinBadgeSettings'
+import {FictionkinBadgeSettings} from './components/FictonkinBadgeSettings'
 
 export function DeltaBadgeSettingsScreen() {
   const t = useTheme()
@@ -46,7 +46,7 @@ export function DeltaBadgeSettingsScreen() {
             </View>
           </View>
         </View>
-        <FictionkinBadgeSettings/>
+        <FictionkinBadgeSettings />
       </Layout.Content>
     </Layout.Screen>
   )
