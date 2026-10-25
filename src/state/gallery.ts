@@ -268,6 +268,7 @@ function blobToDataUri(blob: Blob): Promise<string> {
  */
 const SYSTEM_MEDIA_CACHE_DIRS = ['ImagePicker', 'ImageManipulator']
 
+/** Purge files that were created to accomodate image manipulation */
 export async function purgeTemporaryImageFiles() {
   if (!IS_NATIVE) {
     return

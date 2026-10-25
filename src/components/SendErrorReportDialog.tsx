@@ -36,13 +36,11 @@ function SendErrorReportDialogInner() {
 
   const {mutate: onSubmit, isPending} = useMutation({
     mutationFn: async () => {
-      await Promise.resolve(
-        sendErrorReport({
-          title,
-          description,
-          handle: currentAccount?.handle ?? '',
-        }),
-      )
+      await sendErrorReport({
+        title,
+        description,
+        handle: currentAccount?.handle ?? '',
+      })
     },
     onSuccess: () => {
       control.close(() => {

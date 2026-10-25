@@ -22,6 +22,7 @@ jest.mock('#/alf', () => {
   }
   return {
     atoms: new Proxy({}, {get: () => ({})}),
+    utils: {alpha: (color: string) => color},
     tokens: {space: {xs: 4, sm: 8}},
     useTheme: () => theme,
     useAlf: () => ({fonts: {family: 'system', scaleMultiplier: 1}}),

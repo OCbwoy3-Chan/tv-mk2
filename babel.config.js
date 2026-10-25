@@ -76,7 +76,6 @@ const workletsPluginOptions = {
  * @returns {import("@babel/core").InputOptions}
  */
 module.exports = function (api) {
-  const isWeb = api.caller(caller => caller?.platform === 'web')
   return {
     presets: [
       [
@@ -121,10 +120,7 @@ module.exports = function (api) {
         : []),
 
       stripSymbolLocs,
-      [
-        'react-native-worklets/plugin',
-        {...workletsPluginOptions, bundleMode: !isWeb},
-      ], // NOTE: this plugin MUST be last
+      ['react-native-worklets/plugin', workletsPluginOptions], // NOTE: this plugin MUST be last
     ],
   }
 }

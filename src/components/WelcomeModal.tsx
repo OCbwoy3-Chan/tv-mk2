@@ -162,10 +162,7 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       a.text_center,
                       {color: 'rgb(58, 50, 50)', lineHeight: 24},
                     ]}>
-                    <Trans>
-                      Unofficial. All mentions of Witchsky and Bluesky are
-                      purely informative and are not endorsed.
-                    </Trans>
+                    <Trans>Unofficial. All mentions of Witchsky and Bluesky are purely informative and are not endorsed.</Trans>
                   </Text>
                 </View>
               </View>

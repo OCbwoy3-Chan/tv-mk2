@@ -18,7 +18,10 @@ import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {usePostViewTracking} from '#/lib/hooks/usePostViewTracking'
 import {getShapeStyle} from '#/lib/shapes'
 import {usePostViewAuthorShadowFilter} from '#/state/cache/profile-shadow'
-import {useFeedFeedback} from '#/state/feed-feedback'
+import {
+  type StateContext as FeedFeedbackStateContext,
+  useFeedFeedback,
+} from '#/state/feed-feedback'
 import {useAlsoLikedCollapseByDefault} from '#/state/preferences/also-liked-collapse-by-default'
 import {useAlsoLikedFeedEnabled} from '#/state/preferences/also-liked-feed-enabled'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -86,6 +89,9 @@ import {IS_IOS, IS_NATIVE} from '#/env'
 
 const PARENT_CHUNK_SIZE = IS_NATIVE ? 5 : 20
 const CHILDREN_CHUNK_SIZE = 50
+const analyticsOnlyOnItemSeen: FeedFeedbackStateContext['onItemSeen'] = () => {}
+const analyticsOnlySendInteraction: FeedFeedbackStateContext['sendInteraction'] =
+  () => {}
 
 export function PostThread({
   uri,

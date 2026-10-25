@@ -1,5 +1,7 @@
 import {View} from 'react-native'
 
+import {getShapeStyle} from '#/lib/shapes'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {atoms as a, useTheme} from '#/alf'
 import {PostControlsSkeleton} from '#/components/PostControls'
 import * as Skele from '#/components/Skeleton'
@@ -51,6 +53,7 @@ export function PostFeedSkeleton() {
  */
 function PostSkeleton({index}: {index: number}) {
   const t = useTheme()
+  const avatarShape = useEnableSquareAvatars()
   const {name, handle, lines, hasImage} = VARIANTS[index % VARIANTS.length]
 
   return (
@@ -64,7 +67,10 @@ function PostSkeleton({index}: {index: number}) {
         {paddingLeft: 18, paddingRight: 15},
       ]}>
       <Skele.Row style={[a.align_start, {gap: 10}]}>
-        <Skele.Circle size={AVATAR_SIZE} />
+        <Skele.Circle
+          size={AVATAR_SIZE}
+          style={getShapeStyle(avatarShape, a.rounded_sm, a.rounded_full)}
+        />
 
         <Skele.Col style={[a.gap_xs]}>
           <Skele.Row style={[a.gap_sm]}>

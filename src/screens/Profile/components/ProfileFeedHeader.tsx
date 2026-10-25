@@ -98,7 +98,7 @@ export function ProfileFeedHeader({
   const {hasSession} = useSession()
   const {gtMobile} = useBreakpoints()
   const infoControl = Dialog.useDialogControl()
-  const haptics = useHaptics()
+  const playHaptic = useHaptics()
 
   const {data: preferences} = usePreferencesQuery()
 
@@ -124,7 +124,7 @@ export function ProfileFeedHeader({
 
   const onToggleSaved = async () => {
     try {
-      haptics.tap()
+      playHaptic.confirm()
 
       if (savedFeedConfig) {
         await removeFeed(savedFeedConfig)
@@ -154,7 +154,7 @@ export function ProfileFeedHeader({
 
   const onTogglePinned = async () => {
     try {
-      haptics.tap()
+      playHaptic.confirm()
 
       if (savedFeedConfig) {
         const pinned = !savedFeedConfig.pinned
@@ -220,7 +220,7 @@ export function ProfileFeedHeader({
                   color="secondary"
                   variant="ghost"
                   onPress={() => {
-                    haptics.tap()
+                    playHaptic.confirm()
                     infoControl.open()
                   }}>
                   <ButtonIcon icon={EllipsisIcon} />
@@ -237,7 +237,7 @@ export function ProfileFeedHeader({
                   },
                 ]}
                 onPress={() => {
-                  haptics.tap()
+                  playHaptic.confirm()
                   infoControl.open()
                 }}>
                 {({hovered, pressed}) => (
@@ -442,7 +442,7 @@ function DialogInner({
   const {t: l} = useLingui()
   const ax = useAnalytics()
   const {hasSession} = useSession()
-  const haptics = useHaptics()
+  const playHaptic = useHaptics()
   const control = Dialog.useDialogContext()
   const reportDialogControl = useReportDialogControl()
   const {mutateAsync: likeFeed, isPending: isLikePending} = useLikeMutation()
@@ -456,7 +456,7 @@ function DialogInner({
 
   const onToggleLiked = async () => {
     try {
-      haptics.tap()
+      playHaptic.confirm()
 
       if (isLiked && likeUri) {
         await unlikeFeed({uri: likeUri})
@@ -479,11 +479,11 @@ function DialogInner({
   }
 
   const onPressShare = useCallback(() => {
-    haptics.tap()
+    playHaptic.confirm()
     const url = toShareUrl(info.route.href)
     void shareUrl(url)
     ax.metric('feed:share', {feedUrl: info.uri})
-  }, [ax, info, haptics])
+  }, [ax, info, playHaptic])
 
   const onPressReport = useCallback(() => {
     reportDialogControl.open()

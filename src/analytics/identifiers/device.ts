@@ -7,12 +7,10 @@ const LEGACY_STABLE_ID = 'STATSIG_LOCAL_STORAGE_STABLE_ID'
 let deviceId = device.get(['deviceId'])
 
 export async function getAndMigrateDeviceId() {
-  const migrated = getDeviceId()
-  if (migrated) return migrated
-  const id = (await AsyncStorage.getItem(LEGACY_STABLE_ID)) || uuid.v4()
-  deviceId = id
-  device.set(['deviceId'], id)
-  return id
+  if (deviceId) return deviceId
+  deviceId = (await AsyncStorage.getItem(LEGACY_STABLE_ID)) || uuid.v4()
+  device.set(['deviceId'], deviceId)
+  return deviceId
 }
 
 export function getDeviceId() {

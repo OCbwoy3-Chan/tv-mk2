@@ -31,7 +31,10 @@ jest.mock('#/components/Button', () => ({
   ButtonText: () => null,
 }))
 jest.mock('#/components/Typography', () => ({Text: () => null}))
-jest.mock('#/alf', () => ({atoms: {}}))
+jest.mock('#/alf', () => ({atoms: {}, useTheme: () => ({atoms: {}})}))
+jest.mock('#/state/preferences/enable-square-buttons', () => ({
+  useEnableSquareButtons: () => false,
+}))
 jest.mock('@lingui/react/macro', () => ({
   useLingui: () => ({t: () => 'Menu'}),
 }))

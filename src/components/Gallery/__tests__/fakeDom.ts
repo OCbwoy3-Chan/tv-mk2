@@ -100,6 +100,14 @@ export class FakeElement extends FakeEventTarget {
     return false
   }
 
+  setAttribute(name: string, value: string) {
+    this.attributes[name] = value
+  }
+
+  removeAttribute(name: string) {
+    delete this.attributes[name]
+  }
+
   getAttribute(name: string) {
     return this.attributes[name] ?? null
   }

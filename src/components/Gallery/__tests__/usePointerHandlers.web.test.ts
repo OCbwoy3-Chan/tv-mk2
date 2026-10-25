@@ -73,6 +73,16 @@ function release() {
 }
 
 describe('usePointerHandlers (web)', () => {
+  it('leaves a nested image gallery drag to its own scroll surface', () => {
+    setup()
+    const inner = scroller.append(new FakeElement())
+    inner.setAttribute('data-carousel-scroll', '')
+    const nestedImage = inner.append(new FakeElement('IMG'))
+    mouseDown(nestedImage)
+    drag(100)
+    expect(scrollTo).not.toHaveBeenCalled()
+  })
+
   it('does not prevent default on mousedown, so focus and selection work', () => {
     setup()
     const e = mouseDown(text)

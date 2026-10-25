@@ -55,8 +55,8 @@ import {useDialogControl} from '#/components/Dialog'
 import {SwitchAccountDialog} from '#/components/dialogs/SwitchAccount'
 import {SortableList} from '#/components/DraggableList'
 import {Accessibility_Stroke2_Corner2_Rounded as AccessibilityIcon} from '#/components/icons/Accessibility'
-import {ArrowTriangleBottom_Stroke2_Corner1_Rounded} from '#/components/icons/Arrow'
 import {ArrowRotateClockwise_Stroke2_Corner0_Rounded as ReverseIcon} from '#/components/icons/ArrowRotate'
+import {ArrowTriangleBottom_Stroke2_Corner1_Rounded} from '#/components/icons/ArrowTriangle'
 import {Bell_Stroke2_Corner0_Rounded as NotificationIcon} from '#/components/icons/Bell'
 import {BubbleInfo_Stroke2_Corner2_Rounded as BubbleInfoIcon} from '#/components/icons/BubbleInfo'
 import {ChevronTop_Stroke2_Corner0_Rounded as ChevronUpIcon} from '#/components/icons/Chevron'
@@ -441,7 +441,7 @@ export function SettingsScreen({}: Props) {
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
             to="/moderation"
-            label={l`Moderation tools`}
+            label={l`Moderation`}
             accessibilityHint={
               unreadCount > 0
                 ? plural(unreadCount, {

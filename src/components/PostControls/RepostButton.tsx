@@ -4,7 +4,6 @@ import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {useHaptics} from '#/lib/haptics'
-import {type CountsMetricsDisplay} from '#/lib/metrics-display'
 import {useRequireAuth} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
@@ -18,19 +17,7 @@ import {MetricCountLabel} from '#/components/PostControls/MetricCountLabel'
 import {Text} from '#/components/Typography'
 import {IS_IPAD} from '#/env'
 import {PostControlButton, PostControlButtonIcon} from './PostControlButton'
-import {RepostButtonMenu} from './RepostButtonMenu'
-
-interface RepostButtonProps {
-  isReposted: boolean
-  repostCount?: number
-  metricsDisplay?: CountsMetricsDisplay
-  onRepost: () => void
-  onBumpRepost?: () => void
-  onQuote: () => void
-  onLongPress?: () => void
-  big?: boolean
-  embeddingDisabled: boolean
-}
+import {RepostButtonMenu, type RepostButtonProps} from './RepostButtonMenu'
 
 let RepostButton = (props: RepostButtonProps): React.ReactNode =>
   IS_IPAD ? (
@@ -38,6 +25,7 @@ let RepostButton = (props: RepostButtonProps): React.ReactNode =>
   ) : (
     <RepostButtonDialog {...props} />
   )
+
 RepostButton = memo(RepostButton)
 export {RepostButton}
 
@@ -190,7 +178,7 @@ export const RepostButtonDialogInner = memo(function RepostButtonDialogInner({
               style={[a.justify_start, a.px_md, a.gap_sm]}
               label={l`Bump repost`}
               onPress={() => {
-                haptics.tap()
+                haptics.confirm()
                 control.close(() => onBumpRepost())
               }}
               size="large"

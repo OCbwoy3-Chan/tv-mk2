@@ -1,5 +1,10 @@
-import {type MouseEvent, useCallback, useMemo, useState} from 'react'
-import {ScrollView, StyleSheet, View} from 'react-native'
+import {useCallback, useMemo, useState} from 'react'
+import {
+  type GestureResponderEvent,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
 import {PlatformInfo} from '@bsky.app/expo-bluesky-swiss-army'
 import {Trans, useLingui} from '@lingui/react/macro'
@@ -111,7 +116,7 @@ import {Text} from '#/components/Typography'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {type Events} from '#/analytics/metrics/types'
-import {IS_NATIVE} from '#/env'
+import {IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
 import {isFollowingV2HomeDotEnabled} from '#/features/followingV2/eligibility'
 import {useActorStatus} from '#/features/liveNow'
 import {accentForeground} from '#/features/themes/accentForeground'
@@ -331,6 +336,27 @@ export function SwitchMenuItems({
     closeEverything()
   }
 
+  const footerItems = (
+    <>
+      {showAddAccount && (
+        <Menu.Item label={l`Add another account`} onPress={onAddAnotherAccount}>
+          <Menu.ItemIcon icon={PlusIcon} />
+          <Menu.ItemText>
+            <Trans>Add another account</Trans>
+          </Menu.ItemText>
+        </Menu.Item>
+      )}
+      {showExtraButtons && (
+        <Menu.Item label={l`Sign out`} onPress={signOutPromptControl.open}>
+          <Menu.ItemIcon icon={LeaveIcon} />
+          <Menu.ItemText>
+            <Trans>Sign out</Trans>
+          </Menu.ItemText>
+        </Menu.Item>
+      )}
+    </>
+  )
+
   return (
     <Menu.Outer onCloseAutoFocus={onCloseAutoFocus}>
       {isLoading ? (
@@ -348,16 +374,21 @@ export function SwitchMenuItems({
             {title ?? <Trans>Switch account</Trans>}
           </Menu.LabelText>
           <Menu.Group>
+            {/* Native groups require Menu.Item as a direct child. */}
             {sortedAccounts.map(({account, profile}) => (
               <Menu.Item
                 key={account.did}
                 disabled={!!pendingDid}
                 style={[a.gap_sm, {minWidth: 150}]}
-                label={l`Switch to ${sanitizeHandle(profile?.handle ?? account.handle, '@')}`}
-                onPress={() => {
-                  if (onSelectAccount) onSelectAccount(account)
-                  else void onPressSwitchAccount(account, 'SwitchAccount')
-                }}>
+                label={l`Switch to ${sanitizeHandle(
+                  profile?.handle ?? account.handle,
+                  '@',
+                )}`}
+                onPress={() =>
+                  onSelectAccount
+                    ? onSelectAccount(account)
+                    : void onPressSwitchAccount(account, 'SwitchAccount')
+                }>
                 <SwitchMenuItemAvatar profile={profile} />
                 <Menu.ItemText>
                   {sanitizeHandle(profile?.handle ?? account.handle, '@')}
@@ -368,90 +399,93 @@ export function SwitchMenuItems({
           {hasFooterItems ? <Menu.Divider /> : null}
         </>
       ) : null}
-      {showExtraButtons ? <SwitcherMenuProfileLink /> : undefined}
-      {showAddAccount ? (
-        <Menu.Item label={l`Add another account`} onPress={onAddAnotherAccount}>
-          <Menu.ItemIcon icon={PlusIcon} />
-          <Menu.ItemText>
-            <Trans>Add another account</Trans>
-          </Menu.ItemText>
-        </Menu.Item>
-      ) : null}
       {showExtraButtons ? (
-        <Menu.Item label={l`Sign out`} onPress={signOutPromptControl.open}>
-          <Menu.ItemIcon icon={LeaveIcon} />
-          <Menu.ItemText>
-            <Trans>Sign out</Trans>
-          </Menu.ItemText>
-        </Menu.Item>
-      ) : undefined}
+        <SwitcherMenuProfileGroup>{footerItems}</SwitcherMenuProfileGroup>
+      ) : showAddAccount ? (
+        <Menu.Group>{footerItems}</Menu.Group>
+      ) : null}
     </Menu.Outer>
   )
 }
 
-function SwitcherMenuProfileLink() {
+/** Navigation actions only mount in the sidebar, never in shared account pickers. */
+function SwitcherMenuProfileGroup({children}: React.PropsWithChildren) {
   const {t: l} = useLingui()
   const {currentAccount} = useSession()
-  const navigation = useNavigation()
-  const context = Menu.useMenuContext()
-  const profileLink = currentAccount ? makeProfileLink(currentAccount) : '/'
-  const [pathName] = useMemo(() => router.matchPath(profileLink), [profileLink])
+  const navigation = useNavigation<NavigationProp>()
+  const {control} = Menu.useMenuContext()
   const currentRouteInfo = useNavigationState(state => {
     if (!state) {
       return {name: 'Home'}
     }
     return getCurrentRoute(state)
   })
-  const isCurrent = useMemo(() => {
-    if (currentRouteInfo.name === 'Profile') {
-      return (
-        isTab(currentRouteInfo.name, pathName) &&
-        (currentRouteInfo.params as CommonNavigatorParams['Profile']).name ===
-          currentAccount?.handle
-      )
-    } else {
-      return isTab(currentRouteInfo.name, pathName)
-    }
-  }, [currentAccount?.handle, currentRouteInfo, pathName])
+  const profileLink = currentAccount ? makeProfileLink(currentAccount) : '/'
+  const isCurrent = isCurrentProfileRoute({
+    routeName: currentRouteInfo.name,
+    profileName:
+      currentRouteInfo.name === 'Profile'
+        ? (currentRouteInfo.params as CommonNavigatorParams['Profile']).name
+        : undefined,
+    currentHandle: currentAccount?.handle,
+  })
 
-  const onProfilePress = useCallback(
-    (e: MouseEvent<HTMLAnchorElement>) => {
-      if (e.ctrlKey || e.metaKey || e.altKey) {
+  const onProfilePress = (e: GestureResponderEvent) => {
+    if (IS_WEB) {
+      const mouseEvent = e as unknown as React.MouseEvent<
+        HTMLAnchorElement,
+        MouseEvent
+      >
+      if (mouseEvent.ctrlKey || mouseEvent.metaKey || mouseEvent.altKey) {
         return
       }
-      e.preventDefault()
-      context.control.close(() => {
-        if (isCurrent) {
-          emitSoftReset()
-        } else {
-          const [screen, params] = router.matchPath(profileLink)
-          // @ts-expect-error TODO: type matchPath well enough that it can be plugged into navigation.navigate directly
-          navigation.navigate(screen, params, {pop: true})
-        }
-      })
-    },
-    [navigation, profileLink, isCurrent, context],
-  )
+      mouseEvent.preventDefault()
+    }
+
+    const onNavigate = () => {
+      if (isCurrent) {
+        emitSoftReset()
+      } else {
+        const [screen, params] = router.matchPath(profileLink)
+        // @ts-expect-error TODO: type matchPath well enough that it can be plugged into navigation.navigate directly
+        navigation.navigate(screen, params, {pop: true})
+      }
+    }
+
+    if (IS_IOS) {
+      onNavigate()
+    } else if (IS_NATIVE) {
+      control.close(onNavigate)
+    } else {
+      control.close(onNavigate)
+    }
+  }
+
   return (
-    <Menu.Item
-      label={l`Go to profile`}
-      // @ts-expect-error The function signature differs on web -inb
-      onPress={onProfilePress}
-      href={profileLink}>
-      <Menu.ItemIcon icon={UserCircleIcon} />
-      <Menu.ItemText>
-        <Trans>Go to profile</Trans>
-      </Menu.ItemText>
-    </Menu.Item>
+    <Menu.Group>
+      <Menu.Item
+        label={l`Go to profile`}
+        onPress={onProfilePress}
+        // @ts-expect-error href is web-only -prf
+        href={profileLink}>
+        <Menu.ItemIcon icon={UserCircleIcon} />
+        <Menu.ItemText>
+          <Trans>Go to profile</Trans>
+        </Menu.ItemText>
+      </Menu.Item>
+      {children}
+    </Menu.Group>
   )
 }
 
 function SwitchMenuItemAvatar({
   profile,
 }: {
-  profile?: app.bsky.actor.defs.ProfileViewDetailed
+  profile: app.bsky.actor.defs.ProfileViewDetailed | undefined
+  onSelectAccount?: (account: SessionAccount) => void
 }) {
   const {isActive: live} = useActorStatus(profile)
+
   return (
     <View>
       <UserAvatar
@@ -520,7 +554,7 @@ function NavItem({
   const isRelated = currentRouteInfo.name.startsWith(pathName)
   const navigation = useNavigation<NavigationProp>()
   const onPressWrapped = useCallback(
-    (e: MouseEvent<HTMLAnchorElement>) => {
+    (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       ax.metric('nav:click', {item: navItem, surface: 'leftNav'})
       if (e.ctrlKey || e.metaKey || e.altKey) {
         return
@@ -695,7 +729,7 @@ function ComposeBtn({minimal}: {minimal: boolean}) {
   const layout = getComposeButtonLayout({minimal, isNative: IS_NATIVE})
 
   return (
-    <View style={[layout.container, userStyle('wsky-nav__compose')]}>
+    <View style={[userStyle('wsky-nav__compose'), layout.container]}>
       <Button
         disabled={isFetchingHandle}
         label={l`Compose new post`}
@@ -755,7 +789,7 @@ export function DesktopLeftNav({
     chatsTabBadgeDisplay === 'text' ? chatsCustomText : undefined
   const hasHomeBadge = useHomeBadge()
   const isAtmosphereExploreEnabled = ax.features.enabled(
-    ax.features.AtmosphereExploreEnable,
+    ax.features.AtmosphereScreenEnable,
   )
   const insets = useSafeAreaInsets()
 
@@ -920,14 +954,14 @@ export function DesktopLeftNav({
       role="navigation"
       pointerEvents={IS_NATIVE ? 'box-none' : undefined}
       style={[
+        a.fixed,
+        a.top_0,
+        a.p_lg,
         userStyle(
           'wsky-nav',
           'wsky-nav--desktop',
           leftNavMinimal && 'wsky-nav--compact',
         ),
-        a.fixed,
-        a.top_0,
-        a.p_lg,
         styles.leftNav,
         IS_NATIVE && {top: insets.top, bottom: insets.bottom},
         !hasSession && !leftNavMinimal && {width: LEFT_NAV_PWI_WIDTH},

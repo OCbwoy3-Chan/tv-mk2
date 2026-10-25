@@ -1,5 +1,7 @@
 import {View} from 'react-native'
 
+import {getShapeStyle} from '#/lib/shapes'
+import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {atoms as a} from '#/alf'
 import * as Skele from '#/components/Skeleton'
 
@@ -48,11 +50,15 @@ export function ChatListSkeleton() {
  * handle, and a preview of the last message.
  */
 function ChatItemSkeleton({index}: {index: number}) {
+  const avatarShape = useEnableSquareAvatars()
   const {name, handle, lines} = VARIANTS[index % VARIANTS.length]
 
   return (
     <View style={[a.flex_row, a.align_start, a.gap_md, a.px_lg, a.py_md]}>
-      <Skele.Circle size={AVATAR_SIZE} />
+      <Skele.Circle
+        size={AVATAR_SIZE}
+        style={getShapeStyle(avatarShape, a.rounded_sm, a.rounded_full)}
+      />
 
       <Skele.Col style={[a.justify_center]}>
         <Skele.Row style={[a.align_center, a.gap_sm, a.pb_2xs]}>

@@ -334,8 +334,8 @@ export function AnalyticsFeaturesContext({
     )
     recordFeatureFlagEvaluation(feature, result.value)
   })
-  setAttributes(parentContext.metadata)
   setForcedFeatureValues(featureGateOverrides)
+  setAttributes(parentContext.metadata)
 
   const childContext = useMemo<AnalyticsContextType>(() => {
     return {

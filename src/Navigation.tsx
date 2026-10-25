@@ -129,6 +129,11 @@ import {ProfileSearchScreen} from '#/screens/Profile/ProfileSearch'
 import {ProfileListScreen} from '#/screens/ProfileList'
 import {SavedFeeds} from '#/screens/SavedFeeds'
 import {SearchScreen} from '#/screens/Search'
+import {DeltaSettingsScreen} from '#/screens/Settings/DeltaSettings'
+import {DeltaBadgeSettingsScreen} from '#/screens/Settings/DeltaSettings/BadgeSettings'
+import {DeltaModLabelSettingsScreen} from '#/screens/Settings/DeltaSettings/ModLabelSettings'
+import {DeltaPrivatePostSettingsScreen} from '#/screens/Settings/DeltaSettings/PrivatePostSettings'
+import {DeltaWitchskyNextBranchDebugScreen} from '#/screens/Settings/DeltaSettings/WitchskyNextBranchDebug'
 import TopicScreen from '#/screens/Topic'
 import {type Theme, useBreakpoints, useTheme} from '#/alf'
 import {
@@ -139,11 +144,8 @@ import {EphemeralLoginHost} from '#/components/EphemeralLoginHost'
 import {useAnalytics} from '#/analytics'
 import {setNavigationMetadata} from '#/analytics/metadata'
 import {IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
+import {HomeScreen} from '#/features/followingV2/home'
 import {router} from '#/routes'
-import {DeltaSettingsScreen} from './screens/Settings/DeltaSettings'
-import {DeltaBadgeSettingsScreen} from './screens/Settings/DeltaSettings/BadgeSettings'
-import {DeltaModLabelSettingsScreen} from './screens/Settings/DeltaSettings/ModLabelSettings'
-import {DeltaPrivatePostSettingsScreen} from './screens/Settings/DeltaSettings/PrivatePostSettings'
 
 function deferredNamedScreen<
   Name extends string,
@@ -357,8 +359,6 @@ const InviteScannerScreen = deferredNamedScreen(
   () => require('#/features/inviteFriends'),
   'InviteScannerScreen',
 )
-import {HomeScreen} from '#/features/followingV2/home'
-import {DeltaWitchskyNextBranchDebugScreen} from './screens/Settings/DeltaSettings/WitchskyNextBranchDebug'
 
 const navigationRef = createNavigationContainerRef<AllNavigatorParams>()
 

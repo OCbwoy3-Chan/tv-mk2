@@ -15,7 +15,7 @@ jest.mock('@lingui/react', () => ({
 jest.mock('#/state/session', () => ({
   usePdsClient: () => ({call: mockCall}),
   useSession: () => ({currentAccount: {email: 'alice@example.com'}}),
-  useSessionApi: () => ({refreshSession: mockRefreshSession}),
+  useSessionApi: () => ({partialRefreshSession: mockRefreshSession}),
 }))
 jest.mock('#/alf', () => ({
   atoms: new Proxy({}, {get: () => ({})}),

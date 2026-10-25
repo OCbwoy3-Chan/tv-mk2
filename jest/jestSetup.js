@@ -1,3 +1,18 @@
+import {i18n} from '@lingui/core'
+
+jest.mock('react-native-worklets', () =>
+  require('react-native-worklets/lib/module/mock'),
+)
+jest.mock('react-native-reanimated/src/initializers', () => ({
+  initializeReanimatedModule: jest.fn(),
+}))
+jest.mock('react-native-reanimated', () =>
+  require('react-native-reanimated/mock'),
+)
+
+i18n.load('en', {})
+i18n.activate('en')
+
 /* global jest */
 import 'react-native-gesture-handler/jestSetup'
 

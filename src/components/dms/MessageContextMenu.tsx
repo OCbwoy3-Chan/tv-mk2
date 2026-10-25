@@ -10,7 +10,7 @@ import {useLingui} from '@lingui/react/macro'
 import {EMOJI_REACTION_LIMIT} from '#/lib/constants'
 import {useGoogleTranslate} from '#/lib/hooks/useGoogleTranslate'
 import {richTextToString} from '#/lib/strings/rich-text-helpers'
-import {formatDateWithSystemTime} from '#/lib/strings/systemTime'
+import {formatDateTime} from '#/lib/strings/time'
 import {useMaybeProfileShadow} from '#/state/cache/profile-shadow'
 import {useConvoActive} from '#/state/messages/convo'
 import {useLanguagePrefs} from '#/state/preferences'
@@ -171,13 +171,9 @@ export let MessageContextMenu = ({
 
       <ContextMenu.Outer
         align={isFromSelf ? 'right' : 'left'}
-        label={l`Sent at ${formatDateWithSystemTime(
-          i18n,
-          new Date(message.sentAt),
-          {
-            timeStyle: 'short',
-          },
-        )}`}
+        label={l`Sent at ${formatDateTime(i18n, new Date(message.sentAt), {
+          timeStyle: 'short',
+        })}`}
         style={[isFromSelf && isGroupChatEnabled ? null : a.ml_sm]}
         onCloseAutoFocus={onCloseAutoFocus}>
         <ContextMenu.Item

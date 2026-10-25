@@ -128,8 +128,8 @@ function CantSubscribePrompt({
         <Prompt.TitleText>Unable to subscribe</Prompt.TitleText>
         <Prompt.DescriptionText>
           <Trans>
-            We're sorry! You are crazy AS FUCK! You're already subscibed to 200
-            of them, what more do you want?
+            We're sorry! You are crazy AS FUCK!
+            You're already subscibed to 200 of them, what more do you want?
           </Trans>
           {/* <Trans>
             We're sorry! You can only subscribe to twenty labelers, and you've
@@ -165,7 +165,7 @@ export function LabelerLikeSection({
 
   const onToggleLiked = useCallback(async () => {
     try {
-      haptics.tap()
+      haptics.confirm()
 
       if (likeUri) {
         await unlikeMod({uri: likeUri})
@@ -176,14 +176,14 @@ export function LabelerLikeSection({
         setLikeCount(c => c + 1)
         setLikeUri(res.uri)
       }
-    } catch (e) {
+    } catch (e: any) {
       Toast.show(
         _(
           msg`There was an issue contacting the server, please check your internet connection and try again.`,
         ),
         {type: 'error'},
       )
-      ax.logger.error(`Failed to toggle labeler like`, {safeMessage: String(e)})
+      ax.logger.error(`Failed to toggle labeler like`, {message: e.message})
     }
   }, [ax, labeler, haptics, likeUri, unlikeMod, likeMod, _])
 
@@ -253,6 +253,7 @@ export function LabelerSubscribeButton({
   const t = useTheme()
   const ax = useAnalytics()
   const {_} = useLingui()
+  const {hasSession} = useSession()
   const requireAuth = useRequireAuth()
   const haptics = useHaptics()
   const {data: preferences} = usePreferencesQuery()
@@ -287,15 +288,13 @@ export function LabelerSubscribeButton({
         })
 
         ax.metric(subscribeMetric, {})
-      } catch (e) {
+      } catch (e: any) {
         reset()
-        if (e instanceof Error && e.message === 'MAX_LABELERS') {
+        if (e.message === 'MAX_LABELERS') {
           cantSubscribePrompt.open()
           return
         }
-        ax.logger.error(`Failed to subscribe to labeler`, {
-          safeMessage: String(e),
-        })
+        ax.logger.error(`Failed to subscribe to labeler`, {message: e.message})
       }
     })
 

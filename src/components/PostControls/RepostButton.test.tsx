@@ -1,4 +1,3 @@
-import {i18n} from '@lingui/core'
 import {render} from '@testing-library/react-native'
 
 import * as env from '#/env'
@@ -58,11 +57,6 @@ const props = {
   onQuote: jest.fn(),
   embeddingDisabled: false,
 }
-
-beforeAll(() => {
-  i18n.load('en', {})
-  i18n.activate('en')
-})
 
 afterEach(() => {
   jest.restoreAllMocks()

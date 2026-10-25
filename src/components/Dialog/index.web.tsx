@@ -112,7 +112,7 @@ export function Outer({
   const pressStartTarget = useRef<unknown>(null)
 
   const handleBackgroundPress = useCallback(
-    async (e: GestureResponderEvent) => {
+    (e: GestureResponderEvent) => {
       const startTarget = pressStartTarget.current
       pressStartTarget.current = null
       if (startTarget && startTarget !== e.target) return

@@ -26,9 +26,7 @@ describe('getSupportProvider', () => {
     )
     expect(getSupportProvider('https://kat.booth.pm')?.name).toBe('BOOTH')
     expect(getSupportProvider('https://skeb.jp/@kat')?.name).toBe('Skeb')
-    expect(getSupportProvider('https://www.givesendgo.com/kat')?.name).toBe(
-      'GiveSendGo',
-    )
+    expect(getSupportProvider('https://www.givesendgo.com/kat')).toBeUndefined()
     expect(
       getSupportProvider('https://www.backerkit.com/c/projects/kat/zine')?.name,
     ).toBe('BackerKit')
@@ -73,15 +71,10 @@ describe('getSupportProvider', () => {
     expect(getSupportProvider('https://throne.com/kat')?.name).toBe('Throne')
   })
 
-  // it('recognizes Substack publications and profiles', () => {
-  //   expect(getSupportProvider('https://kat.substack.com')?.name).toBe(
-  //     'Substack',
-  //   )
-  //   expect(getSupportProvider('https://substack.com/@kat')?.name).toBe(
-  //     'Substack',
-  //   )
-  //   expect(getSupportProvider('https://substack.com')).toBe(undefined)
-  // })
+  it('does not recognize excluded Substack providers', () => {
+    expect(getSupportProvider('https://kat.substack.com')).toBeUndefined()
+    expect(getSupportProvider('https://substack.com/@kat')).toBeUndefined()
+  })
 
   it('recognizes accounts on a subdomain', () => {
     expect(getSupportProvider('https://kat.itch.io')?.name).toBe('itch.io')

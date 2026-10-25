@@ -6,12 +6,10 @@ import {useRequireAuth, useSession} from '#/state/session'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {useTheme} from '#/alf'
 import {CloseQuote_Stroke2_Corner1_Rounded as QuoteIcon} from '#/components/icons/Quote'
-import {
-  Repost_Stroke2_Corner2_Rounded as RepostIcon,
-  RepostRepost_Stroke2_Corner2_Rounded as BumpRepostIcon,
-} from '#/components/icons/Repost'
+import {RepostRepost_Stroke2_Corner2_Rounded as BumpRepostIcon} from '#/components/icons/Repost'
+import {Repost_Stroke2_Corner2_Rounded as RepostIcon} from '#/components/icons/Repost'
 import * as Menu from '#/components/Menu'
-import {MetricCountLabel} from './MetricCountLabel'
+import {MetricCountLabel} from '#/components/PostControls/MetricCountLabel'
 import {PostControlButton, PostControlButtonIcon} from './PostControlButton'
 
 export interface RepostButtonProps {
@@ -31,10 +29,10 @@ export function RepostButtonMenu({
   isReposted,
   repostCount,
   onRepost,
+  onQuote,
   onBumpRepost,
   onLongPress,
   metricsDisplay = 'visible',
-  onQuote,
   big,
   embeddingDisabled,
   longPressToQuote = false,
@@ -70,7 +68,7 @@ export function RepostButtonMenu({
                   : undefined)
               }>
               <PostControlButtonIcon icon={RepostIcon} />
-              {typeof repostCount !== 'undefined' && (
+              {typeof repostCount !== 'undefined' && repostCount > 0 && (
                 <MetricCountLabel
                   display={metricsDisplay}
                   count={repostCount}
@@ -86,6 +84,15 @@ export function RepostButtonMenu({
         </Menu.Trigger>
         <Menu.Outer style={{minWidth: 170}}>
           <Menu.Group>
+            {isReposted && onBumpRepost && (
+              <Menu.Item
+                testID="repostDropdownBumpBtn"
+                label={l`Bump repost`}
+                onPress={onBumpRepost}>
+                <Menu.ItemText>{l`Bump repost`}</Menu.ItemText>
+                <Menu.ItemIcon icon={BumpRepostIcon} position="right" />
+              </Menu.Item>
+            )}
             <Menu.Item
               label={
                 isReposted
@@ -101,15 +108,6 @@ export function RepostButtonMenu({
               </Menu.ItemText>
               <Menu.ItemIcon icon={RepostIcon} position="right" />
             </Menu.Item>
-            {isReposted && onBumpRepost && (
-              <Menu.Item
-                label={l`Bump repost`}
-                testID="repostDropdownBumpBtn"
-                onPress={onBumpRepost}>
-                <Menu.ItemText>{l`Bump repost`}</Menu.ItemText>
-                <Menu.ItemIcon icon={BumpRepostIcon} position="right" />
-              </Menu.Item>
-            )}
             <Menu.Item
               disabled={embeddingDisabled}
               label={
@@ -134,7 +132,7 @@ export function RepostButtonMenu({
       label={l`Repost or quote post`}
       big={big}>
       <PostControlButtonIcon icon={RepostIcon} />
-      {typeof repostCount !== 'undefined' && (
+      {typeof repostCount !== 'undefined' && repostCount > 0 && (
         <MetricCountLabel
           display={metricsDisplay}
           count={repostCount}

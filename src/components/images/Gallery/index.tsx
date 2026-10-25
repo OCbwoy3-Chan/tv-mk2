@@ -198,9 +198,8 @@ export function Gallery({
 
   return (
     <GalleryPrimitive.Root
-      allowButtonDrag
-      scrollStyle={userStyle('wsky-post__gallery-scroll')}
       ref={galleryRef}
+      scrollStyle={userStyle('wsky-post__gallery-scroll')}
       label={l`Image gallery, ${images.length} images`}
       onIndexChange={(index, previousIndex) =>
         debouncedSwipeMetric(previousIndex, index)

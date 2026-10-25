@@ -378,13 +378,21 @@ function SubmitButton({
       {loading ? (
         <Loader
           size="md"
-          fill={accentForeground(t, t.palette.primary_500)}
+          fill={
+            disabled
+              ? t.atoms.text_contrast_medium.color
+              : accentForeground(t, t.palette.primary_500)
+          }
           style={[a.mb_2xs]}
         />
       ) : (
         <PaperPlaneIcon
           size="md"
-          fill={accentForeground(t, t.palette.primary_500)}
+          fill={
+            disabled
+              ? t.atoms.text_contrast_medium.color
+              : accentForeground(t, t.palette.primary_500)
+          }
           style={[a.relative, a.z_10, a.mb_2xs]}
         />
       )}

@@ -20,8 +20,6 @@ import {
   type CommonNavigatorParams,
   type NativeStackScreenProps,
 } from '#/lib/routes/types'
-import {getShapeStyle} from '#/lib/shapes'
-import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   moderationOptsOverrideContext,
   useModerationOpts,
@@ -89,8 +87,6 @@ export const DebugModScreen = ({}: NativeStackScreenProps<
   const [view, setView] = useState<string[]>(['post'])
   const labelStrings = useGlobalLabelStrings()
   const {currentAccount} = useSession()
-
-  const enableSquareButtons = useEnableSquareButtons()
 
   const isTargetMe =
     scenario[0] === 'label' && scenarioSwitches.includes('targetMe')
@@ -454,11 +450,7 @@ export const DebugModScreen = ({}: NativeStackScreenProps<
                       <View
                         style={[
                           a.border,
-                          getShapeStyle(
-                            enableSquareButtons,
-                            a.rounded_sm,
-                            a.rounded_full,
-                          ),
+                          a.rounded_full,
                           a.px_md,
                           a.py_sm,
                           t.atoms.border_contrast_medium,
@@ -647,7 +639,6 @@ function CustomLabelForm({
   >
 }) {
   const t = useTheme()
-  const enableSquareButtons = useEnableSquareButtons()
   return (
     <View
       style={[
@@ -667,7 +658,7 @@ function CustomLabelForm({
         <View
           style={[
             a.border,
-            getShapeStyle(enableSquareButtons, a.rounded_sm, a.rounded_full),
+            a.rounded_full,
             a.px_md,
             a.py_sm,
             t.atoms.border_contrast_medium,
@@ -703,7 +694,7 @@ function CustomLabelForm({
         <View
           style={[
             a.border,
-            getShapeStyle(enableSquareButtons, a.rounded_sm, a.rounded_full),
+            a.rounded_full,
             a.px_md,
             a.py_sm,
             t.atoms.border_contrast_medium,

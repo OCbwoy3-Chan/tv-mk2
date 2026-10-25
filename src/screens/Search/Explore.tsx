@@ -833,38 +833,43 @@ export function Explore({
         }
         case 'feed': {
           return (
-            <View style={[a.flex_col, a.px_lg, a.py_lg]}>
-              <FeedCard.Default
-                view={item.feed}
-                onPress={() => {
-                  if (!item.recommendation) return
-                  ax.metric('feed:suggestion:press', {
-                    feedUrl: item.feed.uri,
-                    logContext: 'Explore',
-                    recId: item.recommendation.recId,
-                    position: item.recommendation.position,
-                  })
-                }}
-                onSavedFeedChange={action => {
-                  if (!item.recommendation?.recId) return
-                  const payload = {
-                    feedUrl: item.feed.uri,
-                    logContext: 'Explore' as const,
-                    recId: item.recommendation.recId,
-                    position: item.recommendation.position,
-                  }
-                  if (action === 'save') {
-                    ax.metric('feed:save', payload)
-                  } else if (action === 'unsave') {
-                    ax.metric('feed:unsave', payload)
-                  } else if (action === 'pin') {
-                    ax.metric('feed:pin', payload)
-                  } else {
-                    ax.metric('feed:unpin', payload)
-                  }
-                }}
-              />
-            </View>
+            <FeedCard.Default
+              view={item.feed}
+              style={[
+                a.flex_col,
+                a.px_lg,
+                a.py_lg,
+                a.border_t,
+                t.atoms.border_contrast_low,
+              ]}
+              onPress={() => {
+                if (!item.recommendation) return
+                ax.metric('feed:suggestion:press', {
+                  feedUrl: item.feed.uri,
+                  logContext: 'Explore',
+                  recId: item.recommendation.recId,
+                  position: item.recommendation.position,
+                })
+              }}
+              onSavedFeedChange={action => {
+                if (!item.recommendation?.recId) return
+                const payload = {
+                  feedUrl: item.feed.uri,
+                  logContext: 'Explore' as const,
+                  recId: item.recommendation.recId,
+                  position: item.recommendation.position,
+                }
+                if (action === 'save') {
+                  ax.metric('feed:save', payload)
+                } else if (action === 'unsave') {
+                  ax.metric('feed:unsave', payload)
+                } else if (action === 'pin') {
+                  ax.metric('feed:pin', payload)
+                } else {
+                  ax.metric('feed:unpin', payload)
+                }
+              }}
+            />
           )
         }
         case 'starterPack': {

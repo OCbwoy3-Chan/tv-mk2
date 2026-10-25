@@ -19,8 +19,7 @@
       },
       "env": {
         "EXPO_PUBLIC_ENV": "production",
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
-        "DISABLE_UPDATES": "1"
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     },
     "preview": {

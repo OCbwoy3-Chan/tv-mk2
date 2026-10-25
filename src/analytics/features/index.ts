@@ -1,9 +1,9 @@
 import {MMKV} from 'react-native-mmkv'
 import {setPolyfills} from '@growthbook/growthbook'
+import {GrowthBook} from '@growthbook/growthbook-react'
 import {type I18n} from '@lingui/core'
 import {msg} from '@lingui/core/macro'
 
-import {createGrowthBook} from '#/analytics/features/client'
 import {Features} from '#/analytics/features/types'
 import {getNavigationMetadata, type Metadata} from '#/analytics/metadata'
 import * as env from '#/env'
@@ -31,18 +31,11 @@ setPolyfills({
  */
 export type FeatureFetchStrategy = 'prefer-low-latency' | 'prefer-fresh-gates'
 
-const sdkOptions = {
+export const features = new GrowthBook({
   apiHost: env.GROWTHBOOK_API_HOST,
   clientKey: env.GROWTHBOOK_CLIENT_KEY,
   enableDevMode: env.IS_INTERNAL,
-}
-const bootstrap = undefined
-
-/**
- * Shared SDK instance. Assumes a single active account context, with attributes
- * supplied by AnalyticsFeaturesContext before its children evaluate features.
- */
-export const features = createGrowthBook(sdkOptions, bootstrap)
+})
 
 /**
  * Kept as a resolved promise so existing startup code can await it without
@@ -50,12 +43,15 @@ export const features = createGrowthBook(sdkOptions, bootstrap)
  */
 export const init = Promise.resolve()
 
-let previousOverrides = '{}'
 export function setForcedFeatureValues(overrides?: Record<string, boolean>) {
-  const serialized = JSON.stringify(overrides ?? {})
-  if (serialized === previousOverrides) return
-  previousOverrides = serialized
-  features.setForcedFeatures(new Map(Object.entries(overrides ?? {})))
+  const next = new Map(Object.entries(overrides ?? {}))
+  const previous = features.getForcedFeatures()
+  if (
+    next.size === previous.size &&
+    [...next].every(([key, value]) => previous.get(key) === value)
+  )
+    return
+  features.setForcedFeatures(next)
 }
 
 /**

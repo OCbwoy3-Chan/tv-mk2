@@ -35,6 +35,9 @@ export type ItemContextType = {
 export type OuterProps = React.PropsWithChildren<
   ViewStyleProp & {
     showCancel?: boolean
+    side?: 'top' | 'right' | 'bottom' | 'left'
+    align?: 'start' | 'center' | 'end'
+    label?: string
     /**
      * iOS presentation policy. Defaults to 'adaptive'; use 'always' to keep a
      * popover on iPhone, or 'never' to use a sheet. Ignored on Android and web.

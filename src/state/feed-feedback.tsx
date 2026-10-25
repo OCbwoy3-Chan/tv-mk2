@@ -20,6 +20,7 @@ import {getItemsForFeedback} from '#/view/com/posts/PostFeed'
 import {useAnalytics} from '#/analytics'
 import {app} from '#/lexicons'
 import {useAppviewClient} from './session'
+import {useAgent} from './session'
 
 export const FEEDBACK_FEEDS = [...PROD_FEEDS, ...STAGING_FEEDS]
 
@@ -63,6 +64,7 @@ export function useFeedFeedback(
   const ax = useAnalytics()
   const logger = ax.logger.useChild(ax.logger.Context.FeedFeedback)
   const client = useAppviewClient()
+  const agent = useAgent()
 
   const feed =
     !!feedSourceInfo && isFeedSourceFeedInfo(feedSourceInfo)
@@ -173,7 +175,14 @@ export function useFeedFeedback(
     )
     throttledFlushAggregatedStats()
     logger.debug('flushed')
-  }, [client, throttledFlushAggregatedStats, proxyDid, enabled, feed, logger])
+  }, [
+	client,
+	throttledFlushAggregatedStats,
+	proxyDid,
+	enabled,
+	feed,
+	logger
+])
 
   const sendToFeed = useMemo(
     () =>
@@ -234,7 +243,11 @@ export function useFeedFeedback(
         sendToFeed()
       }
     },
-    [enabled, sendToFeed, logger],
+    [
+	enabled,
+	sendToFeed,
+	logger
+],
   )
 
   return useMemo(() => {

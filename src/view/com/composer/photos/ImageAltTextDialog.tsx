@@ -1,5 +1,7 @@
-import {useCallback, useRef, useState} from 'react'
-import {ActivityIndicator, type ImageStyle, View} from 'react-native'
+import {useRef, useState} from 'react'
+import {useCallback} from 'react'
+import {type ImageStyle, View} from 'react-native'
+import {ActivityIndicator} from 'react-native'
 import {EncodingType, readAsStringAsync} from 'expo-file-system/legacy'
 import {Image} from 'expo-image'
 import {msg} from '@lingui/core/macro'
@@ -82,7 +84,6 @@ const ImageAltTextInner = ({
   const [altText, setAltText] = useState(image.alt)
   const {_, i18n} = useLingui()
   const t = useTheme()
-
   const [isGenerating, setIsGenerating] = useState(false)
   const [generateError, setGenerateError] = useState<string | null>(null)
 
@@ -131,9 +132,9 @@ const ImageAltTextInner = ({
 
       const generated = await generateAltText(aiConfig, base64, mimeType)
 
-      const nextAltText = enforceLen(generated, MAX_ALT_TEXT, true)
-      setAltText(nextAltText)
-      onChangeText(nextAltText)
+      const text = enforceLen(generated, MAX_ALT_TEXT, true)
+      setAltText(text)
+      onChangeText(text)
     } catch (err) {
       setGenerateError(
         err instanceof Error ? err.message : 'Failed to generate alt text',
@@ -141,7 +142,7 @@ const ImageAltTextInner = ({
     } finally {
       setIsGenerating(false)
     }
-  }, [aiConfig, image, onChangeText])
+  }, [aiConfig, image, setAltText, onChangeText])
 
   return (
     <Dialog.ScrollableInner label={_(msg`Add alt text`)}>

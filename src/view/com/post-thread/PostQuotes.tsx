@@ -24,6 +24,20 @@ import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {List} from '../util/List'
 
+function renderItem({
+  item,
+  index,
+}: {
+  item: {
+    post: app.bsky.feed.defs.PostView
+    moderation: ModerationDecision
+    record: app.bsky.feed.post.Main
+  }
+  index: number
+}) {
+  return <Post post={item.post} hideTopBorder={index === 0} />
+}
+
 function keyExtractor(item: {
   post: app.bsky.feed.defs.PostView
   moderation: ModerationDecision
@@ -60,17 +74,17 @@ function ExtractedQuotedPost({post}: {post: app.bsky.feed.defs.PostView}) {
 
 export function PostQuotes({
   uri,
+  quotedPost,
+  isQuotedPostExtracted,
   quoteSort,
   active,
-  quotedPost,
-  isQuotedPostExtracted = false,
 }: {
   uri: string
+  quotedPost?: app.bsky.feed.defs.PostView
+  isQuotedPostExtracted: boolean
   quoteSort: QuotesSort
   /** When false (an unselected pager tab), the list doesn't fetch yet. */
   active: boolean
-  quotedPost?: app.bsky.feed.defs.PostView
-  isQuotedPostExtracted?: boolean
 }) {
   const {_} = useLingui()
   const initialNumToRender = useInitialNumToRender()

@@ -453,7 +453,6 @@ module.exports = function (_config) {
                 './assets/fonts/inter/Inter-SemiBoldItalic.otf',
                 './assets/fonts/inter/Inter-Bold.otf',
                 './assets/fonts/inter/Inter-BoldItalic.otf',
-                './assets/fonts/google-sans-flex/GoogleSansFlex-Regular.ttf',
                 './assets/fonts/google-sans-flex/GoogleSansFlex_9pt-Thin.ttf',
                 './assets/fonts/google-sans-flex/GoogleSansFlex_9pt-ExtraLight.ttf',
                 './assets/fonts/google-sans-flex/GoogleSansFlex_9pt-Light.ttf',
@@ -667,7 +666,7 @@ module.exports = function (_config) {
         },
       },
       experiments: {
-        baseUrl: '',
+        baseUrl: '/static',
         buildCacheProvider: 'eas',
       },
     },

@@ -31,7 +31,7 @@ jest.mock('#/lib/appState', () => ({
 jest.mock('#/env', () => ({
   ENV: 'test',
   IS_NATIVE: true,
-  METRICS_API_HOST: 'https://metrics.example.test',
+  METRICS_API_HOST: 'https://test.metrics.api',
 }))
 jest.mock('#/logger/transports/sentry', () => ({sentryTransport: jest.fn()}))
 jest.mock('#/logger/transports/console', () => ({consoleTransport: jest.fn()}))

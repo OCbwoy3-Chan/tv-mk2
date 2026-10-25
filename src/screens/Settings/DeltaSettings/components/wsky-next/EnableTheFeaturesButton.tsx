@@ -9,7 +9,7 @@ const enabledFeatures = new Set<string>([
   Features.PostThreadKnownLikersEnable,
   Features.FollowSortEnable,
   Features.ModerationInboxEnable,
-  Features.AtmosphereExploreEnable,
+  Features.AtmosphereScreenEnable,
   Features.NotificationsV2Enable,
   Features.ProfileLinksEnable,
   Features.StarterPacksConfig,

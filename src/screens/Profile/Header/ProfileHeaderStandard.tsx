@@ -14,10 +14,6 @@ import {useHaptics} from '#/lib/haptics'
 import {isFollowedByMetricHidden} from '#/lib/metrics-display'
 import {sanitizeDisplayName} from '#/lib/strings/display-names'
 import {formatJoinDate, niceDate} from '#/lib/strings/time'
-import {
-  sanitizeWebsiteForDisplay,
-  sanitizeWebsiteForLink,
-} from '#/lib/strings/website'
 import {logger} from '#/logger'
 import {type Shadow, useProfileShadow} from '#/state/cache/profile-shadow'
 import {useShowGermDmButton} from '#/state/preferences'
@@ -49,13 +45,11 @@ import {
   Check_Stroke2_Corner0_Rounded as Check,
   DoubleCheck_Stroke2_Corner0_Rounded as DoubleCheck,
 } from '#/components/icons/Check'
-import {Globe_Stroke2_Corner0_Rounded as Globe} from '#/components/icons/Globe'
 import {PlusLarge_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {
   KnownFollowers,
   shouldShowKnownFollowers,
 } from '#/components/KnownFollowers'
-import {Link} from '#/components/Link'
 import * as Prompt from '#/components/Prompt'
 import {PronounPill} from '#/components/PronounPill'
 import {RichText} from '#/components/RichText'
@@ -227,6 +221,24 @@ let ProfileHeaderStandard = ({
                     />
                   </View>
                 ) : undefined}
+
+                <ProfileHeaderLinks
+                  profile={profile}
+                  hidden={!!moderation.ui('profileView').blur}
+                  germButton={
+                    showGermDmButton &&
+                    isGermButtonShown(
+                      profile.associated?.germ,
+                      profile,
+                      currentAccount?.did,
+                    ) ? (
+                      <GermButton
+                        germ={profile.associated.germ}
+                        profile={profile}
+                      />
+                    ) : undefined
+                  }
+                />
               </View>
             )}
           </View>
@@ -242,7 +254,8 @@ let ProfileHeaderStandard = ({
               // Keep above Followed by / tabs so the join-date tooltip paints correctly
               web({position: 'relative', zIndex: 2}),
             ]}>
-            <PronounPill pronouns={profile.pronouns} showLabel />
+            <PronounPill pronouns={profile.pronouns} showIcon />
+
             <View style={[a.flex_row, a.align_center, a.gap_xs]}>
               <CalendarDays
                 width={tokens.space.lg}
@@ -281,19 +294,6 @@ let ProfileHeaderStandard = ({
               )}
             </View>
           </View>
-          <ProfileHeaderLinks
-            profile={profile}
-            hidden={!!moderation.ui('profileView').blur}
-            germButton={
-              isGermButtonShown(
-                profile.associated?.germ,
-                profile,
-                currentAccount?.did,
-              ) ? (
-                <GermButton germ={profile.associated.germ} profile={profile} />
-              ) : undefined
-            }
-          />
 
           {!isPlaceholderProfile &&
             !isBlockedUser &&
@@ -364,7 +364,7 @@ export function HeaderStandardButtons({
   const {_} = useLingui()
   const ax = useAnalytics()
   const {accounts, hasSession, currentAccount} = useSession()
-  const haptics = useHaptics()
+  const playHaptic = useHaptics()
   const requireAuth = useRequireAuth()
   const [queueFollow, queueUnfollow] = useProfileFollowMutationQueue(
     profile,
@@ -447,7 +447,7 @@ export function HeaderStandardButtons({
   }
 
   const onPressFollow = () => {
-    haptics.confirm()
+    playHaptic.confirm()
     requireAuth(() => {
       if (confirmFollow) {
         setConfirmationAction('follow')
@@ -459,7 +459,7 @@ export function HeaderStandardButtons({
   }
 
   const onPressUnfollow = () => {
-    haptics.confirm()
+    playHaptic.confirm()
     setConfirmationAction('unfollow')
     followPromptControl.open()
   }
@@ -510,7 +510,7 @@ export function HeaderStandardButtons({
             size="small"
             color="secondary"
             onPress={() => {
-              haptics.tap()
+              playHaptic.tap()
               editProfileControl.open()
             }}
             label={_(msg`Edit profile`)}>
@@ -531,7 +531,7 @@ export function HeaderStandardButtons({
               // overlap the neighboring buttons' own targets
               hitSlop={{top: 6, bottom: 6, left: 2, right: 2}}
               onPress={() => {
-                haptics.tap()
+                playHaptic.tap()
                 ax.metric('invite:dialog:open', {logContext: 'ProfileHeader'})
                 inviteFriendsControl.open()
               }}

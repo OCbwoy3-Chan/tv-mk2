@@ -295,8 +295,6 @@ func serve(cctx *cli.Context) error {
 		}
 	})
 
-	e.GET("/_expo/*", echo.WrapHandler(staticHandler))
-	e.GET("/assets/*", echo.WrapHandler(staticHandler))
 	e.GET("/iframe/*", echo.WrapHandler(staticHandler))
 	e.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", staticHandler)), func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

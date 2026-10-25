@@ -27,6 +27,11 @@ export function useKeyboardHandlers({
       if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return
       const el = scrollRef.current?.getScrollableNode() as HTMLElement | null
       if (!el || !el.contains(document.activeElement)) return
+      let focused = document.activeElement as HTMLElement | null
+      while (focused && focused !== el) {
+        if (focused.getAttribute?.('data-carousel-scroll') != null) return
+        focused = focused.parentElement
+      }
       // Text fields, selects and sliders use the arrow keys themselves
       if (
         isEditableTarget(e.target) ||

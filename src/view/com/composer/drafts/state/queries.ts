@@ -84,9 +84,7 @@ export async function loadDraftMedia(
     if (post.embedImages) {
       for (const img of post.embedImages) {
         try {
-          const url = await Promise.resolve(
-            storage.loadMediaFromLocal(img.localRef.path),
-          )
+          const url = await storage.loadMediaFromLocal(img.localRef.path)
           loadedMedia.set(img.localRef.path, url)
         } catch (e: any) {
           logger.error('Failed to load draft image', {
@@ -101,9 +99,7 @@ export async function loadDraftMedia(
       for (const item of post.embedGallery.items) {
         if (!bsky.isType(app.bsky.draft.defs.draftEmbedImage, item)) continue
         try {
-          const url = await Promise.resolve(
-            storage.loadMediaFromLocal(item.localRef.path),
-          )
+          const url = await storage.loadMediaFromLocal(item.localRef.path)
           loadedMedia.set(item.localRef.path, url)
         } catch (e) {
           logger.error('Failed to load draft gallery image', {
@@ -117,9 +113,7 @@ export async function loadDraftMedia(
     if (post.embedVideos) {
       for (const vid of post.embedVideos) {
         try {
-          const url = await Promise.resolve(
-            storage.loadMediaFromLocal(vid.localRef.path),
-          )
+          const url = await storage.loadMediaFromLocal(vid.localRef.path)
           loadedMedia.set(vid.localRef.path, url)
         } catch (e: any) {
           logger.error('Failed to load draft video', {
@@ -267,7 +261,7 @@ export function useDeleteDraftMutation() {
       // Delete from server first - if this fails, we keep local media for retry
       await client.call(app.bsky.draft.deleteDraft, {id: draftId})
     },
-    onSuccess: (_, {draft}) => {
+    onSuccess: async (_, {draft}) => {
       // Only delete local media after server deletion succeeds
       for (const post of draft.posts) {
         if (post.embedImages) {
@@ -320,7 +314,7 @@ export function useCleanupPublishedDraftMutation() {
       })
       logger.debug('deleted draft from server', {draftId})
     },
-    onSuccess: (_, {originalLocalRefs}) => {
+    onSuccess: async (_, {originalLocalRefs}) => {
       // Delete all local media files for this draft
       for (const localRef of originalLocalRefs) {
         logger.debug('deleting media file after publish', {

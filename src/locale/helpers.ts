@@ -12,8 +12,6 @@ import {
   LANGUAGES_MAP_CODE3,
 } from './languages'
 
-export {findSupportedAppLanguage} from './languages'
-
 export function code2ToCode3(lang: string): string {
   if (lang.length === 2) {
     return LANGUAGES_MAP_CODE2[lang]?.code3 || lang
@@ -310,12 +308,8 @@ export function fixLegacyLanguageCode(code: string | null): string | null {
   return code
 }
 
-/**
- * Find the first language supported by our translation infra. Values should be
- * in order of preference, and match the values of {@link AppLanguage}.
- *
- * If no match, returns `en`.
- */
+export {findSupportedAppLanguage} from './languages'
+
 /**
  * Gets region name for a given country code and language.
  *

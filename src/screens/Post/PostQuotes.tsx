@@ -56,11 +56,6 @@ export const PostQuotesScreen = ({route, navigation}: Props) => {
 
   useSetTitle(profile ? l`Post by @${profile.handle}` : undefined)
 
-  let quoteCount
-  if (post) {
-    quoteCount = post.quoteCount
-  }
-
   const header = (
     <Layout.Header.Outer noBottomBorder>
       <Layout.Header.BackButton />
@@ -71,7 +66,11 @@ export const PostQuotesScreen = ({route, navigation}: Props) => {
               <Trans>Quotes</Trans>
             </Layout.Header.TitleText>
             <Layout.Header.SubtitleText>
-              <Plural value={quoteCount ?? 0} one="# quote" other="# quotes" />
+              <Plural
+                value={post.quoteCount ?? 0}
+                one="# quote"
+                other="# quotes"
+              />
             </Layout.Header.SubtitleText>
           </>
         )}
@@ -113,6 +112,7 @@ export const PostQuotesScreen = ({route, navigation}: Props) => {
       </Layout.Header.Slot>
     </Layout.Header.Outer>
   )
+
   return (
     <Layout.Screen>
       <SortedPostQuotes
@@ -136,9 +136,9 @@ function SortedPostQuotes({
   isQuotedPostExtracted,
 }: {
   uri: string
-  quotedPost?: React.ComponentProps<typeof PostQuotesComponent>['quotedPost']
-  isQuotedPostExtracted: boolean
   header: React.ReactNode
+  quotedPost: React.ComponentProps<typeof PostQuotesComponent>['quotedPost']
+  isQuotedPostExtracted: boolean
 }) {
   const {t: l} = useLingui()
   const ax = useAnalytics()
@@ -174,9 +174,9 @@ function SortedPostQuotes({
           <PostQuotesTab
             uri={uri}
             quoteSort="latest"
-            active={activeTab === 1}
             quotedPost={quotedPost}
             isQuotedPostExtracted={isQuotedPostExtracted}
+            active={activeTab === 1}
           />
         ),
       },
@@ -211,7 +211,7 @@ function PostQuotesTab({
   uri: string
   quoteSort: QuotesSort
   active: boolean
-  quotedPost?: React.ComponentProps<typeof PostQuotesComponent>['quotedPost']
+  quotedPost: React.ComponentProps<typeof PostQuotesComponent>['quotedPost']
   isQuotedPostExtracted: boolean
 }) {
   const metadata = utils.useMeta({postQuotes: {uri, quoteSort}})

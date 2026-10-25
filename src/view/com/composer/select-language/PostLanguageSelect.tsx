@@ -115,7 +115,6 @@ export function PostLanguageSelect({
                       fromPostLanguages(currentLanguages) === historyItem
                     }
                   />
-                  <Menu.ItemText>{langName}</Menu.ItemText>
                 </Menu.Item>
               )
             })}

@@ -265,7 +265,7 @@ let DrawerContent = ({}: React.PropsWithoutRef<{}>): React.ReactNode => {
   const {hasSession, currentAccount} = useSession()
   const inviteFriendsControl = useDialogControl()
   const isAtmosphereExploreEnabled = ax.features.enabled(
-    ax.features.AtmosphereExploreEnable,
+    ax.features.AtmosphereScreenEnable,
   )
 
   // events
@@ -830,14 +830,14 @@ function MenuItem({
   icon,
   label,
   count,
-  bold,
   hasNew,
+  bold,
   beta,
   onPress,
 }: MenuItemProps) {
   const t = useTheme()
-  const {t: l} = useLingui()
   const enableSquareButtons = useEnableSquareButtons()
+  const {t: l} = useLingui()
   return (
     <Button
       testID={`menuItemButton-${label}`}

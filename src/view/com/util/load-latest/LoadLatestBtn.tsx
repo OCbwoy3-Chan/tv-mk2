@@ -18,7 +18,8 @@ import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {ArrowTop_Stroke2_Corner0_Rounded as ArrowIcon} from '#/components/icons/Arrow'
 import {CENTER_COLUMN_OFFSET} from '#/components/Layout'
 import {SubtleHover} from '#/components/SubtleHover'
-import {IS_NATIVE, IS_WEB} from '#/env'
+import {IS_WEB} from '#/env'
+import {IS_NATIVE} from '#/env'
 
 export function LoadLatestBtn({
   onPress,

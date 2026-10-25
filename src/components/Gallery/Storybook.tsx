@@ -24,12 +24,12 @@ function asUri(value: string) {
   return value as `${string}:${string}`
 }
 
-const kawaii = Asset.fromModule(require('../../../assets/logo.png')).uri // 1920x1080
+const kawaii = Asset.fromModule(require('../../../assets/kawaii.avif')).uri // 1920x1080
 const kawaiiSmol = Asset.fromModule(
-  require('../../../assets/logo.png'),
+  require('../../../assets/kawaii_smol.avif'),
 ).uri // 246x138
 const welcome = Asset.fromModule(
-  require('../../../assets/logo.png'),
+  require('../../../assets/images/welcome-modal-bg.webp'),
 ).uri // 1432x1025
 
 /**
@@ -51,6 +51,7 @@ export function GalleryStorybook() {
       <ImageContent />
       <ImageAdapter />
       <MixedContent />
+      <StretchingContent />
       <InteractiveChildren />
       <ChangingContent />
       <ConstrainedAndBleeding />
@@ -305,6 +306,88 @@ function MixedContent() {
           80.
         </Trans>
       </CaptionText>
+    </Section>
+  )
+}
+
+/** Equal-height cards that can shrink again when content changes or leaves. */
+function StretchingContent() {
+  const t = useTheme()
+  const {t: l} = useLingui()
+  const [expanded, setExpanded] = useState(true)
+  const [showTallest, setShowTallest] = useState(true)
+
+  return (
+    <Section
+      testID="galleryStorybook-stretch"
+      titleText={<Trans>Stretching cards</Trans>}
+      descriptionText={
+        <Trans>
+          Cards stretch to the tallest sibling. Shortening or removing the tall
+          card should let the whole row shrink again.
+        </Trans>
+      }>
+      <View style={[a.flex_row, a.flex_wrap, a.gap_sm]}>
+        <Button
+          label={l`Toggle tall content`}
+          testID="galleryStorybook-stretch-resize"
+          color="secondary"
+          size="small"
+          onPress={() => setExpanded(value => !value)}>
+          <ButtonText>
+            <Trans>Toggle tall content</Trans>
+          </ButtonText>
+        </Button>
+        <Button
+          label={l`Toggle tallest card`}
+          testID="galleryStorybook-stretch-remove"
+          color="secondary"
+          size="small"
+          onPress={() => setShowTallest(value => !value)}>
+          <ButtonText>
+            <Trans>Toggle tallest card</Trans>
+          </ButtonText>
+        </Button>
+      </View>
+      <Gallery.Root
+        stretch
+        label={l`Equal-height cards`}
+        testID="galleryStorybook-stretch-root">
+        {[0, 1, ...(showTallest ? [2] : [])].map(index => (
+          <Gallery.Item
+            key={index}
+            testID={`galleryStorybook-stretch-${index}`}>
+            <View
+              testID={`galleryStorybook-stretch-card-${index}`}
+              style={[
+                a.flex_grow,
+                a.gap_sm,
+                a.p_md,
+                a.rounded_md,
+                t.atoms.bg_contrast_25,
+                {width: 160},
+              ]}>
+              <Text style={[a.font_bold]}>
+                <Trans>Card {index}</Trans>
+              </Text>
+              {index === 1 ? (
+                <Text>
+                  <Trans>A little more content than the first card.</Trans>
+                </Text>
+              ) : index === 2 && expanded ? (
+                <Text>
+                  <Trans>
+                    This card has enough text to wrap over many lines. Its
+                    siblings should stretch to match its height without
+                    stretching any images or imposing a fixed height. When this
+                    text disappears, all of the cards should shrink again.
+                  </Trans>
+                </Text>
+              ) : null}
+            </View>
+          </Gallery.Item>
+        ))}
+      </Gallery.Root>
     </Section>
   )
 }

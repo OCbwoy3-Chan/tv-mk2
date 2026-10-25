@@ -15,7 +15,7 @@ import {atoms as a, useTheme} from '#/alf'
 import {Heart2_Stroke2_Corner0_Rounded as HeartIconOutline} from '#/components/icons/Heart2'
 import {Heart2_Filled_Stroke2_Corner0_Rounded as HeartIconFilled} from '#/components/icons/Heart2'
 import {Reply_Stroke2_Corner0_Rounded as Bubble} from '#/components/icons/Reply'
-import {Repost_Stroke2_Corner2_Rounded as Repost} from '#/components/icons/Repost'
+import {Repost_Stroke2_Corner3_Rounded as Repost} from '#/components/icons/Repost'
 
 export function LoadingPlaceholder({
   width,

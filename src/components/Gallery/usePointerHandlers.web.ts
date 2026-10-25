@@ -50,8 +50,7 @@ export function usePointerHandlers({
   onSettle,
   itemCount,
   resetKey,
-  allowButtonDrag = false,
-}: NavigationHandlerArgs & {allowButtonDrag?: boolean}) {
+}: NavigationHandlerArgs) {
   useEffect(() => {
     if (itemCount <= 1) return
 
@@ -71,9 +70,7 @@ export function usePointerHandlers({
     let overscrollX = 0
 
     el.style.cursor = 'grab'
-    // Mark so nested carousels (e.g. image gallery inside repost carousel)
-    // can detect each other and avoid stealing gestures.
-    el.dataset.carouselScroll = ''
+    el.setAttribute('data-carousel-scroll', '')
 
     const clearOverscroll = () => {
       overscrollX = 0
@@ -90,42 +87,28 @@ export function usePointerHandlers({
       if (target?.closest?.('img, a')) e.preventDefault()
     }
 
-    const onMouseDown = (e: MouseEvent) => {
-      if (e.button !== 0 || e.defaultPrevented) return
-      // Leave text fields, selects and sliders to behave normally
-      if (isEditableTarget(e.target)) return
-      const target = e.target
-      if (!(target instanceof Element)) return
-
-      /*
-       * Don't hijack form controls (volume slider, etc.). Image carousel tiles
-       * are exposed as accessible buttons, so that carousel opts into using
-       * buttons as drag surfaces. Post-drag click suppression below keeps a
-       * swipe from activating the image.
-       */
-      const blockedSelector = allowButtonDrag
-        ? 'input, textarea, select, [role="slider"], [data-no-carousel-drag]'
-        : 'input, textarea, select, button, [role="slider"], [role="button"], [data-no-carousel-drag]'
-      if (target.closest(blockedSelector)) {
-        return
-      }
-
-      /*
-       * If a nested carousel scroll surface sits between the target and this
-       * node, let that carousel own the gesture (inner media gallery vs outer
-       * repost carousel).
-       */
-      let node: Element | null = target
+    const isNestedGalleryTarget = (target: EventTarget | null) => {
+      let node = target as HTMLElement | null
       while (node && node !== el) {
-        if (
-          node instanceof HTMLElement &&
-          node !== el &&
-          node.dataset.carouselScroll != null
-        ) {
-          return
-        }
+        if (node.getAttribute?.('data-carousel-scroll') != null) return true
         node = node.parentElement
       }
+      return false
+    }
+
+    const onMouseDown = (e: MouseEvent) => {
+      if (
+        e.button !== 0 ||
+        e.defaultPrevented ||
+        isNestedGalleryTarget(e.target)
+      )
+        return
+      // Leave text fields, selects and sliders to behave normally
+      if (
+        isEditableTarget(e.target) ||
+        (e.target as HTMLElement | null)?.closest?.('[data-no-carousel-drag]')
+      )
+        return
 
       // Cancel any in-progress tween
       if (stopTween) {
@@ -315,7 +298,12 @@ export function usePointerHandlers({
      * Listener must be non-passive so preventDefault is honored.
      */
     const onWheel = (e: WheelEvent) => {
-      if (!IS_WEB_SAFARI) return
+      if (
+        !IS_WEB_SAFARI ||
+        e.defaultPrevented ||
+        isNestedGalleryTarget(e.target)
+      )
+        return
       // Only act on predominantly-horizontal scrolls. Vertical-dominant events
       // are page scroll and must not be swallowed.
       if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
@@ -357,9 +345,9 @@ export function usePointerHandlers({
       window.removeEventListener('mouseup', onMouseUp)
       if (stopTween) stopTween()
       clearOverscroll()
+      el.removeAttribute('data-carousel-scroll')
       el.style.cursor = ''
       el.style.userSelect = ''
-      delete el.dataset.carouselScroll
     }
   }, [
     scrollRef,
@@ -369,6 +357,5 @@ export function usePointerHandlers({
     onSettle,
     itemCount,
     resetKey,
-    allowButtonDrag,
   ])
 }

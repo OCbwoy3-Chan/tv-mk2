@@ -15,7 +15,6 @@ trustPolicyIgnoreAfter: 10080 # 7 days, default: undefined
 pmOnFail: download # run the pnpm version pinned in devEngines; package.json keeps onFail: warn because npm/npx read it too
 overrides:
   '@atproto/oauth-client': '0.8.4'
-  '@atproto/oauth-client-expo': '0.1.12'
   '@react-native/babel-preset': '0.88.0'
   '@react-native/normalize-colors': '0.88.0'
   '@expo/image-utils': '0.12.5'
@@ -42,7 +41,6 @@ patchedDependencies:
   '@atproto/oauth-client@0.8.4': patches/@atproto__oauth-client@0.8.4.patch
   '@expo/cli@58.1.14': patches/@expo__cli@58.1.14.patch
   '@formatjs/bigdecimal@0.2.5': patches/@formatjs__bigdecimal@0.2.5.patch
-  '@react-native/jest-preset@0.88.0': patches/@react-native__jest-preset@0.88.0.patch
   '@sentry/expo-upload-sourcemaps@8.26.0': patches/@sentry__expo-upload-sourcemaps@8.26.0.patch
   'expo-image@58.0.15': patches/expo-image@58.0.15.patch
   'expo-media-library@58.0.10': patches/expo-media-library@58.0.10.patch
@@ -52,7 +50,6 @@ patchedDependencies:
   expo@58.0.14: patches/expo@58.0.14.patch
   'metro-runtime@0.87.1': patches/metro-runtime@0.87.1.patch
   'metro@0.87.1': patches/metro@0.87.1.patch
-  react-native-nano-icons@1.0.1: patches/react-native-nano-icons@1.0.1.patch
   react-native-pager-view@9.0.9: patches/react-native-pager-view@9.0.9.patch
   react-native-reanimated@4.7.1: patches/react-native-reanimated@4.7.1.patch
   react-native-screens@4.30.0: patches/react-native-screens@4.30.0.patch

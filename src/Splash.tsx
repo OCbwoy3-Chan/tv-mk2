@@ -13,7 +13,7 @@ import * as SplashScreen from 'expo-splash-screen'
 
 import {Logotype} from '#/view/icons/Logotype'
 import {atoms as a, useTheme} from '#/alf'
-import {Logomark} from './view/icons/Logomark'
+import { Logomark } from './view/icons/Logomark'
 
 export const Logo = Logomark
 

@@ -224,7 +224,7 @@ export function StepInfo({
             <Divider style={[a.mb_xl]} />
           </View>
         )}
-        {state.error && (
+        {!!state.error && (
           <Admonition.Admonition type="error">
             {state.error}
           </Admonition.Admonition>

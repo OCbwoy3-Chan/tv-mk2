@@ -36,7 +36,6 @@ export function useModerationOpts() {
 }
 
 export function Provider({children}: PropsWithChildren<{}>) {
-  const override = useContext(moderationOptsOverrideContext)
   const {currentAccount} = useSession()
   const prefs = usePreferencesQuery()
   const {labelDefs} = useLabelDefinitions()
@@ -69,14 +68,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       },
       labelDefs,
     }
-  }, [
-    override,
-    userDid,
-    labelDefs,
-    moderationPrefs,
-    hiddenPosts,
-    ignoredAppLabelers,
-  ])
+  }, [userDid, labelDefs, moderationPrefs, hiddenPosts, ignoredAppLabelers])
 
   return (
     <moderationOptsContext.Provider value={value}>

@@ -770,7 +770,7 @@ test('the Expo config plugin builder agrees with the CLI builder and skips tmp',
 
 test('font checks ignore temporary icons but still catch stale ordinary glyphmaps', async t => {
   const root = await tempRoot(t, 'icon-fonts-')
-  await fs.symlink(path.resolve(nanoDir, '..'), path.join(root, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir')
+  await fs.symlink(path.resolve(nanoDir, '..'), path.join(root, 'node_modules'))
   await fs.writeFile(path.join(root, 'package.json'), '{"name":"fixture","version":"1.0.0"}')
   const iconSets = LANES.map(lane => ({
     fontFamily: `icons-${lane}`,
@@ -796,21 +796,4 @@ test('font checks ignore temporary icons but still catch stale ordinary glyphmap
   const glyphmap = path.relative(process.cwd(), path.join(root, 'assets/nano-icons/nanoicons/icons-ui.glyphmap.json'))
   await write('ui/Base_Filled_Corner0_Rounded.svg', svgOf(TRIANGLE))
   assert.deepEqual(await applyNanoFonts({check: true, repoRoot: root}), [glyphmap])
-})
-
-
-test('preserves nested generated modules with Windows line endings', async t => {
-  const {root: sourceRoot} = await fixture(t, 'brands', 'Badge.svg', '<svg viewBox="0 0 24 24"><path d="M0 0h2v2Z"/></svg>')
-  const scanRoot = path.join(sourceRoot, 'src')
-  const outputRoot = path.join(scanRoot, 'components/icons')
-  await fs.mkdir(outputRoot, {recursive: true})
-  const result = await buildIconSet({outputRoot, scanRoot, sourceRoot})
-  await applyIconSet({check: false, outputRoot, result, sourceRoot})
-  const target = path.join(outputRoot, 'brands/Badge.tsx')
-  const generated = await fs.readFile(target, 'utf8')
-  await fs.writeFile(target, generated.replaceAll('\n', '\r\n'))
-  const rebuilt = await buildIconSet({outputRoot, scanRoot, sourceRoot})
-  assert.deepEqual(await applyIconSet({check: true, outputRoot, result: rebuilt, sourceRoot}), [])
-  await applyIconSet({check: false, outputRoot, result: rebuilt, sourceRoot})
-  assert.match(await fs.readFile(target, 'utf8'), /export const Badge/)
 })

@@ -394,8 +394,9 @@
       "excludeFiles": [
         "src/components/Gallery/**",
         "src/components/images/Gallery/**",
+        "src/screens/Atmosphere/components/ExploreGallery.tsx",
         "src/view/screens/Storybook/Storybook.tsx",
-        "src/view/com/posts/PostFeedItemCarousel.tsx"
+        "src/components/PostFeedItemCarousel/**"
       ],
       "rules": {
         "no-restricted-imports": [

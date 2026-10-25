@@ -12,6 +12,7 @@ import {Plural, useLingui} from '@lingui/react/macro'
 import {getShapeStyle} from '#/lib/shapes'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {type FeedPostSlice} from '#/state/queries/post-feed'
+import {PostFeedItem} from '#/view/com/posts/PostFeedItem'
 import {BlockDrawerGesture} from '#/view/shell/BlockDrawerGesture'
 import {atoms as a, useTheme, utils, web} from '#/alf'
 import {Button, ButtonIcon} from '#/components/Button'
@@ -29,7 +30,6 @@ import {
 import {GalleryBleed} from '#/components/images/Gallery'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
-import {PostFeedItem} from './PostFeedItem'
 
 const CARD_WIDTH = 320
 const CARD_INTERVAL = CARD_WIDTH + ITEM_GAP
@@ -375,23 +375,23 @@ function RepostCarouselWeb({
    * vertical stack and stretch sibling cards to the tallest item.
    */
   useKeyboardHandlers({
-    scrollRef: scrollRef,
+    scrollRef,
     itemWidthsRef,
     currentIndexRef,
     scrollTo,
     onSettle,
     itemCount: items.length,
-    resetKey: items.map(item => item.items[0]._reactKey).join('\n'),
+    resetKey: items.map(item => item._reactKey).join('|'),
   })
 
   usePointerHandlers({
-    scrollRef: scrollRef,
+    scrollRef,
     itemWidthsRef,
     currentIndexRef,
     scrollTo,
     onSettle,
     itemCount: items.length,
-    resetKey: items.map(item => item.items[0]._reactKey).join('\n'),
+    resetKey: items.map(item => item._reactKey).join('|'),
   })
 
   return (

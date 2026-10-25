@@ -20,7 +20,6 @@ export type NavigationHandlerArgs = {
    * doesn't, so in-flight navigation for the old items is dropped.
    */
   resetKey: string
-  allowButtonDrag?: boolean
 }
 
 export type GalleryRef = {

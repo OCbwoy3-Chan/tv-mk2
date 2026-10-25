@@ -685,10 +685,6 @@ function renderFlexibleIcon(icon) {
 }
 
 function renderModule(modulePath, icons, aliases) {
-  if (modulePath === 'brands/VerifiedCheck' || modulePath === 'brands/VerifierCheck') {
-    const name = modulePath.split('/').at(-1)
-    return `${GENERATED_HEADER}\nexport {${name}} from '../${name}'\n`
-  }
   const factoryNames = new Set()
   const imports = []
   for (const icon of icons) {
@@ -789,7 +785,7 @@ export async function buildIconSet({outputRoot, scanRoot, sourceRoot}) {
     let handwritten = false
     try {
       const contents = await fs.readFile(legacyFile, 'utf8')
-      handwritten = !contents.startsWith(GENERATED_HEADER.trimEnd())
+      handwritten = !contents.startsWith(GENERATED_HEADER)
     } catch {}
     if (handwritten && !modules.has(imported.modulePath)) {
       holdouts.push({...imported, targetModule: icon.modulePath})
@@ -812,7 +808,7 @@ export async function buildIconSet({outputRoot, scanRoot, sourceRoot}) {
       const target = path.join(outputRoot, `${modulePath}.tsx`)
       try {
         const contents = await fs.readFile(target, 'utf8')
-        if (!contents.startsWith(GENERATED_HEADER.trimEnd())) {
+        if (!contents.startsWith(GENERATED_HEADER)) {
           fail(
             path.relative(process.cwd(), target),
             'generated output would overwrite a handwritten module; rename the SVG family or move the handwritten code',
@@ -875,8 +871,7 @@ export async function applyNanoFonts({check, repoRoot}) {
       const committed = path.join(repoRoot, set.outputDir, path.basename(results[index].glyphmapPath))
       let current
       try { current = await fs.readFile(committed, 'utf8') } catch {}
-      const rebuiltMap = await fs.readFile(results[index].glyphmapPath, 'utf8')
-      if (current !== rebuiltMap) {
+      if (current !== (await fs.readFile(results[index].glyphmapPath, 'utf8'))) {
         differences.push(path.relative(process.cwd(), committed))
       }
       for (const built of [results[index].ttfPath, results[index].woff2Path].filter(Boolean)) {
@@ -896,7 +891,7 @@ export async function applyIconSet({check, outputRoot, result, sourceRoot}) {
     const target = path.join(root, relative)
     let current
     try { current = await fs.readFile(target, 'utf8') } catch {}
-    if (current?.replaceAll('\r\n', '\n') === contents.replaceAll('\r\n', '\n')) return
+    if (current === contents) return
     differences.push(path.relative(process.cwd(), target))
     if (!check) {
       await fs.mkdir(path.dirname(target), {recursive: true})
@@ -908,10 +903,10 @@ export async function applyIconSet({check, outputRoot, result, sourceRoot}) {
   for (const [relative, contents] of result.tsOutputs) await compareOrWrite(outputRoot, relative, contents)
 
   const existing = await listFiles(outputRoot)
-  for (const relative of existing.filter(file => file.endsWith('.tsx') && !result.tsOutputs.has(file.split(path.sep).join('/')))) {
+  for (const relative of existing.filter(file => file.endsWith('.tsx') && !result.tsOutputs.has(file))) {
     const target = path.join(outputRoot, relative)
     const contents = await fs.readFile(target, 'utf8')
-    if (!contents.startsWith(GENERATED_HEADER.trimEnd())) continue
+    if (!contents.startsWith(GENERATED_HEADER)) continue
     differences.push(path.relative(process.cwd(), target))
     if (!check) await fs.unlink(target)
   }

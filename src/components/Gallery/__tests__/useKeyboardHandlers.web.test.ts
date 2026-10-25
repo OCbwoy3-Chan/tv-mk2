@@ -60,6 +60,16 @@ function press(key: string, target: FakeElement, extra = {}) {
 }
 
 describe('useKeyboardHandlers (web)', () => {
+  it('leaves arrow navigation in a nested gallery to that gallery', () => {
+    setup()
+    const inner = scroller.append(new FakeElement())
+    inner.setAttribute('data-carousel-scroll', '')
+    const nestedButton = inner.append(new FakeElement('BUTTON'))
+    dom.document.activeElement = nestedButton
+    dom.window.dispatch('keydown', {target: nestedButton, key: 'ArrowRight'})
+    expect(scrollTo).not.toHaveBeenCalled()
+  })
+
   it('moves between items with the arrow keys', () => {
     setup()
     const e = press('ArrowRight', button)
