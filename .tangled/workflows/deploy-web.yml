@@ -19,20 +19,25 @@ steps:
     command: |
       set -eu
 
+      ref_name="${TANGLED_REF_NAME:-${TANGLED_REF:-$(git symbolic-ref --quiet --short HEAD || true)}}"
+      ref_name="${ref_name#refs/heads/}"
+      : "${ref_name:?Cannot determine the deployment branch from Tangled metadata or Git HEAD}"
+      commit_sha="${TANGLED_SHA:-${TANGLED_COMMIT_SHA:-$(git rev-parse HEAD)}}"
+
       release_version="$(node --print "require('./package.json').version")"
       bundle_date="$(date -u +%y%m%d%H)"
 
-      case "$TANGLED_REF_NAME" in
+      case "$ref_name" in
         main) oauth_base_url="https://tenna.party" ;;
         dev) oauth_base_url="https://dev.tenna.party" ;;
         witchsky-next) oauth_base_url="https://next.tenna.party" ;;
-        *) echo "Refusing to build unexpected branch: $TANGLED_REF_NAME" >&2; exit 1 ;;
+        *) echo "Refusing to build unexpected branch: $ref_name" >&2; exit 1 ;;
       esac
 
       printf '%s\n' \
         "EXPO_PUBLIC_ENV=production" \
         "EXPO_PUBLIC_RELEASE_VERSION=$release_version" \
-        "EXPO_PUBLIC_BUNDLE_IDENTIFIER=$TANGLED_SHA" \
+        "EXPO_PUBLIC_BUNDLE_IDENTIFIER=$commit_sha" \
         "EXPO_PUBLIC_BUNDLE_DATE=$bundle_date" \
         "EXPO_PUBLIC_OAUTH_BASE_URL=$oauth_base_url" \
         > .env
@@ -51,14 +56,19 @@ steps:
     command: |
       set -eu
 
+      ref_name="${TANGLED_REF_NAME:-${TANGLED_REF:-$(git symbolic-ref --quiet --short HEAD || true)}}"
+      ref_name="${ref_name#refs/heads/}"
+      : "${ref_name:?Cannot determine the deployment branch from Tangled metadata or Git HEAD}"
+      commit_sha="${TANGLED_SHA:-${TANGLED_COMMIT_SHA:-$(git rev-parse HEAD)}}"
+
       : "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID must be configured in Tangled's pipeline secrets}"
       : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN must be configured in Tangled's pipeline secrets}"
 
-      case "$TANGLED_REF_NAME" in
+      case "$ref_name" in
         main) cloudflare_branch="main" ;;
         dev) cloudflare_branch="beta" ;;
         witchsky-next) cloudflare_branch="next" ;;
-        *) echo "Refusing to deploy unexpected branch: $TANGLED_REF_NAME" >&2; exit 1 ;;
+        *) echo "Refusing to deploy unexpected branch: $ref_name" >&2; exit 1 ;;
       esac
 
       node ./scripts/prepare-pages-assets.js
@@ -66,4 +76,4 @@ steps:
       pnpm exec wrangler pages deploy ./dist \
         --project-name tenna-party \
         --branch "$cloudflare_branch" \
-        --commit-hash "$TANGLED_SHA"
+        --commit-hash "$commit_sha"
