@@ -36,36 +36,43 @@ beforeEach(() => {
 })
 
 describe('Android native OAuth', () => {
-  it('completes from the deep link and ignores the browser result race', async () => {
-    const session = {did: 'did:plc:example'}
-    let rejectBrowser!: (error: Error) => void
-    mockAuthorize.mockResolvedValueOnce(new URL('https://pds.test/authorize'))
-    mockCallback.mockResolvedValueOnce({session})
-    mockOpenAuthSession.mockReturnValueOnce(
-      new Promise((_resolve, reject) => {
-        rejectBrowser = reject
-      }),
-    )
+  it.each(['app.tennaparty:/auth/callback', 'app.tennaparty://auth/callback'])(
+    'completes from %s and ignores the browser result race',
+    async callbackUri => {
+      const session = {did: 'did:plc:example'}
+      let rejectBrowser!: (error: Error) => void
+      mockAuthorize.mockResolvedValueOnce(new URL('https://pds.test/authorize'))
+      mockCallback.mockResolvedValueOnce({session})
+      mockOpenAuthSession.mockReturnValueOnce(
+        new Promise((_resolve, reject) => {
+          rejectBrowser = reject
+        }),
+      )
 
-    const result = signInNative('alice.test')
-    await Promise.resolve()
-    mockUrlListener?.({
-      url: 'app.witchsky://auth/callback?code=code-value&state=state-value',
-    })
-    rejectBrowser(new TypeError('undefined is not a function'))
+      const result = signInNative('alice.test')
+      await Promise.resolve()
+      mockUrlListener?.({
+        url: 'app.witchsky://auth/callback?code=code-value&state=state-value',
+      })
+      expect(mockCallback).not.toHaveBeenCalled()
+      mockUrlListener?.({
+        url: `${callbackUri}?code=code-value&state=state-value`,
+      })
+      rejectBrowser(new TypeError('undefined is not a function'))
 
-    await expect(result).resolves.toBe(session)
-    expect(mockAuthorize).toHaveBeenCalledWith('alice.test', {
-      display: 'touch',
-      scope: getOAuthScope(),
-      redirect_uri: 'app.tennaparty:/auth/callback',
-    })
-    expect(mockCallback).toHaveBeenCalledWith(
-      new URLSearchParams('code=code-value&state=state-value'),
-      {redirect_uri: 'app.tennaparty:/auth/callback'},
-    )
-    expect(mockRemove).toHaveBeenCalledTimes(1)
-  })
+      await expect(result).resolves.toBe(session)
+      expect(mockAuthorize).toHaveBeenCalledWith('alice.test', {
+        display: 'touch',
+        scope: getOAuthScope(),
+        redirect_uri: 'app.tennaparty:/auth/callback',
+      })
+      expect(mockCallback).toHaveBeenCalledWith(
+        new URLSearchParams('code=code-value&state=state-value'),
+        {redirect_uri: 'app.tennaparty:/auth/callback'},
+      )
+      expect(mockRemove).toHaveBeenCalledTimes(1)
+    },
+  )
 
   it('turns an explicit abort into a silent cancellation', async () => {
     const controller = new AbortController()
