@@ -18,6 +18,7 @@ import * as Dialog from '#/components/Dialog'
 import {InlineLinkText} from '#/components/Link'
 import {AppealForm} from '#/components/moderation/AppealForm'
 import {Text} from '#/components/Typography'
+import {IS_IOS} from '#/env'
 import {type com} from '#/lexicons'
 import {Divider} from '../Divider'
 
@@ -38,7 +39,7 @@ export function LabelsOnMeDialog(props: LabelsOnMeDialogProps) {
   return (
     <Dialog.Outer
       control={props.control}
-      nativeOptions={{preventExpansion: true}}>
+      nativeOptions={{preventExpansion: true, fullHeight: IS_IOS}}>
       <Dialog.Handle />
       <LabelsOnMeDialogInner {...props} />
     </Dialog.Outer>
