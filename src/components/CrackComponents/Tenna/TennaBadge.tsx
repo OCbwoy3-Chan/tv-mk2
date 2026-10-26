@@ -2,42 +2,56 @@ import {View} from 'react-native'
 import {type ComAtprotoLabelDefs} from '@atproto/api'
 import {useLingui} from '@lingui/react/macro'
 
-import { useHideOwnTennaBadge } from '#/state/preferences/hide-own-tennabadge'
-import { useSession } from '#/state/session'
+import {useHideOwnTennaBadge} from '#/state/preferences/hide-own-tennabadge'
+import {useSession} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {useDialogControl} from '#/components/Dialog'
 import type * as bsky from '#/types/bsky'
 import {TennaIcon} from '../Icons'
-import { TennaAccountAlert } from './TennaAccountAlert'
+import {TennaAccountAlert} from './TennaAccountAlert'
 
 export const deltaCharNames: {[char: string]: string} = {
-  kris: "Kris",
-  susie: "Susie",
-  ralsei: "Ralsei",
-  noelle: "Noelle"
-};
-
-export const deltaCharIcons: {[char: string]: React.ComponentProps<typeof import('expo-image').Image>['source']} = {
-  "toby": require('#/../assets/badges/toby.png'),
-  "kris": require('#/../assets/badges/kris.png'),
-  "susie": require('#/../assets/badges/susie.png'),
-  "ralsei": require('#/../assets/badges/ralsei.png'),
-  "noelle": require('#/../assets/badges/noelle.png')
+  kris: 'Kris',
+  susie: 'Susie',
+  ralsei: 'Ralsei',
+  noelle: 'Noelle',
 }
 
-const TOBY_ICON = require('#/../assets/badges/toby.png');
+export const deltaCharIcons: {
+  [char: string]: React.ComponentProps<
+    typeof import('expo-image').Image
+  >['source']
+} = {
+  toby: require('#/../assets/badges/toby.png'),
+  kris: require('#/../assets/badges/kris.png'),
+  susie: require('#/../assets/badges/susie.png'),
+  ralsei: require('#/../assets/badges/ralsei.png'),
+  noelle: require('#/../assets/badges/noelle.png'),
+}
 
-export function isDeltaLabel(val: string): {char: string, kin?: "fictive" | "fictionkin"} {
-  if (!val.startsWith("dr-")) return {
-    char: "67"
-  };
-  // dr-kris-fictionkin
-  const [chrN, chrT] = val.replace(/^dr\-([a-z]+)-(s|fictive|fictionkin)$/,"$1 $2").split(" ")
-  const isKin = chrT !== "s";
+const TOBY_ICON = require('#/../assets/badges/toby.png')
+
+export function isDeltaLabel(val: string): {
+  char: string
+  justBadge?: boolean
+  kin?: 'badge' | 'fictive' | 'fictionkin' | 'otherkin'
+} {
+  const match = val.match(/^dr-([a-z]+)-(s|badge|fictive|fictionkin|otherkin)$/)
+
+  if (!match) {
+    return {char: '67'}
+  }
+
+  const [, char, type] = match
+
   return {
-    char: chrN,
-    kin: isKin ? (chrT === "fictive" ? "fictive" : "fictionkin") : undefined
+    char,
+    justBadge: type === 'badge',
+    kin:
+      type === 's'
+        ? undefined
+        : (type as 'badge' | 'fictive' | 'fictionkin' | 'otherkin'),
   }
 }
 
@@ -46,8 +60,9 @@ export function isTennaAccount(profile: {
   labels?: ComAtprotoLabelDefs.Label[]
 }): boolean {
   return (
-    profile.labels?.some(l => l.src === profile.did && isDeltaLabel(l.val).char!=="67") ??
-    false
+    profile.labels?.some(
+      l => l.src === profile.did && isDeltaLabel(l.val).char !== '67',
+    ) ?? false
   )
 }
 
@@ -61,21 +76,27 @@ export function TennaBadge({
   width: number
 }) {
   const t = useTheme()
-  const {currentAccount} = useSession();
-  const hideOwnTennaBadge = useHideOwnTennaBadge();
+  const {currentAccount} = useSession()
+  const hideOwnTennaBadge = useHideOwnTennaBadge()
 
   if (!isTennaAccount(profile) && !alwaysShow) {
     return null
   }
 
-  if (currentAccount?.did === profile.did && hideOwnTennaBadge === true) return;
+  if (currentAccount?.did === profile.did && hideOwnTennaBadge === true) return
 
-  const l = profile.labels!.find(l => l.src === profile.did && isDeltaLabel(l.val).char!=="67")!;
+  const l = profile.labels!.find(
+    l => l.src === profile.did && isDeltaLabel(l.val).char !== '67',
+  )!
   const ll = isDeltaLabel(l.val)
 
   return (
     <View>
-      <TennaIcon width={width} source={deltaCharIcons[ll.char] ?? TOBY_ICON} fill={t.atoms.text_contrast_medium.color} />
+      <TennaIcon
+        width={width}
+        source={deltaCharIcons[ll.char] ?? TOBY_ICON}
+        fill={t.atoms.text_contrast_medium.color}
+      />
     </View>
   )
 }
@@ -90,16 +111,18 @@ export function TennaBadgeButton({
   const t = useTheme()
   const {t: l} = useLingui()
   const control = useDialogControl()
-  const {currentAccount} = useSession();
-  const hideOwnTennaBadge = useHideOwnTennaBadge();
+  const {currentAccount} = useSession()
+  const hideOwnTennaBadge = useHideOwnTennaBadge()
 
   if (!isTennaAccount(profile)) {
     return null
   }
 
-  if (currentAccount?.did === profile.did && hideOwnTennaBadge === true) return;
+  if (currentAccount?.did === profile.did && hideOwnTennaBadge === true) return
 
-  const lz = profile.labels!.find(l => l.src === profile.did && isDeltaLabel(l.val).char!=="67")!;
+  const lz = profile.labels!.find(
+    l => l.src === profile.did && isDeltaLabel(l.val).char !== '67',
+  )!
   const ll = isDeltaLabel(lz.val)
 
   return (

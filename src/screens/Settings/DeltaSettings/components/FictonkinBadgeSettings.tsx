@@ -14,6 +14,7 @@ import {
 } from '#/state/queries/profile'
 import {postThreadQueryKeyRoot} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
+import {Logomark} from '#/view/icons/Logomark'
 import {atoms as a, useTheme} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
@@ -144,9 +145,11 @@ export function FictionkinBadgeSettings() {
   ]
 
   const KINS = [
+    {value: 'badge', label: 'I just want the Badge'},
     {value: 's', label: 'Literal'},
     {value: 'fictive', label: 'Fictive'},
     {value: 'fictionkin', label: 'Fictionkin'},
+    {value: 'otherkin', label: 'Otherkin'},
   ]
 
   const canToggle = profile && !updateProfile.isPending
@@ -154,22 +157,48 @@ export function FictionkinBadgeSettings() {
   return (
     <View style={[a.p_xl, a.gap_xl]}>
       <View style={[a.gap_sm]}>
-        <Text style={[a.text_2xl, a.font_bold]}>
-          <Trans>THE BADGE</Trans>
-        </Text>
+        <View style={[a.flex_row, a.gap_sm]}>
+          <Logomark width={24} />
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>The Badge</Trans>
+          </Text>
+        </View>
         <Text style={[a.text_md, a.leading_snug]}>
           <Trans>
-            this is a tenna.party exclusive, you can't get this on witchsky 👀
+            Showcase a badge of any character you are or like on your profile.
+            Only Deltarune characters here right now, more soon.. Tell
+            @kris.kralsei.stream to add more! Also a tenna.party exclusive rn 👀
           </Trans>
         </Text>
       </View>
 
       <View style={[a.gap_xl]}>
         <Admonition type="info">
-          <Trans>
-            This feature is intended for those who are a kin of or are any of
-            the characters listed below.
-          </Trans>
+          <View>
+            <Text>
+              <Trans>What are kins? Here's a simple explainer:</Trans>
+            </Text>
+            <Text>
+              <Trans>- Fictive: You identify as the character.</Trans>
+            </Text>
+            <Text>
+              <Trans>
+                - Fictionkin: You identify as the character on a more personal
+                level.
+              </Trans>
+            </Text>
+            <Text>
+              <Trans>
+                - Otherkin: Basically Therian for fictional species.
+              </Trans>
+            </Text>
+            <Text style={[a.mt_lg]}>
+              <Trans>
+                Well, Kris doesn't really know, but Googling that wouldn't hurt,
+                right?
+              </Trans>
+            </Text>
+          </View>
         </Admonition>
       </View>
 
@@ -182,16 +211,26 @@ export function FictionkinBadgeSettings() {
             t.atoms.text_contrast_medium,
             a.leading_snug,
           ]}>
-          <Trans>
-            This makes you{' '}
-            {kinType !== 's'
-              ? (CHARACTERS_A_AN[selectedChar] ?? 'a') + ' '
-              : ''}
-            {CHARACTERS.find(a => a.value === selectedChar)?.label ??
-              selectedChar}{' '}
-            {CHARACTERS_FRANCHISES[selectedChar]}
-            {kinType !== 's' ? ' ' + kinType : ', literally'}.
-          </Trans>
+          {kinType === 'badge' ? (
+            <Trans>
+              You just want {(CHARACTERS_A_AN[selectedChar] ?? 'a') + ' '}
+              {CHARACTERS.find(a => a.value === selectedChar)?.label ??
+                selectedChar}{' '}
+              {CHARACTERS_FRANCHISES[selectedChar] + ' '}
+              badge on your profile.
+            </Trans>
+          ) : (
+            <Trans>
+              This makes you{' '}
+              {kinType !== 's'
+                ? (CHARACTERS_A_AN[selectedChar] ?? 'a') + ' '
+                : ''}
+              {CHARACTERS.find(a => a.value === selectedChar)?.label ??
+                selectedChar}{' '}
+              {CHARACTERS_FRANCHISES[selectedChar]}
+              {kinType !== 's' ? ' ' + kinType : ', literally'}.
+            </Trans>
+          )}
           {hideTennaBadge && (
             <Trans> Others will see this badge on your profile.</Trans>
           )}

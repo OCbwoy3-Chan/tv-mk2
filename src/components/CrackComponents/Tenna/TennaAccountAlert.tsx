@@ -9,7 +9,7 @@ import {Text} from '#/components/Typography'
 import {navigate} from '#/Navigation'
 import type * as bsky from '#/types/bsky'
 import {TennaIcon} from '../Icons'
-import { deltaCharIcons,deltaCharNames, isDeltaLabel } from './TennaBadge'
+import {deltaCharIcons, deltaCharNames, isDeltaLabel} from './TennaBadge'
 
 export function TennaAccountAlert({
   control,
@@ -22,17 +22,26 @@ export function TennaAccountAlert({
   const t = useTheme()
   const {currentAccount} = useSession()
 
-  const ll = profile.labels?.find(a=>(a.src===profile.did)&&(isDeltaLabel(a.val).char!=="67"));
+  const ll = profile.labels?.find(
+    a => a.src === profile.did && isDeltaLabel(a.val).char !== '67',
+  )
 
-  if (!ll) return <></>;
+  if (!ll) return <></>
 
-  const kin = isDeltaLabel(ll.val);
+  const kin = isDeltaLabel(ll.val)
 
   const isSelf = profile.did === currentAccount?.did
 
+  // TODO: Refractor this entire badge system to work better
+
+  // this had deltarune hardcoded in..
   const description = isSelf
-    ? l`You are${kin.kin ? " a" : ""} ${deltaCharNames[kin.char]}${kin.kin ? " Deltarune "+kin.kin : ""}. You can remove this label at any time from Tenna's Settings.`
-    : l`This user is${kin.kin ? " a" : ""} ${deltaCharNames[kin.char]}${kin.kin ? " Deltarune "+kin.kin : ""}.`
+    ? l`You are${kin.kin ? ' a' : ''} ${deltaCharNames[kin.char]}${kin.kin ? kin.kin : ''}. You can remove this label at any time from Tenna's Settings.`
+    : l`This user is${kin.kin ? ' a' : ''} ${deltaCharNames[kin.char]}${kin.kin ? kin.kin : ''}.`
+
+  const descriptionJustBadge = isSelf
+    ? l`You have a ${deltaCharNames[kin.char]} badge on your profile. You can remove this label at any time from Tenna's Settings.`
+    : l`This user chose to have a ${deltaCharNames[kin.char]} badge on their profile.`
 
   return (
     <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
@@ -54,7 +63,7 @@ export function TennaAccountAlert({
               t.atoms.text_contrast_high,
               {maxWidth: 300},
             ]}>
-            {description}
+            {kin.justBadge ? descriptionJustBadge : description}
           </Text>
         </View>
         <View style={[a.w_full, a.gap_sm]}>
