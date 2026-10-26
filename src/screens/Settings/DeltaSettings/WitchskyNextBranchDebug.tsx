@@ -26,16 +26,18 @@ export function DeltaWitchskyNextBranchDebugScreen() {
         <View style={[a.p_xl, a.gap_xl]}>
           <Admonition type="warning">
             <Text>
-              This is EXTREMELY UNSTABLE, it can and will break anytime. You are
-              testing unreleased social-app features and features that will be
-              merged into the prod versions of Witchsky (and in extension
-              tenna.party) they update!
+              This is UNSTABLE AS FUCK!! It can (and will) break anytime. You
+              are testing unreleased social-app features and features that will
+              be merged into the prod versions of Witchsky (and in extension
+              tenna.party) they update! DON'T TOUCH THE DANGEROUS STUFF UNLESS
+              YOU KNOW WHAT YOU'RE DOING.
             </Text>
           </Admonition>
           <View style={[a.gap_sm]}>
             <Text style={[a.text_2xl, a.font_bold]}>Feature gates helper</Text>
             <Text style={[a.text_md, a.leading_snug]}>
-              Enable the unreleased & extremely unstable features here.
+              Enable an opinionated set of Growthbook flags, or something. I
+              promise you this one's actually safe.
             </Text>
           </View>
           <View
