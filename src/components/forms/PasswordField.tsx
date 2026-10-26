@@ -34,6 +34,7 @@ export function PasswordField({
         autoCorrect={autoCorrect}
         hitSlop={hitSlop}
         secureTextEntry={!revealPassword}
+        textBreakStrategy="simple"
       />
       <RevealPasswordButton
         active={revealPassword}
