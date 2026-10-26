@@ -247,6 +247,10 @@ module.exports = function (_config) {
               },
               {
                 scheme: 'https',
+                host: 'cope.works',
+              },
+              {
+                scheme: 'https',
                 host: 'blacksky.community',
               },
               {

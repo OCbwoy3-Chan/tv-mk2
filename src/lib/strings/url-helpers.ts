@@ -158,6 +158,8 @@ export function isBskyAppUrl(url: string): boolean {
       !url.startsWith('https://deer.social/about')) ||
     (url.startsWith('https://mu.social/') &&
       !url.startsWith('https://mu.social/about')) ||
+    (url.startsWith('https://cope.works/') &&
+      !url.startsWith('https://cope.works/about')) ||
     (url.startsWith('https://blacksky.community/') &&
       !url.startsWith('https://blacksky.community/about')) ||
     (url.startsWith('https://northsky.app/') &&

@@ -1356,6 +1356,7 @@ const LINKING = {
     'https://tenna.party',
     'https://deer.social',
     'https://mu.social',
+    'https://cope.works',
     'https://blacksky.community',
     'https://northsky.app',
   ],
