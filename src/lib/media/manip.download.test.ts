@@ -2,6 +2,7 @@ import {
   copyAsync,
   createDownloadResumable,
   deleteAsync,
+  moveAsync,
 } from 'expo-file-system/legacy'
 import {createAlbumAsync, saveToLibraryAsync} from 'expo-media-library/legacy'
 
@@ -19,7 +20,8 @@ jest.mock('#/env', () => ({
   IS_NATIVE: true,
 }))
 jest.mock('#/lib/media/original-image', () => ({
-  getDownloadImageUri: (uri: string) => Promise.resolve(uri),
+  getDownloadImageUri: (uri: string, format: string) =>
+    Promise.resolve(format === 'jpeg' ? `${uri}@jpeg` : uri),
 }))
 jest.mock('expo-media-library/legacy', () => ({
   createAlbumAsync: jest.fn().mockResolvedValue(undefined),
@@ -44,6 +46,7 @@ it.each(['content-type', 'Content-Type', 'CONTENT-TYPE'])(
     jest.mocked(createDownloadResumable).mockReturnValue({
       downloadAsync: () =>
         Promise.resolve({
+          status: 200,
           uri: 'file:///cache/download.bin',
           headers: {[header]: 'image/avif; charset=binary'},
         }),
@@ -68,6 +71,7 @@ it('saves original images with a descriptive basename and their downloaded MIME 
   jest.mocked(createDownloadResumable).mockReturnValue({
     downloadAsync: () =>
       Promise.resolve({
+        status: 200,
         uri: 'file:///cache/download.bin',
         mimeType: 'image/png',
       }),
@@ -90,6 +94,7 @@ it('uses distinct staging folders for repeated filenames and cleans up failed sa
   jest.mocked(createDownloadResumable).mockReturnValue({
     downloadAsync: () =>
       Promise.resolve({
+        status: 200,
         uri: 'file:///cache/download.bin',
         headers: {'content-type': 'video/mp4'},
       }),
@@ -124,6 +129,7 @@ it('saves Android videos directly to the Witchsky album', async () => {
   jest.mocked(createDownloadResumable).mockReturnValue({
     downloadAsync: () =>
       Promise.resolve({
+        status: 200,
         uri: 'file:///cache/download.bin',
         headers: {'content-type': 'video/mp4'},
       }),
@@ -148,6 +154,7 @@ it('reports Android album failures without saving images to another folder', asy
   jest.mocked(createDownloadResumable).mockReturnValue({
     downloadAsync: () =>
       Promise.resolve({
+        status: 200,
         uri: 'file:///cache/download.bin',
         headers: {'content-type': 'image/png'},
       }),
@@ -166,3 +173,77 @@ it('reports Android album failures without saving images to another folder', asy
     {idempotent: true},
   )
 })
+
+it.each([
+  {status: 404, mimeType: 'image/jpeg', message: 'HTTP 404'},
+  {status: 503, mimeType: 'text/html', message: 'HTTP 503'},
+  {
+    status: 200,
+    mimeType: 'application/json',
+    message: 'unexpected content type',
+  },
+])('rejects invalid image responses: $status $mimeType', async response => {
+  jest.mocked(createDownloadResumable).mockReturnValue({
+    downloadAsync: () =>
+      Promise.resolve({
+        ...response,
+        uri: 'file:///cache/download.bin',
+        headers: {},
+      }),
+  } as unknown as ReturnType<typeof createDownloadResumable>)
+
+  await expect(
+    saveImageToMediaLibrary({uri: 'https://pds.example/image'}),
+  ).rejects.toThrow(response.message)
+
+  expect(saveToLibraryAsync).not.toHaveBeenCalled()
+  expect(moveAsync).not.toHaveBeenCalled()
+  expect(deleteAsync).toHaveBeenCalledWith('file:///cache/download.bin', {
+    idempotent: true,
+  })
+})
+
+it.each([
+  {format: 'original', code: 'ERR_MISSING_FILE', retries: true},
+  {format: 'jpeg', code: 'ERR_MISSING_FILE', retries: false},
+  {format: 'original', code: 'ERR_SAVE_ASSET', retries: false},
+])(
+  'handles iOS $format save failure $code',
+  async ({format, code, retries}) => {
+    jest.mocked(createDownloadResumable).mockReturnValue({
+      downloadAsync: () =>
+        Promise.resolve({
+          status: 200,
+          uri: 'file:///cache/download.bin',
+          mimeType: 'image/jpeg',
+          headers: {},
+        }),
+    } as unknown as ReturnType<typeof createDownloadResumable>)
+    jest
+      .mocked(saveToLibraryAsync)
+      .mockRejectedValueOnce(Object.assign(new Error('Save failed'), {code}))
+
+    const save = saveImageToMediaLibrary({
+      uri: 'https://cdn.example/image',
+      format,
+      downloadName: 'alice.example-3abc',
+    })
+    if (retries) {
+      await save
+      expect(createDownloadResumable).toHaveBeenLastCalledWith(
+        'https://cdn.example/image@jpeg',
+        expect.any(String),
+        {cache: true},
+      )
+    } else {
+      await expect(save).rejects.toThrow('Save failed')
+    }
+    expect(saveToLibraryAsync).toHaveBeenCalledTimes(retries ? 2 : 1)
+    for (const [path] of jest.mocked(saveToLibraryAsync).mock.calls) {
+      expect(deleteAsync).toHaveBeenCalledWith(
+        path.slice(0, path.lastIndexOf('/')),
+        {idempotent: true},
+      )
+    }
+  },
+)

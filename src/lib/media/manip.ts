@@ -174,6 +174,24 @@ export async function saveImageToMediaLibrary({
       await MediaLibrary.saveToLibraryAsync(imagePath)
     }
   } catch (err) {
+    /*
+     * UIKit cannot decode every original format that the lightbox can display.
+     * Retry only decode failures with a CDN JPEG, leaving permission errors and
+     * explicitly selected download formats untouched.
+     */
+    if (
+      IS_IOS &&
+      format === 'original' &&
+      err instanceof Error &&
+      'code' in err &&
+      err.code === 'ERR_MISSING_FILE'
+    ) {
+      const jpegUri = await getDownloadImageUri(uri, 'jpeg')
+      if (jpegUri !== downloadUri) {
+        await saveImageToMediaLibrary({uri, format: 'jpeg', downloadName})
+        return
+      }
+    }
     logger.error(err instanceof Error ? err : String(err), {
       message: 'Failed to save image to media library',
     })
@@ -453,10 +471,26 @@ async function downloadImage(uri: string, destName: string, timeout: number) {
     }
 
     downloadedPath = dlRes.uri
+    if (dlRes.status < 200 || dlRes.status >= 300) {
+      throw new Error(`Image download failed: HTTP ${dlRes.status}`)
+    }
     // Android exposes the MIME type in headers rather than mimeType.
     const contentType = Object.entries(dlRes.headers ?? {}).find(
       ([name]) => name.toLowerCase() === 'content-type',
     )?.[1]
+    const mime = (contentType ?? dlRes.mimeType)
+      ?.split(';')[0]
+      .trim()
+      .toLowerCase()
+    if (
+      mime &&
+      !mime.startsWith('image/') &&
+      mime !== 'application/octet-stream'
+    ) {
+      throw new Error(
+        `Image download returned unexpected content type: ${mime}`,
+      )
+    }
     const ext = imageMimeToExtension(contentType) ?? extFromMime(dlRes.mimeType)
     finalPath = `${cacheDirectory ?? ''}/${destName}.${ext}`
     await moveAsync({from: downloadedPath, to: finalPath})
