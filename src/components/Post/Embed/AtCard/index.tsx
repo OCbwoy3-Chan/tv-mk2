@@ -3,7 +3,16 @@ import {Image} from 'expo-image'
 import {useLingui} from '@lingui/react/macro'
 
 import {useHaptics} from '#/lib/haptics'
+import {getShapeStyle} from '#/lib/shapes'
 import {shareUrl} from '#/lib/sharing'
+import {getAuthorPrimaryName} from '#/lib/strings/display-names'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
+import {
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {useProfileQuery} from '#/state/queries/profile'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
@@ -11,6 +20,7 @@ import {Divider} from '#/components/Divider'
 import {Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
 import {IS_NATIVE} from '#/env'
+import {contrastForeground} from '#/features/themes/accentForeground'
 import {type app} from '#/lexicons'
 import {getAtCardProvider} from './providers'
 
@@ -31,6 +41,10 @@ export function AtCard({
   style?: StyleProp<ViewStyle>
 }) {
   const t = useTheme()
+  const shape = useEnableSquareButtons()
+  const hideDisplayNames = useHideDisplayNames()
+  const imageCdnHost = useImageCdnHost()
+  const thumbnailFormat = useThumbnailFormat()
   const {t: l} = useLingui()
   const {gtPhone} = useBreakpoints()
   const haptics = useHaptics()
@@ -42,9 +56,13 @@ export function AtCard({
     did: showAttieAccount ? ATTIE_ACCOUNT_DID : undefined,
   })
   const displayedProfile = showAttieAccount ? attieProfile : authorProfile
-  const displayedName = showAttieAccount
-    ? displayedProfile?.displayName || 'Attie'
-    : displayedProfile?.displayName || displayedProfile?.handle || authorDid
+  const displayedName = displayedProfile
+    ? getAuthorPrimaryName(displayedProfile, {hideDisplayNames})
+    : showAttieAccount
+      ? hideDisplayNames
+        ? 'attie.ai'
+        : 'Attie'
+      : authorDid
   const displayedHandle = showAttieAccount
     ? displayedProfile?.handle || 'attie.ai'
     : displayedProfile?.handle
@@ -76,7 +94,7 @@ export function AtCard({
       }
       style={[
         a.w_full,
-        a.rounded_lg,
+        getShapeStyle(shape, a.rounded_lg, a.rounded_lg),
         a.border,
         t.atoms.border_contrast_low,
         preview && a.pointer_events_none,
@@ -86,14 +104,19 @@ export function AtCard({
         <View
           style={[
             a.w_full,
-            a.rounded_lg,
+            getShapeStyle(shape, a.rounded_lg, a.rounded_lg),
             a.overflow_hidden,
             hovered || focused || pressed ? t.atoms.bg_contrast_25 : t.atoms.bg,
           ]}>
           {view.thumb && (
             <Image
               style={a.aspect_card}
-              source={{uri: view.thumb}}
+              source={{
+                uri: applyImageTransforms(view.thumb, {
+                  imageCdnHost,
+                  format: thumbnailFormat,
+                }),
+              }}
               accessibilityIgnoresInvertColors
               loading="lazy"
               useAppleWebpCodec
@@ -169,7 +192,7 @@ export function AtCard({
                 a.align_center,
                 a.justify_center,
                 a.gap_sm,
-                a.rounded_full,
+                getShapeStyle(shape, a.rounded_sm, a.rounded_full),
                 a.px_md,
                 a.py_sm,
                 {
@@ -180,9 +203,15 @@ export function AtCard({
                 },
                 !gtPhone && a.w_full,
               ]}>
-              <provider.CtaIcon size="md" fill="#ffffff" />
+              <provider.CtaIcon
+                size="md"
+                fill={contrastForeground(provider.backgroundColor)}
+              />
               <Text
-                style={[a.font_bold, {color: '#ffffff'}]}>{l`Visit site`}</Text>
+                style={[
+                  a.font_bold,
+                  {color: contrastForeground(provider.backgroundColor)},
+                ]}>{l`Visit site`}</Text>
             </View>
           </View>
         </View>

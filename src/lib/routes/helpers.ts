@@ -70,21 +70,23 @@ export function isTab(current: string, route: string) {
   )
 }
 
-/** The native profile tab root is named `MyProfile` instead of `Profile`. */
+/** Recognizes the native profile tab and either identifier used in web links. */
 export function isCurrentProfileRoute({
   routeName,
   profileName,
   currentHandle,
+  currentDid,
 }: {
   routeName: string
   profileName?: string
   currentHandle?: string
+  currentDid?: string
 }) {
   return (
     routeName === 'MyProfile' ||
     (routeName === 'Profile' &&
-      !!currentHandle &&
-      profileName === currentHandle)
+      !!profileName &&
+      (profileName === currentHandle || profileName === currentDid))
   )
 }
 

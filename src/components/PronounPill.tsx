@@ -6,7 +6,7 @@ import {getShapeStyle} from '#/lib/shapes'
 import {sanitizePronouns} from '#/lib/strings/pronouns'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, tokens, useTheme, web} from '#/alf'
-import {CircleMinus_Stroke2_Corner0_Rounded as CircleMinus} from '#/components/icons/Circle'
+import {CircleSlash_Stroke2_Corner0_Rounded as CircleSlash} from '#/components/icons/Circle'
 import * as Tooltip from '#/components/Tooltip'
 import {Text} from '#/components/Typography'
 import {IS_NATIVE} from '#/env'
@@ -49,12 +49,9 @@ export function PronounPill({
 
   const contents = (
     <>
-      <CircleMinus
+      <CircleSlash
         width={tokens.space.lg}
-        style={[
-          t.atoms.text_contrast_medium,
-          {transform: [{rotate: '-45deg'}]},
-        ]}
+        style={t.atoms.text_contrast_medium}
       />
       {pill}
     </>

@@ -5,19 +5,37 @@ import type Hls from 'hls.js'
 
 import {formatTime} from '#/lib/media/video/formatTime'
 import {clamp} from '#/lib/numbers'
-import {useAutoplayDisabled, useSubtitlesEnabled} from '#/state/preferences'
+import {SHARP_CORNERS} from '#/lib/shapes'
+import {
+  useAutoplayDisabled,
+  useSetSubtitlesEnabled,
+  useSubtitlesEnabled,
+} from '#/state/preferences'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme, web} from '#/alf'
 import {useIsWithinMessage} from '#/components/dms/MessageContext'
 import {useFullscreen} from '#/components/hooks/useFullscreen'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
 import {
+  ArrowLeft_Stroke2_Corner0_Rounded as ArrowLeftIcon,
+  ArrowRight_Stroke2_Corner0_Rounded as ArrowRightIcon,
+} from '#/components/icons/Arrow'
+import {
   ArrowsDiagonalIn_Stroke2_Corner0_Rounded as ArrowsInIcon,
   ArrowsDiagonalOut_Stroke2_Corner0_Rounded as ArrowsOutIcon,
 } from '#/components/icons/ArrowsDiagonal'
+import {
+  CC_Filled_Corner0_Rounded as CaptionsEnabledIcon,
+  CC_Stroke2_Corner0_Rounded as CaptionsIcon,
+} from '#/components/icons/CC'
+import {Clock_Stroke2_Corner0_Rounded as ClockIcon} from '#/components/icons/Clock'
+import {Mute_Stroke2_Corner0_Rounded as MuteIcon} from '#/components/icons/Mute'
 import {Pause_Filled_Corner0_Rounded as PauseIcon} from '#/components/icons/Pause'
 import {PictureInPicture_Stroke2_Corner2_Rounded as PictureInPictureIcon} from '#/components/icons/PictureInPicture'
 import {Play_Filled_Corner0_Rounded as PlayIcon} from '#/components/icons/Play'
+import {SpeakerVolumeFull_Stroke2_Corner0_Rounded as VolumeIcon} from '#/components/icons/SpeakerVolumeFull'
 import {Loader} from '#/components/Loader'
+import {useVideoVolumeState} from '#/components/Post/Embed/VideoEmbed/VideoVolumeContext'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {IS_WEB_FIREFOX, IS_WEB_MOBILE_IOS, IS_WEB_TOUCH_DEVICE} from '#/env'
@@ -29,7 +47,7 @@ import {Scrubber} from './Scrubber'
 import {SettingsMenu} from './SettingsMenu'
 import {usePictureInPicture} from './usePictureInPicture'
 import {useVideoElement} from './utils'
-import {VolumeControl} from './VolumeControl'
+import {videoVolumeToSliderVolume, VolumeControl} from './VolumeControl'
 
 export function Controls({
   videoRef,
@@ -79,6 +97,16 @@ export function Controls({
   const isPictureInPicture =
     pictureInPictureElement !== null &&
     pictureInPictureElement === videoRef.current
+  const [speedHeld, setSpeedHeld] = useState(false)
+  const speedHoldRef = useRef<{
+    video: HTMLVideoElement
+    rate: number
+    paused: boolean
+    boosted: boolean
+    source: 'keyboard' | 'pointer'
+    pointerId?: number
+    timeout?: ReturnType<typeof setTimeout>
+  } | null>(null)
   const [playbackSpeed, setPlaybackSpeed] = useVideoPlaybackSpeed()
   useEffect(() => {
     const video = videoRef.current
@@ -86,7 +114,7 @@ export function Controls({
     const applySpeed = () => {
       const rate = isGif ? 1 : playbackSpeed
       video.defaultPlaybackRate = rate
-      video.playbackRate = rate
+      video.playbackRate = speedHoldRef.current?.boosted ? 2 : rate
     }
     applySpeed()
     video.addEventListener('loadedmetadata', applySpeed)
@@ -95,7 +123,44 @@ export function Controls({
 
   const t = useTheme()
   const {t: l} = useLingui()
+  const shapePreference = useEnableSquareButtons()
+  const [, setVolume] = useVideoVolumeState()
+  const [keyboardFeedback, setKeyboardFeedback] = useState<{
+    icon: typeof PlayIcon
+    text: string
+    position?: 'left' | 'right'
+  } | null>(null)
+
+  const [feedbackVisible, setFeedbackVisible] = useState(true)
+
+  useEffect(() => {
+    if (!keyboardFeedback) return
+    setFeedbackVisible(true)
+    const fadeTimeout = setTimeout(() => setFeedbackVisible(false), 650)
+    const timeout = setTimeout(() => setKeyboardFeedback(null), 800)
+    return () => {
+      clearTimeout(fadeTimeout)
+      clearTimeout(timeout)
+    }
+  }, [keyboardFeedback])
+
+  useEffect(() => {
+    if (!active) setKeyboardFeedback(null)
+  }, [active])
+
+  const showVolumeFeedback = useCallback(
+    (volume: number, muted: boolean) => {
+      const percent = muted ? 0 : videoVolumeToSliderVolume(volume)
+      setKeyboardFeedback({
+        icon: percent === 0 ? MuteIcon : VolumeIcon,
+        text: l`${percent}%`,
+      })
+    },
+    [l],
+  )
+
   const subtitlesEnabled = useSubtitlesEnabled()
+  const setSubtitlesEnabled = useSetSubtitlesEnabled()
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [selectedSubtitle, setSelectedSubtitle] = useState(0)
   const {
@@ -106,6 +171,10 @@ export function Controls({
   const [isFullscreen, toggleFullscreen] = useFullscreen(fullscreenRef)
   const {state: hasFocus, onIn: onFocus, onOut: onBlur} = useInteractionState()
   const [interactingViaKeypress, setInteractingViaKeypress] = useState(false)
+  const [keyboardControlsVisible, setKeyboardControlsVisible] = useState(false)
+  const [controlsFocused, setControlsFocused] = useState(false)
+  const keyboardControlsTimeoutRef =
+    useRef<ReturnType<typeof setTimeout>>(undefined)
   const showSpinner = hlsLoading || buffering
   const {
     state: volumeHovered,
@@ -113,18 +182,24 @@ export function Controls({
     onOut: onVolumeEndHover,
   } = useInteractionState()
 
-  const onKeyDown = useCallback(() => {
+  const revealKeyboardControls = useCallback(() => {
     setInteractingViaKeypress(true)
+    setKeyboardControlsVisible(true)
+    clearTimeout(keyboardControlsTimeoutRef.current)
+    keyboardControlsTimeoutRef.current = setTimeout(() => {
+      setKeyboardControlsVisible(false)
+    }, 2000)
+  }, [])
+
+  useEffect(() => {
+    return () => clearTimeout(keyboardControlsTimeoutRef.current)
   }, [])
 
   useEffect(() => {
     if (interactingViaKeypress) {
-      document.addEventListener('click', () => setInteractingViaKeypress(false))
-      return () => {
-        document.removeEventListener('click', () =>
-          setInteractingViaKeypress(false),
-        )
-      }
+      const onClick = () => setInteractingViaKeypress(false)
+      document.addEventListener('click', onClick)
+      return () => document.removeEventListener('click', onClick)
     }
   }, [interactingViaKeypress])
 
@@ -214,6 +289,8 @@ export function Controls({
     setFocused(true)
   }, [active, setActive, setFocused, videoRef])
 
+  const suppressPointerClickRef = useRef(false)
+  const suppressDoubleClickRef = useRef(false)
   const playingBeforeClickRef = useRef<boolean | null>(null)
   const emptySpaceRef = useRef<HTMLDivElement>(null)
 
@@ -242,6 +319,10 @@ export function Controls({
       if (!emptySpaceRef.current?.contains(evt.target as Node)) return
 
       evt.stopPropagation()
+      if (suppressDoubleClickRef.current) {
+        suppressDoubleClickRef.current = false
+        return
+      }
       toggleFullscreen()
       // Undo the first click's playback toggle without delaying single clicks.
       if (playingBeforeClickRef.current !== null) {
@@ -274,6 +355,111 @@ export function Controls({
     }
   }
 
+  const stopSpeedHold = useCallback(
+    (toggleOnTap = false) => {
+      const hold = speedHoldRef.current
+      if (!hold) return
+      speedHoldRef.current = null
+      clearTimeout(hold.timeout)
+      if (hold.boosted) {
+        if (hold.source === 'pointer') suppressPointerClickRef.current = true
+        hold.video.playbackRate = hold.rate
+        if (hold.paused) pause()
+        setSpeedHeld(false)
+      } else if (toggleOnTap && hold.source === 'keyboard') {
+        togglePlayPause()
+      }
+    },
+    [pause, togglePlayPause],
+  )
+
+  const startSpeedHold = useCallback(
+    (source: 'keyboard' | 'pointer', pointerId?: number) => {
+      const video = videoRef.current
+      if (!video || speedHoldRef.current || isGif || settingsOpen) return
+      if (source === 'keyboard') drawFocus()
+      const hold = {
+        video,
+        rate: video.playbackRate,
+        paused: video.paused,
+        boosted: false,
+        source,
+        pointerId,
+        timeout: undefined as ReturnType<typeof setTimeout> | undefined,
+      }
+      speedHoldRef.current = hold
+      hold.timeout = setTimeout(() => {
+        hold.boosted = true
+        if (source === 'pointer') {
+          drawFocus()
+          suppressPointerClickRef.current = true
+          playingBeforeClickRef.current = null
+        }
+        video.playbackRate = 2
+        play()
+        setSpeedHeld(true)
+      }, 300)
+    },
+    [videoRef, isGif, settingsOpen, drawFocus, play],
+  )
+
+  const onPointerDownEmptySpace = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    suppressPointerClickRef.current = false
+    if (event.pointerType !== 'mouse' || event.button !== 0) return
+    startSpeedHold('pointer', event.pointerId)
+  }
+
+  const onClickEmptySpaceCapture = (
+    event: React.MouseEvent<HTMLDivElement>,
+  ) => {
+    if (event.detail === 1) suppressDoubleClickRef.current = false
+    if (!suppressPointerClickRef.current) return
+    suppressPointerClickRef.current = false
+    if (event.detail === 0) return
+    suppressDoubleClickRef.current = true
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  useEffect(() => {
+    const onKeyUp = (event: KeyboardEvent) => {
+      if (event.key !== ' ' || speedHoldRef.current?.source !== 'keyboard')
+        return
+      event.preventDefault()
+      event.stopPropagation()
+      stopSpeedHold(true)
+    }
+    const onPointerUp = (event: PointerEvent) => {
+      const hold = speedHoldRef.current
+      if (hold?.source !== 'pointer' || hold.pointerId !== event.pointerId)
+        return
+      stopSpeedHold()
+    }
+    const cancelHold = () => stopSpeedHold()
+    const onVisibilityChange = () => {
+      if (document.hidden) cancelHold()
+    }
+    document.addEventListener('keyup', onKeyUp)
+    document.addEventListener('pointerup', onPointerUp, true)
+    document.addEventListener('pointercancel', onPointerUp, true)
+    window.addEventListener('blur', cancelHold)
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => {
+      document.removeEventListener('keyup', onKeyUp)
+      document.removeEventListener('pointerup', onPointerUp, true)
+      document.removeEventListener('pointercancel', onPointerUp, true)
+      window.removeEventListener('blur', cancelHold)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      cancelHold()
+    }
+  }, [stopSpeedHold])
+
+  useEffect(() => {
+    if (!active || !focused || isGif || settingsOpen) stopSpeedHold()
+  }, [active, focused, isGif, settingsOpen, stopSpeedHold])
+
   const onPressFullscreen = useCallback(() => {
     drawFocus()
     toggleFullscreen()
@@ -285,18 +471,26 @@ export function Controls({
       const isFrameStep = key === ',' || key === '.'
       const isSeek = key === 'arrowleft' || key === 'arrowright' || isFrameStep
       const isSpeedChange = key === '<' || key === '>'
+      const isVolumeChange = key === 'arrowup' || key === 'arrowdown'
+      const isPlayback = key === ' ' || key === 'k'
       const container = fullscreenRef.current
       const target = event.target
       if (
         isGif ||
         event.defaultPrevented ||
-        (event.repeat && (key === 'f' || key === 'm')) ||
+        (event.repeat && (key === 'f' || key === 'm' || key === 'c')) ||
         event.isComposing ||
         (event.shiftKey && !isSpeedChange) ||
         event.ctrlKey ||
         event.metaKey ||
         event.altKey ||
-        (key !== 'f' && key !== 'm' && !isSeek && !isSpeedChange) ||
+        (key !== 'f' &&
+          key !== 'm' &&
+          key !== 'c' &&
+          !isSeek &&
+          !isSpeedChange &&
+          !isVolumeChange &&
+          !isPlayback) ||
         settingsOpen ||
         (target instanceof Element &&
           target.closest(
@@ -311,26 +505,72 @@ export function Controls({
         : container.contains(document.activeElement) ||
           (active && focused && document.activeElement === document.body)
       if (!ownsKeyboard) return
+      // The video surface uses hold-to-speed; other buttons keep native activation.
+      if (
+        key === ' ' &&
+        target instanceof Element &&
+        target.closest('button, [role="button"], a[href]') &&
+        !emptySpaceRef.current?.contains(target)
+      )
+        return
       const video = videoRef.current
+      if (key === 'c' && !hasSubtitleTrack) return
       if (isSpeedChange && !video) return
       if (isSeek && (!video || !Number.isFinite(video.duration))) return
       event.preventDefault()
       event.stopPropagation()
+      setInteractingViaKeypress(true)
+      setKeyboardControlsVisible(false)
+      clearTimeout(keyboardControlsTimeoutRef.current)
       if (key === 'f') {
         onPressFullscreen()
+      } else if (key === 'c') {
+        drawFocus()
+        setSubtitlesEnabled(!subtitlesEnabled)
       } else if (key === 'm') {
         drawFocus()
         changeMuted(value => !value)
+        if (video) showVolumeFeedback(video.volume, video.muted)
+      } else if (isPlayback && video) {
+        if (event.repeat) return
+        drawFocus()
+        if (key === ' ') {
+          startSpeedHold('keyboard')
+        } else {
+          togglePlayPause()
+        }
+      } else if (isVolumeChange && video) {
+        drawFocus()
+        const percent = clamp(
+          (video.muted ? 0 : videoVolumeToSliderVolume(video.volume)) +
+            (key === 'arrowup' ? 5 : -5),
+          0,
+          100,
+        )
+        const volume = Math.pow(percent / 100, 4)
+        video.volume = volume
+        setVolume(volume)
+        changeMuted(percent === 0)
+        showVolumeFeedback(volume, percent === 0)
       } else if (isSpeedChange && video) {
+        if (speedHoldRef.current) return
         drawFocus()
         const direction = key === '<' ? -1 : 1
         const speed = clamp(video.playbackRate + direction * 0.25, 0.25, 2)
         video.playbackRate = speed
         setPlaybackSpeed(speed)
+        setKeyboardFeedback({icon: ClockIcon, text: l`${speed}×`})
       } else if (video) {
         drawFocus()
         if (isFrameStep) pause()
         const direction = key === 'arrowleft' || key === ',' ? -1 : 1
+        if (!isFrameStep) {
+          setKeyboardFeedback({
+            icon: direction < 0 ? ArrowLeftIcon : ArrowRightIcon,
+            text: direction < 0 ? l`-5` : l`+5`,
+            position: direction < 0 ? 'left' : 'right',
+          })
+        }
         // Assign currentTime directly so small steps don't snap to keyframes.
         video.currentTime = clamp(
           video.currentTime + direction * (isFrameStep ? 1 / 30 : 5),
@@ -339,20 +579,42 @@ export function Controls({
         )
       }
     }
+    const onVideoSurfaceKey = (event: KeyboardEvent) => {
+      if (
+        event.key === ' ' &&
+        event.target instanceof Node &&
+        emptySpaceRef.current?.contains(event.target)
+      ) {
+        onVideoKey(event)
+      }
+    }
+    // Capture Space before the surface's Pressable consumes keyboard activation.
+    document.addEventListener('keydown', onVideoSurfaceKey, true)
     document.addEventListener('keydown', onVideoKey)
-    return () => document.removeEventListener('keydown', onVideoKey)
+    return () => {
+      document.removeEventListener('keydown', onVideoSurfaceKey, true)
+      document.removeEventListener('keydown', onVideoKey)
+    }
   }, [
     active,
     focused,
     fullscreenRef,
     isGif,
     onPressFullscreen,
+    hasSubtitleTrack,
+    subtitlesEnabled,
+    setSubtitlesEnabled,
     changeMuted,
     settingsOpen,
     videoRef,
     drawFocus,
     pause,
     setPlaybackSpeed,
+    l,
+    setVolume,
+    showVolumeFeedback,
+    togglePlayPause,
+    startSpeedHold,
   ])
 
   const onSeek = useCallback(
@@ -391,7 +653,8 @@ export function Controls({
     const duration = videoRef.current.duration || 0
     if (!Number.isFinite(duration)) return
     videoRef.current.currentTime = clamp(currentTime - 5, 0, duration)
-  }, [videoRef])
+    setKeyboardFeedback({icon: ArrowLeftIcon, text: l`-5`, position: 'left'})
+  }, [videoRef, l])
 
   const seekRight = useCallback(() => {
     if (!videoRef.current) return
@@ -401,7 +664,8 @@ export function Controls({
     const duration = videoRef.current.duration || 0
     if (!Number.isFinite(duration)) return
     videoRef.current.currentTime = clamp(currentTime + 5, 0, duration)
-  }, [videoRef])
+    setKeyboardFeedback({icon: ArrowRightIcon, text: l`+5`, position: 'right'})
+  }, [videoRef, l])
 
   const [showCursor, setShowCursor] = useState(true)
   const cursorTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -439,6 +703,7 @@ export function Controls({
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   const onHoverWithTimeout = useCallback(() => {
+    setInteractingViaKeypress(false)
     onHover()
     clearTimeout(timeoutRef.current)
   }, [onHover])
@@ -457,9 +722,12 @@ export function Controls({
   )
 
   const showControls =
-    settingsOpen ||
-    ((focused || autoplayDisabled) && !playing) ||
-    (interactingViaKeypress ? hasFocus : hovered)
+    !speedHeld &&
+    (settingsOpen ||
+      ((focused || autoplayDisabled) && !playing) ||
+      (interactingViaKeypress
+        ? hasFocus && (keyboardControlsVisible || controlsFocused)
+        : hovered))
 
   // adjust subtitle cue positioning to avoid occlusion by controls
   // uses percentage-based positioning (snapToLines=false) so wrapped
@@ -479,6 +747,8 @@ export function Controls({
     )
   }
 
+  const FeedbackIcon = keyboardFeedback?.icon
+
   return (
     <div
       data-testid="postVideoFocusTarget"
@@ -487,6 +757,7 @@ export function Controls({
         position: 'absolute',
         inset: 0,
         overflow: 'hidden',
+        borderRadius: 'inherit',
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -501,14 +772,30 @@ export function Controls({
       onDoubleClick={onDoubleClickEmptySpace}
       onFocus={event => {
         onFocus()
-        if (event.target === event.currentTarget) {
-          drawFocus()
-          setInteractingViaKeypress(true)
+        const focusIsOnControls =
+          event.target !== event.currentTarget &&
+          !emptySpaceRef.current?.contains(event.target)
+        setControlsFocused(focusIsOnControls)
+        if (event.target === event.currentTarget) drawFocus()
+        if (
+          event.target === event.currentTarget ||
+          (focusIsOnControls && event.target.matches(':focus-visible'))
+        ) {
+          revealKeyboardControls()
         }
       }}
-      onBlur={onBlur}
-      onKeyDown={onKeyDown}>
-      <div ref={emptySpaceRef} style={{display: 'flex', flex: 1, minHeight: 0}}>
+      onBlur={() => {
+        onBlur()
+        setControlsFocused(false)
+      }}
+      onKeyDown={event => {
+        if (event.key === 'Tab') revealKeyboardControls()
+      }}>
+      <div
+        ref={emptySpaceRef}
+        style={{display: 'flex', flex: 1, minHeight: 0}}
+        onPointerDownCapture={onPointerDownEmptySpace}
+        onClickCapture={onClickEmptySpaceCapture}>
         <Pressable
           testID="postMediaOpenBtn"
           accessibilityRole="button"
@@ -534,6 +821,9 @@ export function Controls({
         <TimeIndicator time={Math.floor(duration - currentTime)} />
       )}
       <View
+        testID="videoPlaybackControls"
+        pointerEvents={speedHeld ? 'none' : 'auto'}
+        aria-hidden={speedHeld}
         style={[
           a.flex_shrink_0,
           a.w_full,
@@ -554,7 +844,6 @@ export function Controls({
             onSeekEnd={onSeekEnd}
             seekLeft={seekLeft}
             seekRight={seekRight}
-            togglePlayPause={togglePlayPause}
             drawFocus={drawFocus}
           />
         )}
@@ -592,7 +881,22 @@ export function Controls({
             onHover={onVolumeHover}
             onEndHover={onVolumeEndHover}
             drawFocus={drawFocus}
+            onKeyboardVolumeChange={showVolumeFeedback}
           />
+          {hasSubtitleTrack && (
+            <ControlButton
+              testID="videoCaptionsButton"
+              active={subtitlesEnabled}
+              activeLabel={l`Disable captions`}
+              inactiveLabel={l`Enable captions`}
+              activeIcon={CaptionsEnabledIcon}
+              inactiveIcon={CaptionsIcon}
+              onPress={() => {
+                drawFocus()
+                setSubtitlesEnabled(!subtitlesEnabled)
+              }}
+            />
+          )}
           {typeof document !== 'undefined' &&
             document.pictureInPictureEnabled && (
               <ControlButton
@@ -631,6 +935,77 @@ export function Controls({
           )}
         </View>
       </View>
+      {speedHeld && (
+        <View
+          pointerEvents="none"
+          style={[a.absolute, a.inset_0, a.align_center, a.pt_sm]}>
+          <View
+            testID="videoHoldSpeedFeedback"
+            accessibilityLabel={l`Playback speed: 2×`}
+            accessibilityHint=""
+            accessibilityLiveRegion="polite"
+            style={[
+              a.flex_row,
+              a.align_center,
+              a.gap_xs,
+              a.px_sm,
+              a.py_xs,
+              a.rounded_md,
+              {backgroundColor: 'rgba(0, 0, 0, 0.65)'},
+              shapePreference === 'sharp' && SHARP_CORNERS,
+            ]}>
+            <ClockIcon fill={t.palette.white} width={16} aria-hidden />
+            <Text style={[a.font_bold, {color: t.palette.white}]}>
+              <Trans>2×</Trans>
+            </Text>
+          </View>
+        </View>
+      )}
+      {keyboardFeedback && FeedbackIcon && (
+        <View
+          pointerEvents="none"
+          style={[
+            a.absolute,
+            a.inset_0,
+            a.justify_center,
+            keyboardFeedback.position === 'left'
+              ? a.align_start
+              : keyboardFeedback.position === 'right'
+                ? a.align_end
+                : a.align_center,
+            a.p_sm,
+          ]}>
+          <View
+            testID="videoKeyboardFeedback"
+            accessibilityLabel={keyboardFeedback.text}
+            accessibilityHint=""
+            accessibilityLiveRegion="polite"
+            style={[
+              a.justify_center,
+              a.align_center,
+              keyboardFeedback.position ? a.gap_xs : a.gap_2xs,
+              keyboardFeedback.position ? a.p_sm : a.p_2xs,
+              a.rounded_md,
+              {
+                backgroundColor: 'rgba(0, 0, 0, 0.65)',
+                opacity: feedbackVisible ? 1 : 0,
+              },
+              web({transition: 'opacity 150ms ease-out'}),
+              !keyboardFeedback.position && {width: 72, height: 72},
+              shapePreference === 'sharp' && SHARP_CORNERS,
+            ]}>
+            <FeedbackIcon
+              fill={t.palette.white}
+              width={keyboardFeedback.position ? 28 : 24}
+              aria-hidden
+            />
+            <Text
+              style={[a.font_bold, a.text_center, {color: t.palette.white}]}>
+              {keyboardFeedback.text}
+            </Text>
+          </View>
+        </View>
+      )}
       {(showSpinner || error) && (
         <View
           pointerEvents="none"

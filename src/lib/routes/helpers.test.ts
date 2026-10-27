@@ -39,22 +39,25 @@ describe('native tab navigation state', () => {
     ).toBe(true)
   })
 
-  it('only selects a Profile route for the current account', () => {
-    expect(
-      isCurrentProfileRoute({
-        routeName: 'Profile',
-        profileName: 'alice.test',
-        currentHandle: 'alice.test',
-      }),
-    ).toBe(true)
-    expect(
-      isCurrentProfileRoute({
-        routeName: 'Profile',
-        profileName: 'bob.test',
-        currentHandle: 'alice.test',
-      }),
-    ).toBe(false)
-  })
+  it.each([
+    ['alice.test', true],
+    ['did:plc:alice', true],
+    ['bob.test', false],
+    ['did:plc:bob', false],
+    [undefined, false],
+  ])(
+    'matches profile %s to the current account: %s',
+    (profileName, matches) => {
+      expect(
+        isCurrentProfileRoute({
+          routeName: 'Profile',
+          profileName,
+          currentHandle: 'alice.test',
+          currentDid: 'did:plc:alice',
+        }),
+      ).toBe(matches)
+    },
+  )
 
   it.each([
     ['HomeTab', 'Home'],

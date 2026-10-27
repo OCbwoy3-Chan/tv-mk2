@@ -428,6 +428,7 @@ function SwitcherMenuProfileGroup({children}: React.PropsWithChildren) {
         ? (currentRouteInfo.params as CommonNavigatorParams['Profile']).name
         : undefined,
     currentHandle: currentAccount?.handle,
+    currentDid: currentAccount?.did,
   })
 
   const onProfilePress = (e: GestureResponderEvent) => {
@@ -545,6 +546,7 @@ function NavItem({
                   .name
               : undefined,
           currentHandle: currentAccount?.handle,
+          currentDid: currentAccount?.did,
         })
       : isTab(currentRouteInfo.name, pathName)
   const isSelected =

@@ -1,6 +1,8 @@
 const common = require('./jest/config.json')
 const domTests = [
   '<rootDir>/src/platform/polyfills.web.test.ts',
+  '<rootDir>/src/features/keyboardShortcuts/PostMediaDialog.web.test.tsx',
+  '<rootDir>/src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/VideoControls.web.test.tsx',
   '<rootDir>/src/lib/routes/pasteLink.test.ts',
   '<rootDir>/src/view/com/pager/TabBar.web.test.tsx',
   '<rootDir>/src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/usePictureInPicture.test.tsx',

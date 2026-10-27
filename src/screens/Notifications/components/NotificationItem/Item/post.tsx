@@ -7,6 +7,7 @@ import {Trans, useLingui} from '@lingui/react/macro'
 import {MAX_POST_LINES} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {makeProfileLink} from '#/lib/routes/links'
+import {getShapeStyle} from '#/lib/shapes'
 import {forceLTR} from '#/lib/strings/bidi'
 import {NON_BREAKING_SPACE} from '#/lib/strings/constants'
 import {sanitizeHandle} from '#/lib/strings/handles'
@@ -16,6 +17,7 @@ import {
   type Shadow,
   usePostShadow,
 } from '#/state/cache/post-shadow'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {type ParentPost} from '#/state/queries/notifications/grouped/types'
 import {useSession} from '#/state/session'
@@ -27,6 +29,7 @@ import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Link, WebOnlyInlineLinkText} from '#/components/Link'
 import {ContentHider} from '#/components/moderation/ContentHider'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
+import {EmbedTarget} from '#/components/Post/Embed'
 import {ExternalEmbed} from '#/components/Post/Embed/ExternalEmbed'
 import {ShowMoreTextButton} from '#/components/Post/ShowMoreTextButton'
 import {PostControls} from '#/components/PostControls'
@@ -329,6 +332,7 @@ export function PostBody({post}: {post: PostView}) {
          * before the timestamp too.
          */
         <View
+          {...{dataSet: {keyboardNavigationEmbed: 'true'}}}
           style={[!richText && a.mt_xs, embedPreview === 'media' && a.mb_xs]}>
           <EmbedPreview
             embed={post.embed}
@@ -388,9 +392,17 @@ function RecordPreview({embed}: {embed: app.bsky.embed.record.View}) {
   const parsed = bsky.post.parseEmbedRecordView(embed)
 
   if (parsed.type === 'feed') {
-    return <FeedCard generator={parsed.view} />
+    return (
+      <EmbedTarget kind="embed">
+        <FeedCard generator={parsed.view} />
+      </EmbedTarget>
+    )
   }
-  return <QuoteCard embed={embed} />
+  return (
+    <EmbedTarget kind="quote">
+      <QuoteCard embed={embed} />
+    </EmbedTarget>
+  )
 }
 
 /**
@@ -423,9 +435,11 @@ function EmbedPreview({
   }
   if (bsky.isType(app.bsky.embed.external.view, embed)) {
     return (
-      <ContentHider modui={moderation?.ui('contentMedia')}>
-        <ExternalEmbed link={embed.external} post={post} />
-      </ContentHider>
+      <EmbedTarget kind="embed">
+        <ContentHider modui={moderation?.ui('contentMedia')}>
+          <ExternalEmbed link={embed.external} post={post} />
+        </ContentHider>
+      </EmbedTarget>
     )
   }
   return (
@@ -524,6 +538,7 @@ function QuoteCardPost({
     ? moderatePost(quote, moderationOpts)
     : undefined
   const href = makePostLink(view)
+  const shape = useEnableSquareButtons()
   const quotedRecord = bsky.isType(app.bsky.feed.post, view.value)
     ? view.value
     : undefined
@@ -531,15 +546,23 @@ function QuoteCardPost({
   return (
     <ContentHider modui={moderation?.ui('contentList')}>
       <Link
+        testID="quotedPostOpenBtn"
         to={href}
         label={l`Post by ${name}`}
-        style={[a.flex_col, a.align_stretch, a.rounded_md]}>
+        style={[
+          a.flex_col,
+          a.align_stretch,
+          getShapeStyle(shape, a.rounded_md, a.rounded_md),
+        ]}>
         {({hovered, pressed}) => (
           <Card style={[a.gap_xs]}>
             <SubtleHover
               hover={hovered || pressed}
               native
-              style={[a.rounded_md, a.curve_continuous]}
+              style={[
+                getShapeStyle(shape, a.rounded_md, a.rounded_md),
+                a.curve_continuous,
+              ]}
             />
             <View style={[a.flex_row, a.align_center, a.gap_xs, {height: 20}]}>
               <UserAvatar

@@ -16,8 +16,11 @@ import {useRequireEmailVerification} from '#/lib/hooks/useRequireEmailVerificati
 import {isBlockedOrBlocking} from '#/lib/moderation/blocked-and-muted'
 import {makeProfileLink} from '#/lib/routes/links'
 import {type NavigationProp} from '#/lib/routes/types'
+import {getShapeStyle} from '#/lib/shapes'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
+import {useConfirmFollow} from '#/state/preferences/confirm-follow'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useGetConvoForMembers} from '#/state/queries/messages/get-convo-for-members'
 import {useProfileFollowMutationQueue} from '#/state/queries/profile'
@@ -27,12 +30,14 @@ import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {AvatarStack} from '#/components/AvatarStack'
 import {Button} from '#/components/Button'
+import {FollowConfirmationDialog} from '#/components/dialogs/FollowConfirmationDialog'
 import {canBeMessaged} from '#/components/dms/util'
 import {StarterPack_Stroke2_Corner0_Rounded as StarterPackIcon} from '#/components/icons/brands/StarterPack'
 import {shouldShowKnownFollowers} from '#/components/KnownFollowers'
 import {InlineLinkText, Link, useLink} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import {ProfileBadges} from '#/components/ProfileBadges'
+import * as Prompt from '#/components/Prompt'
 import {useStarterPackLink} from '#/components/StarterPack/StarterPackCard'
 import {SubtleHover} from '#/components/SubtleHover'
 import * as Toast from '#/components/Toast'
@@ -81,6 +86,7 @@ function PillButton({
 }) {
   const t = useTheme()
   const suppressHover = useSuppressHover()
+  const shape = useEnableSquareButtons()
 
   return (
     <Button
@@ -92,7 +98,7 @@ function PillButton({
       onHoverIn={() => suppressHover(true)}
       onHoverOut={() => suppressHover(false)}
       style={[
-        a.rounded_full,
+        getShapeStyle(shape, a.rounded_sm, a.rounded_full),
         {height: PILL_HEIGHT, paddingHorizontal: 10, borderWidth: 1},
         muted
           ? [t.atoms.bg_contrast_50, {borderColor: 'transparent'}]
@@ -148,6 +154,11 @@ function FollowButtonInner({
   const {t: l} = useLingui()
   const profile = useProfileShadow(profileUnshadowed)
   const name = useDisplayName(profile)
+  const confirmFollow = useConfirmFollow()
+  const promptControl = Prompt.usePromptControl()
+  const [confirmationAction, setConfirmationAction] = useState<
+    'follow' | 'unfollow'
+  >('follow')
   const [queueFollow, queueUnfollow] = useProfileFollowMutationQueue(
     profile,
     logContext,
@@ -164,12 +175,9 @@ function FollowButtonInner({
 
   const isFollowing = Boolean(profile.viewer.following)
 
-  const onPress = async (event: GestureResponderEvent) => {
-    // Keep the press from reaching the row
-    event.preventDefault()
-    event.stopPropagation()
+  const executeAction = async (action: 'follow' | 'unfollow') => {
     try {
-      if (isFollowing) {
+      if (action === 'unfollow') {
         await queueUnfollow()
         Toast.show(l`No longer following ${name}`)
       } else {
@@ -180,6 +188,18 @@ function FollowButtonInner({
       if ((error as Error)?.name !== 'AbortError') {
         Toast.show(l`An issue occurred, please try again.`, {type: 'error'})
       }
+    }
+  }
+
+  const onPress = (event: GestureResponderEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    const action = isFollowing ? 'unfollow' : 'follow'
+    if (isFollowing || confirmFollow) {
+      setConfirmationAction(action)
+      promptControl.open()
+    } else {
+      void executeAction(action)
     }
   }
 
@@ -199,11 +219,16 @@ function FollowButtonInner({
         })
 
   return (
-    <PillButton
-      label={label}
-      muted={isFollowing}
-      onPress={event => void onPress(event)}
-    />
+    <>
+      <PillButton label={label} muted={isFollowing} onPress={onPress} />
+      <FollowConfirmationDialog
+        control={promptControl}
+        displayName={name}
+        handle={profile.handle}
+        actionType={confirmationAction}
+        onConfirm={() => void executeAction(confirmationAction)}
+      />
+    </>
   )
 }
 
@@ -518,6 +543,7 @@ export function ShowMoreActorsButton({
   return (
     <Button
       label={l`Show more`}
+      {...{dataSet: {keyboardNavigationItem: 'true'}}}
       accessibilityHint={l`Loads more people into this list`}
       aria-busy={isLoading}
       disabled={isLoading}
@@ -605,6 +631,7 @@ export function ActorListItem({
         <SubtleHover hover={hover} />
         <Pressable
           accessibilityRole="link"
+          {...{dataSet: {keyboardNavigationItem: 'true'}}}
           accessibilityLabel={l`Go to ${name}’s profile`}
           accessibilityHint=""
           onPress={event => {

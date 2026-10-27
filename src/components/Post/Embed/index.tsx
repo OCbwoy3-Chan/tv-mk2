@@ -130,7 +130,7 @@ function EmbedInner({embed: rawEmbed, ...rest}: EmbedProps) {
 }
 
 /** Keep each top-level attachment separate from media nested in quoted posts. */
-function EmbedTarget({
+export function EmbedTarget({
   kind,
   children,
 }: {
@@ -277,6 +277,7 @@ function ExternalCardEmbed({
       <Card
         view={external}
         authorDid={getEmbedCreator(rest.post?.record, external.uri)}
+        viewContext={rest.viewContext}
         onEmbedInteractionCallback={rest.onOpen}
         style={[a.mt_sm, rest.style]}
       />

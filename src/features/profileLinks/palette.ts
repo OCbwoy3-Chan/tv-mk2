@@ -1,21 +1,31 @@
+import chroma from 'chroma-js'
+
 import {useTheme} from '#/alf'
 
+/** Keep the theme's support hue while making small white labels readable. */
+function supportBackground(color: string) {
+  let background = color
+  while (chroma.contrast(background, '#ffffff') < 4.5) {
+    background = chroma(background).darken(0.1).hex()
+  }
+  return background
+}
+
 /**
- * The support green, which is the same everywhere it appears so people learn
- * what it means.
- *
- * Dark themes mirror the palette scale (positive_600 becomes a light green),
- * so the button picks its step per theme to land on the same deep green. The
- * tints rely on that mirroring instead: positive_25 is a pale wash in light
- * mode and a deep one in dark mode.
+ * Support labels use white on a sufficiently dark fill. Primary-button text
+ * may be dark in Material You and cannot be reused on these mid-tone fills.
  */
 export function useSupportPalette() {
   const t = useTheme()
   const light = t.name === 'light'
   return {
-    bg: light ? t.palette.positive_600 : t.palette.positive_400,
-    bgHover: light ? t.palette.positive_700 : t.palette.positive_300,
-    fg: t.palette.white,
+    bg: supportBackground(
+      light ? t.palette.positive_600 : t.palette.positive_400,
+    ),
+    bgHover: supportBackground(
+      light ? t.palette.positive_700 : t.palette.positive_300,
+    ),
+    fg: '#ffffff',
     tintBg: t.palette.positive_25,
     tintBorder: t.palette.positive_100,
     tintText: t.palette.positive_700,

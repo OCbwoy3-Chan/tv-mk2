@@ -3,8 +3,15 @@ import {Image} from 'expo-image'
 import {moderatePost} from '@bsky/sdk/moderation'
 import {Trans} from '@lingui/react/macro'
 
+import {getShapeStyle, type ShapePreference} from '#/lib/shapes'
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {
+  applyImageTransforms,
+  useImageCdnHost,
+} from '#/state/preferences/image-cdn-host'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {Text} from '#/components/Typography'
@@ -88,6 +95,9 @@ export function InlineImages({
   style?: StyleProp<ViewStyle>
 }) {
   const t = useTheme()
+  const shape = useEnableSquareButtons()
+  const imageCdnHost = useImageCdnHost()
+  const thumbnailFormat = useThumbnailFormat()
   const thumbnails = getPostThumbnails(embed).slice(0, 4)
 
   if (thumbnails.length === 0) return null
@@ -125,14 +135,25 @@ export function InlineImages({
                   t.atoms.border_contrast_low,
                   // Rounded on the outside of the grid, tight between tiles
                   {
-                    borderTopLeftRadius: cornerRadius(isTop && isLeft),
-                    borderTopRightRadius: cornerRadius(isTop && isRight),
-                    borderBottomLeftRadius: cornerRadius(isBottom && isLeft),
-                    borderBottomRightRadius: cornerRadius(isBottom && isRight),
+                    borderTopLeftRadius: cornerRadius(isTop && isLeft, shape),
+                    borderTopRightRadius: cornerRadius(isTop && isRight, shape),
+                    borderBottomLeftRadius: cornerRadius(
+                      isBottom && isLeft,
+                      shape,
+                    ),
+                    borderBottomRightRadius: cornerRadius(
+                      isBottom && isRight,
+                      shape,
+                    ),
                   },
                 ]}>
                 <Image
-                  source={{uri: thumbnail.uri}}
+                  source={{
+                    uri: applyImageTransforms(thumbnail.uri, {
+                      imageCdnHost,
+                      format: thumbnailFormat,
+                    }),
+                  }}
                   accessibilityIgnoresInvertColors
                   // Alt text could describe what the blur is hiding
                   accessibilityLabel={blurred ? undefined : thumbnail.alt}
@@ -154,7 +175,8 @@ export function InlineImages({
  * Corner radius of an `InlineImages` tile: rounded where the corner is on the
  * outside of the grid, tight where it meets another tile.
  */
-function cornerRadius(isOuter: boolean) {
+function cornerRadius(isOuter: boolean, shape: ShapePreference) {
+  if (shape === 'sharp') return 0
   return isOuter ? tokens.borderRadius.md : tokens.borderRadius._2xs
 }
 
@@ -172,12 +194,13 @@ export function Card({
 }) {
   const t = useTheme()
   const {isRead} = useItemContext()
+  const shape = useEnableSquareButtons()
 
   return (
     <View
       style={[
         a.p_md,
-        a.rounded_md,
+        getShapeStyle(shape, a.rounded_md, a.rounded_md),
         a.curve_continuous,
         a.border,
         t.atoms.border_contrast_low,
@@ -204,12 +227,7 @@ export function FeedCard({
   return (
     <Card>
       <View style={[a.flex_row, a.align_start, a.gap_sm]}>
-        <UserAvatar
-          type="algo"
-          size={32}
-          avatar={generator.avatar}
-          extraAviStyle={{borderRadius: tokens.borderRadius.sm}}
-        />
+        <UserAvatar type="algo" size={32} avatar={generator.avatar} />
         <View style={[a.flex_1]}>
           <Text
             emoji

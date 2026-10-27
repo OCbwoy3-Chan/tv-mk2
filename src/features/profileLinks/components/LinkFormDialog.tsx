@@ -177,7 +177,7 @@ function LinkFormInner({
       return
     }
     let cancelled = false
-    void getLinkMeta(targetUrl, 8e3).then(meta => {
+    void getLinkMeta(targetUrl, 8e3, {fetchAppMetadata: true}).then(meta => {
       if (cancelled || meta.error) return
       setReachability('reachable')
       // a standard.site record's title, like a blog's name, beats the HTML one
@@ -264,7 +264,9 @@ function LinkFormInner({
     if (needsCheck || needsIcon || isNewDestination) {
       setReachability('checking')
       const [meta, uploadedIcon, safelinkAction] = await Promise.all([
-        needsCheck ? getLinkMeta(targetUrl, 8e3) : undefined,
+        needsCheck
+          ? getLinkMeta(targetUrl, 8e3, {fetchAppMetadata: true})
+          : undefined,
         needsIcon ? uploadLinkIcon(targetUrl) : undefined,
         // unlike reachability, "save anyway" can't skip this
         isNewDestination ? checkSafelink(targetUrl) : undefined,
@@ -511,7 +513,7 @@ function LinkFormInner({
             hoverStyle={
               provider ? {backgroundColor: palette.bgHover} : undefined
             }>
-            <ButtonText>
+            <ButtonText style={provider ? {color: palette.fg} : undefined}>
               {reachability === 'unreachable' ? (
                 <Trans>Save anyway</Trans>
               ) : isEditing ? (
@@ -520,7 +522,12 @@ function LinkFormInner({
                 <Trans>Add link</Trans>
               )}
             </ButtonText>
-            {reachability === 'checking' && <ButtonIcon icon={Loader} />}
+            {reachability === 'checking' && (
+              <ButtonIcon
+                icon={Loader}
+                color={provider ? palette.fg : undefined}
+              />
+            )}
           </Button>
           {onRemove ? (
             <Button

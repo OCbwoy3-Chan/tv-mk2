@@ -1,4 +1,4 @@
-import { Image } from 'expo-image'
+import {Image} from 'expo-image'
 
 import {type Props, useCommonSVGProps} from './common'
 
@@ -9,16 +9,16 @@ export function Full(
   },
 ) {
   const {size} = useCommonSVGProps(props)
-  
+
   return (
     <Image
-    source={require('../../../assets/logo.png')}
-    accessibilityLabel="Tenna"
-    accessibilityHint=""
-    accessibilityIgnoresInvertColors
-    style={[{height: size, aspectRatio: 500 / 441}]}
+      source={require('../../../assets/logo.png')}
+      accessibilityLabel="Tenna"
+      accessibilityHint=""
+      accessibilityIgnoresInvertColors
+      style={[{height: size, aspectRatio: 500 / 441}]}
     />
   )
 }
 
-export const Mark = Full;
+export const Mark = Full
