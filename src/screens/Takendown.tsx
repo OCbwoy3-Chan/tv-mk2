@@ -208,16 +208,18 @@ export function Takendown() {
             ) : (
               <P style={[t.atoms.text_contrast_medium, a.leading_snug]}>
                 <Trans>
-                  Your account was found to be in violation of the{' '}
+                  Bluesky foundy your account to be in violation of their{' '}
                   <SimpleInlineLinkText
                     label={_(msg`Bluesky Social Terms of Service`)}
                     to="https://bsky.social/about/support/tos"
                     style={[a.text_md, a.leading_snug]}>
-                    Bluesky Social Terms of Service
+                    Terms of Service
                   </SimpleInlineLinkText>
-                  . You have been sent an email outlining the specific violation
-                  and suspension period, if applicable. You can appeal this
-                  decision if you believe it was made in error.
+                  . If you're on a Bluesky-hosted, you have been sent an email
+                  outlining the specific violation and suspension period, if
+                  applicable. If not, may god help you. You can appeal this
+                  decision if you believe it was made in error, they always make
+                  errors. Fuck Bluesky devs.
                 </Trans>
               </P>
             )}
