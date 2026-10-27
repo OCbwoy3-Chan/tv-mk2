@@ -10,6 +10,7 @@ import {
   saveImageToMediaLibrary,
   saveVideoToMediaLibrary,
 } from '#/lib/media/manip'
+import {getDownloadImageUri} from '#/lib/media/original-image'
 import * as env from '#/env'
 
 jest.mock('#/logger', () => ({logger: {error: jest.fn()}}))
@@ -20,8 +21,9 @@ jest.mock('#/env', () => ({
   IS_NATIVE: true,
 }))
 jest.mock('#/lib/media/original-image', () => ({
-  getDownloadImageUri: (uri: string, format: string) =>
+  getDownloadImageUri: jest.fn((uri: string, format: string) =>
     Promise.resolve(format === 'jpeg' ? `${uri}@jpeg` : uri),
+  ),
 }))
 jest.mock('expo-media-library/legacy', () => ({
   createAlbumAsync: jest.fn().mockResolvedValue(undefined),
@@ -245,5 +247,48 @@ it.each([
         {idempotent: true},
       )
     }
+  },
+)
+
+it.each(['original', 'png'])(
+  'retries a missing %s download through the preview preset',
+  async format => {
+    const uri =
+      'https://cdn.example/img/feed_fullsize/plain/did:plc:alice/blob@png'
+    const missingUri = 'https://pds.example/missing-blob'
+    jest.mocked(getDownloadImageUri).mockResolvedValueOnce(missingUri)
+    jest
+      .mocked(createDownloadResumable)
+      .mockReturnValueOnce({
+        downloadAsync: () =>
+          Promise.resolve({
+            status: 404,
+            uri: 'file:///cache/missing.bin',
+            headers: {'content-type': 'application/json'},
+          }),
+      } as unknown as ReturnType<typeof createDownloadResumable>)
+      .mockReturnValueOnce({
+        downloadAsync: () =>
+          Promise.resolve({
+            status: 200,
+            uri: 'file:///cache/preview.bin',
+            headers: {'content-type': 'image/png'},
+          }),
+      } as unknown as ReturnType<typeof createDownloadResumable>)
+
+    await saveImageToMediaLibrary({uri, format})
+
+    expect(createDownloadResumable).toHaveBeenCalledTimes(2)
+    expect(createDownloadResumable).toHaveBeenLastCalledWith(
+      uri,
+      expect.any(String),
+      {cache: true},
+    )
+    expect(saveToLibraryAsync).toHaveBeenCalledWith(
+      expect.stringMatching(/\.png$/),
+    )
+    expect(deleteAsync).toHaveBeenCalledWith('file:///cache/missing.bin', {
+      idempotent: true,
+    })
   },
 )

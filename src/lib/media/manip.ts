@@ -19,6 +19,7 @@ import {getMediaDownloadFilename} from '#/lib/media/downloadFilename'
 import {compressImageSource} from '#/lib/media/image/compress'
 import {formatToFileExt, imageMimeToExtension} from '#/lib/media/image-formats'
 import {getDownloadImageUri} from '#/lib/media/original-image'
+import {modifyImageFormat} from '#/lib/media/util'
 import {logger} from '#/logger'
 import {IS_ANDROID, IS_IOS} from '#/env'
 import {renderImage} from './image-manipulator'
@@ -135,11 +136,33 @@ export async function saveImageToMediaLibrary({
   downloadName?: string
 }) {
   const downloadUri = await getDownloadImageUri(uri, format)
-  const downloadedPath = await downloadImage(
-    downloadUri,
-    String(uuid.default.v4()),
-    20e3,
-  )
+  let downloadedPath: string
+  try {
+    downloadedPath = await downloadImage(
+      downloadUri,
+      String(uuid.default.v4()),
+      20e3,
+    )
+  } catch (error) {
+    /*
+     * A blob can remain cached in the CDN after its PDS copy disappears.
+     * Some CDNs also serve previews without supporting the download preset.
+     */
+    const fallbackUri =
+      format === 'original' ? uri : modifyImageFormat(uri, format)
+    if (
+      !(error instanceof ImageDownloadHttpError) ||
+      error.status !== 404 ||
+      fallbackUri === downloadUri
+    ) {
+      throw error
+    }
+    downloadedPath = await downloadImage(
+      fallbackUri,
+      String(uuid.default.v4()),
+      20e3,
+    )
+  }
   const dotIndex = downloadedPath.lastIndexOf('.')
   const ext =
     dotIndex >= 0
@@ -441,6 +464,12 @@ async function withTempFile<T>(
   }
 }
 
+class ImageDownloadHttpError extends Error {
+  constructor(readonly status: number) {
+    super(`Image download failed: HTTP ${status}`)
+  }
+}
+
 async function downloadImage(uri: string, destName: string, timeout: number) {
   // Download to a temp path first, then rename with the correct extension
   // based on the response's mimeType.
@@ -472,7 +501,7 @@ async function downloadImage(uri: string, destName: string, timeout: number) {
 
     downloadedPath = dlRes.uri
     if (dlRes.status < 200 || dlRes.status >= 300) {
-      throw new Error(`Image download failed: HTTP ${dlRes.status}`)
+      throw new ImageDownloadHttpError(dlRes.status)
     }
     // Android exposes the MIME type in headers rather than mimeType.
     const contentType = Object.entries(dlRes.headers ?? {}).find(
