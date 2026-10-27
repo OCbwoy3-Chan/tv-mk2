@@ -95,7 +95,7 @@ export type PostDraft = {
   embed: EmbedDraft
   shortenedGraphemeLength: number
   /** Per-post ATProto rkey settings (optional). */
-  atprotoRkey?: {
+  atprotoRkeyV2?: {
     generation: 'tid' | 'prefix' | 'suffix'
     prefix?: string
     suffix?: string
@@ -281,11 +281,11 @@ export function composerReducer(
           media: undefined,
           link: undefined,
         },
-        atprotoRkey:
-          state.thread.posts[activePostIndex]?.atprotoRkey ?? {
-            generation: persisted.defaults.atprotoRkeyGenerationDefault ?? "tid",
-            prefix: persisted.defaults.atprotoRkeyPrefixDefault,
-            suffix: persisted.defaults.atprotoRkeySuffixDefault,
+        atprotoRkeyV2:
+          state.thread.posts[activePostIndex]?.atprotoRkeyV2 ?? {
+            generation: persisted.defaults.atprotoRkeyV2GenerationDefault ?? "tid",
+            prefix: persisted.defaults.atprotoRkeyV2PrefixDefault,
+            suffix: persisted.defaults.atprotoRkeyV2SuffixDefault,
           },
       })
       return {
@@ -437,7 +437,7 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
     case 'update_rkey': {
       return {
         ...state,
-        atprotoRkey: {
+        atprotoRkeyV2: {
           generation: action.generation,
           prefix: action.prefix ?? '',
           suffix: action.suffix ?? '',
@@ -711,7 +711,7 @@ export function createComposerState({
   initQuoteUri,
   initInteractionSettings,
   initVideoUri,
-  initAtprotoRkey,
+  initatprotoRkeyV2,
   initTags,
 }: {
   initText: string | undefined
@@ -721,7 +721,7 @@ export function createComposerState({
   initInteractionSettings:
     app.bsky.actor.defs.PostInteractionSettingsPref | undefined
   initVideoUri?: ComposerOpts['videoUri']
-  initAtprotoRkey?: {generation: 'tid' | 'prefix' | 'suffix'; prefix?: string | undefined; suffix?: string | undefined}
+  initatprotoRkeyV2?: {generation: 'tid' | 'prefix' | 'suffix'; prefix?: string | undefined; suffix?: string | undefined}
   initTags?: string[]
 }): ComposerState {
   let media: ImagesMedia | GalleryMedia | VideoMedia | undefined
@@ -836,9 +836,9 @@ export function createComposerState({
   }
 
   const kirkprotoRkeyS =  {
-    generation: persisted.defaults.atprotoRkeyGenerationDefault ?? "tid",
-    prefix: persisted.defaults.atprotoRkeyPrefixDefault,
-    suffix: persisted.defaults.atprotoRkeySuffixDefault,
+    generation: persisted.defaults.atprotoRkeyV2GenerationDefault ?? "tid",
+    prefix: persisted.defaults.atprotoRkeyV2PrefixDefault,
+    suffix: persisted.defaults.atprotoRkeyV2SuffixDefault,
   }
 
   return {
@@ -858,7 +858,7 @@ export function createComposerState({
             media,
             link,
           },
-          atprotoRkey: initAtprotoRkey ?? kirkprotoRkeyS,
+          atprotoRkeyV2: initatprotoRkeyV2 ?? kirkprotoRkeyS,
         },
       ],
       postgate: createPostgateRecord({

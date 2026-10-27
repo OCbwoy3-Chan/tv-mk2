@@ -71,7 +71,7 @@ interface PostOpts {
   pdsClient: Client
   omitViaField?: boolean
   tidSuffix?: string //ignore
-  atprotoRkeyGeneration?:
+  atprotoRkeyV2Generation?:
     | {type: 'tid'}
     | {type: 'prefix'; prefix: string}
     | {type: 'suffix'; suffix: string}
@@ -138,9 +138,9 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     let rkey = tid.toString()
 
     // Prefer per-post ATProto rkey settings (from the composer). Fall back to
-    // the global option passed in `opts.atprotoRkeyGeneration` if the post
+    // the global option passed in `opts.atprotoRkeyV2Generation` if the post
     // doesn't specify one.
-    const perPostRkey = draft.atprotoRkey
+    const perPostRkey = draft.atprotoRkeyV2
     if (perPostRkey && perPostRkey.generation) {
       if (perPostRkey.generation === 'prefix') {
         const prefix = (perPostRkey.prefix ?? '').trim()
@@ -153,14 +153,14 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
           rkey = `${rkey.slice(0, Math.max(0, rkey.length - suffix.length))}${suffix}`
         }
       }
-    } else if (opts.atprotoRkeyGeneration) {
-      if (opts.atprotoRkeyGeneration.type === 'prefix') {
-        const prefix = opts.atprotoRkeyGeneration.prefix.trim()
+    } else if (opts.atprotoRkeyV2Generation) {
+      if (opts.atprotoRkeyV2Generation.type === 'prefix') {
+        const prefix = opts.atprotoRkeyV2Generation.prefix.trim()
         if (prefix.length) {
           rkey = `${prefix}${rkey.slice(prefix.length)}`
         }
-      } else if (opts.atprotoRkeyGeneration.type === 'suffix') {
-        const suffix = opts.atprotoRkeyGeneration.suffix.trim()
+      } else if (opts.atprotoRkeyV2Generation.type === 'suffix') {
+        const suffix = opts.atprotoRkeyV2Generation.suffix.trim()
         if (suffix.length) {
           rkey = `${rkey.slice(0, Math.max(0, rkey.length - suffix.length))}${suffix}`
         }

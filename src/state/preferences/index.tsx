@@ -5,7 +5,7 @@ import {Provider as AlsoLikedCollapseByDefaultProvider} from './also-liked-colla
 import {Provider as AlsoLikedFeedProvider} from './also-liked-feed-enabled'
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
 import {Provider as AtprotoExplorerProvider} from './atproto-explorer'
-import {Provider as AtprotoRkeySettingsProvider} from './atproto-rkey-settings.tsx'
+import {Provider as atprotoRkeyV2SettingsProvider} from './atproto-rkey-settings.tsx'
 import {Provider as AutoCompactAccountSwitcherProvider} from './auto-compact-account-switcher'
 import {Provider as AutoLikeOnRepostProvider} from './auto-like-on-repost'
 import {Provider as AutoplayProvider} from './autoplay'
@@ -93,8 +93,8 @@ export {
   useSetRequireAltTextEnabled,
 } from './alt-text-required'
 export {
-  useAtprotoRkeySettings,
-  useSetAtprotoRkeySettings,
+  useatprotoRkeyV2Settings,
+  useSetatprotoRkeyV2Settings,
 } from './atproto-rkey-settings'
 export {useAutoplayDisabled, useSetAutoplayDisabled} from './autoplay'
 export {useCompactPosts, useSetCompactPosts} from './compact-posts'
@@ -254,7 +254,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                       <DiscoverContextEnabledProvider>
                                                                                                                                         <OmitViaFieldProvider>
                                                                                                                                           <TidSuffixProvider>
-                                                                                                                                            <AtprotoRkeySettingsProvider>
+                                                                                                                                            <atprotoRkeyV2SettingsProvider>
                                                                                                                                               <PrivatePostsEnabledProvider>
                                                                                                                                                 <DisableInfiniteScrollProvider>
                                                                                                                                                   <HideQuotesOfBlockedAccountsProvider>
@@ -274,7 +274,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                                   </HideQuotesOfBlockedAccountsProvider>
                                                                                                                                                 </DisableInfiniteScrollProvider>
                                                                                                                                               </PrivatePostsEnabledProvider>
-                                                                                                                                            </AtprotoRkeySettingsProvider>
+                                                                                                                                            </atprotoRkeyV2SettingsProvider>
                                                                                                                                           </TidSuffixProvider>
                                                                                                                                         </OmitViaFieldProvider>
                                                                                                                                       </DiscoverContextEnabledProvider>

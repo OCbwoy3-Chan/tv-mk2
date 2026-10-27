@@ -7,10 +7,10 @@ import {Trans} from '@lingui/react/macro'
 import {
   isValidAtprotoTidPrefix,
   isValidAtprotoTidSuffix,
-  normalizeAtprotoRkey,
+  normalizeatprotoRkeyV2,
 } from '#/lib/crack/atproto-rkey'
 import { useCustomPostRkeysEnabled } from '#/state/preferences'
-import { useAtprotoRkeySettings, useSetAtprotoRkeySettings } from '#/state/preferences/atproto-rkey-settings'
+import { useatprotoRkeyV2Settings, useSetatprotoRkeyV2Settings } from '#/state/preferences/atproto-rkey-settings'
 import {atoms as a, useTheme, web} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -39,8 +39,8 @@ export function AtprotoBtn({
   const t = useTheme()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const rkeysEnabled = useCustomPostRkeysEnabled();
-  const update = useSetAtprotoRkeySettings()
-  const settings = useAtprotoRkeySettings();
+  const update = useSetatprotoRkeyV2Settings()
+  const settings = useatprotoRkeyV2Settings();
   const control = Dialog.useDialogControl()
   const [draftGeneration, setDraftGeneration] = useState<GenerationMode>('tid')
   const [draftPrefix, setDraftPrefix] = useState('')
@@ -63,8 +63,8 @@ export function AtprotoBtn({
     control.open()
   }
 
-  const normalizedPrefix = normalizeAtprotoRkey(draftPrefix)
-  const normalizedSuffix = normalizeAtprotoRkey(draftSuffix)
+  const normalizedPrefix = normalizeatprotoRkeyV2(draftPrefix)
+  const normalizedSuffix = normalizeatprotoRkeyV2(draftSuffix)
   const effectivePrefix = draftGeneration === 'prefix' ? normalizedPrefix : ''
   const effectiveSuffix = draftGeneration === 'suffix' ? normalizedSuffix : ''
 

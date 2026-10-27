@@ -2,20 +2,20 @@ const RKEY_REGEX = /^[A-Za-z0-9._~:-]{1,512}$/
 const TID_REGEX = /^[234567abcdefghij][234567abcdefghijklmnopqrstuvwxyz]{12}$/
 const TID_CHAR_REGEX = /^[234567abcdefghijklmnopqrstuvwxyz]+$/
 
-export function normalizeAtprotoRkey(value: string): string {
+export function normalizeatprotoRkeyV2(value: string): string {
   return value.trim()
 }
 
-export function isValidAtprotoRkey(value: string): boolean {
+export function isValidatprotoRkeyV2(value: string): boolean {
   if (value === '.' || value === '..') return false
   return RKEY_REGEX.test(value)
 }
 
-export function buildPrefixedAtprotoRkey(prefix: string, tid: string) {
+export function buildPrefixedatprotoRkeyV2(prefix: string, tid: string) {
   return `${prefix}${tid.slice(prefix.length)}`
 }
 
-export function buildSuffixedAtprotoRkey(tid: string, suffix: string) {
+export function buildSuffixedatprotoRkeyV2(tid: string, suffix: string) {
   return `${tid.slice(0, tid.length - suffix.length)}${suffix}`
 }
 

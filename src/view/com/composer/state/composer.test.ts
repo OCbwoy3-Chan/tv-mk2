@@ -35,8 +35,8 @@ describe('composerReducer', () => {
       postAction: {type: 'update_rkey', generation: 'prefix', prefix: 'tenna'},
     })
     const next = composerReducer(state, {type: 'add_post'})
-    expect(next.thread.posts[0].atprotoRkey).toEqual({generation: 'prefix', prefix: 'tenna', suffix: ''})
-    expect(next.thread.posts[1].atprotoRkey).toEqual(next.thread.posts[0].atprotoRkey)
+    expect(next.thread.posts[0].atprotoRkeyV2).toEqual({generation: 'prefix', prefix: 'tenna', suffix: ''})
+    expect(next.thread.posts[1].atprotoRkeyV2).toEqual(next.thread.posts[0].atprotoRkeyV2)
   })
   describe('add_post', () => {
     it('selects the appended post and requests focus', () => {

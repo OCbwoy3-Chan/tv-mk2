@@ -28,9 +28,9 @@ describe('persisted schema helpers', () => {
       hideOwnTennaBadge: true,
       hideBetaBadge: false,
       customPostRkeysEnabled: true,
-      atprotoRkeyGenerationDefault: 'prefix',
-      atprotoRkeyPrefixDefault: 'tenna',
-      atprotoRkeySuffixDefault: 'meow',
+      atprotoRkeyV2GenerationDefault: 'prefix',
+      atprotoRkeyV2PrefixDefault: 'tenna',
+      atprotoRkeyV2SuffixDefault: 'meow',
       pasteToLinkEnabled: true,
     }
     const parsed = tryParse(

@@ -101,7 +101,7 @@ import {
   useForceAltTextEnabled,
   useRequireAltTextEnabled,
 } from '#/state/preferences'
-import {useAtprotoRkeySettings} from '#/state/preferences/atproto-rkey-settings'
+import {useatprotoRkeyV2Settings} from '#/state/preferences/atproto-rkey-settings'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   fromPostLanguages,
@@ -499,8 +499,8 @@ export const ComposePost = ({
     setLanguageNudgeAt(prev => (now - prev > 10_000 ? now : prev))
   }
 
-  const uInitRkeyS = useAtprotoRkeySettings()
-  const initAtprotoRkey = {
+  const uInitRkeyS = useatprotoRkeyV2Settings()
+  const initatprotoRkeyV2 = {
     generation: uInitRkeyS.generation ?? 'tid',
     prefix: uInitRkeyS.prefix,
     suffix: uInitRkeyS.suffix,
@@ -516,7 +516,7 @@ export const ComposePost = ({
         initMention,
         initInteractionSettings: preferences?.postInteractionSettings,
         initVideoUri,
-        initAtprotoRkey,
+        initatprotoRkeyV2,
         initTags,
       }),
   )
@@ -2831,7 +2831,7 @@ function ComposerPills({
     media?.type === 'video'
   const hasLink = !!post.embed.link
 
-  const rkeySettings = useAtprotoRkeySettings()
+  const rkeySettings = useatprotoRkeyV2Settings()
 
   return (
     <Animated.View
@@ -2890,10 +2890,10 @@ function ComposerPills({
 
         <AtprotoBtn
           generation={
-            post.atprotoRkey?.generation ?? rkeySettings.generation ?? 'tid'
+            post.atprotoRkeyV2?.generation ?? rkeySettings.generation ?? 'tid'
           }
-          prefix={post.atprotoRkey?.prefix ?? rkeySettings.prefix}
-          suffix={post.atprotoRkey?.suffix ?? rkeySettings.suffix ?? ''}
+          prefix={post.atprotoRkeyV2?.prefix ?? rkeySettings.prefix}
+          suffix={post.atprotoRkeyV2?.suffix ?? rkeySettings.suffix ?? ''}
           onChangeSettings={(generation, prefix, suffix) => {
             dispatch({
               type: 'update_post',
