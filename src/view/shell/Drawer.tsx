@@ -77,7 +77,7 @@ import {
   UserCircle_Stroke2_Corner0_Rounded as UserCircleIcon,
 } from '#/components/icons/UserCircle'
 import {InlineLinkText} from '#/components/Link'
-import {OTAChannelNotice} from '#/components/OTAChannelNotice'
+// import {OTAChannelNotice} from '#/components/OTAChannelNotice'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
@@ -450,8 +450,8 @@ let DrawerContent = ({}: React.PropsWithoutRef<{}>): React.ReactNode => {
             </View>
           )}
 
-          <OTAChannelNotice style={[a.mt_lg]} />
-
+          {/* tenna.party isn't made for ota, we don't have a testflight or adp build yet lol */}
+          {/* <OTAChannelNotice style={[a.mt_lg]} /> */}
           <Divider style={[a.mt_xl, a.mb_sm]} />
         </View>
 
