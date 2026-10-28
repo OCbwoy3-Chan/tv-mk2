@@ -61,6 +61,7 @@ export const router = new Router<AllNavigatableRoutes>({
   DeltaBadgeSettings: '/settings/deltas/badges',
   DeltaWitchskyNextBranchSettings: '/settings/deltas/witchsky-next',
   DeltaPrivatePostSettings: '/settings/deltas/private-posts',
+  DeltaEuroskyProfileSettings: '/settings/deltas/decoration',
   DeltaLabelSettings: '/settings/deltas/labels',
   AltTextAiSettings: '/settings/accessibility/ai-alt-text',
   RunesSettings: '/settings/runes',

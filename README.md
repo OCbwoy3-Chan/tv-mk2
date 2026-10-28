@@ -1,41 +1,33 @@
 # tenna.party app 📺🎤 (alpha)
 
-Hey, audience! This is the codebase for the tenna.party app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
+Hey, audience! This is the codebase for the [tenna.party](https://tenna.party) app, a fork of [Witchsky](https://tangled.org/jollywhoppers.com/witchsky.app), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
 
-**EVERYTHING IS WIP, SOME THINGS MAY NOT WORK OR MAY HAVE NOT BEEN IMPLEMENTED YET.**
-
-Get the app itself:
-
-- **Web: [tenna.party](https://tenna.party)**
-- **iOS: [native builds are avaiable here via github actions](https://github.com/OCbwoy3-Chan/tv-mk2/actions) (unsigned, for sideloading)**
-- **Android: there are builds on obtainium**
-
-**PLEASE NOTE THAT ANDROID SUPPORT IS NOT MY #1 PRIORITY RIGHT NOW AS I DO NOT OWN AN ANDROID OF MY OWN NOR EMULATE ONE BECAUSE I'M AN IPHONE PERSON**
+The sauce is on Tangled (better than github): https://tangled.org/kris.kralsei.stream/tenna.party
 
 ## Improvements on Witchsky
 
-Fun:
-- Brand new settings Page: Settings -> Deltas
-- New fun self-badge system: Character + kin selector.
-- Enhanced composer Custom TID option ([there's one in witchsky too but it's suffix only](https://bsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3mpsyhopcmeow))
+**I know you all went here for, so you get:**
+- NATIVE BUILDS FOR IOS & ANDROID (IPA/Obtainium)
+- *Push Notifications* on Android (does not support gc and dm notifs cuz bsky stoopid)
 
-Moderation:
-- 200 max labeler limit (its way too much)
-- Ignore blocks for viewing groupchat messages
-- Bypass Bluesky !hide label and blocks on viewing lists
+**SHINY & BRAND NEW FEATURES (Settings -> Deltas):**
+- PROFILE BADGES (character + kin selector)
+- APPLY MODERATION SELF-LABELS ON YOUR PROFILE (e.g. graphic-media)
+- PROFILE DECORATIONS (name gradient + profile frame adapted from mu.social)
+- PRIVATE POSTS (using atproto spaces)
 
-Misc:
-- Big warning on stuff that has to do with AI (too much work to remove)
-- Eurosky / [Mu](https://mu.social) AppView option
-- Declared [W Social](https://wsocial.eu) as a bad platform
+***Enhanced:***
+- *Enhanced* Custom TID option in the composer (prefix & vanity options)
+- **200** max labelers (increased from 20)
+- Bypass Bluesky Moderation & blocks when viewing lists! (does not bypass appview takedowns)
+- Bypass viewing blocked messages in groupchats
+- More *Descriptive* PDS host dialogs
+- Added a Eurosky/Mu AppView option
 
-App:
-- Native iOS via GitHub Actions (sideload)
-- Native Android APK via GitHub actions
-- Push Notifications on Android
+We also put a warning on the AppView selector when typing in the AppView URL for W - The European social network for verified humans.
+> Why would you be using tenna.party which infact goes AGAINST the whole point of W Social? Pick a side. 
 
-New features:
-- Private posts via ATProto spaces & Embeds! (WILL BE DEPRECATED AND REMOVED WHEN BSKY RELEASES SPACES, CUZ WHAT WAS THE POINT)
+Private posts via ATProto spaces & Embeds WILL BE DEPRECATED AND REMOVED WHEN BSKY RELEASES SPACES, CUZ WHAT WAS THE POINT!!!
 
 ### TODO: Kris
 

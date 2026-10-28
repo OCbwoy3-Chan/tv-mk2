@@ -359,6 +359,10 @@ const InviteScannerScreen = deferredNamedScreen(
   () => require('#/features/inviteFriends'),
   'InviteScannerScreen',
 )
+const DeltaEuroskyProfileSettingsScreen = deferredNamedScreen(
+  () => require('#/screens/Settings/DeltaSettings/components/ProfileFancySettings'),
+  'DeltaEuroskyProfileSettingsScreen',
+)
 
 const navigationRef = createNavigationContainerRef<AllNavigatorParams>()
 
@@ -695,6 +699,11 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
           title: title(msg`Private posts`),
           requireAuth: true,
         }}
+      />
+      <Stack.Screen
+        name="DeltaEuroskyProfileSettings"
+        getComponent={() => DeltaEuroskyProfileSettingsScreen}
+        options={{title: title(msg`Profile decorations`)}}
       />
       <Stack.Screen
         name="DeltaLabelSettings"

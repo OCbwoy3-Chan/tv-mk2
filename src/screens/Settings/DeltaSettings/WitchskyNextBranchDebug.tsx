@@ -6,9 +6,13 @@ import {atoms as a, useTheme} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
+import { useDecorationEntitlementQuery } from '#/features/avatarDecorations'
+import { useSession } from '#/state/session'
 
 export function DeltaWitchskyNextBranchDebugScreen() {
   const t = useTheme()
+  const {currentAccount} = useSession();
+  const muEntitlement = useDecorationEntitlementQuery(currentAccount?.did);
 
   return (
     <Layout.Screen>
@@ -51,6 +55,14 @@ export function DeltaWitchskyNextBranchDebugScreen() {
             <View style={[a.p_md]}>
               <Text style={[a.mb_md]}>Restart your client after these.</Text>
               <EnableTheFeaturesButton />
+            </View>
+          </View>
+          <View style={[a.gap_sm]}>
+            <Text style={[a.text_2xl, a.font_bold]}>Tenna's entitlements</Text>
+            <View>
+              <Text style={[a.text_md, a.leading_snug]}>
+                Can have Mu profile decorations: {JSON.stringify(muEntitlement.data)}
+              </Text>
             </View>
           </View>
         </View>

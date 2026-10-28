@@ -8,6 +8,7 @@ import {atoms as a, platform, useBreakpoints, useTheme, web} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
+import {useNameStyle} from '#/features/avatarDecorations'
 import {type app} from '#/lexicons'
 import {useProfileHandleLink} from './useProfileHandleLink'
 
@@ -21,6 +22,11 @@ export function ProfileHeaderDisplayName({
   const t = useTheme()
   const {gtMobile} = useBreakpoints()
   const hideDisplayNames = useHideDisplayNames()
+  const nameStyle = useNameStyle(profile.did)
+  const decorationStyle =
+    !hideDisplayNames && !moderation.ui('displayName').blur
+      ? nameStyle
+      : undefined
   const shouldShowProfileLink = useProfileHandleLink(profile.handle)
   const primaryName = getAuthorPrimaryName(profile, {
     hideDisplayNames,
@@ -52,7 +58,17 @@ export function ProfileHeaderDisplayName({
             {primaryName}
           </InlineLinkText>
         ) : (
-          primaryName
+          <Text
+            emoji
+            style={[
+              t.atoms.text,
+              gtMobile ? a.text_4xl : a.text_3xl,
+              a.font_bold,
+              a.leading_tight,
+              decorationStyle,
+            ]}>
+            {primaryName}
+          </Text>
         )}
         <View
           style={[

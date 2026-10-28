@@ -37,6 +37,7 @@ import {LabelsOnMe} from '#/components/moderation/LabelsOnMe'
 import {ProfileHeaderAlerts} from '#/components/moderation/ProfileHeaderAlerts'
 import {useAnalytics} from '#/analytics'
 import {IS_IOS} from '#/env'
+import {useAvatarDecoration} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {EditLiveDialog} from '#/features/liveNow/components/EditLiveDialog'
 import {LiveIndicator} from '#/features/liveNow/components/LiveIndicator'
@@ -61,6 +62,7 @@ let ProfileHeaderShell = ({
   hideBackButton = false,
   isPlaceholderProfile,
 }: React.PropsWithChildren<Props>): React.ReactNode => {
+  const decoration = useAvatarDecoration(profile.did)
   const t = useTheme()
   const {gtMobile} = useBreakpoints()
   const ax = useAnalytics()
@@ -325,6 +327,9 @@ let ProfileHeaderShell = ({
                 type={profile.associated?.labeler ? 'labeler' : 'user'}
                 size={live.isActive ? 88 : 90}
                 avatar={profile.avatar}
+                decoration={decoration}
+                live={live.isActive}
+                hideLiveBadge
                 moderation={moderation.ui('avatar')}
                 noBorder
               />

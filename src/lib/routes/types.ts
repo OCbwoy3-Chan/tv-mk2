@@ -75,6 +75,7 @@ export type CommonNavigatorParams = {
   DeltaBadgeSettings: undefined
   DeltaWitchskyNextBranchSettings: undefined
   DeltaPrivatePostSettings: undefined
+  DeltaEuroskyProfileSettings: undefined
   DeltaLabelSettings: undefined
   AltTextAiSettings: undefined
   AppearanceSettings: undefined

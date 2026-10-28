@@ -8,6 +8,7 @@ import {Lock_Stroke2_Corner0_Rounded} from '#/components/icons/Lock'
 import {ShieldCheck_Stroke2_Corner0_Rounded} from '#/components/icons/Shield'
 import {Separator} from '#/components/Select'
 import {Text} from '#/components/Typography'
+import { Mu_Logo_Filled } from './mu/MuLogo'
 
 export function TennaQuickLinks() {
   const t = useTheme()
@@ -34,6 +35,11 @@ export function TennaQuickLinks() {
           text: l`Moderation labels`,
           path: '/settings/deltas/labels',
           icon: ShieldCheck_Stroke2_Corner0_Rounded,
+        },
+        {
+          text: l`Profile decorations`,
+          path: '/settings/deltas/decoration',
+          icon: Mu_Logo_Filled,
         },
       ],
     },

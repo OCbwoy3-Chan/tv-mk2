@@ -22,6 +22,7 @@ import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {PronounPill} from '#/components/PronounPill'
 import {Text} from '#/components/Typography'
 import {IS_ANDROID, IS_WEB} from '#/env'
+import {useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {type app} from '#/lexicons'
 import {TimeElapsed} from './TimeElapsed'
@@ -53,6 +54,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
     hideDisplayNames,
     moderation: opts.moderation?.ui('displayName'),
   })
+  const nameStyle = useNameStyle(author.did)
   const handle = author.handle
   // remove dumb typing when you update the atproto api package!!
   const pronouns = (author as {pronouns?: string})?.pronouns
@@ -156,6 +158,9 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                   a.flex_shrink_0,
                   {minWidth: 0, maxWidth: hideDisplayNames ? '100%' : '70%'},
                   web({direction: 'ltr', unicodeBidi: 'isolate'}),
+                  !hideDisplayNames &&
+                    !opts.moderation?.ui('displayName').blur &&
+                    nameStyle,
                 ]}>
                 {forceLTR(displayName)}
               </MaybeLinkText>

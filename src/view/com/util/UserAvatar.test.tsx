@@ -42,6 +42,9 @@ jest.mock('#/components/Link', () => ({}))
 jest.mock('#/components/Menu', () => ({}))
 jest.mock('#/components/ProfileHoverCard', () => ({}))
 jest.mock('#/analytics', () => ({}))
+jest.mock('#/features/avatarDecorations/useDecorations', () => ({
+  useAvatarDecoration: jest.fn(),
+}))
 jest.mock('#/features/liveNow', () => ({}))
 jest.mock('#/features/liveNow/components/LiveIndicator', () => ({}))
 jest.mock('#/features/liveNow/components/LiveStatusDialog', () => ({}))
@@ -82,3 +85,18 @@ it.each(['algo', 'list'] as const)(
     expect((UNSAFE_getByType(Rect).props as {rx: number}).rx).toBe(0)
   },
 )
+
+it('matches decoration rings to square avatars and yields to live status', () => {
+  const frame = {id: 'gold-ring', name: {message: 'Gold'}, color: '#FFD700'}
+  const {getByTestId, queryByTestId, rerender} = render(
+    <UserAvatar type="user" size={40} decoration={frame} />,
+  )
+  expect(getByTestId('avatarDecorationRing')).toHaveStyle({
+    borderRadius: 8,
+    borderColor: '#FFD700',
+  })
+  rerender(
+    <UserAvatar type="user" size={40} decoration={frame} live hideLiveBadge />,
+  )
+  expect(queryByTestId('avatarDecorationRing')).toBeNull()
+})
