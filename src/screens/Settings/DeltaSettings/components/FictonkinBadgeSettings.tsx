@@ -173,7 +173,7 @@ export function FictionkinBadgeSettings() {
       </View>
 
       <View style={[a.gap_xl]}>
-        <Admonition type="info">
+        <Admonition type="tip">
           <View>
             <Text>
               <Trans>What are kins? Here's a simple explainer:</Trans>
