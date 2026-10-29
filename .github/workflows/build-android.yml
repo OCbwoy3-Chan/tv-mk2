@@ -94,10 +94,25 @@ jobs:
         run: chmod +x ./android/gradlew
 
       - name: 📦 Build Android APK
+        shell: bash
         run: |
+          set -eo pipefail
+          # React Native redirects Hermes configuration output to this file,
+          # so print it when Gradle fails instead of losing the CMake error.
+          print_hermes_log() {
+            status=$?
+            if [ "$status" -ne 0 ]; then
+              log="$GITHUB_WORKSPACE/node_modules/react-native/ReactAndroid/hermes-engine/build/configure-hermesc.log"
+              if [ -f "$log" ]; then
+                echo "=== Hermes CMake configuration log ==="
+                cat "$log"
+              fi
+            fi
+          }
+          trap print_hermes_log EXIT
           cd android
           # pass -PnewArchEnabled=true as well to ensure the project property is set for this build
-          ./gradlew assembleRelease -PnewArchEnabled=true
+          ./gradlew assembleRelease -PnewArchEnabled=true --stacktrace
 
       - name: 🔍 Find release APK
         id: find_apk
