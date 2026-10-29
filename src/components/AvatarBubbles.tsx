@@ -18,6 +18,7 @@ import {useSession} from '#/state/session'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme} from '#/alf'
 import {Person_Filled_Corner2_Rounded as PersonIcon} from '#/components/icons/Person'
+import {useAvatarDecoration, useAvatarShape} from '#/features/avatarDecorations'
 import type * as bsky from '#/types/bsky'
 
 type Layout = {
@@ -145,6 +146,8 @@ function AvatarBubble({
 
   const profile = useMaybeProfileShadow(profileUnshadowed)
   const moderationOpts = useModerationOpts()
+  const decoration = useAvatarDecoration(profile?.did)
+  const profileShape = useAvatarShape(profile?.did)
 
   return (
     <Animated.View
@@ -162,6 +165,8 @@ function AvatarBubble({
       {profile && moderationOpts ? (
         <UserAvatar
           avatar={profile.avatar}
+          decoration={decoration}
+          profileShape={profileShape}
           size={size}
           type="user"
           hideLiveBadge

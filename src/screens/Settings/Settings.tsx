@@ -95,7 +95,12 @@ import {device, useStorage} from '#/storage'
 import {useActivitySubscriptionsNudged} from '#/storage/hooks/activity-subscriptions-nudged'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
-import {GradientName, useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
+import {
+  GradientName,
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameStyle,
+} from '#/features/avatarDecorations'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Settings'>
 type AccountListItem = {
@@ -601,6 +606,7 @@ function ProfilePreview({
   const hideDisplayNames = useHideDisplayNames()
   const {isActive: live} = useActorStatus(profile)
   const decoration = useAvatarDecoration(profile.did)
+  const profileShape = useAvatarShape(profile.did)
   const nameStyle = useNameStyle(profile.did)
 
   if (!moderationOpts) return null
@@ -620,6 +626,7 @@ function ProfilePreview({
         type={shadow.associated?.labeler ? 'labeler' : 'user'}
         live={live}
         decoration={decoration}
+        profileShape={profileShape}
       />
 
       <View
@@ -639,7 +646,7 @@ function ProfilePreview({
             t.atoms.text,
             gtMobile ? a.text_4xl : a.text_3xl,
             a.font_bold,
-            nameStyle
+            nameStyle,
           ]}>
           <GradientName did={profile.did}>{displayName}</GradientName>
         </Text>

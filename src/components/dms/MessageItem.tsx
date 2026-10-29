@@ -49,6 +49,7 @@ import {InlineLinkText} from '#/components/Link'
 import * as ProfileCard from '#/components/ProfileCard'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
+import {GradientName, useNameStyle} from '#/features/avatarDecorations'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -173,6 +174,14 @@ let MessageItem = ({
   const displayName = profile
     ? (unavailableLabel ?? createSanitizedDisplayName(profile))
     : null
+  const nameDid =
+    profile &&
+    !unavailableLabel &&
+    moderationOpts &&
+    !moderateProfile(profile, moderationOpts).ui('displayName').blur
+      ? profile.did
+      : undefined
+  const nameStyle = useNameStyle(nameDid)
 
   const isFromSelf =
     message.sender?.did != null && message.sender.did === currentAccount?.did
@@ -527,9 +536,12 @@ let MessageItem = ({
                   a.pt_xs,
                   a.pb_2xs,
                   {paddingLeft: displayNameInset},
+                  nameStyle,
                 ]}
                 emoji>
-                {displayName}
+                <GradientName did={nameDid} enabled={!!nameDid}>
+                  {displayName}
+                </GradientName>
               </Text>
             ) : null}
             <View style={[a.relative]}>

@@ -20,9 +20,9 @@ export type NameGradient = {
   /* Linear-gradient stops, left to right (2+). */
   colors: string[]
   /* Representative solid fallback. */
-  solid: string,
+  solid: string
   /* Whether the name gradient was added by Kris, to tenna.party (not Mu) */
-  notEurosky?: boolean,
+  notEurosky?: boolean
   /* TBD */
   nameGradientCategory?: string
 }
@@ -69,6 +69,53 @@ export const NAME_GRADIENTS: NameGradient[] = [
     name: msg`Rainbow`,
     colors: ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#3B82F6', '#8B5CF6'],
     solid: '#7C3AED',
+
+    notEurosky: true, // even tho its an eurosky one
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'progress',
+    name: msg`Progress Pride`,
+    colors: [
+      '#FFFFFF',
+      '#F5A9B8',
+      '#5BCEFA',
+      '#784F17',
+      '#000000',
+      '#E40303',
+      '#FF8C00',
+      '#FFED00',
+      '#008026',
+      '#004DFF',
+      '#750787',
+    ],
+    solid: '#750787',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'lesbian',
+    name: msg`Lesbian`,
+    colors: ['#D52D00', '#FF9A56', '#FFFFFF', '#D162A4', '#A30262'],
+    solid: '#FF9A56',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'mlm',
+    name: msg`Gay`,
+    colors: ['#078D70', '#98E8C1', '#FFFFFF', '#7BADE2', '#3D1A78'],
+    solid: '#98E8C1',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'bisexual',
+    name: msg`Bisexual`,
+    colors: ['#D60270', '#9B4F96', '#0038A8'],
+    solid: '#9B4F96',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
   },
   {
     id: 'trans',
@@ -76,15 +123,79 @@ export const NAME_GRADIENTS: NameGradient[] = [
     colors: ['#5BCEFA', '#F5A9B8', '#FFFFFF', '#F5A9B8', '#5BCEFA'],
     solid: '#F5A9B8',
     notEurosky: true,
-    nameGradientCategory: "pride"
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'genderqueer',
+    name: msg`Genderqueer`,
+    colors: ['#B57EDC', '#FFFFFF', '#4A8123'],
+    solid: '#8B50B6',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'intersex',
+    name: msg`Intersex`,
+    colors: ['#FFD800', '#7902AA', '#FFD800'],
+    solid: '#7902AA',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'asexual',
+    name: msg`Asexual`,
+    colors: ['#000000', '#A3A3A3', '#FFFFFF', '#800080'],
+    solid: '#800080',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'aromantic',
+    name: msg`Aromantic`,
+    colors: ['#3DA542', '#A7D379', '#FFFFFF', '#A9A9A9', '#000000'],
+    solid: '#3DA542',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'agender',
+    name: msg`Agender`,
+    colors: [
+      '#000000',
+      '#B9B9B9',
+      '#FFFFFF',
+      '#B8F483',
+      '#FFFFFF',
+      '#B9B9B9',
+      '#000000',
+    ],
+    solid: '#659C39',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
   },
   {
     id: 'enby',
-    name: msg`Enby`,
+    name: msg`Non-binary`,
     colors: ['#FFF433', '#FFFFFF', '#9B59D0', '#2D2D2D'],
     solid: '#FFF433',
     notEurosky: true,
-    nameGradientCategory: "pride"
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'genderfluid',
+    name: msg`Genderfluid`,
+    colors: ['#FF75A2', '#FFFFFF', '#BE18D6', '#000000', '#333EBD'],
+    solid: '#BE18D6',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
+  },
+  {
+    id: 'pansexual',
+    name: msg`Pansexual`,
+    colors: ['#FF218C', '#FFD800', '#21B1FF'],
+    solid: '#FF218C',
+    notEurosky: true,
+    nameGradientCategory: 'pride',
   },
 ]
 

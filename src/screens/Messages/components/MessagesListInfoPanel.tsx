@@ -9,7 +9,7 @@ import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useUnavailableProfileLabel} from '#/state/queries/unavailable-content'
 import {useSession} from '#/state/session'
-import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {type ConvoWithDetails} from '#/components/dms/util'
@@ -17,6 +17,7 @@ import {Person_Stroke2_Corner2_Rounded as PersonIcon} from '#/components/icons/P
 import {ProfileBadges} from '#/components/ProfileBadges'
 import * as ProfileCard from '#/components/ProfileCard'
 import {Text} from '#/components/Typography'
+import {GradientName, useNameStyle} from '#/features/avatarDecorations'
 
 export function MessagesListInfoPanel({
   convo,
@@ -34,6 +35,14 @@ export function MessagesListInfoPanel({
     profile => profile.did !== currentAccount?.did,
   )[0]
   const unavailableLabel = useUnavailableProfileLabel(profile)
+  const moderation = moderationOpts
+    ? moderateProfile(profile, moderationOpts)
+    : undefined
+  const nameDid =
+    !unavailableLabel && moderation && !moderation.ui('displayName').blur
+      ? profile.did
+      : undefined
+  const nameStyle = useNameStyle(nameDid)
   const handle = unavailableLabel ?? sanitizeHandle(profile.handle, '@')
   const displayName =
     unavailableLabel ??
@@ -51,10 +60,12 @@ export function MessagesListInfoPanel({
 
   return (
     <View style={[a.align_center, a.justify_center]}>
-      <UserAvatar
+      <PreviewableUserAvatar
+        profile={profile}
+        disableNavigation
         type={profile.associated?.labeler ? 'labeler' : 'user'}
         size={88}
-        avatar={profile?.avatar}
+        moderation={moderation?.ui('avatar')}
       />
       <View
         style={[
@@ -67,10 +78,18 @@ export function MessagesListInfoPanel({
           a.max_w_full,
         ]}>
         <Text
-          style={[a.text_2xl, a.font_bold, a.text_center, a.flex_shrink]}
+          style={[
+            a.text_2xl,
+            a.font_bold,
+            a.text_center,
+            a.flex_shrink,
+            nameStyle,
+          ]}
           numberOfLines={1}
           emoji>
-          {displayName}
+          <GradientName did={nameDid} enabled={!!nameDid}>
+            {displayName}
+          </GradientName>
         </Text>
         <ProfileBadges profile={profile} size="lg" />
       </View>

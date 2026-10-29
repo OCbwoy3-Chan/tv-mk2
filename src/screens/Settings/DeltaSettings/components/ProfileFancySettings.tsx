@@ -1,22 +1,22 @@
-import { View } from 'react-native'
-import { Trans, useLingui } from '@lingui/react/macro'
+import {View} from 'react-native'
+import {Trans, useLingui} from '@lingui/react/macro'
 
-import { useOpenComposer } from '#/lib/hooks/useOpenComposer'
-import { useSession } from '#/state/session'
-import { atoms as a } from '#/alf'
-import { Admonition } from '#/components/Admonition'
-import { Button, ButtonText } from '#/components/Button'
+import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
+import {useSession} from '#/state/session'
+import {atoms as a} from '#/alf'
+import {Admonition} from '#/components/Admonition'
+import {Button, ButtonText} from '#/components/Button'
 import * as Layout from '#/components/Layout'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import { Text } from '#/components/Typography'
-import { useDecorationEntitlementQuery } from '#/features/avatarDecorations'
-import { Mu_Logo_Filled } from './mu/MuLogo'
-import { DecorationSettings } from './mu/DecorationSettings'
+import {Text} from '#/components/Typography'
+import {useDecorationEntitlementQuery} from '#/features/avatarDecorations'
+import {Mu_Logo_Filled} from './mu/MuLogo'
+import {DecorationSettings} from './mu/DecorationSettings'
 
 export function DeltaEuroskyProfileSettingsScreen() {
-  const { t: l } = useLingui()
-  const { openComposer } = useOpenComposer()
-  const { currentAccount } = useSession()
+  const {t: l} = useLingui()
+  const {openComposer} = useOpenComposer()
+  const {currentAccount} = useSession()
   const entitlement = useDecorationEntitlementQuery(currentAccount?.did)
 
   return (
@@ -41,7 +41,8 @@ export function DeltaEuroskyProfileSettingsScreen() {
               <Text style={[a.text_md, a.leading_snug]}>
                 <Trans>
                   Upgrade your profile with a decorative ring and colored names!
-                  Basically ported from Mu, but with more customization.
+                  Basically ported from Mu, but with more customization. We
+                  added more colors and a PFP shape thingy.
                 </Trans>
               </Text>
             </View>
@@ -50,9 +51,10 @@ export function DeltaEuroskyProfileSettingsScreen() {
                 <Admonition type="apology">
                   <Text>
                     <Trans>
-                      Profile customizations are unavaiable on tenna.party without the VIP entitlement.
-                      A list creates exclusivity, even though this client is super niche!
-                      Just tap the button below, you will be added soon enough.
+                      Profile customizations are unavaiable on tenna.party
+                      without the VIP entitlement. A list creates exclusivity,
+                      even though this client is super niche! Just tap the
+                      button below, you will be added soon enough.
                     </Trans>
                   </Text>
                 </Admonition>

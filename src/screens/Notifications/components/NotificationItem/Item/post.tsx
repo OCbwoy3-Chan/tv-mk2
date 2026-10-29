@@ -23,7 +23,12 @@ import {type ParentPost} from '#/state/queries/notifications/grouped/types'
 import {useSession} from '#/state/session'
 import {TimeElapsed} from '#/view/com/util/TimeElapsed'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
-import {GradientName, useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
+import {
+  GradientName,
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameStyle,
+} from '#/features/avatarDecorations'
 import {atoms as a, useTheme, web} from '#/alf'
 import {ArrowCornerDownRight_Stroke2_Corner2_Rounded as ArrowCornerDownRight} from '#/components/icons/Arrow'
 import {type Props as SVGIconProps} from '#/components/icons/common'
@@ -532,6 +537,7 @@ function QuoteCardPost({
   const moderationOpts = useModerationOpts()
   const name = useDisplayName(view.author)
   const decoration = useAvatarDecoration(view.author.did)
+  const profileShape = useAvatarShape(view.author.did)
   const nameStyle = useNameStyle(view.author.did)
   const quote: PostView = {
     ...view,
@@ -574,6 +580,7 @@ function QuoteCardPost({
                 size={20}
                 avatar={view.author.avatar}
                 decoration={decoration}
+                profileShape={profileShape}
                 moderation={moderation?.ui('avatar')}
                 type={view.author.associated?.labeler ? 'labeler' : 'user'}
               />
@@ -588,7 +595,9 @@ function QuoteCardPost({
                   t.atoms.text,
                   nameStyle,
                 ]}>
-                <GradientName did={view.author.did}>{forceLTR(name)}</GradientName>
+                <GradientName did={view.author.did}>
+                  {forceLTR(name)}
+                </GradientName>
               </Text>
               <Text
                 emoji

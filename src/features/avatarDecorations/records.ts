@@ -1,4 +1,6 @@
 /** Adapted from eurosky-social/eurosky-social-app (MIT). */
+import {AVATAR_SHAPES, type AvatarShape} from './avatarShapes'
+
 import {AtUri} from '@atproto/syntax'
 
 export const DECORATION_LIST_URI =
@@ -30,6 +32,8 @@ export const SETTINGS_RKEY = 'self'
 export type DecorationSettings = {
   /** Avatar frame id (catalog.ts). */
   avatar?: string
+  /** Preferred shape for this profile picture. */
+  avatarShape?: AvatarShape
   /** Display-name gradient id (nameGradients.ts). */
   name?: string
   /** Add a dark outline/shadow around the gradient name (pops on any bg). */
@@ -130,7 +134,12 @@ export async function getDecorationSettings(
     throw new Error(`Slingshot getRecord failed: ${res.status}`)
   }
   const json = (await res.json()) as {
-    value?: {avatar?: unknown; name?: unknown; nameOutline?: unknown}
+    value?: {
+      avatar?: unknown
+      avatarShape?: unknown
+      name?: unknown
+      nameOutline?: unknown
+    }
   }
   return parseDecorationSettings(json.value ?? {})
 }
@@ -138,11 +147,16 @@ export async function getDecorationSettings(
 /** Ignore malformed optional slots received from a public record. */
 export function parseDecorationSettings(value: {
   avatar?: unknown
+  avatarShape?: unknown
   name?: unknown
   nameOutline?: unknown
 }): DecorationSettings {
   return {
     avatar: typeof value.avatar === 'string' ? value.avatar : undefined,
+    ...(typeof value.avatarShape === 'string' &&
+    AVATAR_SHAPES.includes(value.avatarShape as AvatarShape)
+      ? {avatarShape: value.avatarShape as AvatarShape}
+      : {}),
     name: typeof value.name === 'string' ? value.name : undefined,
     nameOutline: value.nameOutline === true,
   }

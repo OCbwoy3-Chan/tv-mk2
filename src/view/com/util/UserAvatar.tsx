@@ -38,6 +38,7 @@ import {
   compressImage,
   createComposerImage,
 } from '#/state/gallery'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {
   applyImageTransforms,
@@ -62,9 +63,13 @@ import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import * as Menu from '#/components/Menu'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {useAnalytics} from '#/analytics'
-import {IS_ANDROID, IS_NATIVE, IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
+import {IS_ANDROID, IS_HIGH_DPI, IS_NATIVE, IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
 import {
   AvatarDecorationRing,
+  AvatarShapeMask,
+  hexagonPath,
+  type AvatarShape,
+  useAvatarShape,
   type DecorationFrame,
   useAvatarDecoration,
 } from '#/features/avatarDecorations'
@@ -94,6 +99,7 @@ interface BaseUserAvatarProps {
 
 interface UserAvatarProps extends BaseUserAvatarProps {
   decoration?: DecorationFrame
+  profileShape?: AvatarShape
   type: UserAvatarType
   moderation?: ModerationUI
   usePlainRNImage?: boolean
@@ -122,14 +128,16 @@ let DefaultAvatar = ({
   type,
   shape: overrideShape,
   size,
+  respectOverride = false,
 }: {
   type: UserAvatarType
   shape?: 'square' | 'circle' | 'sharp'
   size: number
+  respectOverride?: boolean
 }): React.ReactNode => {
   const preference = useEnableSquareAvatars()
   const finalShape =
-    preference === 'sharp'
+    preference === 'sharp' && !respectOverride
       ? 'sharp'
       : (overrideShape ??
         (type === 'user' ? (preference ? 'square' : 'circle') : 'square'))
@@ -299,10 +307,12 @@ let UserAvatar = ({
   noBorder,
   extraAviStyle,
   decoration,
+  profileShape,
 }: UserAvatarProps): React.ReactNode => {
   const t = useTheme()
 
   const enableSquareAvatars = useEnableSquareAvatars()
+  const cornerPreference = useEnableSquareButtons()
   const avishapeforce =
     enableSquareAvatars === 'sharp'
       ? 'sharp'
@@ -310,8 +320,9 @@ let UserAvatar = ({
         ? 'square'
         : 'circle'
 
-  const finalShape =
-    enableSquareAvatars === 'sharp'
+  const finalShape = profileShape
+    ? profileShape === 'circle' ? 'circle' : profileShape === 'square' || profileShape === 'hexagon' ? (cornerPreference === 'sharp' ? 'sharp' : 'square') : 'square'
+    : enableSquareAvatars === 'sharp'
       ? 'sharp'
       : (overrideShape ?? (type === 'user' ? avishapeforce : 'square'))
   const thumbnailFormat = useThumbnailFormat()
@@ -320,7 +331,11 @@ let UserAvatar = ({
   const aviStyle = useMemo(() => {
     let borderRadius
 
-    if (finalShape !== 'circle') {
+    if (profileShape === 'hexagon') {
+      borderRadius = 0
+    } else if (profileShape === 'squircle') {
+      borderRadius = size * 0.25
+    } else if (finalShape !== 'circle') {
       borderRadius = getSquareAvatarRadius(
         size,
         finalShape === 'sharp' ? 'sharp' : true,
@@ -333,11 +348,12 @@ let UserAvatar = ({
       width: size,
       height: size,
       borderRadius,
+      ...(profileShape === 'squircle' ? {borderCurve: 'continuous' as const} : {}),
       backgroundColor: t.palette.contrast_25,
       ...extraAviStyle,
       ...(finalShape === 'sharp' && SHARP_CORNERS),
     }
-  }, [finalShape, size, t, extraAviStyle])
+  }, [finalShape, profileShape, size, t, extraAviStyle])
 
   const borderStyle = useMemo(() => {
     return [
@@ -398,10 +414,36 @@ let UserAvatar = ({
     ]
   }, [size, style, finalShape])
 
+  const hexagon = profileShape === 'hexagon'
+  const wrapShape = (content: React.ReactNode) => hexagon ? (
+    <AvatarShapeMask size={size} rounded={cornerPreference !== 'sharp'}>{content}</AvatarShapeMask>
+  ) : content
+  const hexagonFrame = type === 'user' && !moderation?.blur ? decoration : undefined
+  const hexagonLineWidth = IS_WEB && IS_HIGH_DPI ? 0.5 : StyleSheet.hairlineWidth
+  const hexagonBorderColor = (t.name === 'light'
+    ? t.atoms.border_contrast_low
+    : t.atoms.border_contrast_high).borderColor
+  const hexagonBorder = hexagon && (live || hexagonFrame || !noBorder) ? (
+    <Svg
+      testID="avatarHexagonBorder"
+      pointerEvents="none"
+      width={size}
+      height={size}
+      style={[a.absolute, {top: 0, left: 0}]}>
+      <Path
+        d={hexagonPath(size, cornerPreference !== 'sharp')}
+        fill="none"
+        stroke={live ? t.palette.negative_500 : hexagonFrame?.color ?? hexagonBorderColor}
+        strokeOpacity={live || hexagonFrame ? 1 : 0.6}
+        strokeWidth={2 * (live || hexagonFrame ? (size > 16 ? 3 : 1) : hexagonLineWidth)}
+      />
+    </Svg>
+  ) : null
+
   return avatar &&
     !(moderation?.blur && IS_ANDROID /* android crashes with blur */) ? (
     <View style={containerStyle}>
-      {usePlainRNImage ? (
+      {wrapShape(<>{usePlainRNImage ? (
         <RNImage
           accessibilityIgnoresInvertColors
           testID="userAvatarImage"
@@ -432,33 +474,31 @@ let UserAvatar = ({
           useAppleWebpCodec
         />
       )}
-      {!noBorder && <MediaInsetBorder style={borderStyle} />}
-      {live && size > 16 && !hideLiveBadge && (
-        <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />
-      )}
-      {decoration && type === 'user' && !live && !moderation?.blur && (
+      {!noBorder && !hexagon && <MediaInsetBorder style={borderStyle} />}
+      {decoration && !hexagon && type === 'user' && !live && !moderation?.blur && (
         <AvatarDecorationRing
           frame={decoration}
           size={size}
           borderRadius={aviStyle.borderRadius}
         />
       )}
+      {hexagonBorder}</>)}
+      {live && size > 16 && !hideLiveBadge && <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />}
       {alert}
     </View>
   ) : (
     <View style={containerStyle}>
-      <DefaultAvatar type={type} shape={finalShape} size={size} />
-      {!noBorder && <MediaInsetBorder style={borderStyle} />}
-      {live && size > 16 && !hideLiveBadge && (
-        <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />
-      )}
-      {decoration && type === 'user' && !live && !moderation?.blur && (
+      {wrapShape(<><DefaultAvatar type={type} shape={finalShape} size={size} respectOverride={!!profileShape} />
+      {!noBorder && !hexagon && <MediaInsetBorder style={borderStyle} />}
+      {decoration && !hexagon && type === 'user' && !live && !moderation?.blur && (
         <AvatarDecorationRing
           frame={decoration}
           size={size}
           borderRadius={aviStyle.borderRadius}
         />
       )}
+      {hexagonBorder}</>)}
+      {live && size > 16 && !hideLiveBadge && <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />}
       {alert}
     </View>
   )
@@ -675,6 +715,7 @@ let PreviewableUserAvatar = ({
   const queryClient = useQueryClient()
   const enableSquareAvatars = useEnableSquareAvatars()
   const decoration = useAvatarDecoration(profile.did)
+  const profileShape = useAvatarShape(profile.did)
   const status = useActorStatus(profile)
   const liveControl = useDialogControl()
   const haptics = useHaptics()
@@ -693,6 +734,7 @@ let PreviewableUserAvatar = ({
   const avatarEl = (
     <UserAvatar
       decoration={decoration}
+      profileShape={profileShape}
       avatar={profile.avatar}
       moderation={moderation}
       type={profile.associated?.labeler ? 'labeler' : 'user'}

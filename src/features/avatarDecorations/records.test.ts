@@ -3,6 +3,7 @@ import {
   DECORATION_LIST_URI,
   getDecorationSettings,
   hasDecorationEntitlement,
+  parseDecorationSettings,
 } from './records'
 
 const PROD_LIST =
@@ -174,5 +175,22 @@ describe('decoration record reads', () => {
     await expect(getDecorationSettings(SUBJECT)).rejects.toThrow(
       'Slingshot getRecord failed: 400',
     )
+  })
+})
+
+describe('profile picture shapes', () => {
+  it.each(['circle', 'square', 'squircle', 'hexagon'] as const)(
+    'accepts the %s shape',
+    shape => {
+      expect(parseDecorationSettings({avatarShape: shape}).avatarShape).toBe(
+        shape,
+      )
+    },
+  )
+
+  it('ignores unknown shapes', () => {
+    expect(
+      parseDecorationSettings({avatarShape: 'triangle'}).avatarShape,
+    ).toBeUndefined()
   })
 })

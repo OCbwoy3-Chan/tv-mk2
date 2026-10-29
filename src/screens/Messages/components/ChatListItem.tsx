@@ -53,6 +53,7 @@ import {useMenuControl} from '#/components/Menu'
 import {PostAlerts} from '#/components/moderation/PostAlerts'
 import {createPortalGroup} from '#/components/Portal'
 import {ProfileBadges} from '#/components/ProfileBadges'
+import {GradientName, useNameStyle} from '#/features/avatarDecorations'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE} from '#/env'
@@ -280,6 +281,13 @@ function BaseChatItem({
 }) {
   const ax = useAnalytics()
   const t = useTheme()
+  const nameDid =
+    convo.kind === 'direct' &&
+    !isDeletedAccount &&
+    !primaryProfileModeration?.ui('displayName').blur
+      ? primaryProfile?.did
+      : undefined
+  const nameStyle = useNameStyle(nameDid)
   const {t: l, i18n} = useLingui()
   const {currentAccount} = useSession()
   const menuControl = useMenuControl()
@@ -559,8 +567,11 @@ function BaseChatItem({
                           a.font_semi_bold,
                           {lineHeight: 21},
                           isDimStyle && t.atoms.text_contrast_medium,
+                          nameStyle,
                         ]}>
-                        {title}
+                        <GradientName did={nameDid} enabled={!!nameDid}>
+                          {title}
+                        </GradientName>
                       </Text>
                     </View>
 
