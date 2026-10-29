@@ -284,7 +284,7 @@ export function DecorationSettings() {
               t.atoms.text_contrast_medium,
               a.px_xl,
             ]}>
-            <Trans>Pride gradients</Trans>
+            <Trans>Pride</Trans>
           </Text>
           <View style={[a.flex_row, a.flex_wrap, a.gap_sm, a.px_xl]}>
             {NAME_GRADIENTS.filter(
@@ -356,6 +356,15 @@ function GradientSwatch({
 }) {
   const {i18n} = useLingui()
   const t = useTheme()
+  const colors = gradient.segmented
+    ? gradient.colors.flatMap(color => [color, color])
+    : gradient.colors
+  const locations = gradient.segmented
+    ? gradient.colors.flatMap((_, index) => [
+        index / gradient.colors.length,
+        (index + 1) / gradient.colors.length,
+      ])
+    : undefined
   return (
     <Pressable
       accessibilityRole="button"
@@ -374,7 +383,8 @@ function GradientSwatch({
         },
       ]}>
       <LinearGradient
-        colors={gradient.colors as [string, string, ...string[]]}
+        colors={colors as [string, string, ...string[]]}
+        locations={locations as [number, number, ...number[]] | undefined}
         start={{x: 0, y: 0}}
         end={{x: 1, y: 0}}
         style={[a.absolute, a.inset_0]}

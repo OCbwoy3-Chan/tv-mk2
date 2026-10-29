@@ -1,7 +1,7 @@
 /** Adapted from eurosky-social/eurosky-social-app (MIT). */
-import { type TextStyle } from 'react-native'
+import {type TextStyle} from 'react-native'
 
-import { type NameGradient } from './nameGradients'
+import {type NameGradient} from './nameGradients'
 
 /**
  * Paints the name with a real gradient via background-clip: text. The text
@@ -17,9 +17,17 @@ import { type NameGradient } from './nameGradients'
 
 export function nameGradientTextStyle(
   gradient: NameGradient,
-  opts?: { outline?: boolean },
+  opts?: {outline?: boolean},
 ): TextStyle {
-  const stops = gradient.colors.join(', ')
+  const stops = gradient.segmented
+    ? gradient.colors
+        .map((color, index) => {
+          const start = (index / gradient.colors.length) * 100
+          const end = ((index + 1) / gradient.colors.length) * 100
+          return `${color} ${start}% ${end}%`
+        })
+        .join(', ')
+    : gradient.colors.join(', ')
 
   const base: Record<string, unknown> = {
     backgroundImage: `linear-gradient(90deg, ${stops})`,
