@@ -8,7 +8,7 @@ import {atoms as a, platform, useBreakpoints, useTheme, web} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
-import {useNameStyle} from '#/features/avatarDecorations'
+import {GradientName, useNameStyle} from '#/features/avatarDecorations'
 import {type app} from '#/lexicons'
 import {useProfileHandleLink} from './useProfileHandleLink'
 
@@ -67,7 +67,7 @@ export function ProfileHeaderDisplayName({
               a.leading_tight,
               decorationStyle,
             ]}>
-            {primaryName}
+            <GradientName did={profile.did} enabled={!!decorationStyle}>{primaryName}</GradientName>
           </Text>
         )}
         <View

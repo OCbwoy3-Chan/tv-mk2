@@ -51,6 +51,10 @@ export function useAvatarDecoration(did: string | undefined) {
   return getFrame(useActiveDecorations(did)?.avatar)
 }
 
+export function useNameGradient(did: string | undefined) {
+  return getNameGradient(useActiveDecorations(did)?.name)
+}
+
 export function useNameStyle(did: string | undefined): TextStyle | undefined {
   const active = useActiveDecorations(did)
   const gradient = getNameGradient(active?.name)

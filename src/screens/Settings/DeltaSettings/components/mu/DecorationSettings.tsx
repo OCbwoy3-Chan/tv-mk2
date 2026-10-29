@@ -1,6 +1,6 @@
 import { atoms as a, useTheme } from "#/alf";
 import { Text } from "#/components/Typography";
-import { DECORATION_FRAMES, getFrame, NAME_GRADIENTS, NameGradient, nameGradientTextStyle, useMyDecorationSettingsQuery, useSetDecorations } from "#/features/avatarDecorations";
+import { GradientName, DECORATION_FRAMES, getFrame, NAME_GRADIENTS, NameGradient, nameGradientTextStyle, useMyDecorationSettingsQuery, useSetDecorations } from "#/features/avatarDecorations";
 import { UserAvatar } from '#/view/com/util/UserAvatar';
 import { sanitizeDisplayName } from "#/lib/strings/display-names";
 import { sanitizeHandle } from "#/lib/strings/handles";
@@ -165,10 +165,7 @@ export function DecorationSettings() {
                         t.atoms.text_contrast_medium
                     ]}>
                         {'Hello, I\'m '}
-                        <View style={[
-                            selected &&
-                            nameGradientTextStyle(selected, { outline: selectedOutline })
-                        ]}>{capitalizedName}</View>{"!"}
+                        <Text style={selected && nameGradientTextStyle(selected, { outline: selectedOutline })}><GradientName gradient={selected}>{capitalizedName}</GradientName></Text>{"!"}
                     </Text>
                 </View>
                 <Text

@@ -10,6 +10,7 @@ import {forceLTR} from '#/lib/strings/bidi'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {niceDate} from '#/lib/strings/time'
+import {UITextView} from '#/platform/ui-text-view'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {TimeElapsed} from '#/view/com/util/TimeElapsed'
@@ -18,7 +19,7 @@ import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {Text} from '#/components/Typography'
-import {useNameStyle} from '#/features/avatarDecorations'
+import {GradientName, useNameStyle} from '#/features/avatarDecorations'
 import type * as bsky from '#/types/bsky'
 
 /**
@@ -124,9 +125,10 @@ export function Name({profile}: {profile: bsky.profile.AnyProfileView}) {
           a.font_semi_bold,
           t.atoms.text,
           web({direction: 'ltr', unicodeBidi: 'isolate'}),
-          nameStyle,
         ]}>
-        {forceLTR(name)}
+        <UITextView style={nameStyle}>
+          <GradientName did={profile.did}>{forceLTR(name)}</GradientName>
+        </UITextView>
         <ProfileBadges
           profile={profile}
           size="sm"

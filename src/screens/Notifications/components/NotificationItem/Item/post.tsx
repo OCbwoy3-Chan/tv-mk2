@@ -23,7 +23,7 @@ import {type ParentPost} from '#/state/queries/notifications/grouped/types'
 import {useSession} from '#/state/session'
 import {TimeElapsed} from '#/view/com/util/TimeElapsed'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
-import {useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
+import {GradientName, useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
 import {atoms as a, useTheme, web} from '#/alf'
 import {ArrowCornerDownRight_Stroke2_Corner2_Rounded as ArrowCornerDownRight} from '#/components/icons/Arrow'
 import {type Props as SVGIconProps} from '#/components/icons/common'
@@ -100,7 +100,7 @@ export function Author({profile}: {profile: bsky.profile.AnyProfileView}) {
             web({direction: 'ltr', unicodeBidi: 'isolate'}),
             nameStyle,
           ]}>
-          {forceLTR(name)}
+          <GradientName did={profile.did}>{forceLTR(name)}</GradientName>
         </WebOnlyInlineLinkText>
         <ProfileBadges profile={profile} size="sm" style={[a.pl_2xs]} />
         <WebOnlyInlineLinkText
@@ -588,7 +588,7 @@ function QuoteCardPost({
                   t.atoms.text,
                   nameStyle,
                 ]}>
-                {forceLTR(name)}
+                <GradientName did={view.author.did}>{forceLTR(name)}</GradientName>
               </Text>
               <Text
                 emoji

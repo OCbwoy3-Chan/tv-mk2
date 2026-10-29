@@ -95,7 +95,7 @@ import {device, useStorage} from '#/storage'
 import {useActivitySubscriptionsNudged} from '#/storage/hooks/activity-subscriptions-nudged'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
-import { useAvatarDecoration, useNameStyle } from '#/features/avatarDecorations'
+import {GradientName, useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Settings'>
 type AccountListItem = {
@@ -641,7 +641,7 @@ function ProfilePreview({
             a.font_bold,
             nameStyle
           ]}>
-          {displayName}
+          <GradientName did={profile.did}>{displayName}</GradientName>
         </Text>
         <ProfileBadges
           profile={shadow}

@@ -22,7 +22,7 @@ import {ChevronRight_Stroke2_Corner0_Rounded as ChevronIcon} from '#/components/
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
-import {useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
+import {GradientName, useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {type app} from '#/lexicons'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
@@ -231,9 +231,9 @@ function AccountItem({
                   nameStyle,
                 ]}
                 numberOfLines={1}>
-                {sanitizeDisplayName(
+                <GradientName did={account.did}>{sanitizeDisplayName(
                   profile?.displayName || profile?.handle || account.handle,
-                )}
+                )}</GradientName>
               </Text>
               {profile && (
                 <ProfileBadges

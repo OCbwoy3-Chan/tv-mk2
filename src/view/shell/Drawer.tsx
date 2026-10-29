@@ -83,7 +83,7 @@ import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE, IS_WEB} from '#/env'
 import {InviteFriendsDialog} from '#/features/inviteFriends'
-import {useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
+import {GradientName, useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {useActiveThemeUpdate} from '#/features/themes/api'
@@ -160,7 +160,7 @@ let DrawerProfileCard = ({
               nameStyle,
             ]}
             numberOfLines={1}>
-            {profile?.displayName || account.handle}
+            <GradientName did={account.did}>{profile?.displayName || account.handle}</GradientName>
           </Text>
           {profile && <ProfileBadges profile={profile} size="lg" />}
           {onPressShare && (

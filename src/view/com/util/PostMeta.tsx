@@ -22,7 +22,7 @@ import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {PronounPill} from '#/components/PronounPill'
 import {Text} from '#/components/Typography'
 import {IS_ANDROID, IS_WEB} from '#/env'
-import {useNameStyle} from '#/features/avatarDecorations'
+import {GradientName, useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {type app} from '#/lexicons'
 import {TimeElapsed} from './TimeElapsed'
@@ -162,7 +162,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                     !opts.moderation?.ui('displayName').blur &&
                     nameStyle,
                 ]}>
-                {forceLTR(displayName)}
+                <GradientName did={author.did} enabled={!hideDisplayNames && !opts.moderation?.ui('displayName').blur}>{forceLTR(displayName)}</GradientName>
               </MaybeLinkText>
               <ProfileBadgesFromProfileShadow
                 profile={author}
