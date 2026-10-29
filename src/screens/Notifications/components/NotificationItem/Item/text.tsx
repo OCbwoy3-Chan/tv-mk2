@@ -18,6 +18,7 @@ import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {Text} from '#/components/Typography'
+import {useNameStyle} from '#/features/avatarDecorations'
 import type * as bsky from '#/types/bsky'
 
 /**
@@ -107,6 +108,7 @@ export function Name({profile}: {profile: bsky.profile.AnyProfileView}) {
   const t = useTheme()
   const {t: l} = useLingui()
   const name = useDisplayName(profile)
+  const nameStyle = useNameStyle(profile.did)
 
   return (
     <ProfileHoverCard did={profile.did} inline>
@@ -122,6 +124,7 @@ export function Name({profile}: {profile: bsky.profile.AnyProfileView}) {
           a.font_semi_bold,
           t.atoms.text,
           web({direction: 'ltr', unicodeBidi: 'isolate'}),
+          nameStyle,
         ]}>
         {forceLTR(name)}
         <ProfileBadges

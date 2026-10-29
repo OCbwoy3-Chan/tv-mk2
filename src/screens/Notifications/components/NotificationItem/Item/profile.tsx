@@ -27,6 +27,7 @@ import {useProfileFollowMutationQueue} from '#/state/queries/profile'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
 import {useSession} from '#/state/session'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
+import {useNameStyle} from '#/features/avatarDecorations'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {AvatarStack} from '#/components/AvatarStack'
 import {Button} from '#/components/Button'
@@ -598,6 +599,7 @@ export function ActorListItem({
     ? moderateProfile(profile, moderationOpts)
     : undefined
   const name = useDisplayName(profile)
+  const nameStyle = useNameStyle(profile.did)
   const {onPress} = useLink({to: makeProfileLink(profile), displayText: ''})
 
   let secondLine: React.ReactNode
@@ -659,6 +661,7 @@ export function ActorListItem({
                   a.font_semi_bold,
                   a.leading_snug,
                   t.atoms.text,
+                  nameStyle,
                 ]}>
                 {name}
               </Text>

@@ -15,6 +15,8 @@ import { Pressable } from "#/components/Pressable";
 import { CheckThick_Stroke2_Corner0_Rounded as CheckIcon } from "#/components/icons/Check";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Toggle from "#/components/forms/Toggle";
+import { Admonition } from "#/components/Admonition";
+import * as SettingsList from "#/screens/Settings/components/SettingsList";
 
 export function DecorationSettings() {
     const t = useTheme();
@@ -73,6 +75,23 @@ export function DecorationSettings() {
     }
 
     return <>
+        <View style={[a.mx_xl]}>
+            <Admonition type="tip">
+                <View style={[a.gap_sm]}>
+                    <Text>
+                        <Trans>
+                            These customizations are only visible on tenna.party.
+                            This is an extremely tiny, practically unheard of subset of users on Bluesky & ATProto.
+                        </Trans>
+                    </Text>{" "}
+                    <Text style={[a.font_bold]}>
+                        <Trans>
+                            There is no need to remove emojis from your name, if you decide to use this.
+                        </Trans>
+                    </Text>
+                </View>
+            </Admonition>
+        </View>
         <View
             style={[
                 a.mx_xl,

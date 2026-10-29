@@ -22,6 +22,7 @@ import {ChevronRight_Stroke2_Corner0_Rounded as ChevronIcon} from '#/components/
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
+import {useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {type app} from '#/lexicons'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
@@ -176,6 +177,8 @@ function AccountItem({
   const t = useTheme()
   const {_} = useLingui()
   const {isActive: live} = useActorStatus(profile)
+  const decoration = useAvatarDecoration(account.did)
+  const nameStyle = useNameStyle(account.did)
   const enableSquareButtons = useEnableSquareButtons()
 
   const onPress = useCallback(() => {
@@ -210,6 +213,7 @@ function AccountItem({
           ]}>
           <UserAvatar
             avatar={profile?.avatar}
+            decoration={decoration}
             size={useCompactSwitcher ? 36 : 48}
             type={profile?.associated?.labeler ? 'labeler' : 'user'}
             live={live}
@@ -224,6 +228,7 @@ function AccountItem({
                   useCompactSwitcher ? a.font_semi_bold : a.font_medium,
                   a.leading_tight,
                   useCompactSwitcher ? null : a.text_md,
+                  nameStyle,
                 ]}
                 numberOfLines={1}>
                 {sanitizeDisplayName(

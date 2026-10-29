@@ -1,7 +1,7 @@
 /** Adapted from eurosky-social/eurosky-social-app (MIT). */
-import {type TextStyle} from 'react-native'
+import { type TextStyle } from 'react-native'
 
-import {type NameGradient} from './nameGradients'
+import { type NameGradient } from './nameGradients'
 
 /**
  * Paints the name with a real gradient via background-clip: text. The text
@@ -14,11 +14,13 @@ import {type NameGradient} from './nameGradients'
  * crisp. The outline doubles as a contrast guarantee - a gradient name reads
  * on any background once it has a hard edge.
  */
+
 export function nameGradientTextStyle(
   gradient: NameGradient,
-  opts?: {outline?: boolean},
+  opts?: { outline?: boolean },
 ): TextStyle {
   const stops = gradient.colors.join(', ')
+
   const base: Record<string, unknown> = {
     backgroundImage: `linear-gradient(90deg, ${stops})`,
     backgroundClip: 'text',
@@ -26,14 +28,24 @@ export function nameGradientTextStyle(
     color: 'transparent',
     WebkitTextFillColor: 'transparent',
   }
+
   if (opts?.outline) {
+    const color = '#050408'
+    const width = 2
+
     return {
       ...base,
-      WebkitTextStroke: '0.06em rgba(20,20,30,0.92)',
-      paintOrder: 'stroke',
+      filter: [
+        `drop-shadow(${width}px 0 0 ${color})`,
+        `drop-shadow(-${width}px 0 0 ${color})`,
+        `drop-shadow(0 ${width}px 0 ${color})`,
+        `drop-shadow(0 -${width}px 0 ${color})`,
+      ].join(' '),
     } as TextStyle
   }
-  // A hairline shadow keeps a gradient name legible against a matching-tone
-  // background without muddying the color.
-  return {...base, textShadow: '0 0 1px rgba(0,0,0,0.06)'} as TextStyle
+
+  return {
+    ...base,
+    textShadow: '0 0 1px rgba(0,0,0,0.06)',
+  } as TextStyle
 }

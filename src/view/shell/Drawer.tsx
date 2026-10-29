@@ -83,6 +83,7 @@ import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE, IS_WEB} from '#/env'
 import {InviteFriendsDialog} from '#/features/inviteFriends'
+import {useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {useActiveThemeUpdate} from '#/features/themes/api'
@@ -114,6 +115,8 @@ let DrawerProfileCard = ({
   const t = useTheme()
   const {data: profile} = useProfileQuery({did: account.did})
   const {isActive: live} = useActorStatus(profile)
+  const decoration = useAvatarDecoration(account.did)
+  const nameStyle = useNameStyle(account.did)
 
   const followersMetricsDisplay = useFollowersMetricsDisplay()
   const followingMetricsDisplay = useFollowingMetricsDisplay()
@@ -138,6 +141,7 @@ let DrawerProfileCard = ({
       <UserAvatar
         size={52}
         avatar={profile?.avatar}
+        decoration={decoration}
         // See https://github.com/bluesky-social/social-app/pull/1801:
         usePlainRNImage={true}
         type={profile?.associated?.labeler ? 'labeler' : 'user'}
@@ -153,6 +157,7 @@ let DrawerProfileCard = ({
               a.mt_2xs,
               a.leading_tight,
               a.flex_shrink,
+              nameStyle,
             ]}
             numberOfLines={1}>
             {profile?.displayName || account.handle}

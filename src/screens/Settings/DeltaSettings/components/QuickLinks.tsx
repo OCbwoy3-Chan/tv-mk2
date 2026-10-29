@@ -9,6 +9,7 @@ import {ShieldCheck_Stroke2_Corner0_Rounded} from '#/components/icons/Shield'
 import {Separator} from '#/components/Select'
 import {Text} from '#/components/Typography'
 import { Mu_Logo_Filled } from './mu/MuLogo'
+import { PaintRoller_Stroke2_Corner2_Rounded } from '#/components/icons/PaintRoller'
 
 export function TennaQuickLinks() {
   const t = useTheme()
@@ -39,7 +40,7 @@ export function TennaQuickLinks() {
         {
           text: l`Profile decorations`,
           path: '/settings/deltas/decoration',
-          icon: Mu_Logo_Filled,
+          icon: PaintRoller_Stroke2_Corner2_Rounded,
         },
       ],
     },

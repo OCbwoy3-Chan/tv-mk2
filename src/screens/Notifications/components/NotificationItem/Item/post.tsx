@@ -23,6 +23,7 @@ import {type ParentPost} from '#/state/queries/notifications/grouped/types'
 import {useSession} from '#/state/session'
 import {TimeElapsed} from '#/view/com/util/TimeElapsed'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {useAvatarDecoration, useNameStyle} from '#/features/avatarDecorations'
 import {atoms as a, useTheme, web} from '#/alf'
 import {ArrowCornerDownRight_Stroke2_Corner2_Rounded as ArrowCornerDownRight} from '#/components/icons/Arrow'
 import {type Props as SVGIconProps} from '#/components/icons/common'
@@ -77,6 +78,7 @@ export function Author({profile}: {profile: bsky.profile.AnyProfileView}) {
   const t = useTheme()
   const {t: l} = useLingui()
   const name = useDisplayName(profile)
+  const nameStyle = useNameStyle(profile.did)
   const href = makeProfileLink(profile)
   const label = l`Go to ${name}’s profile`
 
@@ -96,6 +98,7 @@ export function Author({profile}: {profile: bsky.profile.AnyProfileView}) {
             a.font_semi_bold,
             t.atoms.text,
             web({direction: 'ltr', unicodeBidi: 'isolate'}),
+            nameStyle,
           ]}>
           {forceLTR(name)}
         </WebOnlyInlineLinkText>
@@ -528,6 +531,8 @@ function QuoteCardPost({
   const {t: l} = useLingui()
   const moderationOpts = useModerationOpts()
   const name = useDisplayName(view.author)
+  const decoration = useAvatarDecoration(view.author.did)
+  const nameStyle = useNameStyle(view.author.did)
   const quote: PostView = {
     ...view,
     $type: 'app.bsky.feed.defs#postView',
@@ -568,6 +573,7 @@ function QuoteCardPost({
               <UserAvatar
                 size={20}
                 avatar={view.author.avatar}
+                decoration={decoration}
                 moderation={moderation?.ui('avatar')}
                 type={view.author.associated?.labeler ? 'labeler' : 'user'}
               />
@@ -580,6 +586,7 @@ function QuoteCardPost({
                   a.leading_snug,
                   a.font_semi_bold,
                   t.atoms.text,
+                  nameStyle,
                 ]}>
                 {forceLTR(name)}
               </Text>

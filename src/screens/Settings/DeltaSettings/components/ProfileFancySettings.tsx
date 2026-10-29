@@ -9,7 +9,7 @@ import { Button, ButtonText } from '#/components/Button'
 import * as Layout from '#/components/Layout'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import { Text } from '#/components/Typography'
-import { useDecorationEntitlementQuery, useMyDecorationSettingsQuery } from '#/features/avatarDecorations'
+import { useDecorationEntitlementQuery } from '#/features/avatarDecorations'
 import { Mu_Logo_Filled } from './mu/MuLogo'
 import { DecorationSettings } from './mu/DecorationSettings'
 
@@ -18,7 +18,6 @@ export function DeltaEuroskyProfileSettingsScreen() {
   const { openComposer } = useOpenComposer()
   const { currentAccount } = useSession()
   const entitlement = useDecorationEntitlementQuery(currentAccount?.did)
-  const myDecor = useMyDecorationSettingsQuery()
 
   return (
     <Layout.Screen>
@@ -42,8 +41,7 @@ export function DeltaEuroskyProfileSettingsScreen() {
               <Text style={[a.text_md, a.leading_snug]}>
                 <Trans>
                   Upgrade your profile with a decorative ring and colored names!
-                  It was supposed to be a Eurosky+ exclusive in Mu, but...
-                  We ported it. And added more options.
+                  Basically ported from Mu, but with more customization.
                 </Trans>
               </Text>
             </View>
@@ -52,7 +50,7 @@ export function DeltaEuroskyProfileSettingsScreen() {
                 <Admonition type="apology">
                   <Text>
                     <Trans>
-                      Profile customizations will not be visible on tenna.party without the VIP entitlement.
+                      Profile customizations are unavaiable on tenna.party without the VIP entitlement.
                       A list creates exclusivity, even though this client is super niche!
                       Just tap the button below, you will be added soon enough.
                     </Trans>
@@ -76,7 +74,7 @@ export function DeltaEuroskyProfileSettingsScreen() {
               </View>
             )}
           </View>
-          <DecorationSettings />
+          {entitlement.data === true && <DecorationSettings />}
         </SettingsList.Container>
       </Layout.Content>
     </Layout.Screen>
