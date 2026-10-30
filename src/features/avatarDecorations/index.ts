@@ -10,6 +10,7 @@ export {
   useAvatarShape,
   useDecorationEntitlementQuery,
   useMyDecorationSettingsQuery,
+  useNameGradient,
   useNameStyle,
   useSetDecorations,
 } from './useDecorations'

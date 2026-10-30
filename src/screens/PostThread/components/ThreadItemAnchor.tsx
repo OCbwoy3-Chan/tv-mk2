@@ -84,6 +84,7 @@ import * as Skele from '#/components/Skeleton'
 import {Text} from '#/components/Typography'
 import {WhoCanReply} from '#/components/WhoCanReply'
 import {Features, useAnalytics} from '#/analytics'
+import {useNameGradient, useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -264,6 +265,10 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const threadRootUri = record.reply?.root?.uri || post.uri
   const authorHref = makeProfileLink(post.author)
   const hideDisplayNames = useHideDisplayNames()
+  const nameGradient = useNameGradient(post.author.did)
+  const nameStyle = useNameStyle(post.author.did)
+  const showNameDecoration =
+    !hideDisplayNames && !moderation.ui('displayName').blur
   const displayName = getAuthorPrimaryName(post.author, {
     hideDisplayNames,
     moderation: moderation.ui('displayName'),
@@ -468,6 +473,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       {maxHeight: nameRowHeight},
                     ]}>
                     <Text
+                      gradient={showNameDecoration ? nameGradient : undefined}
                       onLayout={event => {
                         const {height} = event.nativeEvent.layout
                         if (height > 0) setNameRowHeight(height)
@@ -479,6 +485,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                         isCompactPosts ? a.text_md : a.text_lg,
                         a.font_semi_bold,
                         a.leading_snug,
+                        showNameDecoration && nameStyle,
                       ]}
                       numberOfLines={1}>
                       {displayName}

@@ -390,19 +390,18 @@ function GradientSwatch({
         style={[a.absolute, a.inset_0]}
       />
       <View style={[a.flex_1, a.align_center, a.justify_center, a.px_sm]}>
-        <Text
-          numberOfLines={1}
+        <View
           style={[
-            a.text_sm,
-            a.font_bold,
-            {
-              color: '#FFFFFF',
-              textShadowColor: 'rgba(0,0,0,0.35)',
-              textShadowRadius: 3,
-            },
+            a.rounded_full,
+            a.px_xs,
+            {maxWidth: '100%', backgroundColor: 'rgba(0, 0, 0, 0.75)'},
           ]}>
-          {i18n._(gradient.name)}
-        </Text>
+          <Text
+            numberOfLines={1}
+            style={[a.text_sm, a.font_bold, {color: '#FFFFFF'}]}>
+            {i18n._(gradient.name)}
+          </Text>
+        </View>
         {selected && (
           <View
             style={[

@@ -16,7 +16,7 @@ import {type NameGradient} from './nameGradients'
  */
 
 export function nameGradientTextStyle(
-  gradient: NameGradient,
+  gradient: Pick<NameGradient, 'colors' | 'segmented'>,
   opts?: {outline?: boolean},
 ): TextStyle {
   const stops = gradient.segmented

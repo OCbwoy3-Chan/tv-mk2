@@ -52,6 +52,7 @@ import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {type Metrics} from '#/analytics'
+import {useNameGradient, useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import type * as bsky from '#/types/bsky'
 import {
@@ -262,6 +263,10 @@ function InlineNameAndHandle({
   const t = useTheme()
   const hideDisplayNames = useHideDisplayNames()
   const moderation = moderateProfile(profile, moderationOpts)
+  const nameGradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
+  const showNameDecoration =
+    !hideDisplayNames && !moderation.ui('displayName').blur
   const name = getAuthorPrimaryName(profile, {
     hideDisplayNames,
     moderation: moderation.ui('displayName'),
@@ -271,12 +276,14 @@ function InlineNameAndHandle({
     <View style={[a.flex_row, a.align_end, a.flex_shrink]}>
       <Text
         emoji
+        gradient={showNameDecoration ? nameGradient : undefined}
         style={[
           a.font_semi_bold,
           a.leading_tight,
           a.flex_shrink_0,
           {maxWidth: hideDisplayNames ? '100%' : '70%'},
           web({direction: 'ltr', unicodeBidi: 'isolate'}),
+          showNameDecoration && nameStyle,
         ]}
         numberOfLines={1}>
         {forceLTR(name)}
@@ -318,6 +325,10 @@ export function Name({
 }) {
   const hideDisplayNames = useHideDisplayNames()
   const moderation = moderateProfile(profile, moderationOpts)
+  const nameGradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
+  const showNameDecoration =
+    !hideDisplayNames && !moderation.ui('displayName').blur
   const name = getAuthorPrimaryName(profile, {
     hideDisplayNames,
     moderation: moderation.ui('displayName'),
@@ -326,6 +337,7 @@ export function Name({
     <View style={[a.flex_row, a.align_center, a.max_w_full, style]}>
       <Text
         emoji
+        gradient={showNameDecoration ? nameGradient : undefined}
         style={[
           a.text_md,
           a.font_semi_bold,
@@ -333,6 +345,7 @@ export function Name({
           a.self_start,
           a.flex_shrink,
           textStyle,
+          showNameDecoration && nameStyle,
         ]}
         numberOfLines={1}>
         {name}

@@ -1,6 +1,10 @@
 import {useState} from 'react'
 import {type GestureResponderEvent, View} from 'react-native'
-import {moderatePost, type ModerationDecision} from '@bsky/sdk/moderation'
+import {
+  moderatePost,
+  moderateProfile,
+  type ModerationDecision,
+} from '@bsky/sdk/moderation'
 import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {Trans, useLingui} from '@lingui/react/macro'
 
@@ -18,6 +22,7 @@ import {
   usePostShadow,
 } from '#/state/cache/post-shadow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {type ParentPost} from '#/state/queries/notifications/grouped/types'
 import {useSession} from '#/state/session'
@@ -27,6 +32,7 @@ import {
   GradientName,
   useAvatarDecoration,
   useAvatarShape,
+  useNameGradient,
   useNameStyle,
 } from '#/features/avatarDecorations'
 import {atoms as a, useTheme, web} from '#/alf'
@@ -84,6 +90,15 @@ export function Author({profile}: {profile: bsky.profile.AnyProfileView}) {
   const {t: l} = useLingui()
   const name = useDisplayName(profile)
   const nameStyle = useNameStyle(profile.did)
+  const nameGradient = useNameGradient(profile.did)
+  const hideDisplayNames = useHideDisplayNames()
+  const moderationOpts = useModerationOpts()
+  const showNameDecoration =
+    !hideDisplayNames &&
+    !(
+      moderationOpts &&
+      moderateProfile(profile, moderationOpts).ui('displayName').blur
+    )
   const href = makeProfileLink(profile)
   const label = l`Go to ${name}’s profile`
 
@@ -92,20 +107,22 @@ export function Author({profile}: {profile: bsky.profile.AnyProfileView}) {
       <View style={[a.flex_row, a.align_center, a.self_start, a.max_w_full]}>
         <WebOnlyInlineLinkText
           emoji
+          gradient={showNameDecoration ? nameGradient : undefined}
           numberOfLines={1}
           to={href}
           label={label}
           disableMismatchWarning
           style={[
-            a.flex_shrink,
+            a.flex_shrink_0,
             a.text_md,
             a.leading_snug,
             a.font_semi_bold,
             t.atoms.text,
             web({direction: 'ltr', unicodeBidi: 'isolate'}),
-            nameStyle,
+            {maxWidth: '70%'},
+            showNameDecoration && nameStyle,
           ]}>
-          <GradientName did={profile.did}>{forceLTR(name)}</GradientName>
+          {forceLTR(name)}
         </WebOnlyInlineLinkText>
         <ProfileBadges profile={profile} size="sm" style={[a.pl_2xs]} />
         <WebOnlyInlineLinkText

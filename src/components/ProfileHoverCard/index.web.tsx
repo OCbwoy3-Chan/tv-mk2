@@ -72,7 +72,7 @@ import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {IS_WEB_TOUCH_DEVICE} from '#/env'
-import {useAvatarShape} from '#/features/avatarDecorations'
+import {useAvatarShape, useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {LiveStatus} from '#/features/liveNow/components/LiveStatusDialog'
 import {type app} from '#/lexicons'
@@ -525,6 +525,7 @@ function Inner({
   })
   const confirmFollow = useConfirmFollow()
   const hideDisplayNames = useHideDisplayNames()
+  const nameStyle = useNameStyle(profile.did)
   const authorPrimaryName = getAuthorPrimaryName(profile, {
     hideDisplayNames,
     moderation: moderation.ui('displayName'),
@@ -672,6 +673,7 @@ function Inner({
           <View
             style={[a.flex_row, a.flex_1, a.align_center, a.pt_md, a.pb_xs]}>
             <Text
+              emoji
               numberOfLines={1}
               style={[
                 a.flex_shrink,
@@ -679,6 +681,9 @@ function Inner({
                 a.leading_snug,
                 a.font_semi_bold,
                 a.self_start,
+                !hideDisplayNames &&
+                  !moderation.ui('displayName').blur &&
+                  nameStyle,
               ]}>
               {authorPrimaryName}
             </Text>

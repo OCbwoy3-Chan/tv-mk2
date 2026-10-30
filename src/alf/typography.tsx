@@ -54,6 +54,8 @@ export function normalizeTextStyles(
 
 export type StringChild = string | (string | null)[]
 export type TextProps = RNTextProps & {
+  /** Paint the text with a horizontal gradient. */
+  gradient?: {colors: string[]; segmented?: boolean}
   /**
    * Lets the user select text, to use the native copy and paste functionality.
    */

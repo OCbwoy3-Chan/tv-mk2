@@ -247,6 +247,7 @@ function ProfileCard({minimal}: {minimal: boolean}) {
                             a.font_bold,
                             a.text_sm,
                             a.leading_snug,
+                            a.self_start,
                             !hideDisplayNames && nameStyle,
                           ]}
                           numberOfLines={1}>

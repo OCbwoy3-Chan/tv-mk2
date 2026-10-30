@@ -95,6 +95,17 @@ export function Text({
   const content = renderChildrenWithEmoji(children, shared, emoji ?? false)
 
   if (IS_NATIVE && gradient && gradient.colors.length >= 2) {
+    const textStyle = {
+      ...s,
+      minWidth: undefined,
+      maxWidth: undefined,
+      width: undefined,
+      flex: undefined,
+      flexBasis: undefined,
+      flexGrow: undefined,
+      flexShrink: undefined,
+      alignSelf: undefined,
+    }
     const colors = gradient.segmented
       ? gradient.colors.flatMap(color => [color, color])
       : gradient.colors
@@ -106,7 +117,7 @@ export function Text({
       : undefined
     return (
       <View style={style}>
-        <UITextView {...shared} style={[s, {opacity: 0}]}>
+        <UITextView {...shared} style={[textStyle, {opacity: 0}]}>
           {content}
         </UITextView>
         <NativeMaskedView
@@ -114,7 +125,11 @@ export function Text({
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
           style={{position: 'absolute', top: 0, bottom: 0, left: 0, right: 0}}
-          maskElement={<UITextView {...shared}>{content}</UITextView>}>
+          maskElement={
+            <UITextView {...shared} style={textStyle}>
+              {content}
+            </UITextView>
+          }>
           <LinearGradient
             colors={colors as [string, string, ...string[]]}
             locations={locations as [number, number, ...number[]] | undefined}

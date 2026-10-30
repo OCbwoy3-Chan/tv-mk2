@@ -13,16 +13,16 @@ import {type NameGradient} from './nameGradients'
  * it approximates with a tight dark shadow.
  */
 export function nameGradientTextStyle(
-  gradient: NameGradient,
+  gradient: Pick<NameGradient, 'colors' | 'segmented'> & {solid?: string},
   opts?: {outline?: boolean},
 ): TextStyle {
   if (opts?.outline) {
     return {
-      color: gradient.solid,
+      color: gradient.solid ?? gradient.colors[0],
       textShadowColor: 'rgba(20,20,30,0.9)',
       textShadowOffset: {width: 0, height: 0},
       textShadowRadius: 3,
     }
   }
-  return {color: gradient.solid}
+  return {color: gradient.solid ?? gradient.colors[0]}
 }

@@ -23,7 +23,7 @@ import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
 import {
-  GradientName,
+  useNameGradient,
   useAvatarDecoration,
   useAvatarShape,
   useNameStyle,
@@ -185,6 +185,7 @@ function AccountItem({
   const decoration = useAvatarDecoration(account.did)
   const profileShape = useAvatarShape(account.did)
   const nameStyle = useNameStyle(account.did)
+  const nameGradient = useNameGradient(account.did)
   const enableSquareButtons = useEnableSquareButtons()
 
   const onPress = useCallback(() => {
@@ -231,6 +232,7 @@ function AccountItem({
             <View style={[a.flex_row, a.align_center, a.gap_xs]}>
               <Text
                 emoji
+                gradient={nameGradient}
                 style={[
                   useCompactSwitcher ? a.font_semi_bold : a.font_medium,
                   a.leading_tight,
@@ -238,11 +240,9 @@ function AccountItem({
                   nameStyle,
                 ]}
                 numberOfLines={1}>
-                <GradientName did={account.did}>
-                  {sanitizeDisplayName(
-                    profile?.displayName || profile?.handle || account.handle,
-                  )}
-                </GradientName>
+                {sanitizeDisplayName(
+                  profile?.displayName || profile?.handle || account.handle,
+                )}
               </Text>
               {profile && (
                 <ProfileBadges
