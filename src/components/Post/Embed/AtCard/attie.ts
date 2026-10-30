@@ -6,21 +6,5 @@
  * external-card treatment.
  */
 export function isAttieUrl(uri: string | undefined): boolean {
-  if (!uri) return false
-
-  try {
-    const url = new URL(uri)
-    if (url.protocol !== 'https:') return false
-
-    if (url.hostname === 'attie.site' || url.hostname.endsWith('.attie.site')) {
-      return true
-    }
-
-    return (
-      url.hostname === 'attie.ai' &&
-      /^\/@[^/]+\/pages\/[^/]+\/?$/.test(url.pathname)
-    )
-  } catch {
-    return false
-  }
+ return false
 }
