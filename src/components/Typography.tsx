@@ -1,3 +1,7 @@
+import {View, type ViewProps, type ViewStyle} from 'react-native'
+import {LinearGradient} from 'expo-linear-gradient'
+import MaskedView from '@react-native-masked-view/masked-view'
+
 import {logger} from '#/logger'
 import {UITextView} from '#/platform/ui-text-view'
 import {
@@ -16,9 +20,15 @@ import {
   renderChildrenWithEmoji,
   type TextProps,
 } from '#/alf/typography'
+import {IS_NATIVE} from '#/env'
+import {nameGradientTextStyle} from '#/features/avatarDecorations/nameGradientStyle'
 
 export type {TextProps}
 export {Text as Span} from 'react-native'
+
+const NativeMaskedView = MaskedView as unknown as React.ComponentType<
+  ViewProps & {maskElement: React.ReactElement}
+>
 
 /**
  * Our main text component. Use this most of the time.
@@ -32,6 +42,7 @@ export function Text({
   dataSet,
   numberOfLines,
   allowFontScaling = true,
+  gradient,
   ...rest
 }: TextProps) {
   const {fonts, flags} = useAlf()
@@ -43,6 +54,11 @@ export function Text({
       a.leading_snug,
       web(numberOfLines === 1 && numberOfLinesClippingFix),
       style,
+      web(
+        gradient && gradient.colors.length >= 2
+          ? nameGradientTextStyle(gradient)
+          : undefined,
+      ),
     ],
     {
       fontScale: allowFontScaling ? fonts.scaleMultiplier : 1,
@@ -76,15 +92,41 @@ export function Text({
     ...rest,
   }
 
-  return (
-    <UITextView {...shared}>
-      {renderChildrenWithEmoji(
-        children,
-        shared,
-        emoji ?? false
-      )}
-    </UITextView>
-  )
+  const content = renderChildrenWithEmoji(children, shared, emoji ?? false)
+
+  if (IS_NATIVE && gradient && gradient.colors.length >= 2) {
+    const colors = gradient.segmented
+      ? gradient.colors.flatMap(color => [color, color])
+      : gradient.colors
+    const locations = gradient.segmented
+      ? gradient.colors.flatMap((_, index) => [
+          index / gradient.colors.length,
+          (index + 1) / gradient.colors.length,
+        ])
+      : undefined
+    return (
+      <View style={style}>
+        <UITextView {...shared} style={[s, {opacity: 0}]}>
+          {content}
+        </UITextView>
+        <NativeMaskedView
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          style={{position: 'absolute', top: 0, bottom: 0, left: 0, right: 0}}
+          maskElement={<UITextView {...shared}>{content}</UITextView>}>
+          <LinearGradient
+            colors={colors as [string, string, ...string[]]}
+            locations={locations as [number, number, ...number[]] | undefined}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            style={{flex: 1}}
+          />
+        </NativeMaskedView>
+      </View>
+    )
+  }
+  return <UITextView {...shared}>{content}</UITextView>
 }
 
 function createHeadingElement({level}: {level: number}) {
