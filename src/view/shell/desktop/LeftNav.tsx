@@ -117,6 +117,11 @@ import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {type Events} from '#/analytics/metrics/types'
 import {IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
+import {
+  GradientName,
+  useAvatarShape,
+  useNameStyle,
+} from '#/features/avatarDecorations'
 import {isFollowingV2HomeDotEnabled} from '#/features/followingV2/eligibility'
 import {useActorStatus} from '#/features/liveNow'
 import {accentForeground} from '#/features/themes/accentForeground'
@@ -158,6 +163,8 @@ function ProfileCard({minimal}: {minimal: boolean}) {
   const {t: l} = useLingui()
   const t = useTheme()
 
+  const profileShape = useAvatarShape(currentAccount?.did)
+  const nameStyle = useNameStyle(currentAccount?.did)
   const profile = profiles?.find(p => p.did === currentAccount!.did)
   const otherAccounts = accounts
     .filter(acc => acc.did !== currentAccount!.did)
@@ -216,6 +223,7 @@ function ProfileCard({minimal}: {minimal: boolean}) {
                     ]}>
                     <UserAvatar
                       avatar={profile.avatar}
+                      profileShape={profileShape}
                       size={LARGE_ELEMENT_SIZE}
                       type={profile?.associated?.labeler ? 'labeler' : 'user'}
                       live={live}
@@ -235,9 +243,18 @@ function ProfileCard({minimal}: {minimal: boolean}) {
                         ]}>
                         <Text
                           emoji
-                          style={[a.font_bold, a.text_sm, a.leading_snug]}
+                          style={[
+                            a.font_bold,
+                            a.text_sm,
+                            a.leading_snug,
+                            !hideDisplayNames && nameStyle,
+                          ]}
                           numberOfLines={1}>
-                          {getAuthorPrimaryName(profile, {hideDisplayNames})}
+                          <GradientName
+                            did={profile.did}
+                            enabled={!hideDisplayNames}>
+                            {getAuthorPrimaryName(profile, {hideDisplayNames})}
+                          </GradientName>
                         </Text>
                         {!hideDisplayNames && (
                           <Text
@@ -486,11 +503,13 @@ function SwitchMenuItemAvatar({
   onSelectAccount?: (account: SessionAccount) => void
 }) {
   const {isActive: live} = useActorStatus(profile)
+  const profileShape = useAvatarShape(profile?.did)
 
   return (
     <View>
       <UserAvatar
         avatar={profile?.avatar}
+        profileShape={profileShape}
         size={20}
         type={profile?.associated?.labeler ? 'labeler' : 'user'}
         live={live}

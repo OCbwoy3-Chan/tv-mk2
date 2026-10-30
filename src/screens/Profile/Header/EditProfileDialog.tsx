@@ -34,6 +34,7 @@ import {Text} from '#/components/Typography'
 import {useSimpleVerificationStateWithDeer} from '#/components/verification'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB} from '#/env'
+import {useAvatarShape} from '#/features/avatarDecorations'
 import {
   logProfileLinkChanges,
   type ProfileLink,
@@ -129,6 +130,7 @@ function DialogInner({
   const t = useTheme()
   const ax = useAnalytics()
   const control = Dialog.useDialogContext()
+  const profileShape = useAvatarShape(profile.did)
   const enableSquareButtons = useEnableSquareButtons()
   // the dialog's contents mount on every open, so this fires once per open
   useCallOnce(() => {
@@ -408,7 +410,7 @@ function DialogInner({
               left: 20,
               width: 84,
               height: 84,
-              borderWidth: 2,
+              borderWidth: profileShape ? 0 : 2,
               borderRadius: enableSquareAvatars
                 ? getSquareAvatarRadius(80, enableSquareAvatars) +
                   (enableSquareAvatars === 'sharp' ? 0 : 2)
@@ -418,6 +420,7 @@ function DialogInner({
           ]}>
           <EditableUserAvatar
             size={80}
+            profileShape={profileShape}
             avatar={userAvatar}
             onSelectNewAvatar={onSelectNewAvatar}
           />

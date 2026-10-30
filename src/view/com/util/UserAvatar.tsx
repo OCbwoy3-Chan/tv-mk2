@@ -38,8 +38,8 @@ import {
   compressImage,
   createComposerImage,
 } from '#/state/gallery'
-import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {
   applyImageTransforms,
   useImageCdnHost,
@@ -63,15 +63,21 @@ import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import * as Menu from '#/components/Menu'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {useAnalytics} from '#/analytics'
-import {IS_ANDROID, IS_HIGH_DPI, IS_NATIVE, IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
+import {
+  IS_ANDROID,
+  IS_HIGH_DPI,
+  IS_NATIVE,
+  IS_WEB,
+  IS_WEB_TOUCH_DEVICE,
+} from '#/env'
 import {
   AvatarDecorationRing,
-  AvatarShapeMask,
-  hexagonPath,
   type AvatarShape,
-  useAvatarShape,
+  AvatarShapeMask,
   type DecorationFrame,
+  hexagonPath,
   useAvatarDecoration,
+  useAvatarShape,
 } from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {LiveIndicator} from '#/features/liveNow/components/LiveIndicator'
@@ -110,6 +116,7 @@ interface UserAvatarProps extends BaseUserAvatarProps {
 }
 
 interface EditableUserAvatarProps extends BaseUserAvatarProps {
+  profileShape?: AvatarShape
   onSelectNewAvatar: (img: PickerImage | null) => void
 }
 
@@ -321,7 +328,13 @@ let UserAvatar = ({
         : 'circle'
 
   const finalShape = profileShape
-    ? profileShape === 'circle' ? 'circle' : profileShape === 'square' || profileShape === 'hexagon' ? (cornerPreference === 'sharp' ? 'sharp' : 'square') : 'square'
+    ? profileShape === 'circle'
+      ? 'circle'
+      : profileShape === 'square' || profileShape === 'hexagon'
+        ? cornerPreference === 'sharp'
+          ? 'sharp'
+          : 'square'
+        : 'square'
     : enableSquareAvatars === 'sharp'
       ? 'sharp'
       : (overrideShape ?? (type === 'user' ? avishapeforce : 'square'))
@@ -348,7 +361,9 @@ let UserAvatar = ({
       width: size,
       height: size,
       borderRadius,
-      ...(profileShape === 'squircle' ? {borderCurve: 'continuous' as const} : {}),
+      ...(profileShape === 'squircle'
+        ? {borderCurve: 'continuous' as const}
+        : {}),
       backgroundColor: t.palette.contrast_25,
       ...extraAviStyle,
       ...(finalShape === 'sharp' && SHARP_CORNERS),
@@ -415,90 +430,131 @@ let UserAvatar = ({
   }, [size, style, finalShape])
 
   const hexagon = profileShape === 'hexagon'
-  const wrapShape = (content: React.ReactNode) => hexagon ? (
-    <AvatarShapeMask size={size} rounded={cornerPreference !== 'sharp'}>{content}</AvatarShapeMask>
-  ) : content
-  const hexagonFrame = type === 'user' && !moderation?.blur ? decoration : undefined
-  const hexagonLineWidth = IS_WEB && IS_HIGH_DPI ? 0.5 : StyleSheet.hairlineWidth
-  const hexagonBorderColor = (t.name === 'light'
-    ? t.atoms.border_contrast_low
-    : t.atoms.border_contrast_high).borderColor
-  const hexagonBorder = hexagon && (live || hexagonFrame || !noBorder) ? (
-    <Svg
-      testID="avatarHexagonBorder"
-      pointerEvents="none"
-      width={size}
-      height={size}
-      style={[a.absolute, {top: 0, left: 0}]}>
-      <Path
-        d={hexagonPath(size, cornerPreference !== 'sharp')}
-        fill="none"
-        stroke={live ? t.palette.negative_500 : hexagonFrame?.color ?? hexagonBorderColor}
-        strokeOpacity={live || hexagonFrame ? 1 : 0.6}
-        strokeWidth={2 * (live || hexagonFrame ? (size > 16 ? 3 : 1) : hexagonLineWidth)}
-      />
-    </Svg>
-  ) : null
+  const wrapShape = (content: React.ReactNode) =>
+    hexagon ? (
+      <AvatarShapeMask size={size} rounded={cornerPreference !== 'sharp'}>
+        {content}
+      </AvatarShapeMask>
+    ) : (
+      content
+    )
+  const hexagonFrame =
+    type === 'user' && !moderation?.blur ? decoration : undefined
+  const hexagonLineWidth =
+    IS_WEB && IS_HIGH_DPI ? 0.5 : StyleSheet.hairlineWidth
+  const hexagonBorderColor = (
+    t.name === 'light'
+      ? t.atoms.border_contrast_low
+      : t.atoms.border_contrast_high
+  ).borderColor
+  const hexagonBorder =
+    hexagon && (live || hexagonFrame || !noBorder) ? (
+      <Svg
+        testID="avatarHexagonBorder"
+        pointerEvents="none"
+        width={size}
+        height={size}
+        style={[a.absolute, {top: 0, left: 0}]}>
+        <Path
+          d={hexagonPath(size, cornerPreference !== 'sharp')}
+          fill="none"
+          stroke={
+            live
+              ? t.palette.negative_500
+              : (hexagonFrame?.color ?? hexagonBorderColor)
+          }
+          strokeOpacity={live || hexagonFrame ? 1 : 0.6}
+          strokeWidth={
+            2 * (live || hexagonFrame ? (size > 16 ? 3 : 1) : hexagonLineWidth)
+          }
+        />
+      </Svg>
+    ) : null
 
   return avatar &&
     !(moderation?.blur && IS_ANDROID /* android crashes with blur */) ? (
     <View style={containerStyle}>
-      {wrapShape(<>{usePlainRNImage ? (
-        <RNImage
-          accessibilityIgnoresInvertColors
-          testID="userAvatarImage"
-          style={aviStyle}
-          resizeMode="cover"
-          source={{
-            uri: applyImageTransforms(
-              hackModifyThumbnailPath(avatar, size < 90),
-              {imageCdnHost, format: thumbnailFormat},
-            ),
-          }}
-          blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
-          onLoad={onLoad}
-        />
-      ) : (
-        <ExpoImage
-          testID="userAvatarImage"
-          style={aviStyle}
-          contentFit="cover"
-          source={{
-            uri: applyImageTransforms(
-              hackModifyThumbnailPath(avatar, size < 90),
-              {imageCdnHost, format: thumbnailFormat},
-            ),
-          }}
-          blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
-          onLoad={onLoad}
-          useAppleWebpCodec
-        />
+      {wrapShape(
+        <>
+          {usePlainRNImage ? (
+            <RNImage
+              accessibilityIgnoresInvertColors
+              testID="userAvatarImage"
+              style={aviStyle}
+              resizeMode="cover"
+              source={{
+                uri: applyImageTransforms(
+                  hackModifyThumbnailPath(avatar, size < 90),
+                  {imageCdnHost, format: thumbnailFormat},
+                ),
+              }}
+              blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
+              onLoad={onLoad}
+            />
+          ) : (
+            <ExpoImage
+              testID="userAvatarImage"
+              style={aviStyle}
+              contentFit="cover"
+              source={{
+                uri: applyImageTransforms(
+                  hackModifyThumbnailPath(avatar, size < 90),
+                  {imageCdnHost, format: thumbnailFormat},
+                ),
+              }}
+              blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
+              onLoad={onLoad}
+              useAppleWebpCodec
+            />
+          )}
+          {!noBorder && !hexagon && <MediaInsetBorder style={borderStyle} />}
+          {decoration &&
+            !hexagon &&
+            type === 'user' &&
+            !live &&
+            !moderation?.blur && (
+              <AvatarDecorationRing
+                frame={decoration}
+                size={size}
+                borderRadius={aviStyle.borderRadius}
+              />
+            )}
+          {hexagonBorder}
+        </>,
       )}
-      {!noBorder && !hexagon && <MediaInsetBorder style={borderStyle} />}
-      {decoration && !hexagon && type === 'user' && !live && !moderation?.blur && (
-        <AvatarDecorationRing
-          frame={decoration}
-          size={size}
-          borderRadius={aviStyle.borderRadius}
-        />
+      {live && size > 16 && !hideLiveBadge && (
+        <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />
       )}
-      {hexagonBorder}</>)}
-      {live && size > 16 && !hideLiveBadge && <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />}
       {alert}
     </View>
   ) : (
     <View style={containerStyle}>
-      {wrapShape(<><DefaultAvatar type={type} shape={finalShape} size={size} respectOverride={!!profileShape} />
-      {!noBorder && !hexagon && <MediaInsetBorder style={borderStyle} />}
-      {decoration && !hexagon && type === 'user' && !live && !moderation?.blur && (
-        <AvatarDecorationRing
-          frame={decoration}
-          size={size}
-          borderRadius={aviStyle.borderRadius}
-        />
+      {wrapShape(
+        <>
+          <DefaultAvatar
+            type={type}
+            shape={finalShape}
+            size={size}
+            respectOverride={!!profileShape}
+          />
+          {!noBorder && !hexagon && <MediaInsetBorder style={borderStyle} />}
+          {decoration &&
+            !hexagon &&
+            type === 'user' &&
+            !live &&
+            !moderation?.blur && (
+              <AvatarDecorationRing
+                frame={decoration}
+                size={size}
+                borderRadius={aviStyle.borderRadius}
+              />
+            )}
+          {hexagonBorder}
+        </>,
       )}
-      {hexagonBorder}</>)}
-      {live && size > 16 && !hideLiveBadge && <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />}
+      {live && size > 16 && !hideLiveBadge && (
+        <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />
+      )}
       {alert}
     </View>
   )
@@ -511,6 +567,7 @@ let EditableUserAvatar = ({
   size,
   avatar,
   onSelectNewAvatar,
+  profileShape,
 }: EditableUserAvatarProps): React.ReactNode => {
   const t = useTheme()
   const {_} = useLingui()
@@ -618,7 +675,14 @@ let EditableUserAvatar = ({
         <Menu.Trigger label={_(msg`Edit avatar`)}>
           {({props}) => (
             <Pressable {...props} testID="changeAvatarBtn">
-              {avatar ? (
+              {profileShape ? (
+                <UserAvatar
+                  type={type}
+                  size={size}
+                  avatar={avatar}
+                  profileShape={profileShape}
+                />
+              ) : avatar ? (
                 <ExpoImage
                   testID="userAvatarImage"
                   style={aviStyle}
@@ -745,19 +809,23 @@ let PreviewableUserAvatar = ({
 
   const linkStyle = {
     borderRadius:
-      enableSquareAvatars === 'sharp' || props.shape === 'sharp'
+      profileShape && profileShape !== 'circle'
         ? 0
-        : props.shape === 'circle'
+        : profileShape === 'circle'
           ? Math.floor(props.size / 2)
-          : props.shape === 'square' ||
-              props.type === 'algo' ||
-              props.type === 'list'
-            ? getSquareAvatarRadius(props.size, enableSquareAvatars)
-            : getShapeRadius(
-                enableSquareAvatars,
-                getSquareAvatarRadius(props.size),
-                Math.floor(props.size / 2),
-              ),
+          : enableSquareAvatars === 'sharp' || props.shape === 'sharp'
+            ? 0
+            : props.shape === 'circle'
+              ? Math.floor(props.size / 2)
+              : props.shape === 'square' ||
+                  props.type === 'algo' ||
+                  props.type === 'list'
+                ? getSquareAvatarRadius(props.size, enableSquareAvatars)
+                : getShapeRadius(
+                    enableSquareAvatars,
+                    getSquareAvatarRadius(props.size),
+                    Math.floor(props.size / 2),
+                  ),
   }
 
   return (

@@ -203,6 +203,7 @@ import {
   IS_WEB,
   IS_WEB_SAFARI,
 } from '#/env'
+import {useAvatarShape} from '#/features/avatarDecorations'
 import {type Gif} from '#/features/gifPicker/types'
 import {app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -2163,6 +2164,7 @@ let ComposerPost = memo(function ComposerPost({
   setActiveAccountDid: (did: string) => void
 }) {
   const {t: l} = useLingui()
+  const profileShape = useAvatarShape(activeAccountDid)
   const richtext = post.richtext
   const isTextOnly = !post.embed.link && !post.embed.quote && !post.embed.media
   const forceMinHeight = IS_WEB && isTextOnly && isActive
@@ -2269,6 +2271,7 @@ let ComposerPost = memo(function ComposerPost({
               ]}>
               <UserAvatar
                 avatar={currentProfile?.avatar}
+                profileShape={profileShape}
                 size={42}
                 type={currentProfile?.associated?.labeler ? 'labeler' : 'user'}
                 style={[a.mt_xs]}

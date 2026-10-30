@@ -72,6 +72,7 @@ import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {IS_WEB_TOUCH_DEVICE} from '#/env'
+import {useAvatarShape} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {LiveStatus} from '#/features/liveNow/components/LiveStatusDialog'
 import {type app} from '#/lexicons'
@@ -511,6 +512,7 @@ function Inner({
 }) {
   const {_} = useLingui()
   const {currentAccount} = useSession()
+  const profileShape = useAvatarShape(profile.did)
   const moderation = useMemo(
     () => moderateProfile(profile, moderationOpts),
     [profile, moderationOpts],
@@ -595,6 +597,7 @@ function Inner({
         <Link to={profileURL} label={_(msg`View profile`)} onPress={hide}>
           <UserAvatar
             size={64}
+            profileShape={profileShape}
             avatar={profile.avatar}
             type={isLabeler ? 'labeler' : 'user'}
             moderation={moderation.ui('avatar')}
