@@ -570,7 +570,7 @@ msgstr "{badge, plural, one {# update} other {# updates}}"
 msgid "{count, plural, =0 {No requests to join} one {# request to join} other {# requests to join}}"
 msgstr "{count, plural, =0 {No requests to join} one {# request to join} other {# requests to join}}"
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:867
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:874
 msgid "{count, plural, one {{one}} other {{other}}}"
 msgstr "{count, plural, one {{one}} other {{other}}}"
 
@@ -1372,7 +1372,7 @@ msgstr ""
 
 #. Metric count display, the <0> tags enclose the number in bold (will never be 0)
 #. placeholder {0}: formatCountsMetricNumber(i18n, display, count)
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:874
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:881
 msgid "<0>{0}</0> {count, plural, one {{one}} other {{other}}}"
 msgstr "<0>{0}</0> {count, plural, one {{one}} other {{other}}}"
 
@@ -2476,8 +2476,8 @@ msgstr "An issue occurred starting the group chat, please try again."
 #: src/components/hooks/useEphemeralAccountError.tsx:19
 #: src/components/hooks/useFollowMethods.ts:35
 #: src/components/hooks/useFollowMethods.ts:52
-#: src/components/ProfileCard.tsx:552
-#: src/components/ProfileCard.tsx:567
+#: src/components/ProfileCard.tsx:565
+#: src/components/ProfileCard.tsx:580
 #: src/screens/Notifications/components/NotificationItem/Item/profile.tsx:190
 #: src/view/com/notifications/NotificationFeedItem.tsx:1102
 #: src/view/com/notifications/NotificationFeedItem.tsx:1115
@@ -2751,14 +2751,14 @@ msgstr "AppView URL"
 
 #. placeholder {0}: niceDate(i18n, createdAt, 'medium')
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:400
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:809
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:816
 msgid "Archived from {0}"
 msgstr ""
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:370
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:409
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:780
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:818
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:787
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:825
 msgid "Archived post"
 msgstr ""
 
@@ -3298,7 +3298,7 @@ msgstr ""
 msgid "Blocked accounts cannot reply in your threads, mention you, or otherwise interact with you. You will not see their content and they will be prevented from seeing yours."
 msgstr ""
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:497
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:514
 msgid "Blocked post"
 msgstr "Blocked post"
 
@@ -3345,7 +3345,7 @@ msgid "Bluesky adapts to your iPad’s screen in any orientation or window size.
 msgstr "Bluesky adapts to your iPad’s screen in any orientation or window size."
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:425
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:834
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:841
 msgid "Bluesky cannot confirm the authenticity of the claimed date."
 msgstr ""
 
@@ -5657,7 +5657,7 @@ msgstr ""
 msgid "Deleted list"
 msgstr ""
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:500
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:517
 msgid "Deleted post"
 msgstr "Deleted post"
 
@@ -7692,7 +7692,7 @@ msgstr "Focused video"
 #. User is not following this account, click to follow
 #. User is not following this account, click to follow
 #: src/components/dialogs/FollowConfirmationDialog.tsx:46
-#: src/components/ProfileCard.tsx:617
+#: src/components/ProfileCard.tsx:630
 #: src/components/ProfileHoverCard/index.web.tsx:637
 #: src/components/ProfileHoverCard/index.web.tsx:665
 #: src/screens/Messages/ConversationSettings/Member.tsx:204
@@ -7765,7 +7765,7 @@ msgstr ""
 msgid "Follow all accounts"
 msgstr ""
 
-#: src/components/ProfileCard.tsx:668
+#: src/components/ProfileCard.tsx:681
 #: src/screens/PostThread/components/ThreadItemAnchorFollowButton.tsx:256
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:588
 #: src/screens/VideoFeed/index.tsx:1109
@@ -7774,7 +7774,7 @@ msgstr "Follow as"
 
 #. User is not following this account, click to follow back
 #. User is not following this account, click to follow back
-#: src/components/ProfileCard.tsx:613
+#: src/components/ProfileCard.tsx:626
 #: src/components/ProfileHoverCard/index.web.tsx:636
 #: src/components/ProfileHoverCard/index.web.tsx:664
 #: src/screens/Notifications/components/NotificationItem/Item/profile.tsx:213
@@ -7858,7 +7858,7 @@ msgstr ""
 #. User is following this account, click to unfollow
 #. User is following this account, click to unfollow
 #. User is following this account, click to unfollow
-#: src/components/ProfileCard.tsx:608
+#: src/components/ProfileCard.tsx:621
 #: src/components/ProfileHoverCard/index.web.tsx:634
 #: src/components/ProfileHoverCard/index.web.tsx:662
 #: src/screens/Notifications/components/NotificationItem/Item/profile.tsx:208
@@ -7891,7 +7891,7 @@ msgstr ""
 msgid "Following {0} as @{1}"
 msgstr "Following {0} as @{1}"
 
-#: src/components/ProfileCard.tsx:546
+#: src/components/ProfileCard.tsx:559
 #: src/view/com/notifications/NotificationFeedItem.tsx:1099
 msgid "Following {authorName}"
 msgstr "Following {authorName}"
@@ -8336,7 +8336,7 @@ msgstr "Go to {0}'s profile"
 msgid "Go to {firstAuthorName}'s profile"
 msgstr ""
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:88
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:103
 #: src/screens/Notifications/components/NotificationItem/Item/profile.tsx:637
 #: src/screens/Notifications/components/NotificationItem/Item/text.tsx:118
 msgid "Go to {name}’s profile"
@@ -8668,7 +8668,7 @@ msgid "Hidden list"
 msgstr ""
 
 #. Shown in place of the text of a post that is hidden by the viewer’s moderation settings
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:227
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:244
 msgid "Hidden post"
 msgstr "Hidden post"
 
@@ -9159,15 +9159,15 @@ msgstr "Impressions"
 msgid "In order to provide an age-appropriate experience, we need to know your birthdate. This is a one-time thing, and your data will be kept private."
 msgstr ""
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:271
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:288
 msgid "in reply to <0>{subject}</0>: {previewNode}"
 msgstr "in reply to <0>{subject}</0>: {previewNode}"
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:184
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:201
 msgid "in reply to a blocked post"
 msgstr "in reply to a blocked post"
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:189
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:206
 msgid "in reply to a deleted post"
 msgstr "in reply to a deleted post"
 
@@ -10086,7 +10086,7 @@ msgstr ""
 
 #: src/screens/PostThread/components/LikesStat.tsx:31
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:275
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:649
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:656
 msgid "Likes on this post"
 msgstr ""
 
@@ -11049,7 +11049,7 @@ msgid "Mutual group chats"
 msgstr "Mutual group chats"
 
 #. User is following this account, click to unfollow
-#: src/components/ProfileCard.tsx:604
+#: src/components/ProfileCard.tsx:617
 #: src/components/ProfileHoverCard/index.web.tsx:633
 #: src/components/ProfileHoverCard/index.web.tsx:661
 #: src/screens/PostThread/components/ThreadItemAnchorFollowButton.tsx:243
@@ -11477,7 +11477,7 @@ msgstr ""
 msgid "No longer following {0} as @{1}"
 msgstr "No longer following {0} as @{1}"
 
-#: src/components/ProfileCard.tsx:562
+#: src/components/ProfileCard.tsx:575
 #: src/view/com/notifications/NotificationFeedItem.tsx:1112
 msgid "No longer following {authorName}"
 msgstr "No longer following {authorName}"
@@ -11706,8 +11706,8 @@ msgstr "Non-standard OTA channel"
 
 #: src/screens/Settings/AccessibilitySettings.tsx:50
 #: src/screens/Settings/AltTextAiSettings.tsx:49
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:442
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:460
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:441
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:459
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:220
 msgid "None"
 msgstr "None"
@@ -11882,7 +11882,7 @@ msgstr ""
 #: src/components/PetAccountAlert.tsx:57
 #: src/screens/Login/PasswordUpdatedForm.tsx:35
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:431
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:840
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:847
 msgid "Okay"
 msgstr ""
 
@@ -13212,7 +13212,7 @@ msgstr ""
 msgid "Post by {authorName}"
 msgstr "Post by {authorName}"
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:562
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:579
 msgid "Post by {name}"
 msgstr "Post by {name}"
 
@@ -13242,7 +13242,7 @@ msgstr ""
 msgid "Post from account"
 msgstr "Post from account"
 
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:172
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:173
 #: src/screens/PostThread/components/ThreadItemPost.tsx:138
 #: src/screens/PostThread/components/ThreadItemReaderSegment.tsx:89
 #: src/screens/PostThread/components/ThreadItemTreePost.tsx:116
@@ -13320,7 +13320,7 @@ msgid "Post visibility"
 msgstr "Post visibility"
 
 #. Shown in place of the text of a post that has no text, only images, video, a link or a quoted post
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:233
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:250
 msgid "Post with media"
 msgstr "Post with media"
 
@@ -13771,7 +13771,7 @@ msgid "Quotes"
 msgstr ""
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:261
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:635
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:642
 msgid "Quotes of this post"
 msgstr ""
 
@@ -14251,13 +14251,13 @@ msgstr ""
 
 #: src/components/Post/Embed/index.tsx:426
 #: src/components/Post/Embed/index.tsx:496
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:509
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:526
 msgid "Removed by author"
 msgstr ""
 
 #: src/components/Post/Embed/index.tsx:427
 #: src/components/Post/Embed/index.tsx:494
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:507
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:524
 msgid "Removed by you"
 msgstr ""
 
@@ -14343,7 +14343,7 @@ msgstr "Reorder {0}"
 msgid "Replace with Discover"
 msgstr ""
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:264
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:281
 msgid "replied to <0>{subject}</0>: {previewNode}"
 msgstr "replied to <0>{subject}</0>: {previewNode}"
 
@@ -14352,7 +14352,7 @@ msgctxt "description"
 msgid "Replied to <0><1/></0>"
 msgstr ""
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:182
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:199
 msgid "replied to a blocked post"
 msgstr "replied to a blocked post"
 
@@ -14361,7 +14361,7 @@ msgctxt "description"
 msgid "Replied to a blocked post"
 msgstr ""
 
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:187
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:204
 msgid "replied to a deleted post"
 msgstr "replied to a deleted post"
 
@@ -14696,7 +14696,7 @@ msgid "Reposts Hidden"
 msgstr "Reposts Hidden"
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:243
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:621
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:628
 msgid "Reposts of this post"
 msgstr ""
 
@@ -16354,7 +16354,7 @@ msgid "Shows {0} notifications"
 msgstr "Shows {0} notifications"
 
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:371
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:781
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:788
 msgid "Shows information about when this post was created"
 msgstr ""
 
@@ -18219,7 +18219,7 @@ msgstr "This person is blocking you"
 #. placeholder {0}: niceDate(i18n, createdAt)
 #. placeholder {1}: niceDate(i18n, indexedAt)
 #: src/screens/PostThread/components/ReaderSeamControls.tsx:412
-#: src/screens/PostThread/components/ThreadItemAnchor.tsx:821
+#: src/screens/PostThread/components/ThreadItemAnchor.tsx:828
 msgid "This post claims to have been created on <0>{0}</0>, but was first seen by Bluesky on <1>{1}</1>."
 msgstr ""
 
@@ -19718,7 +19718,7 @@ msgid "View {0}'s profile"
 msgstr ""
 
 #. placeholder {0}: getAuthorPrimaryName(profile, { hideDisplayNames, })
-#: src/components/ProfileCard.tsx:164
+#: src/components/ProfileCard.tsx:165
 msgid "View {0}’s profile"
 msgstr "View {0}’s profile"
 
@@ -19850,8 +19850,8 @@ msgstr ""
 #: src/components/ProfileHoverCard/index.web.tsx:623
 #: src/components/ProfileHoverCard/index.web.tsx:672
 #: src/view/com/posts/PostFeedErrorMessage.tsx:181
-#: src/view/com/util/PostMeta.tsx:148
-#: src/view/com/util/PostMeta.tsx:184
+#: src/view/com/util/PostMeta.tsx:152
+#: src/view/com/util/PostMeta.tsx:186
 msgid "View profile"
 msgstr ""
 
@@ -20581,7 +20581,7 @@ msgid "Yesterday"
 msgstr ""
 
 #. Emphasised in “replied to you: ...”, in a notification where someone replied to the viewer’s own post
-#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:211
+#: src/screens/Notifications/components/NotificationItem/Item/post.tsx:228
 msgid "you"
 msgstr "you"
 
