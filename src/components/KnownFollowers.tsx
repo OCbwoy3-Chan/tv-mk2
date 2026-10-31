@@ -13,12 +13,19 @@ import {makeProfileLink} from '#/lib/routes/links'
 import {getShapeRadius, type ShapePreference} from '#/lib/shapes'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
+import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, useTheme} from '#/alf'
 import {PlusSmall_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {Link, type LinkProps} from '#/components/Link'
 import {Text} from '#/components/Typography'
+import {
+  AvatarShapeMask,
+  GradientName,
+  useAvatarShape,
+  useNameStyle,
+} from '#/features/avatarDecorations'
 import {type app} from '#/lexicons'
 import type * as bsky from '#/types/bsky'
 
@@ -137,6 +144,8 @@ function KnownFollowersInner({
         }),
       },
       moderation,
+      showNameDecoration:
+        !hideDisplayNames && !moderation.ui('displayName').blur,
     }
   })
 
@@ -184,28 +193,15 @@ function KnownFollowersInner({
               },
             ]}>
             {slice.map(({profile: prof, moderation}, i) => (
-              <View
+              <FollowerAvatar
                 key={prof.did}
-                style={[
-                  {
-                    borderWidth: AVI_BORDER,
-                    borderColor: t.atoms.bg.backgroundColor,
-                    width: dim,
-                    height: dim,
-                    borderRadius: radius,
-                    zIndex: slice.length - i + (showOverflowPlus ? 1 : 0),
-                    marginLeft: i > 0 ? -8 : 0,
-                    overflow: 'hidden',
-                  },
-                ]}>
-                <UserAvatar
-                  size={SIZE}
-                  avatar={prof.avatar}
-                  moderation={moderation.ui('avatar')}
-                  type={prof.associated?.labeler ? 'labeler' : 'user'}
-                  noBorder
-                />
-              </View>
+                profile={prof}
+                moderation={moderation}
+                size={SIZE}
+                radius={radius}
+                index={i}
+                zIndex={slice.length - i + (showOverflowPlus ? 1 : 0)}
+              />
             ))}
             {showOverflowPlus ? (
               <View
@@ -267,13 +263,99 @@ function KnownFollowersInner({
   )
 }
 
+function FollowerAvatar({
+  profile,
+  moderation,
+  size,
+  radius,
+  index,
+  zIndex,
+}: {
+  profile: bsky.profile.AnyProfileView
+  moderation: ReturnType<typeof moderateProfile>
+  size: number
+  radius: number
+  index: number
+  zIndex: number
+}) {
+  const t = useTheme()
+  const shape = useAvatarShape(profile.did)
+  const squareButtons = useEnableSquareButtons()
+  const dim = size + AVI_BORDER * 2
+  const borderRadius =
+    shape === 'circle'
+      ? dim / 2
+      : shape === 'squircle'
+        ? dim * 0.25
+        : shape === 'square'
+          ? getShapeRadius(squareButtons === 'sharp' ? 'sharp' : true, 3, 3)
+          : shape === 'hexagon'
+            ? 0
+            : radius
+  const avatar = (
+    <View
+      style={{
+        borderWidth: AVI_BORDER,
+        borderColor: t.atoms.bg.backgroundColor,
+        width: dim,
+        height: dim,
+        borderRadius,
+        overflow: 'hidden',
+      }}>
+      <UserAvatar
+        size={size}
+        avatar={profile.avatar}
+        profileShape={shape}
+        moderation={moderation.ui('avatar')}
+        type={profile.associated?.labeler ? 'labeler' : 'user'}
+        noBorder
+      />
+    </View>
+  )
+  return (
+    <View style={{zIndex, marginLeft: index > 0 ? -8 : 0}}>
+      {shape === 'hexagon' ? (
+        <AvatarShapeMask size={dim} rounded={squareButtons !== 'sharp'}>
+          {avatar}
+        </AvatarShapeMask>
+      ) : (
+        avatar
+      )}
+    </View>
+  )
+}
+
+type FollowerNameData = {
+  profile: {did: string; displayName: string}
+  showNameDecoration: boolean
+}
+
+function FollowerName({
+  follower,
+  textStyle,
+}: {
+  follower: FollowerNameData
+  textStyle: object[]
+}) {
+  const nameStyle = useNameStyle(follower.profile.did)
+  return (
+    <Text emoji style={[textStyle, follower.showNameDecoration && nameStyle]}>
+      <GradientName
+        did={follower.profile.did}
+        enabled={follower.showNameDecoration}>
+        {follower.profile.displayName}
+      </GradientName>
+    </Text>
+  )
+}
+
 function FollowedByNamesText({
   serverCount,
   slice,
   textStyle,
 }: {
   serverCount: number
-  slice: Array<{profile: {did: string; displayName: string}}>
+  slice: FollowerNameData[]
   textStyle: object[]
 }) {
   if (slice.length >= 2) {
@@ -283,13 +365,9 @@ function FollowedByNamesText({
       return (
         <Trans>
           Followed by{' '}
-          <Text emoji key={slice[0].profile.did} style={textStyle}>
-            {slice[0].profile.displayName}
-          </Text>
+          <FollowerName follower={slice[0]} textStyle={textStyle} />
           ,{' '}
-          <Text emoji key={slice[1].profile.did} style={textStyle}>
-            {slice[1].profile.displayName}
-          </Text>
+          <FollowerName follower={slice[1]} textStyle={textStyle} />
           , and{' '}
           <Plural value={serverCount - 2} one="# other" other="# others" />
         </Trans>
@@ -298,13 +376,9 @@ function FollowedByNamesText({
     return (
       <Trans>
         Followed by{' '}
-        <Text emoji key={slice[0].profile.did} style={textStyle}>
-          {slice[0].profile.displayName}
-        </Text>{' '}
+        <FollowerName follower={slice[0]} textStyle={textStyle} />{' '}
         and{' '}
-        <Text emoji key={slice[1].profile.did} style={textStyle}>
-          {slice[1].profile.displayName}
-        </Text>
+        <FollowerName follower={slice[1]} textStyle={textStyle} />
       </Trans>
     )
   }
@@ -314,9 +388,7 @@ function FollowedByNamesText({
     return (
       <Trans>
         Followed by{' '}
-        <Text emoji key={slice[0].profile.did} style={textStyle}>
-          {slice[0].profile.displayName}
-        </Text>{' '}
+        <FollowerName follower={slice[0]} textStyle={textStyle} />{' '}
         and <Plural value={serverCount - 1} one="# other" other="# others" />
       </Trans>
     )
@@ -326,9 +398,7 @@ function FollowedByNamesText({
   return (
     <Trans>
       Followed by{' '}
-      <Text emoji key={slice[0].profile.did} style={textStyle}>
-        {slice[0].profile.displayName}
-      </Text>
+      <FollowerName follower={slice[0]} textStyle={textStyle} />
     </Trans>
   )
 }
@@ -339,7 +409,7 @@ function FollowedByExactText({
   textStyle,
 }: {
   serverCount: number
-  slice: Array<{profile: {did: string; displayName: string}}>
+  slice: FollowerNameData[]
   textStyle: object[]
 }) {
   if (slice.length >= 2) {
@@ -348,13 +418,9 @@ function FollowedByExactText({
         Followed by{' '}
         <Plural value={serverCount} one="# person" other="# others" />,{' '}
         including{' '}
-        <Text emoji key={slice[0].profile.did} style={textStyle}>
-          {slice[0].profile.displayName}
-        </Text>{' '}
+        <FollowerName follower={slice[0]} textStyle={textStyle} />{' '}
         and{' '}
-        <Text emoji key={slice[1].profile.did} style={textStyle}>
-          {slice[1].profile.displayName}
-        </Text>
+        <FollowerName follower={slice[1]} textStyle={textStyle} />
       </Trans>
     )
   }
@@ -363,9 +429,7 @@ function FollowedByExactText({
     <Trans>
       Followed by <Plural value={serverCount} one="# person" other="# others" />
       , including{' '}
-      <Text emoji key={slice[0].profile.did} style={textStyle}>
-        {slice[0].profile.displayName}
-      </Text>
+      <FollowerName follower={slice[0]} textStyle={textStyle} />
     </Trans>
   )
 }

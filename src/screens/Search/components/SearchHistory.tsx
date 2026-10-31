@@ -24,6 +24,12 @@ import {ProfileBadges} from '#/components/ProfileBadges'
 import * as Prompt from '#/components/Prompt'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/features/avatarDecorations'
 import type * as bsky from '#/types/bsky'
 
 export function SearchHistory({
@@ -249,7 +255,12 @@ function RecentProfileItem({
   onRemove: () => void
 }) {
   const {t: l} = useLingui()
-  const width = 80
+  const width = 112
+  const avatarSize = 72
+  const decoration = useAvatarDecoration(profile.did)
+  const profileShape = useAvatarShape(profile.did)
+  const nameGradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
 
   const moderation = moderateProfile(profile, moderationOpts)
   const name = sanitizeDisplayName(
@@ -275,12 +286,25 @@ function RecentProfileItem({
         ]}>
         <UserAvatar
           avatar={profile.avatar}
+          decoration={decoration}
+          profileShape={profileShape}
           type={profile.associated?.labeler ? 'labeler' : 'user'}
-          size={width - 8}
+          size={avatarSize}
           moderation={moderation.ui('avatar')}
         />
         <View style={[a.flex_row, a.align_center, a.justify_center, a.w_full]}>
-          <Text emoji style={[a.text_xs, a.leading_snug]} numberOfLines={1}>
+          <Text
+            emoji
+            gradient={
+              !moderation.ui('displayName').blur ? nameGradient : undefined
+            }
+            style={[
+              a.text_xs,
+              a.leading_snug,
+              a.flex_shrink,
+              !moderation.ui('displayName').blur && nameStyle,
+            ]}
+            numberOfLines={1}>
             {name}
           </Text>
           <ProfileBadges profile={profile} size="xs" style={[a.pl_xs]} />
@@ -298,7 +322,7 @@ function RecentProfileItem({
           a.absolute,
           {
             top: 0,
-            right: 0,
+            right: (width - avatarSize) / 2 - 4,
             height: 18,
             width: 18,
           },

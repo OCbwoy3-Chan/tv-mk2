@@ -83,7 +83,12 @@ import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE, IS_WEB} from '#/env'
 import {InviteFriendsDialog} from '#/features/inviteFriends'
-import {GradientName, useAvatarDecoration, useAvatarShape, useNameStyle} from '#/features/avatarDecorations'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {useActiveThemeUpdate} from '#/features/themes/api'
@@ -117,6 +122,7 @@ let DrawerProfileCard = ({
   const {isActive: live} = useActorStatus(profile)
   const decoration = useAvatarDecoration(account.did)
   const profileShape = useAvatarShape(account.did)
+  const nameGradient = useNameGradient(account.did)
   const nameStyle = useNameStyle(account.did)
 
   const followersMetricsDisplay = useFollowersMetricsDisplay()
@@ -151,19 +157,22 @@ let DrawerProfileCard = ({
       />
       <View style={[a.gap_2xs]}>
         <View style={[a.flex_row, a.align_center, a.gap_xs, a.flex_1]}>
-          <Text
-            emoji
-            style={[
-              a.font_bold,
-              a.text_xl,
-              a.mt_2xs,
-              a.leading_tight,
-              a.flex_shrink,
-              nameStyle,
-            ]}
-            numberOfLines={1}>
-            <GradientName did={account.did}>{profile?.displayName || account.handle}</GradientName>
-          </Text>
+          <View style={[a.flex_shrink, a.align_start]}>
+            <Text
+              emoji
+              gradient={nameGradient}
+              style={[
+                a.font_bold,
+                a.text_xl,
+                a.mt_2xs,
+                a.leading_tight,
+                a.self_start,
+                nameStyle,
+              ]}
+              numberOfLines={1}>
+              {profile?.displayName || account.handle}
+            </Text>
+          </View>
           {profile && <ProfileBadges profile={profile} size="lg" />}
           {onPressShare && (
             <Pressable

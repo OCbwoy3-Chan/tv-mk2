@@ -8,7 +8,7 @@ import {atoms as a, platform, useBreakpoints, useTheme, web} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
-import {useNameGradient, useNameStyle} from '#/features/avatarDecorations'
+import {GradientName, useNameStyle} from '#/features/avatarDecorations'
 import {type app} from '#/lexicons'
 import {useProfileHandleLink} from './useProfileHandleLink'
 
@@ -23,7 +23,6 @@ export function ProfileHeaderDisplayName({
   const {gtMobile} = useBreakpoints()
   const hideDisplayNames = useHideDisplayNames()
   const nameStyle = useNameStyle(profile.did)
-  const nameGradient = useNameGradient(profile.did)
   const decorationStyle =
     !hideDisplayNames && !moderation.ui('displayName').blur
       ? nameStyle
@@ -55,7 +54,6 @@ export function ProfileHeaderDisplayName({
           <Text
             emoji
             testID="profileHeaderDisplayName"
-            gradient={decorationStyle ? nameGradient : undefined}
             style={[
               a.flex_shrink,
               t.atoms.text,
@@ -64,7 +62,9 @@ export function ProfileHeaderDisplayName({
               a.leading_tight,
               decorationStyle,
             ]}>
-            {primaryName}
+            <GradientName did={profile.did} enabled={!!decorationStyle}>
+              {primaryName}
+            </GradientName>
           </Text>
         )}
         <View

@@ -52,7 +52,12 @@ import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {type Metrics} from '#/analytics'
-import {useNameGradient, useNameStyle} from '#/features/avatarDecorations'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import type * as bsky from '#/types/bsky'
 import {
@@ -191,6 +196,8 @@ export function Avatar({
   size?: number
 }) {
   const moderation = moderateProfile(profile, moderationOpts)
+  const decoration = useAvatarDecoration(disabledPreview ? profile.did : undefined)
+  const profileShape = useAvatarShape(disabledPreview ? profile.did : undefined)
 
   const {isActive: live} = useActorStatus(profile)
 
@@ -198,6 +205,8 @@ export function Avatar({
     <UserAvatar
       size={size}
       avatar={profile.avatar}
+      decoration={decoration}
+      profileShape={profileShape}
       type={profile.associated?.labeler ? 'labeler' : 'user'}
       moderation={moderation.ui('avatar')}
       live={liveOverride ?? live}
