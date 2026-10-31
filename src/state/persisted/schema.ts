@@ -245,7 +245,9 @@ const schema = z.object({
   disableAutoplay: z.boolean().optional(),
   kawaii: z.boolean().optional(),
   customPostRkeysEnabled: z.boolean().optional(),
-  atprotoRkeyV2GenerationDefault: z.enum(['tid', 'prefix', 'suffix']).optional(),
+  atprotoRkeyV2GenerationDefault: z
+    .enum(['tid', 'prefix', 'suffix'])
+    .optional(),
   atprotoRkeyV2PrefixDefault: z.string().optional(),
   atprotoRkeyV2SuffixDefault: z.string().optional(),
   hasCheckedForStarterPack: z.boolean().optional(),
@@ -253,6 +255,8 @@ const schema = z.object({
 
   // deer
   goLinksEnabled: z.boolean().optional(),
+  /** Tracks the one-time reset of go.bsky.app redirects to off. */
+  goLinksDefaultsVersion: z.number().optional(),
   pasteToLinkEnabled: z.boolean().optional(),
   constellationEnabled: z.boolean().optional(),
   directFetchRecords: z.boolean().optional(),
@@ -486,7 +490,8 @@ export const defaults: Schema = {
   trendingVideoDisabled: true,
 
   // deer
-  goLinksEnabled: true,
+  goLinksEnabled: false,
+  goLinksDefaultsVersion: 1,
   pasteToLinkEnabled: false,
   constellationEnabled: true,
   directFetchRecords: false,

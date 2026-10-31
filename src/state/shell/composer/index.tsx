@@ -40,7 +40,7 @@ export type ComposerLogContext =
   'Fab' | 'PostReply' | 'QuotePost' | 'ProfileFeed' | 'Deeplink' | 'Other'
 
 export interface ComposerOpts {
-  /** Local native composition restored after app termination. */
+  /** Local composition restored after an account switch or native app termination. */
   recoveredState?: ComposerState
 
   /** Open the account picker when the composer mounts. */

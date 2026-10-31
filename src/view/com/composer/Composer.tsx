@@ -387,8 +387,9 @@ export const ComposePost = ({
   const skipEmptyConfirmedRef = useRef(false)
   const missingAltTextConfirmedRef = useRef(false)
   const {mutateAsync: saveDraft, isPending: _isSavingDraft} =
-    useSaveDraftMutation()
-  const {mutate: cleanupPublishedDraft} = useCleanupPublishedDraftMutation()
+    useSaveDraftMutation(activeAccountDid)
+  const {mutate: cleanupPublishedDraft} =
+    useCleanupPublishedDraftMutation(activeAccountDid)
   const {closeAllDialogs} = useDialogStateControlContext()
   const {data: preferences} = usePreferencesQuery()
   const navigation = useNavigation<NavigationProp>()
@@ -1967,6 +1968,7 @@ export const ComposePost = ({
             topBarAnimatedStyle={topBarAnimatedStyle}
             onCancel={onPressCancel}
             onPublish={() => void onPressPublish()}
+            draftAccountDid={activeAccountDid}
             onSelectDraft={draft => void handleSelectDraft(draft)}
             onSaveDraft={saveCurrentDraft}
             onDiscard={handleClearComposer}
@@ -2421,6 +2423,7 @@ let ComposerPost = memo(function ComposerPost({
 })
 
 function ComposerTopBar({
+  draftAccountDid,
   canPost,
   isReply,
   isPublishQueued,
@@ -2440,6 +2443,7 @@ function ComposerTopBar({
   topBarAnimatedStyle,
   children,
 }: {
+  draftAccountDid: string
   isPublishing: boolean
   publishingStage: string
   canPost: boolean
@@ -2500,6 +2504,7 @@ function ComposerTopBar({
         ) : (
           <>
             <DraftsButton
+              accountDid={draftAccountDid}
               onSelectDraft={onSelectDraft}
               onSaveDraft={onSaveDraft}
               onDiscard={onDiscard}
