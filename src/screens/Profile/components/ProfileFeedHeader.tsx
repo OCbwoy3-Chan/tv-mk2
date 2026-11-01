@@ -53,6 +53,7 @@ import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB} from '#/env'
+import {TennaFeedSettings} from '#/features/tennaFeedSettings'
 
 export function ProfileFeedHeaderSkeleton() {
   const t = useTheme()
@@ -587,6 +588,8 @@ function DialogInner({
               </Button>
             </View>
           ) : null}
+
+          <TennaFeedSettings info={info} />
 
           <View style={[a.pt_xs, a.gap_lg]}>
             <Divider />

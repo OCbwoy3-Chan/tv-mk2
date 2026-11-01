@@ -269,6 +269,7 @@
     "com.atproto.sync.requestCrawl",
     "com.atproto.sync.subscribeRepos",
     "com.germnetwork.declaration",
+    "party.tenna.feed.preference",
     "tools.ozone.inbox.appealActionedSubject",
     "tools.ozone.inbox.defs",
     "tools.ozone.inbox.getAccountStatus",
@@ -1424,6 +1425,10 @@
     "tools.ozone.team.defs": {
       "uri": "at://did:plc:33dt5kftu3jq2h5h4jjlqezt/com.atproto.lexicon.schema/tools.ozone.team.defs",
       "cid": "bafyreihqaijzof4hbey6u5lzfyhahuxjj5d7c3irremztfkavrqekvtvj4"
+    },
+    "party.tenna.feed.preference": {
+      "uri": "at://did:web:vessel.darkworld.download/com.atproto.lexicon.schema/party.tenna.feed.preference",
+      "cid": "bafyreifqanjcj7mrb4qazzh3misuy4yj3f5xs2gbztlv63wnmqhspwzs2e"
     }
   }
 }

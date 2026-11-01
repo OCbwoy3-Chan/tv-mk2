@@ -1,0 +1,26 @@
+{
+  "id": "party.tenna.feed.preference",
+  "defs": {
+    "main": {
+      "key": "any",
+      "type": "record",
+      "record": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "optOut": {
+            "type": "boolean",
+            "description": "Detrmines the opt-out state, which hides your posts from the given feed."
+          },
+          "showMarkedPosts": {
+            "type": "boolean",
+            "description": "Unhides posts from accounts marked as 18+/MDNI. (safe mode)"
+          }
+        }
+      }
+    }
+  },
+  "$type": "com.atproto.lexicon.schema",
+  "lexicon": 1,
+  "description": "A preference request for any tenna.party feed. The rkey must match with an existing tenna.party feed."
+}
