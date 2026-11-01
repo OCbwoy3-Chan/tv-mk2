@@ -92,9 +92,27 @@ export function renderChildrenWithEmoji(
   props: Omit<TextProps, 'children'> = {},
   emoji: boolean,
   useNotoColorEmoji = false,
+  preserveWebEmoji = false,
 ) {
   // Browser font fallback covers nested text and editable text on one baseline.
-  if (IS_WEB) return children
+  if (IS_WEB && !preserveWebEmoji) return children
+  if (IS_WEB) {
+    return Children.map(children, child => {
+      if (typeof child !== 'string') return child
+      const emojis = child.match(EMOJI)
+      if (!emojis) return child
+      return child.split(EMOJI).map((part, index) => [
+        part,
+        emojis[index] ? (
+          <UITextView
+            key={index}
+            style={{color: '#000', WebkitTextFillColor: 'initial'} as TextStyle}>
+            {emojis[index]}
+          </UITextView>
+        ) : null,
+      ])
+    })
+  }
   if (!useNotoColorEmoji && (!IS_IOS || !emoji)) {
     return children
   }

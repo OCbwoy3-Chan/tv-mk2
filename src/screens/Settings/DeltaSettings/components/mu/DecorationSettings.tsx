@@ -245,7 +245,7 @@ export function DecorationSettings() {
                   selected &&
                   nameGradientTextStyle(selected, {outline: selectedOutline})
                 }>
-                <GradientName gradient={selected}>
+                <GradientName gradient={selected} outline={selectedOutline}>
                   {capitalizedName}
                 </GradientName>
               </UITextView>

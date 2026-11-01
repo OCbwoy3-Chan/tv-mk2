@@ -1,6 +1,8 @@
-import {View, type ViewProps, type ViewStyle} from 'react-native'
+import {Children} from 'react'
+import {View, type ViewProps} from 'react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import MaskedView from '@react-native-masked-view/masked-view'
+import createEmojiRegex from 'emoji-regex'
 
 import {logger} from '#/logger'
 import {UITextView} from '#/platform/ui-text-view'
@@ -21,7 +23,9 @@ import {
   type TextProps,
 } from '#/alf/typography'
 import {IS_NATIVE} from '#/env'
+import {GradientName} from '#/features/avatarDecorations/GradientName'
 import {nameGradientTextStyle} from '#/features/avatarDecorations/nameGradientStyle'
+import {NameTextContext} from '#/features/avatarDecorations/nameTextContext'
 
 export type {TextProps}
 export {Text as Span} from 'react-native'
@@ -92,8 +96,30 @@ export function Text({
     ...rest,
   }
 
-  const content = renderChildrenWithEmoji(children, shared, emoji ?? false)
+  const content = renderChildrenWithEmoji(
+    children,
+    shared,
+    emoji ?? false,
+    false,
+    !!emoji && (Boolean(gradient) || 'backgroundImage' in s),
+  )
 
+  if (
+    IS_NATIVE &&
+    gradient &&
+    gradient.colors.length >= 2 &&
+    typeof children === 'string'
+  ) {
+    return (
+      <NameTextContext.Provider value={s}>
+        <UITextView {...shared}>
+          <GradientName gradient={gradient} outline={!!s.textShadowColor}>
+            {children}
+          </GradientName>
+        </UITextView>
+      </NameTextContext.Provider>
+    )
+  }
   if (IS_NATIVE && gradient && gradient.colors.length >= 2) {
     const textStyle = {
       ...s,
@@ -115,9 +141,23 @@ export function Text({
           (index + 1) / gradient.colors.length,
         ])
       : undefined
+    const maskContent = Children.map(children, child => {
+      if (typeof child !== 'string') return child
+      const emojis = child.match(createEmojiRegex()) ?? []
+      return child.split(createEmojiRegex()).map((part, index) => (
+        <UITextView key={index}>
+          {part}
+          {emojis[index] && (
+            <UITextView style={{opacity: 0, fontFamily: 'System'}}>
+              {emojis[index]}
+            </UITextView>
+          )}
+        </UITextView>
+      ))
+    })
     return (
       <View style={style}>
-        <UITextView {...shared} style={[textStyle, {opacity: 0}]}>
+        <UITextView {...shared} style={textStyle}>
           {content}
         </UITextView>
         <NativeMaskedView
@@ -126,8 +166,8 @@ export function Text({
           importantForAccessibility="no-hide-descendants"
           style={{position: 'absolute', top: 0, bottom: 0, left: 0, right: 0}}
           maskElement={
-            <UITextView {...shared} style={textStyle}>
-              {content}
+            <UITextView {...shared} style={[textStyle, {textShadowRadius: 0}]}>
+              {maskContent}
             </UITextView>
           }>
           <LinearGradient
@@ -141,7 +181,11 @@ export function Text({
       </View>
     )
   }
-  return <UITextView {...shared}>{content}</UITextView>
+  return (
+    <NameTextContext.Provider value={s}>
+      <UITextView {...shared}>{content}</UITextView>
+    </NameTextContext.Provider>
+  )
 }
 
 function createHeadingElement({level}: {level: number}) {

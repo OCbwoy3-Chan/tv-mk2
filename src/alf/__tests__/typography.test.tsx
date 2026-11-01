@@ -74,6 +74,21 @@ describe('emoji font rendering', () => {
     expect(renderChildrenWithEmoji(children, {}, true, true)).toBe(children)
   })
 
+  it('keeps complete emoji sequences visible inside web gradients', () => {
+    jest.replaceProperty(env, 'IS_WEB', true)
+    const parts = Children.toArray(
+      renderChildrenWithEmoji('Baltics 🇱🇹🇱🇻🇪🇪', {}, true, false, true),
+    )
+    const emoji = parts.filter(isValidElement<TextProps>)
+    expect(emoji.map(element => element.props.children)).toEqual(['🇱🇹', '🇱🇻', '🇪🇪'])
+    for (const element of emoji) {
+      expect(StyleSheet.flatten(element.props.style)).toMatchObject({
+        color: '#000',
+        WebkitTextFillColor: 'initial',
+      })
+    }
+  })
+
   it('preserves the iOS system emoji fallback when disabled', () => {
     jest.replaceProperty(env, 'IS_IOS', true)
     const parts = Children.toArray(
