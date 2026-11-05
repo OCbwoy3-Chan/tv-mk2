@@ -1,4 +1,4 @@
-import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {memo, type ReactNode, useCallback, useMemo} from 'react'
 import {View} from 'react-native'
 import {type StyleProp, type ViewStyle} from 'react-native'
 import {AtUri} from '@atproto/syntax'
@@ -9,7 +9,6 @@ import {MAX_POST_LINES} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {makeProfileLink} from '#/lib/routes/links'
 import {getShapeRadius} from '#/lib/shapes'
-import {countLines} from '#/lib/strings/helpers'
 import {userStyle} from '#/lib/userstyles'
 import {
   POST_TOMBSTONE,
@@ -50,6 +49,8 @@ import {type AppModerationCause} from '#/components/Pills'
 import {Embed, PostEmbedViewContext} from '#/components/Post/Embed'
 import {ShowMoreTextButton} from '#/components/Post/ShowMoreTextButton'
 import {TranslatedPost} from '#/components/Post/Translated'
+import {useBridgedHtmlSegments} from '#/components/Post/useBridgedHtmlSegments'
+import {usePostTextLimit} from '#/components/Post/usePostTextLimit'
 import {PostControls, PostControlsSkeleton} from '#/components/PostControls'
 import {PostTags} from '#/components/PostTags'
 import {RichText} from '#/components/RichText'
@@ -253,8 +254,10 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
       }),
     [record],
   )
-  const [limitLines, setLimitLines] = useState(
-    () => countLines(richText?.text) >= MAX_POST_LINES,
+  const htmlSegments = useBridgedHtmlSegments(record)
+  const {limitLines, onPressShowMore} = usePostTextLimit(
+    richText?.text,
+    htmlSegments,
   )
   const threadRootUri = record.reply?.root?.uri || post.uri
   const postHref = useMemo(() => {
@@ -294,10 +297,6 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
       logContext: 'PostReply',
     })
   }, [openComposer, post, record, onPostSuccess, moderation])
-
-  const onPressShowMore = useCallback(() => {
-    setLimitLines(false)
-  }, [setLimitLines])
 
   const {isActive: live} = useActorStatus(post.author)
 
@@ -392,11 +391,12 @@ const ThreadItemPostInner = memo(function ThreadItemPostInner({
                 style={[a.pb_2xs]}
                 additionalCauses={additionalPostAlerts}
               />
-              {richText?.text ? (
+              {htmlSegments?.length || richText?.text ? (
                 <View style={[a.mb_2xs, userStyle('wsky-post__text')]}>
                   <RichText
                     enableTags
                     value={richText}
+                    htmlSegments={htmlSegments}
                     style={[a.flex_1, a.text_md]}
                     numberOfLines={limitLines ? MAX_POST_LINES : undefined}
                     authorHandle={post.author.handle}

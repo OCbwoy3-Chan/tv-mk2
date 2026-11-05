@@ -1,6 +1,5 @@
 const common = require('./jest/config.json')
 const domTests = [
-  '<rootDir>/src/platform/polyfills.web.test.ts',
   '<rootDir>/src/components/Dialog/index.web.test.tsx',
   '<rootDir>/src/view/shell/Composer.web.test.tsx',
   '<rootDir>/src/features/keyboardShortcuts/PostMediaDialog.web.test.tsx',

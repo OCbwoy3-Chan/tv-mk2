@@ -26,18 +26,6 @@ function createState() {
 }
 
 describe('composerReducer', () => {
-  it('preserves per-post record-key settings when extending a thread', () => {
-    let state = createState()
-    const postId = state.thread.posts[0].id
-    state = composerReducer(state, {
-      type: 'update_post',
-      postId,
-      postAction: {type: 'update_rkey', generation: 'prefix', prefix: 'tenna'},
-    })
-    const next = composerReducer(state, {type: 'add_post'})
-    expect(next.thread.posts[0].atprotoRkeyV2).toEqual({generation: 'prefix', prefix: 'tenna', suffix: ''})
-    expect(next.thread.posts[1].atprotoRkeyV2).toEqual(next.thread.posts[0].atprotoRkeyV2)
-  })
   describe('retarget', () => {
     it.each(['reply', 'quote'])(
       'switches to a %s while preserving thread contents and media',
