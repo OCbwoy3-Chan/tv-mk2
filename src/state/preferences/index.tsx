@@ -78,6 +78,7 @@ import { Provider as TranslationServicePreferenceProvider } from './translation-
 import { Provider as TrendingSettingsProvider } from './trending'
 import { Provider as UseHandleInLinksProvider } from './use-handle-in-links'
 import { Provider as UsedStarterPacksProvider } from './used-starter-packs'
+import {Provider as HideBluemojiReactionsProvider} from './hide-bluemoji-reactions'
 
 export {
   useAlsoLikedCollapseByDefault,
@@ -345,6 +346,7 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                   </IgnoredAppLabelersProvider>
                 </GoLinksProvider>
               </SlingshotInstanceProvider>
+import {Provider as HideBluemojiReactionsProvider} from './hide-bluemoji-reactions'
             </AtprotoExplorerProvider>
           </AutoLikeOnRepostProvider>
         </AltTextRequiredProvider>
