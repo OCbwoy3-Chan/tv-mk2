@@ -1134,3 +1134,12 @@ export function usePublicAppviewClient(): Client {
   const [appViewUrl] = useCustomAppViewUrl()
   return getPublicAppviewClient(appViewUrl)
 }
+
+/**
+ * The account's own PDS origin, e.g. for reading its blobs. Undefined when
+ * logged out.
+ */
+export function usePdsServiceUrl(): string | undefined {
+  const bundle = useContext(BundleContext)
+  return bundle?.service?.toString()
+}

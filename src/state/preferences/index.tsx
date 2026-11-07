@@ -78,7 +78,6 @@ import { Provider as TranslationServicePreferenceProvider } from './translation-
 import { Provider as TrendingSettingsProvider } from './trending'
 import { Provider as UseHandleInLinksProvider } from './use-handle-in-links'
 import { Provider as UsedStarterPacksProvider } from './used-starter-packs'
-import {Provider as HideBluemojiReactionsProvider} from './hide-bluemoji-reactions'
 
 export {
   useAlsoLikedCollapseByDefault,
@@ -190,6 +189,9 @@ export {
   useTranslationServicePreference,
 } from './translation-service-preference'
 
+import {Provider as BluemojiInstanceProvider} from './bluemoji-instance'
+import {Provider as HideBluemojiReactionsProvider} from './hide-bluemoji-reactions'
+
 export function Provider({ children }: PropsWithChildren<{}>) {
   return (
     <SettingsSyncProvider>
@@ -204,6 +206,7 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                       <RenderBridgedHtmlProvider>
                         <ConstellationProvider>
                           <ConstellationInstanceProvider>
+<BluemojiInstanceProvider>
                             <DeerVerificationProvider>
                               <FaviconServiceProvider>
                                 <PdsLabelProvider>
@@ -264,6 +267,7 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                               <AtprotoRkeyV2SettingsProvider>
                                                                                                                                                 <PrivatePostsEnabledProvider>
                                                                                                                                                   <DisableInfiniteScrollProvider>
+<HideBluemojiReactionsProvider>
                                                                                                                                                     <HideQuotesOfBlockedAccountsProvider>
                                                                                                                                                       <ReplyIconIndicatorsProvider>
                                                                                                                                                         <ShowPostTagsProvider>
@@ -279,7 +283,8 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                                         </ShowPostTagsProvider>
                                                                                                                                                       </ReplyIconIndicatorsProvider>
                                                                                                                                                     </HideQuotesOfBlockedAccountsProvider>
-                                                                                                                                                  </DisableInfiniteScrollProvider>
+                                                                                                                                                  </HideBluemojiReactionsProvider>
+</DisableInfiniteScrollProvider>
                                                                                                                                                 </PrivatePostsEnabledProvider>
                                                                                                                                               </AtprotoRkeyV2SettingsProvider>
                                                                                                                                             </TidSuffixProvider>
@@ -339,14 +344,14 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                 </PdsLabelProvider>
                               </FaviconServiceProvider>
                             </DeerVerificationProvider>
-                          </ConstellationInstanceProvider>
+                          </BluemojiInstanceProvider>
+</ConstellationInstanceProvider>
                         </ConstellationProvider>
                       </RenderBridgedHtmlProvider>
                     </DirectFetchRecordsProvider>
                   </IgnoredAppLabelersProvider>
                 </GoLinksProvider>
               </SlingshotInstanceProvider>
-import {Provider as HideBluemojiReactionsProvider} from './hide-bluemoji-reactions'
             </AtprotoExplorerProvider>
           </AutoLikeOnRepostProvider>
         </AltTextRequiredProvider>
