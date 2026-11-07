@@ -368,6 +368,7 @@ const schema = z.object({
   hideBetaBadge: z.boolean().optional(),
   privatePostsEnabled: z.boolean().optional(),
   hideComposerPrompt: z.boolean().optional(),
+  tokimekiPolls: z.boolean().optional(),
 
   postReplacement: z.object({
     enabled: z.boolean().optional(),
@@ -570,6 +571,7 @@ export const defaults: Schema = {
   hideBetaBadge: true,
   privatePostsEnabled: false,
   hideComposerPrompt: true,
+  tokimekiPolls: true,
   atprotoExplorer: {
     name: 'PDSls',
     url: 'https://pds.ls/(uri)',

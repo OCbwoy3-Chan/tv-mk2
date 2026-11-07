@@ -55,8 +55,8 @@ import { Provider as PasteToLinkEnabledProvider } from './paste-to-link-enabled'
 import { Provider as PdsLabelProvider } from './pds-label'
 import { Provider as PlcDirectoryProvider } from './plc-directory'
 import { Provider as PostNameReplacementProvider } from './post-name-replacement.tsx'
-import { Provider as RenderBridgedHtmlProvider } from './render-bridged-html'
 import { Provider as PrivatePostsEnabledProvider } from './private-posts-enabled.tsx'
+import { Provider as RenderBridgedHtmlProvider } from './render-bridged-html'
 import { Provider as ReplyIconIndicatorsProvider } from './reply-icon-indicators'
 import { Provider as RepostCarouselProvider } from './repost-carousel-enabled'
 import { Provider as SettingsSyncProvider } from './settings-sync'
@@ -74,6 +74,7 @@ import { Provider as SlingshotInstanceProvider } from './slingshot-instance'
 import { Provider as SubtitlesProvider } from './subtitles'
 import { Provider as ThumbnailFormatProvider } from './thumbnail-format'
 import { Provider as TidSuffixProvider } from './tid-suffix'
+import {Provider as TokimekiPollsProvider} from './tokimeki-polls'
 import { Provider as TranslationServicePreferenceProvider } from './translation-service-preference'
 import { Provider as TrendingSettingsProvider } from './trending'
 import { Provider as UseHandleInLinksProvider } from './use-handle-in-links'
@@ -184,6 +185,7 @@ export {
 } from './show-standard-labeler-profile'
 export { useSetSubtitlesEnabled, useSubtitlesEnabled } from './subtitles'
 export { useSetTidSuffix, useTidSuffix } from './tid-suffix'
+export {useSetTokimekiPolls, useTokimekiPolls} from './tokimeki-polls'
 export {
   useSetTranslationServicePreference,
   useTranslationServicePreference,
@@ -269,9 +271,11 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                                           <EmojiFontProvider>
                                                                                                                                                             <PasteToLinkEnabledProvider>
                                                                                                                                                               <HideComposerPromptProvider>
+                                                                                                                                                                <TokimekiPollsProvider>
                                                                                                                                                                 {
                                                                                                                                                                   children
                                                                                                                                                                 }
+                                                                                                                                                                  </TokimekiPollsProvider>
                                                                                                                                                               </HideComposerPromptProvider>
                                                                                                                                                             </PasteToLinkEnabledProvider>
                                                                                                                                                           </EmojiFontProvider>

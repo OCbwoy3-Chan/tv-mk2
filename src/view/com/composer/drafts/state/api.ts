@@ -189,10 +189,7 @@ async function postDraftToServerPost(
   }
 
   if (post.embed.poll) {
-    const {statements, assembly} = post.embed.poll
-    ;(draftPost as DraftPostWithPoll)[DRAFT_POLL_KEY] = assembly
-      ? {statements, assembly}
-      : {statements}
+    ;(draftPost as DraftPostWithPoll)[DRAFT_POLL_KEY] = post.embed.poll
   }
 
   if (post.embed.event) {

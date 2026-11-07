@@ -1,3 +1,4 @@
+import {Fragment} from 'react'
 import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
@@ -5,11 +6,10 @@ import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useTheme} from '#/alf'
 import {TobyIcon} from '#/components/CrackComponents/Icons'
 import {Lock_Stroke2_Corner0_Rounded} from '#/components/icons/Lock'
+import {PaintRoller_Stroke2_Corner2_Rounded} from '#/components/icons/PaintRoller'
 import {ShieldCheck_Stroke2_Corner0_Rounded} from '#/components/icons/Shield'
 import {Separator} from '#/components/Select'
 import {Text} from '#/components/Typography'
-import { Mu_Logo_Filled } from './mu/MuLogo'
-import { PaintRoller_Stroke2_Corner2_Rounded } from '#/components/icons/PaintRoller'
 
 export function TennaQuickLinks() {
   const t = useTheme()
@@ -86,15 +86,15 @@ export function TennaQuickLinks() {
           t.atoms.bg_contrast_25,
         ]}>
         {items.map(({text, path, icon}, idx) => (
-          <>
-            {idx !== 0 && <Separator key={idx + 'sep'} />}
-            <SettingsList.LinkItem key={idx} to={path} label={text}>
+          <Fragment key={path}>
+            {idx !== 0 && <Separator />}
+            <SettingsList.LinkItem to={path} label={text}>
               <SettingsList.ItemIcon icon={icon} />
               <SettingsList.ItemText>
                 <Trans>{text}</Trans>
               </SettingsList.ItemText>
             </SettingsList.LinkItem>
-          </>
+          </Fragment>
         ))}
       </View>
     </View>

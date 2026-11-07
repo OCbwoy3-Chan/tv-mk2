@@ -237,3 +237,81 @@ describe('decodePollDraft', () => {
     ).toBeUndefined()
   })
 })
+
+describe('TOKIMEKI poll drafts', () => {
+  it('requires two to four options of at most 50 graphemes and 100 bytes', () => {
+    const provider = 'tokimeki' as const
+    expect(isPollDraftPublishable({provider, statements: ['One']})).toBe(false)
+    expect(isPollDraftPublishable({provider, statements: ['One', 'Two']})).toBe(
+      true,
+    )
+    expect(
+      isPollDraftPublishable({
+        provider,
+        statements: ['One', 'Two', 'Three', 'Four'],
+      }),
+    ).toBe(true)
+    expect(
+      isPollDraftPublishable({
+        provider,
+        statements: ['One', 'Two', 'Three', 'Four', 'Five'],
+      }),
+    ).toBe(false)
+    expect(
+      isPollDraftPublishable({provider, statements: ['One', 'x'.repeat(101)]}),
+    ).toBe(false)
+    expect(
+      isPollDraftPublishable({provider, statements: ['One', 'x'.repeat(51)]}),
+    ).toBe(false)
+    expect(
+      isPollDraftPublishable({provider, statements: ['One', 'x'.repeat(50)]}),
+    ).toBe(true)
+    expect(
+      isPollDraftPublishable({provider, statements: ['One', '界'.repeat(34)]}),
+    ).toBe(false)
+    expect(isPollTopicPublishable('x'.repeat(301), provider)).toBe(false)
+    expect(isPollTopicPublishable('x'.repeat(300), provider)).toBe(true)
+  })
+
+  it('keeps the provider when restoring a draft and rejects unknown providers', () => {
+    const draft = {provider: 'tokimeki', statements: ['One', 'Two']}
+    expect(decodePollDraft(draft)).toMatchObject(draft)
+    expect(decodePollDraft({...draft, provider: 'unknown'})).toBeUndefined()
+  })
+})
+
+it('restores a TOKIMEKI record key for retrying and drops malformed references', () => {
+  const record = {rkey: '3mzqpsoqqns2p', createdAt: '2026-11-07T12:00:00.000Z'}
+  const draft = {provider: 'tokimeki', statements: ['Yes', 'No'], record}
+  expect(decodePollDraft(draft)?.record).toEqual(record)
+  expect(
+    decodePollDraft({...draft, record: {...record, rkey: '../bad'}})?.record,
+  ).toBeUndefined()
+})
+
+it('ignores empty optional TOKIMEKI options but still requires two answers', () => {
+  const draft = {
+    provider: 'tokimeki' as const,
+    statements: [' Yes ', 'No', '', '  '],
+  }
+  expect(isPollDraftPublishable(draft)).toBe(true)
+  expect(pollStatementsForPublish(draft)).toEqual(['Yes', 'No'])
+  expect(isPollDraftPublishable({...draft, statements: ['Yes', '', ' ']})).toBe(
+    false,
+  )
+  expect(isPollDraftPublishable({statements: ['Yes', 'No', '']})).toBe(false)
+})
+
+it('restores supported poll durations and rejects invalid durations before publishing', () => {
+  const draft = {
+    provider: 'tokimeki' as const,
+    statements: ['Yes', 'No'],
+    durationHours: 168,
+  }
+  expect(decodePollDraft(draft)?.durationHours).toBe(168)
+  expect(isPollDraftPublishable(draft)).toBe(true)
+  expect(
+    decodePollDraft({...draft, durationHours: -1})?.durationHours,
+  ).toBeUndefined()
+  expect(isPollDraftPublishable({...draft, durationHours: -1})).toBe(false)
+})

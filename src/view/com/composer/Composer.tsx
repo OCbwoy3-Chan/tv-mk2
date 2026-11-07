@@ -125,6 +125,7 @@ import {
 } from '#/state/preferences/private-posts-appview'
 import {usePrivatePostsEnabled} from '#/state/preferences/private-posts-enabled'
 import {useTidSuffix} from '#/state/preferences/tid-suffix'
+import {useTokimekiPolls} from '#/state/preferences/tokimeki-polls'
 import {usePreferencesQuery} from '#/state/queries/preferences'
 import {usePrivatePostAvailability} from '#/state/queries/private-posts'
 import {resolveLinkQueryOptions} from '#/state/queries/resolve-link'
@@ -1628,6 +1629,13 @@ export const ComposePost = ({
               postAction: {type: 'embed_set_poll_assembly', assembly},
             })
           },
+          onPollRecord: (postId, record) => {
+            composerDispatch({
+              type: 'update_post',
+              postId,
+              postAction: {type: 'embed_set_poll_record', record},
+            })
+          },
           onEvent: (postId: string, record: {uri: string; cid: string}) => {
             composerDispatch({
               type: 'update_post',
@@ -3061,6 +3069,7 @@ function ComposerFooter({
   const t = useTheme()
   const {t: l} = useLingui()
   const {gtPhone} = useBreakpoints()
+  const tokimekiPolls = useTokimekiPolls()
   const hasPoll = !!post.embed.poll
   const hasEvent = !!post.embed.event
   /*
@@ -3192,7 +3201,12 @@ function ComposerFooter({
                 disabled={!!media || hasPoll || hasEvent}
               />
               <SelectPollBtn
-                onPress={() => dispatch({type: 'embed_add_poll'})}
+                onPress={() =>
+                  dispatch({
+                    type: 'embed_add_poll',
+                    ...(tokimekiPolls ? {provider: 'tokimeki'} : {}),
+                  })
+                }
                 disabled={!canAddPoll || postHasAttachment(post)}
               />
               <SelectEventBtn

@@ -20,6 +20,7 @@ import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/
 import {Poll_Stroke2_Corner0_Rounded as PollIcon} from '#/components/icons/Poll'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
 import {VoteButtons} from '#/components/Post/Embed/ExternalEmbed/VoteButtons'
+import * as Select from '#/components/Select'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 
@@ -35,11 +36,21 @@ export function PollEditor({
   const t = useTheme()
   const {t: l} = useLingui()
   const ax = useAnalytics()
-  const canAdd = poll.statements.length < POLL_MAX_STATEMENTS
-  const canRemoveStatement = poll.statements.length > 1
-  const issues = getStatementIssues(poll.statements)
+  const isTokimeki = poll.provider === 'tokimeki'
+  const durationItems = [
+    { value: '24', label: l`24 hours` },
+    { value: '72', label: l`3 days` },
+    { value: '168', label: l`7 days` },
+  ]
+  const maxStatements = isTokimeki ? 4 : POLL_MAX_STATEMENTS
+  const maxLength = isTokimeki ? 100 : POLL_STATEMENT_MAX_CHARS
+  const maxGraphemes = isTokimeki ? 50 : POLL_STATEMENT_MAX_GRAPHEMES
+  const canAdd = poll.statements.length < maxStatements
+  const canRemoveStatement = poll.statements.length > (isTokimeki ? 2 : 1)
+  const issues = getStatementIssues(poll.statements, poll.provider)
   const isTopicMissing = text.trim().length === 0
-  const isTopicInvalid = !isTopicMissing && !isPollTopicPublishable(text)
+  const isTopicInvalid =
+    !isTopicMissing && !isPollTopicPublishable(text, poll.provider)
   const [rowKeys, setRowKeys] = useState(() =>
     poll.statements.map(() => nanoid()),
   )
@@ -50,39 +61,47 @@ export function PollEditor({
       style={[
         a.mt_lg,
         a.p_md,
-        a.gap_md,
+        isTokimeki ? a.gap_sm : a.gap_md,
         a.rounded_md,
         a.border,
         t.atoms.border_contrast_low,
-        t.atoms.bg_contrast_25,
+        isTokimeki ? t.atoms.bg : t.atoms.bg_contrast_25,
       ]}>
       <View style={[a.flex_row, a.align_center, a.justify_between]}>
         <View style={[a.flex_row, a.align_center, a.gap_xs]}>
-          <PollIcon size="sm" fill={t.palette.primary_500} />
+          <PollIcon
+            size="sm"
+            fill={isTokimeki ? t.palette.contrast_500 : t.palette.primary_500}
+          />
           <Text
             style={[
-              a.text_xs,
+              isTokimeki ? a.text_sm : a.text_xs,
               a.font_bold,
-              {color: t.palette.primary_500, textTransform: 'uppercase'},
+              isTokimeki
+                ? t.atoms.text
+                : { color: t.palette.primary_500, textTransform: 'uppercase' },
             ]}>
-            <Trans comment="Heading of the poll editor card in the post composer">
-              Poll
-            </Trans>
+            <Trans>Poll</Trans>
           </Text>
         </View>
         <Button
           testID="removePollBtn"
           label={l`Remove poll`}
           size="tiny"
+          shape={isTokimeki ? 'round' : 'default'}
           variant="ghost"
           color="secondary"
           onPress={() => {
             ax.metric('composer:poll:remove', {})
             dispatch({type: 'embed_remove_poll'})
           }}>
+          {isTokimeki ? (
+            <ButtonIcon icon={XIcon} />
+          ) : (
           <ButtonText>
             <Trans>Remove</Trans>
           </ButtonText>
+          )}
         </Button>
       </View>
 
@@ -95,7 +114,9 @@ export function PollEditor({
               ? {color: t.palette.negative_500}
               : t.atoms.text_contrast_medium,
           ]}>
-          {isTopicInvalid ? (
+          {isTokimeki && text.trim().length > 300 ? (
+            <Trans>Shorten your post text to 300 characters.</Trans>
+          ) : isTopicInvalid ? (
             <Trans>
               Your post text contains characters that cannot be saved.
             </Trans>
@@ -110,9 +131,9 @@ export function PollEditor({
         const graphemes = countGraphemes(statement.trim())
         const isInvalid =
           issue === 'too_long' || issue === 'invalid' || issue === 'duplicate'
-        const isBlankExtra = issue === 'empty' && canRemoveStatement
-        const isOverByteCap =
-          issue === 'too_long' && graphemes <= POLL_STATEMENT_MAX_GRAPHEMES
+        const isBlankExtra =
+          !isTokimeki && issue === 'empty' && canRemoveStatement
+        const isOverByteCap = issue === 'too_long' && graphemes <= maxGraphemes
         return (
           <View key={rowKeys[index]} style={[a.gap_2xs]}>
             <View style={[a.flex_row, a.align_center, a.gap_xs]}>
@@ -120,17 +141,25 @@ export function PollEditor({
                 <TextField.Root isInvalid={isInvalid}>
                   <TextField.Input
                     testID={`pollStatementInput-${index}`}
-                    maxLength={POLL_STATEMENT_MAX_CHARS}
-                    label={l({
+                    maxLength={maxLength}
+                    label={
+                      isTokimeki
+                        ? l`Option ${index + 1}`
+                        : l({
                       message: `Statement ${index + 1}`,
                       comment:
                         'Accessibility label for a poll statement text field in the composer. The number is the position of the statement.',
-                    })}
-                    placeholder={l({
+                        })
+                    }
+                    placeholder={
+                      isTokimeki
+                        ? l`Option ${index + 1}`
+                        : l({
                       message: 'Write a statement people can agree with',
                       comment:
                         'Placeholder for a poll statement text field in the composer',
-                    })}
+                        })
+                    }
                     value={statement}
                     onChangeText={next =>
                       dispatch({
@@ -139,14 +168,14 @@ export function PollEditor({
                         text: next,
                       })
                     }
-                    multiline
+                    multiline={!isTokimeki}
                   />
                 </TextField.Root>
               </View>
               {canRemoveStatement && (
                 <Button
                   testID={`pollStatementRemove-${index}`}
-                  label={l`Remove statement`}
+                  label={isTokimeki ? l`Remove option` : l`Remove statement`}
                   size="tiny"
                   shape="round"
                   variant="ghost"
@@ -163,6 +192,7 @@ export function PollEditor({
                 </Button>
               )}
             </View>
+            {(!isTokimeki || isInvalid || isBlankExtra || graphemes >= 40) && (
             <Text
               testID={`pollStatementHint-${index}`}
               style={[
@@ -172,7 +202,15 @@ export function PollEditor({
                   ? {color: t.palette.negative_500}
                   : t.atoms.text_contrast_medium,
               ]}>
-              {issue === 'invalid' ? (
+                {isTokimeki && issue === 'invalid' ? (
+                  <Trans>
+                    This option contains characters that cannot be saved.
+                  </Trans>
+                ) : isTokimeki && issue === 'too_long' ? (
+                  <Trans>This option is too long. Shorten it to post.</Trans>
+                ) : isTokimeki && issue === 'duplicate' ? (
+                  <Trans>This option repeats another one.</Trans>
+                ) : issue === 'invalid' ? (
                 <Trans>
                   This statement contains characters that cannot be saved.
                 </Trans>
@@ -183,9 +221,10 @@ export function PollEditor({
               ) : isBlankExtra ? (
                 <Trans>Add text or remove this statement to post.</Trans>
               ) : (
-                `${graphemes} / ${POLL_STATEMENT_MAX_GRAPHEMES}`
+                  `${graphemes} / ${maxGraphemes}`
               )}
             </Text>
+            )}
           </View>
         )
       })}
@@ -193,26 +232,57 @@ export function PollEditor({
       {canAdd && (
         <Button
           testID="addPollStatementBtn"
-          label={l`Add another statement`}
+          label={isTokimeki ? l`Add another option` : l`Add another statement`}
           size="small"
-          variant="outline"
-          color="secondary"
+          variant={isTokimeki ? 'solid' : 'outline'}
+          color={isTokimeki ? 'primary_subtle' : 'secondary'}
+          style={isTokimeki && a.self_start}
           onPress={() => {
             ax.metric('composer:poll:statementAdd', {
               count: poll.statements.length + 1,
             })
             setRowKeys(keys =>
-              keys.length < POLL_MAX_STATEMENTS ? [...keys, nanoid()] : keys,
+              keys.length < maxStatements ? [...keys, nanoid()] : keys,
             )
             dispatch({type: 'embed_add_poll_statement'})
           }}>
           <ButtonIcon icon={PlusIcon} position="left" />
           <ButtonText>
+            {isTokimeki ? (
+              <Trans>Add another option</Trans>
+            ) : (
             <Trans>Add another statement</Trans>
+            )}
           </ButtonText>
         </Button>
       )}
+      {isTokimeki && (
+        <Select.Root
+          value={String(poll.durationHours ?? 24)}
+          onValueChange={value =>
+            dispatch({
+              type: 'embed_set_poll_duration',
+              durationHours: Number(value),
+            })
+          }>
+          <Select.Trigger label={l`Poll closing time`}>
+            <Select.ValueText />
+            <Select.Icon />
+          </Select.Trigger>
+          <Select.Content
+            label={l`Poll closing time`}
+            items={durationItems}
+            renderItem={({ value, label }) => (
+              <Select.Item value={value} label={label}>
+                <Select.ItemIndicator />
+                <Select.ItemText>{label}</Select.ItemText>
+              </Select.Item>
+            )}
+          />
+        </Select.Root>
+      )}
 
+      {!isTokimeki && (
       <View
         testID="pollVotePreview"
         style={[{opacity: 0.5}]}
@@ -222,14 +292,19 @@ export function PollEditor({
         importantForAccessibility="no-hide-descendants">
         <VoteButtons disabled onVote={() => {}} />
       </View>
+      )}
+      {!isTokimeki && (
       <View>
-        <Text style={[a.text_xs, a.leading_snug, t.atoms.text_contrast_medium]}>
+          <Text
+            style={[a.text_xs, a.leading_snug, t.atoms.text_contrast_medium]}>
           <Trans>Your post text is the question.</Trans>
         </Text>
-        <Text style={[a.text_xs, a.leading_snug, t.atoms.text_contrast_medium]}>
+          <Text
+            style={[a.text_xs, a.leading_snug, t.atoms.text_contrast_medium]}>
           <Trans>Statements and votes are public on People's Assembly.</Trans>
         </Text>
       </View>
+      )}
     </View>
   )
 }

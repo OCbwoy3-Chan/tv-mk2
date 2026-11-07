@@ -13,8 +13,7 @@ type ReactHooks = {useEffect: typeof useEffect; useRef: typeof useRef}
 jest.mock('@lingui/react', () => {
   const format = (
     message:
-      | {message?: string; values?: Record<string, string | number>}
-      | string,
+      {message?: string; values?: Record<string, string | number>} | string,
   ) => {
     if (typeof message === 'string') return message
     return (message.message ?? '').replace(/{(\w+)}/g, (_, key: string) =>
@@ -44,6 +43,13 @@ jest.mock('#/alf', () => {
     }),
   }
 })
+jest.mock('#/components/Select', () => ({
+  Root: ({children}: {children: React.ReactNode}) => children,
+  Trigger: ({children}: {children: React.ReactNode}) => children,
+  ValueText: () => null,
+  Icon: () => null,
+  Content: () => null,
+}))
 jest.mock('#/components/Typography', () => {
   const {Text} = require('react-native')
   return {Text}
@@ -564,4 +570,35 @@ describe('PollEditor', () => {
     expect(queryByTestId('addPollStatementBtn')).toBeNull()
     expect(consoleError).not.toHaveBeenCalled()
   })
+})
+
+it('shows the TOKIMEKI editor with options and a 24 hour deadline', () => {
+  const {getByText, getByLabelText, queryByTestId, queryByText} = render(
+    <PollEditor
+      poll={{provider: 'tokimeki', statements: ['Yes', 'No']}}
+      text="Question?"
+      dispatch={jest.fn()}
+    />,
+  )
+  expect(getByText('Poll')).toBeTruthy()
+  expect(getByLabelText('Option 1')).toBeTruthy()
+  expect(getByText('Add another option')).toBeTruthy()
+  expect(getByText('Closes in')).toBeTruthy()
+  expect(queryByText(/TOKIMEKI|Public poll/)).toBeNull()
+  expect(queryByTestId('pollVotePreview')).toBeNull()
+  expect(queryByTestId('pollStatementRemove-0')).toBeNull()
+  expect(queryByTestId('pollStatementHint-0')).toBeNull()
+  expect(queryByTestId('pollStatementHint-1')).toBeNull()
+})
+
+it('does not show Assembly statement hints for blank extra TOKIMEKI options', () => {
+  const {queryByTestId, queryByText} = render(
+    <PollEditor
+      poll={{provider: 'tokimeki', statements: ['Yes', 'No', '']}}
+      text="Question?"
+      dispatch={jest.fn()}
+    />,
+  )
+  expect(queryByTestId('pollStatementHint-2')).toBeNull()
+  expect(queryByText(/statement/i)).toBeNull()
 })

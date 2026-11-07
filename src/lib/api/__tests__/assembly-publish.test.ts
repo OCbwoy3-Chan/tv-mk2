@@ -118,10 +118,19 @@ function setup() {
     events.push(`stage:${state}`)
   })
   const onAssembly = jest.fn()
+  const putRecord = jest.fn((_input: unknown) =>
+    Promise.resolve({
+      uri: 'at://did:plc:alice/tech.tokimeki.poll.poll/poll',
+      cid: 'bafyreipoll',
+    }),
+  )
   const pdsClient = {
     assertDid: 'did:plc:alice',
     call: jest.fn((def: {$nsid?: string}, input: unknown) => {
-      if (def?.$nsid === com.atproto.repo.applyWrites.$nsid) return applyWrites(input)
+      if (def?.$nsid === com.atproto.repo.applyWrites.$nsid)
+        return applyWrites(input)
+      if (def?.$nsid === com.atproto.repo.putRecord.$nsid)
+        return putRecord(input)
       throw new Error('unexpected pds call')
     }),
   } as unknown as Client
@@ -136,6 +145,7 @@ function setup() {
     pdsClient,
     appviewClient,
     applyWrites,
+    putRecord,
     getPosts,
     onStateChange,
     onAssembly,
@@ -417,7 +427,6 @@ describe('publishing a post with a poll', () => {
     const first = {uri: result.uris[0], cid: 'bafyreifake'}
     expect(writes[1].value.reply).toEqual({root: first, parent: first})
   })
-
 })
 
 describe('replying with a poll', () => {
@@ -463,9 +472,7 @@ describe('replying with a poll', () => {
 
   it('starts no assembly when the parent is gone', async () => {
     const ctx = setup()
-    ctx.getPosts.mockImplementation(() =>
-      Promise.resolve({posts: []} as never),
-    )
+    ctx.getPosts.mockImplementation(() => Promise.resolve({posts: []} as never))
 
     await expect(
       post(queryClient, {
@@ -509,7 +516,9 @@ describe('the poll thumbnail', () => {
     arrange()
 
     const result = await post(queryClient, {
-      ...clientsOf(ctx),thread: pollThread()})
+      ...clientsOf(ctx),
+      thread: pollThread(),
+    })
 
     expect(mockUploadBlob).toHaveBeenCalledTimes(uploads)
     expect(ctx.applyWrites).toHaveBeenCalledTimes(1)
@@ -531,7 +540,9 @@ describe('the poll thumbnail', () => {
     mockImageToThumb.mockImplementation(() => new Promise(() => {}))
 
     const pending = post(queryClient, {
-      ...clientsOf(ctx),thread: pollThread()})
+      ...clientsOf(ctx),
+      thread: pollThread(),
+    })
 
     await jest.advanceTimersByTimeAsync(4999)
     expect(mockImageToThumb).toHaveBeenCalledWith(THUMB_URL)
@@ -553,7 +564,9 @@ describe('the poll thumbnail', () => {
     const ctx = setup()
 
     await post(queryClient, {
-      ...clientsOf(ctx),thread: pollThread()})
+      ...clientsOf(ctx),
+      thread: pollThread(),
+    })
 
     expect(mockUploadBlob).toHaveBeenCalledTimes(1)
     expect(jest.getTimerCount()).toBe(0)
@@ -656,4 +669,147 @@ describe('poll invariants', () => {
 
     expect(mockImageToThumb).not.toHaveBeenCalled()
   })
+})
+
+describe('publishing a TOKIMEKI poll', () => {
+  it.each([24, 72, 168])(
+    'publishes the web preview with a %s hour deadline',
+    async durationHours => {
+      const ctx = setup()
+      jest.mocked(fetchResolveLinkQuery).mockImplementation(() => {
+        expect(ctx.putRecord).toHaveBeenCalledTimes(1)
+        expect(ctx.applyWrites).not.toHaveBeenCalled()
+        return Promise.resolve({
+          type: 'external',
+          uri: 'https://poll.tokimeki.tech/p/did:plc:alice/poll',
+          title: 'TOKIMEKI web title',
+          description: 'TOKIMEKI web description',
+          thumb: THUMB,
+        } as never)
+      })
+      const onPollRecord = jest.fn(
+        (_postId: string, _record: {rkey: string; createdAt: string}) => {},
+      )
+      const result = await post(queryClient, {
+        ...clientsOf(ctx),
+        onPollRecord,
+        thread: thread([
+          draft({
+            poll: {
+              provider: 'tokimeki',
+              statements: ['  Yes ', 'No'],
+              durationHours,
+            },
+          }),
+        ]),
+      })
+      expect(mockEnsureAssembly).not.toHaveBeenCalled()
+      expect(ctx.applyWrites).toHaveBeenCalledTimes(1)
+      const [{writes, validate}] = ctx.applyWrites.mock.calls[0] as unknown as [
+        {
+          writes: {
+            collection: string
+            rkey: string
+            value: {
+              endsAt: string
+              createdAt: string
+              embed: {
+                external: {
+                  uri: string
+                  title: string
+                  description: string
+                  thumb: unknown
+                }
+              }
+            }
+          }[]
+          validate?: boolean
+        },
+      ]
+      expect(validate).toBeUndefined()
+      const postWrite = writes.find(w => w.collection === 'app.bsky.feed.post')!
+      const pollWrite = writes.find(
+        w => w.collection === 'tech.tokimeki.poll.poll',
+      )!
+      expect(pollWrite.value).toMatchObject({
+        $type: 'tech.tokimeki.poll.poll',
+        options: ['Yes', 'No'],
+        subject: {uri: result.uris[0], cid: 'bafyreifake'},
+      })
+      expect(fetchResolveLinkQuery).toHaveBeenCalledWith(
+        queryClient,
+        {
+          appviewClient: ctx.appviewClient,
+          chatClient: ctx.appviewClient,
+        },
+        `https://poll.tokimeki.tech/p/did:plc:alice/${pollWrite.rkey}`,
+      )
+      expect(postWrite.value.embed.external).toMatchObject({
+        title: 'TOKIMEKI web title',
+        description: 'TOKIMEKI web description',
+        thumb: THUMB_BLOB,
+      })
+      expect(onPollRecord).toHaveBeenCalledWith('post-1', {
+        rkey: pollWrite.rkey,
+        createdAt: pollWrite.value.createdAt,
+      })
+      expect(
+        Date.parse(pollWrite.value.endsAt) -
+          Date.parse(pollWrite.value.createdAt),
+      ).toBe(durationHours * 60 * 60 * 1000)
+      expect(result.assembly).toBeUndefined()
+    },
+  )
+
+  it('rejects an invalid TOKIMEKI poll before writing', async () => {
+    const ctx = setup()
+    await expect(
+      post(queryClient, {
+        ...clientsOf(ctx),
+        thread: thread([
+          draft({poll: {provider: 'tokimeki', statements: ['Only one']}}),
+        ]),
+      }),
+    ).rejects.toThrow('Check your poll')
+    expect(ctx.applyWrites).not.toHaveBeenCalled()
+    expect(mockEnsureAssembly).not.toHaveBeenCalled()
+  })
+})
+
+it('reuses the staged TOKIMEKI poll after a web preview failure', async () => {
+  const ctx = setup()
+  const onPollRecord = jest.fn(
+    (_postId: string, _record: {rkey: string; createdAt: string}) => {},
+  )
+  const poll = {provider: 'tokimeki' as const, statements: ['Yes', 'No']}
+  jest
+    .mocked(fetchResolveLinkQuery)
+    .mockRejectedValueOnce(new Error('Preview unavailable'))
+  await expect(
+    post(queryClient, {
+      ...clientsOf(ctx),
+      onPollRecord,
+      thread: thread([draft({poll})]),
+    }),
+  ).rejects.toThrow('Preview unavailable')
+  expect(ctx.applyWrites).not.toHaveBeenCalled()
+  const record = onPollRecord.mock.calls[0][1]
+  jest.mocked(fetchResolveLinkQuery).mockResolvedValue({
+    type: 'external',
+    uri: 'https://poll.tokimeki.tech/p/did:plc:alice/poll',
+    title: 'TOKIMEKI Poll',
+    description: 'Yes / No',
+  } as never)
+  await post(queryClient, {
+    ...clientsOf(ctx),
+    thread: thread([draft({poll: {...poll, record}})]),
+  })
+  expect(ctx.putRecord).toHaveBeenCalledTimes(2)
+  for (const [input] of ctx.putRecord.mock.calls) {
+    expect(input).toMatchObject({
+      rkey: record.rkey,
+      record: {createdAt: record.createdAt},
+    })
+  }
+  expect(ctx.applyWrites).toHaveBeenCalledTimes(1)
 })

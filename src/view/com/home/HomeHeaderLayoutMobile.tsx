@@ -24,8 +24,11 @@ import {IS_DEV, IS_LIQUID_GLASS} from '#/env'
 
 export function HomeHeaderLayoutMobile({
   children,
+  onFeedInfoPress,
 }: {
   children: React.ReactNode
+  feedInfoButton?: React.ReactNode
+  onFeedInfoPress?: () => void
   tabBarAnchor: React.ReactElement | null | undefined
 }) {
   const t = useTheme()
@@ -61,6 +64,12 @@ export function HomeHeaderLayoutMobile({
         <View style={[a.flex_1, a.align_center]}>
           <PressableScale
             targetScale={0.9}
+            accessibilityLabel={_(msg`Home`)}
+            accessibilityHint={_(msg`Long press to open Delta Settings`)}
+            onLongPress={() => {
+              haptics.longPress()
+              navigate('DeltaSettings')
+            }}
             onPress={() => {
               if (IS_DEV) {
                 navigate('Debug')
@@ -80,6 +89,13 @@ export function HomeHeaderLayoutMobile({
               to={{screen: 'Feeds'}}
               hitSlop={HITSLOP_10}
               label={_(msg`View your feeds and explore more`)}
+              onLongPress={event => {
+                event.preventDefault()
+                haptics.longPress()
+                onFeedInfoPress?.()
+                return false
+              }}
+              accessibilityHint={_(msg`Long press to view feed information`)}
               size="small"
               variant="ghost"
               color="secondary"

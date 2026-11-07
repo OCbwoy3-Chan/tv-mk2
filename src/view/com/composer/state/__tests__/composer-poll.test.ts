@@ -105,7 +105,6 @@ function withPollOnEveryPost(state: ComposerState): ComposerState {
   }))
 }
 
-
 describe('composer polls', () => {
   it('adds a poll with one empty statement', () => {
     const post = draftAfter([{type: 'embed_add_poll'}])
@@ -513,4 +512,33 @@ describe('post content predicates', () => {
     expect(postHasAttachment(withPoll)).toBe(true)
     expect(postHasContent(withPoll)).toBe(true)
   })
+})
+
+it('creates a TOKIMEKI poll with two options and enforces its option limits', () => {
+  let state = apply(initialState(), [
+    {type: 'embed_add_poll', provider: 'tokimeki'},
+  ])
+  expect(state.thread.posts[0].embed.poll).toEqual({
+    provider: 'tokimeki',
+    statements: ['', ''],
+  })
+  state = apply(state, [{type: 'embed_remove_poll_statement', index: 0}])
+  expect(state.thread.posts[0].embed.poll?.statements).toHaveLength(2)
+  state = apply(
+    state,
+    Array.from({length: 4}, () => ({
+      type: 'embed_add_poll_statement' as const,
+    })),
+  )
+  expect(state.thread.posts[0].embed.poll?.statements).toHaveLength(4)
+})
+
+it('sets a TOKIMEKI closing duration and rejects unsupported values', () => {
+  let state = apply(initialState(), [
+    {type: 'embed_add_poll', provider: 'tokimeki'},
+  ])
+  state = apply(state, [{type: 'embed_set_poll_duration', durationHours: 168}])
+  expect(state.thread.posts[0].embed.poll?.durationHours).toBe(168)
+  state = apply(state, [{type: 'embed_set_poll_duration', durationHours: -1}])
+  expect(state.thread.posts[0].embed.poll?.durationHours).toBe(168)
 })

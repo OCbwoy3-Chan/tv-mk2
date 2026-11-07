@@ -19,6 +19,23 @@ export const CHAT_SERVICE = 'https://api.bsky.chat'
 export const EMBED_SERVICE = 'https://embed.bsky.app'
 export const EMBED_SCRIPT = `${EMBED_SERVICE}/static/embed.js`
 export const BSKY_DOWNLOAD_URL = 'https://bsky.app/download'
+
+export const LINKING_PREFIXES = [
+  'bsky://',
+  'bluesky://',
+  'witchsky://',
+  'tenna://',
+  'deersocial://',
+  'https://bsky.app',
+  'https://witchsky.app',
+  'https://tenna.party',
+  'https://deer.social',
+  'https://mu.social',
+  'https://cope.works',
+  'https://blacksky.community',
+  'https://northsky.app',
+]
+
 export const APPVIEW_DID_PROXY = ENV_APPVIEW_DID_PROXY
 export const STARTER_PACK_DEFAULT_SIZE = 150
 export const STARTER_PACK_MAX_SIZE = 500

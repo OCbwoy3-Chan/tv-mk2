@@ -17,6 +17,8 @@ import {
 } from '#/lib/api/assembly'
 import {
   type AssemblyRef,
+  isPollDraftPublishable,
+  isPollTopicPublishable,
   type PollDraft,
   pollStatementsForPublish,
   pollTopicFromText,
@@ -51,6 +53,7 @@ import {
 } from '#/view/com/composer/state/composer'
 import {IS_IOS, IS_WEB} from '#/env'
 import {makeEventUrl} from '#/features/events/url'
+import {TOKIMEKI_POLL_COLLECTION} from '#/features/tokimeki/types'
 import {app, chat, com} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {createGIFDescription} from '../gif-alt-text'
@@ -121,6 +124,10 @@ interface PostOpts {
   replyTo?: string
   onStateChange?: (state: string) => void
   onAssembly?: (postId: string, ref: AssemblyRef) => void
+  onPollRecord?: (
+    postId: string,
+    record: NonNullable<PollDraft['record']>,
+  ) => void
   onEvent?: (postId: string, record: {uri: string; cid: string}) => void
   langs?: string[]
   /*
@@ -176,7 +183,7 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
 
   let assembly: PostResult['assembly']
   const poll = pollPost?.embed.poll
-  if (pollPost && poll) {
+  if (pollPost && poll && poll.provider !== 'tokimeki') {
     // An assembly is public and cannot be withdrawn, so a reply whose parent
     // is gone has to fail before one is started.
     await replyPromise
@@ -201,6 +208,42 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
           : p,
       ),
     }
+  }
+
+  let tokimekiRecord: NonNullable<PollDraft['record']> | undefined
+  let tokimekiValue: com.atproto.repo.putRecord.$InputBody['record'] | undefined
+  if (pollPost && poll?.provider === 'tokimeki') {
+    await replyPromise
+    if (
+      !isPollDraftPublishable(poll) ||
+      !isPollTopicPublishable(pollPost.richtext.text, 'tokimeki')
+    ) {
+      throw new Error(t`Check your poll question and answer options.`)
+    }
+    tokimekiRecord = poll.record ?? {
+      rkey: TID.nextStr(),
+      createdAt: new Date().toISOString(),
+    }
+    // Keep the key before writing so a retry can reuse even an ambiguous write.
+    opts.onPollRecord?.(pollPost.id, tokimekiRecord)
+    tokimekiValue = {
+      $type: TOKIMEKI_POLL_COLLECTION,
+      options: pollStatementsForPublish(poll),
+      createdAt: tokimekiRecord.createdAt,
+      endsAt: new Date(
+        Date.parse(tokimekiRecord.createdAt) +
+          (poll.durationHours ?? 24) * 60 * 60 * 1000,
+      ).toISOString(),
+    }
+    opts.onStateChange?.(t`Starting poll...`)
+    // TOKIMEKI's preview endpoint needs the poll to exist, but subject is optional.
+    await opts.pdsClient.call(com.atproto.repo.putRecord, {
+      repo: opts.pdsClient.assertDid,
+      collection: TOKIMEKI_POLL_COLLECTION,
+      rkey: tokimekiRecord.rkey,
+      record: tokimekiValue,
+      validate: false,
+    })
   }
 
   // The event record has to exist before the post so the link card can point
@@ -253,7 +296,26 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
 
     // Not awaited to avoid waterfalls.
     const rtPromise = resolveRT(opts.appviewClient, draft.richtext)
-    const embedPromise = resolveEmbed(
+    const tokimekiPoll =
+      draft.embed.poll?.provider === 'tokimeki' ? draft.embed.poll : undefined
+    const embedPromise =
+      tokimekiPoll && tokimekiRecord
+        ? resolveMedia(
+            opts.appviewClient,
+            opts.chatClient,
+            opts.pdsClient,
+            queryClient,
+            {
+              media: undefined,
+              quote: undefined,
+              link: {
+                type: 'link',
+                uri: `https://poll.tokimeki.tech/p/${did}/${tokimekiRecord.rkey}`,
+              },
+            },
+            opts.onStateChange,
+          )
+        : resolveEmbed(
       opts.appviewClient,
       opts.chatClient,
       opts.pdsClient,
@@ -370,6 +432,14 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
       cid: await computeCid(record),
       uri,
     }
+    if (tokimekiPoll && tokimekiRecord && tokimekiValue) {
+      writes.push({
+        $type: 'com.atproto.repo.applyWrites#update',
+        collection: TOKIMEKI_POLL_COLLECTION,
+        rkey: tokimekiRecord.rkey,
+        value: {...tokimekiValue, subject: ref},
+      })
+    }
     if (draft.embed.event) {
       eventPostRef = ref
     }
@@ -383,7 +453,8 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     await opts.pdsClient.call(com.atproto.repo.applyWrites, {
       repo: did,
       writes: writes,
-      validate: true,
+      // Let the PDS validate known schemas while accepting TOKIMEKI's custom record.
+      validate: poll?.provider === 'tokimeki' ? undefined : true,
     })
   } catch (err) {
     const e = err as Error
