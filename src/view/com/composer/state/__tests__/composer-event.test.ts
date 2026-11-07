@@ -99,7 +99,10 @@ describe('event draft', () => {
       {type: 'embed_add_event'},
       {
         type: 'embed_set_event_record',
-        record: {uri: 'at://did:plc:x/community.lexicon.calendar.event/1', cid: 'c'},
+        record: {
+          uri: 'at://did:plc:x/community.lexicon.calendar.event/1',
+          cid: 'c',
+        },
       },
     ]).embed.event
     expect(event?.record).toEqual({
@@ -190,7 +193,8 @@ describe('event publishability', () => {
     // a poll on the same post.
     const pollPost = draftAfter([
       {type: 'embed_add_poll'},
-      {type: 'embed_update_poll_statement', index: 0, text: 'Yes'},
+      {type: 'embed_update_poll_option', index: 0, text: 'Yes'},
+      {type: 'embed_update_poll_option', index: 1, text: 'No'},
     ])
     const forced = {
       ...pollPost,
