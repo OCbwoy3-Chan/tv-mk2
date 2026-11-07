@@ -1,6 +1,7 @@
 import {TID} from '@atproto/common-web'
 import {type $Typed, type Client} from '@atproto/lex'
 import {
+  AtUri,
   type AtUriString,
   toDatetimeString,
   type UriString,
@@ -9,7 +10,18 @@ import {RichText} from '@bsky/sdk/richtext'
 import {t} from '@lingui/core/macro'
 import {type QueryClient} from '@tanstack/react-query'
 
-import {type LinkResolvers} from '#/lib/api/resolve'
+import {
+  assemblyThumbUrl,
+  buildAssemblyExternal,
+  ensureAssembly,
+} from '#/lib/api/assembly'
+import {
+  type AssemblyRef,
+  type PollDraft,
+  pollStatementsForPublish,
+  pollTopicFromText,
+} from '#/lib/api/poll'
+import {imageToThumb, type LinkResolvers} from '#/lib/api/resolve'
 import {withCreator} from '#/lib/at-card'
 import {IMAGE_SIZE_CONFIG_POSTS} from '#/lib/constants'
 import {MAX_TAGS} from '#/lib/constants'
@@ -38,19 +50,78 @@ import {
   type ThreadDraft,
 } from '#/view/com/composer/state/composer'
 import {IS_IOS, IS_WEB} from '#/env'
+import {makeEventUrl} from '#/features/events/url'
 import {app, chat, com} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {createGIFDescription} from '../gif-alt-text'
 import {computeCid} from './computeCid'
+import {type EventDraft, type EventRecordRef} from './event'
+import {
+  deleteEvent,
+  ensureEvent,
+  finalizeEvent,
+  rsvpSelfGoing,
+} from './event-publish'
 import {reuseGalleryImageBlob} from './resolve-gallery'
 import {uploadBlob} from './upload-blob'
 
 export {uploadBlob}
 
+const ASSEMBLY_THUMB_TIMEOUT_MS = 5e3
+
+function refusePollWithAttachments(draft: PostDraft) {
+  if (
+    draft.embed.poll &&
+    (draft.embed.media || draft.embed.link || draft.embed.quote)
+  ) {
+    throw new Error(
+      t`A poll cannot be combined with media, a link card or a quote.`,
+    )
+  }
+}
+
+function findPollPost(thread: ThreadDraft): PostDraft | undefined {
+  const [pollPost, ...others] = thread.posts.filter(p => p.embed.poll)
+  if (others.length) {
+    throw new Error(t`A thread can only have one poll.`)
+  }
+  if (pollPost) {
+    refusePollWithAttachments(pollPost)
+  }
+  return pollPost
+}
+
+function refuseEventWithAttachments(draft: PostDraft) {
+  if (
+    draft.embed.event &&
+    (draft.embed.media ||
+      draft.embed.link ||
+      draft.embed.quote ||
+      draft.embed.poll)
+  ) {
+    throw new Error(
+      t`An event cannot be combined with media, a link card, a quote or a poll.`,
+    )
+  }
+}
+
+function findEventPost(thread: ThreadDraft): PostDraft | undefined {
+  const [eventPost, ...others] = thread.posts.filter(p => p.embed.event)
+  if (others.length) {
+    throw new Error(t`A thread can only have one event.`)
+  }
+  if (eventPost) {
+    refuseEventWithAttachments(eventPost)
+  }
+  return eventPost
+}
+
 interface PostOpts {
   thread: ThreadDraft
   replyTo?: string
   onStateChange?: (state: string) => void
+  onAssembly?: (postId: string, ref: AssemblyRef) => void
+  onEvent?: (postId: string, record: {uri: string; cid: string}) => void
   langs?: string[]
   /*
    * Facet/mention resolution and reply-root lookup are appview jobs - they
@@ -77,9 +148,22 @@ interface PostOpts {
     | {type: 'suffix'; suffix: string}
 }
 
+export type PostResult = {
+  uris: string[]
+  assembly?: {
+    conversationId: string
+    statementCount: number
+    isReplay: boolean
+  }
+  event?: {uri: string; cid: string}
+}
+
 export async function post(queryClient: QueryClient, opts: PostOpts) {
-  const thread = opts.thread
+  let thread = opts.thread
   opts.onStateChange?.(t`Processing...`)
+
+  const pollPost = findPollPost(thread)
+  const eventPost = findEventPost(thread)
 
   let replyPromise:
     | Promise<app.bsky.feed.post.Main['reply']>
@@ -88,6 +172,60 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
   if (opts.replyTo) {
     // Not awaited to avoid waterfalls.
     replyPromise = resolveReply(opts.appviewClient, opts.replyTo)
+  }
+
+  let assembly: PostResult['assembly']
+  const poll = pollPost?.embed.poll
+  if (pollPost && poll) {
+    // An assembly is public and cannot be withdrawn, so a reply whose parent
+    // is gone has to fail before one is started.
+    await replyPromise
+    opts.onStateChange?.(t`Starting poll...`)
+    const statements = pollStatementsForPublish(poll)
+    const {ref, isReplay} = await ensureAssembly(opts.pdsClient, {
+      topic: pollTopicFromText(pollPost.richtext.text),
+      statements,
+      ref: poll.assembly,
+      onRef: next => opts.onAssembly?.(pollPost.id, next),
+    })
+    assembly = {
+      conversationId: ref.conversationId,
+      statementCount: statements.length,
+      isReplay,
+    }
+    thread = {
+      ...thread,
+      posts: thread.posts.map(p =>
+        p === pollPost
+          ? {...p, embed: {...p.embed, poll: {...poll, assembly: ref}}}
+          : p,
+      ),
+    }
+  }
+
+  // The event record has to exist before the post so the link card can point
+  // at it; it is finalized (with the post ref) only if the post write lands.
+  const eventDraft = eventPost?.embed.event
+  let eventRef: EventRecordRef | undefined
+  let createdEvent = false
+  if (eventPost && eventDraft) {
+    // A reply whose parent is gone should fail before an event is created.
+    await replyPromise
+    opts.onStateChange?.(t`Creating event...`)
+    createdEvent = !eventDraft.record
+    eventRef = await ensureEvent(opts.pdsClient, eventDraft)
+    opts.onEvent?.(eventPost.id, {uri: eventRef.uri, cid: eventRef.cid})
+    thread = {
+      ...thread,
+      posts: thread.posts.map(p =>
+        p === eventPost
+          ? {
+              ...p,
+              embed: {...p.embed, event: {...eventDraft, record: eventRef}},
+            }
+          : p,
+      ),
+    }
   }
 
   // add top 3 languages from user preferences if langs is provided
@@ -108,6 +246,7 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
 
   let now = new Date()
   let tid: TID | undefined
+  let eventPostRef: {uri: string; cid: string} | undefined
 
   for (let i = 0; i < thread.posts.length; i++) {
     const draft = thread.posts[i]
@@ -231,6 +370,9 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
       cid: await computeCid(record),
       uri,
     }
+    if (draft.embed.event) {
+      eventPostRef = ref
+    }
     replyPromise = {
       root: reply?.root ?? ref,
       parent: ref,
@@ -248,6 +390,14 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     logger.error(`Failed to create post`, {
       safeMessage: e.message,
     })
+    /*
+     * Only remove an event created by this attempt, and never after an
+     * ambiguous failure: a network error may mean the write committed, and
+     * deleting here would strip the event from a live post with no way back.
+     */
+    if (createdEvent && eventRef && !isNetworkError(e)) {
+      await deleteEvent(opts.pdsClient, eventRef)
+    }
     if (isNetworkError(e)) {
       throw new Error(
         t`Post failed to upload. Please check your Internet connection and try again.`,
@@ -257,7 +407,19 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     }
   }
 
-  return {uris}
+  // Attach the post to the event and RSVP the author. Both are best effort;
+  // the RSVP uses the post-finalize cid, since it is the event's current one.
+  if (eventRef && eventDraft && eventPostRef) {
+    eventRef = await finalizeEvent(
+      opts.pdsClient,
+      eventRef,
+      eventPostRef,
+      eventDraft,
+    )
+    await rsvpSelfGoing(opts.pdsClient, eventRef)
+  }
+
+  return {uris, assembly, ...(eventRef ? {event: eventRef} : {})}
 }
 
 export async function resolveRT(appviewClient: Client, richtext: RichText) {
@@ -335,7 +497,7 @@ async function resolveReply(appviewClient: Client, replyTo: string) {
   }
 }
 
-async function resolveEmbed(
+export async function resolveEmbed(
   appviewClient: Client,
   chatClient: Client,
   pdsClient: Client,
@@ -343,6 +505,12 @@ async function resolveEmbed(
   draft: PostDraft,
   onStateChange: ((state: string) => void) | undefined,
 ): Promise<app.bsky.feed.post.Main['embed']> {
+  if (draft.embed.event) {
+    return resolveEvent(pdsClient, draft, draft.embed.event)
+  }
+  if (draft.embed.poll) {
+    return resolveAssembly(pdsClient, draft, draft.embed.poll, onStateChange)
+  }
   if (draft.embed.quote) {
     const [resolvedMedia, resolvedQuote] = await Promise.all([
       resolveMedia(
@@ -410,6 +578,91 @@ async function resolveEmbed(
     }
   }
   return undefined
+}
+
+/**
+ * The post's link card for an event it created. The event record itself is
+ * written earlier in `post()`, so the URI is already known; it just has to be
+ * rendered as an absolute witchsky URL so `parseEventUrl` picks it up.
+ */
+function resolveEvent(
+  pdsClient: Client,
+  draft: PostDraft,
+  event: EventDraft,
+): $Typed<app.bsky.embed.external.Main> {
+  refuseEventWithAttachments(draft)
+  const ref = event.record
+  if (!ref) {
+    throw new Error(t`The event record was not created.`)
+  }
+  const rkey = new AtUri(ref.uri).rkey
+  const description = [event.description?.trim(), event.place?.trim()]
+    .filter(Boolean)
+    .join('\n\n')
+  return {
+    $type: 'app.bsky.embed.external',
+    external: {
+      uri: makeEventUrl({did: pdsClient.assertDid}, rkey) as UriString,
+      title: event.name.trim(),
+      description,
+    },
+  }
+}
+
+async function resolveAssembly(
+  pdsClient: Client,
+  draft: PostDraft,
+  poll: PollDraft,
+  onStateChange: ((state: string) => void) | undefined,
+): Promise<$Typed<app.bsky.embed.external.Main>> {
+  refusePollWithAttachments(draft)
+  const conversationId = poll.assembly?.conversationId
+  if (!conversationId) {
+    throw new Error('A poll cannot be posted before its assembly exists')
+  }
+  return {
+    $type: 'app.bsky.embed.external',
+    external: {
+      ...buildAssemblyExternal({
+        conversationId,
+        topic: pollTopicFromText(draft.richtext.text),
+        statements: pollStatementsForPublish(poll),
+      }),
+      thumb: await uploadAssemblyThumb(
+        pdsClient,
+        conversationId,
+        onStateChange,
+      ),
+    },
+  }
+}
+
+async function uploadAssemblyThumb(
+  pdsClient: Client,
+  conversationId: string,
+  onStateChange: ((state: string) => void) | undefined,
+): Promise<app.bsky.embed.external.External['thumb']> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    const thumb = await Promise.race([
+      imageToThumb(assemblyThumbUrl(conversationId)),
+      new Promise<undefined>(resolve => {
+        timer = setTimeout(() => resolve(undefined), ASSEMBLY_THUMB_TIMEOUT_MS)
+      }),
+    ])
+    if (!thumb) throw new Error('The image could not be read in time')
+    onStateChange?.(t`Uploading link thumbnail...`)
+    const {path, mime} = thumb.source
+    const response = await uploadBlob(pdsClient, path, mime)
+    return response.blob
+  } catch (e) {
+    logger.warn(`Failed to attach the poll thumbnail`, {
+      safeMessage: e instanceof Error ? e.message : String(e),
+    })
+    return undefined
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 async function resolveMedia(

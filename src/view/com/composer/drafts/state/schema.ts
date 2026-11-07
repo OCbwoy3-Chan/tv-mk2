@@ -1,8 +1,10 @@
-import {type app} from '#/lexicons'
 /**
  * Types for draft display and local media tracking.
  * Server draft types come from the generated `#/lexicons` modules.
  */
+import {type EventDraft} from '#/lib/api/event'
+import {type PollDraft} from '#/lib/api/poll'
+import {type app} from '#/lexicons'
 
 /**
  * Reference to locally cached media file for display
@@ -45,6 +47,8 @@ export type DraftPostDisplay = {
   video?: LocalMediaDisplay
   /** GIF data (from URL) */
   gif?: GifDisplay
+  poll?: PollDraft
+  event?: EventDraft
 }
 
 /**

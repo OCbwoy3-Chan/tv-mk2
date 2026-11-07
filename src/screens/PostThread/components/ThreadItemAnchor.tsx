@@ -87,6 +87,8 @@ import {WhoCanReply} from '#/components/WhoCanReply'
 import {Features, useAnalytics} from '#/analytics'
 import {useNameGradient, useNameStyle} from '#/features/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
+import {PostPoll} from '#/features/pollblue/components/PostPoll'
+import {pollPostParts} from '#/features/pollblue/parse'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
@@ -562,6 +564,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                     selectable
                     value={richText}
                     htmlSegments={htmlSegments}
+                    pollParts={pollPostParts(post.record)}
                     style={[a.flex_1, isCompactPosts ? a.text_md : a.text_lg]}
                     authorHandle={post.author.handle}
                     shouldProxyLinks={true}
@@ -575,6 +578,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                 ) : (
                   <ThreadItemPostNumber inline={false} value={postNumbering} />
                 )}
+                <PostPoll post={post} />
                 <TranslatedPost
                   post={post}
                   postTextStyle={[isCompactPosts ? a.text_md : a.text_lg]}
