@@ -92,102 +92,20 @@ export function CustomFeedHeader({
 }) {
   const t = useTheme()
   const {t: l, i18n} = useLingui()
-  const ax = useAnalytics()
   const {hasSession} = useSession()
   const {gtMobile} = useBreakpoints()
   const infoControl = Dialog.useDialogControl()
+  const {
+    likeUri,
+    setLikeUri,
+    likeCount,
+    isSaved,
+    isPinned,
+    isFeedStateChangePending,
+    onToggleSaved,
+    onTogglePinned,
+  } = useFeedActions(info)
   const haptics = useHaptics()
-
-  const {data: preferences} = usePreferencesQuery()
-
-  const [likeUri, setLikeUri] = useState(info.likeUri || '')
-  const likeCount =
-    (info.likeCount || 0) +
-    (likeUri && !info.likeUri ? 1 : !likeUri && info.likeUri ? -1 : 0)
-
-  const {mutateAsync: addSavedFeeds, isPending: isAddSavedFeedPending} =
-    useAddSavedFeedsMutation()
-  const {mutateAsync: removeFeed, isPending: isRemovePending} =
-    useRemoveFeedMutation()
-  const {mutateAsync: updateSavedFeeds, isPending: isUpdateFeedPending} =
-    useUpdateSavedFeedsMutation()
-
-  const isFeedStateChangePending =
-    isAddSavedFeedPending || isRemovePending || isUpdateFeedPending
-  const savedFeedConfig = preferences?.savedFeeds?.find(
-    f => f.value === info.uri,
-  )
-  const isSaved = Boolean(savedFeedConfig)
-  const isPinned = Boolean(savedFeedConfig?.pinned)
-
-  const onToggleSaved = async () => {
-    try {
-      haptics.confirm()
-
-      if (savedFeedConfig) {
-        await removeFeed(savedFeedConfig)
-        Toast.show(l`Removed from your feeds`)
-        ax.metric('feed:unsave', {feedUrl: info.uri})
-      } else {
-        await addSavedFeeds([
-          {
-            type: 'feed',
-            value: info.uri,
-            pinned: false,
-          },
-        ])
-        Toast.show(l`Saved to your feeds`)
-        ax.metric('feed:save', {feedUrl: info.uri})
-      }
-    } catch (err) {
-      Toast.show(
-        l`There was an issue updating your feeds, please check your internet connection and try again.`,
-        {
-          type: 'error',
-        },
-      )
-      logger.error('Failed to update feeds', {message: err})
-    }
-  }
-
-  const onTogglePinned = async () => {
-    try {
-      haptics.confirm()
-
-      if (savedFeedConfig) {
-        const pinned = !savedFeedConfig.pinned
-        await updateSavedFeeds([
-          {
-            ...savedFeedConfig,
-            pinned,
-          },
-        ])
-
-        if (pinned) {
-          Toast.show(l`Pinned ${info.displayName} to Home`)
-          ax.metric('feed:pin', {feedUrl: info.uri})
-        } else {
-          Toast.show(l`Unpinned ${info.displayName} from Home`)
-          ax.metric('feed:unpin', {feedUrl: info.uri})
-        }
-      } else {
-        await addSavedFeeds([
-          {
-            type: 'feed',
-            value: info.uri,
-            pinned: true,
-          },
-        ])
-        Toast.show(l`Pinned ${info.displayName} to Home`)
-        ax.metric('feed:pin', {feedUrl: info.uri})
-      }
-    } catch (e) {
-      Toast.show(l`There was an issue contacting the server`, {
-        type: 'error',
-      })
-      logger.error('Failed to toggle pinned feed', {message: e})
-    }
-  }
 
   return (
     <>
@@ -629,5 +547,154 @@ function DialogInner({
         </>
       ) : null}
     </View>
+  )
+}
+
+function useFeedActions(info: FeedSourceFeedInfo) {
+  const {t: l} = useLingui()
+  const ax = useAnalytics()
+  const haptics = useHaptics()
+
+  const {data: preferences} = usePreferencesQuery()
+
+  const [likeUri, setLikeUri] = useState(info.likeUri || '')
+  const likeCount =
+    (info.likeCount || 0) +
+    (likeUri && !info.likeUri ? 1 : !likeUri && info.likeUri ? -1 : 0)
+
+  const {mutateAsync: addSavedFeeds, isPending: isAddSavedFeedPending} =
+    useAddSavedFeedsMutation()
+  const {mutateAsync: removeFeed, isPending: isRemovePending} =
+    useRemoveFeedMutation()
+  const {mutateAsync: updateSavedFeeds, isPending: isUpdateFeedPending} =
+    useUpdateSavedFeedsMutation()
+
+  const isFeedStateChangePending =
+    isAddSavedFeedPending || isRemovePending || isUpdateFeedPending
+  const savedFeedConfig = preferences?.savedFeeds?.find(
+    f => f.value === info.uri,
+  )
+  const isSaved = Boolean(savedFeedConfig)
+  const isPinned = Boolean(savedFeedConfig?.pinned)
+
+  const onToggleSaved = async () => {
+    try {
+      haptics.confirm()
+
+      if (savedFeedConfig) {
+        await removeFeed(savedFeedConfig)
+        Toast.show(l`Removed from your feeds`)
+        ax.metric('feed:unsave', {feedUrl: info.uri})
+      } else {
+        await addSavedFeeds([
+          {
+            type: 'feed',
+            value: info.uri,
+            pinned: false,
+          },
+        ])
+        Toast.show(l`Saved to your feeds`)
+        ax.metric('feed:save', {feedUrl: info.uri})
+      }
+    } catch (err) {
+      Toast.show(
+        l`There was an issue updating your feeds, please check your internet connection and try again.`,
+        {
+          type: 'error',
+        },
+      )
+      logger.error('Failed to update feeds', {message: err})
+    }
+  }
+
+  const onTogglePinned = async () => {
+    try {
+      haptics.confirm()
+
+      if (savedFeedConfig) {
+        const pinned = !savedFeedConfig.pinned
+        await updateSavedFeeds([
+          {
+            ...savedFeedConfig,
+            pinned,
+          },
+        ])
+
+        if (pinned) {
+          Toast.show(l`Pinned ${info.displayName} to Home`)
+          ax.metric('feed:pin', {feedUrl: info.uri})
+        } else {
+          Toast.show(l`Unpinned ${info.displayName} from Home`)
+          ax.metric('feed:unpin', {feedUrl: info.uri})
+        }
+      } else {
+        await addSavedFeeds([
+          {
+            type: 'feed',
+            value: info.uri,
+            pinned: true,
+          },
+        ])
+        Toast.show(l`Pinned ${info.displayName} to Home`)
+        ax.metric('feed:pin', {feedUrl: info.uri})
+      }
+    } catch (e) {
+      Toast.show(l`There was an issue contacting the server`, {
+        type: 'error',
+      })
+      logger.error('Failed to toggle pinned feed', {message: e})
+    }
+  }
+
+  return {
+    likeUri,
+    setLikeUri,
+    likeCount,
+    isSaved,
+    isPinned,
+    isFeedStateChangePending,
+    onToggleSaved,
+    onTogglePinned,
+  }
+}
+
+export function FeedInfoDialog({
+  info,
+  control,
+  isTrending = false,
+}: {
+  info: FeedSourceFeedInfo
+  control: ReturnType<typeof Dialog.useDialogControl>
+  isTrending?: boolean
+}) {
+  const {t: l} = useLingui()
+  const {gtMobile} = useBreakpoints()
+  const {
+    likeUri,
+    setLikeUri,
+    likeCount,
+    isPinned,
+    isFeedStateChangePending,
+    onTogglePinned,
+  } = useFeedActions(info)
+
+  return (
+    <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner
+        label={l`Feed menu`}
+        style={[a.w_full, gtMobile && web({width: 'auto', minWidth: 450})]}>
+        <DialogInner
+          info={info}
+          likeUri={likeUri}
+          setLikeUri={setLikeUri}
+          likeCount={likeCount}
+          isPinned={isPinned}
+          isTrending={isTrending}
+          onTogglePinned={() => void onTogglePinned()}
+          isFeedStateChangePending={isFeedStateChangePending}
+        />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
   )
 }
