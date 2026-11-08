@@ -9,6 +9,7 @@ import { Provider as AtprotoRkeyV2SettingsProvider } from './atproto-rkey-settin
 import { Provider as AutoCompactAccountSwitcherProvider } from './auto-compact-account-switcher'
 import { Provider as AutoLikeOnRepostProvider } from './auto-like-on-repost'
 import { Provider as AutoplayProvider } from './autoplay'
+import { Provider as BluemojiInstanceProvider } from './bluemoji-instance'
 import { Provider as CompactAccountSwitcherProvider } from './compact-account-switcher'
 import { Provider as CompactPostsProvider } from './compact-posts'
 import { Provider as ConfirmFollowProvider } from './confirm-follow'
@@ -31,6 +32,7 @@ import { Provider as FaviconServiceProvider } from './favicon-service'
 import { Provider as FullsizeFormatProvider } from './fullsize-format'
 import { Provider as GoLinksProvider } from './go-links-enabled'
 import { Provider as HiddenPostsProvider } from './hidden-posts'
+import { Provider as HideBluemojiReactionsProvider } from './hide-bluemoji-reactions'
 import { Provider as HideBetaBadgeProvider } from './hide-beta-badge.tsx'
 import { Provider as HideComposerPromptProvider } from './hide-composer-prompt.tsx'
 import { Provider as HideDisplayNamesProvider } from './hide-display-names'
@@ -189,9 +191,6 @@ export {
   useTranslationServicePreference,
 } from './translation-service-preference'
 
-import {Provider as BluemojiInstanceProvider} from './bluemoji-instance'
-import {Provider as HideBluemojiReactionsProvider} from './hide-bluemoji-reactions'
-
 export function Provider({ children }: PropsWithChildren<{}>) {
   return (
     <SettingsSyncProvider>
@@ -206,7 +205,7 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                       <RenderBridgedHtmlProvider>
                         <ConstellationProvider>
                           <ConstellationInstanceProvider>
-<BluemojiInstanceProvider>
+                            <BluemojiInstanceProvider>
                             <DeerVerificationProvider>
                               <FaviconServiceProvider>
                                 <PdsLabelProvider>
@@ -267,7 +266,7 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                               <AtprotoRkeyV2SettingsProvider>
                                                                                                                                                 <PrivatePostsEnabledProvider>
                                                                                                                                                   <DisableInfiniteScrollProvider>
-<HideBluemojiReactionsProvider>
+                                                                                                                                                    <HideBluemojiReactionsProvider>
                                                                                                                                                     <HideQuotesOfBlockedAccountsProvider>
                                                                                                                                                       <ReplyIconIndicatorsProvider>
                                                                                                                                                         <ShowPostTagsProvider>
@@ -283,8 +282,8 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                                                                                                                                         </ShowPostTagsProvider>
                                                                                                                                                       </ReplyIconIndicatorsProvider>
                                                                                                                                                     </HideQuotesOfBlockedAccountsProvider>
-                                                                                                                                                  </HideBluemojiReactionsProvider>
-</DisableInfiniteScrollProvider>
+                                                                                                                                                    </HideBluemojiReactionsProvider>
+                                                                                                                                                  </DisableInfiniteScrollProvider>
                                                                                                                                                 </PrivatePostsEnabledProvider>
                                                                                                                                               </AtprotoRkeyV2SettingsProvider>
                                                                                                                                             </TidSuffixProvider>
@@ -344,8 +343,8 @@ export function Provider({ children }: PropsWithChildren<{}>) {
                                 </PdsLabelProvider>
                               </FaviconServiceProvider>
                             </DeerVerificationProvider>
-                          </BluemojiInstanceProvider>
-</ConstellationInstanceProvider>
+                            </BluemojiInstanceProvider>
+                          </ConstellationInstanceProvider>
                         </ConstellationProvider>
                       </RenderBridgedHtmlProvider>
                     </DirectFetchRecordsProvider>

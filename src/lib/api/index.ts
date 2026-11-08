@@ -447,7 +447,7 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
 export async function resolveRT(
   appviewClient: Client,
   richtext: RichText,
-  lookupEmoji: Parameters<typeof detectBluemojiFacets>[1] = async () => undefined,
+  lookupEmoji: Parameters<typeof detectBluemojiFacets>[1] = () => Promise.resolve(null),
 ) {
   const trimmedText = richtext.text
     // Trim leading whitespace-only lines (but don't break ASCII art).
