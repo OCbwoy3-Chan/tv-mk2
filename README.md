@@ -4,33 +4,44 @@ Hey, audience! This is the codebase for the [tenna.party](https://tenna.party) a
 
 The sauce is on Tangled (better than github): https://tangled.org/kris.kralsei.stream/tenna.party
 
-## Improvements on Witchsky
+**Native Apps:**
+- iOS IPA
+- Android (Obtainium)
+- Push Notifications (Android only, Group chats unsupported)
 
-**I know you all went here for, so you get:**
-- NATIVE BUILDS FOR IOS & ANDROID (IPA/Obtainium)
-- *Push Notifications* on Android (does not support gc and dm notifs cuz bsky stoopid)
+**New settings & features (Settings -> Deltas):**
+- Profile Bages (character + kin selector)
+- Mod self-labels (e.g. graphic-media)
+- Free Eurosky+ Profile Decorations (tenna.party VIP specific)
+- Private Posts (using atproto spaces, i hope they work)
+- [Polls (TOKIMEKI)](https://tangled.org/jollywhoppers.com/witchsky.app/pulls/413/latest)
+- [Custom emojis & reactions (moji.blue)](https://tangled.org/jollywhoppers.com/witchsky.app/pulls/412/latest)
 
-**SHINY & BRAND NEW FEATURES (Settings -> Deltas):**
-- PROFILE BADGES (character + kin selector)
-- APPLY MODERATION SELF-LABELS ON YOUR PROFILE (e.g. graphic-media)
-- PROFILE DECORATIONS (name gradient + profile frame adapted from mu.social)
-- PRIVATE POSTS (using atproto spaces)
-
-***Enhanced:***
-- *Enhanced* Custom TID option in the composer (prefix & vanity options)
-- **200** max labelers (increased from 20)
+***Enhancments* on top of Witchsky:**
+- More customizable post TID/rkey (in composer)
+- 200 max labelers
 - Bypass Bluesky Moderation & blocks when viewing lists! (does not bypass appview takedowns)
 - Bypass viewing blocked messages in groupchats
 - More *Descriptive* PDS host dialogs
 - Added a Eurosky/Mu AppView option
 
-We also put a warning on the AppView selector when typing in the AppView URL for W - The European social network for verified humans.
-> Why would you be using tenna.party which infact goes AGAINST the whole point of W Social? Pick a side. 
-
 Private posts via ATProto spaces & Embeds WILL BE DEPRECATED AND REMOVED WHEN BSKY RELEASES SPACES, CUZ WHAT WAS THE POINT!!!
 
 ### TODO: Kris
 
+- [ ] Tennalings/Krislings feeds
+  - [ ] Krislings: Algorithm
+  - [x] Opt-outs & show MDNI post options
+  - [x] Hide MDNI posts by default
+
+- [ ] Labeler integrations (labeler.tenna.party):
+  - [ ] Opt-in option to client-side negate false or unfaithfully added labels
+
+- [ ] Labeler integrations (labeler.unlabeled.fyi):
+  - [ ] Apply the 🔞 badge on MDNI users (if they don't have 🔞 in their display name)
+  - [ ] Tennalings/Krislings: Use MDNI labels instead of matching text on profile
+
+- [ ] Deltas option to warn posts from accounts on "The European social network for verified humans"
 - [ ] Larp mode preset (needs larproto - self contained bluesky infrastructure for larping)
 - [ ] Ensure compliance with brand new https://github.com/bluesky-social/social-app/blob/main/ASSETS.md (impossible, just have witchsky do it instead)
 - [ ] Replace the Butterfly and make a custom Japan logo (just tenna's head with football field texture i guess)
