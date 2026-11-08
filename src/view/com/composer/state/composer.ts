@@ -13,7 +13,6 @@ import {
   type AssemblyRef,
   isPollDraftPublishable,
   isPollTopicPublishable,
-  POLL_DURATION_HOURS,
   POLL_MAX_STATEMENTS,
   type PollDraft,
 } from '#/lib/api/poll'
@@ -144,13 +143,11 @@ export type PostAction =
   | {type: 'embed_add_gif'; gif: Gif}
   | {type: 'embed_update_gif'; alt: string}
   | {type: 'embed_remove_gif'}
-  | {type: 'embed_add_poll'; provider?: PollDraft['provider']}
+  | {type: 'embed_add_poll'}
   | {type: 'embed_update_poll_statement'; index: number; text: string}
   | {type: 'embed_add_poll_statement'}
   | {type: 'embed_remove_poll_statement'; index: number}
   | {type: 'embed_set_poll_assembly'; assembly: AssemblyRef}
-  | {type: 'embed_set_poll_duration'; durationHours: number}
-  | {type: 'embed_set_poll_record'; record: NonNullable<PollDraft['record']>}
   | {type: 'embed_remove_poll'}
   | {type: 'embed_add_event'}
   | {type: 'embed_update_event'; patch: Partial<EventDraft>}
@@ -175,7 +172,7 @@ export function isPollPostable(post: PostDraft): boolean {
   const poll = post.embed.poll
   if (!poll) return true
   return (
-    isPollTopicPublishable(post.richtext.text, poll.provider) &&
+    isPollTopicPublishable(post.richtext.text) &&
     isPollDraftPublishable(poll) &&
     !post.embed.media &&
     !post.embed.link &&
@@ -848,10 +845,7 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
         ...state,
         embed: {
           ...state.embed,
-          poll:
-            action.provider === 'tokimeki'
-              ? {statements: ['', ''], provider: 'tokimeki'}
-              : {statements: ['']},
+          poll: {statements: ['']},
         },
       }
     }
@@ -875,11 +869,7 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
     }
     case 'embed_add_poll_statement': {
       const poll = state.embed.poll
-      if (
-        !poll ||
-        poll.statements.length >=
-          (poll.provider === 'tokimeki' ? 4 : POLL_MAX_STATEMENTS)
-      ) {
+      if (!poll || poll.statements.length >= POLL_MAX_STATEMENTS) {
         return state
       }
       return {
@@ -892,10 +882,7 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
     }
     case 'embed_remove_poll_statement': {
       const poll = state.embed.poll
-      if (
-        !poll ||
-        poll.statements.length <= (poll.provider === 'tokimeki' ? 2 : 1)
-      ) {
+      if (!poll || poll.statements.length <= 1) {
         return state
       }
       return {
@@ -920,30 +907,6 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
           ...state.embed,
           poll: {...poll, assembly: action.assembly},
         },
-      }
-    }
-    case 'embed_set_poll_duration': {
-      const poll = state.embed.poll
-      if (
-        !poll ||
-        poll.provider !== 'tokimeki' ||
-        !POLL_DURATION_HOURS.includes(action.durationHours)
-      )
-        return state
-      return {
-        ...state,
-        embed: {
-          ...state.embed,
-          poll: {...poll, durationHours: action.durationHours},
-        },
-      }
-    }
-    case 'embed_set_poll_record': {
-      const poll = state.embed.poll
-      if (!poll || poll.provider !== 'tokimeki') return state
-      return {
-        ...state,
-        embed: {...state.embed, poll: {...poll, record: action.record}},
       }
     }
     case 'embed_remove_poll': {

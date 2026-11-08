@@ -28,7 +28,6 @@ import {
 } from '@react-navigation/native'
 
 import {timeout} from '#/lib/async/timeout'
-import {LINKING_PREFIXES} from '#/lib/constants'
 import {useAccountSwitcher} from '#/lib/hooks/useAccountSwitcher'
 import {useColorSchemeStyle} from '#/lib/hooks/useColorSchemeStyle'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
@@ -1361,7 +1360,21 @@ const NATIVE_LINK_ACTION_CONFIG = {
 const LINKING = {
   // TODO figure out what we are going to use
   // note: `bluesky://` and `witchsky://` and `deersocial://` is what is used in app.config.js
-  prefixes: LINKING_PREFIXES,
+  prefixes: [
+    'bsky://',
+    'bluesky://',
+    'witchsky://',
+    'tenna://',
+    'deersocial://',
+    'https://bsky.app',
+    'https://witchsky.app',
+    'https://tenna.party',
+    'https://deer.social',
+    'https://mu.social',
+    'https://cope.works',
+    'https://blacksky.community',
+    'https://northsky.app',
+  ],
 
   getPathFromState(state: State) {
     // find the current node in the navigation tree

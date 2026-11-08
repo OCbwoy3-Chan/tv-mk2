@@ -1,7 +1,5 @@
-import {TID} from '@atproto/common-web'
 import {countGraphemes, graphemeSegments} from 'unicode-segmenter/grapheme'
 
-export const POLL_DURATION_HOURS = [24, 72, 168]
 export const POLL_MAX_STATEMENTS = 10
 export const POLL_STATEMENT_MAX_GRAPHEMES = 400
 export const POLL_STATEMENT_MAX_BYTES = 2000
@@ -22,9 +20,6 @@ export type AssemblyRef = {
 
 export type PollDraft = {
   statements: string[]
-  provider?: 'tokimeki'
-  durationHours?: number
-  record?: {rkey: string; createdAt: string}
   assembly?: AssemblyRef
 }
 
@@ -91,19 +86,11 @@ export function getStatementIssue(text: string): PollStatementIssue | null {
 
 export function getStatementIssues(
   statements: string[],
-  provider?: PollDraft['provider'],
 ): (PollStatementIssue | null)[] {
   const seen = new Set<string>()
   return statements.map(text => {
     const issue = getStatementIssue(text)
     if (issue) return issue
-    if (
-      provider === 'tokimeki' &&
-      (inspectText(normalizePollText(text)).bytes > 100 ||
-        countGraphemes(normalizePollText(text)) > 50)
-    ) {
-      return 'too_long'
-    }
     const key = normalizePollText(text).toLowerCase()
     if (seen.has(key)) return 'duplicate'
     seen.add(key)
@@ -112,23 +99,15 @@ export function getStatementIssues(
 }
 
 export function isPollDraftPublishable(draft: PollDraft): boolean {
-  const statements = pollStatementsForPublish(draft)
   return (
-    (draft.provider !== 'tokimeki' ||
-      draft.durationHours === undefined ||
-      POLL_DURATION_HOURS.includes(draft.durationHours)) &&
-    statements.length >= (draft.provider === 'tokimeki' ? 2 : 1) &&
-    statements.length <=
-      (draft.provider === 'tokimeki' ? 4 : POLL_MAX_STATEMENTS) &&
-    getStatementIssues(statements, draft.provider).every(
-      issue => issue === null,
-    )
+    draft.statements.length >= 1 &&
+    draft.statements.length <= POLL_MAX_STATEMENTS &&
+    getStatementIssues(draft.statements).every(issue => issue === null)
   )
 }
 
 export function pollStatementsForPublish(draft: PollDraft): string[] {
-  const statements = draft.statements.map(normalizePollText)
-  return draft.provider === 'tokimeki' ? statements.filter(Boolean) : statements
+  return draft.statements.map(normalizePollText)
 }
 
 export function pollTopicFromText(text: string): string {
@@ -158,15 +137,8 @@ export function pollTopicFromText(text: string): string {
   return kept.trimEnd() + TRUNCATION_MARK
 }
 
-export function isPollTopicPublishable(
-  text: string,
-  provider?: PollDraft['provider'],
-): boolean {
-  if (provider === 'tokimeki' && normalizePollText(text).length > 300) {
-    return false
-  }
-  const topic =
-    provider === 'tokimeki' ? normalizePollText(text) : pollTopicFromText(text)
+export function isPollTopicPublishable(text: string): boolean {
+  const topic = pollTopicFromText(text)
   if (topic.length === 0 || topic === TRUNCATION_MARK) return false
   const {wellFormed, hasNul} = inspectText(topic)
   return wellFormed && !hasNul
@@ -194,7 +166,7 @@ function decodeAssemblyRef(value: unknown): AssemblyRef | undefined {
 
 export function decodePollDraft(value: unknown): PollDraft | undefined {
   if (!isObject(value)) return undefined
-  const {statements, assembly, provider, record, durationHours} = value
+  const {statements, assembly} = value
   if (
     !Array.isArray(statements) ||
     statements.length < 1 ||
@@ -203,32 +175,5 @@ export function decodePollDraft(value: unknown): PollDraft | undefined {
   ) {
     return undefined
   }
-  if (provider !== undefined && provider !== 'tokimeki') return undefined
-  let pollRecord: PollDraft['record']
-  if (
-    provider === 'tokimeki' &&
-    isObject(record) &&
-    typeof record.rkey === 'string' &&
-    typeof record.createdAt === 'string' &&
-    Number.isFinite(Date.parse(record.createdAt))
-  ) {
-    try {
-      TID.fromStr(record.rkey)
-      pollRecord = {rkey: record.rkey, createdAt: record.createdAt}
-    } catch {}
-  }
-  return {
-    statements,
-    assembly: decodeAssemblyRef(assembly),
-    ...(provider === 'tokimeki'
-      ? {
-          provider,
-          ...(pollRecord ? {record: pollRecord} : {}),
-          ...(typeof durationHours === 'number' &&
-          POLL_DURATION_HOURS.includes(durationHours)
-            ? {durationHours}
-            : {}),
-        }
-      : {}),
-  }
+  return {statements, assembly: decodeAssemblyRef(assembly)}
 }

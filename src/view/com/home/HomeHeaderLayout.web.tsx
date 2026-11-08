@@ -2,11 +2,8 @@ import {type JSX} from 'react'
 import {View} from 'react-native'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
-import {useNavigation} from '@react-navigation/native'
 
 import {HITSLOP_10} from '#/lib/constants'
-import {PressableScale} from '#/lib/custom-animations/PressableScale'
-import {type NavigationProp} from '#/lib/routes/types'
 import {userStyle} from '#/lib/userstyles'
 import {useSession} from '#/state/session'
 import {useShellHeaderLayout} from '#/state/shell/shell-layout'
@@ -22,8 +19,6 @@ import {useAnalytics} from '#/analytics'
 
 export function HomeHeaderLayout(props: {
   children: React.ReactNode
-  feedInfoButton?: React.ReactNode
-  onFeedInfoPress?: () => void
   tabBarAnchor: JSX.Element | null | undefined
 }) {
   const {gtMobile} = useBreakpoints()
@@ -37,10 +32,8 @@ export function HomeHeaderLayout(props: {
 function HomeHeaderLayoutDesktopAndTablet({
   children,
   tabBarAnchor,
-  feedInfoButton,
 }: {
   children: React.ReactNode
-  feedInfoButton?: React.ReactNode
   tabBarAnchor: JSX.Element | null | undefined
 }) {
   const t = useTheme()
@@ -48,7 +41,6 @@ function HomeHeaderLayoutDesktopAndTablet({
   const {hasSession} = useSession()
   const {_} = useLingui()
   const ax = useAnalytics()
-  const {navigate} = useNavigation<NavigationProp>()
   const logoVariant = useLogoVariant()
   const gutters = useGutters([0, 'base'])
 
@@ -65,14 +57,9 @@ function HomeHeaderLayoutDesktopAndTablet({
               a.pt_md,
               t.atoms.bg,
             ]}>
-            <View style={{width: 34}}>{feedInfoButton}</View>
+            <View style={{width: 34}} />
             <View style={[a.flex_1, a.align_center, a.justify_center]}>
-              <PressableScale
-                targetScale={0.9}
-                accessibilityLabel={_(msg`Open Delta Settings`)}
-                onPress={() => navigate('DeltaSettings')}>
-                <Logo width={logoVariant === 'kawaii' ? 60 : 28} />
-              </PressableScale>
+              <Logo width={logoVariant === 'kawaii' ? 60 : 28} />
             </View>
             <Link
               to="/feeds"

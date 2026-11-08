@@ -7,7 +7,6 @@ import {Text} from '#/components/Typography'
 import {DeltasBetaBadgeToggle} from './components/BetaBadgeToggle'
 import {DeltasComposerPromptToggle} from './components/ComposerPromptToggle'
 import {TennaQuickLinks} from './components/QuickLinks'
-import {DeltasTokimekiPollsToggle} from './components/TokimekiPollsToggle'
 
 export function DeltaSettingsScreen() {
   const t = useTheme()
@@ -49,8 +48,6 @@ export function DeltaSettingsScreen() {
             <DeltasBetaBadgeToggle />
             <View style={[a.w_full, {height: 1}, t.atoms.bg_contrast_100]} />
             <DeltasComposerPromptToggle />
-            <View style={[a.w_full, {height: 1}, t.atoms.bg_contrast_100]} />
-            <DeltasTokimekiPollsToggle />
           </View>
         </View>
       </Layout.Content>

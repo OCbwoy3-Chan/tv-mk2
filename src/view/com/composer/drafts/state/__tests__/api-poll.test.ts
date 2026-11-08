@@ -87,9 +87,7 @@ function state(posts: PostDraft[]): ComposerState {
   }
 }
 
-function draftPost(
-  extra: Record<string, unknown>,
-): app.bsky.draft.defs.DraftPost {
+function draftPost(extra: Record<string, unknown>): app.bsky.draft.defs.DraftPost {
   return {
     $type: 'app.bsky.draft.defs#draftPost',
     text: 'hello',
@@ -97,24 +95,20 @@ function draftPost(
   }
 }
 
-function draftOf(
-  posts: app.bsky.draft.defs.DraftPost[],
-): app.bsky.draft.defs.Draft {
+function draftOf(posts: app.bsky.draft.defs.DraftPost[]): app.bsky.draft.defs.Draft {
   return {$type: 'app.bsky.draft.defs#draft', posts}
 }
 
 describe('draft polls', () => {
   it('serialises the poll as an extra property on the draft post', async () => {
-    const {draft} = await composerStateToDraft(
-      CLIENTS,
+    const {draft} = await composerStateToDraft(CLIENTS, 
       state([post({poll: {statements: ['one', '']}}, 'question')]),
     )
     expect(savedPoll(draft)).toStrictEqual({statements: ['one', '']})
   })
 
   it('serialises the assembly reference with the statements', async () => {
-    const {draft} = await composerStateToDraft(
-      CLIENTS,
+    const {draft} = await composerStateToDraft(CLIENTS, 
       state([
         post(
           {poll: {statements: ['first', 'second'], assembly: createdRef}},
@@ -135,8 +129,7 @@ describe('draft polls', () => {
   })
 
   it('serialises the poll of the post that has one', async () => {
-    const {draft} = await composerStateToDraft(
-      CLIENTS,
+    const {draft} = await composerStateToDraft(CLIENTS, 
       state([
         post({}, 'lead'),
         post({poll: {statements: ['first'], assembly: pendingRef}}, 'question'),
@@ -150,10 +143,7 @@ describe('draft polls', () => {
   })
 
   it('omits the property when there is no poll', async () => {
-    const {draft} = await composerStateToDraft(
-      CLIENTS,
-      state([post({}, 'text only')]),
-    )
+    const {draft} = await composerStateToDraft(CLIENTS, state([post({}, 'text only')]))
     expect(POLL_KEY in draft.posts[0]).toBe(false)
   })
 
@@ -167,8 +157,7 @@ describe('draft polls', () => {
   })
 
   it('round-trips a poll through save and restore', async () => {
-    const {draft} = await composerStateToDraft(
-      CLIENTS,
+    const {draft} = await composerStateToDraft(CLIENTS, 
       state([post({poll: {statements: ['first', 'second']}}, 'question')]),
     )
     const {posts} = await draftToComposerPosts(asStored(draft), new Map())
@@ -181,8 +170,7 @@ describe('draft polls', () => {
     {kind: 'an assembly that was created', assembly: createdRef},
     {kind: 'an assembly that is still being created', assembly: pendingRef},
   ])('round-trips the reference to $kind', async ({assembly}) => {
-    const {draft} = await composerStateToDraft(
-      CLIENTS,
+    const {draft} = await composerStateToDraft(CLIENTS, 
       state([
         post({poll: {statements: ['first', 'second'], assembly}}, 'question'),
       ]),
@@ -200,8 +188,7 @@ describe('draft polls', () => {
   })
 
   it('round-trips a saved reference through a second save', async () => {
-    const first = await composerStateToDraft(
-      CLIENTS,
+    const first = await composerStateToDraft(CLIENTS, 
       state([
         post(
           {poll: {statements: ['first', 'second'], assembly: pendingRef}},
@@ -330,8 +317,7 @@ describe('draft polls', () => {
     const statements = [...Array(10).keys()].map(index =>
       String(index).repeat(400),
     )
-    const {draft} = await composerStateToDraft(
-      CLIENTS,
+    const {draft} = await composerStateToDraft(CLIENTS, 
       state([
         post({poll: {statements, assembly: createdRef}}, 'question'),
         ...Array.from({length: 31}, () => post({}, text)),
@@ -364,20 +350,4 @@ describe('draft polls', () => {
     })
     expect(summary.posts[1].poll).toBeUndefined()
   })
-})
-
-it('round-trips the TOKIMEKI provider through a saved draft', async () => {
-  const poll = {
-    provider: 'tokimeki' as const,
-    statements: ['One', 'Two'],
-    durationHours: 72,
-    record: {rkey: '3mzqpsoqqns2p', createdAt: '2026-11-07T12:00:00.000Z'},
-  }
-  const {draft} = await composerStateToDraft(
-    CLIENTS,
-    state([post({poll}, 'Question')]),
-  )
-  expect(savedPoll(draft)).toMatchObject(poll)
-  const {posts} = await draftToComposerPosts(asStored(draft), new Map())
-  expect(posts[0].embed.poll).toMatchObject(poll)
 })

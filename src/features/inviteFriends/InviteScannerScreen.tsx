@@ -7,13 +7,10 @@ import {
   CameraView,
   useCameraPermissions,
 } from 'expo-camera'
-import {isValidDid} from '@atproto/syntax'
 import {useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 
-import {LINKING_PREFIXES} from '#/lib/constants'
 import {type NavigationProp} from '#/lib/routes/types'
-import {isValidHandle} from '#/lib/strings/handles'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import {ArrowLeft_Stroke2_Corner0_Rounded as ArrowLeftIcon} from '#/components/icons/Arrow'
@@ -45,27 +42,11 @@ export function InviteScannerScreen() {
       const url = result.data?.trim()
       if (!url) return
 
-      const normalizedUrl = (/^[a-z][a-z0-9+.-]*:\/\//i.test(url)
-        ? url
-        : `https://${url}`
-      ).replace(/^http:\/\//i, 'https://')
-      const prefix = LINKING_PREFIXES.find(value =>
-        normalizedUrl.toLowerCase().startsWith(
-          value.endsWith('://') ? value : `${value}/`,
-        ),
+      // Match bsky.app/profile/{handle} URLs (with or without https://).
+      const profileMatch = url.match(
+        /^(?:https?:\/\/)?bsky\.app\/profile\/([^/?#]+)/i,
       )
-      const path = prefix ? normalizedUrl.slice(prefix.length) : ''
-      const profileMatch = path.match(
-        /^\/?profile\/([^/?#]+)\/?(?:[?#].*)?$/i,
-      )
-      let identifier = ''
-      try {
-        identifier = decodeURIComponent(profileMatch?.[1] ?? '').replace(/^@/, '')
-        if (!identifier.startsWith('did:')) identifier = identifier.toLowerCase()
-      } catch {
-        // Malformed URL escapes are an invalid QR payload.
-      }
-      if (!isValidDid(identifier) && !isValidHandle(identifier)) {
+      if (!profileMatch) {
         ax.metric('invite:scanner:scanned', {result: 'invalidQr'})
         setScannerEnabled(false)
         setShowError(true)
@@ -74,7 +55,8 @@ export function InviteScannerScreen() {
 
       ax.metric('invite:scanner:scanned', {result: 'profileFound'})
       setScannerEnabled(false)
-      navigation.replace('Profile', {name: identifier})
+      const handle = profileMatch[1]
+      navigation.replace('Profile', {name: handle})
     },
     [ax, scannerEnabled, navigation],
   )
