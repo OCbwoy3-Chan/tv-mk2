@@ -52,10 +52,10 @@ module.exports = function (_config) {
 
   const IOS_ICON_FILE =
     PLATFORM === 'web' // web build doesn't like .icon files
-      ? './assets/app-icons/ios_icon_legacy_light.png'
+      ? './assets/app-icons/tenna/ios_icon_legacy_light.png'
       : IS_TESTFLIGHT
-        ? './assets/app-icons/ios_icon_testflight.icon'
-        : './assets/app-icons/ios_icon_default.icon'
+        ? './assets/app-icons/tenna/ios_icon_testflight.icon'
+        : './assets/app-icons/tenna/ios_icon_default.icon'
 
   return {
     expo: {
@@ -68,7 +68,7 @@ module.exports = function (_config) {
       runtimeVersion: {
         policy: 'appVersion',
       },
-      icon: './assets/app-icons/ios_icon_legacy_light.png',
+      icon: './assets/app-icons/tenna/ios_icon_legacy_light.png',
       userInterfaceStyle: 'automatic',
       primaryColor: '#EDBC1A',
       ios: {
@@ -209,7 +209,7 @@ module.exports = function (_config) {
         },
       },
       android: {
-        icon: './assets/app-icons/android_icon_legacy_light.png',
+        icon: './assets/app-icons/tenna/android_icon_legacy_light.png',
         adaptiveIcon: {
           foregroundImage: './assets/icon-android-foreground.png',
           monochromeImage: './assets/icon-android-monochrome.png',
@@ -538,39 +538,59 @@ module.exports = function (_config) {
              * Default set
              */
             default_light: {
-              ios: './assets/app-icons/ios_icon_legacy_light.png',
-              android: './assets/app-icons/android_icon_legacy_light.png',
+              ios: './assets/app-icons/tenna/ios_icon_legacy_light.png',
+              android: './assets/app-icons/tenna/android_icon_legacy_light.png',
               prerendered: true,
             },
             default_dark: {
-              ios: './assets/app-icons/ios_icon_legacy_dark.png',
-              android: './assets/app-icons/android_icon_legacy_dark.png',
+              ios: './assets/app-icons/tenna/ios_icon_legacy_dark.png',
+              android: './assets/app-icons/tenna/android_icon_legacy_dark.png',
+              prerendered: true,
+            },
+            mu_light: {
+              ios: './assets/app-icons/mu/ios_icon_legacy_light.png',
+              android: './assets/app-icons/mu/android_icon_legacy_light.png',
+              prerendered: true,
+            },
+            mu_dark: {
+              ios: './assets/app-icons/mu/ios_icon_legacy_dark.png',
+              android: './assets/app-icons/mu/android_icon_legacy_dark.png',
               prerendered: true,
             },
             liquid_glass_r: {
-              ios: './assets/app-icons/ios_icon_liquid_glass_r.png',
-              android: './assets/app-icons/android_icon_liquid_glass_r.png',
+              ios: './assets/app-icons/roblox/ios_icon_roblox_classic.png',
+              android: './assets/app-icons/roblox/android_icon_roblox_classic.png',
               prerendered: true,
             },
             liquid_glass_o: {
-              ios: './assets/app-icons/ios_icon_liquid_glass_o.png',
-              android: './assets/app-icons/android_icon_liquid_glass_o.png',
+              ios: './assets/app-icons/roblox/ios_icon_roblox.png',
+              android: './assets/app-icons/roblox/android_icon_roblox.png',
+              prerendered: true,
+            },
+            roblox_hollow: {
+              ios: './assets/app-icons/roblox/ios_icon_roblox_hollow.png',
+              android: './assets/app-icons/roblox/android_icon_roblox_hollow.png',
               prerendered: true,
             },
             liquid_glass_bluesky: {
-              ios: './assets/app-icons/ios_icon_bluesky_liquid_glass.png',
+              ios: './assets/app-icons/bsky/ios_icon_bluesky_liquid_glass.png',
               android:
-                './assets/app-icons/android_icon_bluesky_liquid_glass.png',
+                './assets/app-icons/bsky/android_icon_bluesky_legacy_light.png',
               prerendered: true,
             },
             testflight: {
-              ios: './assets/app-icons/ios_icon_testflight.png',
-              android: './assets/app-icons/android_icon_testflight.png',
+              ios: './assets/app-icons/tenna/ios_icon_testflight.png',
+              android: './assets/app-icons/tenna/android_icon_testflight.png',
+              prerendered: true,
+            },
+            bluesky_dark: {
+              ios: './assets/app-icons/bsky/ios_icon_bluesky_legacy_dark.png',
+              android: './assets/app-icons/bsky/android_icon_bluesky_legacy_dark.png',
               prerendered: true,
             },
             bluesky_testflight: {
-              ios: './assets/app-icons/ios_icon_bluesky_testflight.png',
-              android: './assets/app-icons/android_icon_bluesky_testflight.png',
+              ios: './assets/app-icons/bsky/ios_icon_bluesky_testflight.png',
+              android: './assets/app-icons/bsky/android_icon_bluesky_testflight.png',
               prerendered: true,
             },
 

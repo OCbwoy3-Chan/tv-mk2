@@ -44,6 +44,7 @@ patchedDependencies:
   '@expo/cli@58.1.14': patches/@expo__cli@58.1.14.patch
   '@formatjs/bigdecimal@0.2.5': patches/@formatjs__bigdecimal@0.2.5.patch
   '@sentry/expo-upload-sourcemaps@8.26.0': patches/@sentry__expo-upload-sourcemaps@8.26.0.patch
+  expo-dev-launcher@58.0.14: patches/expo-dev-launcher@58.0.14.patch
   'expo-image@58.0.15': patches/expo-image@58.0.15.patch
   'expo-media-library@58.0.10': patches/expo-media-library@58.0.10.patch
   'expo-modules-core@58.0.22': patches/expo-modules-core@58.0.22.patch

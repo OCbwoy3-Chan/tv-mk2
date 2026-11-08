@@ -7,7 +7,7 @@ async function buildPwaIcons(output) {
   const root = path.resolve(__dirname, '..')
   await fs.mkdir(output, {recursive: true})
 
-  await sharp(path.join(root, 'assets/app-icons/ios_icon_legacy_light.png'))
+  await sharp(path.join(root, 'assets/app-icons/tenna/ios_icon_legacy_light.png'))
     .resize(180, 180)
     .removeAlpha()
     .png()

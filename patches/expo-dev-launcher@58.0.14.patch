@@ -1,0 +1,30 @@
+diff --git a/android/src/debug/java/expo/modules/devlauncher/DevLauncherController.kt b/android/src/debug/java/expo/modules/devlauncher/DevLauncherController.kt
+index 6110c3709bf3bfc06164a5e047fd3f911702469c..c1acd3c086f87286cfe3cfbbb68fa94234ee85a8 100644
+--- a/android/src/debug/java/expo/modules/devlauncher/DevLauncherController.kt
++++ b/android/src/debug/java/expo/modules/devlauncher/DevLauncherController.kt
+@@ -471,16 +471,15 @@ class DevLauncherController private constructor(
+     return newIntent
+   }
+ 
+-  private fun createBasicAppIntent() =
+-    if (sLauncherClass == null) {
+-      checkNotNull(
+-        context
+-          .packageManager
+-          .getLaunchIntentForPackage(context.packageName)
+-      ) { "Couldn't find the launcher class." }
+-    } else {
+-      Intent(context, sLauncherClass!!)
+-    }.apply { addFlags(NEW_ACTIVITY_FLAGS) }
++  private fun createBasicAppIntent(): Intent {
++    val explicitIntent = sLauncherClass?.let { Intent(context, it) }
++    // Alternate app icons can disable the original launcher activity.
++    val intent = explicitIntent?.takeIf { context.packageManager.resolveActivity(it, 0) != null }
++      ?: checkNotNull(context.packageManager.getLaunchIntentForPackage(context.packageName)) {
++        "Couldn't find the launcher class."
++      }
++    return intent.apply { addFlags(NEW_ACTIVITY_FLAGS) }
++  }
+ 
+   companion object {
+     private var sErrorHandlerWasInitialized = false

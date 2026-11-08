@@ -86,7 +86,7 @@ export function TennaQuickLinks() {
           t.atoms.bg_contrast_25,
         ]}>
         {items.map(({text, path, icon}, idx) => (
-          <>
+          <View key={idx}>
             {idx !== 0 && <Separator key={idx + 'sep'} />}
             <SettingsList.LinkItem key={idx} to={path} label={text}>
               <SettingsList.ItemIcon icon={icon} />
@@ -94,7 +94,7 @@ export function TennaQuickLinks() {
                 <Trans>{text}</Trans>
               </SettingsList.ItemText>
             </SettingsList.LinkItem>
-          </>
+          </View>
         ))}
       </View>
     </View>

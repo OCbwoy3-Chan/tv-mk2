@@ -1,9 +1,7 @@
 import {useState} from 'react'
 import {Alert, View} from 'react-native'
 import * as DynamicAppIcon from '@bsky.app/expo-dynamic-app-icon'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {PressableScale} from '#/lib/custom-animations/PressableScale'
@@ -15,12 +13,12 @@ import {atoms as a, useTheme} from '#/alf'
 import * as Toggle from '#/components/forms/Toggle'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
-import {IS_ANDROID, IS_INTERNAL} from '#/env'
+import {IS_ANDROID} from '#/env'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AppIconSettings'>
 export function AppIconSettingsScreen({}: Props) {
   const t = useTheme()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const sets = useAppIconSets()
   const [currentAppIcon, setCurrentAppIcon] = useState(() =>
     getAppIconName(DynamicAppIcon.getAppIcon()),
@@ -28,24 +26,20 @@ export function AppIconSettingsScreen({}: Props) {
 
   const onSetAppIcon = (icon: DynamicAppIcon.IconName) => {
     if (IS_ANDROID) {
-      const next =
-        sets.defaults.find(i => i.id === icon) ??
-        sets.liquidGlass.find(i => i.id === icon) ??
-        sets.testFlight.find(i => i.id === icon) ??
-        sets.core.find(i => i.id === icon)
+      const next = Object.values(sets).flat().find(i => i.id === icon)
       Alert.alert(
         next
-          ? _(msg`Change app icon to "${next.name}"`)
-          : _(msg`Change app icon`),
+          ? l`Change app icon to "${next.name}"`
+          : l`Change app icon`,
         // unfortunately necessary -sfn
-        _(msg`The app will be restarted`),
+        l`The app will be restarted`,
         [
           {
-            text: _(msg`Cancel`),
+            text: l`Cancel`,
             style: 'cancel',
           },
           {
-            text: _(msg`OK`),
+            text: l`OK`,
             onPress: () => {
               setCurrentAppIcon(setAppIcon(icon))
             },
@@ -71,99 +65,32 @@ export function AppIconSettingsScreen({}: Props) {
       </Layout.Header.Outer>
 
       <Layout.Content contentContainerStyle={[a.p_lg]}>
-        <Group
-          label={_(msg`Default icons`)}
-          value={currentAppIcon}
-          onChange={onSetAppIcon}>
-          {sets.defaults.map((icon, i) => (
-            <Row
-              key={icon.id}
-              icon={icon}
-              isEnd={i === sets.defaults.length - 1}>
-              <AppIcon icon={icon} key={icon.id} size={40} />
-              <RowText>{icon.name}</RowText>
-            </Row>
-          ))}
-        </Group>
-
-        <Text
-          style={[
-            a.text_md,
-            a.mt_xl,
-            a.mb_sm,
-            a.font_semi_bold,
-            t.atoms.text_contrast_medium,
-          ]}>
-          <Trans>Other icons</Trans>
-        </Text>
-        <Group
-          label={_(msg`Other icons`)}
-          value={currentAppIcon}
-          onChange={onSetAppIcon}>
-          {sets.liquidGlass.map((icon, i) => (
-            <Row
-              key={icon.id}
-              icon={icon}
-              isEnd={i === sets.liquidGlass.length - 1}>
-              <AppIcon icon={icon} key={icon.id} size={40} />
-              <RowText>{icon.name}</RowText>
-            </Row>
-          ))}
-        </Group>
-
-        <Text
-          style={[
-            a.text_md,
-            a.mt_xl,
-            a.mb_sm,
-            a.font_semi_bold,
-            t.atoms.text_contrast_medium,
-          ]}>
-          <Trans>TestFlight icon</Trans>
-        </Text>
-        <Group
-          label={_(msg`TestFlight icons`)}
-          value={currentAppIcon}
-          onChange={onSetAppIcon}>
-          {sets.testFlight.map((icon, i) => (
-            <Row
-              key={icon.id}
-              icon={icon}
-              isEnd={i === sets.testFlight.length - 1}>
-              <AppIcon icon={icon} key={icon.id} size={40} />
-              <RowText>{icon.name}</RowText>
-            </Row>
-          ))}
-        </Group>
-
-        {IS_INTERNAL && (
-          <>
+        {[
+          {label: l`Default`, icons: sets.defaults},
+          {label: l`Bluesky`, icons: sets.bluesky},
+          {label: l`Mu`, icons: sets.mu},
+          {label: l`Roblox`, icons: sets.roblox},
+        ].map(({label, icons}, index) => (
+          <View key={label} style={index > 0 && a.mt_xl}>
             <Text
               style={[
                 a.text_md,
-                a.mt_xl,
                 a.mb_sm,
                 a.font_semi_bold,
                 t.atoms.text_contrast_medium,
               ]}>
-              <Trans>Bluesky+</Trans>
+              {label}
             </Text>
-            <Group
-              label={_(msg`Bluesky+ icons`)}
-              value={currentAppIcon}
-              onChange={onSetAppIcon}>
-              {sets.core.map((icon, i) => (
-                <Row
-                  key={icon.id}
-                  icon={icon}
-                  isEnd={i === sets.core.length - 1}>
-                  <AppIcon icon={icon} key={icon.id} size={40} />
+            <Group label={label} value={currentAppIcon} onChange={onSetAppIcon}>
+              {icons.map((icon, i) => (
+                <Row key={icon.id} icon={icon} isEnd={i === icons.length - 1}>
+                  <AppIcon icon={icon} size={40} />
                   <RowText>{icon.name}</RowText>
                 </Row>
               ))}
             </Group>
-          </>
-        )}
+          </View>
+        ))}
       </Layout.Content>
     </Layout.Screen>
   )
@@ -222,10 +149,10 @@ function Row({
   isEnd: boolean
 }) {
   const t = useTheme()
-  const {_} = useLingui()
+  const {t: l} = useLingui()
 
   return (
-    <Toggle.Item label={_(msg`Set app icon to ${icon.name}`)} name={icon.id}>
+    <Toggle.Item label={l`Set app icon to ${icon.name}`} name={icon.id}>
       {({hovered, pressed}) => (
         <View
           style={[
@@ -264,24 +191,24 @@ function RowText({children}: {children: React.ReactNode}) {
 }
 
 function AppIcon({icon, size = 50}: {icon: AppIconSet; size: number}) {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   return (
     <PressableScale
       accessibilityLabel={icon.name}
-      accessibilityHint={_(msg`Changes app icon`)}
+      accessibilityHint={l`Changes app icon`}
       targetScale={0.95}
       onPress={() => {
         if (IS_ANDROID) {
           Alert.alert(
-            _(msg`Change app icon to "${icon.name}"`),
-            _(msg`The app will be restarted`),
+            l`Change app icon to "${icon.name}"`,
+            l`The app will be restarted`,
             [
               {
-                text: _(msg`Cancel`),
+                text: l`Cancel`,
                 style: 'cancel',
               },
               {
-                text: _(msg`OK`),
+                text: l`OK`,
                 onPress: () => {
                   DynamicAppIcon.setAppIcon(icon.id)
                 },
