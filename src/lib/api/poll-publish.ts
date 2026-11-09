@@ -1,6 +1,5 @@
 import {TID} from '@atproto/common-web'
 import {type Client} from '@atproto/lex'
-import {type UriString} from '@atproto/syntax'
 
 import {type PollDraft, pollEndsAt, pollOptionsForPublish} from '#/lib/api/poll'
 import {logger} from '#/logger'
@@ -14,22 +13,6 @@ export type PollPostRef = {uri: string; cid: string}
 
 export function tokimekiPollUrl(did: string, rkey: string): string {
   return `https://${TOKIMEKI_HOSTS[0]}/p/${did}/${rkey}`
-}
-
-/**
- * The link card a poll post carries. TOKIMEKI finds the poll from the record
- * at this URL's path; other clients only ever show the card text.
- */
-export function buildPollExternal(input: {
-  did: string
-  rkey: string
-  options: string[]
-}): {uri: UriString; title: string; description: string} {
-  return {
-    uri: tokimekiPollUrl(input.did, input.rkey) as UriString,
-    title: input.options.slice(0, 2).join(' / '),
-    description: input.options.join(' / '),
-  }
 }
 
 function pollRecord(draft: PollDraft, post: PollPostRef, now: Date) {
