@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { View } from 'react-native'
-import { useLingui } from '@lingui/react/macro'
+import {useState} from 'react'
+import {View} from 'react-native'
+import {useLingui} from '@lingui/react/macro'
 
 import {HITSLOP_20} from '#/lib/constants'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
@@ -27,9 +27,16 @@ import {VerificationCheckButton} from '#/components/verification/VerificationChe
 import {verifierColor} from '#/components/verification/verifier-color'
 import {IS_WEB} from '#/env'
 import type * as bsky from '#/types/bsky'
-import { BetaBadge, BetaBadgeButton, useIsBetaBadgeVisible } from './BetaBadge'
-import { SpecialBadge, SpecialBadgeButton } from './CrackComponents/Tenna/SpecialBadge'
-import { TennaBadge, TennaBadgeButton } from './CrackComponents/Tenna/TennaBadge'
+import {BetaBadge, BetaBadgeButton, useIsBetaBadgeVisible} from './BetaBadge'
+import {
+  SpecialBadge,
+  SpecialBadgeButton,
+} from './CrackComponents/Tenna/SpecialBadge'
+import {
+  isTennaAccount,
+  TennaBadge,
+  TennaBadgeButton,
+} from './CrackComponents/Tenna/TennaBadge'
 
 export type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
@@ -117,7 +124,7 @@ export function ProfileBadgesFromProfileShadow({
   )
   const nativeScaleMultiplier = useNativeFontScale()
   const {
-    fonts: { scaleMultiplier: alfScaleMultiplier },
+    fonts: {scaleMultiplier: alfScaleMultiplier},
   } = useAlf()
 
   const showPdsBadge =
@@ -129,6 +136,7 @@ export function ProfileBadgesFromProfileShadow({
     isBetaBadgeVisible,
     isBotAccount(shadowed),
     isPetAccount(shadowed),
+    isTennaAccount(shadowed),
   ]
   const badgeCount = badgeVisibility.filter(Boolean).length
 
@@ -203,14 +211,8 @@ export function ProfileBadgesFromProfileShadow({
             hitSlop={hitSlops[2]}
           />
           <PetBadgeButton profile={shadowed} width={botIconWidth} />
-          <SpecialBadgeButton
-            profile={shadowed}
-            width={botIconWidth}
-          />
-          <TennaBadgeButton
-            profile={shadowed}
-            width={botIconWidth}
-          />
+          <SpecialBadgeButton profile={shadowed} width={botIconWidth} />
+          <TennaBadgeButton profile={shadowed} width={botIconWidth} />
         </>
       ) : (
         <>
@@ -244,14 +246,8 @@ export function ProfileBadgesFromProfileShadow({
           ) : null}
           <BotBadge profile={shadowed} width={botIconWidth} />
           <PetBadge profile={shadowed} width={botIconWidth} />
-          <SpecialBadge
-            profile={shadowed}
-            width={botIconWidth}
-          />
-          <TennaBadge
-            profile={shadowed}
-            width={botIconWidth}
-          />
+          <SpecialBadge profile={shadowed} width={botIconWidth} />
+          <TennaBadge profile={shadowed} width={botIconWidth} />
         </>
       )}
     </View>
@@ -288,7 +284,7 @@ function PdsInlineIcon({
   pdsUrl?: string
   faviconUrl?: string
 }) {
-  const { t: l } = useLingui()
+  const {t: l} = useLingui()
   const dialogControl = Dialog.useDialogControl()
   const [loadDescription, setLoadDescription] = useState(false)
   const dimensions = pdsIconDimensions(size)
@@ -310,7 +306,7 @@ function PdsInlineIcon({
         style={[
           a.justify_center,
           a.align_center,
-          { width: dimensions, height: dimensions },
+          {width: dimensions, height: dimensions},
         ]}>
         {icon}
       </View>
@@ -327,11 +323,11 @@ function PdsInlineIcon({
           setLoadDescription(true)
           dialogControl.open()
           if (IS_WEB) {
-            ; (document.activeElement as HTMLElement | null)?.blur()
+            ;(document.activeElement as HTMLElement | null)?.blur()
           }
         }}>
-        {({ hovered }) => (
-          <View style={{ width: dimensions, height: dimensions }}>
+        {({hovered}) => (
+          <View style={{width: dimensions, height: dimensions}}>
             <View
               style={[
                 a.justify_center,
@@ -343,7 +339,7 @@ function PdsInlineIcon({
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  transform: [{ scale: hovered ? 1.1 : 1 }],
+                  transform: [{scale: hovered ? 1.1 : 1}],
                 },
               ]}>
               {icon}
