@@ -42,6 +42,7 @@ import {messages as messagesIt} from '#/locale/locales/it/messages'
 import {messages as messagesJa} from '#/locale/locales/ja/messages'
 import {messages as messagesKm} from '#/locale/locales/km/messages'
 import {messages as messagesKo} from '#/locale/locales/ko/messages'
+import {messages as messagesLv} from '#/locale/locales/lv/messages'
 import {messages as messagesNe} from '#/locale/locales/ne/messages'
 import {messages as messagesNl} from '#/locale/locales/nl/messages'
 import {messages as messagesPl} from '#/locale/locales/pl/messages'
@@ -322,6 +323,16 @@ export async function dynamicActivate(locale: AppLanguage) {
         import('@formatjs/intl-pluralrules/locale-data/ko.js'),
         import('@formatjs/intl-numberformat/locale-data/ko.js'),
         import('@formatjs/intl-displaynames/locale-data/ko.js'),
+      ])
+      return dateLocale
+    }
+    case AppLanguage.lv: {
+      i18n.loadAndActivate({locale, messages: messagesLv})
+      const [dateLocale] = await Promise.all([
+        import('date-fns/locale/lv').then(m => m.lv),
+        import('@formatjs/intl-pluralrules/locale-data/lv.js'),
+        import('@formatjs/intl-numberformat/locale-data/lv.js'),
+        import('@formatjs/intl-displaynames/locale-data/lv.js'),
       ])
       return dateLocale
     }
