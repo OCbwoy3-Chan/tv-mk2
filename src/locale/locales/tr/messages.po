@@ -1676,7 +1676,7 @@ msgstr ""
 
 #: src/Navigation.tsx:927
 #: src/screens/Event/EventHeader.tsx:152
-#: src/screens/Settings/AboutSettings.tsx:86
+#: src/screens/Settings/AboutSettings.tsx:88
 #: src/screens/Settings/Settings.tsx:543
 #: src/screens/Settings/Settings.tsx:546
 msgid "About"
@@ -4481,8 +4481,8 @@ msgstr "Tarihi temizle"
 msgid "Clear GIF search"
 msgstr "GIF aramayı temizle"
 
-#: src/screens/Settings/AboutSettings.tsx:141
-#: src/screens/Settings/AboutSettings.tsx:145
+#: src/screens/Settings/AboutSettings.tsx:143
+#: src/screens/Settings/AboutSettings.tsx:147
 msgid "Clear image cache"
 msgstr "Görsel önbelleğini temizle"
 
@@ -5076,7 +5076,7 @@ msgstr ""
 msgid "Copied {handle}"
 msgstr ""
 
-#: src/screens/Settings/AboutSettings.tsx:176
+#: src/screens/Settings/AboutSettings.tsx:178
 msgid "Copied build version to clipboard"
 msgstr "Sürüm numarası panoya kopyalandı"
 
@@ -5103,7 +5103,7 @@ msgstr "Panoya kopyalandı"
 msgid "Copied!"
 msgstr "Kopyalandı!"
 
-#: src/screens/Settings/AboutSettings.tsx:152
+#: src/screens/Settings/AboutSettings.tsx:154
 msgid "Copies build version to clipboard"
 msgstr "Geliştirme sürümünü panoya kopyalar"
 
@@ -6057,12 +6057,12 @@ msgstr "Alıntı gönderinin ilişiği kesilsin mi?"
 msgid "Developer mode"
 msgstr ""
 
-#: src/screens/Settings/AboutSettings.tsx:165
+#: src/screens/Settings/AboutSettings.tsx:167
 msgctxt "toast"
 msgid "Developer mode disabled"
 msgstr "Geliştirici modu devre dışı bırakıldı"
 
-#: src/screens/Settings/AboutSettings.tsx:159
+#: src/screens/Settings/AboutSettings.tsx:161
 msgctxt "toast"
 msgid "Developer mode enabled"
 msgstr "Geliştirici modu devreye alındı"
@@ -9520,13 +9520,13 @@ msgstr "Görsel {0}"
 msgid "Image {0} of {1}"
 msgstr "Görsel {0}/{1}"
 
-#: src/screens/Settings/AboutSettings.tsx:75
+#: src/screens/Settings/AboutSettings.tsx:77
 msgid "Image cache cleared"
 msgstr "Görsel önbelleği temizlendi"
 
 #. Android-only toast message which includes amount of space freed using localized number formatting
 #. placeholder {0}: i18n.number( Math.abs(sizeDiffBytes / 1024 / 1024), { notation: 'compact', style: 'unit', unit: 'megabyte', }, )
-#: src/screens/Settings/AboutSettings.tsx:61
+#: src/screens/Settings/AboutSettings.tsx:63
 msgid "Image cache cleared, freed {0}"
 msgstr "Görsel önbelleği temizlendi, {0} yer açıldı"
 
@@ -14198,8 +14198,8 @@ msgstr "Gizlilik ve Güvenlik ayarları"
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:36
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:103
 #: src/Navigation.tsx:625
-#: src/screens/Settings/AboutSettings.tsx:103
-#: src/screens/Settings/AboutSettings.tsx:106
+#: src/screens/Settings/AboutSettings.tsx:105
+#: src/screens/Settings/AboutSettings.tsx:108
 #: src/view/screens/PrivacyPolicy.tsx:25
 #: src/view/shell/Drawer.tsx:964
 #: src/view/shell/Drawer.tsx:965
@@ -16592,8 +16592,8 @@ msgstr "E-posta gönder"
 
 #: src/components/SendErrorReportDialog.tsx:60
 #: src/components/SendErrorReportDialog.tsx:64
-#: src/screens/Settings/AboutSettings.tsx:132
-#: src/screens/Settings/AboutSettings.tsx:135
+#: src/screens/Settings/AboutSettings.tsx:134
+#: src/screens/Settings/AboutSettings.tsx:137
 msgid "Send error report"
 msgstr "Hata raporu yolla"
 
@@ -17584,8 +17584,8 @@ msgstr "Yanıtları şuna göre sırala"
 msgid "Sort replies to the same post by:"
 msgstr "Aynı gönderiye verilen yanıtları şuna göre sırala:"
 
-#: src/screens/Settings/AboutSettings.tsx:117
-#: src/screens/Settings/AboutSettings.tsx:120
+#: src/screens/Settings/AboutSettings.tsx:119
+#: src/screens/Settings/AboutSettings.tsx:122
 msgid "Source code"
 msgstr ""
 
@@ -17735,8 +17735,8 @@ msgstr ""
 msgid "Status by {name}"
 msgstr ""
 
-#: src/screens/Settings/AboutSettings.tsx:111
-#: src/screens/Settings/AboutSettings.tsx:114
+#: src/screens/Settings/AboutSettings.tsx:113
+#: src/screens/Settings/AboutSettings.tsx:116
 msgid "Status Page"
 msgstr "Durum Sayfası"
 
@@ -18034,8 +18034,8 @@ msgid "System"
 msgstr "Sistem"
 
 #: src/screens/Log.tsx:49
-#: src/screens/Settings/AboutSettings.tsx:124
-#: src/screens/Settings/AboutSettings.tsx:127
+#: src/screens/Settings/AboutSettings.tsx:126
+#: src/screens/Settings/AboutSettings.tsx:129
 #: src/screens/Settings/Settings.tsx:747
 msgid "System log"
 msgstr "Sistem günlüğü"
@@ -18222,8 +18222,8 @@ msgstr "Şartlar"
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:31
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:98
 #: src/Navigation.tsx:630
-#: src/screens/Settings/AboutSettings.tsx:95
-#: src/screens/Settings/AboutSettings.tsx:98
+#: src/screens/Settings/AboutSettings.tsx:97
+#: src/screens/Settings/AboutSettings.tsx:100
 #: src/view/screens/TermsOfService.tsx:25
 #: src/view/shell/Drawer.tsx:957
 #: src/view/shell/Drawer.tsx:959
@@ -18819,6 +18819,10 @@ msgstr ""
 #: src/components/verification/VerificationCreatePrompt.tsx:56
 msgid "This action can be undone at any time."
 msgstr "Bu işlem herhangi bir zamanda geri alınabilir."
+
+#: src/screens/Settings/AboutSettings.tsx:213
+msgid "This app is a fork of Witchsky. Without it, tenna.party wouldn't exist. Please support their work!"
+msgstr ""
 
 #. placeholder {0}: currentChannel ?? defaultChannel
 #: src/components/OTAChannelNotice.tsx:87
@@ -20531,8 +20535,8 @@ msgid "Verifying..."
 msgstr "Doğrulanıyor..."
 
 #. placeholder {0}: env.APP_VERSION
-#: src/screens/Settings/AboutSettings.tsx:151
-#: src/screens/Settings/AboutSettings.tsx:180
+#: src/screens/Settings/AboutSettings.tsx:153
+#: src/screens/Settings/AboutSettings.tsx:182
 msgid "Version {0}"
 msgstr "Sürüm {0}"
 
@@ -21448,6 +21452,11 @@ msgstr ""
 #: src/screens/Settings/AppearanceSettings/shared.tsx:62
 #: src/view/com/auth/SplashScreen.web.tsx:174
 msgid "Witchsky"
+msgstr ""
+
+#: src/screens/Settings/AboutSettings.tsx:218
+#: src/screens/Settings/AboutSettings.tsx:221
+msgid "Witchsky source code"
 msgstr ""
 
 #: src/Navigation.tsx:701
