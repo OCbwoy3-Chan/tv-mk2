@@ -127,6 +127,7 @@ module.exports = function (_config) {
             'ja',
             'km',
             'ko',
+            'lv',
             'ne',
             'nl',
             'pl',

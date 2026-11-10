@@ -32,6 +32,7 @@ export default defineConfig({
     'ja',
     'km',
     'ko',
+    'lv',
     'ne',
     'nl',
     'pl',
