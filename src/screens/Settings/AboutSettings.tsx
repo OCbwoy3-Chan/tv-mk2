@@ -31,6 +31,8 @@ import {IS_ANDROID, IS_IOS, IS_NATIVE} from '#/env'
 import {useDemoMode} from '#/storage/hooks/demo-mode'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 import {OTAInfo} from './components/OTAInfo'
+import { Admonition } from '#/components/Admonition'
+import { atoms as a } from '#/alf'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'AboutSettings'>
 export function AboutSettingsScreen({}: Props) {
@@ -206,6 +208,19 @@ export function AboutSettingsScreen({}: Props) {
               )}
             </>
           )}
+          <SettingsList.Item>
+            <Admonition style={[a.w_full]}>
+              <Trans>
+                This app is a fork of Witchsky. Without it, tenna.party wouldn't exist. Please support their work!
+              </Trans>
+            </Admonition>
+          </SettingsList.Item>
+          <SettingsList.LinkItem to={"https://tangled.org/jollywhoppers.com/witchsky.app"} label={_(msg`Witchsky source code`)}>
+            <SettingsList.ItemIcon icon={CodeBracketsIcon} />
+            <SettingsList.ItemText>
+              <Trans>Witchsky source code</Trans>
+            </SettingsList.ItemText>
+          </SettingsList.LinkItem>
         </SettingsList.Container>
       </Layout.Content>
       <SendErrorReportDialog control={sendErrorReportControl} />
