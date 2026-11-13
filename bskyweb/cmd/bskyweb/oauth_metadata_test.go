@@ -35,8 +35,8 @@ func TestOAuthMetadata(t *testing.T) {
 		if metadata.ClientID != "https://canary.witchsky.app"+filename {
 			t.Fatalf("wrong client ID: %s", metadata.ClientID)
 		}
-		if metadata.Scope != "atproto transition:generic transition:email transition:chat.bsky" {
-			t.Fatal("production scopes changed")
+		if metadata.Scope != "atproto transition:generic transition:email transition:chat.bsky identity:handle" {
+			t.Fatal("incorrect advertised scopes")
 		}
 		redirect := "https://canary.witchsky.app/auth/web/callback"
 		if native {

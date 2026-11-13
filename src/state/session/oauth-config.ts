@@ -17,8 +17,9 @@ export type OAuthPermission = keyof typeof OPTIONAL_OAUTH_SCOPES
 export function hasOAuthPermission(scope: string, permission: OAuthPermission) {
   const scopes = scope.split(' ')
   if (
+    permission === 'email' &&
     scopes.includes('transition:generic') &&
-    (permission === 'handle' || scopes.includes('transition:email'))
+    scopes.includes('transition:email')
   ) {
     return true
   }
@@ -64,13 +65,17 @@ export function hasOAuthAppViewScope(scope: string, audience: string) {
   })
 }
 
-/** Audiences and optional permissions no longer partition the production grant. */
+/** Keep the production grant, adding explicit optional access only on request. */
 export function buildOAuthScope(
   _appview = DEFAULT_APPVIEW_AUDIENCE,
   _chat = DEFAULT_CHAT_AUDIENCE,
-  _permissions: OAuthPermission[] = [],
+  permissions: OAuthPermission[] = [],
 ) {
-  return OAUTH_SCOPE
+  // transition:generic excludes identity operations such as changing a handle.
+  const optional = permissions
+    .filter(permission => !hasOAuthPermission(OAUTH_SCOPE, permission))
+    .map(permission => OPTIONAL_OAUTH_SCOPES[permission])
+  return [OAUTH_SCOPE, ...new Set(optional)].join(' ')
 }
 
 export function createOAuthMetadata({

@@ -10,7 +10,7 @@ const prodScope =
   'atproto transition:generic transition:email transition:chat.bsky'
 
 it.each([false, true])(
-  'preserves prod client identity and scopes (native=%s)',
+  'preserves prod client identity and advertises optional handle access (native=%s)',
   native => {
     const metadata = createOAuthMetadata({
       baseUrl: 'https://witchsky.app',
@@ -19,7 +19,7 @@ it.each([false, true])(
     expect(metadata.client_id).toBe(
       `https://witchsky.app/oauth-client-metadata${native ? '-native' : ''}.json`,
     )
-    expect(metadata.scope).toBe(prodScope)
+    expect(metadata.scope).toBe(`${prodScope} identity:handle`)
     expect(metadata.redirect_uris).toEqual([
       native
         ? 'app.witchsky:/auth/callback'
@@ -28,18 +28,24 @@ it.each([false, true])(
   },
 )
 
-it('uses the same client and grant across AppViews and permission requests', () => {
+it('keeps the default grant stable and adds requested optional access', () => {
   const baseUrl = 'https://canary.witchsky.app'
   const appview = 'did:web:api.blacksky.community#bsky_appview'
   const chat = 'did:web:chat.example.com#bsky_chat'
   expect(createOAuthMetadata({baseUrl, appview, chat})).toEqual(
     createOAuthMetadata({baseUrl}),
   )
-  expect(buildOAuthScope(appview, chat, ['handle', 'email'])).toBe(prodScope)
+  expect(buildOAuthScope(appview, chat)).toBe(prodScope)
+  expect(buildOAuthScope(appview, chat, ['handle', 'email'])).toBe(
+    `${prodScope} identity:handle`,
+  )
 })
 
-it('accepts saved prod grants without requiring reauthorization', () => {
-  expect(hasOAuthPermission(prodScope, 'handle')).toBe(true)
+it('does not treat a transition grant as handle permission', () => {
+  expect(hasOAuthPermission(prodScope, 'handle')).toBe(false)
+  expect(hasOAuthPermission(`${prodScope} identity:handle`, 'handle')).toBe(
+    true,
+  )
   expect(hasOAuthPermission(prodScope, 'email')).toBe(true)
   expect(hasOAuthAppViewScope(prodScope, DEFAULT_APPVIEW_AUDIENCE)).toBe(true)
   expect(

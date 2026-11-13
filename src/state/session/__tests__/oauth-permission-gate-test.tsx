@@ -21,8 +21,10 @@ jest.mock('../oauth-client-adapter', () => ({
   restoreOAuthSession: (...args: unknown[]) => mockRestore(...args),
 }))
 jest.mock('../oauth-scopes', () => ({
-  getOAuthScope: (permissions: string[]) =>
-    ['atproto', ...permissions].join(' '),
+  getOAuthScope: (permissions: import('../oauth-config').OAuthPermission[]) =>
+    jest
+      .requireActual<typeof import('../oauth-config')>('../oauth-config')
+      .buildOAuthScope(undefined, undefined, permissions),
 }))
 let mockIsWeb = false
 jest.mock('#/env', () => ({
@@ -89,7 +91,11 @@ it('starts OAuth directly and retains previously approved optional access', asyn
   fireEvent.press(await screen.findByText('Continue to authorization'))
   expect(mockReauthenticate).toHaveBeenCalledWith(
     {did, isOauthSession: true},
-    {scope: 'atproto handle email', directOAuth: true},
+    {
+      scope:
+        'atproto transition:generic transition:email transition:chat.bsky identity:handle',
+      directOAuth: true,
+    },
   )
   expect(mockLogin).not.toHaveBeenCalled()
   expect(screen.queryByText('handle editor')).toBeNull()
@@ -133,7 +139,7 @@ it('gives standalone permission prompts a proper dialog surface', async () => {
   expect(screen.getByTestId('permission-dialog-surface')).toBeTruthy()
 })
 
-it('opens the action for a saved production grant without asking for consent', async () => {
+it('requests explicit handle access for a saved transition grant', async () => {
   mockRestore.mockResolvedValue({
     getTokenInfo: () =>
       Promise.resolve({
@@ -141,8 +147,22 @@ it('opens the action for a saved production grant without asking for consent', a
           'atproto transition:generic transition:email transition:chat.bsky',
       }),
   })
+  mockReauthenticate.mockResolvedValue({did, isOauthSession: true})
   showGate()
-  await screen.findByText('handle editor')
-  expect(mockReauthenticate).not.toHaveBeenCalled()
-  expect(screen.queryByText('Continue to authorization')).toBeNull()
+  fireEvent.press(await screen.findByText('Continue to authorization'))
+  expect(screen.queryByText('handle editor')).toBeNull()
+  expect(mockReauthenticate).toHaveBeenCalledWith(
+    {did, isOauthSession: true},
+    {
+      scope:
+        'atproto transition:generic transition:email transition:chat.bsky identity:handle',
+      directOAuth: true,
+    },
+  )
+  await waitFor(() =>
+    expect(
+      screen.getByText('The requested permission was not granted.'),
+    ).toBeTruthy(),
+  )
+  expect(mockLogin).not.toHaveBeenCalled()
 })
