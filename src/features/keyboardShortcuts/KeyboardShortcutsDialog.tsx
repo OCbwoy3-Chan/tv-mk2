@@ -158,6 +158,11 @@ function KeyboardShortcutsDialogInner() {
 
           <ShortcutGroup title={l`Page navigation`}>
             <ShortcutRow
+              shortcut={['g', 'g']}
+              shortcutLabel={l`g then g`}
+              label={l`Scroll to the top of the page`}
+            />
+            <ShortcutRow
               shortcut={['[', {separator: '/'}, ']']}
               shortcutLabel={l`left or right square bracket`}
               label={l`Previous or next page tab`}

@@ -518,7 +518,12 @@ export function KeyboardShortcuts() {
       if (pendingChordRef.current === 'g') {
         clearChord()
         consume(event)
-        goTo(key)
+        if (key === 'g') {
+          clearSelection()
+          window.scrollTo({top: 0, behavior: 'instant'})
+        } else {
+          goTo(key)
+        }
         return
       }
 
