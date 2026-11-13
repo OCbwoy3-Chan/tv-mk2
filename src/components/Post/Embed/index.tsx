@@ -178,6 +178,7 @@ function MediaEmbed({
             numberOfLines={undefined}
             textOnly={false}
             author={rest.post?.author.did}
+            postUri={rest.post?.uri}
             {...privatePostLink}
             viewContext={rest.viewContext}
           />

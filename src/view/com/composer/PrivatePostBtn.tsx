@@ -95,7 +95,8 @@ export function PrivatePostBtn({
               style={[a.text_md, a.leading_snug, t.atoms.text_contrast_medium]}>
               {draft === 'private' ? (
                 <Trans>
-                  Only your mutuals on tenna.party can read this post. A fallback link will be shared.
+                  Your mutuals can view this post through your private posts
+                  server. A public link to it will be shared.
                 </Trans>
               ) : (
                 <Trans>

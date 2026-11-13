@@ -1,4 +1,4 @@
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 
 import { usePrivatePostsEnabled, useSetPrivatePostsEnabled } from '#/state/preferences/private-posts-enabled'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
@@ -7,6 +7,7 @@ import * as Toggle from '#/components/forms/Toggle'
 
 export function DeltasPrivatePostsToggle() {
     const t = useTheme();
+    const {t: l} = useLingui()
 
     const privatePostsEnabled = usePrivatePostsEnabled();
     const setPrivatePostsEnabled = useSetPrivatePostsEnabled();
@@ -15,7 +16,7 @@ export function DeltasPrivatePostsToggle() {
         <Toggle.Item
             key={"enable_private_posts"}
             name={"Enable private posts"}
-            label={"Enable private posts"}
+            label={l`Enable private posts`}
             value={privatePostsEnabled}
             onChange={next =>
                 setPrivatePostsEnabled(next)

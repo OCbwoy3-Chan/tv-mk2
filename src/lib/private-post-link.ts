@@ -3,7 +3,10 @@ export function parsePrivatePostLink(uri: string) {
   try {
     const url = new URL(uri)
     if (url.origin !== 'https://private-post.tenna.party' || url.pathname !== '/') return
-    return {uri: url.searchParams.get('uri') ?? '', cid: url.searchParams.get('cid') ?? ''}
+    const recordUri = url.searchParams.get('uri')
+    const cid = url.searchParams.get('cid')
+    if (!recordUri || !cid) return
+    return {uri: recordUri, cid}
   } catch {
     return
   }

@@ -1,5 +1,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import {type StyleProp, type TextStyle, View} from 'react-native'
+import {AtUri} from '@atproto/syntax'
 import {RichText as RichTextApi} from '@bsky/sdk/richtext'
 
 import {MAX_POST_LINES} from '#/lib/constants'
@@ -38,6 +39,7 @@ function InvalidEmbed({reason}: {reason: string}) {
 
 export function PrivatePostEmbed({
   author = undefined,
+  postUri,
   uri,
   cid,
   viewContext = PostEmbedViewContext.ThreadHighlighted,
@@ -46,6 +48,7 @@ export function PrivatePostEmbed({
   numberOfLines = undefined,
 }: {
   author: string | undefined
+  postUri: string | undefined
   uri: string
   cid: string
   viewContext: PostEmbedViewContext | undefined
@@ -54,7 +57,17 @@ export function PrivatePostEmbed({
   numberOfLines: number | undefined
 }) {
   const privatePostsEnabled = usePrivatePostsEnabled()
-  const privatePostQuery = usePrivatePost(uri, cid)
+  let valid = false
+  try {
+    if (uri.includes('/party.tenna.private.encryptedPost/')) {
+      const encrypted = new AtUri(uri)
+      const post = new AtUri(postUri ?? '')
+      valid = !!author && post.host === author && encrypted.host === author && post.collection === 'app.bsky.feed.post' && encrypted.collection === 'party.tenna.private.encryptedPost' && post.rkey === encrypted.rkey
+    } else {
+      valid = uri.startsWith(`at://${author}/space/`)
+    }
+  } catch {}
+  const privatePostQuery = usePrivatePost(valid ? uri : undefined, valid ? cid : undefined)
   const t = useTheme()
   const postText =
     typeof privatePostQuery.data?.text === 'string'
@@ -75,7 +88,7 @@ export function PrivatePostEmbed({
   }, [postText])
 
   if (!privatePostsEnabled) return <InvalidEmbed reason="Private post" />
-  if (!uri.startsWith('at://')) {
+  if (!valid) {
     return <InvalidEmbed reason="Invalid private post" />
   }
   if (!/^(Qm[1-9A-HJ-NP-Za-km-z]{44}|b[a-z2-7]{58})$/.test(cid)) {

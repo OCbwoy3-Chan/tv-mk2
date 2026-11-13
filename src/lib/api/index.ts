@@ -135,6 +135,7 @@ interface PostOpts {
   pdsClient: Client
   omitViaField?: boolean
   tidSuffix?: string //ignore
+  privateFallback?: {rkey: string; record: {$type: string; encryptedContent: string}}
   atprotoRkeyV2Generation?:
     | {type: 'tid'}
     | {type: 'prefix'; prefix: string}
@@ -272,13 +273,13 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     // undefined, so what we'll do here is increment the time by 1 for every post
     now.setMilliseconds(now.getMilliseconds() + 1)
     tid = TID.next(tid)
-    let rkey = tid.toString()
+    let rkey = opts.privateFallback?.rkey ?? tid.toString()
 
     // Prefer per-post ATProto rkey settings (from the composer). Fall back to
     // the global option passed in `opts.atprotoRkeyV2Generation` if the post
     // doesn't specify one.
     const perPostRkey = draft.atprotoRkeyV2
-    if (perPostRkey && perPostRkey.generation) {
+    if (!opts.privateFallback && perPostRkey && perPostRkey.generation) {
       if (perPostRkey.generation === 'prefix') {
         const prefix = (perPostRkey.prefix ?? '').trim()
         if (prefix.length) {
@@ -290,7 +291,7 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
           rkey = `${rkey.slice(0, Math.max(0, rkey.length - suffix.length))}${suffix}`
         }
       }
-    } else if (opts.atprotoRkeyV2Generation) {
+    } else if (!opts.privateFallback && opts.atprotoRkeyV2Generation) {
       if (opts.atprotoRkeyV2Generation.type === 'prefix') {
         const prefix = opts.atprotoRkeyV2Generation.prefix.trim()
         if (prefix.length) {
@@ -326,6 +327,7 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     if (!opts.omitViaField) {
       ;(record as app.bsky.feed.post.Main & {via?: string}).via = via
     }
+    if (opts.privateFallback) app.bsky.feed.post.main.validate(record)
     if (draft.embed.poll) {
       pollCreatedAt = new Date(now)
       opts.onStateChange?.(t`Creating poll...`)
@@ -419,11 +421,19 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     poll = {rkey: pollToWrite.rkey, optionCount: pollToWrite.options.length}
   }
 
+  if (opts.privateFallback) {
+    writes.push({
+      $type: 'com.atproto.repo.applyWrites#create',
+      collection: 'party.tenna.private.encryptedPost',
+      rkey: opts.privateFallback.rkey,
+      value: opts.privateFallback.record,
+    })
+  }
   try {
     await opts.pdsClient.call(com.atproto.repo.applyWrites, {
       repo: did,
       writes: writes,
-      validate: true,
+      validate: opts.privateFallback ? false : true,
     })
   } catch (err) {
     const e = err as Error

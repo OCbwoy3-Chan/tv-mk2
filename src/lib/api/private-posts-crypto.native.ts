@@ -1,4 +1,5 @@
 import {requireNativeModule} from 'expo-modules-core'
+import {type JWK} from 'jose'
 import {base64url} from 'multiformats/bases/base64'
 
 type PrivateJwk = {
@@ -29,6 +30,19 @@ const NativeCrypto = requireNativeModule<NativeCryptoModule>(
 export type DpopKey = {
   privateJwk: PrivateJwk
   publicJwk: Omit<PrivateJwk, 'd'>
+}
+
+export async function encryptPrivatePost(jwk: JWK, author: string, rkey: string, content: string) {
+  const {default: QuickCrypto} = await import('react-native-quick-crypto')
+  const key = await QuickCrypto.subtle.importKey(
+    'jwk', {kty: 'RSA', n: jwk.n, e: jwk.e}, {name: 'RSA-OAEP', hash: 'SHA-256'}, false, ['encrypt'],
+  )
+  Object.assign(globalThis, {crypto: QuickCrypto})
+  const {CompactEncrypt, calculateJwkThumbprint} = await import('jose')
+  if (await calculateJwkThumbprint(jwk) !== jwk.kid) throw new Error('Invalid private posts encryption key')
+  return new CompactEncrypt(new TextEncoder().encode(content))
+    .setProtectedHeader({alg: 'RSA-OAEP-256', enc: 'A256GCM', kid: jwk.kid, author, rkey})
+    .encrypt(key)
 }
 
 export function encodeBase64url(data: Uint8Array) {

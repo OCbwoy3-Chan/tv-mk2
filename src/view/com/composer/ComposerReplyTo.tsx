@@ -140,6 +140,7 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
                 textOnly
                 numberOfLines={!showFull ? 6 : undefined}
                 author={replyTo.author.did}
+                postUri={replyTo.uri}
                 uri={privatePostUri}
                 cid={privatePostCid}
                 viewContext={PostEmbedViewContext.ChatMessage}

@@ -307,6 +307,7 @@ module.exports = function (_config) {
         checkAutomatically: 'NEVER',
       },
       plugins: [
+        'react-native-quick-crypto',
         [
           'expo-dev-client',
           {

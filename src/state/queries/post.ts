@@ -392,9 +392,21 @@ function usePostUnrepostMutation(
 export function usePostDeleteMutation() {
   const queryClient = useQueryClient()
   const pdsClient = usePdsClient()
-  return useMutation<void, Error, {uri: string}>({
-    mutationFn: async ({uri}) => {
-      await pdsClient.call(deletePost, uri as AtUriString)
+  return useMutation<void, Error, {uri: string; encryptedRkey?: string}>({
+    mutationFn: async ({uri, encryptedRkey}) => {
+      if (encryptedRkey) {
+        const post = new AtUri(uri)
+        if (post.host !== pdsClient.assertDid || post.rkey !== encryptedRkey) throw new Error('Invalid private post')
+        await pdsClient.call(com.atproto.repo.applyWrites, {
+          repo: pdsClient.assertDid,
+          writes: [
+            {$type: 'com.atproto.repo.applyWrites#delete', collection: 'app.bsky.feed.post', rkey: post.rkey},
+            {$type: 'com.atproto.repo.applyWrites#delete', collection: 'party.tenna.private.encryptedPost', rkey: post.rkey},
+          ],
+        })
+      } else {
+        await pdsClient.call(deletePost, uri as AtUriString)
+      }
     },
     onSuccess(_, variables) {
       updatePostShadow(queryClient, variables.uri, {isDeleted: true})

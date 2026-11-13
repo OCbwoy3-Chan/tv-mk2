@@ -1,17 +1,26 @@
 import {
   base64url,
+  calculateJwkThumbprint,
+  CompactEncrypt,
   exportJWK,
   generateKeyPair,
+  importJWK,
   type JWK,
-  type KeyLike,
   SignJWT,
 } from 'jose'
 import {sha256} from 'js-sha256'
 
+export async function encryptPrivatePost(jwk: JWK, author: string, rkey: string, content: string) {
+  if (await calculateJwkThumbprint(jwk) !== jwk.kid) throw new Error('Invalid private posts encryption key')
+  return new CompactEncrypt(new TextEncoder().encode(content))
+    .setProtectedHeader({alg: 'RSA-OAEP-256', enc: 'A256GCM', kid: jwk.kid, author, rkey})
+    .encrypt(await importJWK(jwk, 'RSA-OAEP-256'))
+}
+
 export type DpopKey = {
   privateJwk: JWK
   publicJwk: JWK
-  privateKey: KeyLike
+  privateKey: CryptoKey
 }
 
 export function encodeBase64url(data: Uint8Array) {

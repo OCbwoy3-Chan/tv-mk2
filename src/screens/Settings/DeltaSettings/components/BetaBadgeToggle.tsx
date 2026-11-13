@@ -1,4 +1,4 @@
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 
 import { useHideBetaBadge, useSetHideBetaBadge } from '#/state/preferences/hide-beta-badge'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
@@ -7,6 +7,7 @@ import * as Toggle from '#/components/forms/Toggle'
 
 export function DeltasBetaBadgeToggle() {
     const t = useTheme();
+    const {t: l} = useLingui()
 
     const hideBetaBadge = useHideBetaBadge();
     const setHideBetaBadge = useSetHideBetaBadge();
@@ -15,7 +16,7 @@ export function DeltasBetaBadgeToggle() {
         <Toggle.Item
             key={"hide_beta_badge"}
             name={"Hide beta badge"}
-            label={"Hide beta badge"}
+            label={l`Hide beta badge`}
             value={hideBetaBadge}
             onChange={next =>
                 setHideBetaBadge(next)

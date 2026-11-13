@@ -143,13 +143,18 @@ export function usePrivatePost(
       !!appViewURL,
     staleTime: STALE.MINUTES.FIVE,
     queryKey: RQKEY_POST(uri ?? '', cid ?? '', appViewDID, appViewURL),
-    queryFn: () =>
-      getPrivatePost({
+    retry: (failureCount, error) => error.message === 'Post not found' && failureCount < 3,
+    retryDelay: attempt => Math.min(1000 * 2 ** attempt, 8000),
+    queryFn: async () => {
+      const post = await getPrivatePost({
         agent,
         appViewDID,
         appViewURL: appViewURL!,
         uri: uri!,
         cid: cid!,
-      }),
+      })
+      if (post.error === 'Post not found' && uri?.includes('/party.tenna.private.encryptedPost/')) throw new Error(post.error)
+      return post
+    },
   })
 }

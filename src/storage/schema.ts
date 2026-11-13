@@ -86,6 +86,7 @@ export type Device = {
   customAppViewUrl: string | undefined
   /** DID whose #private AtprotoSpaceService provides the private-post AppView. */
   privatePostsAppViewDID?: string
+  privatePostsFallbackEnabled?: boolean
   hiddenAccountsElsewhere?: string[]
   settingsAccountSwitcherSortBy?:
     'alphabetical' | 'dateModified' | 'dateAdded' | 'custom'

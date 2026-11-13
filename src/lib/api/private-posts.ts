@@ -1,9 +1,12 @@
 import {type AtpAgent as AtpAgentType} from '@atproto/api'
 import {xrpc} from '@atproto/lex'
+import {RichText} from '@bsky/sdk/richtext'
 
+import {computeCid} from '#/lib/api/computeCid'
 import {
   createSpaceDpopProof,
   encodeBase64url,
+  encryptPrivatePost,
   generateDpopKey,
 } from '#/lib/api/private-posts-crypto'
 import {
@@ -40,6 +43,60 @@ export type PrivatePost = {
   error?: string
   text?: string
   postBanReason?: string
+}
+
+export async function prepareEncryptedPrivatePost({
+  appViewURL,
+  author,
+  rkey,
+  text,
+  facets,
+  createdAt,
+}: {
+  appViewURL: string
+  author: string
+  rkey: string
+  text: string
+  facets?: app.bsky.richtext.facet.Main[]
+  createdAt: string
+}) {
+  if (
+    new RichText({text}).graphemeLength > 300 ||
+    new TextEncoder().encode(text).length > 3000
+  ) {
+    throw new Error('Private posts must be at most 300 characters and 3,000 bytes')
+  }
+  const url = new URL('/.well-known/jwks.json', appViewURL)
+  if (url.protocol !== 'https:') {
+    throw new Error('Private posts AppView must use HTTPS')
+  }
+  const response = await fetch(url, {redirect: 'error'})
+  if (!response.ok) throw new Error('Could not fetch private posts encryption key')
+  const body = (await response.json()) as {keys?: import('jose').JWK[]}
+  const key = body.keys?.find(
+    key =>
+      key.kty === 'RSA' &&
+      key.alg === 'RSA-OAEP-256' &&
+      key.use === 'enc' &&
+      typeof key.kid === 'string',
+  )
+  if (!key) throw new Error('No suitable private posts encryption key')
+  const encryptedContent = await encryptPrivatePost(
+    key,
+    author,
+    rkey,
+    JSON.stringify({
+      text,
+      createdAt,
+      ...(facets?.length ? {descriptionFacets: facets} : {}),
+    }),
+  )
+  const record = {$type: 'party.tenna.private.encryptedPost', encryptedContent}
+  return {
+    record,
+    uri: `at://${author}/party.tenna.private.encryptedPost/${rkey}`,
+    cid: await computeCid(record as unknown as app.bsky.feed.post.Main),
+  }
 }
 
 async function getPrivatePostsServiceAuthToken({

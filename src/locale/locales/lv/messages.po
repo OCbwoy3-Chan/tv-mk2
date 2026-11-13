@@ -18,19 +18,19 @@ msgstr ""
 "X-Crowdin-File: /main/src/locale/locales/en/messages.po\n"
 "X-Crowdin-File-ID: 11\n"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:235
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:217
 msgid " Others will see this badge on your profile."
 msgstr " Citi redzēs šo nozīmīti tavā profilā."
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:185
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:184
 msgid "- Fictionkin: You identify as the character on a more personal level."
 msgstr "- Fictionkin: tu identificējies ar tēlu personīgākā līmenī."
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:182
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:181
 msgid "- Fictive: You identify as the character."
 msgstr "- Fictive: tu identificējies ar tēlu."
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:191
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:190
 msgid "- Otherkin: Basically Therian for fictional species."
 msgstr "- Otherkin: būtībā therians, bet izdomātām sugām."
 
@@ -644,7 +644,7 @@ msgstr "{count, plural, one {# kopīgs sekotājs} other {# kopīgi sekotāji}}"
 #. Short form of “mutual followers”: the number of people you follow who also follow this account
 #: src/screens/Notifications/components/NotificationItem/Item/profile.tsx:349
 msgid "{count, plural, one {# mutual} other {# mutuals}}"
-msgstr "{count, plural, one {# savstarpējs sekotājs} other {# savstarpēji sekotāji}}"
+msgstr "{count, plural, one {# draugs} other {# draugi}}"
 
 #: src/screens/Messages/components/RequestStatus.tsx:74
 msgid "{count, plural, one {# new join request} other {# new join requests}}"
@@ -951,7 +951,7 @@ msgstr "{joinedAllTimeCount, plural, other {Pievienojušies # lietotāji}}!"
 #: src/view/shell/desktop/LeftNav.tsx:551
 #: src/view/shell/Drawer.tsx:862
 msgid "{label}, Beta"
-msgstr "{label}, beta versija"
+msgstr "{label}, Beta"
 
 #. placeholder {0}: labels[selected]
 #: src/screens/Settings/components/ShapeSlider.tsx:48
@@ -982,7 +982,7 @@ msgstr "{MAX_DESCRIPTION, plural, other {Apraksts ir pārāk garš. Maksimālais
 msgid "{MAX_DISPLAY_NAME, plural, other {Display name is too long. The maximum number of characters is #.}}"
 msgstr "{MAX_DISPLAY_NAME, plural, other {Redzamais vārds ir pārāk garš. Maksimālais rakstzīmju skaits: #.}}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:629
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:641
 msgid "{MAX_HIDDEN_REPLIES, plural, other {You can hide a maximum of # replies.}}"
 msgstr "{MAX_HIDDEN_REPLIES, plural, other {Vari paslēpt ne vairāk kā # atbildes.}}"
 
@@ -995,15 +995,15 @@ msgstr "{memberCount}/{memberLimit}"
 msgid "{minutes, plural, one {# minute} other {# minutes}}"
 msgstr "{minutes, plural, one {# minūte} other {# minūtes}}"
 
-#: src/view/com/composer/Composer.tsx:1312
+#: src/view/com/composer/Composer.tsx:1307
 msgid "{missingGifs, plural, one {One GIF is missing alt text.} other {# GIFs are missing alt text.}}"
 msgstr "{missingGifs, plural, one {Vienam GIF trūkst alternatīvā teksta.} other {# GIF failiem trūkst alternatīvā teksta.}}"
 
-#: src/view/com/composer/Composer.tsx:1304
+#: src/view/com/composer/Composer.tsx:1299
 msgid "{missingImages, plural, one {One image is missing alt text.} other {# images are missing alt text.}}"
 msgstr "{missingImages, plural, one {Vienam attēlam trūkst alternatīvā teksta.} other {# attēliem trūkst alternatīvā teksta.}}"
 
-#: src/view/com/composer/Composer.tsx:1320
+#: src/view/com/composer/Composer.tsx:1315
 msgid "{missingVideos, plural, one {One video is missing alt text.} other {# videos are missing alt text.}}"
 msgstr "{missingVideos, plural, one {Vienam video trūkst alternatīvā teksta.} other {# video trūkst alternatīvā teksta.}}"
 
@@ -1144,11 +1144,11 @@ msgstr "{percent}%"
 
 #: src/screens/ModerationInbox/components/hooks/useActionedSubjectLabels.ts:77
 msgid "{policyLabel} – {duration}"
-msgstr ""
+msgstr "{policyLabel} – {duration}"
 
 #: src/screens/ModerationInbox/components/hooks/useActionedSubjectLabels.ts:76
 msgid "{policyLabel} – {duration}, now expired"
-msgstr ""
+msgstr "{policyLabel} – {duration}, termiņš ir beidzies"
 
 #: src/screens/Profile/Header/Metrics.tsx:91
 msgid "{postsCount, plural, one {post} other {posts}}"
@@ -1233,10 +1233,6 @@ msgstr "{slash}... atstāj saites, haštagus un pieminējumus kā parastu tekstu
 msgid "{speed}×"
 msgstr "{speed}×"
 
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:94
-msgid "{text}"
-msgstr "{text}"
-
 #: src/features/bluemoji/reactions/ReactionDialog.tsx:108
 msgid "{total, plural, one {# reaction} other {# reactions}}"
 msgstr "{total, plural, one {# reakcija} other {# reakcijas}}"
@@ -1267,11 +1263,15 @@ msgstr "@{displayedHandle}"
 msgid "@{handle} reacted with {0}"
 msgstr "@{handle} reaģēja ar {0}"
 
+#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:65
+msgid "@kris.kralsei.stream can I get VIP access, please?"
+msgstr "@kris.kralsei.stream vai varu, lūdzu, saņemt VIP piekļuvi?"
+
 #. Number of images beyond the first 3
 #. placeholder {0}: labels.length
 #. placeholder {0}: totalNumber - 3
 #: src/components/moderation/PostAlerts.tsx:159
-#: src/view/com/composer/ComposerReplyTo.tsx:295
+#: src/view/com/composer/ComposerReplyTo.tsx:296
 msgid "+{0}"
 msgstr "+{0}"
 
@@ -1737,7 +1737,7 @@ msgstr "Pieejamības iestatījumi"
 #: src/screens/ModerationInbox/components/hooks/useSubjectPreviewProfile.ts:22
 #: src/screens/ModerationInbox/components/hooks/useSubjectPreviewProfile.ts:23
 #: src/screens/Settings/AccountSettings.tsx:56
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:28
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:27
 #: src/screens/Settings/Settings.tsx:434
 #: src/screens/Settings/Settings.tsx:437
 msgid "Account"
@@ -1747,7 +1747,7 @@ msgstr "Konts"
 msgid "Account {authorName}"
 msgstr "Konts {authorName}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:734
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:746
 #: src/screens/Messages/components/RequestButtons.tsx:104
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:122
 #: src/view/com/profile/ProfileMenu.tsx:305
@@ -1788,7 +1788,7 @@ msgctxt "moderation-inbox-setting"
 msgid "Account labeling notifications"
 msgstr "Paziņojumi par kontam piešķirtām etiķetēm"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:775
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:787
 #: src/view/com/profile/ProfileMenu.tsx:241
 msgctxt "toast"
 msgid "Account muted"
@@ -1848,7 +1848,7 @@ msgstr "Kontam vairs neseko"
 msgid "Account unknown"
 msgstr "Nezināms konts"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:756
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:768
 #: src/view/com/profile/ProfileMenu.tsx:228
 msgctxt "toast"
 msgid "Account unmuted"
@@ -1966,7 +1966,7 @@ msgstr "Pievienot raganas cepuri savam avatāram"
 msgid "Add account"
 msgstr "Pievienot kontu"
 
-#: src/view/com/composer/Composer.tsx:2138
+#: src/view/com/composer/Composer.tsx:2147
 #: src/view/com/composer/GifAltText.tsx:87
 #: src/view/com/composer/GifAltText.tsx:170
 #: src/view/com/composer/GifAltText.tsx:240
@@ -1993,11 +1993,11 @@ msgstr "Pievienot vēl vienu kontu"
 msgid "Add another choice"
 msgstr "Pievienot vēl vienu atbildes variantu"
 
-#: src/view/com/composer/Composer.tsx:2227
+#: src/view/com/composer/Composer.tsx:2236
 msgid "Add another Jarona"
 msgstr "Pievienot vēl vienu džaronu"
 
-#: src/view/com/composer/Composer.tsx:3211
+#: src/view/com/composer/Composer.tsx:3220
 msgid "Add another post to thread"
 msgstr "Pievienot vēl vienu džaronu pavedienam"
 
@@ -2018,6 +2018,10 @@ msgstr "Pievienot lietotnes paroli"
 #: src/screens/Settings/AutomationLabelSettings.tsx:173
 msgid "Add automation label to account"
 msgstr "Pievienot kontam automatizācijas etiķeti"
+
+#: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:33
+msgid "Add badges that appear next to your name on your profile and posts in supported clients. You can turn them off at any time."
+msgstr "Pievieno nozīmītes, kas atbalstītās lietotnēs parādās blakus tavam vārdam profilā un ierakstos. Tās var jebkurā laikā izslēgt."
 
 #: src/components/Gallery/Storybook.tsx:539
 msgid "Add card"
@@ -2066,6 +2070,10 @@ msgstr "Pievienot džaronai multividi"
 #: src/screens/Messages/ConversationSettings/AddMembersLink.tsx:132
 msgid "Add members"
 msgstr "Pievienot dalībniekus"
+
+#: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:33
+msgid "Add moderation labels to your profile. Supported clients may hide or warn about your profile picture, banner, and posts according to their moderation settings."
+msgstr "Pievieno savam profilam moderācijas etiķetes. Atbalstītās lietotnes atkarībā no moderācijas iestatījumiem var paslēpt tavu profila attēlu, galveni un ierakstus vai par tiem brīdināt."
 
 #: src/components/moderation/ReportDialog/index.tsx:610
 #: src/components/moderation/ReportDialog/index.tsx:614
@@ -2254,7 +2262,7 @@ msgstr "Papildu informācija (līdz 300 rakstzīmēm)"
 msgid "Additional permission required"
 msgstr "Nepieciešama papildu atļauja"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:316
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:314
 msgid "Adds a dark edge so the name pops on any background."
 msgstr "Pievieno tumšu kontūru, lai vārds izceltos uz jebkura fona."
 
@@ -2742,7 +2750,7 @@ msgstr "Ikviens var pievienoties uzreiz"
 msgid "Anyone can request to join"
 msgstr "Ikviens var pieprasīt pievienošanos"
 
-#: src/view/com/composer/PrivatePostBtn.tsx:101
+#: src/view/com/composer/PrivatePostBtn.tsx:102
 msgid "Anyone on Bluesky can view your post."
 msgstr "Ikviens Bluesky lietotājs var redzēt tavu džaronu."
 
@@ -2770,6 +2778,10 @@ msgstr "API bāzes URL"
 #: src/screens/Settings/AltTextAiSettings.tsx:268
 msgid "API key"
 msgstr "API atslēga"
+
+#: src/screens/Settings/DeltaSettings/index.tsx:38
+msgid "App"
+msgstr "Lietotne"
 
 #: src/Navigation.tsx:935
 #: src/screens/Settings/AppIconSettings/index.tsx:61
@@ -3018,7 +3030,7 @@ msgstr "Vai tiešām vēlies noņemt šo no savām plūsmām?"
 msgid "Are you sure you want to rescind your request to join {0}?"
 msgstr "Vai tiešām vēlies atsaukt pieprasījumu pievienoties {0}?"
 
-#: src/view/com/composer/Composer.tsx:2470
+#: src/view/com/composer/Composer.tsx:2479
 msgid "Are you sure you'd like to discard this post?"
 msgstr "Vai tiešām vēlies atmest šo džaronu?"
 
@@ -3061,8 +3073,8 @@ msgstr "Lūgt lietotnēm un vietnēm nerādīt manu kontu lietotājiem, kuri nav
 msgid "Ask apps to hide my posts from algorithmic recommendations"
 msgstr "Lūgt lietotnēm neiekļaut manas džaronas algoritmiskajos ieteikumos"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:981
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:983
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:993
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:995
 msgid "Assign topic for algo"
 msgstr "Piešķirt algoritmam tēmu"
 
@@ -3112,13 +3124,13 @@ msgstr "Aurora"
 msgid "Author"
 msgstr "Autors"
 
-#: src/components/Post/Embed/index.tsx:421
-#: src/components/Post/Embed/index.tsx:448
+#: src/components/Post/Embed/index.tsx:422
+#: src/components/Post/Embed/index.tsx:449
 msgid "Author account suspended"
 msgstr "Autora konts ir apturēts"
 
-#: src/components/Post/Embed/index.tsx:423
-#: src/components/Post/Embed/index.tsx:450
+#: src/components/Post/Embed/index.tsx:424
+#: src/components/Post/Embed/index.tsx:451
 msgid "Author account unavailable"
 msgstr "Autora konts nav pieejams"
 
@@ -3161,7 +3173,7 @@ msgstr "Automātiskā alternatīvā teksta ģenerēšana, {providerName}"
 msgid "Automatic themes"
 msgstr "Automātiskās tēmas"
 
-#: src/view/com/composer/Composer.tsx:2739
+#: src/view/com/composer/Composer.tsx:2748
 msgid "Automatically generate alt text for images in this post using the configured AI provider."
 msgstr "Automātiski ģenerēt alternatīvo tekstu šīs džaronas attēliem, izmantojot konfigurēto AI pakalpojumu."
 
@@ -3190,6 +3202,10 @@ msgstr "Pieejams"
 #: src/screens/Onboarding/StepProfile/index.tsx:327
 msgid "Avatar creator"
 msgstr "Avatāru veidotājs"
+
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:191
+msgid "Avatar shape"
+msgstr "Profila attēla forma"
 
 #: src/screens/Settings/AppearanceSettings.tsx:328
 msgid "Avatars"
@@ -3263,7 +3279,7 @@ msgstr "Backspace"
 msgid "Badges"
 msgstr "Nozīmītes"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:145
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:170
 msgid "Ban reason"
 msgstr "Bana iemesls"
 
@@ -3350,7 +3366,7 @@ msgstr "Lai sāktu vecuma apliecināšanu, aizpildi tālāk redzamos laukus."
 
 #: src/components/BetaTag.tsx:26
 msgid "Beta"
-msgstr "Beta versija"
+msgstr "Beta"
 
 #: src/components/dialogs/nuxs/IPadBetaAnnouncement.tsx:47
 #: src/components/dialogs/nuxs/LiveNowBetaDialog.tsx:99
@@ -3412,8 +3428,8 @@ msgstr "Bloķēt {displayName}"
 
 #: src/components/dms/ConvoMenu.tsx:287
 #: src/components/dms/ConvoMenu.tsx:291
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1130
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1132
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1142
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1144
 #: src/screens/Messages/components/RequestButtons.tsx:154
 #: src/screens/Messages/components/RequestButtons.tsx:156
 #: src/view/com/profile/ProfileMenu.tsx:782
@@ -3474,9 +3490,9 @@ msgstr "Bloķēt lietotāju un/vai izdzēst šo sarunu"
 msgid "Block user and/or leave this conversation"
 msgstr "Bloķēt lietotāju un/vai pamest šo sarunu"
 
-#: src/components/Post/Embed/index.tsx:411
-#: src/components/Post/Embed/index.tsx:438
-#: src/components/Post/Embed/index.tsx:454
+#: src/components/Post/Embed/index.tsx:412
+#: src/components/Post/Embed/index.tsx:439
+#: src/components/Post/Embed/index.tsx:455
 msgid "Blocked"
 msgstr "Bloķēts"
 
@@ -3591,7 +3607,7 @@ msgstr "Bluesky ir jautrāks kopā ar draugiem. Vai vēlies uzaicināt kādu no 
 msgid "Bluesky is part of a growing network of hundreds of social apps. Your account unlocks them all."
 msgstr "Bluesky ir daļa no augoša tīkla ar simtiem sociālo lietotņu. Tavs konts ļauj izmantot tās visas."
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:97
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:102
 msgid "Bluesky may choose to suspend or ban your account if the majority of your posts are private, as it may trip their spam filters."
 msgstr "Bluesky var apturēt vai banot tavu kontu, ja lielākā daļa tavu džaronu ir privātas, jo tās var aktivizēt spama filtrus."
 
@@ -3606,7 +3622,7 @@ msgstr "Bluesky nepieciešama piekļuve kamerai, lai skenētu QR kodus no citiem
 
 #: src/components/dialogs/nuxs/IPadBetaAnnouncement.tsx:66
 msgid "Bluesky now makes full use of your iPad’s screen, in any orientation. It’s still in beta, so if something looks off, let us know in Settings → Beta features."
-msgstr ""
+msgstr "Bluesky tagad pilnībā izmanto tava iPad ekrānu jebkurā orientācijā. Šī iespēja vēl ir beta, tāpēc, ja kaut kas izskatās nepareizi, ziņo mums sadaļā Iestatījumi → Beta funkcijas."
 
 #: src/components/PdsDialog.tsx:131
 msgid "Bluesky Social"
@@ -3879,8 +3895,8 @@ msgstr "Nepieciešama piekļuve kamerai"
 #: src/screens/Takendown.tsx:102
 #: src/screens/Takendown.tsx:105
 #: src/state/preferences/restart-required-prompt.tsx:36
-#: src/view/com/composer/Composer.tsx:2550
-#: src/view/com/composer/Composer.tsx:2560
+#: src/view/com/composer/Composer.tsx:2559
+#: src/view/com/composer/Composer.tsx:2569
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:49
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:58
 #: src/view/shell/desktop/LeftNav.tsx:309
@@ -4104,8 +4120,8 @@ msgstr "Satura maiņa"
 msgid "Channel"
 msgstr "Kanāls"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:311
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:322
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:293
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:304
 msgid "Character"
 msgstr "Tēls"
 
@@ -4401,6 +4417,10 @@ msgstr "Izvēlies lietotnes serveri"
 msgid "Choose your hosting provider"
 msgstr "Izvēlies mitināšanas pakalpojumu sniedzēju"
 
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:223
+msgid "Choose your options below, then save to apply the label."
+msgstr "Izvēlies tālāk norādītās iespējas un saglabā, lai lietotu etiķeti."
+
 #: src/view/screens/Feeds.tsx:745
 msgid "Choose your own timeline! Feeds built by the community help you find content you love."
 msgstr "Izvēlies savu laika skalu! Kopienas veidotās plūsmas palīdz atrast saturu, kas tev patīk."
@@ -4413,7 +4433,7 @@ msgstr "Izvēlies paroli"
 msgid "Choosing a different image format may increase load times."
 msgstr "Cits attēla formāts var palielināt ielādes laiku."
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:201
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:197
 msgid "Circle"
 msgstr "Aplis"
 
@@ -4678,7 +4698,7 @@ msgstr "Aizvērt sveiciena logu"
 msgid "Closes password update alert"
 msgstr "Aizver paziņojumu par paroles atjaunināšanu"
 
-#: src/view/com/composer/Composer.tsx:2558
+#: src/view/com/composer/Composer.tsx:2567
 msgid "Closes post composer and discards post draft"
 msgstr "Aizver džaronas redaktoru un atmet melnrakstu"
 
@@ -4794,7 +4814,7 @@ msgid "Compose new post"
 msgstr "Izveidot jaunu džaronu"
 
 #. placeholder {0}: MAX_GRAPHEME_LENGTH || 0
-#: src/view/com/composer/Composer.tsx:2395
+#: src/view/com/composer/Composer.tsx:2404
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr "Raksti džaronas līdz {0, plural, other {# rakstzīmēm}} garumā"
 
@@ -4806,11 +4826,11 @@ msgstr "Rakstīt atbildi"
 msgid "Composer"
 msgstr "Džaronu redaktors"
 
-#: src/view/com/composer/Composer.tsx:3612
+#: src/view/com/composer/Composer.tsx:3621
 msgid "Compressing GIF..."
 msgstr "Notiek GIF saspiešana..."
 
-#: src/view/com/composer/Composer.tsx:3614
+#: src/view/com/composer/Composer.tsx:3623
 msgid "Compressing video..."
 msgstr "Notiek video saspiešana..."
 
@@ -5087,7 +5107,7 @@ msgstr "Saite nokopēta starpliktuvē"
 #: src/components/dms/ChatInvite/Root.tsx:100
 #: src/components/dms/MessageContextMenu.tsx:96
 #: src/components/PostControls/DiscoverDebug.tsx:39
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:507
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:519
 #: src/lib/sharing.ts:17
 #: src/lib/sharing.ts:52
 #: src/lib/sharing.ts:84
@@ -5206,8 +5226,8 @@ msgstr "Kopēt ziņojuma tekstu"
 msgid "Copy post at:// URI"
 msgstr "Kopēt džaronas at:// URI"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:936
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:938
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:948
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:950
 msgid "Copy post text"
 msgstr "Kopēt džaronas tekstu"
 
@@ -5332,7 +5352,7 @@ msgstr "Neizdevās ielādēt plūsmu"
 msgid "Could not load feed settings."
 msgstr "Neizdevās ielādēt plūsmas iestatījumus."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:273
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:285
 msgid "Could not load images. Please try redrafting again."
 msgstr "Neizdevās ielādēt attēlus. Mēģini vēlreiz atvērt melnrakstu."
 
@@ -5354,15 +5374,15 @@ msgstr "Neizdevās ielādēt profilu"
 msgid "Could not load that page. Please try again."
 msgstr "Neizdevās ielādēt šo lapu. Mēģini vēlreiz."
 
-#: src/lib/api/index.ts:715
+#: src/lib/api/index.ts:725
 msgid "Could not load the poll link preview. Please try again."
 msgstr "Neizdevās ielādēt aptaujas saites priekšskatījumu. Mēģini vēlreiz."
 
-#: src/view/com/composer/Composer.tsx:979
+#: src/view/com/composer/Composer.tsx:974
 msgid "Could not load the post this draft replies to. Please try again later."
 msgstr "Neizdevās ielādēt džaronu, uz kuru atbild šis melnraksts. Mēģini vēlreiz vēlāk."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:401
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:413
 msgid "Could not load video captions. Please try redrafting again."
 msgstr "Neizdevās ielādēt video subtitrus. Mēģini vēlreiz atvērt melnrakstu."
 
@@ -5370,7 +5390,7 @@ msgstr "Neizdevās ielādēt video subtitrus. Mēģini vēlreiz atvērt melnraks
 msgid "Could not load your avatar. Choose a photo and try again."
 msgstr "Neizdevās ielādēt tavu avatāru. Izvēlies foto un mēģini vēlreiz."
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:148
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:144
 msgid "Could not load your decorations. Try again."
 msgstr "Neizdevās ielādēt tavus dekorus. Mēģini vēlreiz."
 
@@ -5416,7 +5436,7 @@ msgstr "Neizdevās saglabāt tavu avatāru. Mēģini vēlreiz."
 msgid "Could not save your emoji"
 msgstr "Neizdevās saglabāt tavu emoji"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:95
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:94
 msgid "Could not save. Try again."
 msgstr "Neizdevās saglabāt. Mēģini vēlreiz."
 
@@ -5662,12 +5682,12 @@ msgstr "Izveidots {date}"
 msgid "Creates an event attached to this post"
 msgstr "Pievieno šai džaronai pasākumu"
 
-#: src/lib/api/index.ts:203
+#: src/lib/api/index.ts:204
 msgid "Creating event..."
 msgstr "Veido pasākumu..."
 
-#: src/lib/api/index.ts:331
-#: src/lib/api/index.ts:416
+#: src/lib/api/index.ts:333
+#: src/lib/api/index.ts:418
 msgid "Creating poll..."
 msgstr "Veido aptauju..."
 
@@ -5754,9 +5774,9 @@ msgstr "Pielāgots TID sufikss"
 msgid "Customization options"
 msgstr "Pielāgošanas iespējas"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:241
-msgid "Customize some of the options below and tap save to apply the label!"
-msgstr "Pielāgo dažas tālāk norādītās opcijas un spied „Saglabāt”, lai lietotu etiķeti!"
+#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:41
+msgid "Customize your profile with frames, avatar shapes, and colorful display names. These decorations are inspired by Mu."
+msgstr "Pielāgo savu profilu ar rāmīšiem, profila attēlu formām un krāsainiem redzamajiem vārdiem. Šos rotājumus iedvesmojis Mu."
 
 #: src/screens/Onboarding/Layout.tsx:126
 msgid "Customizes your Bluesky experience"
@@ -5864,7 +5884,7 @@ msgid "Default posting languages"
 msgstr "Noklusējuma džaronu valodas"
 
 #: src/components/dms/MessageOverlays.tsx:184
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1186
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1198
 #: src/screens/ProfileList/components/MoreOptionsMenu.tsx:323
 #: src/screens/Settings/AppearanceSettings/ThemeEditor.tsx:596
 #: src/screens/Settings/AppPasswords.tsx:236
@@ -5941,9 +5961,9 @@ msgstr "Dzēst ziņojumu tikai man"
 msgid "Delete my account"
 msgstr "Dzēst manu kontu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1170
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1172
-#: src/view/com/composer/Composer.tsx:2427
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1182
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1184
+#: src/view/com/composer/Composer.tsx:2436
 msgid "Delete post"
 msgstr "Dzēst džaronu"
 
@@ -5977,11 +5997,11 @@ msgstr "Vai dzēst šo emoji?"
 msgid "Delete this list?"
 msgstr "Dzēst šo sarakstu?"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1183
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1195
 msgid "Delete this post?"
 msgstr "Dzēst šo džaronu?"
 
-#: src/components/Post/Embed/index.tsx:425
+#: src/components/Post/Embed/index.tsx:426
 msgid "Deleted"
 msgstr "Izdzēsts"
 
@@ -6043,12 +6063,12 @@ msgstr "Apraksts: „{description}”"
 msgid "Descriptive alt text"
 msgstr "Aprakstošs alternatīvais teksts"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1074
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1084
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1086
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1096
 msgid "Detach quote"
 msgstr "Atvienot citātu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1219
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1231
 msgid "Detach quote post?"
 msgstr "Atvienot citēto džaronu?"
 
@@ -6184,7 +6204,7 @@ msgstr "Nepiekrītu"
 #: src/components/ComposerExitDialog.tsx:94
 #: src/components/dialogs/lists/CreateOrEditListDialog.tsx:104
 #: src/screens/Profile/Header/EditProfileDialog.tsx:109
-#: src/view/com/composer/Composer.tsx:2477
+#: src/view/com/composer/Composer.tsx:2486
 #: src/view/com/composer/drafts/DraftItem.tsx:285
 #: src/view/com/composer/drafts/DraftsButton.tsx:139
 msgid "Discard"
@@ -6201,7 +6221,7 @@ msgid "Discard draft?"
 msgstr "Atmest melnrakstu?"
 
 #: src/components/ComposerExitDialog.tsx:49
-#: src/view/com/composer/Composer.tsx:2469
+#: src/view/com/composer/Composer.tsx:2478
 msgid "Discard post?"
 msgstr "Atmest džaronu?"
 
@@ -6254,7 +6274,7 @@ msgstr "Paslēpt paziņojumu joslu"
 msgid "Dismiss Discover the Atmosphere banner"
 msgstr "Paslēpt baneri „Atklāj Atmosfēru”"
 
-#: src/view/com/composer/Composer.tsx:3554
+#: src/view/com/composer/Composer.tsx:3563
 msgid "Dismiss error"
 msgstr "Paslēpt kļūdu"
 
@@ -6300,7 +6320,7 @@ msgstr "Rādīt lielākas alternatīvā teksta atzīmes"
 msgid "Display name"
 msgstr "Redzamais vārds"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:263
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:261
 msgid "Display name gradients"
 msgstr "Redzamā vārda gradienti"
 
@@ -6462,8 +6482,8 @@ msgstr "Lejupielādes formāts"
 msgid "Download formats"
 msgstr "Lejupielādes formāti"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:887
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:889
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:899
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:901
 msgid "Download GIF"
 msgstr "Lejupielādēt GIF"
 
@@ -6492,18 +6512,18 @@ msgstr "Lejupielāde sākta"
 
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/SettingsMenu.tsx:217
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/SettingsMenu.tsx:220
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:872
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:874
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:884
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:886
 msgid "Download video"
 msgstr "Lejupielādēt video"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:706
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:718
 msgctxt "toast"
 msgid "Downloading GIF..."
 msgstr "Lejupielādē GIF..."
 
 #: src/components/Post/Embed/VideoEmbed/useVideoDownload.ts:24
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:688
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:700
 msgctxt "toast"
 msgid "Downloading video..."
 msgstr "Lejupielādē video..."
@@ -6664,8 +6684,8 @@ msgstr "Rediģēšanas vēsture"
 msgid "Edit image"
 msgstr "Rediģēt attēlu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1151
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1164
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1163
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1176
 msgid "Edit interaction settings"
 msgstr "Rediģēt mijiedarbības iestatījumus"
 
@@ -6890,8 +6910,8 @@ msgstr "Iespējot pieaugušajiem paredzētu saturu"
 msgid "Enable app keyboard shortcuts"
 msgstr "Ieslēgt lietotnes īsinājumtaustiņus"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:266
-msgid "Enable Badge"
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:248
+msgid "Enable badge"
 msgstr "Ieslēgt nozīmīti"
 
 #: src/screens/Settings/BetaFeaturesSettings.tsx:151
@@ -6940,9 +6960,15 @@ msgstr "Iespējot multivides atskaņotājus šiem avotiem"
 msgid "Enable notifications for an account by visiting their profile and pressing the <0>bell icon</0> <1/>."
 msgstr "Lai ieslēgtu paziņojumus par kāda konta aktivitātēm, apmeklē tā profilu un nospied <0>zvaniņa ikonu</0> <1/>."
 
-#: src/screens/Settings/DeltaSettings/components/PrivatePostsToggle.tsx:32
+#: src/screens/Settings/DeltaSettings/components/PrivatePostsToggle.tsx:19
+#: src/screens/Settings/DeltaSettings/components/PrivatePostsToggle.tsx:33
 msgid "Enable private posts"
 msgstr "Ieslēgt privātās džaronas"
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:112
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:118
+msgid "Enable private posts fallback"
+msgstr "Ieslēgt privāto ierakstu rezerves metodi"
 
 #: src/screens/Settings/NotificationSettings/index.tsx:135
 #: src/screens/Settings/NotificationSettings/index.tsx:139
@@ -7114,7 +7140,7 @@ msgstr "Izklaide"
 msgid "Equal-height cards"
 msgstr "Vienāda augstuma kartītes"
 
-#: src/view/com/composer/Composer.tsx:3632
+#: src/view/com/composer/Composer.tsx:3641
 #: src/view/com/util/error/ErrorScreen.tsx:43
 msgid "Error"
 msgstr "Kļūda"
@@ -7308,11 +7334,11 @@ msgstr "Izvērš lietotāju sarakstu"
 msgid "Expands or collapses post text"
 msgstr "Izvērš vai sakļauj džaronas tekstu"
 
-#: src/lib/api/index.ts:940
+#: src/lib/api/index.ts:950
 msgid "Expected uri to resolve to a record"
 msgstr "Bija paredzēts, ka URI norādīs uz ierakstu"
 
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:48
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:47
 #: src/screens/Settings/FollowingFeedPreferences.tsx:127
 msgid "Experimental"
 msgstr "Eksperimentāls"
@@ -7483,7 +7509,7 @@ msgstr "Neizdevās izdzēst čatu"
 msgid "Failed to delete message"
 msgstr "Neizdevās izdzēst ziņojumu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:249
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:261
 msgid "Failed to delete post, please try again"
 msgstr "Neizdevās izdzēst džaronu. Mēģini vēlreiz"
 
@@ -7500,14 +7526,14 @@ msgstr "Neizdevās atspējot uzaicinājuma saiti"
 msgid "Failed to disconnect Germ DM. Error: {0}"
 msgstr "Neizdevās atvienot Germ DM. Kļūda: {0}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:719
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:731
 msgctxt "toast"
 msgid "Failed to download GIF"
 msgstr "Neizdevās lejupielādēt GIF"
 
 #: src/components/Post/Embed/VideoEmbed/useVideoDownload.ts:37
 #: src/components/Post/Embed/VideoEmbed/useVideoDownload.ts:41
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:698
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:710
 msgctxt "toast"
 msgid "Failed to download video"
 msgstr "Neizdevās lejupielādēt video"
@@ -7679,7 +7705,7 @@ msgstr "Neizdevās atsaukt tavu pieprasījumu. Mēģini vēlreiz."
 msgid "Failed to resolve location. Please try again."
 msgstr "Neizdevās noteikt atrašanās vietu. Mēģini vēlreiz."
 
-#: src/view/com/composer/Composer.tsx:1063
+#: src/view/com/composer/Composer.tsx:1058
 msgid "Failed to save draft"
 msgstr "Neizdevās saglabāt melnrakstu"
 
@@ -7722,7 +7748,7 @@ msgstr "Neizdevās iesniegt apelāciju. Mēģini vēlreiz."
 msgid "Failed to submit appeal. Please try again."
 msgstr "Neizdevās iesniegt apelāciju. Mēģini vēlreiz."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:486
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:498
 msgid "Failed to toggle thread mute, please try again"
 msgstr "Neizdevās pārslēgt pavediena apklusināšanu. Mēģini vēlreiz"
 
@@ -7776,6 +7802,10 @@ msgstr "Neizdevās verificēt lietotājvārdu. Mēģini vēlreiz."
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:47
 msgid "Fake account or bot"
 msgstr "Viltus konts vai bots"
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:124
+msgid "Fallback posts are encrypted in your public repository. Your private posts server can read their contents. This is not end-to-end encryption."
+msgstr "Ar rezerves metodi veidotie ieraksti tiek glabāti šifrētā veidā tavā publiskajā repozitorijā. Tavs privāto ierakstu serveris var nolasīt to saturu. Šī nav pilnšifrēšana."
 
 #: src/components/moderation/ReportDialog/utils/useReportOptions.ts:55
 msgid "False information about elections"
@@ -7882,8 +7912,8 @@ msgstr "Plūsma nav pieejama"
 msgid "Feedback"
 msgstr "Atsauksmes"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:542
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:565
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:554
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:577
 msgctxt "toast"
 msgid "Feedback sent to feed operator"
 msgstr "Atsauksme nosūtīta plūsmas operatoram"
@@ -7929,6 +7959,14 @@ msgstr "Ielādēt ierakstus tieši no PDS, lai salabotu bojātus citātus"
 #: src/screens/Settings/components/OTAInfo.tsx:66
 msgid "Fetch update"
 msgstr "Iegūt atjauninājumu"
+
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:147
+msgid "Fictionkin"
+msgstr "Fictionkin"
+
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:146
+msgid "Fictive"
+msgstr "Fiktīvs"
 
 #: src/screens/Settings/components/ExportCarDialog.tsx:51
 #: src/screens/Settings/components/ExportCarDialog.tsx:81
@@ -8527,8 +8565,8 @@ msgstr "Vispārīgi"
 msgid "Generate a Starter Pack"
 msgstr "Ģenerēt sākuma komplektu"
 
-#: src/view/com/composer/Composer.tsx:2738
-#: src/view/com/composer/Composer.tsx:2746
+#: src/view/com/composer/Composer.tsx:2747
+#: src/view/com/composer/Composer.tsx:2755
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:234
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:247
 msgid "Generate alt text"
@@ -8666,12 +8704,12 @@ msgstr "Sākt"
 msgid "GIF"
 msgstr "GIF"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:715
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:727
 msgctxt "toast"
 msgid "GIF downloaded"
 msgstr "GIF lejupielādēts"
 
-#: src/view/com/composer/Composer.tsx:3637
+#: src/view/com/composer/Composer.tsx:3646
 msgid "GIF uploaded"
 msgstr "GIF augšupielādēts"
 
@@ -8857,6 +8895,10 @@ msgstr "Sapratu"
 #: src/features/inviteFriends/InviteScannerScreen.tsx:113
 msgid "Grant access"
 msgstr "Piešķirt piekļuvi"
+
+#: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:72
+msgid "Graphic media"
+msgstr "Vardarbīgs saturs"
 
 #: src/lib/moderation/useGlobalLabelStrings.ts:41
 #: src/lib/moderation/useGlobalLabelStrings.ts:45
@@ -9058,6 +9100,10 @@ msgstr "Bluesky glabā 7 dienas, lai novērstu ļaunprātīgu izmantošanu, un p
 msgid "Hell yeah!"
 msgstr "O, jā!"
 
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:238
+msgid "Hello, I’m <0><1>{capitalizedName}</1></0>!"
+msgstr "Sveiki, es esmu <0><1>{capitalizedName}</1></0>!"
+
 #: src/screens/Onboarding/StepProfile/index.tsx:260
 msgid "Help people know you're not a bot by uploading a picture or creating an avatar."
 msgstr "Palīdzi citiem saprast, ka neesi bots, augšupielādējot attēlu vai izveidojot avatāru."
@@ -9066,7 +9112,11 @@ msgstr "Palīdzi citiem saprast, ka neesi bots, augšupielādējot attēlu vai i
 msgid "Here is your app password!"
 msgstr "Lūk, tava lietotnes parole!"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:207
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:178
+msgid "Here’s a brief guide to the kin options:"
+msgstr "Īss skaidrojums par kin iespējām:"
+
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:203
 msgid "Hexagon"
 msgstr "Sešstūris"
 
@@ -9120,7 +9170,7 @@ msgstr "Paslēpta džarona"
 #: src/components/moderation/ContentHider.tsx:227
 #: src/components/moderation/LabelPreference.tsx:141
 #: src/components/moderation/PostHider.tsx:146
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1194
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1206
 #: src/lib/moderation/useLabelBehaviorDescription.ts:18
 #: src/lib/moderation/useLabelBehaviorDescription.ts:23
 #: src/lib/moderation/useLabelBehaviorDescription.ts:28
@@ -9138,11 +9188,13 @@ msgstr "Paslēpt"
 msgid "Hide \"Feeds ✨\" tab when only one feed is selected"
 msgstr "Paslēpt cilni „Plūsmas ✨”, ja atlasīta tikai viena plūsma"
 
-#: src/screens/Settings/DeltaSettings/components/BetaBadgeToggle.tsx:32
+#: src/screens/Settings/DeltaSettings/components/BetaBadgeToggle.tsx:19
+#: src/screens/Settings/DeltaSettings/components/BetaBadgeToggle.tsx:33
 msgid "Hide beta badge"
 msgstr "Paslēpt beta nozīmīti"
 
-#: src/screens/Settings/DeltaSettings/components/ComposerPromptToggle.tsx:32
+#: src/screens/Settings/DeltaSettings/components/ComposerPromptToggle.tsx:22
+#: src/screens/Settings/DeltaSettings/components/ComposerPromptToggle.tsx:33
 msgid "Hide composer prompt"
 msgstr "Paslēpt džaronas redaktora uzvedni"
 
@@ -9174,10 +9226,6 @@ msgstr "Paslēpt sekošanas pogu džaronās un ritinātā profila galvenē"
 msgid "Hide group chat updates"
 msgstr "Paslēpt grupas čata atjauninājumus"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:290
-msgid "Hide it"
-msgstr "Paslēpt to"
-
 #: src/components/dialogs/PostInteractionSettingsDialog.tsx:535
 msgid "Hide lists"
 msgstr "Paslēpt sarakstus"
@@ -9185,6 +9233,10 @@ msgstr "Paslēpt sarakstus"
 #: src/screens/Event/EventScreen.tsx:219
 msgid "Hide muted or blocked accounts"
 msgstr "Paslēpt apklusinātos vai bloķētos kontus"
+
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:272
+msgid "Hide my badge from myself"
+msgstr "Nerādīt nozīmīti man pašam"
 
 #: src/components/forms/PasswordField.tsx:75
 #: src/screens/Login/LoginForm.web.tsx:788
@@ -9196,8 +9248,8 @@ msgstr "Paslēpt paroli"
 msgid "Hide PDS badge for Bluesky-hosted accounts"
 msgstr "Paslēpt PDS nozīmīti Bluesky hostētajiem kontiem"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1034
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1037
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1046
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1049
 msgid "Hide post for me"
 msgstr "Paslēpt džaronu tikai man"
 
@@ -9216,13 +9268,13 @@ msgstr "Paslēpt plūsmās džaronas, uz kurām nevar atbildēt"
 msgid "Hide replies"
 msgstr "Paslēpt atbildes"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1048
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1058
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1060
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1070
 msgid "Hide reply for everyone"
 msgstr "Paslēpt atbildi visiem"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1034
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1037
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1046
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1049
 msgid "Hide reply for me"
 msgstr "Paslēpt atbildi tikai man"
 
@@ -9235,19 +9287,19 @@ msgstr "Paslēpt pārpublicējumus plūsmās"
 msgid "Hide this card"
 msgstr "Paslēpt šo kartīti"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1191
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1203
 msgid "Hide this post?"
 msgstr "Paslēpt šo džaronu?"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1191
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1226
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1203
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1238
 msgid "Hide this reply?"
 msgstr "Paslēpt šo atbildi?"
 
 #: src/components/Post/Translated/index.tsx:213
 #: src/components/Post/Translated/index.tsx:347
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:911
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:913
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:923
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:925
 msgid "Hide translation"
 msgstr "Paslēpt tulkojumu"
 
@@ -9476,7 +9528,7 @@ msgstr "Ja tev ir savs domēns, vari to izmantot kā lietotājvārdu. Tas ļauj 
 msgid "If you need to update your email, <0>click here</0>."
 msgstr "Ja nepieciešams atjaunināt e-pasta adresi, <0>noklikšķini šeit</0>."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1184
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1196
 msgid "If you remove this post, you won't be able to recover it."
 msgstr "Ja noņemsi šo džaronu, to nevarēs atjaunot."
 
@@ -9500,6 +9552,10 @@ msgstr "Ja esi izstrādātājs, vari uzturēt savu serveri."
 #: src/screens/Settings/components/DeactivateAccountDialog.tsx:98
 msgid "If you're trying to change your handle or email, do so before you deactivate."
 msgstr "Ja vēlies mainīt lietotājvārdu vai e-pasta adresi, izdari to pirms deaktivizēšanas."
+
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:216
+msgid "If your private posts haven’t appeared, try syncing them with your private posts server."
+msgstr "Ja tavi privātie ieraksti nav parādījušies, mēģini tos sinhronizēt ar savu privāto ierakstu serveri."
 
 #: src/components/Gallery/Storybook.tsx:292
 #: src/components/images/ImageLayoutGridItem.tsx:110
@@ -9750,8 +9806,8 @@ msgstr "Infrastruktūra"
 
 #: src/screens/Login/components/AppServerDialog.tsx:590
 #: src/screens/Login/components/AppServerDialog.tsx:592
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:112
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:116
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:141
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:145
 msgid "Infrastructure settings"
 msgstr "Infrastruktūras iestatījumi"
 
@@ -9883,7 +9939,7 @@ msgstr "Nederīgs grupas čata kods."
 msgid "Invalid handle. Please try a different one."
 msgstr "Nederīgs lietotājvārds. Izmēģini citu."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:635
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:647
 msgctxt "toast"
 msgid "Invalid interaction settings."
 msgstr "Nederīgi mijiedarbības iestatījumi."
@@ -10034,7 +10090,7 @@ msgid "Jarona! This app is now on Android! Check it out!"
 msgstr "Džarona! Šī lietotne tagad ir Android! Apskati!"
 
 #. placeholder {0}: videoState.jobId
-#: src/view/com/composer/Composer.tsx:3573
+#: src/view/com/composer/Composer.tsx:3582
 msgid "Job ID: {0}"
 msgstr "Uzdevuma ID: {0}"
 
@@ -10104,6 +10160,10 @@ msgstr "Pievienojās {dateJoinedExact}"
 msgid "Journalism"
 msgstr "Žurnālistika"
 
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:144
+msgid "Just the badge"
+msgstr "Tikai nozīmīte"
+
 #: src/screens/Settings/LanguageSettings.tsx:55
 msgid "Kagi Translate"
 msgstr "Kagi Translate"
@@ -10118,7 +10178,7 @@ msgid "Keep current theme colors"
 msgstr "Paturēt pašreizējās tēmas krāsas"
 
 #: src/components/ComposerExitDialog.tsx:80
-#: src/view/com/composer/Composer.tsx:2130
+#: src/view/com/composer/Composer.tsx:2139
 #: src/view/com/composer/drafts/DraftsButton.tsx:137
 msgid "Keep editing"
 msgstr "Turpināt rediģēšanu"
@@ -10143,12 +10203,12 @@ msgstr "Saglabāt savu vietu plūsmā „Seko”"
 msgid "Keyboard shortcuts"
 msgstr "Īsinājumtaustiņi"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:348
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:330
 msgid "Kin"
 msgstr "Kin"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:359
-msgid "Kin Type"
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:341
+msgid "Kin type"
 msgstr "Kin veids"
 
 #: src/screens/Settings/AppearanceSettings/shared.tsx:87
@@ -10167,8 +10227,8 @@ msgstr "Etiķete piešķirta"
 msgid "Label removed"
 msgstr "Etiķete noņemta"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:989
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:991
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1001
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1003
 msgid "Label reply for algo"
 msgstr "Pievienot atbildei etiķeti algoritmam"
 
@@ -10764,6 +10824,10 @@ msgstr "Saraksti, kas bloķē šo lietotāju:"
 msgid "Lite"
 msgstr "Vienkāršotais"
 
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:145
+msgid "Literal"
+msgstr "Burtiski"
+
 #: src/screens/Atmosphere/components/LivestreamCard.tsx:168
 msgid "Live"
 msgstr "Tiešraide"
@@ -10791,7 +10855,7 @@ msgstr "Tiešraides pasākums vairs nav paslēpts"
 
 #: src/features/liveNow/components/LiveStatusDialog.tsx:271
 msgid "Live feature is in beta"
-msgstr "Tiešraides funkcija ir beta versijā"
+msgstr "Tiešraides funkcija ir beta"
 
 #: src/features/liveNow/components/EditLiveDialog.tsx:144
 #: src/features/liveNow/components/EditLiveDialog.tsx:148
@@ -11284,7 +11348,7 @@ msgstr "Ziņojumi"
 msgid "microcosm.blue"
 msgstr "microcosm.blue"
 
-#: src/view/com/composer/Composer.tsx:2228
+#: src/view/com/composer/Composer.tsx:2237
 #: src/view/com/feeds/ComposerPrompt.tsx:211
 msgid "MIKE, THE JARONA please!"
 msgstr "MAIK, DŽARONU, lūdzu!"
@@ -11346,8 +11410,9 @@ msgid "Moderation inbox settings"
 msgstr "Moderācijas iesūtnes iestatījumi"
 
 #: src/Navigation.tsx:722
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:36
-#: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:19
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:35
+#: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:20
+#: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:30
 msgid "Moderation labels"
 msgstr "Moderācijas etiķetes"
 
@@ -11445,11 +11510,11 @@ msgstr "Pārvietot plūsmu uz augšu"
 msgid "Move later"
 msgstr "Pārvietot vēlāk"
 
-#: src/view/com/composer/Composer.tsx:2449
+#: src/view/com/composer/Composer.tsx:2458
 msgid "Move post down"
 msgstr "Pārvietot džaronu lejup"
 
-#: src/view/com/composer/Composer.tsx:2409
+#: src/view/com/composer/Composer.tsx:2418
 msgid "Move post up"
 msgstr "Pārvietot džaronu augšup"
 
@@ -11487,8 +11552,8 @@ msgstr "Apklusināt"
 msgid "Mute {0}"
 msgstr "Apklusināt {0}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1113
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1119
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1125
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1131
 #: src/view/com/profile/ProfileMenu.tsx:758
 #: src/view/com/profile/ProfileMenu.tsx:765
 msgid "Mute account"
@@ -11548,13 +11613,13 @@ msgstr "Apklusināt šo vārdu tikai atzīmēs"
 msgid "Mute this word until you unmute it"
 msgstr "Apklusināt šo vārdu līdz apklusināšanas atcelšanai"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1004
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1007
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1016
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1019
 msgid "Mute thread"
 msgstr "Apklusināt pavedienu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1017
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1019
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1029
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1031
 msgid "Mute words & tags"
 msgstr "Apklusināt vārdus un atzīmes"
 
@@ -11606,7 +11671,7 @@ msgstr "Kopīgās grupas čata"
 #: src/screens/Profile/Header/ProfileHeaderStandard.tsx:667
 #: src/view/com/notifications/NotificationFeedItem.tsx:1182
 msgid "Mutuals"
-msgstr "Abpusējie sekotāji"
+msgstr "Draugi"
 
 #: src/components/dialogs/BirthDateSettings.tsx:60
 #: src/components/dialogs/BirthDateSettings.tsx:64
@@ -12005,8 +12070,8 @@ msgstr "Vēl nav parādāmu sekotāju"
 msgid "No followers yet"
 msgstr "Vēl nav sekotāju"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:168
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:181
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:164
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:177
 msgid "No frame"
 msgstr "Bez rāmja"
 
@@ -12278,6 +12343,10 @@ msgstr "Nebinārs"
 msgid "Non-consensual intimate imagery"
 msgstr "Intīmu attēlu izplatīšana bez piekrišanas"
 
+#: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:64
+msgid "Non-sexual nudity"
+msgstr "Neseksuāls kailums"
+
 #: src/lib/moderation/useGlobalLabelStrings.ts:37
 msgid "Non-sexual Nudity"
 msgstr "Neseksuāls kailums"
@@ -12288,8 +12357,8 @@ msgstr "Nestandarta OTA kanāls"
 
 #: src/screens/Settings/AccessibilitySettings.tsx:50
 #: src/screens/Settings/AltTextAiSettings.tsx:49
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:441
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:459
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:439
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:457
 #: src/screens/Settings/NotificationSettings/ActivityNotificationSettings.tsx:220
 msgid "None"
 msgstr "Nav"
@@ -12424,14 +12493,6 @@ msgstr "Numuram jābūt mobilā tālruņa numuram"
 msgid "OAuth"
 msgstr "OAuth"
 
-#: src/view/com/composer/Composer.tsx:1422
-msgid "OAuth sessions are not currently supported for private posts. Please log in with a password to use this feature."
-msgstr "OAuth sesijas pagaidām neatbalsta privātās džaronas. Lai izmantotu šo funkciju, pieraksties ar paroli."
-
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:123
-msgid "OAuth sessions are not supported."
-msgstr "OAuth sesijas netiek atbalstītas."
-
 #: src/features/avatarDecorations/catalog.ts:26
 #: src/features/avatarDecorations/nameGradients.ts:41
 msgid "Ocean"
@@ -12446,7 +12507,7 @@ msgstr "Okeāns"
 msgid "Off"
 msgstr "Izslēgts"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:155
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:180
 msgid "Offending content"
 msgstr "Noteikumus pārkāpjošais saturs"
 
@@ -12530,9 +12591,9 @@ msgstr "Viens vai vairāki atlasītie faili netiek atbalstīti."
 
 #: src/view/com/composer/SelectMediaButton.tsx:453
 msgid "One or more of your selected files are too large. Maximum size is {VIDEO_MAX_SIZE_MB} MB."
-msgstr ""
+msgstr "Viens vai vairāki atlasītie faili ir pārāk lieli. Maksimālais izmērs ir {VIDEO_MAX_SIZE_MB} MB."
 
-#: src/view/com/composer/Composer.tsx:1074
+#: src/view/com/composer/Composer.tsx:1069
 msgid "One or more posts are too long to save as a draft. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {The maximum number of characters is # character.} other {The maximum number of characters is # characters.}}"
 msgstr "Viena vai vairākas džaronas ir pārāk garas, lai saglabātu kā melnrakstu. {MAX_DRAFT_GRAPHEME_LENGTH, plural, one {Maksimālais garums ir # rakstzīme.} other {Maksimālais garums ir # rakstzīmes.}}"
 
@@ -12556,7 +12617,7 @@ msgstr "Atbildēt var tikai {0}."
 #. placeholder {0}: result.accepted.length
 #. placeholder {1}: next.length
 #. placeholder {2}: next.length
-#: src/view/com/composer/Composer.tsx:315
+#: src/view/com/composer/Composer.tsx:316
 msgid "Only {0} of {1} {2, plural, one {image} other {images}} added; limit is {MAX_GALLERY_IMAGES}"
 msgstr "Pievienoti tikai {0} no {1} {2, plural, one {attēla} other {attēliem}}; ierobežojums ir {MAX_GALLERY_IMAGES}"
 
@@ -12620,10 +12681,6 @@ msgstr "Var pievienot tikai drošas saites. Izmanto saiti, kas sākas ar https:/
 #: src/screens/Settings/RunesSettings/ProfileSettings.tsx:94
 msgid "Only show URL on handles with working links"
 msgstr "Rādīt URL tikai lietotājvārdiem ar darbojošām saitēm"
-
-#: src/view/com/composer/PrivatePostBtn.tsx:97
-msgid "Only your mutuals on tenna.party can read this post. A fallback link will be shared."
-msgstr "Tikai tavi savstarpējie sekotāji tenna.party var lasīt šo džaronu. Tiks kopīgota rezerves saite."
 
 #: src/components/Lists.tsx:99
 msgid "Oops, something went wrong!"
@@ -12718,7 +12775,7 @@ msgid "Open drawer menu"
 msgstr "Atvērt sānu izvēlni"
 
 #: src/screens/Messages/components/MessageComposer.tsx:248
-#: src/view/com/composer/Composer.tsx:3181
+#: src/view/com/composer/Composer.tsx:3190
 msgid "Open emoji picker"
 msgstr "Atvērt emoji izvēlni"
 
@@ -12762,8 +12819,8 @@ msgstr "Atvērt grupas čatu"
 msgid "Open group chat settings"
 msgstr "Atvērt grupas čata iestatījumus"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:921
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:927
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:933
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:939
 msgid "Open in Google Translate"
 msgstr "Atvērt Google tulkotājā"
 
@@ -13242,6 +13299,10 @@ msgstr "Cits seksuālās vardarbības saturs"
 msgid "Other violent content"
 msgstr "Cits vardarbīgs saturs"
 
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:148
+msgid "Otherkin"
+msgstr "Otherkin"
+
 #: src/components/PolicyUpdateOverlay/updates/202508/index.tsx:51
 msgid "Our blog post"
 msgstr "Mūsu emuāra ieraksts"
@@ -13257,8 +13318,8 @@ msgstr "Mūsu moderācijas komanda ir saņēmusi tavu ziņojumu."
 msgid "Our moderators have reviewed reports and decided to disable your access to chats on Bluesky."
 msgstr "Mūsu moderatori ir izskatījuši ziņojumus un nolēmuši atspējot tavu piekļuvi Bluesky čatiem."
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:304
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:310
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:302
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:308
 msgid "Outline"
 msgstr "Kontūra"
 
@@ -13481,6 +13542,10 @@ msgstr "Personas pārslēgs"
 msgid "Personalize the message"
 msgstr "Personalizēt ziņojumu"
 
+#: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:49
+msgid "Pet"
+msgstr "Mīlulis"
+
 #: src/components/PetAccountAlert.tsx:32
 #: src/components/PetBadge.tsx:63
 msgid "Pet account"
@@ -13499,10 +13564,6 @@ msgstr "Mājdzīvnieka etiķete"
 #: src/lib/interests.ts:68
 msgid "Pets"
 msgstr "Mājdzīvnieki"
-
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:195
-msgid "PFP shape"
-msgstr "Profila attēla forma"
 
 #: src/components/contacts/screens/PhoneInput.tsx:192
 #: src/components/contacts/screens/PhoneInput.tsx:204
@@ -13548,8 +13609,8 @@ msgstr "Piespraust sākumlapai"
 msgid "Pin to Home"
 msgstr "Piespraust sākumlapai"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:843
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:848
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:855
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:860
 msgid "Pin to your profile"
 msgstr "Piespraust savam profilam"
 
@@ -13866,6 +13927,7 @@ msgstr "Aptauja beidzas pēc {0}"
 msgid "poll.blue"
 msgstr "poll.blue"
 
+#: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:50
 #: src/view/com/composer/labels/LabelsBtn.tsx:152
 msgid "Porn"
 msgstr "Pornogrāfija"
@@ -13882,7 +13944,7 @@ msgstr "Portreta, kvadrāta un ainavas rāmji kā parasti pakārtotie elementi. 
 msgid "Post"
 msgstr "Džarona"
 
-#: src/view/com/composer/Composer.tsx:2624
+#: src/view/com/composer/Composer.tsx:2633
 msgctxt "action"
 msgid "Post"
 msgstr "Džarona"
@@ -13908,13 +13970,13 @@ msgstr "Publicēt fotoattēlu"
 msgid "Post a video"
 msgstr "Publicēt video"
 
-#: src/view/com/composer/Composer.tsx:2622
+#: src/view/com/composer/Composer.tsx:2631
 msgctxt "action"
 msgid "Post All"
 msgstr "Publicēt visu"
 
-#: src/view/com/composer/Composer.tsx:2129
-#: src/view/com/composer/Composer.tsx:2137
+#: src/view/com/composer/Composer.tsx:2138
+#: src/view/com/composer/Composer.tsx:2146
 msgid "Post anyway"
 msgstr "Tomēr publicēt"
 
@@ -13943,16 +14005,16 @@ msgstr "Džaronas autors: {name}"
 msgid "Post by @{0}"
 msgstr "Džaronas autors: @{0}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:229
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:241
 msgctxt "toast"
 msgid "Post deleted"
 msgstr "Džarona izdzēsta"
 
-#: src/lib/api/index.ts:448
+#: src/lib/api/index.ts:458
 msgid "Post failed to upload. Please check your Internet connection and try again."
 msgstr "Neizdevās augšupielādēt džaronu. Pārbaudi interneta savienojumu un mēģini vēlreiz."
 
-#: src/view/com/composer/Composer.tsx:2323
+#: src/view/com/composer/Composer.tsx:2332
 msgid "Post from account"
 msgstr "Džarona no konta"
 
@@ -14017,7 +14079,7 @@ msgstr "Džaronu tulkošanas pakalpojums"
 msgid "Post type"
 msgstr "Džaronas tips"
 
-#: src/components/Post/Embed/index.tsx:452
+#: src/components/Post/Embed/index.tsx:453
 #: src/screens/ModerationInbox/components/ReportSubjectPreview/PostSubjectPreview.tsx:139
 msgid "Post unavailable"
 msgstr "Džarona nav pieejama"
@@ -14038,7 +14100,7 @@ msgstr "Džaronas redzamība"
 msgid "Post with media"
 msgstr "Džarona ar multividi"
 
-#: src/view/com/composer/Composer.tsx:2135
+#: src/view/com/composer/Composer.tsx:2144
 msgid "Post without alt text?"
 msgstr "Publicēt džaronu bez alternatīvā teksta?"
 
@@ -14169,7 +14231,7 @@ msgstr "Iepriekšējās vai nākamās lapas cilne"
 msgid "Previous page"
 msgstr "Iepriekšējā lapa"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:287
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:285
 msgid "Pride"
 msgstr "Praids"
 
@@ -14220,25 +14282,25 @@ msgid "Private post"
 msgstr "Privāta džarona"
 
 #: src/Navigation.tsx:709
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:51
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:77
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:87
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:50
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:82
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:92
 msgid "Private posts"
 msgstr "Privātās džaronas"
 
-#: src/view/com/composer/Composer.tsx:1413
+#: src/view/com/composer/Composer.tsx:1408
 msgid "Private posts are text-only."
 msgstr "Privātās džaronas var saturēt tikai tekstu."
 
-#: src/view/com/composer/Composer.tsx:1535
+#: src/view/com/composer/Composer.tsx:1525
 msgid "Private posts not supported by your PDS."
 msgstr "Tavs PDS neatbalsta privātās džaronas."
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:63
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:68
 msgid "Private posts sync failed"
 msgstr "Neizdevās sinhronizēt privātās džaronas"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:59
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:64
 msgid "Private posts synced"
 msgstr "Privātās džaronas sinhronizētas"
 
@@ -14253,15 +14315,15 @@ msgstr "Private Vessel AppView DID"
 msgid "Private Vessel Instance"
 msgstr "Private Vessel instance"
 
-#: src/view/com/composer/Composer.tsx:3626
+#: src/view/com/composer/Composer.tsx:3635
 msgid "Processing GIF..."
 msgstr "Notiek GIF apstrāde..."
 
-#: src/view/com/composer/Composer.tsx:3628
+#: src/view/com/composer/Composer.tsx:3637
 msgid "Processing video..."
 msgstr "Notiek video apstrāde..."
 
-#: src/lib/api/index.ts:152
+#: src/lib/api/index.ts:153
 msgid "Processing..."
 msgstr "Notiek apstrāde..."
 
@@ -14284,8 +14346,9 @@ msgid "Profile"
 msgstr "Profils"
 
 #: src/Navigation.tsx:693
-#: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:19
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:31
+#: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:20
+#: src/screens/Settings/DeltaSettings/BadgeSettings.tsx:30
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:30
 msgid "Profile badges"
 msgstr "Profila nozīmītes"
 
@@ -14293,18 +14356,18 @@ msgstr "Profila nozīmītes"
 msgid "Profile banner placeholder"
 msgstr "Profila galvenes attēla vietturis"
 
-#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:53
-msgid "Profile customizations are unavaiable on tenna.party without the VIP entitlement. A list creates exclusivity, even though this client is super niche! Just tap the button below, you will be added soon enough."
-msgstr "Profila personalizācija tenna.party nav pieejama bez VIP piekļuves. Saraksts rada ekskluzivitāti, lai gan šis klients jau tāpat ir ļoti nišas! Vienkārši nospied zemāk esošo pogu, un drīz vien tevi pievienosim."
-
 #: src/Navigation.tsx:716
-#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:28
-#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:39
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:41
+#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:27
+#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:38
+#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:40
 msgid "Profile decorations"
 msgstr "Profila dekori"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:162
+#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:51
+msgid "Profile decorations on tenna.party require VIP access. Use the button below to draft a request for access."
+msgstr "Profila rotājumiem vietnē tenna.party ir nepieciešama VIP piekļuve. Izmanto tālāk esošo pogu, lai sagatavotu piekļuves pieprasījumu."
+
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:158
 msgid "Profile frames"
 msgstr "Profila rāmji"
 
@@ -14385,22 +14448,22 @@ msgid "Publish from the composer"
 msgstr "Publicēt no džaronu redaktora"
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:2608
+#: src/view/com/composer/Composer.tsx:2617
 msgid "Publish post"
 msgstr "Publicēt džaronu"
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:2603
+#: src/view/com/composer/Composer.tsx:2612
 msgid "Publish posts"
 msgstr "Publicēt džaronas"
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:2592
+#: src/view/com/composer/Composer.tsx:2601
 msgid "Publish replies"
 msgstr "Publicēt atbildes"
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:2597
+#: src/view/com/composer/Composer.tsx:2606
 msgid "Publish reply"
 msgstr "Publicēt atbildi"
 
@@ -14461,11 +14524,11 @@ msgstr "Citātu ķēde"
 msgid "Quote post"
 msgstr "Citēt džaronu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:585
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:597
 msgid "Quote post was re-attached"
 msgstr "Citētā džarona pievienota atkārtoti"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:584
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:596
 msgid "Quote post was successfully detached"
 msgstr "Citētā džarona veiksmīgi atvienota"
 
@@ -14514,8 +14577,8 @@ msgstr "Pārsniegts pieprasījumu biežuma ierobežojums. Pārāk daudz reižu �
 msgid "Rate limit exceeded. Please try again later."
 msgstr "Pārsniegts pieprasījumu biežuma ierobežojums. Mēģini vēlreiz vēlāk."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1073
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1083
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1085
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1095
 msgid "Re-attach quote"
 msgstr "Atkārtoti pievienot citātu"
 
@@ -14642,6 +14705,11 @@ msgstr "Apelācijas iemesls"
 msgid "Reason:"
 msgstr "Iemesls:"
 
+#. placeholder {0}: content.reason
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:198
+msgid "Reason: {0}"
+msgstr "Iemesls: {0}"
+
 #: src/screens/Login/components/AppServerDialog.tsx:447
 msgid "Reauthenticate"
 msgstr "Autentificēties vēlreiz"
@@ -14702,13 +14770,13 @@ msgstr "Pārvirzīt caur go.bsky.app"
 msgid "Redirects to your authorization server"
 msgstr "Pārvirza uz tavu autorizācijas serveri"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:824
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:857
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:859
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:836
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:869
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:871
 msgid "Redraft"
 msgstr "Atgriezt džaronu melnrakstā"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:821
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:833
 msgid "Redraft this post?"
 msgstr "Atgriezt šo džaronu melnrakstā?"
 
@@ -14966,11 +15034,11 @@ msgstr "Noņemt pārpublicējumu"
 msgid "Remove suggestion"
 msgstr "Noņemt ieteikumu"
 
-#: src/view/com/composer/Composer.tsx:2275
+#: src/view/com/composer/Composer.tsx:2284
 msgid "Remove the event to add media"
 msgstr "Lai pievienotu medijus, noņem pasākumu"
 
-#: src/view/com/composer/Composer.tsx:2274
+#: src/view/com/composer/Composer.tsx:2283
 msgid "Remove the poll to add media"
 msgstr "Lai pievienotu medijus, noņem aptauju"
 
@@ -15011,14 +15079,14 @@ msgstr "Noņemt verificējumu"
 msgid "Remove your verification for this account?"
 msgstr "Noņemt savu šī konta verificējumu?"
 
-#: src/components/Post/Embed/index.tsx:466
-#: src/components/Post/Embed/index.tsx:536
+#: src/components/Post/Embed/index.tsx:467
+#: src/components/Post/Embed/index.tsx:537
 #: src/screens/Notifications/components/NotificationItem/Item/post.tsx:530
 msgid "Removed by author"
 msgstr "Autors noņēma"
 
-#: src/components/Post/Embed/index.tsx:467
-#: src/components/Post/Embed/index.tsx:534
+#: src/components/Post/Embed/index.tsx:468
+#: src/components/Post/Embed/index.tsx:535
 #: src/screens/Notifications/components/NotificationItem/Item/post.tsx:528
 msgid "Removed by you"
 msgstr "Tu noņēmi"
@@ -15187,7 +15255,7 @@ msgstr "Atbildes uz šo džaronu ir atspējotas."
 msgid "Reply"
 msgstr "Atbildēt"
 
-#: src/view/com/composer/Composer.tsx:2620
+#: src/view/com/composer/Composer.tsx:2629
 msgctxt "action"
 msgid "Reply"
 msgstr "Atbildēt"
@@ -15242,12 +15310,12 @@ msgstr "Atbildēt uz atlasīto džaronu"
 msgid "Reply to this post?"
 msgstr "Atbildēt uz šo džaronu?"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:623
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:635
 msgctxt "toast"
 msgid "Reply visibility updated"
 msgstr "Atbildes redzamība atjaunināta"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:622
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:634
 msgid "Reply was successfully hidden"
 msgstr "Atbilde veiksmīgi paslēpta"
 
@@ -15306,8 +15374,8 @@ msgstr "Ziņot par sarakstu"
 msgid "Report message"
 msgstr "Ziņot par ziņojumu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1139
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1141
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1151
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1153
 msgid "Report post"
 msgstr "Ziņot par džaronu"
 
@@ -15509,8 +15577,8 @@ msgstr "Pieprasījums noraidīts."
 msgid "Request to join"
 msgstr "Pieprasīt pievienošanos"
 
-#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:63
-#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:73
+#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:59
+#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:69
 msgid "Request VIP entitlement"
 msgstr "Pieprasīt VIP piekļuvi"
 
@@ -15653,7 +15721,7 @@ msgstr "Atjaunota džarona"
 msgid "Resync contacts"
 msgstr "Atkārtoti sinhronizēt kontaktus"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:202
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:224
 msgid "Resynchronize private post records"
 msgstr "Sinhronizēt privāto džaronu ierakstus vēlreiz"
 
@@ -15828,8 +15896,8 @@ msgstr "Skumji GIF"
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:277
 #: src/screens/Settings/components/LibreTranslateInstanceDialog.tsx:89
 #: src/screens/Settings/components/LibreTranslateInstanceDialog.tsx:97
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:324
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:335
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:322
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:333
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:258
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:268
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:455
@@ -15857,7 +15925,7 @@ msgstr "Skumji GIF"
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:88
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:254
 #: src/view/com/composer/photos/ImageAltTextDialog.tsx:264
-#: src/view/com/composer/PrivatePostBtn.tsx:117
+#: src/view/com/composer/PrivatePostBtn.tsx:118
 msgid "Save"
 msgstr "Saglabāt"
 
@@ -15882,15 +15950,12 @@ msgstr "Saglabāt dzimšanas datumu"
 #: src/screens/SavedFeeds.tsx:128
 #: src/screens/SavedFeeds.tsx:318
 #: src/screens/SavedFeeds.tsx:322
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:377
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:359
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:368
 #: src/screens/Settings/Settings.tsx:414
 #: src/screens/Settings/Settings.tsx:421
 #: src/view/com/composer/drafts/DraftsButton.tsx:132
 msgid "Save changes"
-msgstr "Saglabāt izmaiņas"
-
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:386
-msgid "Save Changes"
 msgstr "Saglabāt izmaiņas"
 
 #: src/components/ComposerExitDialog.tsx:44
@@ -15933,7 +15998,7 @@ msgstr "Saglabāt jauno lietotājvārdu"
 msgid "Save or unsave the selected post"
 msgstr "Saglabāt atlasīto džaronu vai noņemt to no saglabātajām"
 
-#: src/view/com/composer/PrivatePostBtn.tsx:110
+#: src/view/com/composer/PrivatePostBtn.tsx:111
 msgid "Save post visibility"
 msgstr "Saglabāt džaronas redzamību"
 
@@ -15971,7 +16036,8 @@ msgstr "Saglabā savu vietu plūsmā „Seko” starp sesijām. Jaunās džarona
 
 #: src/features/keyboardShortcuts/KeyboardShortcutsDialog.tsx:145
 #: src/screens/Settings/AppearanceSettings/ThemeGallery.tsx:97
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:93
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:375
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:92
 msgid "Saved"
 msgstr "Saglabāts"
 
@@ -16001,10 +16067,6 @@ msgstr "Saglabātās plūsmas"
 msgid "Saved Posts"
 msgstr "Saglabātās džaronas"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:393
-msgid "Saved successfully!"
-msgstr "Veiksmīgi saglabāts!"
-
 #: src/screens/CustomFeed/components/CustomFeedHeader.tsx:596
 #: src/screens/Profile/components/ProfileFeedHeader.tsx:142
 #: src/screens/ProfileList/components/Header.tsx:97
@@ -16015,12 +16077,9 @@ msgstr "Saglabāts tavās plūsmās"
 msgid "Saves"
 msgstr "Saglabātās džaronas"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:384
-msgid "Saving..."
-msgstr "Saglabā…"
-
 #: src/screens/Settings/AppearanceSettings/ThemeEditor.tsx:587
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:333
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:366
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:331
 #: src/screens/Settings/RunesSettings/CustomEmojiSettings.tsx:304
 msgid "Saving…"
 msgstr "Saglabā…"
@@ -16259,7 +16318,7 @@ msgid "See #{tag} posts by user"
 msgstr "Skatīt lietotāja džaronas ar #{tag}"
 
 #: src/screens/Login/components/AppServerDialog.tsx:588
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:110
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:139
 msgid "See also:"
 msgstr "Skatīt arī:"
 
@@ -16554,6 +16613,10 @@ msgstr "Izvēlies vēlamo valodu tulkojumiem savā plūsmā."
 msgid "Select your preferred notification channels"
 msgstr "Izvēlies vēlamo paziņojumu saņemšanas veidu"
 
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:213
+msgid "Selected badge: {character} ({franchise}). Kin: {kinLabel}."
+msgstr "Atlasītā nozīmīte: {character} ({franchise}). Kin: {kinLabel}."
+
 #: src/features/keyboardShortcuts/index.web.tsx:155
 msgid "Selected item"
 msgstr "Atlasītais vienums"
@@ -16779,6 +16842,10 @@ msgstr "Iestatījumu sinhronizācija"
 msgid "Sexual activity or erotic nudity."
 msgstr "Seksuālas darbības vai erotisks kailums."
 
+#: src/screens/Settings/DeltaSettings/ModLabelSettings.tsx:56
+msgid "Sexually suggestive"
+msgstr "Seksuāli divdomīgs saturs"
+
 #: src/lib/moderation/useGlobalLabelStrings.ts:33
 msgid "Sexually Suggestive"
 msgstr "Seksuāli divdomīgs saturs"
@@ -16857,6 +16924,10 @@ msgstr "Kopīgot manu profilu"
 msgid "Share post at:// URI"
 msgstr "Kopīgot džaronas at:// URI"
 
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:95
+msgid "Share private posts with your mutuals. This experimental feature uses AT Protocol spaces or an optional encrypted fallback."
+msgstr "Kopīgo privātus ierakstus ar saviem draugiem. Šī eksperimentālā funkcija izmanto AT Protocol telpas vai izvēles šifrētu rezerves metodi."
+
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:142
 #: src/features/inviteFriends/InviteFriendsDialogInner.tsx:157
 msgid "Share Profile"
@@ -16927,15 +16998,15 @@ msgstr "Ass"
 msgid "Short links can’t be added. Use the full link instead."
 msgstr "Saīsinātās saites nevar pievienot. Izmanto pilnu saiti."
 
-#: src/view/com/composer/Composer.tsx:3212
+#: src/view/com/composer/Composer.tsx:3221
 msgid "Shortcut: Alt plus Enter"
 msgstr "Īsinājumtaustiņš: Alt + Enter"
 
-#: src/view/com/composer/Composer.tsx:2450
+#: src/view/com/composer/Composer.tsx:2459
 msgid "Shortcut: Alt plus Shift plus Down Arrow"
 msgstr "Īsinājumtaustiņš: Alt + Shift + lejupvērstā bultiņa"
 
-#: src/view/com/composer/Composer.tsx:2410
+#: src/view/com/composer/Composer.tsx:2419
 msgid "Shortcut: Alt plus Shift plus Up Arrow"
 msgstr "Īsinājumtaustiņš: Alt + Shift + augšupvērstā bultiņa"
 
@@ -16954,6 +17025,10 @@ msgstr "Rādīt ieteikumus „Patīk arī” zem džaronas atbildēm"
 #: src/screens/Settings/RunesSettings/ImpressionsSettings.tsx:157
 msgid "Show “Followed by” on own profile"
 msgstr "Rādīt „Seko arī” savā profilā"
+
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:166
+msgid "Show a character badge on your profile. Currently, badges are available for a few DELTARUNE characters and are only visible on tenna.party."
+msgstr "Rādi tēla nozīmīti savā profilā. Pašlaik ir pieejamas dažu DELTARUNE tēlu nozīmītes, kas ir redzamas tikai vietnē tenna.party."
 
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:146
 #: src/screens/Settings/RunesSettings/BadgesSettings.tsx:151
@@ -17024,8 +17099,8 @@ msgstr "Rādīt grupas čata atjauninājumus"
 msgid "Show keyboard shortcuts"
 msgstr "Rādīt īsinājumtaustiņus"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:967
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:969
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:979
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:981
 msgid "Show less like this"
 msgstr "Rādīt mazāk šāda satura"
 
@@ -17052,8 +17127,8 @@ msgstr "Rādīt MDNI džaronas"
 msgid "Show more"
 msgstr "Rādīt vairāk"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:959
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:961
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:971
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:973
 msgid "Show more like this"
 msgstr "Rādīt vairāk šāda satura"
 
@@ -17111,8 +17186,8 @@ msgstr "Rādīt atbildes"
 msgid "Show replies as"
 msgstr "Rādīt atbildes kā"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1047
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1057
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1059
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1069
 msgid "Show reply for everyone"
 msgstr "Rādīt atbildi visiem"
 
@@ -17153,10 +17228,6 @@ msgstr "Rādīt brīdinājumu un filtrēt no plūsmām"
 #: src/components/dialogs/nuxs/LiveNowBetaDialog.tsx:171
 msgid "Show when you’re live"
 msgstr "Rādīt, kad esi tiešraidē"
-
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:167
-msgid "Showcase a badge of any character you are or like on your profile. Only Deltarune characters here right now, more soon.. Tell @kris.kralsei.stream to add more! Also a tenna.party exclusive rn 👀"
-msgstr "Parādi savā profilā nozīmīti ar jebkuru tēlu, kas tu esi vai kas tev patīk. Pagaidām pieejami tikai Deltarune tēli, bet drīzumā būs vēl! Palūdz @kris.kralsei.stream pievienot citus! Pašlaik tikai tenna.party 👀"
 
 #: src/screens/Settings/RunesSettings/DisplaySettings.tsx:328
 msgid "Shown in thread views, collapsed by default"
@@ -17269,8 +17340,8 @@ msgstr "Pieraksties, lai pārvaldītu lietotņu paroles"
 msgid "Sign in to request access to this group chat."
 msgstr "Pieraksties, lai pieprasītu piekļuvi šai grupas čatam."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:945
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:947
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:957
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:959
 msgid "Sign in to view post"
 msgstr "Pieraksties, lai skatītu džaronu"
 
@@ -17343,10 +17414,6 @@ msgstr "Reģistrācija"
 msgid "Since"
 msgstr "Kopš"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:192
-msgid "Since tenna.party and the private post infrastructure is brand new and extremely unstable, some of your posts may fail to sync to our AppView. Tap the button below to sync them."
-msgstr "Tā kā tenna.party un privāto džaronu infrastruktūra ir pavisam jauna un ļoti nestabila, dažas tavas džaronas var nesinhronizēties ar mūsu AppView. Spied tālāk esošo pogu, lai tās sinhronizētu."
-
 #: src/components/Gallery/Storybook.tsx:303
 msgid "Sizes: 100×80, 220×160, 140×240, 180×120, and a wide card of {wideCardSize}×100, which is the gallery width of {galleryWidth} plus 80."
 msgstr "Izmēri: 100×80, 220×160, 140×240, 180×120 un plata kartīte {wideCardSize}×100, kuras platums ir galerijas platums {galleryWidth} plus 80."
@@ -17368,7 +17435,7 @@ msgstr "Izlaist"
 msgid "Skip contact sharing and continue to the app"
 msgstr "Izlaist kontaktu kopīgošanu un turpināt lietotnē"
 
-#: src/view/com/composer/Composer.tsx:2127
+#: src/view/com/composer/Composer.tsx:2136
 msgid "Skip empty posts?"
 msgstr "Izlaist tukšās džaronas?"
 
@@ -17621,7 +17688,7 @@ msgstr "Sports"
 msgid "Spot posts your friends and follows have liked."
 msgstr "Atrodi džaronas, kas patikušas taviem draugiem un sekotajiem kontiem."
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:203
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:199
 msgid "Square"
 msgstr "Kvadrāts"
 
@@ -17629,7 +17696,7 @@ msgstr "Kvadrāts"
 msgid "Square frame"
 msgstr "Kvadrātveida rāmis"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:205
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:201
 msgid "Squircle"
 msgstr "Noapaļots kvadrāts"
 
@@ -17990,7 +18057,7 @@ msgstr "Pārslēgties uz citātu"
 msgid "Switch to reply"
 msgstr "Pārslēgties uz atbildi"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:206
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:228
 msgid "Sync records"
 msgstr "Sinhronizēt ierakstus"
 
@@ -18011,13 +18078,13 @@ msgstr "Sinhronizēt iestatījumus visos kontos"
 msgid "Syncing @{0} ({1}/{2})"
 msgstr "Sinhronizē @{0} ({1}/{2})"
 
-#: src/view/com/composer/Composer.tsx:1559
+#: src/view/com/composer/Composer.tsx:1565
 msgid "Syncing private posts…"
 msgstr "Sinhronizē privātās džaronas…"
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:206
-msgid "Syncing..."
-msgstr "Sinhronizē..."
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:228
+msgid "Syncing…"
+msgstr "Sinhronizē…"
 
 #. placeholder {0}: syncAllProgress.completed
 #. placeholder {1}: syncAllProgress.total
@@ -18371,7 +18438,7 @@ msgstr "Atmosfēra ir atvērtais tīkls, uz kura balstīts Bluesky. Kad cilvēki
 msgid "The author of this thread has hidden this reply."
 msgstr "Šī pavediena autors ir paslēpis šo atbildi."
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:163
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:162
 msgid "The Badge"
 msgstr "Nozīmīte"
 
@@ -18424,7 +18491,7 @@ msgstr "Plūsma „Atklājumi”"
 msgid "The Discover feed now knows what you like"
 msgstr "Plūsma „Atklājumi” tagad zina, kas tev patīk"
 
-#: src/lib/api/index.ts:659
+#: src/lib/api/index.ts:669
 msgid "The event record was not created."
 msgstr "Pasākuma ieraksts netika izveidots."
 
@@ -18509,7 +18576,7 @@ msgstr "Atlasītajam video ir neatbalstīta malu attiecība."
 #: src/view/com/composer/state/video.ts:552
 #: src/view/com/composer/state/video.ts:591
 msgid "The selected video is larger than {VIDEO_MAX_SIZE_MB} MB. Please try again with a smaller file."
-msgstr ""
+msgstr "Atlasītais video ir lielāks par {VIDEO_MAX_SIZE_MB} MB. Lūdzu, mēģini vēlreiz ar mazāku failu."
 
 #: src/view/com/composer/state/video.ts:534
 msgid "The selected video is too long."
@@ -18604,10 +18671,6 @@ msgstr "Dzimšanas datumu drīkst mainīt tikai noteiktu reižu skaitu. Iespēja
 msgid "There is no invite link for this group chat."
 msgstr "Šai grupas čatam nav uzaicinājuma saites."
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:113
-msgid "There is no need to remove emojis from your name, if you decide to use this."
-msgstr "Ja izvēlies izmantot šo funkciju, emoji no sava vārda nav jānoņem."
-
 #: src/screens/Settings/components/DeactivateAccountDialog.tsx:92
 msgid "There is no time limit for account deactivation, come back any time."
 msgstr "Konta deaktivizācijai nav termiņa. Vari atgriezties jebkurā laikā."
@@ -18679,9 +18742,9 @@ msgid "There was an issue updating your feeds, please check your internet connec
 msgstr "Neizdevās atjaunināt tavas plūsmas. Pārbaudi interneta savienojumu un mēģini vēlreiz."
 
 #. placeholder {0}: e.toString()
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:739
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:761
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:780
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:751
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:773
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:792
 #: src/screens/Messages/ConversationSettings/Member.tsx:80
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:114
 #: src/screens/Messages/ConversationSettings/MemberMenu.tsx:127
@@ -18731,9 +18794,13 @@ msgstr "Bluesky pievienojas ļoti daudz jaunu lietotāju! Mēs aktivizēsim tavu
 msgid "These are your default settings"
 msgstr "Šie ir tavi noklusējuma iestatījumi"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:106
-msgid "These customizations are only visible on tenna.party. This is an extremely tiny, practically unheard of subset of users on Bluesky & ATProto."
-msgstr "Šie personalizācijas elementi ir redzami tikai tenna.party. Tā ir ārkārtīgi maza, gandrīz nedzirdēta Bluesky un ATProto lietotāju daļa."
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:105
+msgid "These decorations are only visible on tenna.party."
+msgstr "Šie rotājumi ir redzami tikai vietnē tenna.party."
+
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:195
+msgid "These descriptions are a starting point; people may use these terms differently."
+msgstr "Šie apraksti ir tikai sākumpunkts; cilvēki šos terminus var lietot dažādi."
 
 #. Advanced search filter
 #: src/screens/Search/components/AdvancedSearchDialog/hooks.tsx:51
@@ -18772,7 +18839,7 @@ msgstr "Šis {screenDescription} ir atzīmēts:"
 
 #: src/components/PostControls/index.tsx:300
 #: src/screens/PostThread/components/ReaderSeam.tsx:261
-#: src/view/com/composer/Composer.tsx:475
+#: src/view/com/composer/Composer.tsx:470
 msgid "This account cannot reply to this post"
 msgstr "Šis konts nevar atbildēt uz šo džaronu"
 
@@ -18959,7 +19026,7 @@ msgstr "Šī funkcija ļauj lietotājiem saņemt paziņojumus par tavām jaunaj�
 
 #: src/screens/Settings/components/ExportCarDialog.tsx:170
 msgid "This feature is in beta. You can read more about repository exports in <0>this blogpost</0>."
-msgstr "Šī funkcija ir beta versijā. Vairāk par repozitoriju eksportēšanu vari izlasīt <0>šajā emuāra rakstā</0>."
+msgstr "Šī funkcija ir beta. Vairāk par repozitoriju eksportēšanu vari izlasīt <0>šajā emuāra rakstā</0>."
 
 #: src/lib/hooks/useCleanError.ts:70
 #: src/lib/strings/errors.ts:72
@@ -19083,14 +19150,6 @@ msgstr "Šis saraksts ir tukšs."
 msgid "This looks like a hosting provider (PDS) address, not an AppView. Your PDS is detected from your handle, or set separately under Hosting provider; don’t enter it here!"
 msgstr "Šī izskatās pēc hostinga pakalpojuma (PDS) adreses, nevis AppView. Tavs PDS tiek noteikts pēc lietotājvārda vai atsevišķi iestatīts sadaļā „Hostinga pakalpojums”. Neievadi to šeit!"
 
-#. placeholder {0}: kinType !== 's' ? (CHARACTERS_A_AN[selectedChar] ?? 'a') + ' ' : ''
-#. placeholder {1}: CHARACTERS.find(a => a.value === selectedChar)?.label ?? selectedChar
-#. placeholder {2}: CHARACTERS_FRANCHISES[selectedChar]
-#. placeholder {3}: kinType !== 's' ? ' ' + kinType : ', literally'
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:223
-msgid "This makes you {0}{1} {2}{3}."
-msgstr "Tas padara tevi par {0}{1} {2}{3}."
-
 #: src/components/moderation/ReportDialog/index.tsx:318
 msgid "This moderation service does not support that report reason. Please choose a different reason or moderation service."
 msgstr "Šis moderācijas pakalpojums neatbalsta norādīto ziņošanas iemeslu. Izvēlies citu iemeslu vai moderācijas pakalpojumu."
@@ -19109,7 +19168,7 @@ msgstr "Šis nosaukums ir pārāk garš."
 
 #: src/screens/Settings/RunesSettings/UsabilitySettings.tsx:144
 msgid "This only gets rid of the reminder on app launch, useful if your PDS does not have email verification setup. This does NOT give access to features locked behind email verification."
-msgstr ""
+msgstr "Šī iespēja tikai paslēpj atgādinājumu, atverot lietotni. Tā noder, ja tavā PDS nav iestatīta e-pasta verifikācija. Tā NEDOD piekļuvi funkcijām, kurām ir nepieciešama e-pasta verifikācija."
 
 #: src/components/dms/MessagesListDeletedAccountFooter.tsx:48
 msgid "This person has deactivated, been suspended, or deleted their account. You can read chat history but can’t send new messages."
@@ -19142,11 +19201,11 @@ msgstr "Šī džarona nav pieejama"
 msgid "This post was deleted"
 msgstr "Šī džarona tika izdzēsta"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1192
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1204
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr "Šī džarona tiks paslēpta plūsmās un pavedienos. Šo darbību nevarēs atsaukt."
 
-#: src/view/com/composer/Composer.tsx:1713
+#: src/view/com/composer/Composer.tsx:1722
 msgid "This post's author has disabled quote posts."
 msgstr "Šīs džaronas autors ir atspējojis citēšanas džaronas."
 
@@ -19154,7 +19213,7 @@ msgstr "Šīs džaronas autors ir atspējojis citēšanas džaronas."
 msgid "This profile is only visible to logged-in users. It won't be visible to people who aren't signed in."
 msgstr "Šis profils ir redzams tikai lietotājiem, kuri ir pierakstījušies. Lietotāji, kuri nav pierakstījušies, to neredzēs."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1227
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1239
 msgid "This reply will be sorted into a hidden section at the bottom of your thread and will mute notifications for subsequent replies - both for yourself and others."
 msgstr "Šī atbilde tiks pārvietota uz paslēptu sadaļu tava pavediena apakšā, un tiks izslēgti paziņojumi par turpmākajām atbildēm gan tev, gan citiem."
 
@@ -19169,7 +19228,7 @@ msgstr "Šis pakalpojums nav sniedzis pakalpojuma noteikumus vai privātuma poli
 
 #: src/features/liveNow/index.tsx:199
 msgid "This service is not supported while the Live feature is in beta. Allowed services: {formatted}."
-msgstr "Šis pakalpojums netiek atbalstīts, kamēr tiešraides funkcija ir beta versijā. Atļautie pakalpojumi: {formatted}."
+msgstr "Šis pakalpojums netiek atbalstīts, kamēr tiešraides funkcija ir beta. Atļautie pakalpojumi: {formatted}."
 
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:477
 msgid "This should create a domain record at:"
@@ -19273,7 +19332,7 @@ msgstr "Tiks izveidots jauns saraksts ar tādu pašu nosaukumu, aprakstu un dal�
 msgid "This will delete \"{0}\" from your muted words. You can always add it back later."
 msgstr "Vārds „{0}” tiks noņemts no tava apklusināto vārdu saraksta. Vēlāk to vienmēr varēsi pievienot atpakaļ."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:822
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:834
 msgid "This will delete the original post and open the composer with its content."
 msgstr "Tiks izdzēsta oriģinālā džarona un atvērts redaktors ar tās saturu."
 
@@ -19290,7 +19349,7 @@ msgstr "Tādējādi neatgriezeniski tiks dzēsts tavs Bluesky konts <0>{currentH
 msgid "This will remove @{0} from the quick access list."
 msgstr "@{0} tiks noņemts no ātrās piekļuves saraksta."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1220
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1232
 msgid "This will remove your post from this quote post for all users, and replace it with a placeholder."
 msgstr "Tava džarona tiks noņemta no šīs citēšanas džaronas visiem lietotājiem, un tās vietā tiks parādīts aizstājējs."
 
@@ -19405,7 +19464,7 @@ msgstr "Pārslēgt {label} etiķeti"
 msgid "Toggle captions when available"
 msgstr "Ieslēgt vai izslēgt subtitrus, ja tie pieejami"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:264
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:246
 msgid "Toggle fictionkin badge"
 msgstr "Pārslēgt fictionkin nozīmīti"
 
@@ -19417,7 +19476,7 @@ msgstr "Pārslēgt pilnekrāna režīmu"
 msgid "Toggle intro"
 msgstr "Pārslēgt ievadu"
 
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:288
+#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:270
 msgid "Toggle seeing your own fictionkin badge"
 msgstr "Pārslēgt savas fictionkin nozīmītes redzamību"
 
@@ -19505,8 +19564,8 @@ msgstr "Pārcelt savu tīmekļvietni uz saiti?"
 #: src/components/dms/MessageContextMenu.tsx:193
 #: src/components/Post/Translated/index.tsx:147
 #: src/components/Post/Translated/index.tsx:154
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:922
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:928
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:934
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:940
 msgid "Translate"
 msgstr "Tulkot"
 
@@ -19518,8 +19577,8 @@ msgstr "Iztulkots"
 msgid "Translating"
 msgstr "Tulkošana"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:903
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:905
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:915
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:917
 msgid "Translating…"
 msgstr "Tulko…"
 
@@ -19609,7 +19668,7 @@ msgstr "Izmēģini citu meklēšanas vaicājumu."
 
 #: src/features/inviteFriends/InviteScannerScreen.tsx:221
 #: src/features/inviteFriends/InviteScannerScreen.tsx:226
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:143
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:139
 msgid "Try again"
 msgstr "Mēģināt vēlreiz"
 
@@ -19931,8 +19990,8 @@ msgstr "Beigt apklusināt"
 msgid "Unmute {0}"
 msgstr "Beigt apklusināt {0}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1112
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1118
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1124
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1130
 #: src/view/com/profile/ProfileMenu.tsx:757
 #: src/view/com/profile/ProfileMenu.tsx:763
 msgid "Unmute account"
@@ -19951,8 +20010,8 @@ msgstr "Beigt apklusināt sarakstu"
 msgid "Unmute this group chat"
 msgstr "Beigt apklusināt šo grupas čatu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1004
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1007
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1016
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1019
 msgid "Unmute thread"
 msgstr "Beigt apklusināt pavedienu"
 
@@ -19985,8 +20044,8 @@ msgstr "Atspraust plūsmu"
 msgid "Unpin from home"
 msgstr "Atspraust no sākumlapas"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:843
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:848
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:855
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:860
 msgid "Unpin from profile"
 msgstr "Atspraust no profila"
 
@@ -20033,10 +20092,6 @@ msgstr "Noņemt tēmu no saglabātajām"
 msgid "Unsnooze email reminder"
 msgstr "Atcelt e-pasta atgādinājuma atlikšanu"
 
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:58
-msgid "Unstable"
-msgstr "Nestabils"
-
 #: src/screens/Profile/Header/ProfileHeaderLabeler.tsx:340
 msgid "Unsubscribe"
 msgstr "Atteikties no abonementa"
@@ -20058,7 +20113,7 @@ msgstr "Saraksta abonements atcelts"
 msgid "Unsupported clipboard content"
 msgstr "Neatbalstīts starpliktuves saturs"
 
-#: src/view/com/composer/Composer.tsx:2288
+#: src/view/com/composer/Composer.tsx:2297
 msgid "Unsupported video type: {mimeType}"
 msgstr "Neatbalstīts video tips: {mimeType}"
 
@@ -20122,19 +20177,15 @@ msgstr "Atjaunini savu e-pasta adresi"
 msgid "Update your location"
 msgstr "Atjaunini savu atrašanās vietu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:590
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:602
 msgctxt "toast"
 msgid "Updating quote attachment failed"
 msgstr "Neizdevās atjaunināt citēšanas pielikumu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:639
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:651
 msgctxt "toast"
 msgid "Updating reply visibility failed"
 msgstr "Neizdevās atjaunināt atbildes redzamību"
-
-#: src/screens/Settings/DeltaSettings/components/ProfileFancySettings.tsx:42
-msgid "Upgrade your profile with a decorative ring and colored names! Basically ported from Mu, but with more customization. We added more colors and a PFP shape thingy."
-msgstr "Uzlabojiet savu profilu ar dekoratīvu gredzenu un krāsainiem vārdiem! Būtībā pārnests no Mu, bet ar plašākām personalizācijas iespējām. Pievienojām vairāk krāsu un profila attēla formas izvēli."
 
 #: src/screens/Onboarding/StepProfile/index.tsx:313
 msgid "Upload a photo instead"
@@ -20177,21 +20228,21 @@ msgstr "Augšupielādēt vairākus vienlaikus"
 msgid "Uploaded SRT files will be converted to WebVTT."
 msgstr "Augšupielādētie SRT faili tiks pārveidoti par WebVTT."
 
-#: src/view/com/composer/Composer.tsx:3619
+#: src/view/com/composer/Composer.tsx:3628
 msgid "Uploading GIF..."
 msgstr "Notiek GIF augšupielāde…"
 
-#: src/lib/api/index.ts:743
-#: src/lib/api/index.ts:782
+#: src/lib/api/index.ts:753
+#: src/lib/api/index.ts:792
 msgid "Uploading images..."
 msgstr "Notiek attēlu augšupielāde…"
 
-#: src/lib/api/index.ts:873
-#: src/lib/api/index.ts:897
+#: src/lib/api/index.ts:883
+#: src/lib/api/index.ts:907
 msgid "Uploading link thumbnail..."
 msgstr "Notiek saites sīktēla augšupielāde…"
 
-#: src/view/com/composer/Composer.tsx:3621
+#: src/view/com/composer/Composer.tsx:3630
 msgid "Uploading video..."
 msgstr "Notiek video augšupielāde…"
 
@@ -20556,7 +20607,7 @@ msgid "Video"
 msgstr "Video"
 
 #: src/components/Post/Embed/VideoEmbed/useVideoDownload.ts:36
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:697
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:709
 msgctxt "toast"
 msgid "Video downloaded"
 msgstr "Video lejupielādēts"
@@ -20603,7 +20654,7 @@ msgstr "Video nav atrasts."
 msgid "Video settings"
 msgstr "Video iestatījumi"
 
-#: src/view/com/composer/Composer.tsx:3639
+#: src/view/com/composer/Composer.tsx:3648
 msgid "Video uploaded"
 msgstr "Video augšupielādēts"
 
@@ -20616,8 +20667,8 @@ msgstr "Video: {0}"
 msgid "Videos"
 msgstr "Video"
 
-#: src/view/com/composer/Composer.tsx:722
-#: src/view/com/composer/Composer.tsx:851
+#: src/view/com/composer/Composer.tsx:717
+#: src/view/com/composer/Composer.tsx:846
 #: src/view/com/composer/SelectMediaButton.tsx:447
 msgid "Videos must be 10 minutes or less."
 msgstr "Video nedrīkst būt garāki par 10 minūtēm."
@@ -20626,7 +20677,7 @@ msgstr "Video nedrīkst būt garāki par 10 minūtēm."
 msgid "View"
 msgstr "Skatīt"
 
-#: src/view/com/composer/Composer.tsx:1828
+#: src/view/com/composer/Composer.tsx:1837
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr "Skatīt"
@@ -20789,7 +20840,7 @@ msgid "View PDS information"
 msgstr "Skatīt PDS informāciju"
 
 #: src/features/bluemoji/reactions/notifications.tsx:69
-#: src/view/com/composer/Composer.tsx:1823
+#: src/view/com/composer/Composer.tsx:1832
 msgid "View post"
 msgstr "Skatīt džaronu"
 
@@ -20904,7 +20955,7 @@ msgstr "Skatīt savus apklusinātos kontus"
 msgid "View your verifications"
 msgstr "Skatīt savas verifikācijas"
 
-#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:208
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:204
 msgid "Viewer default"
 msgstr "Noklusējuma skatītājs"
 
@@ -21264,7 +21315,7 @@ msgstr "Diemžēl meklēšanu neizdevās pabeigt. Mēģini vēlreiz pēc dažām
 msgid "We're sorry, you cannot access this screen at this time."
 msgstr "Diemžēl pašlaik nevari piekļūt šim ekrānam."
 
-#: src/view/com/composer/Composer.tsx:1711
+#: src/view/com/composer/Composer.tsx:1720
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr "Diemžēl džarona, uz kuru atbildi, ir dzēsta."
 
@@ -21317,14 +21368,6 @@ msgstr "Laipni lūgts Atmosfērā!"
 #: src/components/dialogs/NewskieDialog/index.tsx:119
 msgid "Welcome, friend!"
 msgstr "Sveicināts, draugs!"
-
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:196
-msgid "Well, Kris doesn't really know, but Googling that wouldn't hurt, right?"
-msgstr "Nu, Kris īsti nezina, bet ieguglēt taču nekaitēs, vai ne?"
-
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:179
-msgid "What are kins? Here's a simple explainer:"
-msgstr "Kas ir kins? Te būs vienkāršs skaidrojums:"
 
 #: src/screens/Onboarding/StepInterests/index.tsx:98
 msgid "What are your interests?"
@@ -21463,8 +21506,7 @@ msgstr "Witchsky pirmkods"
 msgid "witchsky-next"
 msgstr "witchsky-next"
 
-#: src/screens/Settings/DeltaSettings/components/QuickLinks.tsx:61
-#: src/screens/Settings/DeltaSettings/WitchskyNextBranchDebug.tsx:23
+#: src/screens/Settings/DeltaSettings/WitchskyNextBranchDebug.tsx:24
 msgid "witchsky-next debug"
 msgstr "witchsky-next atkļūdošana"
 
@@ -21489,11 +21531,11 @@ msgstr "Vai vēlies saglabāt šo kā melnrakstu, lai rediģētu vēlāk?"
 msgid "Write a post"
 msgstr "Rakstīt džaronu"
 
-#: src/view/com/composer/Composer.tsx:2394
+#: src/view/com/composer/Composer.tsx:2403
 msgid "Write post"
 msgstr "Rakstīt džaronu"
 
-#: src/view/com/composer/Composer.tsx:2226
+#: src/view/com/composer/Composer.tsx:2235
 msgid "Write your Jarona"
 msgstr "Raksti savu džaronu"
 
@@ -21544,11 +21586,11 @@ msgstr "Jā, dzēst manu kontu"
 msgid "Yes, delete this Starter Pack"
 msgstr "Jā, dzēst šo sākuma komplektu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1222
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1234
 msgid "Yes, detach"
 msgstr "Jā, atvienot"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1229
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:1241
 msgid "Yes, hide"
 msgstr "Jā, paslēpt"
 
@@ -21587,11 +21629,11 @@ msgstr "Tu tūlīt pārtrauksi sekot @{handle}."
 msgid "You are accessing Bluesky from a region that legally requires us to verify your age before allowing you to access the app."
 msgstr "Tu piekļūsti Bluesky no reģiona, kur likums pieprasa verificēt tavu vecumu, pirms varam atļaut izmantot lietotni."
 
-#: src/view/com/composer/Composer.tsx:1543
+#: src/view/com/composer/Composer.tsx:1533
 msgid "You are banned from {privatePostsAppViewDID}."
 msgstr "Tev ir bans no {privatePostsAppViewDID}."
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:137
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:162
 msgid "You are banned from publishing private posts to your current Private Vessel instance."
 msgstr "Tev ir aizliegts publicēt privātas džaronas pašreizējā Private Vessel instancē."
 
@@ -21698,6 +21740,10 @@ msgstr "Lietotnes čata iestatījumos vari izvēlēties, vai čata paziņojumiem
 msgid "You can continue ongoing conversations regardless of which setting you choose."
 msgstr "Neatkarīgi no izvēlētā iestatījuma vari turpināt esošās sarunas."
 
+#: src/screens/Settings/DeltaSettings/components/mu/DecorationSettings.tsx:110
+msgid "You can keep emoji in your display name."
+msgstr "Savā redzamajā vārdā vari atstāt emocijzīmes."
+
 #: src/components/dialogs/nuxs/ActivitySubscriptions.tsx:154
 msgid "You can now choose to be notified when specific people post. If there’s someone you want timely updates from, go to their profile and find the new bell icon near the follow button."
 msgstr "Tagad vari izvēlēties saņemt paziņojumus, kad konkrēti lietotāji publicē jaunu saturu. Ja vēlies laikus saņemt jaunumus no kāda lietotāja, atver viņa profilu un atrodi jauno zvana ikonu pie sekošanas pogas."
@@ -21712,7 +21758,7 @@ msgid "You can now sign in with your new password."
 msgstr "Tagad vari pierakstīties ar savu jauno paroli."
 
 #. Toast shown when the user tries to add more images but the post gallery is already at the cap
-#: src/view/com/composer/Composer.tsx:302
+#: src/view/com/composer/Composer.tsx:303
 msgid "You can only add up to {MAX_GALLERY_IMAGES, plural, other {# images}} per post"
 msgstr "Vienai džaronai vari pievienot ne vairāk kā {MAX_GALLERY_IMAGES, plural, other {# attēlus}}"
 
@@ -21936,13 +21982,6 @@ msgstr "Tu pievienojies Bluesky, izmantojot sākuma komplektu, pirms {timeAgoStr
 msgid "You joined Bluesky using a Starter Pack just now"
 msgstr "Tu tikko pievienojies Bluesky, izmantojot sākuma komplektu"
 
-#. placeholder {0}: (CHARACTERS_A_AN[selectedChar] ?? 'a') + ' '
-#. placeholder {1}: CHARACTERS.find(a => a.value === selectedChar)?.label ?? selectedChar
-#. placeholder {2}: CHARACTERS_FRANCHISES[selectedChar] + ' '
-#: src/screens/Settings/DeltaSettings/components/FictonkinBadgeSettings.tsx:215
-msgid "You just want {0}{1} {2}badge on your profile."
-msgstr "Tu vienkārši vēlies {0}{1} {2}nozīmīti savā profilā."
-
 #: src/components/moderation/LabelsOnMeDialog.tsx:86
 msgid "You may appeal non-self labels if you feel they were placed in error."
 msgstr "Ja uzskati, ka etiķetes, kuras neesi piešķīris pats, ir piešķirtas kļūdaini, vari tās pārsūdzēt."
@@ -22052,11 +22091,11 @@ msgstr "Tu vairs neparādīsies šajā sākuma komplektā. Tā veidotājs redzē
 msgid "You will no longer receive notifications for {0}"
 msgstr "Tu vairs nesaņemsi paziņojumus par {0}"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:480
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:492
 msgid "You will no longer receive notifications for this thread"
 msgstr "Tu vairs nesaņemsi paziņojumus par šo pavedienu"
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:471
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:483
 msgid "You will now receive notifications for this thread"
 msgstr "Tagad saņemsi paziņojumus par šo pavedienu"
 
@@ -22149,7 +22188,7 @@ msgstr "Esi sasniedzis aktīvā satura beigas."
 msgid "You've reached the end of your feed! Find some more accounts to follow."
 msgstr "Esi sasniedzis savas plūsmas beigas! Atrodi vēl kontus, kuriem sekot."
 
-#: src/view/com/composer/Composer.tsx:1061
+#: src/view/com/composer/Composer.tsx:1056
 msgid "You've reached the maximum number of drafts"
 msgstr "Esi sasniedzis maksimālo melnrakstu skaitu"
 
@@ -22377,11 +22416,15 @@ msgstr "Tava minimizētā džarona paliks tāda pati, izņemot pašreizējo atbi
 msgid "Your muted words"
 msgstr "Tavi apklusinātie vārdi"
 
+#: src/view/com/composer/PrivatePostBtn.tsx:97
+msgid "Your mutuals can view this post through your private posts server. A public link to it will be shared."
+msgstr "Tavi draugi var skatīt šo ierakstu tavā privāto ierakstu serverī. Publiski tiks kopīgota saite uz šo ierakstu."
+
 #: src/screens/Messages/components/InviteLinkDialog.tsx:209
 msgid "Your name, avatar, the name of the group chat, and the number of members will be visible to everyone."
 msgstr "Tavs vārds, avatārs, grupas čata nosaukums un dalībnieku skaits būs redzams visiem."
 
-#: src/components/PostControls/PostMenu/PostMenuItems.tsx:448
+#: src/components/PostControls/PostMenu/PostMenuItems.tsx:460
 msgid "Your new post was published, but the original could not be replaced."
 msgstr "Tava jaunā džarona tika publicēta, bet oriģinālu neizdevās aizstāt."
 
@@ -22397,7 +22440,7 @@ msgstr "Tava parole ir veiksmīgi nomainīta! Turpmāk izmanto jauno paroli, lai
 msgid "Your password must be at least 8 characters long."
 msgstr "Tavai parolei jābūt vismaz 8 rakstzīmes garai."
 
-#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:126
+#: src/screens/Settings/DeltaSettings/PrivatePostSettings.tsx:151
 msgid "Your PDS does not support atproto spaces."
 msgstr "Tavs PDS neatbalsta atproto spaces."
 
@@ -22414,11 +22457,11 @@ msgstr "Tavas džaronas teksts ir jautājums."
 msgid "Your post was removed"
 msgstr "Tava džarona tika noņemta"
 
-#: src/view/com/composer/Composer.tsx:1819
+#: src/view/com/composer/Composer.tsx:1828
 msgid "Your post was sent"
 msgstr "Tava džarona nosūtīta"
 
-#: src/view/com/composer/Composer.tsx:1816
+#: src/view/com/composer/Composer.tsx:1825
 msgid "Your posts were sent"
 msgstr "Tavas džaronas nosūtītas"
 
@@ -22426,7 +22469,7 @@ msgstr "Tavas džaronas nosūtītas"
 msgid "Your preferred language"
 msgstr "Tava vēlamā valoda"
 
-#: src/view/com/composer/Composer.tsx:1417
+#: src/view/com/composer/Composer.tsx:1412
 msgid "Your Private Vessel instance is unavailable."
 msgstr "Tava Private Vessel instance nav pieejama."
 
@@ -22443,7 +22486,7 @@ msgstr "Tavs profila attēls, ko ieskauj citu lietotāju profila attēlu koncent
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr "Tavs profils, džaronas, plūsmas un saraksti vairs nebūs redzami citiem Bluesky lietotājiem. Kontu varēsi jebkurā laikā atjaunot, pierakstoties."
 
-#: src/view/com/composer/Composer.tsx:1818
+#: src/view/com/composer/Composer.tsx:1827
 msgid "Your reply was sent"
 msgstr "Tava atbilde nosūtīta"
 
@@ -22490,7 +22533,7 @@ msgstr "Tavs statuss var ierobežot dažas konta funkcijas. Pārkāpumu punkti a
 msgid "Your themes"
 msgstr "Tavas tēmas"
 
-#: src/view/com/composer/Composer.tsx:2128
+#: src/view/com/composer/Composer.tsx:2137
 msgid "Your thread has empty posts that will be skipped. The remaining posts will be published as a thread."
 msgstr "Tavā pavedienā ir tukšas džaronas, kuras tiks izlaistas. Pārējās džaronas tiks publicētas kā pavediens."
 

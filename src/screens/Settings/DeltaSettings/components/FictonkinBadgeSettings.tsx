@@ -129,10 +129,6 @@ export function FictionkinBadgeSettings() {
     aqua: 'Deltarune',
   }
 
-  const CHARACTERS_A_AN: {[a: string]: string} = {
-    aqua: 'an',
-  }
-
   const CHARACTERS = [
     {value: 'kris', label: 'Kris'},
     {value: 'susie', label: 'Susie'},
@@ -145,14 +141,17 @@ export function FictionkinBadgeSettings() {
   ]
 
   const KINS = [
-    {value: 'badge', label: 'I just want the Badge'},
-    {value: 's', label: 'Literal'},
-    {value: 'fictive', label: 'Fictive'},
-    {value: 'fictionkin', label: 'Fictionkin'},
-    {value: 'otherkin', label: 'Otherkin'},
+    {value: 'badge', label: l`Just the badge`},
+    {value: 's', label: l`Literal`},
+    {value: 'fictive', label: l`Fictive`},
+    {value: 'fictionkin', label: l`Fictionkin`},
+    {value: 'otherkin', label: l`Otherkin`},
   ]
 
   const canToggle = profile && !updateProfile.isPending
+  const character = CHARACTERS.find(c => c.value === selectedChar)?.label ?? selectedChar
+  const franchise = CHARACTERS_FRANCHISES[selectedChar]
+  const kinLabel = KINS.find(kin => kin.value === kinType)?.label ?? kinType
 
   return (
     <View style={[a.p_xl, a.gap_xl]}>
@@ -165,9 +164,9 @@ export function FictionkinBadgeSettings() {
         </View>
         <Text style={[a.text_md, a.leading_snug]}>
           <Trans>
-            Showcase a badge of any character you are or like on your profile.
-            Only Deltarune characters here right now, more soon.. Tell
-            @kris.kralsei.stream to add more! Also a tenna.party exclusive rn 👀
+            Show a character badge on your profile. Currently, badges are
+            available for a few DELTARUNE characters and are only visible on
+            tenna.party.
           </Trans>
         </Text>
       </View>
@@ -176,7 +175,7 @@ export function FictionkinBadgeSettings() {
         <Admonition type="tip">
           <View>
             <Text>
-              <Trans>What are kins? Here's a simple explainer:</Trans>
+            <Trans>Here’s a brief guide to the kin options:</Trans>
             </Text>
             <Text>
               <Trans>- Fictive: You identify as the character.</Trans>
@@ -194,8 +193,8 @@ export function FictionkinBadgeSettings() {
             </Text>
             <Text style={[a.mt_lg]}>
               <Trans>
-                Well, Kris doesn't really know, but Googling that wouldn't hurt,
-                right?
+                These descriptions are a starting point; people may use these
+                terms differently.
               </Trans>
             </Text>
           </View>
@@ -211,26 +210,9 @@ export function FictionkinBadgeSettings() {
             t.atoms.text_contrast_medium,
             a.leading_snug,
           ]}>
-          {kinType === 'badge' ? (
-            <Trans>
-              You just want {(CHARACTERS_A_AN[selectedChar] ?? 'a') + ' '}
-              {CHARACTERS.find(a => a.value === selectedChar)?.label ??
-                selectedChar}{' '}
-              {CHARACTERS_FRANCHISES[selectedChar] + ' '}
-              badge on your profile.
-            </Trans>
-          ) : (
-            <Trans>
-              This makes you{' '}
-              {kinType !== 's'
-                ? (CHARACTERS_A_AN[selectedChar] ?? 'a') + ' '
-                : ''}
-              {CHARACTERS.find(a => a.value === selectedChar)?.label ??
-                selectedChar}{' '}
-              {CHARACTERS_FRANCHISES[selectedChar]}
-              {kinType !== 's' ? ' ' + kinType : ', literally'}.
-            </Trans>
-          )}
+          <Trans>
+            Selected badge: {character} ({franchise}). Kin: {kinLabel}.
+          </Trans>
           {hideTennaBadge && (
             <Trans> Others will see this badge on your profile.</Trans>
           )}
@@ -239,7 +221,7 @@ export function FictionkinBadgeSettings() {
       {isEnabled && (
         <Text style={[a.text_md, t.atoms.text_contrast_medium, a.leading_snug]}>
           <Trans>
-            Customize some of the options below and tap save to apply the label!
+            Choose your options below, then save to apply the label.
           </Trans>
         </Text>
       )}
@@ -263,7 +245,7 @@ export function FictionkinBadgeSettings() {
           }}
           label={l`Toggle fictionkin badge`}>
           <Toggle.LabelText style={[a.flex_1, a.text_md, a.font_medium]}>
-            <Trans>Enable Badge</Trans>
+            <Trans>Enable badge</Trans>
           </Toggle.LabelText>
           <Toggle.Platform />
         </Toggle.Item>
@@ -287,7 +269,7 @@ export function FictionkinBadgeSettings() {
             }}
             label={l`Toggle seeing your own fictionkin badge`}>
             <Toggle.LabelText style={[a.flex_1, a.text_md, a.font_medium]}>
-              <Trans>Hide it</Trans>
+              <Trans>Hide my badge from myself</Trans>
             </Toggle.LabelText>
             <Toggle.Platform />
           </Toggle.Item>
@@ -356,7 +338,7 @@ export function FictionkinBadgeSettings() {
                   setIsSaved(false)
                 }
               }}
-              label={l`Kin Type`}>
+              label={l`Kin type`}>
               <View style={[a.gap_sm, a.pt_xs]}>
                 {KINS.map(r => (
                   <Toggle.Item key={r.value} name={r.value} label={r.label}>
@@ -381,16 +363,16 @@ export function FictionkinBadgeSettings() {
           disabled={!canToggle || updateProfile.isPending}>
           <ButtonText>
             {updateProfile.isPending ? (
-              <Trans>Saving...</Trans>
+              <Trans>Saving…</Trans>
             ) : (
-              <Trans>Save Changes</Trans>
+              <Trans>Save changes</Trans>
             )}
           </ButtonText>
         </Button>
 
         {isSaved && (
           <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
-            <Trans>Saved successfully!</Trans>
+            <Trans>Saved</Trans>
           </Text>
         )}
       </View>

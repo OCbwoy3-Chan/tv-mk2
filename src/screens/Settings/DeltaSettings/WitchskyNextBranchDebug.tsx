@@ -8,6 +8,7 @@ import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
 import { useDecorationEntitlementQuery } from '#/features/avatarDecorations'
 import { useSession } from '#/state/session'
+import { PrivatePostPlayground } from './components/PrivatePostPlayground'
 
 export function DeltaWitchskyNextBranchDebugScreen() {
   const t = useTheme()
@@ -65,6 +66,7 @@ export function DeltaWitchskyNextBranchDebugScreen() {
               </Text>
             </View>
           </View>
+          <PrivatePostPlayground />
         </View>
       </Layout.Content>
     </Layout.Screen>

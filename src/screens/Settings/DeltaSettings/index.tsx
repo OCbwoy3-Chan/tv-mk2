@@ -35,7 +35,7 @@ export function DeltaSettingsScreen() {
                 a.pb_md,
                 t.atoms.text_contrast_high,
               ]}>
-              App
+              <Trans>App</Trans>
             </Text>
           </View>
           <View

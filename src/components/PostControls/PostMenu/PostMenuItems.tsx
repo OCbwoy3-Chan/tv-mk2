@@ -26,6 +26,7 @@ import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {useOpenLink} from '#/lib/hooks/useOpenLink'
 import {getPostMediaDownloadName} from '#/lib/media/downloadFilename'
 import {saveVideoToDevice} from '#/lib/media/saveVideoToDevice'
+import {parsePrivatePostLink} from '#/lib/private-post-link'
 import {getRedraftImages} from '#/lib/redraft'
 import {getCurrentRoute} from '#/lib/routes/helpers'
 import {makeProfileLink} from '#/lib/routes/links'
@@ -180,6 +181,17 @@ let PostMenuItems = ({
     useToggleReplyVisibilityMutation()
 
   const postUri = post.uri
+  let encryptedRkey: string | undefined
+  if (record.embed?.$type === 'app.bsky.embed.external') {
+    const link = parsePrivatePostLink((record.embed as AppBskyEmbedExternal.Main).external.uri)
+    if (link) {
+      try {
+        const encrypted = new AtUri(link.uri)
+        const wrapper = new AtUri(postUri)
+        if (encrypted.host === wrapper.host && encrypted.rkey === wrapper.rkey && encrypted.collection === 'party.tenna.private.encryptedPost') encryptedRkey = encrypted.rkey
+      } catch {}
+    }
+  }
   const postCid = post.cid
   const postAuthor = useProfileShadow(post.author)
   const quoteEmbed = useMemo(() => {
@@ -224,7 +236,7 @@ let PostMenuItems = ({
   const queryClient = useQueryClient()
 
   const onDeletePost = () => {
-    deletePostMutate({uri: postUri}).then(
+    deletePostMutate({uri: postUri, encryptedRkey}).then(
       () => {
         Toast.show(l({message: 'Post deleted', context: 'toast'}))
 
@@ -426,7 +438,7 @@ let PostMenuItems = ({
                 ? published.value.post
                 : undefined,
               getPost: () => getPost({uri: newUri}),
-              deletePost: () => deletePostMutate({uri: postUri}),
+              deletePost: () => deletePostMutate({uri: postUri, encryptedRkey}),
             })
             const route = getCurrentRoute(navigation.getState())
             if (route.name === 'PostThread') {

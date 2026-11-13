@@ -65,6 +65,7 @@ import {
   createPrivatePost,
   forcePrivatePostsResync,
   getPrivatePostsModStatus,
+  prepareEncryptedPrivatePost,
 } from '#/lib/api/private-posts'
 import {EmbeddingDisabledError} from '#/lib/api/resolve'
 import {useAppState} from '#/lib/appState'
@@ -124,7 +125,6 @@ import {
 import {usePrivatePostsEnabled} from '#/state/preferences/private-posts-enabled'
 import {useTidSuffix} from '#/state/preferences/tid-suffix'
 import {usePreferencesQuery} from '#/state/queries/preferences'
-import {usePrivatePostAvailability} from '#/state/queries/private-posts'
 import {resolveLinkQueryOptions} from '#/state/queries/resolve-link'
 import {
   threadgateViewToAllowUISetting,
@@ -216,6 +216,7 @@ import {BluemojiPickerButton} from '#/features/bluemoji/Picker'
 import {getBluemojiInsertionName} from '#/features/bluemoji/util'
 import {type Gif} from '#/features/gifPicker/types'
 import {app, chat} from '#/lexicons'
+import {device, useStorage} from '#/storage'
 import * as bsky from '#/types/bsky'
 import {
   draftToComposerPosts,
@@ -365,6 +366,9 @@ export const ComposePost = ({
   const queryClient = useQueryClient()
   const currentDid = currentAccount!.did
   const privatePostsEnabled = usePrivatePostsEnabled()
+  const [privatePostsFallbackEnabled] = useStorage(device, [
+    'privatePostsFallbackEnabled',
+  ])
   const [privatePostsAppViewDID] = usePrivatePostsAppViewDID()
   const privatePostsAppViewURL = usePrivatePostsAppViewURL()
   const [postVisibility, setPostVisibility] = useState<PostVisibility>('public')
@@ -376,16 +380,7 @@ export const ComposePost = ({
   const activeAccount = accounts.find(
     account => account.did === activeAccountDid,
   )
-  const privatePostAvailability = usePrivatePostAvailability(
-    activeAccountDid,
-    !!privatePostsEnabled,
-  )
-  const canSelectPrivatePost =
-    !!privatePostsEnabled &&
-    privatePostAvailability.isSuccess &&
-    privatePostAvailability.data.pdsSupported &&
-    !privatePostAvailability.data.isBanned &&
-    activeAccount?.isOauthSession !== true
+  const canSelectPrivatePost = !!privatePostsEnabled
 
   useEffect(() => {
     setActiveAccountDid(initialActiveAccountDid ?? currentDid)
@@ -1417,12 +1412,6 @@ export const ComposePost = ({
         setError(l`Your Private Vessel instance is unavailable.`)
         return
       }
-      if (activeAccount?.isOauthSession === true) {
-        setError(
-          l`OAuth sessions are not currently supported for private posts. Please log in with a password to use this feature.`,
-        )
-        return
-      }
     }
 
     const {type: emptyType, filteredThread} = getFilteredThread()
@@ -1531,7 +1520,8 @@ export const ComposePost = ({
       }
       if (isPrivatePost) {
         const currentAgent = postingAgent ?? pdsAgent(agent)
-        if (!(await isSpacesCompatiblePDS(currentAgent))) {
+        const supportsSpaces = await isSpacesCompatiblePDS(currentAgent)
+        if (!supportsSpaces && !privatePostsFallbackEnabled) {
           throw new Error(l`Private posts not supported by your PDS.`)
         }
         const modStatus = await getPrivatePostsModStatus({
@@ -1548,24 +1538,41 @@ export const ComposePost = ({
           privateDraft.richtext,
         )
         const rkey = TID.nextStr()
-        const privateRecord = await createPrivatePost({
-          agent: currentAgent,
-          rkey,
-          text: resolved.text,
-          facets: resolved.facets,
-          createdAt: new Date().toISOString(),
-        })
-        const space = `at://${currentAgent.assertDid}/space/party.tenna.private.space/self`
-        setPublishingStage(l`Syncing private posts…`)
-        await forcePrivatePostsResync({
-          agent: currentAgent,
-          pdsUrl: currentAccount!.pdsUrl ?? currentAccount!.service,
-          appViewURL: privatePostsAppViewURL!,
-          appViewDID: privatePostsAppViewDID,
-        })
-        const privateUri = `${space}/${currentAgent.assertDid}/party.tenna.private.post/${rkey}`
+        const createdAt = new Date().toISOString()
+        let privateFallback:
+          | {rkey: string; record: {$type: string; encryptedContent: string}}
+          | undefined
+        let privateRecord: {uri: string; cid: string}
+        if (!supportsSpaces) {
+          const encrypted = await prepareEncryptedPrivatePost({
+            appViewURL: privatePostsAppViewURL!,
+            author: currentAgent.assertDid,
+            rkey,
+            text: resolved.text,
+            facets: resolved.facets,
+            createdAt,
+          })
+          privateFallback = {rkey, record: encrypted.record}
+          privateRecord = encrypted
+        } else {
+          privateRecord = await createPrivatePost({
+            agent: currentAgent,
+            rkey,
+            text: resolved.text,
+            facets: resolved.facets,
+            createdAt,
+          })
+          setPublishingStage(l`Syncing private posts…`)
+          await forcePrivatePostsResync({
+            agent: currentAgent,
+            pdsUrl: activeAccount!.pdsUrl ?? activeAccount!.service,
+            appViewURL: privatePostsAppViewURL!,
+            appViewDID: privatePostsAppViewDID,
+          })
+          privateRecord.uri = `at://${currentAgent.assertDid}/space/party.tenna.private.space/self/${currentAgent.assertDid}/party.tenna.private.post/${rkey}`
+        }
         const link = new URL('https://private-post.tenna.party')
-        link.searchParams.set('uri', privateUri)
+        link.searchParams.set('uri', privateRecord.uri)
         link.searchParams.set('cid', privateRecord.cid)
         const wrapper: ThreadDraft = {
           ...filteredThread,
@@ -1574,6 +1581,7 @@ export const ComposePost = ({
               ...privateDraft,
               richtext: new RichText({text: ''}),
               shortenedGraphemeLength: 0,
+              tags: [],
               embed: {
                 quote: undefined,
                 media: undefined,
@@ -1590,6 +1598,7 @@ export const ComposePost = ({
             onStateChange: setPublishingStage,
             omitViaField,
             tidSuffix,
+            privateFallback,
           })
         ).uris[0]
       } else {
@@ -1871,9 +1880,9 @@ export const ComposePost = ({
     composerState.thread.posts,
     isPrivatePost,
     privatePostsEnabled,
+    privatePostsFallbackEnabled,
     privatePostsAppViewURL,
     privatePostsAppViewDID,
-    activeAccount?.isOauthSession,
     omitViaField,
     tidSuffix,
     showEphemeralError,
@@ -2927,6 +2936,13 @@ function ComposerPills({
         bounces={false}
         keyboardShouldPersistTaps="always"
         showsHorizontalScrollIndicator={false}>
+        {canSelectPrivatePost && (
+          <PrivatePostBtn
+            value={postVisibility}
+            enabled
+            onChange={onChangePostVisibility}
+          />
+        )}
         {
           <ThreadgateBtn
             isReply={isReply}
@@ -2992,13 +3008,6 @@ function ComposerPills({
             })
           }}
         />
-        {canSelectPrivatePost && (
-          <PrivatePostBtn
-            value={postVisibility}
-            enabled
-            onChange={onChangePostVisibility}
-          />
-        )}
       </ScrollView>
     </Animated.View>
   )

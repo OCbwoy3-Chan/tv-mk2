@@ -1,4 +1,4 @@
-import {Trans} from '@lingui/react/macro'
+import {Trans, useLingui} from '@lingui/react/macro'
 
 import {
   useHideComposerPrompt,
@@ -10,6 +10,7 @@ import * as Toggle from '#/components/forms/Toggle'
 
 export function DeltasComposerPromptToggle() {
   const t = useTheme()
+  const {t: l} = useLingui()
 
   const hideComposerPrompt = useHideComposerPrompt()
   const setHideComposerPrompt = useSetHideComposerPrompt()
@@ -18,7 +19,7 @@ export function DeltasComposerPromptToggle() {
     <Toggle.Item
       key={'hide_composer_prompt'}
       name={'Hide composer prompt'}
-      label={'Hide composer prompt'}
+      label={l`Hide composer prompt`}
       value={hideComposerPrompt}
       onChange={next => setHideComposerPrompt(next)}
       style={[

@@ -28,7 +28,6 @@ import {CheckThick_Stroke2_Corner0_Rounded as CheckIcon} from '#/components/icon
 import {LinearGradient} from 'expo-linear-gradient'
 import * as Toggle from '#/components/forms/Toggle'
 import {Admonition} from '#/components/Admonition'
-import * as SettingsList from '#/screens/Settings/components/SettingsList'
 
 export function DecorationSettings() {
   const t = useTheme()
@@ -104,15 +103,12 @@ export function DecorationSettings() {
           <View style={[a.gap_sm]}>
             <Text>
               <Trans>
-                These customizations are only visible on tenna.party. This is an
-                extremely tiny, practically unheard of subset of users on
-                Bluesky & ATProto.
+                These decorations are only visible on tenna.party.
               </Trans>
-            </Text>{' '}
+            </Text>
             <Text style={[a.font_bold]}>
               <Trans>
-                There is no need to remove emojis from your name, if you decide
-                to use this.
+                You can keep emoji in your display name.
               </Trans>
             </Text>
           </View>
@@ -192,7 +188,7 @@ export function DecorationSettings() {
               t.atoms.text_contrast_medium,
               a.px_xl,
             ]}>
-            <Trans>PFP shape</Trans>
+            <Trans>Avatar shape</Trans>
           </Text>
           <View style={[a.flex_row, a.flex_wrap, a.gap_sm, a.px_xl]}>
             {[undefined, ...AVATAR_SHAPES].map(item => {
@@ -239,17 +235,19 @@ export function DecorationSettings() {
             ]}>
             <Text
               style={[a.text_2xl, a.font_bold, t.atoms.text_contrast_medium]}>
-              {"Hello, I'm "}
-              <UITextView
-                style={
-                  selected &&
-                  nameGradientTextStyle(selected, {outline: selectedOutline})
-                }>
-                <GradientName gradient={selected} outline={selectedOutline}>
-                  {capitalizedName}
-                </GradientName>
-              </UITextView>
-              {'!'}
+              <Trans>
+                Hello, I’m{' '}
+                <UITextView
+                  style={
+                    selected &&
+                    nameGradientTextStyle(selected, {outline: selectedOutline})
+                  }>
+                  <GradientName gradient={selected} outline={selectedOutline}>
+                    {capitalizedName}
+                  </GradientName>
+                </UITextView>
+                !
+              </Trans>
             </Text>
           </View>
           <Text
