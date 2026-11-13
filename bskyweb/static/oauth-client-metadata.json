@@ -5,7 +5,7 @@
   "redirect_uris": [
     "https://witchsky.app/auth/web/callback"
   ],
-  "scope": "atproto transition:generic transition:email transition:chat.bsky",
+  "scope": "atproto transition:generic transition:email transition:chat.bsky identity:handle",
   "token_endpoint_auth_method": "none",
   "response_types": [
     "code"

@@ -53,20 +53,20 @@ it('keeps the prod client identity and SDK storage when AppView routing changes'
   expect(mockClient).toHaveBeenCalledWith({
     clientMetadata: expect.objectContaining({
       client_id: 'https://witchsky.app/oauth-client-metadata.json',
-      scope: prodScope,
+      scope: `${prodScope} identity:handle`,
     }),
     identityResolver: {},
   })
 })
 
-it('retains the exact prod loopback client ID, including scope encoding', () => {
+it('advertises optional handle access in the loopback client ID', () => {
   const {getWebOAuthClient} = loadClient('localhost', '8081')
   getWebOAuthClient()
   const redirect = 'http://127.0.0.1:8081/'
   expect(mockClient).toHaveBeenCalledWith(
     expect.objectContaining({
       clientMetadata: expect.objectContaining({
-        client_id: `http://localhost?redirect_uri=${encodeURIComponent(redirect)}&scope=${encodeURIComponent(prodScope)}`,
+        client_id: `http://localhost?redirect_uri=${encodeURIComponent(redirect)}&scope=${encodeURIComponent(`${prodScope} identity:handle`)}`,
         redirect_uris: [redirect],
       }),
     }),
