@@ -94,6 +94,7 @@ import {device, useStorage} from '#/storage'
 import {useActivitySubscriptionsNudged} from '#/storage/hooks/activity-subscriptions-nudged'
 import {useDevMode} from '#/storage/hooks/dev-mode'
 import {useHiddenAccountsElsewhere} from '#/storage/hooks/hidden-accounts-elsewhere'
+import { DeltasSettingsButton } from './Deltas/components/DeltasSettingsButton'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Settings'>
 type AccountListItem = {
@@ -519,6 +520,7 @@ export function SettingsScreen({}: Props) {
               <Trans>Languages</Trans>
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
+          <DeltasSettingsButton/>
           <SettingsList.LinkItem to="/settings/runes" label={l`Runes`}>
             <SettingsList.ItemIcon icon={EclipseIcon} />
             <SettingsList.ItemText>

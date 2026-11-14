@@ -11,134 +11,33 @@ Get the app itself:
 <img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png?raw=true"
 alt="Get it on Obtainium" height="54" /></a> -->
 
-## Improvements on Bluesky
+## Enhancements on top of Witchsky
 
-- Cooler name (and kawaii logo)
-- Themes, hue slider, and Material You support
-- OAuth login option
-- Sort/filter accounts in account switchers
-- Hold/right click on interaction buttons to use another account
-- You can change "post" to any phrase you want in the UI
-- Choose between sharing witchsky.app or bsky.app links
-- Embed player works with [stream.place](https://stream.place/) links!
-- Open posts in a configurable ATProto explorer, Skythread, and original bridged fedi instances
-- You can delete and redraft (basically edit!) posts
-- Better defaults (alt text required 😉 autoplay off 🫨)
-- Read your chat threads with deleted/deactivated accounts
-- Unique repost icons in notifications
-- Repost carousels in following feed
-- Can download videos
-- Stable [CSS hooks for browser userstyles](./docs/userstyles.md)
-- Stay on a page when switching accounts
-- 'Mutuals' in place of 'Following' when relevant
-- Pet label (option to toggle, & visibility for everyone else)
-- No unread notifications badge limit (✗30+)
-- No age assurance or blocks based on location
-- No push notifications (hopefully will be added later)
-- Kept as up-to-date as possible (sporadically unstable as a result)
+- More descriptive PDS dialogs
+- 200 max labelers
 
-### Runes
+### TODO: Kris
 
-These are all available as options in the Runes sub-page of the app's settings.
+Deltas:
+- [ ] More customizable post TID/rkey (in composer)
+- [ ] Bypass Bluesky Moderation & blocks when viewing lists
+- [ ] Bypass viewing blocked messages in groupchats
+- [ ] Profile Bages (character + kin selector)
+- [ ] Mod self-labels
+- [ ] Free Eurosky+ Profile Decorations (tenna.party VIP specific)
 
-- Menus
-  - Configure the ATProto explorer name and link used by Open menus
-  - Show Clearsky in profile Open menu
-- Badges
-  - Trusted verifiers
-    - Use own selection of trusted verifiers
-    - Trust verifiers from current AppView
-  - PDS badges
-    - Show a PDS badge next to the display name on profiles
-    - Hide PDS badge for Bluesky-hosted accounts
-    - Change favicon service
-- Impressions
-  - Set visibility (Hidden, Lite, Visible, or Exact) of
-    - Post like, repost, quote, save, and reply counts
-    - Profile follower, following, and post counts
-    - "Followed by" avatars on profiles
-    - Extra "Follows you" label
-- Usability
-  - Feeds
-    - Do not fall back to discover feed
-    - Hide "Feeds ✨" tab when only one feed is selected
-    - Disable composer prompt
-    - Disable top-of-feed button
-    - Show plus icon on unfollowed feed avatars
-    - Hide posts that cannot be replied to from feeds
-  - Profiles
-    - Use handles in profile links instead of DIDs
-    - On non-bsky.social handles, show a link to that URL
-    - Only show URL on handles with working links
-    - Show Germ DM button on profiles
-    - Show standard profile UI on labeler accounts
-    - Disable similar accounts recommendations
-  - Redirect through go.bsky.app
-  - Hide follow button on posts and scrolled profile header
-  - Confirm before following or unfollowing
-  - Disable verify email reminder
-- Display
-  - Also liked
-    - Show "Also liked" recommendations under post replies
-    - Collapse "Also liked" by default
-  - Density
-    - Account switcher
-      - Use compact account switcher
-      - Automatically use compact account switcher with more than 6 accounts
-    - Anything else
-      - Compact posts
-  - Show client used to post
-  - Change custom post phrase
-  - Images
-    - Thumbnail format
-    - Full-size format
-    - Download format
-    - Load especially small images as PNGs
-- Infrastructure
-  - Post translation provider
-    - Google Translate
-    - Kagi Translate
-    - Naver Papago
-    - LibreTranslate
-    - Change LibreTranslate instance
-  - Change image CDN
-  - Change PLC directory
-  - Change Constellation instance
-  - Set custom AppView DID
-- Settings sync
-  - Sync settings between devices
-  - Include OpenRouter API key in synced settings
-  - Push settings to cloud
-  - Load settings from cloud
-- Extra
-  - Fetch records directly from PDS to fix broken quotes
-  - Auto-like what you repost
-  - Disable via repost notifications
-  - Show debug context for posts in Discover feed
-  - Don't include the 'via' field in own posts
-  - Developer mode
-  - Feature gates
+- [ ] Tennalings/Krislings feeds
+  - [ ] Krislings: Algorithm
+  - [ ] Feed settings
+  - [x] Opt-outs & show MDNI post options
+  - [x] Hide MDNI posts by default
 
-### TODO: Xan
+- [ ] Labeler integrations (labeler.tenna.party):
+  - [ ] Opt-in option to client-side negate false or unfaithfully added labels
 
-- [ ] Setup App Linking for Android (.well-known w/ app package fingerprint)
-- [ ] Change followed accounts [on onboarding](https://github.com/blacksky-algorithms/blacksky.community/commit/e36ee43efb4999f070860d7f70122e45b28c1e2b)
-- [ ] Visual replies indicator like the [Firmament userstyle](https://witchsky.app/profile/did:plc:jwhxcrf5uvl3vyw7nurecgt5/post/3m4rr3vzmak2a)
-- [ ] Permit editing Menu options in Runes > Menus (remember [Outlinks page](https://witchsky.app/profile/did:plc:q7suwaz53ztc4mbiqyygbn43/post/3m5zjhhshic2g)?)
-  - [ ] ShareMenuItems.tsx, ShareMenuItems.web.tsx
-- [ ] Add Open bridged OG fedi account page option to ProfileMenu.tsx
-- [ ] Witchsky PDS and .social site (list good songs containing 'bitch' in their titles on related site)
-
-### Upcoming or wishful features
-
-- [ ] Collapse labels past a customizable number (from the same labeler?) into a labeler clip "(+)"
-- [ ] Submit releases to the Google Play Store and iOS App Store
-- [ ] Move from [Cloudflare Pages](https://pages.cloudflare.com/) to [wisp.place](https://wisp.place/) (needs serverless for embeds)
-- [ ] Move Terms and Privacy policy to Jollywhoppers.com
-- [ ] Ignore `!no-unauthenticated` labels
-- [ ] Better OpenGraph support for sharing profiles & posts (including videos & fixing quotes)
-- [ ] Seeing past blocks in threads (the nuclear block in reply chains)
-
+- [ ] Labeler integrations (labeler.unlabeled.fyi):
+  - [ ] Apply the 🔞 badge on MDNI users (if they don't have 🔞 in their display name)
+  - [ ] Tennalings/Krislings: Use MDNI labels instead of matching text on profile
 
 ## Development Resources
 
@@ -201,8 +100,8 @@ Self hosting is great! It is our intention that Witchsky is easy to self host an
 
 ## Security disclosures
 
-If you discover any security issues, please privately disclose them to [xan.lol](https://xan.lol/).
-If the issue pertains to infastructure, code, or systems outside the scope of Witchsky, please refer to the [disclosure guidelines on social-app](https://github.com/bluesky-social/social-app#security-disclosures) if it is hosted by Bluesky PBC. Otherwise, reference the security policy of that system as applicable <3
+If you discover any security issues present in tenna.party that is not present in Witchsky, please privately disclose them to @kris.kralsei.stream.
+If the issue pertains to infastructure, code, or systems outside the scope of Witchsky or tenna.party, please refer to the [disclosure guidelines on social-app](https://github.com/bluesky-social/social-app#security-disclosures) if it is hosted by Bluesky PBC. Otherwise, reference the security policy of that system as applicable <3
 
 ## License (MIT)
 
@@ -216,4 +115,4 @@ Bluesky Social PBC has committed to a software patent non-aggression pledge. For
 
 ## P.S.
 
-We ❤️ you and all of the ways you support us. Thank you for making Witchsky so great! ^.^
+We ❤️ you and all of the ways you support us. Thank you for making Witchsky and tenna.party so great! ^.^

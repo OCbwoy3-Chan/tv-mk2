@@ -3,6 +3,7 @@ import {type NativeStackNavigationProp} from '@react-navigation/native-stack'
 
 import {type SearchFilters} from '#/screens/Search/searchParams'
 import {type VideoFeedSourceContext} from '#/screens/VideoFeed/types'
+import { DeltasNavigatorParams } from '#/deltas/DeltasNavigation'
 
 export type {NativeStackScreenProps} from '@react-navigation/native-stack'
 
@@ -210,7 +211,7 @@ export type AllNavigatorParams = CommonNavigatorParams & {
 // this isn't strictly correct but it should be close enough
 // a TS wizard might be able to get this 100%
 // -prf
-export type NavigationProp = NativeStackNavigationProp<AllNavigatorParams>
+export type NavigationProp = NativeStackNavigationProp<AllNavigatorParams & DeltasNavigatorParams> // KRIS
 
 export type State =
   NavigationState | Omit<PartialState<NavigationState>, 'stale'>

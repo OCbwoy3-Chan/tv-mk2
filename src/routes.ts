@@ -1,4 +1,5 @@
 import {Router} from '#/lib/routes/router'
+import { DeltasRoutes } from './deltas/DeltasNavigation'
 import {type FlatNavigatorParams} from './lib/routes/types'
 
 type AllNavigatableRoutes = Omit<
@@ -7,6 +8,7 @@ type AllNavigatableRoutes = Omit<
 >
 
 export const router = new Router<AllNavigatableRoutes>({
+  ...DeltasRoutes,
   Home: ['/', '/download'],
   AuthCallback: '/auth/web/callback',
   Search: '/search',

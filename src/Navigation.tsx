@@ -143,6 +143,7 @@ import {setNavigationMetadata} from '#/analytics/metadata'
 import {IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
 import {HomeScreen} from '#/features/followingV2/home'
 import {router} from '#/routes'
+import { DeltasCommonStacks } from './deltas/DeltasNavigation'
 
 function deferredNamedScreen<
   Name extends string,
@@ -402,6 +403,13 @@ function commonScreens(Stack: typeof Flat, unreadCountLabel?: string) {
 
   return (
     <>
+      {DeltasCommonStacks({
+        props:{
+          Stack: Stack as never,
+          unreadCountLabel,
+          title
+        }
+      })}
       <Stack.Screen
         name="NotFound"
         getComponent={() => NotFoundScreen}
