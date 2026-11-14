@@ -14,7 +14,7 @@ export const BSKY_SERVICE_DID = 'did:web:bsky.social'
 export const PUBLIC_BSKY_SERVICE =
   ENV_PUBLIC_BSKY_SERVICE || 'https://public.api.bsky.app'
 export const DEFAULT_SERVICE = BSKY_SERVICE
-export const HELP_DESK_URL = `https://tangled.org/jollywhoppers.com/witchsky.app/`
+export const HELP_DESK_URL = `https://tangled.org/did:plc:3thjdgidhlxp7qzhffroeece`
 export const CHAT_SERVICE = 'https://api.bsky.chat'
 export const EMBED_SERVICE = 'https://embed.bsky.app'
 export const EMBED_SCRIPT = `${EMBED_SERVICE}/static/embed.js`
@@ -169,7 +169,7 @@ export const TRENDING_DID = 'did:plc:qrz3lhbyuxbeilrc6nekdqme'
 export const TRENDING_HANDLE = 'trending.bsky.app'
 
 export const DISCOVER_FEED_URI =
-  'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot'
+  'at://did:web:vessel.darkworld.download/app.bsky.feed.generator/tennalings'
 export const VIDEO_FEED_URI =
   'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/thevids'
 export const STAGING_VIDEO_FEED_URI =

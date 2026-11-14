@@ -2,6 +2,12 @@
   "applinks": {
     "details": [
       {
+        "appID": "B3LX46C5HS.party.tenna",
+        "paths": [
+          "*"
+        ]
+      },
+      {
         "appID": "B3LX46C5HS.app.witchsky",
         "paths": [
           "*"
@@ -10,6 +16,9 @@
     ]
   },
   "appclips": {
-    "apps": ["B3LX46C5HS.app.witchsky.AppClip"]
+    "apps": [
+      "B3LX46C5HS.party.tenna.AppClip",
+      "B3LX46C5HS.app.witchsky.AppClip"
+    ]
   }
 }

@@ -7,6 +7,7 @@ export const MATERIAL_YOU_SPECIAL = `${THEME_DEFS}#materialYou` as const
 export const HUE_SPECIAL = `${THEME_DEFS}#hue` as const
 
 /** Stable TID-keyed record; its collection items can change independently. */
+export const TENNA_PARTY_THEME_COLLECTION_URI = `at://did:web:vessel.darkworld.download/${THEME_GROUP_COLLECTION}/3mv3iy7lipl22`
 export const FEATURED_THEME_COLLECTION_URI = `at://witchsky.app/${THEME_GROUP_COLLECTION}/3mu4wp2pxkc2q`
 export const BLUESKY_FORKS_THEME_COLLECTION_URI = `at://witchsky.app/${THEME_GROUP_COLLECTION}/3munq7ft6g522`
 
@@ -22,8 +23,16 @@ export const FEATURED_THEME_COLLECTION_URIS: Record<
   ThemeMode,
   readonly string[]
 > = {
-  light: [FEATURED_THEME_COLLECTION_URI, BLUESKY_FORKS_THEME_COLLECTION_URI],
-  dark: [FEATURED_THEME_COLLECTION_URI, BLUESKY_FORKS_THEME_COLLECTION_URI],
+  light: [
+    TENNA_PARTY_THEME_COLLECTION_URI,
+    FEATURED_THEME_COLLECTION_URI,
+    BLUESKY_FORKS_THEME_COLLECTION_URI,
+  ],
+  dark: [
+    TENNA_PARTY_THEME_COLLECTION_URI,
+    FEATURED_THEME_COLLECTION_URI,
+    BLUESKY_FORKS_THEME_COLLECTION_URI,
+  ],
 }
 
 /** Semantic roles intentionally describe UI usage instead of palette math. */

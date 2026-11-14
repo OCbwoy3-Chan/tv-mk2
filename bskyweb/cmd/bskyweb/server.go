@@ -630,7 +630,10 @@ func (srv *Server) oauthClientMetadata(c echo.Context, native bool) error {
 	}
 	metadata["client_id"] = baseURL + "/" + filename
 	metadata["client_uri"] = baseURL
-	if !native {
+	host := strings.ToLower(strings.Split(c.Request().Host, ":")[0])
+	if native && host != "tenna.party" && !strings.HasSuffix(host, ".tenna.party") {
+		metadata["redirect_uris"] = []string{"app.witchsky:/auth/callback"}
+	} else if !native {
 		metadata["redirect_uris"] = []string{baseURL + "/auth/web/callback"}
 	}
 	c.Response().Header().Set("Cache-Control", "public, max-age=300")

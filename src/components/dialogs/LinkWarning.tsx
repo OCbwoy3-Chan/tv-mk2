@@ -80,7 +80,7 @@ function LinkWarningDialogInner({
       label={
         potentiallyMisleading
           ? _(msg`Potentially misleading link warning`)
-          : _(msg`Leaving Witchsky`)
+          : _(msg`Leaving tenna.party`)
       }>
       <View style={[a.gap_2xl]}>
         <View style={[a.gap_sm]}>
@@ -88,7 +88,7 @@ function LinkWarningDialogInner({
             {potentiallyMisleading ? (
               <Trans>Potentially misleading link</Trans>
             ) : (
-              <Trans>Leaving Witchsky</Trans>
+              <Trans>Leaving tenna.party</Trans>
             )}
           </Text>
           <Text style={[t.atoms.text_contrast_high, a.text_md, a.leading_snug]}>

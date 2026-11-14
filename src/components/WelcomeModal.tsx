@@ -115,7 +115,7 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       a.user_select_none,
                       {color: 'rgb(42, 40, 40)', letterSpacing: -0.5},
                     ]}>
-                    Witchsky
+                    tenna.party
                   </Text>
                 </View>
               </View>
@@ -144,11 +144,11 @@ export function WelcomeModal({control}: WelcomeModalProps) {
                       letterSpacing: -0.5,
                     }),
                   ]}>
-                  <Trans>Real talk.</Trans>
+                  <Trans>Real games.</Trans>
                   {'\n'}
-                  <Trans>Real creatures.</Trans>
+                  <Trans>Real audience.</Trans>
                   {'\n'}
-                  <Trans>Social media if it was good.</Trans>
+                  <Trans>Bluesky if it was good.</Trans>
                 </Text>
               </View>
               <View style={[a.gap_md, a.align_center]}>

@@ -13,7 +13,7 @@ import {useSession} from '#/state/session'
 import {useIsDrawerOpen, useSetDrawerOpen} from '#/state/shell'
 import {useCloseAllActiveElements} from '#/state/util'
 import {ErrorBoundary} from '#/view/com/util/ErrorBoundary'
-import {LOGO_PATH, LOGO_VIEW_BOX} from '#/view/icons/Logo'
+import {TENNA_LOGO_SVG} from '#/view/icons/tennaLogo'
 import {Deactivated} from '#/screens/Deactivated'
 import {Takendown} from '#/screens/Takendown'
 import {atoms as a, select, useBreakpoints, useTheme} from '#/alf'
@@ -78,9 +78,8 @@ function selectionTextColor(
   return scheme === 'dark' ? canvas : text
 }
 
-function createFaviconDataUrl(color: string, outline: string) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEW_BOX}"><path fill="${color}" stroke="${outline}" stroke-width="1.5" stroke-linejoin="round" paint-order="stroke fill" d="${LOGO_PATH}"/></svg>`
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+function createFaviconDataUrl() {
+  return `data:image/svg+xml,${encodeURIComponent(TENNA_LOGO_SVG)}`
 }
 
 function upsertHeadLink({
@@ -182,10 +181,7 @@ function ShellInner() {
   }, [t.palette.primary_500])
 
   useLayoutEffect(() => {
-    const faviconHref = createFaviconDataUrl(
-      t.palette.primary_500,
-      t.palette.contrast_1000,
-    )
+    const faviconHref = createFaviconDataUrl()
 
     upsertHeadLink({
       rel: 'icon',

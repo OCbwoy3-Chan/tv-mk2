@@ -9,7 +9,6 @@ import {useFocusEffect} from '@react-navigation/native'
 
 import {
   DISCOVER_FEED_URI,
-  PROD_DEFAULT_FEED,
   TIMELINE_SAVED_FEED,
 } from '#/lib/constants'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
@@ -242,7 +241,7 @@ function HomeScreenReady({
                 displayName: 'Following',
                 uri: TIMELINE_SAVED_FEED.value,
               },
-              {displayName: 'Discover', uri: DISCOVER_FEED_URI},
+              {displayName: 'Tennalings', uri: DISCOVER_FEED_URI},
             ]}
           />
         )
@@ -299,7 +298,7 @@ function HomeScreenReady({
           testID="customFeedPage"
           isPageFocused
           isPageAdjacent={false}
-          feed={`feedgen|${PROD_DEFAULT_FEED('whats-hot')}`}
+          feed={`feedgen|${DISCOVER_FEED_URI}`}
           renderEmptyState={renderCustomFeedEmptyState}
           feedInfo={pinnedFeedInfos[0]}
         />
@@ -362,7 +361,7 @@ function HomeScreenReady({
         testID="customFeedPage"
         isPageFocused
         isPageAdjacent={false}
-        feed={`feedgen|${PROD_DEFAULT_FEED('whats-hot')}`}
+        feed={`feedgen|${DISCOVER_FEED_URI}`}
         renderEmptyState={renderCustomFeedEmptyState}
         feedInfo={pinnedFeedInfos[0]}
       />

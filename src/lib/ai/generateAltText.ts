@@ -67,8 +67,8 @@ export async function generateAltText(
     headers.Authorization = `Bearer ${apiKey}`
   }
   if (config.provider === 'openrouter') {
-    headers['HTTP-Referer'] = 'https://witchsky.app'
-    headers['X-Title'] = 'Witchsky'
+    headers['HTTP-Referer'] = 'https://tenna.party'
+    headers['X-Title'] = 'tenna.party'
   }
 
   const response = await fetch(getChatCompletionsUrl(config.baseUrl), {

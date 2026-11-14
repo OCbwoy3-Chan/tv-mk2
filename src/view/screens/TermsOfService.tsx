@@ -29,8 +29,8 @@ export const TermsOfServiceScreen = (_props: Props) => {
             <Trans>The Terms of Service have been moved to</Trans>{' '}
             <TextLink
               style={pal.link}
-              href="https://witchsky.app/about/tos"
-              text="witchsky.app/about/tos"
+              href="https://tenna.party/about/tos"
+              text="tenna.party/about/tos"
             />
           </Text>
         </View>

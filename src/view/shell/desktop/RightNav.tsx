@@ -115,14 +115,14 @@ export function DesktopRightNav({routeName}: {routeName: string}) {
           </>
         )}
         <InlineLinkText
-          to="https://witchsky.app/about/privacy"
+          to="https://tenna.party/about/privacy"
           style={[t.atoms.text_contrast_medium]}
           label={_(msg`Privacy`)}>
           {_(msg`Privacy`)}
         </InlineLinkText>
         <Text style={[t.atoms.text_contrast_low]}>{' ∙ '}</Text>
         <InlineLinkText
-          to="https://witchsky.app/about/tos"
+          to="https://tenna.party/about/tos"
           style={[t.atoms.text_contrast_medium]}
           label={_(msg`Terms`)}>
           {_(msg`Terms`)}
@@ -133,6 +133,14 @@ export function DesktopRightNav({routeName}: {routeName: string}) {
           to={HELP_DESK_URL}
           style={[t.atoms.text_contrast_medium]}>
           {_(msg`Code`)}
+        </InlineLinkText>
+      </Text>
+      <Text style={[a.leading_snug, t.atoms.text_contrast_low]}>
+        <InlineLinkText
+          label={_(msg`Join the tenna.party Fluxer`)}
+          to={"https://fluxer.gg/4x3SR8Ui"}
+          style={[t.atoms.text_contrast_medium]}>
+          {_(msg`Community`)}
         </InlineLinkText>
       </Text>
 

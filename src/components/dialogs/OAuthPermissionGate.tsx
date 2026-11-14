@@ -108,8 +108,8 @@ export function OAuthPermissionGate({
       </Text>
       <Text>
         {permission === 'handle'
-          ? l`Allow Witchsky to change your handle to continue.`
-          : l`Allow Witchsky to view and verify your email address to continue.`}
+          ? l`Allow tenna.party to change your handle to continue.`
+          : l`Allow tenna.party to view and verify your email address to continue.`}
       </Text>
       {error ? <Admonition type="error">{error}</Admonition> : null}
       {!granted && !error ? (

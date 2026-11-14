@@ -98,13 +98,13 @@ export function RunesUsabilityFeedSettingsScreen() {
       </SettingsList.Item>
       <Toggle.Item
         name="no_discover_fallback"
-        label={l`Do not fall back to discover feed`}
+        label={l`Do not fall back to Tennalings feed`}
         value={noDiscoverFallback}
         onChange={value => setNoDiscoverFallback(value)}>
         <SettingsList.Item>
           <SettingsList.ItemIcon icon={EyeSlashIcon} />
           <SettingsList.ItemText>
-            <Trans>Do not fall back to discover feed</Trans>
+            <Trans>Do not fall back to Tennalings feed</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

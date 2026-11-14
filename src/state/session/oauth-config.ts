@@ -80,7 +80,7 @@ export function buildOAuthScope(
 
 export function createOAuthMetadata({
   baseUrl,
-  clientName = 'Witchsky',
+  clientName = 'tenna.party',
   native = false,
   appview = DEFAULT_APPVIEW_AUDIENCE,
   chat = DEFAULT_CHAT_AUDIENCE,
@@ -91,7 +91,8 @@ export function createOAuthMetadata({
   appview?: string
   chat?: string
 }) {
-  baseUrl = new URL(baseUrl).origin
+  const origin = new URL(baseUrl)
+  baseUrl = origin.origin
   for (const audience of [appview, chat]) {
     if (
       !/^did:(plc:[a-z2-7]{24}|web:[A-Za-z0-9._:%-]+)#[A-Za-z0-9._-]+$/.test(
@@ -111,9 +112,15 @@ export function createOAuthMetadata({
     client_id: clientId.href,
     client_name: clientName,
     client_uri: baseUrl,
-    redirect_uris: [
-      native ? NATIVE_REDIRECT_URI : `${baseUrl}/auth/web/callback`,
-    ] as [string],
+    redirect_uris: native
+      ? ([
+          NATIVE_REDIRECT_URI,
+          ...(origin.hostname === 'tenna.party' ||
+          origin.hostname.endsWith('.tenna.party')
+            ? ['party.tenna:/auth/callback', 'app.tennaparty:/auth/callback']
+            : []),
+        ] as [string, ...string[]])
+      : ([`${baseUrl}/auth/web/callback`] as [string, ...string[]]),
     scope: buildOAuthScope(appview, chat, ['handle', 'email']),
     token_endpoint_auth_method: 'none' as const,
     response_types: ['code'] as ['code'],

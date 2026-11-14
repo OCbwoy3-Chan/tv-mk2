@@ -9,13 +9,13 @@ export default function (ctx: AppContext, app: Express) {
         apps: [],
         details: [
           {
-            appID: 'B3LX46C5HS.app.witchsky',
+            appID: 'B3LX46C5HS.party.tenna',
             paths: ['*'],
           },
         ],
       },
       appclips: {
-        apps: ['B3LX46C5HS.app.witchsky.AppClip'],
+        apps: ['B3LX46C5HS.party.tenna.AppClip'],
       },
     })
   })

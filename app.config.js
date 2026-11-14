@@ -30,6 +30,8 @@ module.exports = function (_config) {
     'applinks:mu.social',
     'applinks:blacksky.community',
     'applinks:northsky.app',
+    'applinks:tenna.party',
+    'applinks:cope.works',
     // When testing local services, enter an ngrok (et al) domain here. It must use a standard HTTP/HTTPS port.
     ...(IS_DEV || IS_TESTFLIGHT ? [] : []),
   ]
@@ -51,29 +53,29 @@ module.exports = function (_config) {
 
   const IOS_ICON_FILE =
     PLATFORM === 'web' // web build doesn't like .icon files
-      ? './assets/app-icons/ios_icon_legacy_light.png'
+      ? './assets/app-icons/tenna/ios_icon_legacy_light.png'
       : IS_TESTFLIGHT
-        ? './assets/app-icons/ios_icon_testflight.icon'
-        : './assets/app-icons/ios_icon_default.icon'
+        ? './assets/app-icons/tenna/ios_icon_testflight.icon'
+        : './assets/app-icons/tenna/ios_icon_default.icon'
 
   return {
     expo: {
       version: VERSION,
-      name: 'Witchsky',
-      slug: 'witchsky',
-      scheme: ['bluesky', 'witchsky', 'app.witchsky'],
+      name: 'tenna.party',
+      slug: 'tennaparty',
+      scheme: ['bluesky', 'witchsky', 'app.witchsky', 'tenna', 'app.tennaparty', 'party.tenna'],
       // owner: 'blueskysocial',
       // owner: 'neema.brown',
       runtimeVersion: {
         policy: 'appVersion',
       },
-      icon: './assets/app-icons/ios_icon_legacy_light.png',
+      icon: './assets/app-icons/tenna/ios_icon_legacy_light.png',
       userInterfaceStyle: 'automatic',
       primaryColor: '#ED5345',
       ios: {
         supportsTablet: true,
-        bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
-        appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'TODO: Xan',
+        bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID || 'party.tenna',
+        appleTeamId: process.env.WITCHSKY_APPLE_TEAM_ID || 'B3LX46C5HS',
         buildNumber: IOS_BUILD_NUMBER,
         config: {
           usesNonExemptEncryption: false,
@@ -98,7 +100,7 @@ module.exports = function (_config) {
             'Used to save images to your library.',
           NSPhotoLibraryUsageDescription:
             'Used for profile pictures, posts, and other kinds of content',
-          CFBundleSpokenName: 'witchsky.app',
+          CFBundleSpokenName: 'tenna.party',
           CFBundleLocalizations: [
             'en',
             'an',
@@ -150,7 +152,7 @@ module.exports = function (_config) {
           'com.apple.security.application-groups': process.env
             .WITCHSKY_BUNDLE_ID
             ? `group.${process.env.WITCHSKY_BUNDLE_ID}`
-            : 'group.app.witchsky',
+            : 'group.party.tenna',
           'com.apple.developer.usernotifications.communication': true,
           // 'com.apple.developer.device-information.user-assigned-device-name': true,
           'com.apple.developer.declared-age-range': true,
@@ -208,14 +210,14 @@ module.exports = function (_config) {
         },
       },
       android: {
-        icon: './assets/app-icons/android_icon_legacy_light.png',
+        icon: './assets/app-icons/tenna/android_icon_legacy_light.png',
         adaptiveIcon: {
           foregroundImage: './assets/icon-android-foreground.png',
           monochromeImage: './assets/icon-android-monochrome.png',
-          backgroundColor: '#ED5345',
+          backgroundColor: '#EDBC1A',
         },
         googleServicesFile: './google-services.json',
-        package: process.env.WITCHSKY_BUNDLE_ID || 'app.witchsky',
+        package: process.env.WITCHSKY_BUNDLE_ID || 'app.tennaparty',
         versionCode: Number.isFinite(ANDROID_VERSION_CODE)
           ? ANDROID_VERSION_CODE
           : 1,
@@ -247,6 +249,14 @@ module.exports = function (_config) {
               {
                 scheme: 'https',
                 host: 'northsky.app',
+              },
+              {
+                scheme: 'https',
+                host: 'tenna.party',
+              },
+              {
+                scheme: 'https',
+                host: 'cope.works',
               },
               ...(IS_DEV
                 ? [
@@ -502,21 +512,21 @@ module.exports = function (_config) {
           {
             ios: {
               backgroundColor: '#fefbfb',
-              image: './assets/splash/witchsky.png',
+              image: './assets/logo.png',
               resizeMode: 'contain',
               dark: {
                 backgroundColor: '#281c1c',
-                image: './assets/splash/witchsky.png',
+                image: './assets/logo.png',
                 resizeMode: 'contain',
               },
             },
             android: {
               backgroundColor: '#fefbfb',
-              image: './assets/splash/witchsky.png',
+              image: './assets/logo.png',
               imageWidth: 102, // even division of 306px
               dark: {
                 backgroundColor: '#281c1c',
-                image: './assets/splash/witchsky.png',
+                image: './assets/logo.png',
                 imageWidth: 102,
               },
             },
@@ -529,13 +539,60 @@ module.exports = function (_config) {
              * Default set
              */
             default_light: {
-              ios: './assets/app-icons/ios_icon_legacy_light.png',
-              android: './assets/app-icons/android_icon_legacy_light.png',
+              ios: './assets/app-icons/tenna/ios_icon_legacy_light.png',
+              android: './assets/app-icons/tenna/android_icon_legacy_light.png',
               prerendered: true,
             },
             default_dark: {
-              ios: './assets/app-icons/ios_icon_legacy_dark.png',
-              android: './assets/app-icons/android_icon_legacy_dark.png',
+              ios: './assets/app-icons/tenna/ios_icon_legacy_dark.png',
+              android: './assets/app-icons/tenna/android_icon_legacy_dark.png',
+              prerendered: true,
+            },
+
+            mu_light: {
+              ios: './assets/app-icons/mu/ios_icon_legacy_light.png',
+              android: './assets/app-icons/mu/android_icon_legacy_light.png',
+              prerendered: true,
+            },
+            mu_dark: {
+              ios: './assets/app-icons/mu/ios_icon_legacy_dark.png',
+              android: './assets/app-icons/mu/android_icon_legacy_dark.png',
+              prerendered: true,
+            },
+            liquid_glass_r: {
+              ios: './assets/app-icons/roblox/ios_icon_roblox_classic.png',
+              android: './assets/app-icons/roblox/android_icon_roblox_classic.png',
+              prerendered: true,
+            },
+            liquid_glass_o: {
+              ios: './assets/app-icons/roblox/ios_icon_roblox.png',
+              android: './assets/app-icons/roblox/android_icon_roblox.png',
+              prerendered: true,
+            },
+            roblox_hollow: {
+              ios: './assets/app-icons/roblox/ios_icon_roblox_hollow.png',
+              android: './assets/app-icons/roblox/android_icon_roblox_hollow.png',
+              prerendered: true,
+            },
+            liquid_glass_bluesky: {
+              ios: './assets/app-icons/bsky/ios_icon_bluesky_liquid_glass.png',
+              android:
+                './assets/app-icons/bsky/android_icon_bluesky_legacy_light.png',
+              prerendered: true,
+            },
+            testflight: {
+              ios: './assets/app-icons/tenna/ios_icon_testflight.png',
+              android: './assets/app-icons/tenna/android_icon_testflight.png',
+              prerendered: true,
+            },
+            bluesky_dark: {
+              ios: './assets/app-icons/bsky/ios_icon_bluesky_legacy_dark.png',
+              android: './assets/app-icons/bsky/android_icon_bluesky_legacy_dark.png',
+              prerendered: true,
+            },
+            bluesky_testflight: {
+              ios: './assets/app-icons/bsky/ios_icon_bluesky_testflight.png',
+              android: './assets/app-icons/bsky/android_icon_bluesky_testflight.png',
               prerendered: true,
             },
 

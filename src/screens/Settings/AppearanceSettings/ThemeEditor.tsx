@@ -555,7 +555,7 @@ export function ThemeEditorScreen({route, navigation}: Props) {
             <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
               <Trans>
                 Optional. After publishing a theme for the opposite appearance
-                mode, paste its Witchsky link or AT URI here so people can use
+                mode, paste its tenna.party link or AT URI here so people can use
                 the two together.
               </Trans>
             </Text>

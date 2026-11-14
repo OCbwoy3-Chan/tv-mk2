@@ -5,7 +5,7 @@ export type EventRef = {actor: string; rkey: string}
 const RKEY_RE = /^[a-zA-Z0-9._:~-]{1,512}$/
 
 /** Our own `web` domain, so witchsky.app event links from anyone resolve to a card. */
-const OWN_HOSTS = new Set(['witchsky.app'])
+const OWN_HOSTS = new Set(['tenna.party', 'witchsky.app'])
 
 /**
  * Recognises event links from witchsky, Blacksky, atmo.rsvp and Smoke Signal
@@ -68,5 +68,5 @@ export function makeEventUrl(
   creator: {did: string; handle?: string},
   rkey: string,
 ) {
-  return `https://witchsky.app${makeEventLink(creator, rkey)}`
+  return `https://tenna.party${makeEventLink(creator, rkey)}`
 }

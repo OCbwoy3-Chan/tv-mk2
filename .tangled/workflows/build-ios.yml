@@ -1,6 +1,6 @@
 when:
   - event: ["manual"]
-    branch: ["main"]
+    branch: ["actual-release"]
 
 engine: "nixery"
 

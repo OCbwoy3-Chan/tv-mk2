@@ -95,7 +95,7 @@ export const SplashScreen = ({
                   a.font_semi_bold,
                   t.atoms.text_contrast_medium,
                 ]}>
-                <Trans>Skeet yo shit! 🗣️</Trans>
+                <Trans>Seal yo fountain! 🗣️</Trans>
               </Text>
             </View>
 
@@ -163,9 +163,10 @@ function Footer() {
         a.flex_1,
         t.atoms.border_contrast_medium,
       ]}>
+      {/* KRIS: TODO */}
       <InlineLinkText
         label={_(msg`Read the patches and contribute`)}
-        to="https://tangled.org/jollywhoppers.com/witchsky.app/">
+        to="https://tangled.org/did:plc:3thjdgidhlxp7qzhffroeece">
         <Trans>Tangled</Trans>
       </InlineLinkText>
 

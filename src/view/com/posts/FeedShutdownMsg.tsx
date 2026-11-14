@@ -4,7 +4,7 @@ import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
-import {PROD_DEFAULT_FEED} from '#/lib/constants'
+import {DISCOVER_FEED_URI} from '#/lib/constants'
 import {logger} from '#/logger'
 import {
   usePreferencesQuery,
@@ -26,17 +26,17 @@ export function FeedShutdownMsg({feedUri}: {feedUri: string}) {
   const {data: preferences} = usePreferencesQuery()
   const {mutateAsync: removeFeed, isPending: isRemovePending} =
     useRemoveFeedMutation()
-  const {mutateAsync: replaceFeedWithDiscover, isPending: isReplacePending} =
+  const {mutateAsync: replaceFeedWithTennalings, isPending: isReplacePending} =
     useReplaceForYouWithDiscoverFeedMutation()
 
   const feedConfig = preferences?.savedFeeds?.find(
     f => f.value === feedUri && f.pinned,
   )
   const discoverFeedConfig = preferences?.savedFeeds?.find(
-    f => f.value === PROD_DEFAULT_FEED('whats-hot'),
+    f => f.value === DISCOVER_FEED_URI,
   )
   const hasFeedPinned = Boolean(feedConfig)
-  const hasDiscoverPinned = Boolean(discoverFeedConfig?.pinned)
+  const hasTennalingsPinned = Boolean(discoverFeedConfig?.pinned)
 
   const onRemoveFeed = useCallback(async () => {
     try {
@@ -44,8 +44,8 @@ export function FeedShutdownMsg({feedUri}: {feedUri: string}) {
         await removeFeed(feedConfig)
         Toast.show(_(msg`Removed from your feeds`))
       }
-      if (hasDiscoverPinned) {
-        setSelectedFeed(`feedgen|${PROD_DEFAULT_FEED('whats-hot')}`)
+      if (hasTennalingsPinned) {
+        setSelectedFeed(`feedgen|${DISCOVER_FEED_URI}`)
       }
     } catch (err: any) {
       Toast.show(
@@ -58,16 +58,16 @@ export function FeedShutdownMsg({feedUri}: {feedUri: string}) {
       )
       logger.error('Failed to update feeds', {message: err})
     }
-  }, [removeFeed, feedConfig, _, hasDiscoverPinned, setSelectedFeed])
+  }, [removeFeed, feedConfig, _, hasTennalingsPinned, setSelectedFeed])
 
   const onReplaceFeed = useCallback(async () => {
     try {
-      await replaceFeedWithDiscover({
+      await replaceFeedWithTennalings({
         forYouFeedConfig: feedConfig,
         discoverFeedConfig,
       })
-      setSelectedFeed(`feedgen|${PROD_DEFAULT_FEED('whats-hot')}`)
-      Toast.show(_(msg`The feed has been replaced with Discover.`))
+      setSelectedFeed(`feedgen|${DISCOVER_FEED_URI}`)
+      Toast.show(_(msg`The feed has been replaced with Tennalings.`))
     } catch (err: any) {
       Toast.show(
         _(
@@ -80,7 +80,7 @@ export function FeedShutdownMsg({feedUri}: {feedUri: string}) {
       logger.error('Failed to update feeds', {message: err})
     }
   }, [
-    replaceFeedWithDiscover,
+    replaceFeedWithTennalings,
     discoverFeedConfig,
     feedConfig,
     setSelectedFeed,
@@ -104,10 +104,10 @@ export function FeedShutdownMsg({feedUri}: {feedUri: string}) {
         <Trans>
           This feed is no longer online. We are showing{' '}
           <InlineLinkText
-            label={_(msg`The Discover feed`)}
-            to="/profile/bsky.app/feed/whats-hot"
+            label={_(msg`The Tennalings feed`)}
+            to="/profile/did:web:vessel.darkworld.download/feed/tennalings"
             style={[a.text_md]}>
-            Discover
+            Tennalings
           </InlineLinkText>{' '}
           instead.
         </Trans>
@@ -126,16 +126,16 @@ export function FeedShutdownMsg({feedUri}: {feedUri: string}) {
             </ButtonText>
             {isRemovePending && <ButtonIcon icon={Loader} />}
           </Button>
-          {!hasDiscoverPinned && (
+          {!hasTennalingsPinned && (
             <Button
               variant="solid"
               color="primary"
               size="small"
-              label={_(msg`Replace with Discover`)}
+              label={_(msg`Replace with Tennalings`)}
               disabled={isProcessing}
               onPress={onReplaceFeed}>
               <ButtonText>
-                <Trans>Replace with Discover</Trans>
+                <Trans>Replace with Tennalings</Trans>
               </ButtonText>
               {isReplacePending && <ButtonIcon icon={Loader} />}
             </Button>

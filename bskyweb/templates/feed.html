@@ -2,15 +2,15 @@
 
 {% block head_title %}
 {%- if feedView -%}
-  {{ feedView.DisplayName }} by @{{ feedView.Creator.Handle }} | Bluesky Feed
+  {{ feedView.DisplayName }} by @{{ feedView.Creator.Handle }} | tenna.party Feed
 {%- else -%}
-  Bluesky
+  tenna.party
 {%- endif -%}
 {% endblock %}
 
 {% block html_head_extra -%}
 {%- if feedView -%}
-  <meta property="og:site_name" content="Bluesky Social">
+  <meta property="og:site_name" content="tenna.party">
   <meta property="og:type" content="website">
   {%- if requestURI %}
   <meta property="og:url" content="{{ requestURI }}">

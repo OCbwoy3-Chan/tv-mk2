@@ -7,9 +7,10 @@ import {isInvalidHandle} from '#/lib/strings/handles'
 import {startUriToStarterPackUri} from '#/lib/strings/starter-pack'
 import {logger} from '#/logger'
 
-export const BSKY_APP_HOST = 'https://witchsky.app'
+export const BSKY_APP_HOST = 'https://tenna.party'
 export const BSKY_HOSTING_ENDSWITH = '.host.bsky.network'
 const BSKY_TRUSTED_HOSTS = [
+  'tenna\\.party',
   'witchsky\\.app',
   'witchsky\\.social',
   'deer\\.social',
@@ -97,7 +98,7 @@ export function toShortUrl(url: string): string {
 
 export function toShareUrl(url: string): string {
   if (!url.startsWith('https')) {
-    const urlp = new URL('https://witchsky.app')
+    const urlp = new URL(BSKY_APP_HOST)
     urlp.pathname = url
     url = urlp.toString()
   }
@@ -149,6 +150,8 @@ export function isBlueskyHostedUrl(url: string): boolean {
 
 export function isBskyAppUrl(url: string): boolean {
   return (
+    (url.startsWith('https://tenna.party/') &&
+      !url.startsWith('https://tenna.party/about')) ||
     (url.startsWith('https://witchsky.app/') &&
       !url.startsWith('https://witchsky.app/about')) ||
     url.startsWith('https://bsky.app/') ||

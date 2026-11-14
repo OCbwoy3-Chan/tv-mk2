@@ -1,19 +1,13 @@
 import {forwardRef} from 'react'
 import {type TextProps} from 'react-native'
-import Svg, {
-  Defs,
-  LinearGradient,
-  Path,
-  type PathProps,
-  Stop,
-  type SvgProps,
-} from 'react-native-svg'
+import Svg, {G, Path, type PathProps, type SvgProps} from 'react-native-svg'
 import {Image} from 'expo-image'
 
+import {TENNA_LOGO_PATHS} from '#/view/icons/tennaLogo'
 import {useLogoVariant} from '#/view/icons/useLogoVariant'
-import {flatten, useTheme} from '#/alf'
+import {flatten} from '#/alf'
 
-const ratio = 512 / 512
+const ratio = 441 / 500
 const KAWAII_LOGO_RATIO = 1920 / 1080
 const KAWAII_SMALL_LOGO_RATIO = 289 / 138
 export const LOGO_VIEW_BOX = '0 0 512 512'
@@ -27,13 +21,8 @@ type Props = {
 } & Omit<SvgProps, 'style'>
 
 export const Logo = forwardRef(function LogoImpl(props: Props, ref) {
-  const t = useTheme()
-  const {allowVariants = true, fill, ...rest} = props
-  const gradient = fill === 'sky'
+  const {allowVariants = true, fill: _fill, ...rest} = props
   const styles = flatten(props.style)
-  const _fill = gradient
-    ? 'url(#sky)'
-    : fill || styles?.color || t.palette.primary_500
   // @ts-expect-error it's fiiiiine
   const size = parseInt(rest.width || 32, 10)
 
@@ -48,7 +37,7 @@ export const Logo = forwardRef(function LogoImpl(props: Props, ref) {
             ? require('../../../assets/kawaii.avif')
             : require('../../../assets/kawaii_smol.avif')
         }
-        accessibilityLabel="Witchsky"
+        accessibilityLabel="tenna.party"
         accessibilityHint=""
         accessibilityIgnoresInvertColors
         contentFit="contain"
@@ -69,27 +58,14 @@ export const Logo = forwardRef(function LogoImpl(props: Props, ref) {
       fill="none"
       // @ts-expect-error it's fiiiiine
       ref={ref}
-      viewBox="0 0 512 512"
+      viewBox="0 0 500 441"
       {...rest}
       style={[{width: size, height: size * ratio}, styles]}>
-      {gradient && (
-        <Defs>
-          <LinearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <Stop
-              offset="0"
-              stopColor={t.palette.primary_500}
-              stopOpacity="1"
-            />
-            <Stop
-              offset="1"
-              stopColor={t.palette.primary_500}
-              stopOpacity="1"
-            />
-          </LinearGradient>
-        </Defs>
-      )}
-
-      <Path fill={_fill} d={LOGO_PATH} />
+      <G transform="translate(0 441) scale(0.1 -0.1)">
+        <Path fill="#ceb7e6" d={TENNA_LOGO_PATHS[0]} />
+        <Path fill="#fff" d={TENNA_LOGO_PATHS[1]} />
+        <Path fill="#000" d={TENNA_LOGO_PATHS[2]} />
+      </G>
     </Svg>
   )
 })

@@ -13,7 +13,7 @@ export const onRequestGet: PagesFunction<Env> = async context => {
     const url = new URL(context.request.url)
     const image = `${url.origin}/theme-og/${encodeURIComponent(name)}/${encodeURIComponent(rkey)}`
     const meta = `
-      <title>${escapeHtml(value.name)} — Witchsky Theme</title>
+      <title>${escapeHtml(value.name)} — tenna.party Theme</title>
       <meta name="description" content="${escapeHtml(description)}">
       <meta property="og:type" content="website">
       <meta property="og:title" content="${escapeHtml(value.name)}">

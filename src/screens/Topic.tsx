@@ -66,7 +66,7 @@ function SearchTopicScreen({
   }, [topic])
 
   const onShare = useCallback(() => {
-    const url = new URL('https://witchsky.app')
+    const url = new URL('https://tenna.party')
     url.pathname = `/topic/${topic}`
     void shareUrl(url.toString())
   }, [topic])

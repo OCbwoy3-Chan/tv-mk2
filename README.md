@@ -1,14 +1,13 @@
-# Witchsky Social App 🧙 (alpha)
+# tenna.party app 📺🎤 (alpha)
 
-Hey, witches! This is the codebase for the Witchsky app, based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
+Hey, audience! This is the codebase for the [tenna.party](https://tenna.party) app, a fork of [Witchsky](https://tangled.org/did:plc:3thjdgidhlxp7qzhffroeece), which itself is based on [social.daniela.lol](https://github.com/kittibytess/deer-social) and prior [Bluesky](https://github.com/bluesky-social/social-app) forks.
 
 Get the app itself:
 
-- **Web: [witchsky.app](https://witchsky.app)**
-- **iOS: App Store [Soon™](https://cat-bounce.com/)? (Altstore source in the future?)**
-- **Android: Play Store Soon! ([F-Droid repo](https://app.jolly.you/fdroid/repo) in the future?)**
+- **Web: [tenna.party](https://tenna.party)**
+- **iOS/Android: IPA & Obtainium (on the server)**
 
-<!-- <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://tangled.org/jollywhoppers.com/witchsky.app/">
+<!-- <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://tangled.org/did:plc:3thjdgidhlxp7qzhffroeece">
 <img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png?raw=true"
 alt="Get it on Obtainium" height="54" /></a> -->
 

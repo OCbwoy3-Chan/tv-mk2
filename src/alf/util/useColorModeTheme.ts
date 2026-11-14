@@ -4,7 +4,7 @@ import {type ThemeName} from '@bsky.app/alf'
 
 import {useThemePrefs} from '#/state/shell'
 import {IS_WEB} from '#/env'
-import {WITCHSKY_DARK_THEME,WITCHSKY_THEME} from '#/features/themes/catalog'
+import {DEFAULT_ACTIVE_THEME} from '#/features/themes/catalog'
 
 export function useColorModeTheme(): ThemeName {
   const theme = useThemeName()
@@ -54,10 +54,10 @@ function updateDocument(theme: ThemeName) {
 export function getBackgroundColor(theme: ThemeName): string {
   switch (theme) {
     case 'light':
-      return WITCHSKY_THEME.base.colors.canvas
+      return DEFAULT_ACTIVE_THEME.light.record.base.colors.canvas
     case 'dark':
-      return WITCHSKY_DARK_THEME.base.colors.canvas
+      return DEFAULT_ACTIVE_THEME.dark.record.base.colors.canvas
     case 'dim':
-      return WITCHSKY_DARK_THEME.base.colors.canvas
+      return DEFAULT_ACTIVE_THEME.dark.record.base.colors.canvas
   }
 }

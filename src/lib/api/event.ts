@@ -143,7 +143,7 @@ export function buildEventRecord(draft: EventDraft): {
     mode: eventModeValue(draft.mode),
     status: `${MODE_PREFIX}scheduled`,
     createdAt: new Date().toISOString(),
-    createdWith: 'https://witchsky.app',
+    createdWith: 'https://tenna.party',
     preferences: {showInDiscovery: true},
     ...(locations.length ? {locations} : {}),
     ...(uris.length ? {uris} : {}),

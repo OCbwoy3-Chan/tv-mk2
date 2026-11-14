@@ -5,6 +5,7 @@ import {type ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes
 import {type CaptchaWebViewProps} from './CaptchaWebView.shared'
 
 const ALLOWED_HOSTS = [
+  'tenna.party',
   'witchsky.app',
   'witchsky.social',
   'bsky.social',

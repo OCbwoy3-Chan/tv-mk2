@@ -24,7 +24,7 @@ import {
 import {type LabelPreference} from '@bsky/sdk/moderation'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
-import {PROD_DEFAULT_FEED} from '#/lib/constants'
+import {DISCOVER_FEED_URI} from '#/lib/constants'
 import {replaceEqualDeep} from '#/lib/functions'
 import {getAge} from '#/lib/strings/time'
 import {GCTIME, STALE} from '#/state/queries'
@@ -342,7 +342,7 @@ export function useReplaceForYouWithDiscoverFeedMutation() {
         await client.call(addSavedFeeds, [
           {
             type: 'feed',
-            value: PROD_DEFAULT_FEED('whats-hot'),
+            value: DISCOVER_FEED_URI,
             pinned: true,
           },
         ])

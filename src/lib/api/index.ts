@@ -233,10 +233,10 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
   const writes: com.atproto.repo.applyWrites.$InputBody['writes'] = []
   const uris: string[] = []
   const via = IS_WEB
-    ? 'Witchsky Web App'
+    ? 'tenna.party'
     : IS_IOS
-      ? 'Witchsky for iPhone'
-      : 'Witchsky for Android'
+      ? 'tenna.party iOS'
+      : 'tenna.party for Android'
 
   let now = new Date()
   let tid: TID | undefined

@@ -28,6 +28,7 @@ type SetContext = {
   setActiveTheme: (v: persisted.Schema['activeTheme']) => void
 }
 
+// KRIS: TODO
 const stateContext = createContext<StateContext>({
   colorMode: 'system',
   darkTheme: 'dark',

@@ -12,7 +12,7 @@ type SignInOptions = {
 }
 
 // Android may deliver one or two slashes after the custom URI scheme.
-const OAUTH_CALLBACK_RE = /^app\.witchsky:\/\/?auth\/callback\b/
+const OAUTH_CALLBACK_RE = /^app\.(?:witchsky|tennaparty):\/\/?auth\/callback\b/
 
 /**
  * Complete Android OAuth from the redirect deep link itself.

@@ -1,9 +1,11 @@
 {
-  "client_id": "https://witchsky.app/oauth-client-metadata-native.json",
-  "client_name": "Witchsky",
-  "client_uri": "https://witchsky.app",
+  "client_id": "https://tenna.party/oauth-client-metadata-native.json",
+  "client_name": "tenna.party",
+  "client_uri": "https://tenna.party",
   "redirect_uris": [
-    "app.witchsky:/auth/callback"
+    "app.witchsky:/auth/callback",
+    "party.tenna:/auth/callback",
+    "app.tennaparty:/auth/callback"
   ],
   "scope": "atproto transition:generic transition:email transition:chat.bsky identity:handle",
   "token_endpoint_auth_method": "none",

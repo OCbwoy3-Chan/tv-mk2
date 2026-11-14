@@ -43,7 +43,7 @@ export function useDraftsQuery(accountDid?: string) {
           drafts: data.drafts
             .filter(view => {
               const firstText = view.draft.posts[0]?.text ?? ''
-              if (!firstText.startsWith('witchsky:storage')) return true
+              if (!firstText.startsWith('tenna:storage')) return true
               try {
                 decode(view.draft.posts.map(post => post.text ?? ''))
                 return false

@@ -71,7 +71,7 @@ export default function HashtagScreen({
   }, [author])
 
   const onShare = useCallback(() => {
-    const url = new URL('https://witchsky.app')
+    const url = new URL('https://tenna.party')
     url.pathname = `/hashtag/${decodeURIComponent(tag)}`
     if (author) {
       url.searchParams.set('author', author)

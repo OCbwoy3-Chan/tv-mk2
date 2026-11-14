@@ -133,7 +133,7 @@ export function PdsDialog({
                 </InlineLinkText>{' '}
                 via{' '}
                 <InlineLinkText
-                  to="https://witchsky.app/profile/ap.brid.gy"
+                  to="https://tenna.party/profile/ap.brid.gy"
                   label="Bridgy Fed"
                   style={[a.text_md, a.font_semi_bold]}>
                   Bridgy Fed

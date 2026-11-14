@@ -10,8 +10,8 @@ export function getWebOAuthClient(
   audiences: {appview: string; chat: string} = getOAuthAudiences(),
 ) {
   const metadata = createOAuthMetadata({
-    baseUrl: process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://witchsky.app',
-    clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'Witchsky',
+    baseUrl: process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://tenna.party',
+    clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'tenna.party',
     ...audiences,
   })
   if (

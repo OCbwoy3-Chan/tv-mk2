@@ -91,7 +91,7 @@ export function AboutSettingsScreen({}: Props) {
       <Layout.Content>
         <SettingsList.Container>
           <SettingsList.LinkItem
-            to="https://witchsky.app/about/tos"
+            to="https://tenna.party/about/tos"
             label={_(msg`Terms of Service`)}>
             <SettingsList.ItemIcon icon={NewspaperIcon} />
             <SettingsList.ItemText>
@@ -99,7 +99,7 @@ export function AboutSettingsScreen({}: Props) {
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
-            to="https://witchsky.app/about/privacy"
+            to="https://tenna.party/about/privacy"
             label={_(msg`Privacy Policy`)}>
             <SettingsList.ItemIcon icon={NewspaperIcon} />
             <SettingsList.ItemText>

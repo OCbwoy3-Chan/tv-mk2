@@ -59,7 +59,7 @@ export const ChooseAccountForm = ({
       } catch (err) {
         if (err instanceof Error && err.name === 'OAuthSessionBusyError') {
           setError(
-            l`Sign-in is taking too long. Another Witchsky tab or window may be using this account’s session. Close that view, then try again.`,
+            l`Sign-in is taking too long. Another tenna.party tab or window may be using this account’s session. Close that view, then try again.`,
           )
           return
         }

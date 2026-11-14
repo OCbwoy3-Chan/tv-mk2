@@ -1,0 +1,124 @@
+name: Build unsigned IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest # or macos-26-xlarge if Xcode 26 needed
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 5
+
+      - uses: pnpm/action-setup@v6
+
+      - name: 🔧 Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: 🪛 Setup jq
+        uses: dcarbone/install-jq-action@v2
+
+      - name: ⚙️ Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "latest-stable" # use whatever matches the repo's requirements
+
+      - name: 💎 Setup Ruby and CocoaPods
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: 🔤 Compile translations
+        run: pnpm intl:build
+
+      - name: ✏️ Write environment variables
+        run: |
+          # Minimal .env — omit secrets that aren't needed for a local build
+          echo "EXPO_PUBLIC_RELEASE_VERSION=$(jq -r '.version' package.json)" >> .env
+          echo "EXPO_PUBLIC_BUNDLE_IDENTIFIER=$(git rev-parse HEAD)" >> .env
+          echo "EXPO_PUBLIC_BUNDLE_DATE=$(date -u +"%y%m%d%H")" >> .env
+
+      # This generates the ios/ native project without building or signing
+      - name: 🏗️ Prebuild (generate native iOS project via Expo)
+        run: npx expo prebuild --platform ios
+
+      - name: 🔧 Copy assets into generated iOS directory
+        run: cp -R assets/. ios/tennaparty/
+
+      - name: 📦 Install Pods
+        run: |
+          set -o pipefail
+          cd ios
+          bundle exec pod install --repo-update --verbose
+
+      - name: 🔍 Debug - list ios directory
+        run: ls -la ios/
+
+      - name: 🔨 Archive (no code signing)
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -workspace ios/tennaparty.xcworkspace \
+            -scheme tennaparty \
+            -archivePath $RUNNER_TEMP/tennaparty.xcarchive \
+            -sdk iphoneos \
+            -arch arm64 \
+            -configuration Release \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_ALLOWED=NO
+
+      # - name: 📦 Upload RUNNER_TEMP for inspection
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: runner-temp-debug
+      #     path: ${{ runner.temp }}/
+
+      - name: 🔍 Debug - list xcarchive contents
+        run: find $RUNNER_TEMP/tennaparty.xcarchive -type d
+
+      - name: 📦 Package unsigned IPA
+        run: |
+          mkdir -p $RUNNER_TEMP/Payload
+          cp -r "$RUNNER_TEMP/tennaparty.xcarchive/Products/Applications/tennaparty.app" \
+            $RUNNER_TEMP/Payload/
+          cd $RUNNER_TEMP
+          zip -r tennaparty.ipa Payload/
+          mkdir -p $RUNNER_TEMP/LOL
+          mv tennaparty.ipa $RUNNER_TEMP/LOL
+
+      - name: ⬆️ Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tennaparty-ios.ipa
+          path: ${{ runner.temp }}/LOL/tennaparty.ipa
+
+      - name: ⬆️ Push IPA to R2
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          pnpm dlx wrangler r2 object put shit/tennaparty.ipa \
+            --file="${{ runner.temp }}/LOL/tennaparty.ipa" \
+            --remote \
+            --jurisdiction eu
+
+      - name: 💬 Send Discord notification
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl --fail-with-body \
+            -H "Content-Type: application/json" \
+            -X POST \
+            -d '{"content":"<@&1534860049879531591> tenna.party (${{ github.ref_name }}) has been updated on iOS, check it out! sha: ${{ github.sha }}"}' \
+            "$DISCORD_WEBHOOK"

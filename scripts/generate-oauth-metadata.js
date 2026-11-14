@@ -6,8 +6,8 @@ function generateOAuthMetadata(outputDir, options = {}) {
   fs.mkdirSync(outputDir, {recursive: true})
   for (const native of [false, true]) {
     const metadata = createOAuthMetadata({
-      baseUrl: process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://witchsky.app',
-      clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'Witchsky',
+      baseUrl: process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://tenna.party',
+      clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'tenna.party',
       ...options,
       native,
     })
