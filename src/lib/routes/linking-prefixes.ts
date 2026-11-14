@@ -1,0 +1,17 @@
+export const LINKING_PREFIXES = [
+  'bsky://',
+  'bluesky://',
+  'witchsky://',
+  'app.witchsky://',
+  'tenna://',
+  'app.tennaparty://',
+  'party.tenna://',
+  'deersocial://',
+  'https://bsky.app',
+  'https://witchsky.app',
+  'https://tenna.party',
+  'https://deer.social',
+  'https://mu.social',
+  'https://blacksky.community',
+  'https://northsky.app',
+]

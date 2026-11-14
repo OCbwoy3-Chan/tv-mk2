@@ -36,6 +36,33 @@ function formatBskyPdsDisplayName(hostname: string): string {
     return `${name} (${region})`
   }
   if (hostname === 'bsky.social') return 'Bluesky Social'
+  
+  if (hostname === 'northsky.social') return 'Northsky'
+  if (hostname === 'blacksky.app') return 'Blacksky'
+  if (hostname === 'myatproto.social') return 'Blacksky'
+  if (hostname === 'cryptoanarchy.network') return 'Blacksky'
+
+  // eurosky vs wsocial fighting to hold the title for the worst atproto service in europe - @furry-hater
+  if (hostname === 'eurosky.social') return 'Eurosky'
+  if (hostname === 'pds.wsocial.network') return 'Shit Social' // L Social
+  
+  if (hostname === 'at.app.wafrn.net') return 'Wafrn'
+  
+  if (hostname === 'tngl.sh') return 'Tangled'
+  if (hostname === 'pds.sprk.so') return 'Spark'
+  if (hostname === 'pds.pckt.cafe') return 'pckt'
+  
+  if (hostname === 'castletown.darkworld.download') return 'Castle Town'
+  if (hostname === 'church.darkworld.download') return 'Church'
+  if (hostname === 'ant.tenna.party') return 'tenna.party'
+  if (hostname === 'pushingbuddies.kralsei.stream') return 'Pushing Buddies'
+  if (hostname === 'kissing.kralsei.stream') return 'Kissing'
+
+  if (hostname === 'pds.protogen.at') return 'P(rotogen)DS'
+  if (hostname === 'pds.tokyonight.city') return 'Tokyo Night City'
+  if (hostname === 'pds.synth.download') return 'synth.download'
+  if (hostname === 'pds.witchcraft.systems') return 'Witchcraft Systems'
+
   return hostname
 }
 
@@ -61,7 +88,17 @@ export function PdsDialog({
 
   const isBsky = isBskyPdsUrl(pdsUrl)
   const isBridged = isBridgedPdsUrl(pdsUrl)
-  const displayName = isBsky ? formatBskyPdsDisplayName(hostname) : hostname
+  const displayName = formatBskyPdsDisplayName(hostname)
+  const customDescription = hostname.endsWith('.darkworld.download')
+    ? 'Dark World'
+    : hostname.endsWith('.tenna.party')
+      ? 'tenna.party'
+      : hostname.endsWith('.kralsei.stream')
+        ? 'Kralsei'
+        : hostname.endsWith('.protogen.at') ||
+            hostname.endsWith('.protogen.nexus')
+          ? 'The Protogen Nexus'
+          : null
   const descriptionUrl = isBsky ? 'https://bsky.social' : pdsUrl
   const shouldLoadDescription = loadDescription && !isBridged
   const description = useServiceQuery(descriptionUrl, {
@@ -101,6 +138,11 @@ export function PdsDialog({
               {isBsky && (
                 <Text style={[a.text_sm, a.leading_tight]}>
                   <Trans>Bluesky Social</Trans>
+                </Text>
+              )}
+              {customDescription && (
+                <Text style={[a.text_sm, a.leading_tight]}>
+                  {customDescription}
                 </Text>
               )}
             </View>
@@ -321,6 +363,21 @@ function DbBadgeIcon({
   )
 }
 
+const PDS_FAVICON_NOBORDER = [
+  "pds.tokyonight.city",
+  "pds.protogen.at",
+  "northsky.social",
+  "pds.synth.download",
+  "at.meowing.zip",
+  "pds.vixen.computer",
+  "pds.vulpe.systems",
+  "castletown.darkworld.download",
+  "church.darkworld.download",
+  "ant.tenna.party",
+  "pushingbuddies.kralsei.stream",
+  "kissing.kralsei.stream"
+].flatMap(a=>[`https://${a}/favicon.ico`,`https://twenty-icons.com/${a}`])
+
 function FaviconBadgeIcon({
   size,
   borderRadius,
@@ -353,8 +410,10 @@ function FaviconBadgeIcon({
           width: size,
           height: size,
           borderRadius,
-          backgroundColor: t.atoms.bg_contrast_100.backgroundColor,
         },
+        (!imageLoaded || !PDS_FAVICON_NOBORDER.includes(currentUrl)) && {
+          backgroundColor: t.atoms.bg_contrast_100.backgroundColor
+        }
       ]}>
       {!imageLoaded ? (
         <DbBadgeIcon size={size} borderRadius={borderRadius} />

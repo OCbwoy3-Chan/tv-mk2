@@ -47,6 +47,7 @@ import {
   getTabState,
   TabState,
 } from '#/lib/routes/helpers'
+import {LINKING_PREFIXES} from '#/lib/routes/linking-prefixes'
 import {type SidebarTab} from '#/lib/routes/tab-to-nav-item'
 import {
   type AllNavigatorParams,
@@ -1315,23 +1316,7 @@ const NATIVE_LINK_ACTION_CONFIG = {
 const LINKING = {
   // TODO figure out what we are going to use
   // note: `bluesky://` and `witchsky://` and `deersocial://` is what is used in app.config.js
-  prefixes: [
-    'bsky://',
-    'bluesky://',
-    'witchsky://',
-    'app.witchsky://',
-    'tenna://',
-    'app.tennaparty://',
-    'party.tenna://',
-    'deersocial://',
-    'https://bsky.app',
-    'https://witchsky.app',
-    'https://tenna.party',
-    'https://deer.social',
-    'https://mu.social',
-    'https://blacksky.community',
-    'https://northsky.app',
-  ],
+  prefixes: LINKING_PREFIXES,
 
   getPathFromState(state: State) {
     // find the current node in the navigation tree

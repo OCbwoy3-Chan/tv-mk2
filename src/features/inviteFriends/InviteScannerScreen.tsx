@@ -10,6 +10,8 @@ import {
 import {useLingui} from '@lingui/react/macro'
 import {useNavigation} from '@react-navigation/native'
 
+import {LINKING_PREFIXES} from '#/lib/routes/linking-prefixes'
+import {parseSearchLink} from '#/lib/routes/searchLink'
 import {type NavigationProp} from '#/lib/routes/types'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
@@ -42,11 +44,20 @@ export function InviteScannerScreen() {
       const url = result.data?.trim()
       if (!url) return
 
-      // Match bsky.app/profile/{handle} URLs (with or without https://).
-      const profileMatch = url.match(
-        /^(?:https?:\/\/)?bsky\.app\/profile\/([^/?#]+)/i,
+      const normalizedUrl = /^[a-z][a-z\d+.-]*:\/\//i.test(url)
+        ? url.replace(/^http:\/\//i, 'https://')
+        : `https://${url}`
+      const prefix = LINKING_PREFIXES.find(candidate =>
+        normalizedUrl.toLowerCase().startsWith(
+          candidate.endsWith('://') ? candidate : `${candidate}/`,
+        ),
       )
-      if (!profileMatch) {
+      const link = prefix
+        ? parseSearchLink(
+            `https://bsky.app/${normalizedUrl.slice(prefix.length).replace(/^\//, '')}`,
+          )
+        : undefined
+      if (link?.screen !== 'Profile') {
         ax.metric('invite:scanner:scanned', {result: 'invalidQr'})
         setScannerEnabled(false)
         setShowError(true)
@@ -55,8 +66,7 @@ export function InviteScannerScreen() {
 
       ax.metric('invite:scanner:scanned', {result: 'profileFound'})
       setScannerEnabled(false)
-      const handle = profileMatch[1]
-      navigation.replace('Profile', {name: handle})
+      navigation.replace('Profile', link.params)
     },
     [ax, scannerEnabled, navigation],
   )

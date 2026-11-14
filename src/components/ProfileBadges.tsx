@@ -86,7 +86,7 @@ export function ProfileBadgesFromProfileShadow({
   profile,
   interactive = false,
   pdsInteractive = true,
-  showBetaBadge = false,
+  // showBetaBadge = false,
   size,
   style,
   allowFontScaling = true,
@@ -121,7 +121,8 @@ export function ProfileBadgesFromProfileShadow({
   const showPdsBadge =
     shouldShowPdsCandidate && (!pdsData || !(hideBskyPds && pdsData.isBsky))
 
-  const isBetaBadgeVisible = useIsBetaBadgeVisible(shadowed) && showBetaBadge
+  const showBetaBadge = false
+  const isBetaBadgeVisible = false // useIsBetaBadgeVisible(shadowed) && showBetaBadge
   const badgeVisibility = [
     verification.showBadge,
     isBetaBadgeVisible,

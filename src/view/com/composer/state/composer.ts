@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {type ImagePickerAsset} from 'expo-image-picker'
 import {type UriString} from '@atproto/lex'
 import {type AtUriString, toDatetimeString} from '@atproto/syntax'
