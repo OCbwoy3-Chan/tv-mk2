@@ -21,7 +21,11 @@ export function encodeRecovery(
   return JSON.stringify(
     {
       version: 1,
-      opts: {activeAccountDid: opts.activeAccountDid, replyTo: opts.replyTo},
+      opts: {
+        activeAccountDid: opts.activeAccountDid,
+        replyTo: opts.replyTo,
+        isMinimized: opts.isMinimized,
+      },
       state: {
         ...state,
         loadedMediaMap: [...(state.loadedMediaMap ?? [])],

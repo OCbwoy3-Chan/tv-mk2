@@ -57,7 +57,11 @@ export function saveRecovery(
   }
   recovery = {
     version: 1,
-    opts: {activeAccountDid: opts.activeAccountDid, replyTo: opts.replyTo},
+    opts: {
+      activeAccountDid: opts.activeAccountDid,
+      replyTo: opts.replyTo,
+      isMinimized: opts.isMinimized,
+    },
     state,
   }
   try {

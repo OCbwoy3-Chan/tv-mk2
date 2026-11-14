@@ -350,7 +350,8 @@ export const ComposePost = ({
   const {closeComposer, minimizeComposer} = useComposerControls()
   const shellComposerState = useComposerState()
   const isComposerOpen = !!shellComposerState
-  const isComposerVisible = isComposerOpen && !shellComposerState.isMinimized
+  const isComposerMinimized = shellComposerState?.isMinimized
+  const isComposerVisible = isComposerOpen && !isComposerMinimized
   const showEphemeralError = useEphemeralAccountError()
   const {t: l, i18n} = useLingui()
   const forceAltTextEnabled = useForceAltTextEnabled()
@@ -498,9 +499,20 @@ export const ComposePost = ({
 
   useLayoutEffect(() => {
     if (isComposerOpen) {
-      saveRecovery(currentDid, {activeAccountDid, replyTo}, composerState)
+      saveRecovery(
+        currentDid,
+        {activeAccountDid, replyTo, isMinimized: isComposerMinimized},
+        composerState,
+      )
     }
-  }, [isComposerOpen, currentDid, activeAccountDid, replyTo, composerState])
+  }, [
+    isComposerOpen,
+    isComposerMinimized,
+    currentDid,
+    activeAccountDid,
+    replyTo,
+    composerState,
+  ])
 
   const thread = composerState.thread
   const target = shellComposerState?.target

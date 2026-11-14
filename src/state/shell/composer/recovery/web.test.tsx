@@ -661,3 +661,28 @@ it('does not apply a pending target to a different composition', () => {
   expect(session.state?.text).toBe('another post')
   expect(session.state?.quote).toBeUndefined()
 })
+
+it('recovers a minimized tab draft without reopening it or clearing its cached post', () => {
+  saveRecovery(
+    'alice',
+    {activeAccountDid: 'alice', isMinimized: true},
+    composition('keep this minimized post'),
+  )
+  mockReadRecovery = reloadedTab().readRecovery
+  const session = observeComposer()
+  expect(session.state?.isMinimized).toBe(true)
+  expect(session.state?.recoveredState?.thread.posts[0].richtext.text).toBe(
+    'keep this minimized post',
+  )
+  act(() => expect(session.controls!.closeComposer()).toBe(false))
+  expect(mockSessionStorage.size).toBe(1)
+  act(() => session.controls!.restoreComposer())
+  expect(session.state?.isMinimized).toBe(false)
+  expect(session.state?.recoveredState?.thread.posts[0].richtext.text).toBe(
+    'keep this minimized post',
+  )
+  act(() => {
+    session.controls!.closeComposer()
+  })
+  expect(mockSessionStorage.size).toBe(0)
+})
