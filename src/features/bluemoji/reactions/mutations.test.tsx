@@ -46,6 +46,14 @@ beforeAll(() => {
   pdsCall = mock.__setPdsCall()
 })
 
+/*
+ * `queries` now owns the composition that pulls in the Constellation fallback,
+ * whose module graph reaches the analytics client and needs a real app.
+ */
+jest.mock('#/features/bluemoji/reactions/constellation', () => ({
+  useConstellationReactionsQuery: () => ({data: undefined}),
+}))
+
 jest.mock('#/lib/haptics', () => ({
   useHaptics: () => ({confirm: jest.fn(), tap: jest.fn()}),
 }))

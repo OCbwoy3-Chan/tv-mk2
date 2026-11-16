@@ -7,6 +7,7 @@ import {useBluemojiInstance} from '#/state/preferences/bluemoji-instance'
 import {STALE} from '#/state/queries'
 import {createQueryKey} from '#/state/queries/util'
 import {usePdsClient, useSession} from '#/state/session'
+import {useConstellationReactionsQuery} from '#/features/bluemoji/reactions/constellation'
 import {
   REACTION_COLLECTION,
   REACTION_COUNT_BATCH,
@@ -206,12 +207,6 @@ export function getGroupKey(emoji: ReactionEmoji) {
   return emoji.uri
 }
 
-/** Merged counts for a post, largest group first. */
-export function useReactionGroups(uri: string | undefined) {
-  const {data} = useReactionCountsQuery(uri)
-  return data ?? []
-}
-
 /**
  * The viewer's own reactions. moji.blue only fills `group.viewer` for
  * requests authenticated as that actor, and our users' sessions live with our
@@ -262,21 +257,32 @@ export type ViewerReaction = {
   emoji: ReactionEmoji
 }
 
+/** The viewer's reactions on one post, if their own list has loaded. */
+export function useViewerReactionForPost(uri: string | undefined) {
+  const {data} = useViewerReactionsQuery()
+  if (!uri || !data) return undefined
+  return data.filter(r => r.subject === uri)
+}
+
 /**
- * The viewer's reactions on one post, plus whether their whole reaction list is
- * known. The second half matters because an empty list has to be distinguishable
- * from a list that has not loaded: only the former proves the viewer is not one
- * of the reactors a count is made of.
+ * The groups a post renders: the AppView's counts with the viewer's own
+ * reactions folded in, and the Constellation fallback for posts the AppView
+ * has nothing for.
+ *
+ * One hook so both readers (the action row and the picker) cannot drift apart
+ * on how counts and the viewer's list are combined.
  */
-export function useViewerReactionForPost(uri: string | undefined): {
-  reactions: ViewerReaction[] | undefined
-  known: boolean
-} {
-  const {data, isSuccess} = useViewerReactionsQuery()
-  return {
-    reactions: uri && data ? data.filter(r => r.subject === uri) : undefined,
-    known: isSuccess,
-  }
+export function useReactionGroups(uri: string | undefined) {
+  const {data: appviewGroups} = useReactionCountsQuery(uri)
+  const {data: fallbackGroups} = useConstellationReactionsQuery(
+    uri,
+    Boolean(appviewGroups) && !appviewGroups?.length,
+  )
+  const viewerReactions = useViewerReactionForPost(uri)
+  return mergeViewerReactions(
+    appviewGroups?.length ? appviewGroups : (fallbackGroups ?? []),
+    viewerReactions,
+  )
 }
 
 /**
@@ -289,28 +295,20 @@ export function useViewerReactionForPost(uri: string | undefined): {
  * A viewer reaction only ever raises a group to 1, so a later AppView count
  * replaces it naturally instead of double counting.
  *
- * `ownReactionsKnown` says the viewer's own records were read successfully. Only
- * then does the absence of a reaction mean the viewer has none: it lets their
- * share be subtracted from the AppView's count, so a reaction removed here stops
- * showing even while the AppView still reports it (its index does not reliably
- * process reaction deletes). While the read is pending nothing is subtracted,
- * which is the old behaviour rather than a wrong one.
+ * Counts are never lowered here. An earlier version dropped every group of
+ * count one whose emoji was missing from the viewer's list, reading that as
+ * "the viewer was the only reactor and has since removed it". That inference
+ * needs `group.viewer`, which moji.blue only fills for a request authenticated
+ * as the actor; we are not, so it fired for every single-reactor group and hid
+ * other people's reactions from every signed-in viewer. The AppView does apply
+ * reaction deletes, so a removal needs no local correction: invalidate the
+ * counts (see `useInvalidateReactions`) and read the truth back.
  */
 export function mergeViewerReactions(
   groups: ReactionGroup[],
   viewerReactions: ViewerReaction[] | undefined,
-  ownReactionsKnown = false,
 ): ReactionGroup[] {
   const byEmoji = new Map(groups.map(group => [group.emoji.uri, group]))
-  const own = new Set(viewerReactions?.map(reaction => reaction.emoji.uri))
-
-  if (ownReactionsKnown) {
-    for (const [uri, group] of byEmoji) {
-      // The viewer is one of the reactors the AppView counted, and is no
-      // longer counted locally, so their reaction is gone.
-      if (!own.has(uri) && group.count <= 1) byEmoji.delete(uri)
-    }
-  }
 
   for (const {emoji} of viewerReactions ?? []) {
     const existing = byEmoji.get(emoji.uri)

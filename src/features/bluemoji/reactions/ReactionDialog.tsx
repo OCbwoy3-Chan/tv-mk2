@@ -10,15 +10,13 @@ import {atoms as a, useTheme, web} from '#/alf'
 import * as Menu from '#/components/Menu'
 import {Text} from '#/components/Typography'
 import {EmojiGrid} from '#/features/bluemoji/Picker'
-import {useConstellationReactionsQuery} from '#/features/bluemoji/reactions/constellation'
 import {
   useCreateReactionMutation,
   useDeleteReactionMutation,
 } from '#/features/bluemoji/reactions/mutations'
 import {
   isPersistedReaction,
-  mergeViewerReactions,
-  useReactionCountsQuery,
+  useReactionGroups,
   useViewerReactionForPost,
 } from '#/features/bluemoji/reactions/queries'
 import {
@@ -51,18 +49,8 @@ export function ReactionDialog({
   const navigation = useNavigation<NavigationProp>()
   const requireAuth = useRequireAuth()
 
-  const {data: counts} = useReactionCountsQuery(post.uri)
-  const {data: fallback} = useConstellationReactionsQuery(
-    post.uri,
-    Boolean(counts) && !counts?.length,
-  )
-  const {reactions: viewerReactions, known: ownKnown} =
-    useViewerReactionForPost(post.uri)
-  const groups: ReactionGroup[] = mergeViewerReactions(
-    counts?.length ? counts : (fallback ?? []),
-    viewerReactions,
-    ownKnown,
-  )
+  const groups = useReactionGroups(post.uri)
+  const viewerReactions = useViewerReactionForPost(post.uri)
   const visibleGroups = groups.filter(
     group => getReactionEmojiModeration(group.emoji, moderationOpts) !== 'hide',
   )

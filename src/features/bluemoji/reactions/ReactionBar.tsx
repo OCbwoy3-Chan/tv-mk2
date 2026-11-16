@@ -16,15 +16,13 @@ import {
   PostControlButtonIcon,
 } from '#/components/PostControls/PostControlButton'
 import {Text} from '#/components/Typography'
-import {useConstellationReactionsQuery} from '#/features/bluemoji/reactions/constellation'
 import {
   useCreateReactionMutation,
   useDeleteReactionMutation,
 } from '#/features/bluemoji/reactions/mutations'
 import {
   isPersistedReaction,
-  mergeViewerReactions,
-  useReactionCountsQuery,
+  useReactionGroups,
   useViewerReactionForPost,
 } from '#/features/bluemoji/reactions/queries'
 import {ReactionBurst} from '#/features/bluemoji/reactions/ReactionBurst'
@@ -66,24 +64,13 @@ export function ReactionBar({
   const moderationOpts = useModerationOpts()
   const requireAuth = useRequireAuth()
 
-  const {data: appviewGroups} = useReactionCountsQuery(post.uri)
-  const {data: fallbackGroups} = useConstellationReactionsQuery(
-    post.uri,
-    Boolean(appviewGroups) && !appviewGroups?.length,
-  )
-  const {reactions: viewerReactions, known: ownKnown} =
-    useViewerReactionForPost(post.uri)
+  const groups = useReactionGroups(post.uri)
   /*
    * Our own reactions come from our PDS and are always ahead of the AppView,
-   * so they are merged in rather than left to the firehose. `ownKnown` also
-   * lets a removal subtract the viewer's share of a count the AppView has not
-   * caught up with yet.
+   * so `useReactionGroups` folds them in rather than leaving them to the
+   * firehose. The list itself is still needed to mark which pills are ours.
    */
-  const groups = mergeViewerReactions(
-    appviewGroups?.length ? appviewGroups : (fallbackGroups ?? []),
-    viewerReactions,
-    ownKnown,
-  )
+  const viewerReactions = useViewerReactionForPost(post.uri)
   const allowed = groups.filter(
     group => getReactionEmojiModeration(group.emoji, moderationOpts) !== 'hide',
   )

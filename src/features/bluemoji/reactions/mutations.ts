@@ -10,7 +10,10 @@ import {useHaptics} from '#/lib/haptics'
 import {logger} from '#/logger'
 import {usePdsClient} from '#/state/session'
 import * as Toast from '#/components/Toast'
-import {type ViewerReaction} from '#/features/bluemoji/reactions/queries'
+import {
+  useInvalidateReactions,
+  type ViewerReaction,
+} from '#/features/bluemoji/reactions/queries'
 import {
   REACTION_COLLECTION,
   type ReactionEmoji,
@@ -126,6 +129,7 @@ export function useDeleteReactionMutation() {
   const pds = usePdsClient()
   const queryClient = useQueryClient()
   const haptics = useHaptics()
+  const invalidateReactions = useInvalidateReactions()
   const {t: l} = useLingui()
 
   return useMutation({
@@ -160,11 +164,19 @@ export function useDeleteReactionMutation() {
       })
       Toast.show(l`Could not remove your reaction`, {type: 'error'})
     },
-    onSuccess: () => {
+    onSuccess: (_uri, {target}) => {
       haptics.tap()
       void queryClient.invalidateQueries({
         queryKey: ['bluemoji-viewer-reactions'],
       })
+      /*
+       * Nothing is subtracted locally: the AppView is the authority on counts,
+       * and we cannot tell whether it had indexed our reaction yet. It does
+       * apply deletes, but a beat after the PDS write, so read now and once
+       * more after it has caught up.
+       */
+      void invalidateReactions(target.uri)
+      setTimeout(() => void invalidateReactions(target.uri), 3000)
     },
   })
 }

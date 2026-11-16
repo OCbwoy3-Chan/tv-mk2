@@ -45,6 +45,14 @@ reactions are read once per account with a `listRecords` walk of their repo
 (reaction rkeys are TIDs and cannot be derived). Shortcut: the walk caps at 500
 records; past that, the upgrade is an AppView query that takes a DID list.
 
+Because `group.viewer` is always absent for us, a count can never be attributed
+to a specific reactor. The viewer's records are merged in only to raise a group
+they reacted with, and counts are never lowered locally: the AppView applies
+reaction deletes, so `useInvalidateReactions` re-reads the truth instead. An
+earlier version subtracted one from every count-1 group missing from the
+viewer's list, which hid every other person's lone reaction from signed-in
+users while logged-out rendering looked fine.
+
 The web composer extends TipTap 2's Emoji node and renders verified aliases as
 inline images. Shortcode autocomplete uses the upstream shared Autocomplete/Sift
 menu and emoji search, combining local Unicode matches with verified results
