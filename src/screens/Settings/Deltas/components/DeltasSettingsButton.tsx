@@ -6,7 +6,7 @@ import { CustomBadgeIcon } from "./CustomBadgeIcon";
 export function DeltasSettingsButton() {
     const {t: l} = useLingui();
 
-    const badgeIcon = <CustomBadgeIcon source={require("#/../assets/badges/kris.png")}/>
+    const badgeIcon = <CustomBadgeIcon source={require("#/../assets/badges/ralsei.png")}/>
 
     return <SettingsList.LinkItem to="/settings/deltas" label={l`Deltas`}>
         <SettingsList.ItemIcon icon={()=>badgeIcon} />

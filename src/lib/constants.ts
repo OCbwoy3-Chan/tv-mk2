@@ -296,7 +296,7 @@ export const MOD_PROXY_SERVICE: Service = `${MOD_PROXY_DID || api.moderation.did
  * the notification service (replaces the old
  * `BLUESKY_NOTIF_SERVICE_HEADERS`).
  */
-export const NOTIF_SERVICE: Service = `${BLUESKY_PROXY_DID}#bsky_notif`
+export const NOTIF_SERVICE: Service = 'did:web:push.tenna.party#bsky_notif' // TODO `${BLUESKY_PROXY_DID}#bsky_notif`
 
 /**
  * The Blacksky AppView's proxy target. The `community.blacksky.calendar.*`

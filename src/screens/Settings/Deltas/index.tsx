@@ -8,7 +8,6 @@ import { Admonition } from '#/components/Admonition'
 import { RunesScreenLayout } from '../RunesSettings/components/RunesScreenLayout'
 import { createStaticClick, InlineLinkText, Link } from '#/components/Link'
 import { useNavigationDeduped } from '#/lib/hooks/useNavigationDeduped'
-import { CustomBadgeIcon } from './components/CustomBadgeIcon'
 import { View } from 'react-native'
 import { Text } from '#/components/Typography'
 import { DeltasSubItem } from './components/SettingsSubItem'
@@ -66,7 +65,7 @@ export function DeltasSettingsScreen({ }: Props) {
                         
                     <Link
                         label={l`View or edit your profile badge`}
-                        to="/deltas/badge"
+                        to="/settings/deltas/badge"
                     >
                         {state => (
                             <DeltasSubItem
@@ -83,7 +82,7 @@ export function DeltasSettingsScreen({ }: Props) {
 
                     <Link
                         label={l`View or edit your profile decorations`}
-                        to="/deltas/decorations"
+                        to="/settings/deltas/decorations"
                     >
                         {state => (
                             <DeltasSubItem

@@ -16,7 +16,7 @@ import {isNetworkError} from '#/lib/strings/errors'
 import {type SessionAccount, usePdsClient, useSession} from '#/state/session'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
-import {IS_DEV, IS_NATIVE} from '#/env'
+import {IS_ANDROID, IS_DEV, IS_NATIVE} from '#/env'
 import {app} from '#/lexicons'
 
 /**
@@ -31,6 +31,9 @@ export type TemporaryPushClient = {
   service: string
   handle: string
 }
+
+const PUSH_SERVICE_DID = 'did:web:push.tenna.party'
+const PUSH_APP_ID = IS_ANDROID ? 'app.tennaparty' : 'party.tenna' // TODO
 
 /**
  * @private
@@ -51,12 +54,10 @@ async function _registerPushToken({
 }) {
   try {
     const payload: app.bsky.notification.registerPush.$InputBody = {
-      serviceDid: currentAccount.service?.includes('staging')
-        ? PUBLIC_STAGING_APPVIEW_DID
-        : PUBLIC_APPVIEW_DID,
+      serviceDid: PUSH_SERVICE_DID, // TODO
       platform: Platform.OS,
       token: token.data,
-      appId: 'app.witchsky',
+      appId: PUSH_APP_ID,
       // ageRestricted: extra.ageRestricted ?? false,
     }
 
@@ -354,12 +355,10 @@ export async function unregisterPushToken(clients: TemporaryPushClient[]) {
         await client.call(
           app.bsky.notification.unregisterPush,
           {
-            serviceDid: service.includes('staging')
-              ? PUBLIC_STAGING_APPVIEW_DID
-              : PUBLIC_APPVIEW_DID,
+            serviceDid: PUSH_SERVICE_DID, // TODO
             platform: Platform.OS,
             token: token.data,
-            appId: 'app.witchsky',
+            appId: PUSH_APP_ID,
           },
           {
             service: NOTIF_SERVICE,

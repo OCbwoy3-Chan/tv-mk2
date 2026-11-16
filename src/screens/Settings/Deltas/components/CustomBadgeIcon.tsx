@@ -12,7 +12,7 @@ export function CustomBadgeIcon({
     return (
         <Image
             source={source}
-            accessibilityLabel="Tenna"
+            accessibilityLabel=""
             accessibilityHint=""
             accessibilityIgnoresInvertColors
             style={{ width: size, height: size }}
