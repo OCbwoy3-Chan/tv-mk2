@@ -14,6 +14,8 @@ import { DeltasSubItem } from './components/SettingsSubItem'
 import { Divider } from '#/components/Divider'
 import { PaintRoller_Stroke2_Corner2_Rounded as PaintRollerIcon } from '#/components/icons/PaintRoller'
 import { UserCircle_Stroke2_Corner0_Rounded as UserCircleIcon } from '#/components/icons/UserCircle'
+import { ShieldCheck_Stroke2_Corner0_Rounded as ShieldCheckIcon } from '#/components/icons/Shield'
+import { Hashtag_Stroke2_Corner0_Rounded as HashtagIcon } from '#/components/icons/Hashtag'
 
 type Props = NativeStackScreenProps<DeltasNavigatorParams>
 
@@ -88,6 +90,59 @@ export function DeltasSettingsScreen({ }: Props) {
                             <DeltasSubItem
                                 title={l`Profile Decorations`}
                                 icon={PaintRollerIcon}
+                                style={[
+                                    (state.hovered || state.pressed) && [t.atoms.bg_contrast_50],
+                                ]}
+                            />
+                        )}
+                    </Link>
+                </View>
+            </View>
+
+            <View style={[a.pt_lg, a.px_lg, gtMobile && a.px_2xl]}>
+                <Text
+                    style={[
+                        a.text_md,
+                        a.font_semi_bold,
+                        a.pb_md,
+                        t.atoms.text_contrast_high,
+                    ]}>
+                    <Trans>Quirks</Trans>
+                </Text>
+
+                <View
+                    style={[
+                        a.w_full,
+                        a.rounded_md,
+                        a.overflow_hidden,
+                        t.atoms.bg_contrast_25,
+                    ]}>
+                        
+                    <Link
+                        label={l`Bypass settings`}
+                        to="/settings/deltas/bypasses"
+                    >
+                        {state => (
+                            <DeltasSubItem
+                                title={l`Bypasses`}
+                                icon={ShieldCheckIcon}
+                                style={[
+                                    (state.hovered || state.pressed) && [t.atoms.bg_contrast_50],
+                                ]}
+                            />
+                        )}
+                    </Link>
+
+                    <Divider />
+
+                    <Link
+                        label={l`Posting quirks settings`}
+                        to="/settings/deltas/posting"
+                    >
+                        {state => (
+                            <DeltasSubItem
+                                title={l`Posting`}
+                                icon={HashtagIcon}
                                 style={[
                                     (state.hovered || state.pressed) && [t.atoms.bg_contrast_50],
                                 ]}
