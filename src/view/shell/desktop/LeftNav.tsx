@@ -117,6 +117,12 @@ import {Text} from '#/components/Typography'
 import {useAgeAssurance} from '#/ageAssurance'
 import {useAnalytics} from '#/analytics'
 import {type Events} from '#/analytics/metrics/types'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/deltas/feat/avatarDecorations'
 import {IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
 import {isFollowingV2HomeDotEnabled} from '#/features/followingV2/eligibility'
 import {useActorStatus} from '#/features/liveNow'
@@ -168,6 +174,10 @@ function ProfileCard({minimal}: {minimal: boolean}) {
     }))
 
   const {isActive: live} = useActorStatus(profile)
+  const decoration = useAvatarDecoration(profile?.did)
+  const profileShape = useAvatarShape(profile?.did)
+  const nameGradient = useNameGradient(profile?.did)
+  const nameStyle = useNameStyle(profile?.did)
 
   const enableSquareButtons = useEnableSquareButtons()
   const enableSquareAvatars = useEnableSquareAvatars()
@@ -220,6 +230,8 @@ function ProfileCard({minimal}: {minimal: boolean}) {
                       size={LARGE_ELEMENT_SIZE}
                       type={profile?.associated?.labeler ? 'labeler' : 'user'}
                       live={live}
+                      decoration={decoration}
+                      profileShape={profileShape}
                     />
                   </View>
                   {!minimal && (
@@ -236,7 +248,14 @@ function ProfileCard({minimal}: {minimal: boolean}) {
                         ]}>
                         <Text
                           emoji
-                          style={[a.font_bold, a.text_sm, a.leading_snug]}
+                          // The name is a handle when display names are off.
+                          gradient={hideDisplayNames ? undefined : nameGradient}
+                          style={[
+                            a.font_bold,
+                            a.text_sm,
+                            a.leading_snug,
+                            !hideDisplayNames && nameStyle,
+                          ]}
                           numberOfLines={1}>
                           {getAuthorPrimaryName(profile, {hideDisplayNames})}
                         </Text>

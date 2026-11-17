@@ -1,6 +1,10 @@
 import {useLayoutEffect, useRef, useState} from 'react'
 import {View} from 'react-native'
-import {moderateProfile, type ModerationOpts} from '@bsky/sdk/moderation'
+import {
+  moderateProfile,
+  type ModerationDecision,
+  type ModerationOpts,
+} from '@bsky/sdk/moderation'
 import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {
@@ -15,10 +19,15 @@ import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
+import {DecoratedName} from '#/screens/Settings/Deltas/Decorations/components/DecoratedName'
 import {atoms as a, useTheme} from '#/alf'
 import {PlusSmall_Stroke2_Corner0_Rounded as Plus} from '#/components/icons/Plus'
 import {Link, type LinkProps} from '#/components/Link'
 import {Text} from '#/components/Typography'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+} from '#/deltas/feat/avatarDecorations'
 import {type app} from '#/lexicons'
 import type * as bsky from '#/types/bsky'
 
@@ -184,28 +193,16 @@ function KnownFollowersInner({
               },
             ]}>
             {slice.map(({profile: prof, moderation}, i) => (
-              <View
+              <KnownFollowerAvatar
                 key={prof.did}
-                style={[
-                  {
-                    borderWidth: AVI_BORDER,
-                    borderColor: t.atoms.bg.backgroundColor,
-                    width: dim,
-                    height: dim,
-                    borderRadius: radius,
-                    zIndex: slice.length - i + (showOverflowPlus ? 1 : 0),
-                    marginLeft: i > 0 ? -8 : 0,
-                    overflow: 'hidden',
-                  },
-                ]}>
-                <UserAvatar
-                  size={SIZE}
-                  avatar={prof.avatar}
-                  moderation={moderation.ui('avatar')}
-                  type={prof.associated?.labeler ? 'labeler' : 'user'}
-                  noBorder
-                />
-              </View>
+                profile={prof}
+                moderation={moderation}
+                size={SIZE}
+                dim={dim}
+                radius={radius}
+                zIndex={slice.length - i + (showOverflowPlus ? 1 : 0)}
+                overlap={i > 0 ? -8 : 0}
+              />
             ))}
             {showOverflowPlus ? (
               <View
@@ -267,6 +264,70 @@ function KnownFollowersInner({
   )
 }
 
+/**
+ * A single overlapping avatar in the stack. A profile's own shape replaces the
+ * stack's shared radius so the outline does not clip a decorated avatar.
+ */
+function KnownFollowerAvatar({
+  profile,
+  moderation,
+  size,
+  dim,
+  radius,
+  zIndex,
+  overlap,
+}: {
+  profile: bsky.profile.AnyProfileView
+  moderation: ModerationDecision
+  size: number
+  dim: number
+  radius: number
+  zIndex: number
+  overlap: number
+}) {
+  const t = useTheme()
+  const enableSquareAvatars = useEnableSquareAvatars()
+  const profileShape = useAvatarShape(profile.did)
+  const decoration = useAvatarDecoration(profile.did)
+  const decoratedRadius =
+    profileShape === 'circle'
+      ? dim / 2
+      : profileShape === 'squircle'
+        ? Math.round(dim * 0.25)
+        : profileShape === 'square' || profileShape === 'hexagon'
+          ? getShapeRadius(
+              enableSquareAvatars === 'sharp' ? 'sharp' : true,
+              3,
+              3,
+            )
+          : radius
+  return (
+    <View
+      style={[
+        {
+          borderWidth: AVI_BORDER,
+          borderColor: t.atoms.bg.backgroundColor,
+          width: dim,
+          height: dim,
+          borderRadius: decoratedRadius,
+          zIndex,
+          marginLeft: overlap,
+          overflow: 'hidden',
+        },
+      ]}>
+      <UserAvatar
+        size={size}
+        avatar={profile.avatar}
+        moderation={moderation.ui('avatar')}
+        type={profile.associated?.labeler ? 'labeler' : 'user'}
+        decoration={decoration}
+        profileShape={profileShape}
+        noBorder
+      />
+    </View>
+  )
+}
+
 function FollowedByNamesText({
   serverCount,
   slice,
@@ -283,13 +344,19 @@ function FollowedByNamesText({
       return (
         <Trans>
           Followed by{' '}
-          <Text emoji key={slice[0].profile.did} style={textStyle}>
+          <DecoratedName
+            key={slice[0].profile.did}
+            did={slice[0].profile.did}
+            style={textStyle}>
             {slice[0].profile.displayName}
-          </Text>
+          </DecoratedName>
           ,{' '}
-          <Text emoji key={slice[1].profile.did} style={textStyle}>
+          <DecoratedName
+            key={slice[1].profile.did}
+            did={slice[1].profile.did}
+            style={textStyle}>
             {slice[1].profile.displayName}
-          </Text>
+          </DecoratedName>
           , and{' '}
           <Plural value={serverCount - 2} one="# other" other="# others" />
         </Trans>
@@ -298,13 +365,19 @@ function FollowedByNamesText({
     return (
       <Trans>
         Followed by{' '}
-        <Text emoji key={slice[0].profile.did} style={textStyle}>
+        <DecoratedName
+          key={slice[0].profile.did}
+          did={slice[0].profile.did}
+          style={textStyle}>
           {slice[0].profile.displayName}
-        </Text>{' '}
+        </DecoratedName>{' '}
         and{' '}
-        <Text emoji key={slice[1].profile.did} style={textStyle}>
+        <DecoratedName
+          key={slice[1].profile.did}
+          did={slice[1].profile.did}
+          style={textStyle}>
           {slice[1].profile.displayName}
-        </Text>
+        </DecoratedName>
       </Trans>
     )
   }
@@ -314,9 +387,12 @@ function FollowedByNamesText({
     return (
       <Trans>
         Followed by{' '}
-        <Text emoji key={slice[0].profile.did} style={textStyle}>
+        <DecoratedName
+          key={slice[0].profile.did}
+          did={slice[0].profile.did}
+          style={textStyle}>
           {slice[0].profile.displayName}
-        </Text>{' '}
+        </DecoratedName>{' '}
         and <Plural value={serverCount - 1} one="# other" other="# others" />
       </Trans>
     )
@@ -326,9 +402,12 @@ function FollowedByNamesText({
   return (
     <Trans>
       Followed by{' '}
-      <Text emoji key={slice[0].profile.did} style={textStyle}>
+      <DecoratedName
+        key={slice[0].profile.did}
+        did={slice[0].profile.did}
+        style={textStyle}>
         {slice[0].profile.displayName}
-      </Text>
+      </DecoratedName>
     </Trans>
   )
 }
@@ -348,13 +427,19 @@ function FollowedByExactText({
         Followed by{' '}
         <Plural value={serverCount} one="# person" other="# others" />,{' '}
         including{' '}
-        <Text emoji key={slice[0].profile.did} style={textStyle}>
+        <DecoratedName
+          key={slice[0].profile.did}
+          did={slice[0].profile.did}
+          style={textStyle}>
           {slice[0].profile.displayName}
-        </Text>{' '}
+        </DecoratedName>{' '}
         and{' '}
-        <Text emoji key={slice[1].profile.did} style={textStyle}>
+        <DecoratedName
+          key={slice[1].profile.did}
+          did={slice[1].profile.did}
+          style={textStyle}>
           {slice[1].profile.displayName}
-        </Text>
+        </DecoratedName>
       </Trans>
     )
   }
@@ -363,9 +448,12 @@ function FollowedByExactText({
     <Trans>
       Followed by <Plural value={serverCount} one="# person" other="# others" />
       , including{' '}
-      <Text emoji key={slice[0].profile.did} style={textStyle}>
+      <DecoratedName
+        key={slice[0].profile.did}
+        did={slice[0].profile.did}
+        style={textStyle}>
         {slice[0].profile.displayName}
-      </Text>
+      </DecoratedName>
     </Trans>
   )
 }

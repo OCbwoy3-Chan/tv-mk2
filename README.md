@@ -15,6 +15,8 @@ alt="Get it on Obtainium" height="54" /></a> -->
 
 - More descriptive PDS dialogs
 - 200 max labelers
+- Profile Bages (character + kin)
+- *Enhanced* Profile Decorations (stolen from mu, basically free eurosky+)
 
 ### TODO: Kris
 
@@ -22,9 +24,7 @@ Deltas:
 - [ ] More customizable post TID/rkey (in composer)
 - [ ] Bypass Bluesky Moderation & blocks when viewing lists
 - [ ] Bypass viewing blocked messages in groupchats
-- [ ] Profile Bages (character + kin selector)
 - [ ] Mod self-labels
-- [ ] Free Eurosky+ Profile Decorations (tenna.party VIP specific)
 
 - [ ] Tennalings/Krislings feeds
   - [ ] Krislings: Algorithm

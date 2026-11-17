@@ -21,6 +21,7 @@ import {ProfileBadgesFromProfileShadow} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {PronounPill} from '#/components/PronounPill'
 import {Text} from '#/components/Typography'
+import {useNameGradient, useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {IS_ANDROID, IS_WEB} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import {type app} from '#/lexicons'
@@ -53,6 +54,10 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
     hideDisplayNames,
     moderation: opts.moderation?.ui('displayName'),
   })
+  const decorated =
+    !hideDisplayNames && !opts.moderation?.ui('displayName').blur
+  const gradient = useNameGradient(author.did)
+  const nameStyle = useNameStyle(author.did)
   const handle = author.handle
   // remove dumb typing when you update the atproto api package!!
   const pronouns = (author as {pronouns?: string})?.pronouns
@@ -141,6 +146,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                 : {})}>
               <MaybeLinkText
                 emoji
+                gradient={decorated ? gradient : undefined}
                 numberOfLines={1}
                 to={profileLink}
                 label={_(msg`View profile`)}
@@ -156,6 +162,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
                   a.flex_shrink_0,
                   {minWidth: 0, maxWidth: hideDisplayNames ? '100%' : '70%'},
                   web({direction: 'ltr', unicodeBidi: 'isolate'}),
+                  decorated && nameStyle,
                 ]}>
                 {forceLTR(displayName)}
               </MaybeLinkText>

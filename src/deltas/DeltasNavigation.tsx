@@ -1,11 +1,13 @@
-import {FlatNavigatorParams} from '#/lib/routes/types'
-import {createNativeStackNavigatorWithAuth} from '#/view/shell/createNativeStackNavigatorWithAuth'
 import {MessageDescriptor} from '@lingui/core'
 import {msg} from '@lingui/core/macro'
+
+import {FlatNavigatorParams} from '#/lib/routes/types'
+import {createNativeStackNavigatorWithAuth} from '#/view/shell/createNativeStackNavigatorWithAuth'
 import {deltaDeferredNamedScreen} from './DeltaNavigationLib'
 
 export type DeltasNavigatorParams = {
   DeltasSettings: undefined
+  DeltasDecorationsSettingsScreen: undefined
   DeltasBadgeSettingsScreen: undefined
 }
 
@@ -19,6 +21,7 @@ export const DeltasRoutes: Record<
 > = {
   DeltasSettings: '/settings/deltas',
   DeltasBadgeSettingsScreen: '/settings/deltas/badge',
+  DeltasDecorationsSettingsScreen: '/settings/deltas/decorations',
 }
 
 const DeltasSettingsScreen = deltaDeferredNamedScreen(
@@ -31,8 +34,13 @@ const DeltasBadgeSettingsScreen = deltaDeferredNamedScreen(
   'DeltasBadgeSettingsScreen',
 )
 
+const DeltasDecorationsSettingsScreen = deltaDeferredNamedScreen(
+  () => require('#/screens/Settings/Deltas/Decorations'),
+  'DeltasDecorationsSettingsScreen',
+)
+
 export function DeltasCommonStacks({
-  props: {Stack, unreadCountLabel, title},
+  props: {Stack, title},
 }: {
   props: {
     Stack: typeof Flat
@@ -51,6 +59,11 @@ export function DeltasCommonStacks({
         name="DeltasBadgeSettingsScreen"
         getComponent={() => DeltasBadgeSettingsScreen}
         options={{title: title(msg`Badge settings`)}}
+      />
+      <Stack.Screen
+        name="DeltasDecorationsSettingsScreen"
+        getComponent={() => DeltasDecorationsSettingsScreen}
+        options={{title: title(msg`Profile decorations`)}}
       />
     </>
   )

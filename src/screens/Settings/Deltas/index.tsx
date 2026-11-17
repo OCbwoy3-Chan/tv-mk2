@@ -43,6 +43,7 @@ export function DeltasSettingsScreen({ }: Props) {
                     >
                         Bluesky Communities
                     </InlineLinkText>.
+                    Dropped before GTA 6!
                 </Admonition>
             </SettingsList.Item>
 

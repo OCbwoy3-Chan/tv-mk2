@@ -28,34 +28,54 @@ export type KinBadgeType = {
      * %c -> Character Franchise
      * %a -> Article (a/an)
      */
-    showAs?: string
+    showAs?: {
+        /** badge description when viewing yours (default to others if unspecified) */
+        you?: string,
+        /** badge description when viewing others */
+        others: string
+    } | string
 }
 
 export const KIN_BADGE_TYPES: KinBadgeType[] = [
     {
         name: "I just want the badge",
         id: "badge",
-        showAs: "This user chose to have %a %c badge on their profile.",
+        showAs: {
+            you: "You have %a %c badge.",
+            others: "%c."
+        },
     },
     {
-        name: "I'm them",
+        name: "I'm",
         id: "s",
-        showAs: "They're %c.",
+        showAs: {
+            you: "You're %c.",
+            others: "They're %c."
+        },
     },
     {
         name: "Fictive",
         id: "fictive",
-        showAs: "They're %a %s fictive.",
+        showAs: {
+            you: "You're %a %s fictive.",
+            others: "They're %a %s fictive."
+        },
     },
     {
         name: "Fictionkin",
         id: "fictionkin",
-        showAs: "They're %a %s fictionkin.",
+        showAs: {
+            you: "You're %a %s fictionkin.",
+            others: "They're %a %s fictionkin."
+        },
     },
     {
         name: "Otherkin",
         id: "otherkin",
-        showAs: "They're %a %s otherkin.",
+        showAs: {
+            you: "You're %a %s otherkin.",
+            others: "They're %a %s otherkin."
+        },
     },
 ]
 

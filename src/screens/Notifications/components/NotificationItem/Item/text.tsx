@@ -18,6 +18,7 @@ import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {Text} from '#/components/Typography'
+import {useNameGradient, useNameStyle} from '#/deltas/feat/avatarDecorations'
 import type * as bsky from '#/types/bsky'
 
 /**
@@ -107,6 +108,14 @@ export function Name({profile}: {profile: bsky.profile.AnyProfileView}) {
   const t = useTheme()
   const {t: l} = useLingui()
   const name = useDisplayName(profile)
+  const moderationOpts = useModerationOpts()
+  const hideDisplayNames = useHideDisplayNames()
+  const decorated =
+    !!moderationOpts &&
+    !hideDisplayNames &&
+    !moderateProfile(profile, moderationOpts).ui('displayName').blur
+  const gradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
 
   return (
     <ProfileHoverCard did={profile.did} inline>
@@ -116,12 +125,14 @@ export function Name({profile}: {profile: bsky.profile.AnyProfileView}) {
         disableMismatchWarning
         disableUnderline
         emoji
+        gradient={decorated ? gradient : undefined}
         style={[
           a.text_md,
           a.leading_snug,
           a.font_semi_bold,
           t.atoms.text,
           web({direction: 'ltr', unicodeBidi: 'isolate'}),
+          decorated && nameStyle,
         ]}>
         {forceLTR(name)}
         <ProfileBadges

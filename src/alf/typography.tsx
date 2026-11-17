@@ -14,7 +14,7 @@ import {
   flatten,
   type MutableTextStyle,
 } from '#/alf'
-import {IS_IOS, IS_NATIVE} from '#/env'
+import {IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
 
 /**
  * Ensures that `lineHeight` defaults to a relative value of `1`, or applies
@@ -53,6 +53,8 @@ export function normalizeTextStyles(
 
 export type StringChild = string | (string | null)[]
 export type TextProps = RNTextProps & {
+  /** Paint the text with a horizontal gradient. */
+  gradient?: {colors: string[]; segmented?: boolean}
   /**
    * Lets the user select text, to use the native copy and paste functionality.
    */
@@ -88,7 +90,27 @@ export function renderChildrenWithEmoji(
   children: React.ReactNode,
   props: Omit<TextProps, 'children'> = {},
   emoji: boolean,
+  preserveWebEmoji = false,
 ) {
+  // Browser font fallback covers nested text and editable text on one baseline.
+  if (IS_WEB && !preserveWebEmoji) return children
+  if (IS_WEB) {
+    return Children.map(children, child => {
+      if (typeof child !== 'string') return child
+      const emojis = child.match(EMOJI)
+      if (!emojis) return child
+      return child.split(EMOJI).map((part, index) => [
+        part,
+        emojis[index] ? (
+          <UITextView
+            key={index}
+            style={{color: '#000', WebkitTextFillColor: 'initial'} as TextStyle}>
+            {emojis[index]}
+          </UITextView>
+        ) : null,
+      ])
+    })
+  }
   if (!IS_IOS || !emoji) {
     return children
   }
@@ -106,7 +128,12 @@ export function renderChildrenWithEmoji(
       emojis[index] ? (
         <UITextView
           {...props}
-          style={[props?.style, {fontFamily: 'System'}]}
+          style={[
+            props?.style,
+            {
+              fontFamily: 'System',
+            },
+          ]}
           key={index}>
           {emojis[index]}
         </UITextView>

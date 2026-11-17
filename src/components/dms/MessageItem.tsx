@@ -55,6 +55,7 @@ import * as ProfileCard from '#/components/ProfileCard'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
+import {useNameGradient, useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -180,6 +181,9 @@ let MessageItem = ({
   const displayName = profile
     ? (unavailableLabel ?? createSanitizedDisplayName(profile))
     : null
+  const nameGradient = useNameGradient(profile?.did)
+  const nameStyle = useNameStyle(profile?.did)
+  const decoratedName = !!profile?.displayName && !unavailableLabel
 
   const isFromSelf =
     message.sender?.did != null && message.sender.did === currentAccount?.did
@@ -528,12 +532,14 @@ let MessageItem = ({
               />
             ) : displayName && showDisplayName ? (
               <Text
+                gradient={decoratedName ? nameGradient : undefined}
                 style={[
                   a.text_xs,
                   t.atoms.text_contrast_medium,
                   a.pt_xs,
                   a.pb_2xs,
                   {paddingLeft: displayNameInset},
+                  decoratedName && nameStyle,
                 ]}
                 emoji>
                 {displayName}

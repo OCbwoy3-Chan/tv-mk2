@@ -17,6 +17,12 @@ import {Person_Stroke2_Corner2_Rounded as PersonIcon} from '#/components/icons/P
 import {ProfileBadges} from '#/components/ProfileBadges'
 import * as ProfileCard from '#/components/ProfileCard'
 import {Text} from '#/components/Typography'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/deltas/feat/avatarDecorations'
 
 export function MessagesListInfoPanel({
   convo,
@@ -48,6 +54,11 @@ export function MessagesListInfoPanel({
     profile.handle && !unavailableLabel && !isInvalidHandle(profile.handle)
       ? profile.handle
       : profile.did
+  const decoration = useAvatarDecoration(profile.did)
+  const profileShape = useAvatarShape(profile.did)
+  const gradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
+  const decorated = !unavailableLabel
 
   return (
     <View style={[a.align_center, a.justify_center]}>
@@ -55,6 +66,8 @@ export function MessagesListInfoPanel({
         type={profile.associated?.labeler ? 'labeler' : 'user'}
         size={88}
         avatar={profile?.avatar}
+        decoration={decoration}
+        profileShape={profileShape}
       />
       <View
         style={[
@@ -67,7 +80,14 @@ export function MessagesListInfoPanel({
           a.max_w_full,
         ]}>
         <Text
-          style={[a.text_2xl, a.font_bold, a.text_center, a.flex_shrink]}
+          gradient={decorated ? gradient : undefined}
+          style={[
+            a.text_2xl,
+            a.font_bold,
+            a.text_center,
+            a.flex_shrink,
+            decorated && nameStyle,
+          ]}
           numberOfLines={1}
           emoji>
           {displayName}

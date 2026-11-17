@@ -8,6 +8,7 @@ import {atoms as a, platform, useBreakpoints, useTheme, web} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
+import {useNameGradient, useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {type app} from '#/lexicons'
 import {useProfileHandleLink} from './useProfileHandleLink'
 
@@ -26,25 +27,22 @@ export function ProfileHeaderDisplayName({
     hideDisplayNames,
     moderation: moderation.ui('displayName'),
   })
+  // A blurred name must not keep the owner's decoration color either.
+  const decorated = !hideDisplayNames && !moderation.ui('displayName').blur
+  const gradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
 
   return (
     <View>
-      <Text
-        emoji
-        testID="profileHeaderDisplayName"
-        style={[
-          t.atoms.text,
-          gtMobile ? a.text_4xl : a.text_3xl,
-          a.self_start,
-          a.font_bold,
-          a.leading_tight,
-        ]}>
+      <View style={[a.flex_row, a.flex_wrap, a.align_center]}>
         {hideDisplayNames && shouldShowProfileLink ? (
           <InlineLinkText
+            testID="profileHeaderDisplayName"
             to={`https://${profile.handle}`}
             label={profile.handle}
             disableMismatchWarning
             style={[
+              a.flex_shrink,
               gtMobile ? a.text_4xl : a.text_3xl,
               a.font_bold,
               a.leading_tight,
@@ -52,7 +50,21 @@ export function ProfileHeaderDisplayName({
             {primaryName}
           </InlineLinkText>
         ) : (
-          primaryName
+          <Text
+            emoji
+            testID="profileHeaderDisplayName"
+            gradient={decorated ? gradient : undefined}
+            style={[
+              a.flex_shrink,
+              t.atoms.text,
+              gtMobile ? a.text_4xl : a.text_3xl,
+              a.self_start,
+              a.font_bold,
+              a.leading_tight,
+              decorated && nameStyle,
+            ]}>
+            {primaryName}
+          </Text>
         )}
         <View
           style={[
@@ -69,12 +81,7 @@ export function ProfileHeaderDisplayName({
             showBetaBadge
           />
         </View>
-        {/*
-         * TODO: Workaround for a rounding bug in Android RN.
-         * Fixed upstream in RN main (facebook/react-native#56651); remove this
-         *  once we are on a release that contains it (0.86.0 should be good).
-         */}{' '}
-      </Text>
+      </View>
     </View>
   )
 }

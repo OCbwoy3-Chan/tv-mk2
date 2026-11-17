@@ -152,8 +152,6 @@ import {PollEditor} from '#/view/com/composer/poll/PollEditor'
 import {SelectPollBtn} from '#/view/com/composer/poll/SelectPollBtn'
 import {SuggestedLanguage} from '#/view/com/composer/select-language/SuggestedLanguage'
 import {TagsBtn} from '#/view/com/composer/tags/TagsBtn'
-// TODO: Prevent naming components that coincide with RN primitives
-// due to linting false positives
 import {TextInput} from '#/view/com/composer/text-input/TextInput'
 import {TextSyntaxHelp} from '#/view/com/composer/TextSyntaxHelp'
 import {ThreadgateBtn} from '#/view/com/composer/threadgate/ThreadgateBtn'
@@ -183,6 +181,10 @@ import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+} from '#/deltas/feat/avatarDecorations'
 import {
   IS_ANDROID,
   IS_IOS,
@@ -2180,12 +2182,7 @@ let ComposerPost = memo(function ComposerPost({
                 ),
                 a.self_start,
               ]}>
-              <UserAvatar
-                avatar={currentProfile?.avatar}
-                size={42}
-                type={currentProfile?.associated?.labeler ? 'labeler' : 'user'}
-                style={[a.mt_xs]}
-              />
+              <ComposerAvatar profile={currentProfile} />
             </Button>
           )}
         />
@@ -2594,6 +2591,30 @@ function AltTextReminder({
         )}
       </View>
     </Admonition>
+  )
+}
+
+/**
+ * The active account's avatar in the composer. Decorations belong to the
+ * profile being posted from, which can differ from the signed-in account while
+ * the ephemeral switcher is open.
+ */
+function ComposerAvatar({
+  profile,
+}: {
+  profile?: app.bsky.actor.defs.ProfileViewDetailed
+}) {
+  const decoration = useAvatarDecoration(profile?.did)
+  const profileShape = useAvatarShape(profile?.did)
+  return (
+    <UserAvatar
+      avatar={profile?.avatar}
+      size={42}
+      type={profile?.associated?.labeler ? 'labeler' : 'user'}
+      decoration={decoration}
+      profileShape={profileShape}
+      style={[a.mt_xs]}
+    />
   )
 }
 

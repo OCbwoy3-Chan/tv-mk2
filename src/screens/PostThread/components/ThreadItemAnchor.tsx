@@ -85,6 +85,7 @@ import * as Skele from '#/components/Skeleton'
 import {Text} from '#/components/Typography'
 import {WhoCanReply} from '#/components/WhoCanReply'
 import {Features, useAnalytics} from '#/analytics'
+import {useNameGradient, useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import {PostPoll} from '#/features/pollblue/components/PostPoll'
 import {pollPostParts} from '#/features/pollblue/parse'
@@ -272,6 +273,9 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
     hideDisplayNames,
     moderation: moderation.ui('displayName'),
   })
+  const decorated = !hideDisplayNames && !moderation.ui('displayName').blur
+  const nameGradient = useNameGradient(post.author.did)
+  const nameStyle = useNameStyle(post.author.did)
   const isAllLowercaseDisplayName =
     displayName === displayName.toLowerCase() && /[a-z]/.test(displayName)
   const isThreadAuthor = getThreadAuthor(post, record) === currentAccount?.did
@@ -477,12 +481,14 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                         if (height > 0) setNameRowHeight(height)
                       }}
                       emoji
+                      gradient={decorated ? nameGradient : undefined}
                       style={[
                         a.flex_shrink_0,
                         {maxWidth: '100%'},
                         isCompactPosts ? a.text_md : a.text_lg,
                         a.font_semi_bold,
                         a.leading_snug,
+                        decorated && nameStyle,
                       ]}
                       numberOfLines={1}>
                       {displayName}

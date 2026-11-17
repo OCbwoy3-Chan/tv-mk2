@@ -47,6 +47,8 @@ import {useThumbnailFormat} from '#/state/preferences/thumbnail-format'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
 import {EditImageDialog} from '#/view/com/composer/photos/EditImageDialog'
 import {LOGO_PATH} from '#/view/icons/Logo'
+import {AvatarDecorationRing} from '#/screens/Settings/Deltas/Decorations/components/AvatarDecorationRing'
+import {HexagonAvatar} from '#/screens/Settings/Deltas/Decorations/components/HexagonAvatar'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {useDialogControl} from '#/components/Dialog'
@@ -62,6 +64,12 @@ import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import * as Menu from '#/components/Menu'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {useAnalytics} from '#/analytics'
+import {
+  type AvatarShape,
+  type DecorationFrame,
+  useAvatarDecoration,
+  useAvatarShape,
+} from '#/deltas/feat/avatarDecorations'
 import {IS_ANDROID, IS_NATIVE, IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import {LiveIndicator} from '#/features/liveNow/components/LiveIndicator'
@@ -95,10 +103,16 @@ interface UserAvatarProps extends BaseUserAvatarProps {
   onLoad?: () => void
   style?: StyleProp<ViewStyle>
   extraAviStyle?: ImageStyle
+  /** Decoration frame owned by the profile, if any. */
+  decoration?: DecorationFrame
+  /** Shape chosen by the profile owner, overriding the viewer's preference. */
+  profileShape?: AvatarShape
 }
 
 interface EditableUserAvatarProps extends BaseUserAvatarProps {
   onSelectNewAvatar: (img: PickerImage | null) => void
+  /** Shape chosen by the owner, so the preview matches the live profile. */
+  profileShape?: AvatarShape
 }
 
 interface PreviewableUserAvatarProps extends BaseUserAvatarProps {
@@ -292,6 +306,8 @@ let UserAvatar = ({
   hideLiveBadge,
   noBorder,
   extraAviStyle,
+  decoration,
+  profileShape,
 }: UserAvatarProps): React.ReactNode => {
   const t = useTheme()
 
@@ -303,17 +319,29 @@ let UserAvatar = ({
         ? 'square'
         : 'circle'
 
-  const finalShape =
-    enableSquareAvatars === 'sharp'
+  // A profile's own shape choice wins over the viewer's avatar preference, but
+  // still follows it for corner sharpness so nobody loses their sharp mode.
+  const finalShape: 'circle' | 'square' | 'sharp' = profileShape
+    ? profileShape === 'circle'
+      ? 'circle'
+      : enableSquareAvatars === 'sharp'
+        ? 'sharp'
+        : 'square'
+    : enableSquareAvatars === 'sharp'
       ? 'sharp'
       : (overrideShape ?? (type === 'user' ? avishapeforce : 'square'))
+  const hexagon = profileShape === 'hexagon' && !moderation?.blur
   const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
   const aviStyle = useMemo(() => {
     let borderRadius
 
-    if (finalShape !== 'circle') {
+    if (profileShape === 'hexagon' && !moderation?.blur) {
+      borderRadius = 0
+    } else if (profileShape === 'squircle') {
+      borderRadius = Math.round(size * 0.25)
+    } else if (finalShape !== 'circle') {
       borderRadius = getSquareAvatarRadius(
         size,
         finalShape === 'sharp' ? 'sharp' : true,
@@ -326,11 +354,14 @@ let UserAvatar = ({
       width: size,
       height: size,
       borderRadius,
+      ...(profileShape === 'squircle'
+        ? {borderCurve: 'continuous' as const}
+        : {}),
       backgroundColor: t.palette.contrast_25,
       ...extraAviStyle,
       ...(finalShape === 'sharp' && SHARP_CORNERS),
     }
-  }, [finalShape, size, t, extraAviStyle])
+  }, [finalShape, profileShape, size, t, extraAviStyle, moderation?.blur])
 
   const borderStyle = useMemo(() => {
     return [
@@ -391,41 +422,73 @@ let UserAvatar = ({
     ]
   }, [size, style, finalShape])
 
+  const frame = type === 'user' && !moderation?.blur ? decoration : undefined
+  const imageUri = avatar
+    ? applyImageTransforms(hackModifyThumbnailPath(avatar, size < 90), {
+        imageCdnHost,
+        format: thumbnailFormat,
+      })
+    : undefined
+
+  const decorationRing = frame && (
+    <AvatarDecorationRing
+      frame={frame}
+      size={size}
+      borderRadius={aviStyle.borderRadius}
+    />
+  )
+
+  /*
+   * A hexagon cannot be a rounded rect, so it renders as a clipped SVG image
+   * with the border, frame, and live ring all drawn on the same path. The
+   * stroke color is only resolved in that branch.
+   */
+  const hexagonImage =
+    hexagon && imageUri ? (
+      <HexagonAvatar
+        testID="userAvatarImage"
+        uri={imageUri}
+        size={size}
+        rounded={enableSquareAvatars !== 'sharp'}
+        stroke={
+          live
+            ? t.palette.negative_500
+            : (frame?.color ??
+              (t.scheme === 'light'
+                ? t.atoms.border_contrast_low.borderColor
+                : t.atoms.border_contrast_high.borderColor))
+        }
+        strokeWidth={live || frame ? (size > 16 ? 3 : 1) : 1}
+      />
+    ) : undefined
+
   return avatar &&
     !(moderation?.blur && IS_ANDROID /* android crashes with blur */) ? (
     <View style={containerStyle}>
-      {usePlainRNImage ? (
-        <RNImage
-          accessibilityIgnoresInvertColors
-          testID="userAvatarImage"
-          style={aviStyle}
-          resizeMode="cover"
-          source={{
-            uri: applyImageTransforms(
-              hackModifyThumbnailPath(avatar, size < 90),
-              {imageCdnHost, format: thumbnailFormat},
-            ),
-          }}
-          blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
-          onLoad={onLoad}
-        />
-      ) : (
-        <ExpoImage
-          testID="userAvatarImage"
-          style={aviStyle}
-          contentFit="cover"
-          source={{
-            uri: applyImageTransforms(
-              hackModifyThumbnailPath(avatar, size < 90),
-              {imageCdnHost, format: thumbnailFormat},
-            ),
-          }}
-          blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
-          onLoad={onLoad}
-          useAppleWebpCodec
-        />
-      )}
-      {!noBorder && <MediaInsetBorder style={borderStyle} />}
+      {hexagonImage ??
+        (usePlainRNImage ? (
+          <RNImage
+            accessibilityIgnoresInvertColors
+            testID="userAvatarImage"
+            style={aviStyle}
+            resizeMode="cover"
+            source={{uri: imageUri}}
+            blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
+            onLoad={onLoad}
+          />
+        ) : (
+          <ExpoImage
+            testID="userAvatarImage"
+            style={aviStyle}
+            contentFit="cover"
+            source={{uri: imageUri}}
+            blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
+            onLoad={onLoad}
+            useAppleWebpCodec
+          />
+        ))}
+      {!noBorder && !hexagon && <MediaInsetBorder style={borderStyle} />}
+      {!hexagon && decorationRing}
       {live && size > 16 && !hideLiveBadge && (
         <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />
       )}
@@ -435,6 +498,7 @@ let UserAvatar = ({
     <View style={containerStyle}>
       <DefaultAvatar type={type} shape={finalShape} size={size} />
       {!noBorder && <MediaInsetBorder style={borderStyle} />}
+      {decorationRing}
       {live && size > 16 && !hideLiveBadge && (
         <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />
       )}
@@ -450,6 +514,7 @@ let EditableUserAvatar = ({
   size,
   avatar,
   onSelectNewAvatar,
+  profileShape,
 }: EditableUserAvatarProps): React.ReactNode => {
   const t = useTheme()
   const {_} = useLingui()
@@ -465,6 +530,30 @@ let EditableUserAvatar = ({
   const circular = type !== 'algo' && type !== 'list' && !enableSquareAvatars
 
   const aviStyle = useMemo(() => {
+    if (profileShape === 'hexagon') {
+      return {width: size, height: size, borderRadius: 0}
+    }
+    if (profileShape === 'squircle') {
+      return {
+        width: size,
+        height: size,
+        borderRadius: Math.round(size * 0.25),
+        borderCurve: 'continuous' as const,
+      }
+    }
+    if (profileShape === 'circle') {
+      return {width: size, height: size, borderRadius: Math.floor(size / 2)}
+    }
+    if (profileShape === 'square') {
+      return {
+        width: size,
+        height: size,
+        borderRadius: getSquareAvatarRadius(
+          size,
+          enableSquareAvatars === 'sharp' ? 'sharp' : true,
+        ),
+      }
+    }
     if (!circular) {
       return {
         width: size,
@@ -477,7 +566,7 @@ let EditableUserAvatar = ({
       height: size,
       borderRadius: Math.floor(size / 2),
     }
-  }, [circular, size, enableSquareAvatars])
+  }, [circular, profileShape, size, enableSquareAvatars])
 
   const onOpenCamera = useCallback(async () => {
     if (!(await requestCameraAccessIfNeeded())) {
@@ -558,14 +647,35 @@ let EditableUserAvatar = ({
           {({props}) => (
             <Pressable {...props} testID="changeAvatarBtn">
               {avatar ? (
-                <ExpoImage
-                  testID="userAvatarImage"
-                  style={aviStyle}
-                  source={{uri: avatar}}
-                  accessibilityRole="image"
-                />
+                profileShape === 'hexagon' ? (
+                  <HexagonAvatar
+                    testID="userAvatarImage"
+                    uri={avatar}
+                    size={size}
+                    rounded={enableSquareAvatars !== 'sharp'}
+                  />
+                ) : (
+                  <ExpoImage
+                    testID="userAvatarImage"
+                    style={aviStyle}
+                    source={{uri: avatar}}
+                    accessibilityRole="image"
+                  />
+                )
               ) : (
-                <DefaultAvatar type={type} size={size} />
+                <DefaultAvatar
+                  type={type}
+                  size={size}
+                  shape={
+                    profileShape === 'circle'
+                      ? 'circle'
+                      : profileShape === 'hexagon' ||
+                          profileShape === 'squircle' ||
+                          profileShape === 'square'
+                        ? 'square'
+                        : undefined
+                  }
+                />
               )}
               <View
                 style={[
@@ -653,6 +763,8 @@ let PreviewableUserAvatar = ({
   const {_} = useLingui()
   const queryClient = useQueryClient()
   const enableSquareAvatars = useEnableSquareAvatars()
+  const decoration = useAvatarDecoration(profile.did)
+  const profileShape = useAvatarShape(profile.did)
   const status = useActorStatus(profile)
   const liveControl = useDialogControl()
   const haptics = useHaptics()
@@ -674,25 +786,38 @@ let PreviewableUserAvatar = ({
       moderation={moderation}
       type={profile.associated?.labeler ? 'labeler' : 'user'}
       live={status.isActive || live}
+      decoration={decoration}
+      profileShape={profileShape}
       {...props}
     />
   )
 
   const linkStyle = {
     borderRadius:
-      enableSquareAvatars === 'sharp' || props.shape === 'sharp'
+      profileShape === 'hexagon'
         ? 0
-        : props.shape === 'circle'
-          ? Math.floor(props.size / 2)
-          : props.shape === 'square' ||
-              props.type === 'algo' ||
-              props.type === 'list'
-            ? getSquareAvatarRadius(props.size, enableSquareAvatars)
-            : getShapeRadius(
-                enableSquareAvatars,
-                getSquareAvatarRadius(props.size),
-                Math.floor(props.size / 2),
-              ),
+        : profileShape === 'squircle'
+          ? Math.round(props.size * 0.25)
+          : profileShape === 'circle'
+            ? Math.floor(props.size / 2)
+            : profileShape === 'square'
+              ? getSquareAvatarRadius(
+                  props.size,
+                  enableSquareAvatars === 'sharp' ? 'sharp' : true,
+                )
+              : enableSquareAvatars === 'sharp' || props.shape === 'sharp'
+                ? 0
+                : props.shape === 'circle'
+                  ? Math.floor(props.size / 2)
+                  : props.shape === 'square' ||
+                      props.type === 'algo' ||
+                      props.type === 'list'
+                    ? getSquareAvatarRadius(props.size, enableSquareAvatars)
+                    : getShapeRadius(
+                        enableSquareAvatars,
+                        getSquareAvatarRadius(props.size),
+                        Math.floor(props.size / 2),
+                      ),
   }
 
   return (

@@ -52,6 +52,12 @@ import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {type Metrics} from '#/analytics'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/deltas/feat/avatarDecorations'
 import {useActorStatus} from '#/features/liveNow'
 import type * as bsky from '#/types/bsky'
 import {
@@ -190,6 +196,12 @@ export function Avatar({
   size?: number
 }) {
   const moderation = moderateProfile(profile, moderationOpts)
+  // Previews of the current account are the only place a raw UserAvatar here
+  // needs the decorations, since PreviewableUserAvatar resolves its own.
+  const decoration = useAvatarDecoration(
+    disabledPreview ? profile.did : undefined,
+  )
+  const profileShape = useAvatarShape(disabledPreview ? profile.did : undefined)
 
   const {isActive: live} = useActorStatus(profile)
 
@@ -200,6 +212,8 @@ export function Avatar({
       type={profile.associated?.labeler ? 'labeler' : 'user'}
       moderation={moderation.ui('avatar')}
       live={liveOverride ?? live}
+      decoration={decoration}
+      profileShape={profileShape}
     />
   ) : (
     <PreviewableUserAvatar
@@ -266,17 +280,22 @@ function InlineNameAndHandle({
     hideDisplayNames,
     moderation: moderation.ui('displayName'),
   })
+  const decorated = !hideDisplayNames && !moderation.ui('displayName').blur
+  const gradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
   const handle = sanitizeHandle(profile.handle, '@')
   return (
     <View style={[a.flex_row, a.align_end, a.flex_shrink]}>
       <Text
         emoji
+        gradient={decorated ? gradient : undefined}
         style={[
           a.font_semi_bold,
           a.leading_tight,
           a.flex_shrink_0,
           {maxWidth: hideDisplayNames ? '100%' : '70%'},
           web({direction: 'ltr', unicodeBidi: 'isolate'}),
+          decorated && nameStyle,
         ]}
         numberOfLines={1}>
         {forceLTR(name)}
@@ -322,10 +341,14 @@ export function Name({
     hideDisplayNames,
     moderation: moderation.ui('displayName'),
   })
+  const decorated = !hideDisplayNames && !moderation.ui('displayName').blur
+  const gradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
   return (
     <View style={[a.flex_row, a.align_center, a.max_w_full, style]}>
       <Text
         emoji
+        gradient={decorated ? gradient : undefined}
         style={[
           a.text_md,
           a.font_semi_bold,
@@ -333,6 +356,7 @@ export function Name({
           a.self_start,
           a.flex_shrink,
           textStyle,
+          decorated && nameStyle,
         ]}
         numberOfLines={1}>
         {name}

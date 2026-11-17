@@ -81,6 +81,12 @@ import {OTAChannelNotice} from '#/components/OTAChannelNotice'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/deltas/feat/avatarDecorations'
 import {IS_NATIVE, IS_WEB} from '#/env'
 import {InviteFriendsDialog} from '#/features/inviteFriends'
 import {useActorStatus} from '#/features/liveNow'
@@ -114,6 +120,10 @@ let DrawerProfileCard = ({
   const t = useTheme()
   const {data: profile} = useProfileQuery({did: account.did})
   const {isActive: live} = useActorStatus(profile)
+  const decoration = useAvatarDecoration(profile?.did)
+  const profileShape = useAvatarShape(profile?.did)
+  const nameGradient = useNameGradient(profile?.did)
+  const nameStyle = useNameStyle(profile?.did)
 
   const followersMetricsDisplay = useFollowersMetricsDisplay()
   const followingMetricsDisplay = useFollowingMetricsDisplay()
@@ -142,17 +152,22 @@ let DrawerProfileCard = ({
         usePlainRNImage={true}
         type={profile?.associated?.labeler ? 'labeler' : 'user'}
         live={live}
+        decoration={decoration}
+        profileShape={profileShape}
       />
       <View style={[a.gap_2xs]}>
         <View style={[a.flex_row, a.align_center, a.gap_xs, a.flex_1]}>
           <Text
             emoji
+            // Falls back to the handle, which is not a decorated name.
+            gradient={profile?.displayName ? nameGradient : undefined}
             style={[
               a.font_bold,
               a.text_xl,
               a.mt_2xs,
               a.leading_tight,
               a.flex_shrink,
+              profile?.displayName && nameStyle,
             ]}
             numberOfLines={1}>
             {profile?.displayName || account.handle}

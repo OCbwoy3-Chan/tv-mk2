@@ -24,6 +24,12 @@ import {ProfileBadges} from '#/components/ProfileBadges'
 import * as Prompt from '#/components/Prompt'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/deltas/feat/avatarDecorations'
 import type * as bsky from '#/types/bsky'
 
 export function SearchHistory({
@@ -256,6 +262,12 @@ function RecentProfileItem({
     profile.displayName || sanitizeHandle(profile.handle),
     moderation.ui('displayName'),
   )
+  const decoration = useAvatarDecoration(profile.did)
+  const profileShape = useAvatarShape(profile.did)
+  const nameGradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
+  // A name reduced to the handle by moderation is not a decorated name.
+  const decorated = !!profile.displayName && !moderation.ui('displayName').blur
 
   const enableSquareButtons = useEnableSquareButtons()
 
@@ -278,9 +290,20 @@ function RecentProfileItem({
           type={profile.associated?.labeler ? 'labeler' : 'user'}
           size={width - 8}
           moderation={moderation.ui('avatar')}
+          decoration={decoration}
+          profileShape={profileShape}
         />
         <View style={[a.flex_row, a.align_center, a.justify_center, a.w_full]}>
-          <Text emoji style={[a.text_xs, a.leading_snug]} numberOfLines={1}>
+          <Text
+            emoji
+            gradient={decorated ? nameGradient : undefined}
+            style={[
+              a.text_xs,
+              a.leading_snug,
+              a.flex_shrink,
+              decorated && nameStyle,
+            ]}
+            numberOfLines={1}>
             {name}
           </Text>
           <ProfileBadges profile={profile} size="xs" style={[a.pl_xs]} />

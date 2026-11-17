@@ -461,7 +461,7 @@ function LinkPeek({
 export type InlineLinkProps = React.PropsWithChildren<
   BaseLinkProps &
     TextStyleProp &
-    Pick<TextProps, 'selectable' | 'numberOfLines' | 'emoji'> &
+    Pick<TextProps, 'selectable' | 'numberOfLines' | 'emoji' | 'gradient'> &
     Pick<ButtonProps, 'label' | 'accessibilityHint' | 'onFocus' | 'onBlur'> & {
       disableUnderline?: boolean
       title?: TextProps['title']

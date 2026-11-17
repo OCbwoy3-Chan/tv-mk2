@@ -33,6 +33,7 @@ import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useSimpleVerificationStateWithDeer} from '#/components/verification'
 import {useAnalytics} from '#/analytics'
+import {useAvatarShape} from '#/deltas/feat/avatarDecorations'
 import {IS_WEB} from '#/env'
 import {
   logProfileLinkChanges,
@@ -130,6 +131,7 @@ function DialogInner({
   const ax = useAnalytics()
   const control = Dialog.useDialogContext()
   const enableSquareButtons = useEnableSquareButtons()
+  const profileShape = useAvatarShape(profile.did)
   // the dialog's contents mount on every open, so this fires once per open
   useCallOnce(() => {
     ax.metric('profile:edit:open', {})
@@ -408,17 +410,21 @@ function DialogInner({
               left: 20,
               width: 84,
               height: 84,
-              borderWidth: 2,
-              borderRadius: enableSquareAvatars
-                ? getSquareAvatarRadius(80, enableSquareAvatars) +
-                  (enableSquareAvatars === 'sharp' ? 0 : 2)
-                : 42,
+              // A chosen shape draws its own outline, so the frame would clash.
+              borderWidth: profileShape ? 0 : 2,
+              borderRadius: profileShape
+                ? 0
+                : enableSquareAvatars
+                  ? getSquareAvatarRadius(80, enableSquareAvatars) +
+                    (enableSquareAvatars === 'sharp' ? 0 : 2)
+                  : 42,
               borderColor: t.atoms.bg.backgroundColor,
             },
           ]}>
           <EditableUserAvatar
             size={80}
             avatar={userAvatar}
+            profileShape={profileShape}
             onSelectNewAvatar={onSelectNewAvatar}
           />
         </View>

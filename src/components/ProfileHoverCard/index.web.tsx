@@ -71,6 +71,12 @@ import {ProfileBadges} from '#/components/ProfileBadges'
 import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/deltas/feat/avatarDecorations'
 import {IS_WEB_TOUCH_DEVICE} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import {LiveStatus} from '#/features/liveNow/components/LiveStatusDialog'
@@ -527,6 +533,11 @@ function Inner({
     hideDisplayNames,
     moderation: moderation.ui('displayName'),
   })
+  const decorated = !hideDisplayNames && !moderation.ui('displayName').blur
+  const nameGradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
+  const decoration = useAvatarDecoration(profile.did)
+  const profileShape = useAvatarShape(profile.did)
   const isBlockedUser =
     profile.viewer?.blocking ||
     profile.viewer?.blockedBy ||
@@ -598,6 +609,8 @@ function Inner({
             avatar={profile.avatar}
             type={isLabeler ? 'labeler' : 'user'}
             moderation={moderation.ui('avatar')}
+            decoration={decoration}
+            profileShape={profileShape}
           />
         </Link>
 
@@ -669,13 +682,16 @@ function Inner({
           <View
             style={[a.flex_row, a.flex_1, a.align_center, a.pt_md, a.pb_xs]}>
             <Text
+              emoji
               numberOfLines={1}
+              gradient={decorated ? nameGradient : undefined}
               style={[
                 a.flex_shrink,
                 a.text_lg,
                 a.leading_snug,
                 a.font_semi_bold,
                 a.self_start,
+                decorated && nameStyle,
               ]}>
               {authorPrimaryName}
             </Text>
