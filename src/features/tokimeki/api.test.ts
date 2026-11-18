@@ -93,19 +93,22 @@ it('reads a poll directly and counts verified vote backlinks', async () => {
   ).toBe(true)
 })
 
-it('counts each voter once using their latest valid vote', async () => {
+it('counts each voter once using their first valid vote, as TOKIMEKI does', async () => {
   records.set(`${voter}/old`, vote(0))
   records.set(`${voter}/new`, vote(1, '2026-11-09T02:00:00Z'))
+  expect(
+    await fetchTokimekiPoll(ref, voter, 'https://constellation.test'),
+  ).toMatchObject({counts: [1, 0], totalVotes: 1, myVote: 0})
+})
+
+it('counts a vote cast against an earlier version of the poll', async () => {
+  records.set(`${voter}/vote`, {...vote(1), poll: {uri, cid: 'first-cid'}})
   expect(
     await fetchTokimekiPoll(ref, voter, 'https://constellation.test'),
   ).toMatchObject({counts: [0, 1], totalVotes: 1, myVote: 1})
 })
 
-it('rejects mismatched poll refs, invalid choices and votes after closing', async () => {
-  records.set('did:plc:wrongcid/vote', {
-    ...vote(0),
-    poll: {uri, cid: 'old-cid'},
-  })
+it('rejects other polls, invalid choices and votes after closing', async () => {
   records.set('did:plc:wronguri/vote', {
     ...vote(0),
     poll: {uri: 'at://another/poll/key', cid: 'poll-cid'},

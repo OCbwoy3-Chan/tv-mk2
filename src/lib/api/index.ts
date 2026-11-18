@@ -240,7 +240,7 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
   let tid: TID | undefined
   let eventPostRef: {uri: string; cid: string} | undefined
   let pollPostRef: {uri: string; cid: string} | undefined
-  let pollCreatedAt: Date | undefined
+  let createdPoll = false
 
   for (let i = 0; i < thread.posts.length; i++) {
     const draft = thread.posts[i]
@@ -294,7 +294,14 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
       ;(record as app.bsky.feed.post.Main & {via?: string}).via = via
     }
     if (draft.embed.poll) {
-      pollCreatedAt = new Date(now)
+      /*
+       * The poll is written once, before its link card exists: TOKIMEKI only
+       * serves the card image for a poll it has indexed, and the image then
+       * changes the post's CID. So `subject.cid` names the post as hashed
+       * before the card was attached. Rewriting the poll with the final CID
+       * afterwards would fork it: TOKIMEKI keeps the first version and hands
+       * its CID to voters, while the PDS holds another.
+       */
       opts.onStateChange?.(t`Creating poll...`)
       await createPoll(
         opts.pdsClient,
@@ -303,8 +310,9 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
           uri,
           cid: await computeCid(record),
         },
-        pollCreatedAt,
+        new Date(now),
       )
+      createdPoll = true
       try {
         record.embed = await resolveEmbed(
           opts.appviewClient,
@@ -373,16 +381,8 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     }
   }
 
-  /*
-   * The thumbnail changes the post's CID, so replace the preliminary subject
-   * with the finished post ref before writing the post and any thread replies.
-   */
-  let createdPoll = false
   const pollToWrite = thread.posts.find(p => p.embed.poll)?.embed.poll
   if (pollPostRef && pollToWrite?.rkey) {
-    opts.onStateChange?.(t`Creating poll...`)
-    await createPoll(opts.pdsClient, pollToWrite, pollPostRef, pollCreatedAt)
-    createdPoll = true
     poll = {rkey: pollToWrite.rkey, optionCount: pollToWrite.options.length}
   }
 

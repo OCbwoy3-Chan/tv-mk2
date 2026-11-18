@@ -48,7 +48,14 @@ async function readRecord(did: string, collection: string, rkey: string) {
   return {uri: data.uri, cid: data.cid, value: data.value}
 }
 
-/** Read the poll from its PDS and verify Constellation's vote backlinks there. */
+/**
+ * Read the poll from its PDS and verify Constellation's vote backlinks there.
+ *
+ * Votes are matched to the poll by URI, not CID. A poll record can have more
+ * than one version (Witchsky used to write it twice while publishing), and
+ * TOKIMEKI hands voters the CID of the version it indexed first, so requiring
+ * the current CID drops real votes.
+ */
 export async function fetchTokimekiPoll(
   ref: TokimekiPollRef,
   viewerDid: string,
@@ -95,7 +102,6 @@ export async function fetchTokimekiPoll(
       typeof value.createdAt === 'string' ? Date.parse(value.createdAt) : NaN
     if (
       poll?.uri !== record.uri ||
-      poll.cid !== record.cid ||
       typeof index !== 'number' ||
       !Number.isInteger(index) ||
       index < 0 ||
@@ -106,8 +112,10 @@ export async function fetchTokimekiPoll(
     ) {
       continue
     }
+    // One vote per person, like TOKIMEKI: a second record (a double tap, a
+    // race between clients) does not replace the first.
     const previous = byVoter.get(vote.did)
-    if (!previous || previous.time < time) byVoter.set(vote.did, {index, time})
+    if (!previous || time < previous.time) byVoter.set(vote.did, {index, time})
   }
   const counts = options.map(() => 0)
   for (const vote of byVoter.values()) counts[vote.index]++

@@ -178,8 +178,8 @@ describe('publishing a post with a poll', () => {
     const [postId, rkey] = onPollRkey.mock.calls[0]
     expect(postId).toBe('post-1')
 
-    expect(ctx.putRecord).toHaveBeenCalledTimes(2)
-    const [record, writtenRkey] = ctx.putRecord.mock.calls[1]
+    expect(ctx.putRecord).toHaveBeenCalledTimes(1)
+    const [record, writtenRkey] = ctx.putRecord.mock.calls[0]
     expect(writtenRkey).toBe(rkey)
     expect(record.$type).toBe(TOKIMEKI_POLL_COLLECTION)
     expect(record.options).toEqual(['Yes', 'No'])
@@ -209,7 +209,6 @@ describe('publishing a post with a poll', () => {
       'putRecord',
       'resolveLink',
       'uploadBlob',
-      'putRecord',
       'applyWrites',
     ])
   })
@@ -267,7 +266,7 @@ describe('publishing a post with a poll', () => {
     expect(ctx.putRecord.mock.calls[0][1]).toBe('3mpoll')
   })
 
-  it('finalizes the poll and following replies with the post CID including its preview', async () => {
+  it('writes the poll once, before the preview, and replies to the final post', async () => {
     const ctx = setup()
     jest
       .spyOn(cid, 'computeCid')
@@ -283,11 +282,13 @@ describe('publishing a post with a poll', () => {
         draft({}, 'Reply', 'post-2'),
       ]),
     })
+    /*
+     * TOKIMEKI only renders the preview for a poll it has indexed, so the poll
+     * is written first and never rewritten: a second version would fork it.
+     */
+    expect(ctx.putRecord).toHaveBeenCalledTimes(1)
     expect(ctx.putRecord.mock.calls[0][0].subject).toMatchObject({
       cid: 'cid-without-preview',
-    })
-    expect(ctx.putRecord.mock.calls[1][0].subject).toMatchObject({
-      cid: 'cid-with-preview',
     })
     expect(writesOf(ctx.applyWrites)[1].value).toMatchObject({
       reply: {
@@ -295,9 +296,6 @@ describe('publishing a post with a poll', () => {
         root: {cid: 'cid-with-preview'},
       },
     })
-    expect(ctx.putRecord.mock.calls[1][0].endsAt).toBe(
-      ctx.putRecord.mock.calls[0][0].endsAt,
-    )
   })
 
   it('closes the poll at the chosen duration', async () => {
