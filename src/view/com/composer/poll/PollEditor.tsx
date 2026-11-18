@@ -6,7 +6,8 @@ import {
   getOptionIssues,
   POLL_DURATIONS,
   POLL_MIN_OPTIONS,
-  POLL_OPTION_MAX_CHARS,
+  POLL_OPTION_MAX_BYTES,
+  POLL_OPTION_MAX_GRAPHEMES,
   type PollDraft,
   type PollDuration,
   pollHasContent,
@@ -96,7 +97,9 @@ export function PollEditor({
             <TextField.Root isInvalid={isInvalid}>
               <TextField.Input
                 testID={`pollOptionInput-${index}`}
-                maxLength={POLL_OPTION_MAX_CHARS}
+                // The real limit is graphemes and bytes, checked below; this
+                // only stops runaway pastes, since UTF-16 length <= UTF-8 bytes.
+                maxLength={POLL_OPTION_MAX_BYTES}
                 label={l({
                   message: `Choice ${index + 1}`,
                   comment:
@@ -129,7 +132,7 @@ export function PollEditor({
                 }}
               />
             </TextField.Root>
-            {issue === 'invalid' && (
+            {isInvalid && (
               <Text
                 testID={`pollOptionHint-${index}`}
                 style={[
@@ -137,9 +140,15 @@ export function PollEditor({
                   a.text_right,
                   {color: t.palette.negative_500},
                 ]}>
-                <Trans>
-                  This choice contains characters that cannot be saved
-                </Trans>
+                {issue === 'invalid' ? (
+                  <Trans>
+                    This choice contains characters that cannot be saved
+                  </Trans>
+                ) : (
+                  <Trans>
+                    Choices can be up to {POLL_OPTION_MAX_GRAPHEMES} characters
+                  </Trans>
+                )}
               </Text>
             )}
           </View>

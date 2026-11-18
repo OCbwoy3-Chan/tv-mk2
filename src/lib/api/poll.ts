@@ -3,8 +3,9 @@ import {countGraphemes, graphemeSegments} from 'unicode-segmenter/grapheme'
 /** TOKIMEKI's composer lets a poll have two to four choices. */
 export const POLL_MIN_OPTIONS = 2
 export const POLL_MAX_OPTIONS = 4
-/** Length cap of TOKIMEKI's own option field. */
-export const POLL_OPTION_MAX_CHARS = 100
+/** TOKIMEKI's option limits, as its lexicon states them. */
+export const POLL_OPTION_MAX_GRAPHEMES = 100
+export const POLL_OPTION_MAX_BYTES = 1000
 
 /** Values on a People's Assembly statement vote; kept for old conversations. */
 export const POLL_VOTE_VALUES = ['agree', 'disagree', 'pass'] as const
@@ -99,7 +100,12 @@ export function getOptionIssue(text: string): PollOptionIssue | null {
   if (option.length === 0) return 'empty'
   const {wellFormed, hasNul} = inspectText(option)
   if (!wellFormed || hasNul) return 'invalid'
-  if (option.length > POLL_OPTION_MAX_CHARS) return 'too_long'
+  if (
+    countGraphemes(option) > POLL_OPTION_MAX_GRAPHEMES ||
+    inspectText(option).bytes > POLL_OPTION_MAX_BYTES
+  ) {
+    return 'too_long'
+  }
   return null
 }
 

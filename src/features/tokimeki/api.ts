@@ -1,6 +1,7 @@
 import {type DidString} from '@atproto/syntax'
 import {useQuery} from '@tanstack/react-query'
 
+import {getOptionIssue} from '#/lib/api/poll'
 import {useDeferredEnable} from '#/lib/hooks/useDeferredEnable'
 import {useConstellationInstance} from '#/state/preferences/constellation-instance'
 import {STALE} from '#/state/queries'
@@ -57,9 +58,7 @@ function isPollValue(value: Record<string, unknown>): value is PollRecordValue {
     Array.isArray(options) &&
     options.length >= 2 &&
     options.length <= 4 &&
-    options.every(
-      o => typeof o === 'string' && o.length > 0 && o.length <= 100,
-    ) &&
+    options.every(o => typeof o === 'string' && getOptionIssue(o) === null) &&
     typeof endsAt === 'string' &&
     Number.isFinite(Date.parse(endsAt)) &&
     typeof createdAt === 'string' &&

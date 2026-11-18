@@ -246,8 +246,8 @@ describe('PollEditor', () => {
 
   it('stops each choice at the length TOKIMEKI accepts', () => {
     const {getByTestId} = renderEditor(['one', 'two'])
-    expect(getByTestId('pollOptionInput-0')).toHaveProp('maxLength', 100)
-    expect(getByTestId('pollOptionInput-1')).toHaveProp('maxLength', 100)
+    expect(getByTestId('pollOptionInput-0')).toHaveProp('maxLength', 1000)
+    expect(getByTestId('pollOptionInput-1')).toHaveProp('maxLength', 1000)
   })
 
   it('has no add or remove buttons for choices', () => {
@@ -345,6 +345,14 @@ describe('PollEditor', () => {
       type: 'embed_set_poll_duration',
       duration: '7d',
     })
+  })
+
+  it('points out a choice that is too long', () => {
+    const {getByTestId} = renderEditor(['a'.repeat(101), 'fine'])
+    expect(getByTestId('pollOptionHint-0')).toHaveTextContent(
+      'Choices can be up to 100 characters',
+      {exact: true},
+    )
   })
 
   it('points out a choice that cannot be saved', () => {

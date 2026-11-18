@@ -6,7 +6,8 @@ import {
   isPollDraftPublishable,
   isPollDuration,
   POLL_MAX_OPTIONS,
-  POLL_OPTION_MAX_CHARS,
+  POLL_OPTION_MAX_BYTES,
+  POLL_OPTION_MAX_GRAPHEMES,
   pollEndsAt,
   pollOptionsForPublish,
   pollTopicFromText,
@@ -24,10 +25,25 @@ describe('getOptionIssue', () => {
   })
 
   it('stops at the length TOKIMEKI accepts', () => {
-    expect(getOptionIssue('a'.repeat(POLL_OPTION_MAX_CHARS))).toBeNull()
-    expect(getOptionIssue('a'.repeat(POLL_OPTION_MAX_CHARS + 1))).toBe(
+    expect(getOptionIssue('a'.repeat(POLL_OPTION_MAX_GRAPHEMES))).toBeNull()
+    expect(getOptionIssue('a'.repeat(POLL_OPTION_MAX_GRAPHEMES + 1))).toBe(
       'too_long',
     )
+  })
+
+  it('counts graphemes, so an emoji counts once', () => {
+    // Ten family emoji: 10 graphemes, but 110 UTF-16 units and 250 bytes.
+    expect(getOptionIssue('👨‍👩‍👧‍👦'.repeat(10))).toBeNull()
+  })
+
+  it('also stops at the byte limit', () => {
+    // 4-byte emoji: 100 graphemes but 400 bytes is fine; the byte cap only
+    // bites for longer grapheme clusters.
+    expect(getOptionIssue('😀'.repeat(POLL_OPTION_MAX_GRAPHEMES))).toBeNull()
+    const cluster = '👩🏽‍💻' // 15 bytes, one grapheme
+    expect(
+      getOptionIssue(cluster.repeat(Math.ceil(POLL_OPTION_MAX_BYTES / 15) + 1)),
+    ).toBe('too_long')
   })
 
   it('rejects text that cannot be stored', () => {
