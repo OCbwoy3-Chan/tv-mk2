@@ -597,6 +597,10 @@ export async function resolveEmbed(
  * The post's link card for an event it created. The event record itself is
  * written earlier in `post()`, so the URI is already known; it just has to be
  * rendered as an absolute witchsky URL so `parseEventUrl` picks it up.
+ *
+ * `associatedRefs` names the event record the card was built from. Its CID is
+ * the version written before the post: `finalizeEvent` then adds the post's
+ * own ref, and the two records cannot hold each other's final CIDs.
  */
 function resolveEvent(
   pdsClient: Client,
@@ -618,6 +622,7 @@ function resolveEvent(
       uri: makeEventUrl({did: pdsClient.assertDid}, rkey) as UriString,
       title: event.name.trim(),
       description,
+      associatedRefs: [{uri: ref.uri as AtUriString, cid: ref.cid}],
     },
   }
 }

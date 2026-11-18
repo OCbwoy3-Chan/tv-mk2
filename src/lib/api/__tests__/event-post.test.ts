@@ -133,6 +133,20 @@ describe('creating an event with a post', () => {
     expect(ctx.calls.put).toHaveLength(1)
     expect(ctx.calls.put[0]).toMatchObject({rkey: '3kevent'})
 
+    // The post's card names the event record it was built from.
+    const [, input] = (
+      ctx.pdsClient.call as unknown as jest.Mock<
+        unknown,
+        [{$nsid?: string}, {writes: {value: {embed?: unknown}}[]}]
+      >
+    ).mock.calls.find(
+      ([def]) => def.$nsid === com.atproto.repo.applyWrites.$nsid,
+    )!
+    const postWrite = input.writes[0].value
+    expect(postWrite.embed).toMatchObject({
+      external: {associatedRefs: [{uri: EVENT_URI, cid: 'cid-event'}]},
+    })
+
     // RSVP written against the finalized cid, not the create-time one.
     const rsvp = ctx.calls.create.find(
       (r: Record<string, unknown>) =>
@@ -244,6 +258,7 @@ describe('the event card', () => {
       external: {
         uri: 'https://witchsky.app/profile/did:plc:alice/event/3kevent',
         title: 'Garden party',
+        associatedRefs: [{uri: EVENT_URI, cid: 'c'}],
       },
     })
     expect(
