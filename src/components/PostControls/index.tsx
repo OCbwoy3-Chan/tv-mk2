@@ -37,6 +37,7 @@ import {
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {EphemeralAccountSwitcherFromScope} from '#/components/EphemeralAccountSwitcher'
 import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
+import {useEphemeralPostToggle} from '#/components/hooks/useEphemeralPostToggle'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
 import * as Toast from '#/components/Toast'
@@ -308,98 +309,17 @@ function PostControlsInner({
     }
   }
 
-  const onSelectLikeAccount = async (account: (typeof accounts)[number]) => {
-    try {
-      const wasLiked = await runWithEphemeralAgent(account, async agent => {
-        const res = await agent.getPosts({uris: [post.uri]})
-        const target = res.data.posts[0]
-        const likeUri = target?.viewer?.like
-
-        if (likeUri) {
-          await agent.deleteLike(likeUri)
-          return true
-        }
-
-        await agent.like(post.uri, post.cid)
-        return false
-      })
-
-      if (wasLiked) {
-        Toast.show(l`Removed like as @${account.handle}`)
-      } else {
-        Toast.show(l`Liked as @${account.handle}`)
-      }
-    } catch (e) {
-      showEphemeralError(e, account, onSelectLikeAccount)
-    }
-  }
-
-  const onSelectRepostAccount = async (account: (typeof accounts)[number]) => {
-    try {
-      const wasReposted = await runWithEphemeralAgent(account, async agent => {
-        const res = await agent.getPosts({uris: [post.uri]})
-        const target = res.data.posts[0]
-        const repostUri = target?.viewer?.repost
-
-        if (repostUri) {
-          await agent.deleteRepost(repostUri)
-          return true
-        }
-
-        await agent.repost(post.uri, post.cid)
-        if (
-          autoLikeOnRepost &&
-          target &&
-          target.author.did !== account.did &&
-          !target.viewer?.like
-        ) {
-          await agent.like(post.uri, post.cid)
-        }
-        return false
-      })
-
-      if (wasReposted) {
-        Toast.show(l`Removed repost as @${account.handle}`)
-      } else {
-        Toast.show(l`Reposted as @${account.handle}`)
-      }
-    } catch (e) {
-      showEphemeralError(e, account, onSelectRepostAccount)
-    }
-  }
-
-  const onSelectBookmarkAccount = async (
-    account: (typeof accounts)[number],
-  ) => {
-    try {
-      const wasBookmarked = await runWithEphemeralAgent(
-        account,
-        async agent => {
-          const res = await agent.getPosts({uris: [post.uri]})
-          const target = res.data.posts[0]
-
-          if (target?.viewer?.bookmarked) {
-            await agent.app.bsky.bookmark.deleteBookmark({uri: post.uri})
-            return true
-          }
-
-          await agent.app.bsky.bookmark.createBookmark({
-            uri: post.uri,
-            cid: post.cid,
-          })
-          return false
-        },
-      )
-
-      if (wasBookmarked) {
-        Toast.show(l`Removed save as @${account.handle}`)
-      } else {
-        Toast.show(l`Saved as @${account.handle}`)
-      }
-    } catch (e) {
-      showEphemeralError(e, account, onSelectBookmarkAccount)
-    }
-  }
+  const ephemeralPost = useEphemeralPostToggle({
+    uri: post.uri,
+    cid: post.cid,
+    autoLikeOnRepost,
+  })
+  const onSelectLikeAccount = (account: (typeof accounts)[number]) =>
+    ephemeralPost.toggle('like', account)
+  const onSelectRepostAccount = (account: (typeof accounts)[number]) =>
+    ephemeralPost.toggle('repost', account)
+  const onSelectBookmarkAccount = (account: (typeof accounts)[number]) =>
+    ephemeralPost.toggle('bookmark', account)
 
   const renderReplyButton = (onLongPress?: () => void) => (
     <PostControlButton
@@ -666,6 +586,7 @@ function PostControlsInner({
           />
         </View>
       </View>
+      {ephemeralPost.prompt}
     </>
   )
 }
