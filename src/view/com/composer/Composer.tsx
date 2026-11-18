@@ -3009,6 +3009,24 @@ function ComposerFooter({
                 onSelectGif={onSelectGif}
                 disabled={!!media || hasPoll || hasEvent}
               />
+              {showEmojiPicker ? (
+                <EmojiPicker.Root nextFocusRef={textInputRef}>
+                  <EmojiPicker.Trigger label={l`Open emoji picker`}>
+                    {({props}) => (
+                      <Button
+                        style={a.p_sm}
+                        label={props.accessibilityLabel}
+                        variant="ghost"
+                        shape={enableSquareButtons ? 'square' : 'round'}
+                        color="primary"
+                        {...props}>
+                        <EmojiSmileIcon size="lg" />
+                      </Button>
+                    )}
+                  </EmojiPicker.Trigger>
+                  <EmojiPicker.Picker />
+                </EmojiPicker.Root>
+              ) : null}
               {foldExtras ? (
                 <ComposerExtrasMenu
                   canAddPoll={canAddPoll && !postHasAttachment(post)}
@@ -3028,24 +3046,6 @@ function ComposerFooter({
                   />
                 </>
               )}
-              {showEmojiPicker ? (
-                <EmojiPicker.Root nextFocusRef={textInputRef}>
-                  <EmojiPicker.Trigger label={l`Open emoji picker`}>
-                    {({props}) => (
-                      <Button
-                        style={a.p_sm}
-                        label={props.accessibilityLabel}
-                        variant="ghost"
-                        shape={enableSquareButtons ? 'square' : 'round'}
-                        color="primary"
-                        {...props}>
-                        <EmojiSmileIcon size="lg" />
-                      </Button>
-                    )}
-                  </EmojiPicker.Trigger>
-                  <EmojiPicker.Picker />
-                </EmojiPicker.Root>
-              ) : null}
             </ToolbarWrapper>
           )}
         </LayoutAnimationConfig>

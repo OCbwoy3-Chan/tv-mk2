@@ -10,6 +10,8 @@ import {com} from '#/lexicons'
 import {RQKEY_POLL} from './api'
 import {TOKIMEKI_VOTE_COLLECTION, type TokimekiPoll} from './types'
 
+const VOTE_REFETCH_DELAY_MS = 4000
+
 /**
  * Casts a vote the way TOKIMEKI does: a `tech.tokimeki.poll.vote` record in the
  * voter's own repo. One vote per poll, so the card stops offering buttons once
@@ -66,8 +68,16 @@ export function useTokimekiVoteMutation(
     onSuccess: () => {
       haptics.confirm()
     },
-    onSettled: (_data, _error, _index, ctx) => {
-      if (ctx) void queryClient.invalidateQueries({queryKey: ctx.key})
+    onSettled: (_data, error, _index, ctx) => {
+      if (!ctx || error) return
+      /*
+       * The counts come from TOKIMEKI's AppView, which only learns of the vote
+       * from the firehose. Refetching straight away can drop the vote that was
+       * just added optimistically, so give it a moment first.
+       */
+      setTimeout(() => {
+        void queryClient.invalidateQueries({queryKey: ctx.key})
+      }, VOTE_REFETCH_DELAY_MS)
     },
   })
 }
