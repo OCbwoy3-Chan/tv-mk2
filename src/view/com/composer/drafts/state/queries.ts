@@ -41,6 +41,10 @@ export function useDraftsQuery(accountDid?: string) {
         return {
           cursor: data.cursor,
           drafts: data.drafts
+            .filter(view=>{
+              const firstText = view.draft.posts[0]?.text ?? ''
+              return !firstText.startsWith('witchsky:storage')
+            })
             .filter(view => {
               const firstText = view.draft.posts[0]?.text ?? ''
               if (!firstText.startsWith('tenna:storage')) return true
