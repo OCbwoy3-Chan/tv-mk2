@@ -283,3 +283,29 @@ export function useDeleteEventMutation() {
     },
   })
 }
+
+/**
+ * Rewrites the viewer's own event record. The edited view is cached straight
+ * away, since the AppView only sees the change once it reaches the firehose.
+ */
+export function useUpdateEventMutation(event: EventView) {
+  const pdsClient = usePdsClient()
+  const queryClient = useQueryClient()
+  return useMutation<{cid: string}, Error, Record<string, unknown>>({
+    mutationFn: async record => {
+      const {host: repo, rkey} = new AtUri(event.uri)
+      const res = await pdsClient.putRecord(record as never, rkey, {
+        repo,
+        service: null,
+      })
+      return {cid: res.body.cid}
+    },
+    onSuccess: ({cid}, record) => {
+      queryClient.setQueryData<EventView | null>(
+        eventQueryKey(event.uri),
+        prev => (prev ? {...prev, cid, record} : prev),
+      )
+      void queryClient.invalidateQueries({queryKey: [MY_EVENTS_KEY_ROOT]})
+    },
+  })
+}

@@ -25,9 +25,15 @@ const DATE_FIELD_MIN_WIDTH = 260
 export function EventEditor({
   event,
   dispatch,
+  bare = false,
 }: {
   event: EventDraft
   dispatch: (action: PostAction) => void
+  /**
+   * Just the fields: no card frame and no "Event" heading or remove button,
+   * for editing an existing event in a dialog of its own.
+   */
+  bare?: boolean
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
@@ -54,40 +60,44 @@ export function EventEditor({
     <View
       testID="eventEditor"
       style={[
-        a.mt_lg,
-        a.p_md,
         a.gap_md,
-        a.rounded_md,
-        a.border,
-        t.atoms.border_contrast_low,
-        t.atoms.bg_contrast_25,
+        !bare && [
+          a.mt_lg,
+          a.p_md,
+          a.rounded_md,
+          a.border,
+          t.atoms.border_contrast_low,
+          t.atoms.bg_contrast_25,
+        ],
       ]}>
-      <View style={[a.flex_row, a.align_center, a.justify_between]}>
-        <View style={[a.flex_row, a.align_center, a.gap_xs]}>
-          <CalendarIcon size="sm" fill={t.palette.primary_500} />
-          <Text
-            style={[
-              a.text_xs,
-              a.font_bold,
-              {color: t.palette.primary_500, textTransform: 'uppercase'},
-            ]}>
-            <Trans comment="Heading of the event editor card in the post composer">
-              Event
-            </Trans>
-          </Text>
+      {!bare && (
+        <View style={[a.flex_row, a.align_center, a.justify_between]}>
+          <View style={[a.flex_row, a.align_center, a.gap_xs]}>
+            <CalendarIcon size="sm" fill={t.palette.primary_500} />
+            <Text
+              style={[
+                a.text_xs,
+                a.font_bold,
+                {color: t.palette.primary_500, textTransform: 'uppercase'},
+              ]}>
+              <Trans comment="Heading of the event editor card in the post composer">
+                Event
+              </Trans>
+            </Text>
+          </View>
+          <EmbedEditorRemoveBtn
+            testID="removeEventBtn"
+            label={l`Remove event`}
+            confirm={eventHasContent(event)}
+            promptTitle={l`Remove event?`}
+            promptDescription={l`The details you've entered will be lost.`}
+            onRemove={() => {
+              ax.metric('composer:event:remove', {})
+              dispatch({type: 'embed_remove_event'})
+            }}
+          />
         </View>
-        <EmbedEditorRemoveBtn
-          testID="removeEventBtn"
-          label={l`Remove event`}
-          confirm={eventHasContent(event)}
-          promptTitle={l`Remove event?`}
-          promptDescription={l`The details you've entered will be lost.`}
-          onRemove={() => {
-            ax.metric('composer:event:remove', {})
-            dispatch({type: 'embed_remove_event'})
-          }}
-        />
-      </View>
+      )}
 
       <View style={[a.gap_xs]}>
         <TextField.LabelText>

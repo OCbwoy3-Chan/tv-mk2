@@ -88,22 +88,37 @@ jest.mock('#/features/events/queries', () => ({
 }))
 
 import {type EventView} from '#/features/events/types'
-import {DeleteEventButton} from '../DeleteEventButton'
+import {useDeleteEvent} from '../useDeleteEvent'
 
 const EVENT = {
   uri: 'at://did:plc:alice/community.lexicon.calendar.event/3kevent',
   creator: {did: 'did:plc:alice', handle: 'alice.test'},
 } as unknown as EventView
 
+function Harness({onDeleted}: {onDeleted: () => void}) {
+  const {open, prompt} = useDeleteEvent({event: EVENT, onDeleted})
+  const {Pressable} = require('react-native')
+  return (
+    <>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Delete event"
+        accessibilityHint=""
+        testID="deleteEventBtn"
+        onPress={open}
+      />
+      {prompt}
+    </>
+  )
+}
+
 function renderButton() {
   const onDeleted = jest.fn()
-  const utils = render(
-    <DeleteEventButton event={EVENT} onDeleted={onDeleted} />,
-  )
+  const utils = render(<Harness onDeleted={onDeleted} />)
   return {onDeleted, ...utils}
 }
 
-describe('DeleteEventButton', () => {
+describe('useDeleteEvent', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockCanGoBack = true

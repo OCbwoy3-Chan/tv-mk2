@@ -300,4 +300,13 @@ describe('EventEditor', () => {
     expect(mockMetric).toHaveBeenCalledWith('composer:event:remove', {})
     expect(dispatch).toHaveBeenCalledWith({type: 'embed_remove_event'})
   })
+
+  it('shows only the fields in bare mode', () => {
+    const dispatch = jest.fn<void, [PostAction]>()
+    const {queryByTestId, getByTestId} = render(
+      <EventEditor bare event={base} dispatch={dispatch} />,
+    )
+    expect(queryByTestId('removeEventBtn')).toBeNull()
+    expect(getByTestId('eventNameInput')).toBeTruthy()
+  })
 })

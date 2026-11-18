@@ -3,14 +3,12 @@ import {type ListRenderItemInfo, useWindowDimensions, View} from 'react-native'
 import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {HITSLOP_10} from '#/lib/constants'
 import {
   type CommonNavigatorParams,
   type NativeStackScreenProps,
 } from '#/lib/routes/types'
 import {shareUrl} from '#/lib/sharing'
 import {cleanError} from '#/lib/strings/errors'
-import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
 import {useSession} from '#/state/session'
@@ -18,10 +16,12 @@ import {List, type ListMethods} from '#/view/com/util/List'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {ArrowOutOfBoxModified_Stroke2_Corner2_Rounded as ShareIcon} from '#/components/icons/ArrowOutOfBox'
+import {ChainLink_Stroke2_Corner0_Rounded as ChainLinkIcon} from '#/components/icons/ChainLink'
 import * as Layout from '#/components/Layout'
 import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
 import * as ProfileCard from '#/components/ProfileCard'
 import {Text} from '#/components/Typography'
+import {IS_WEB} from '#/env'
 import {useEventQuery, useEventRsvpsQuery} from '#/features/events/queries'
 import {type ParsedEvent, parseEventRecord} from '#/features/events/record'
 import {
@@ -32,8 +32,8 @@ import {
   type RsvpView,
 } from '#/features/events/types'
 import {eventAtUri, makeEventUrl} from '#/features/events/url'
-import {DeleteEventButton} from './DeleteEventButton'
 import {EventHeader} from './EventHeader'
+import {EventOptionsMenu} from './EventOptionsMenu'
 import {GuestTabs} from './GuestTabs'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Event'>
@@ -45,7 +45,6 @@ export function EventScreen({route}: Props) {
   const uri = did ? eventAtUri(did, rkey) : undefined
   const {data: event, isLoading, error, refetch} = useEventQuery(uri)
   const parsed = event ? parseEventRecord(event.record) : undefined
-  const squareButtons = useEnableSquareButtons()
   const [deleted, setDeleted] = useState(false)
   const {currentAccount} = useSession()
   const isOwnEvent = !!event && currentAccount?.did === event.creator.did
@@ -59,29 +58,30 @@ export function EventScreen({route}: Props) {
             <Trans>Event</Trans>
           </Layout.Header.TitleText>
         </Layout.Header.Content>
-        {event && isOwnEvent && (
-          <Layout.Header.Slot>
-            <DeleteEventButton
-              event={event}
-              onDeleted={() => setDeleted(true)}
-            />
-          </Layout.Header.Slot>
-        )}
-        <Layout.Header.Slot>
-          {event && (
+        {event ? (
+          <View style={[a.flex_row, a.align_center, a.gap_sm]}>
             <Button
-              label={l`Share event`}
+              testID="shareEventBtn"
+              label={IS_WEB ? l`Copy link to event` : l`Share event`}
               size="small"
-              variant="ghost"
-              color="primary"
-              shape={squareButtons ? 'square' : 'round'}
-              hitSlop={HITSLOP_10}
-              style={[{right: -3}]}
+              color="secondary"
               onPress={() => void shareUrl(makeEventUrl(event.creator, rkey))}>
-              <ButtonIcon icon={ShareIcon} size="md" />
+              <ButtonIcon icon={IS_WEB ? ChainLinkIcon : ShareIcon} />
+              <ButtonText>
+                {IS_WEB ? <Trans>Copy link</Trans> : <Trans>Share</Trans>}
+              </ButtonText>
             </Button>
-          )}
-        </Layout.Header.Slot>
+            {isOwnEvent && parsed && (
+              <EventOptionsMenu
+                event={event}
+                parsed={parsed}
+                onDeleted={() => setDeleted(true)}
+              />
+            )}
+          </View>
+        ) : (
+          <Layout.Header.Slot />
+        )}
       </Layout.Header.Outer>
       {deleted ? null : event && parsed ? (
         <EventBody event={event} parsed={parsed} />
