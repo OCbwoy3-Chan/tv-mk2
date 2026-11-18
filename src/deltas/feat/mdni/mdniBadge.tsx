@@ -1,10 +1,8 @@
 import { View } from 'react-native'
-import { Image } from 'expo-image'
 import { Trans, useLingui } from '@lingui/react/macro'
-import {useQueryClient} from '@tanstack/react-query'
 
-import {createQueryKey} from '#/state/queries/util'
-
+import { STALE } from '#/state/queries'
+import { useProfileQuery } from '#/state/queries/profile'
 import { atoms as a, useTheme, web } from '#/alf'
 import { Button, ButtonText } from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -12,40 +10,20 @@ import { Text } from '#/components/Typography'
 import { useDeltasPreferences } from '#/deltas/preferences'
 import { type AnyProfileView } from '#/types/bsky/profile'
 import { shouldShowMdniBadge } from './mdniChecker'
-
-type MdniBadgeCacheEntry = {
-  displayName: string | undefined
-  description: string | undefined
-  showBadge: boolean
-}
+import { Image } from 'expo-image'
 
 export function useHasMdniBadge(profile: AnyProfileView) {
   const { showMdniBadge } = useDeltasPreferences()
-  const queryClient = useQueryClient()
-  const queryKey = createQueryKey('mdniBadge', {did: profile.did})
-  const cached = queryClient.getQueryData<MdniBadgeCacheEntry>(queryKey)
-  const description =
-    'description' in profile ? profile.description : cached?.description
-
-  if (
-    cached &&
-    cached.displayName === profile.displayName &&
-    cached.description === description
-  ) {
-    return showMdniBadge && cached.showBadge
-  }
-
-  if (cached) {
-    void queryClient.invalidateQueries({queryKey, exact: true, refetchType: 'none'})
-  }
-
-  const showBadge = shouldShowMdniBadge({...profile, description})
-  queryClient.setQueryData<MdniBadgeCacheEntry>(queryKey, {
-    displayName: profile.displayName,
-    description,
-    showBadge,
+  const hasDescription = 'description' in profile
+  const { data: fullProfile } = useProfileQuery({
+    did: showMdniBadge && !hasDescription ? profile.did : undefined,
+    staleTime: STALE.MINUTES.FIFTEEN,
   })
-  return showMdniBadge && showBadge
+  const description = hasDescription
+    ? profile.description
+    : fullProfile?.description
+
+  return showMdniBadge && shouldShowMdniBadge({ ...profile, description })
 }
 
 export function MdniBadge({ width }: { width: number }) {
