@@ -7,6 +7,7 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme} from '#/alf'
 import {Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
+import {IS_WEB} from '#/env'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {eventLinkLabel, type EventPhase, eventPhase} from '../format'
 import {useEventQuery} from '../queries'
@@ -41,6 +42,13 @@ export function EventCard({
 
   return (
     <View
+      // j/k select the card; the outline is drawn on the card, not the link.
+      {...(IS_WEB && {
+        dataSet: {
+          keyboardNavigationCard: 'true',
+          keyboardNavigationCardSharp: sharp ? 'true' : 'false',
+        },
+      })}
       style={[
         a.rounded_md,
         a.border,
@@ -48,7 +56,10 @@ export function EventCard({
         t.atoms.border_contrast_low,
         sharp,
       ]}>
-      <Link to={href} label={eventLinkLabel(i18n, event, parsed, phase)}>
+      <Link
+        to={href}
+        label={eventLinkLabel(i18n, event, parsed, phase)}
+        dataSet={{keyboardNavigationItem: 'true'}}>
         <View style={[a.flex_row, a.gap_md, a.p_md]}>
           <Poster event={event} parsed={parsed} size={64} style={sharp} />
           <View style={[a.flex_1, a.gap_xs]}>

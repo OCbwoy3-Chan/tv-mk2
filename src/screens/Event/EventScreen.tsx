@@ -13,6 +13,7 @@ import {cleanError} from '#/lib/strings/errors'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
+import {useSession} from '#/state/session'
 import {List, type ListMethods} from '#/view/com/util/List'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
@@ -31,6 +32,7 @@ import {
   type RsvpView,
 } from '#/features/events/types'
 import {eventAtUri, makeEventUrl} from '#/features/events/url'
+import {DeleteEventButton} from './DeleteEventButton'
 import {EventHeader} from './EventHeader'
 import {GuestTabs} from './GuestTabs'
 
@@ -44,6 +46,9 @@ export function EventScreen({route}: Props) {
   const {data: event, isLoading, error, refetch} = useEventQuery(uri)
   const parsed = event ? parseEventRecord(event.record) : undefined
   const squareButtons = useEnableSquareButtons()
+  const [deleted, setDeleted] = useState(false)
+  const {currentAccount} = useSession()
+  const isOwnEvent = !!event && currentAccount?.did === event.creator.did
 
   return (
     <Layout.Screen testID="eventScreen">
@@ -54,6 +59,14 @@ export function EventScreen({route}: Props) {
             <Trans>Event</Trans>
           </Layout.Header.TitleText>
         </Layout.Header.Content>
+        {event && isOwnEvent && (
+          <Layout.Header.Slot>
+            <DeleteEventButton
+              event={event}
+              onDeleted={() => setDeleted(true)}
+            />
+          </Layout.Header.Slot>
+        )}
         <Layout.Header.Slot>
           {event && (
             <Button
@@ -70,7 +83,7 @@ export function EventScreen({route}: Props) {
           )}
         </Layout.Header.Slot>
       </Layout.Header.Outer>
-      {event && parsed ? (
+      {deleted ? null : event && parsed ? (
         <EventBody event={event} parsed={parsed} />
       ) : (
         <ListMaybePlaceholder
@@ -267,21 +280,21 @@ function MutedOrBlockedSection({
   )
 }
 
-/** One guest, as a standard profile row with a follow button. */
+/**
+ * One guest, as a standard profile row with a follow button. The padding is on
+ * the card's link rather than around it, so the link fills the row: the whole
+ * row is pressable and the j/k selection outline wraps the row, not its text.
+ */
 function GuestItem({rsvp, noBorder}: {rsvp: RsvpView; noBorder?: boolean}) {
   const t = useTheme()
   const moderationOpts = useModerationOpts()
   if (!moderationOpts) return null
   return (
-    <View
-      style={[
-        a.px_lg,
-        a.py_md,
-        !noBorder && [a.border_t, t.atoms.border_contrast_low],
-      ]}>
+    <View style={[!noBorder && [a.border_t, t.atoms.border_contrast_low]]}>
       <ProfileCard.Default
         profile={rsvp.actor}
         moderationOpts={moderationOpts}
+        style={[a.px_lg, a.py_md]}
       />
     </View>
   )

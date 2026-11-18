@@ -16,6 +16,7 @@ import {createQueryKey} from '#/state/queries/util'
 import {useAppviewClient, usePdsClient, useSession} from '#/state/session'
 import {applyRsvp} from './rsvp-state'
 import {
+  EVENT_COLLECTION,
   type EventView,
   RSVP_COLLECTION,
   type RsvpStatus,
@@ -256,6 +257,29 @@ export function useRsvpMutation(event: EventView) {
         viewer: {...base.viewer, rsvp: result},
       })
       markListsStale(queryClient)
+    },
+  })
+}
+
+/**
+ * Deletes the viewer's own event record. Other people's RSVPs live in their
+ * repos and are left alone; without the event they no longer show anywhere.
+ * The event's cached view is left for the caller to drop, so the open event
+ * page doesn't flash "not found" while it's being left.
+ */
+export function useDeleteEventMutation() {
+  const pdsClient = usePdsClient()
+  const queryClient = useQueryClient()
+  return useMutation<void, Error, string>({
+    mutationFn: async uri => {
+      const {host: repo, rkey} = new AtUri(uri)
+      await pdsClient.deleteRecord(EVENT_COLLECTION, rkey, {
+        repo,
+        service: null,
+      })
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({queryKey: [MY_EVENTS_KEY_ROOT]})
     },
   })
 }
