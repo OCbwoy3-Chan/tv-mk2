@@ -16,6 +16,7 @@ import {
   POLL_MIN_OPTIONS,
   type PollDraft,
   type PollDuration,
+  withSpareOption,
 } from '#/lib/api/poll'
 import {MAX_TAGS} from '#/lib/constants'
 import {type VideoTelemetry} from '#/lib/media/video/telemetry'
@@ -111,12 +112,37 @@ export type PostDraft = {
 }
 
 export type PostAction =
-  | {type: 'update_richtext'; richtext: RichText}| {type: 'update_labels'; labels: SelfLabel[]}| {type: 'update_tags'; tags: string[]}| {type: 'embed_add_images'; images: ComposerImage[]}| {type: 'embed_update_image'; image: ComposerImage}| {type: 'embed_remove_image'; image: ComposerImage}| {
+  | {type: 'update_richtext'; richtext: RichText}
+  | {type: 'update_labels'; labels: SelfLabel[]}
+  | {type: 'update_tags'; tags: string[]}
+  | {type: 'embed_add_images'; images: ComposerImage[]}
+  | {type: 'embed_update_image'; image: ComposerImage}
+  | {type: 'embed_remove_image'; image: ComposerImage}
+  | {
       type: 'embed_add_video'
       asset: ImagePickerAsset
       abortController: AbortController
       telemetry: VideoTelemetry
-    }| {type: 'embed_remove_video'}| {type: 'embed_update_video'; videoAction: VideoAction}| {type: 'embed_add_uri'; uri: UriString}| {type: 'embed_remove_quote'}| {type: 'embed_remove_link'}| {type: 'embed_add_gif'; gif: Gif}| {type: 'embed_update_gif'; alt: string}| {type: 'embed_remove_gif'}| {type: 'embed_add_poll'}| {}| {type: 'embed_remove_poll'}| {type: 'embed_add_event'}| {type: 'embed_update_event'; patch: Partial<EventDraft>}| {type: 'embed_set_event_record'; record: {uri: string; cid: string}}| {type: 'embed_update_poll_option'; index: number; text: string}| {type: 'embed_add_poll_option'}| {type: 'embed_remove_poll_option'; index: number}| {type: 'embed_set_poll_duration'; duration: PollDuration}| {type: 'embed_set_poll_rkey'; rkey: string}| {type: 'embed_remove_event'}
+    }
+  | {type: 'embed_remove_video'}
+  | {type: 'embed_update_video'; videoAction: VideoAction}
+  | {type: 'embed_add_uri'; uri: UriString}
+  | {type: 'embed_remove_quote'}
+  | {type: 'embed_remove_link'}
+  | {type: 'embed_add_gif'; gif: Gif}
+  | {type: 'embed_update_gif'; alt: string}
+  | {type: 'embed_remove_gif'}
+  | {type: 'embed_add_poll'}
+  | {type: 'embed_remove_poll'}
+  | {type: 'embed_update_poll_option'; index: number; text: string}
+  | {type: 'embed_add_poll_option'}
+  | {type: 'embed_remove_poll_option'; index: number}
+  | {type: 'embed_set_poll_duration'; duration: PollDuration}
+  | {type: 'embed_set_poll_rkey'; rkey: string}
+  | {type: 'embed_add_event'}
+  | {type: 'embed_update_event'; patch: Partial<EventDraft>}
+  | {type: 'embed_set_event_record'; record: {uri: string; cid: string}}
+  | {type: 'embed_remove_event'}
 
 export function postHasAttachment(post: PostDraft): boolean {
   return Boolean(
@@ -811,8 +837,10 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
           ...state.embed,
           poll: {
             ...poll,
-            options: poll.options.map((text, i) =>
-              i === action.index ? action.text : text,
+            options: withSpareOption(
+              poll.options.map((text, i) =>
+                i === action.index ? action.text : text,
+              ),
             ),
           },
         },
@@ -930,7 +958,6 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
         },
       }
     }
-
   }
 }
 

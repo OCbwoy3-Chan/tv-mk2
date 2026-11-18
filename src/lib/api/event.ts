@@ -71,6 +71,19 @@ export function getEventNameIssue(
   return getNameIssue(draft.name)
 }
 
+/**
+ * Whether anything was entered into an event. The start time is not counted:
+ * the editor fills it in, so it is there before the event is touched.
+ */
+export function eventHasContent(event: EventDraft): boolean {
+  return Boolean(
+    event.name.trim() ||
+    event.place?.trim() ||
+    event.description?.trim() ||
+    event.endsDate,
+  )
+}
+
 export function isEventDraftPublishable(draft: EventDraft): boolean {
   return (
     getNameIssue(draft.name) === null &&

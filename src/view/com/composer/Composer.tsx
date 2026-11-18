@@ -2343,7 +2343,6 @@ let ComposerPost = memo(function ComposerPost({
       <ComposerEmbeds
         canRemoveQuote={canRemoveQuote}
         embed={post.embed}
-        text={richtext.text}
         dispatch={dispatchPost}
         clearVideo={() => onClearVideo(post.id)}
         isActivePost={isActive}
@@ -2615,14 +2614,12 @@ function AltTextReminder({
 
 function ComposerEmbeds({
   embed,
-  text,
   dispatch,
   clearVideo,
   canRemoveQuote,
   isActivePost,
 }: {
   embed: EmbedDraft
-  text: string
   dispatch: (action: PostAction) => void
   clearVideo: () => void
   canRemoveQuote: boolean
@@ -2651,9 +2648,7 @@ function ComposerEmbeds({
         </View>
       )}
 
-      {embed.poll && (
-        <PollEditor poll={embed.poll} text={text} dispatch={dispatch} />
-      )}
+      {embed.poll && <PollEditor poll={embed.poll} dispatch={dispatch} />}
       {embed.event && <EventEditor event={embed.event} dispatch={dispatch} />}
 
       {!embed.media && embed.link && (

@@ -72,8 +72,32 @@ jest.mock('#/components/Button', () => {
     ButtonText: ({children}: {children: React.ReactNode}) => (
       <Text>{children}</Text>
     ),
+    ButtonIcon: () => null,
   }
 })
+jest.mock('#/components/icons/Times', () => ({
+  TimesLarge_Stroke2_Corner0_Rounded: () => null,
+}))
+const mockPromptOpen = jest.fn()
+jest.mock('#/components/Prompt', () => {
+  const {Pressable, Text} = require('react-native')
+  return {
+    usePromptControl: () => ({open: mockPromptOpen}),
+    Basic: ({title, onConfirm}: {title: string; onConfirm: () => void}) => (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityHint=""
+        testID="confirmRemove"
+        onPress={onConfirm}>
+        <Text>{title}</Text>
+      </Pressable>
+    ),
+  }
+})
+jest.mock('#/state/preferences/enable-square-buttons', () => ({
+  useEnableSquareButtons: () => false,
+}))
 jest.mock('#/components/forms/TextField', () => {
   const {TextInput} = require('react-native')
   return {
@@ -195,9 +219,17 @@ function renderEditor(event: EventDraft = base) {
 describe('EventEditor', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  it('shows a hint until the event has a name', () => {
-    const {getByTestId} = renderEditor({...base, name: ''})
-    expect(getByTestId('eventNameHint')).toBeTruthy()
+  it('does not flag a missing name', () => {
+    const {queryByTestId} = renderEditor({...base, name: ''})
+    expect(queryByTestId('eventNameHint')).toBeNull()
+  })
+
+  it('flags a name that is too long', () => {
+    const {getByTestId} = renderEditor({...base, name: 'a'.repeat(1001)})
+    expect(getByTestId('eventNameHint')).toHaveTextContent(
+      'This name is too long',
+      {exact: true},
+    )
   })
 
   it('does not show the name hint once named', () => {
@@ -250,9 +282,21 @@ describe('EventEditor', () => {
     })
   })
 
-  it('removes the event', () => {
+  it('removes an untouched event without asking', () => {
+    const {dispatch, getByTestId} = renderEditor({...base, name: ''})
+    fireEvent.press(getByTestId('removeEventBtn'))
+    expect(mockPromptOpen).not.toHaveBeenCalled()
+    expect(mockMetric).toHaveBeenCalledWith('composer:event:remove', {})
+    expect(dispatch).toHaveBeenCalledWith({type: 'embed_remove_event'})
+  })
+
+  it('asks before removing an event with details filled in', () => {
     const {dispatch, getByTestId} = renderEditor()
     fireEvent.press(getByTestId('removeEventBtn'))
+    expect(mockPromptOpen).toHaveBeenCalledTimes(1)
+    expect(dispatch).not.toHaveBeenCalled()
+
+    fireEvent.press(getByTestId('confirmRemove'))
     expect(mockMetric).toHaveBeenCalledWith('composer:event:remove', {})
     expect(dispatch).toHaveBeenCalledWith({type: 'embed_remove_event'})
   })

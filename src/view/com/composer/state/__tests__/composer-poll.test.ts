@@ -107,14 +107,50 @@ describe('composer polls', () => {
     expect(post.embed.poll).toEqual({options: ['', ''], duration: '1d'})
   })
 
-  it('edits, adds and removes choices', () => {
+  it('offers a blank choice once every choice is filled', () => {
+    expect(draftAfter(TWO_CHOICES).embed.poll?.options).toEqual([
+      'first',
+      'second',
+      '',
+    ])
+    expect(
+      draftAfter([
+        ...TWO_CHOICES,
+        {type: 'embed_update_poll_option', index: 2, text: 'third'},
+      ]).embed.poll?.options,
+    ).toEqual(['first', 'second', 'third', ''])
+  })
+
+  it('stops offering blank choices at four', () => {
     const post = draftAfter([
       ...TWO_CHOICES,
-      {type: 'embed_add_poll_option'},
+      {type: 'embed_update_poll_option', index: 2, text: 'third'},
+      {type: 'embed_update_poll_option', index: 3, text: 'fourth'},
+    ])
+    expect(post.embed.poll?.options).toEqual([
+      'first',
+      'second',
+      'third',
+      'fourth',
+    ])
+  })
+
+  it('collapses trailing blank choices back to one', () => {
+    const post = draftAfter([
+      ...TWO_CHOICES,
+      {type: 'embed_update_poll_option', index: 2, text: 'third'},
+      {type: 'embed_update_poll_option', index: 2, text: ''},
+    ])
+    expect(post.embed.poll?.options).toEqual(['first', 'second', ''])
+  })
+
+  it('still removes a choice by index', () => {
+    const post = draftAfter([
+      ...TWO_CHOICES,
       {type: 'embed_update_poll_option', index: 2, text: 'third'},
       {type: 'embed_remove_poll_option', index: 0},
     ])
-    expect(post.embed.poll?.options).toEqual(['second', 'third'])
+    expect(post.embed.poll?.options).toEqual(['second', 'third', ''])
   })
 
   it('ignores an out-of-range choice update', () => {

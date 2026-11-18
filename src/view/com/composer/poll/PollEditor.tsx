@@ -1,35 +1,35 @@
-import {useState} from 'react'
 import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
-import {nanoid} from 'nanoid/non-secure'
 
 import {
   DEFAULT_POLL_DURATION,
   getOptionIssues,
   POLL_DURATIONS,
-  POLL_MAX_OPTIONS,
   POLL_MIN_OPTIONS,
   POLL_OPTION_MAX_CHARS,
   type PollDraft,
   type PollDuration,
+  pollHasContent,
 } from '#/lib/api/poll'
+import {EmbedEditorRemoveBtn} from '#/view/com/composer/EmbedEditorRemoveBtn'
 import {type PostAction} from '#/view/com/composer/state/composer'
 import {atoms as a, useTheme} from '#/alf'
-import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import {Button, ButtonText} from '#/components/Button'
 import * as TextField from '#/components/forms/TextField'
-import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {Poll_Stroke2_Corner0_Rounded as PollIcon} from '#/components/icons/Poll'
-import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 
+/**
+ * Choices grow on their own: once every choice has text, the reducer adds a
+ * blank one (up to the maximum), and blank extra choices are ignored when
+ * posting. So there are no add or remove buttons.
+ */
 export function PollEditor({
   poll,
-  text,
   dispatch,
 }: {
   poll: PollDraft
-  text: string
   dispatch: (action: PostAction) => void
 }) {
   const t = useTheme()
@@ -46,11 +46,7 @@ export function PollEditor({
     })[value]
   const options = poll.options ?? ['', '']
   const duration = poll.duration ?? DEFAULT_POLL_DURATION
-  const canAdd = options.length < POLL_MAX_OPTIONS
-  const canRemove = options.length > POLL_MIN_OPTIONS
   const issues = getOptionIssues(options)
-  const isQuestionMissing = text.trim().length === 0
-  const [rowKeys, setRowKeys] = useState(() => options.map(() => nanoid()))
 
   return (
     <View
@@ -78,117 +74,77 @@ export function PollEditor({
             </Trans>
           </Text>
         </View>
-        <Button
+        <EmbedEditorRemoveBtn
           testID="removePollBtn"
           label={l`Remove poll`}
-          size="tiny"
-          variant="ghost"
-          color="secondary"
-          onPress={() => {
+          confirm={pollHasContent(poll)}
+          promptTitle={l`Remove poll?`}
+          promptDescription={l`The choices you've written will be lost.`}
+          onRemove={() => {
             ax.metric('composer:poll:remove', {})
             dispatch({type: 'embed_remove_poll'})
-          }}>
-          <ButtonText>
-            <Trans>Remove</Trans>
-          </ButtonText>
-        </Button>
+          }}
+        />
       </View>
-
-      {isQuestionMissing && (
-        <Text
-          testID="pollQuestionHint"
-          style={[a.text_xs, t.atoms.text_contrast_medium]}>
-          <Trans>Add post text to ask your question.</Trans>
-        </Text>
-      )}
 
       {options.map((option, index) => {
         const issue = issues[index]
         const isInvalid = issue === 'invalid' || issue === 'too_long'
+        const isOptional = index >= POLL_MIN_OPTIONS
         return (
-          <View key={rowKeys[index]} style={[a.gap_2xs]}>
-            <View style={[a.flex_row, a.align_center, a.gap_xs]}>
-              <View style={[a.flex_1]}>
-                <TextField.Root isInvalid={isInvalid}>
-                  <TextField.Input
-                    testID={`pollOptionInput-${index}`}
-                    maxLength={POLL_OPTION_MAX_CHARS}
-                    label={l({
-                      message: `Choice ${index + 1}`,
-                      comment:
-                        'Accessibility label for a poll choice text field in the composer. The number is the position of the choice.',
-                    })}
-                    placeholder={l({
-                      message: 'Choice',
-                      comment:
-                        'Placeholder for a poll choice text field in the composer',
-                    })}
-                    value={option}
-                    onChangeText={next =>
-                      dispatch({
-                        type: 'embed_update_poll_option',
-                        index,
-                        text: next,
+          <View key={index} style={[a.gap_2xs]}>
+            <TextField.Root isInvalid={isInvalid}>
+              <TextField.Input
+                testID={`pollOptionInput-${index}`}
+                maxLength={POLL_OPTION_MAX_CHARS}
+                label={l({
+                  message: `Choice ${index + 1}`,
+                  comment:
+                    'Accessibility label for a poll choice text field in the composer. The number is the position of the choice.',
+                })}
+                placeholder={
+                  isOptional
+                    ? l({
+                        message: 'Choice (optional)',
+                        comment:
+                          'Placeholder for an extra, optional poll choice text field in the composer',
                       })
-                    }
-                  />
-                </TextField.Root>
-              </View>
-              {canRemove && (
-                <Button
-                  testID={`pollOptionRemove-${index}`}
-                  label={l`Remove choice`}
-                  size="tiny"
-                  shape="round"
-                  variant="ghost"
-                  color="secondary"
-                  onPress={() => {
-                    setRowKeys(keys =>
-                      keys.length > 1
-                        ? keys.filter((_, i) => i !== index)
-                        : keys,
-                    )
-                    dispatch({type: 'embed_remove_poll_option', index})
-                  }}>
-                  <ButtonIcon icon={XIcon} />
-                </Button>
-              )}
-            </View>
+                    : l({
+                        message: 'Choice',
+                        comment:
+                          'Placeholder for a poll choice text field in the composer',
+                      })
+                }
+                value={option}
+                onChangeText={next => {
+                  // Typing into the blank extra slot is what adds a choice.
+                  if (isOptional && !option && next) {
+                    ax.metric('composer:poll:optionAdd', {count: index + 1})
+                  }
+                  dispatch({
+                    type: 'embed_update_poll_option',
+                    index,
+                    text: next,
+                  })
+                }}
+              />
+            </TextField.Root>
             {issue === 'invalid' && (
               <Text
                 testID={`pollOptionHint-${index}`}
-                style={[a.text_xs, a.text_right, {color: t.palette.negative_500}]}>
+                style={[
+                  a.text_xs,
+                  a.text_right,
+                  {color: t.palette.negative_500},
+                ]}>
                 <Trans>
-                  This choice contains characters that cannot be saved.
+                  This choice contains characters that cannot be saved
                 </Trans>
               </Text>
             )}
           </View>
         )
       })}
-
-      {canAdd && (
-        <Button
-          testID="addPollOptionBtn"
-          label={l`Add another choice`}
-          size="small"
-          variant="outline"
-          color="secondary"
-          onPress={() => {
-            ax.metric('composer:poll:optionAdd', {
-              count: options.length + 1,
-            })
-            setRowKeys(keys =>
-              keys.length < POLL_MAX_OPTIONS ? [...keys, nanoid()] : keys,
-            )
-            dispatch({type: 'embed_add_poll_option'})
-          }}>
-          <ButtonIcon icon={PlusIcon} position="left" />
-          <ButtonText>
-            <Trans>Add another choice</Trans>
-          </ButtonText>
-        </Button>
-      )}
 
       <View style={[a.gap_xs]}>
         <Text style={[a.text_xs, a.font_medium, t.atoms.text_contrast_medium]}>
@@ -217,14 +173,9 @@ export function PollEditor({
         </View>
       </View>
 
-      <View>
-        <Text style={[a.text_xs, a.leading_snug, t.atoms.text_contrast_medium]}>
-          <Trans>Your post text is the question.</Trans>
-        </Text>
-        <Text style={[a.text_xs, a.leading_snug, t.atoms.text_contrast_medium]}>
-          <Trans>Votes are public and handled by TOKIMEKI.</Trans>
-        </Text>
-      </View>
+      <Text style={[a.text_xs, a.leading_snug, t.atoms.text_contrast_medium]}>
+        <Trans>Votes are public and handled by TOKIMEKI Poll</Trans>
+      </Text>
     </View>
   )
 }

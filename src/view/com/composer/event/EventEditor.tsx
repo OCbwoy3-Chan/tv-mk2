@@ -3,9 +3,11 @@ import {Trans, useLingui} from '@lingui/react/macro'
 
 import {
   type EventDraft,
+  eventHasContent,
   type EventMode,
   getEventNameIssue,
 } from '#/lib/api/event'
+import {EmbedEditorRemoveBtn} from '#/view/com/composer/EmbedEditorRemoveBtn'
 import {type PostAction} from '#/view/com/composer/state/composer'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
@@ -17,6 +19,9 @@ import {CalendarDays_Stroke2_Corner0_Rounded as CalendarIcon} from '#/components
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 
+/** Starts and Ends share a row when each still gets at least this much. */
+const DATE_FIELD_MIN_WIDTH = 260
+
 export function EventEditor({
   event,
   dispatch,
@@ -27,11 +32,20 @@ export function EventEditor({
   const t = useTheme()
   const {t: l} = useLingui()
   const ax = useAnalytics()
-  const nameIssue = getEventNameIssue(event)
+  /*
+   * A missing name only keeps the Post button disabled; it is not flagged, so
+   * the card doesn't sit in red while it's being filled in.
+   */
+  const issue = getEventNameIssue(event)
+  const nameIssue = issue === 'empty' ? null : issue
   const start = dt.fromEventParts(event.date, event.time)
   const end = event.endsDate
     ? dt.fromEventParts(event.endsDate, event.endsTime ?? '')
     : ''
+
+  const dateFieldStyle = {flexGrow: 1, flexBasis: DATE_FIELD_MIN_WIDTH}
+  // Ends has a Clear button in its label row; keep both fields level.
+  const labelRowStyle = {minHeight: 28}
 
   const update = (patch: Partial<EventDraft>) =>
     dispatch({type: 'embed_update_event', patch})
@@ -62,20 +76,17 @@ export function EventEditor({
             </Trans>
           </Text>
         </View>
-        <Button
+        <EmbedEditorRemoveBtn
           testID="removeEventBtn"
           label={l`Remove event`}
-          size="tiny"
-          variant="ghost"
-          color="secondary"
-          onPress={() => {
+          confirm={eventHasContent(event)}
+          promptTitle={l`Remove event?`}
+          promptDescription={l`The details you've entered will be lost.`}
+          onRemove={() => {
             ax.metric('composer:event:remove', {})
             dispatch({type: 'embed_remove_event'})
-          }}>
-          <ButtonText>
-            <Trans>Remove</Trans>
-          </ButtonText>
-        </Button>
+          }}
+        />
       </View>
 
       <View style={[a.gap_xs]}>
@@ -94,78 +105,81 @@ export function EventEditor({
         {nameIssue && (
           <Text
             testID="eventNameHint"
-            style={[
-              a.text_xs,
-              nameIssue === 'empty'
-                ? t.atoms.text_contrast_medium
-                : {color: t.palette.negative_500},
-            ]}>
+            style={[a.text_xs, {color: t.palette.negative_500}]}>
             {nameIssue === 'invalid' ? (
-              <Trans>This name contains characters that cannot be saved.</Trans>
-            ) : nameIssue === 'too_long' ? (
-              <Trans>This name is too long.</Trans>
+              <Trans>This name contains characters that cannot be saved</Trans>
             ) : (
-              <Trans>Give your event a name.</Trans>
+              <Trans>This name is too long</Trans>
             )}
           </Text>
         )}
       </View>
 
-      <View style={[a.gap_xs]}>
-        <TextField.LabelText>
-          <Trans>Starts</Trans>
-        </TextField.LabelText>
-        <DateTimeField
-          testID="eventStartField"
-          label={l`Event start`}
-          value={start}
-          onChangeDateTime={value => {
-            const parts = dt.toEventParts(value)
-            update({
-              date: parts.date,
-              time: parts.time,
-              // An end before the new start no longer makes sense.
-              ...(event.endsDate && event.endsDate < parts.date
-                ? {endsDate: undefined, endsTime: undefined}
-                : {}),
-            })
-          }}
-          isInvalid={!start}
-        />
-      </View>
-
-      <View style={[a.gap_xs]}>
-        <View style={[a.flex_row, a.align_center, a.justify_between]}>
-          <TextField.LabelText>
-            <Trans>Ends</Trans>
-          </TextField.LabelText>
-          {event.endsDate ? (
-            <Button
-              testID="clearEventEndBtn"
-              label={l`Remove end time`}
-              size="tiny"
-              variant="ghost"
-              color="secondary"
-              onPress={() =>
-                update({endsDate: undefined, endsTime: undefined})
-              }>
-              <ButtonText>
-                <Trans>Clear</Trans>
-              </ButtonText>
-            </Button>
-          ) : null}
+      <View style={[a.flex_row, a.flex_wrap, a.gap_md]}>
+        <View style={[a.gap_xs, dateFieldStyle]}>
+          <View style={[a.justify_center, labelRowStyle]}>
+            <TextField.LabelText>
+              <Trans>Starts</Trans>
+            </TextField.LabelText>
+          </View>
+          <DateTimeField
+            testID="eventStartField"
+            label={l`Event start`}
+            value={start}
+            onChangeDateTime={value => {
+              const parts = dt.toEventParts(value)
+              update({
+                date: parts.date,
+                time: parts.time,
+                // An end before the new start no longer makes sense.
+                ...(event.endsDate && event.endsDate < parts.date
+                  ? {endsDate: undefined, endsTime: undefined}
+                  : {}),
+              })
+            }}
+            isInvalid={!start}
+          />
         </View>
-        <DateTimeField
-          testID="eventEndField"
-          label={l`Event end`}
-          value={end}
-          placeholder={l`Optional`}
-          minimumDate={start ? dt.fromDateTimeLocal(start) : undefined}
-          onChangeDateTime={value => {
-            const parts = dt.toEventParts(value)
-            update({endsDate: parts.date, endsTime: parts.time})
-          }}
-        />
+
+        <View style={[a.gap_xs, dateFieldStyle]}>
+          <View
+            style={[
+              a.flex_row,
+              a.align_center,
+              a.justify_between,
+              labelRowStyle,
+            ]}>
+            <TextField.LabelText>
+              <Trans>Ends</Trans>
+            </TextField.LabelText>
+            {event.endsDate ? (
+              <Button
+                testID="clearEventEndBtn"
+                label={l`Remove end time`}
+                size="tiny"
+                variant="ghost"
+                color="secondary"
+                onPress={() =>
+                  update({endsDate: undefined, endsTime: undefined})
+                }>
+                <ButtonText>
+                  <Trans>Clear</Trans>
+                </ButtonText>
+              </Button>
+            ) : null}
+          </View>
+          <DateTimeField
+            testID="eventEndField"
+            label={l`Event end`}
+            value={end}
+            placeholder={l`Optional`}
+            minimumDate={start ? dt.fromDateTimeLocal(start) : undefined}
+            onChangeDateTime={value => {
+              const parts = dt.toEventParts(value)
+              update({endsDate: parts.date, endsTime: parts.time})
+            }}
+          />
+        </View>
       </View>
 
       <View style={[a.gap_xs]}>

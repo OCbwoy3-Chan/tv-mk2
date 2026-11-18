@@ -103,22 +103,57 @@ export function getOptionIssue(text: string): PollOptionIssue | null {
   return null
 }
 
-export function getOptionIssues(
-  options: string[],
-): (PollOptionIssue | null)[] {
+export function getOptionIssues(options: string[]): (PollOptionIssue | null)[] {
   return options.map(getOptionIssue)
 }
 
+/**
+ * The choices that count: the first {@link POLL_MIN_OPTIONS} always, later
+ * ones only once filled in. The editor keeps a blank slot after the last
+ * filled choice (see {@link withSpareOption}), which must neither block
+ * posting nor be published.
+ */
+export function pollOptionsInUse(options: string[]): string[] {
+  return options.filter(
+    (option, i) => i < POLL_MIN_OPTIONS || option.trim().length > 0,
+  )
+}
+
+/**
+ * The editor's choices with exactly one blank slot to type the next choice
+ * into, once every choice is filled and there is room for another. Extra
+ * trailing blanks collapse back, so clearing the last choice keeps its field.
+ */
+export function withSpareOption(options: string[]): string[] {
+  const next = [...options]
+  const isBlank = (option: string) => option.trim().length === 0
+  while (
+    next.length > POLL_MIN_OPTIONS &&
+    isBlank(next[next.length - 1]) &&
+    isBlank(next[next.length - 2])
+  ) {
+    next.pop()
+  }
+  if (next.length < POLL_MAX_OPTIONS && !next.some(isBlank)) next.push('')
+  return next
+}
+
+/** Whether any poll choice has been written; an untouched poll has none. */
+export function pollHasContent(poll: Pick<PollDraft, 'options'>): boolean {
+  return poll.options.some(option => option.trim().length > 0)
+}
+
 export function isPollDraftPublishable(draft: PollDraft): boolean {
+  const options = pollOptionsInUse(draft.options)
   return (
-    draft.options.length >= POLL_MIN_OPTIONS &&
-    draft.options.length <= POLL_MAX_OPTIONS &&
-    getOptionIssues(draft.options).every(issue => issue === null)
+    options.length >= POLL_MIN_OPTIONS &&
+    options.length <= POLL_MAX_OPTIONS &&
+    getOptionIssues(options).every(issue => issue === null)
   )
 }
 
 export function pollOptionsForPublish(draft: PollDraft): string[] {
-  return draft.options.map(normalizePollOption)
+  return pollOptionsInUse(draft.options).map(normalizePollOption)
 }
 
 export function isPollDuration(value: unknown): value is PollDuration {

@@ -10,6 +10,7 @@ import {
   pollEndsAt,
   pollOptionsForPublish,
   pollTopicFromText,
+  withSpareOption,
 } from '#/lib/api/poll'
 
 describe('getOptionIssue', () => {
@@ -43,9 +44,9 @@ describe('getOptionIssues', () => {
 
 describe('isPollDraftPublishable', () => {
   it('needs two to four filled choices', () => {
-    expect(
-      isPollDraftPublishable({options: ['One'], duration: '1d'}),
-    ).toBe(false)
+    expect(isPollDraftPublishable({options: ['One'], duration: '1d'})).toBe(
+      false,
+    )
     expect(
       isPollDraftPublishable({options: ['One', 'Two'], duration: '1d'}),
     ).toBe(true)
@@ -63,10 +64,22 @@ describe('isPollDraftPublishable', () => {
     ).toBe(false)
   })
 
-  it('refuses a blank choice', () => {
+  it('refuses a blank required choice', () => {
+    expect(isPollDraftPublishable({options: ['One', ''], duration: '1d'})).toBe(
+      false,
+    )
+  })
+
+  it('ignores blank choices past the first two', () => {
     expect(
-      isPollDraftPublishable({options: ['One', ''], duration: '1d'}),
-    ).toBe(false)
+      isPollDraftPublishable({options: ['One', 'Two', ''], duration: '1d'}),
+    ).toBe(true)
+    expect(
+      isPollDraftPublishable({
+        options: ['One', 'Two', '', 'Four'],
+        duration: '1d',
+      }),
+    ).toBe(true)
   })
 })
 
@@ -75,6 +88,32 @@ describe('pollOptionsForPublish', () => {
     expect(
       pollOptionsForPublish({options: ['  First ', 'Second'], duration: '1d'}),
     ).toEqual(['First', 'Second'])
+  })
+
+  it('leaves out blank extra choices', () => {
+    expect(
+      pollOptionsForPublish({
+        options: ['First', 'Second', ' ', 'Fourth'],
+        duration: '1d',
+      }),
+    ).toEqual(['First', 'Second', 'Fourth'])
+  })
+})
+
+describe('withSpareOption', () => {
+  it('adds a blank slot only when every choice has text', () => {
+    expect(withSpareOption(['', ''])).toEqual(['', ''])
+    expect(withSpareOption(['One', ''])).toEqual(['One', ''])
+    expect(withSpareOption(['One', 'Two'])).toEqual(['One', 'Two', ''])
+  })
+
+  it('stops at the maximum', () => {
+    expect(withSpareOption(['1', '2', '3', '4'])).toHaveLength(POLL_MAX_OPTIONS)
+  })
+
+  it('collapses trailing blanks to one, never below two choices', () => {
+    expect(withSpareOption(['One', 'Two', '', ''])).toEqual(['One', 'Two', ''])
+    expect(withSpareOption(['', '', ''])).toEqual(['', ''])
   })
 })
 

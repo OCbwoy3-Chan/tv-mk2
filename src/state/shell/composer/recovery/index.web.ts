@@ -1,6 +1,8 @@
 import {createStore, del, get, update} from 'idb-keyval'
 import {nanoid} from 'nanoid/non-secure'
 
+import {eventHasContent} from '#/lib/api/event'
+import {pollHasContent} from '#/lib/api/poll'
 import {logger} from '#/logger'
 import {type ComposerOpts} from '#/state/shell/composer'
 import {type ComposerState} from '#/view/com/composer/state/composer'
@@ -104,7 +106,9 @@ function hasContent(state: ComposerState) {
       post.richtext.text.trim().length > 0 ||
       post.embed.media ||
       post.embed.link ||
-      post.embed.quote,
+      post.embed.quote ||
+      (post.embed.poll && pollHasContent(post.embed.poll)) ||
+      (post.embed.event && eventHasContent(post.embed.event)),
   )
 }
 

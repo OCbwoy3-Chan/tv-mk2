@@ -1,5 +1,5 @@
 import {type useEffect, useReducer, type useRef} from 'react'
-import {act, fireEvent, render} from '@testing-library/react-native'
+import {fireEvent, render} from '@testing-library/react-native'
 
 import {
   composerReducer,
@@ -13,8 +13,7 @@ type ReactHooks = {useEffect: typeof useEffect; useRef: typeof useRef}
 jest.mock('@lingui/react', () => {
   const format = (
     message:
-      | {message?: string; values?: Record<string, string | number>}
-      | string,
+      {message?: string; values?: Record<string, string | number>} | string,
   ) => {
     if (typeof message === 'string') return message
     return (message.message ?? '').replace(/{(\w+)}/g, (_, key: string) =>
@@ -50,9 +49,6 @@ jest.mock('#/components/Typography', () => {
 })
 jest.mock('#/components/icons/Poll', () => ({
   Poll_Stroke2_Corner0_Rounded: () => null,
-}))
-jest.mock('#/components/icons/Plus', () => ({
-  PlusLarge_Stroke2_Corner0_Rounded: () => null,
 }))
 jest.mock('#/components/icons/Times', () => ({
   TimesLarge_Stroke2_Corner0_Rounded: () => null,
@@ -134,6 +130,27 @@ jest.mock('#/analytics', () => ({
   useAnalytics: () => ({metric: mockMetric}),
 }))
 
+const mockPromptOpen = jest.fn()
+jest.mock('#/components/Prompt', () => {
+  const {Pressable, Text} = require('react-native')
+  return {
+    usePromptControl: () => ({open: mockPromptOpen}),
+    Basic: ({title, onConfirm}: {title: string; onConfirm: () => void}) => (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityHint=""
+        testID="confirmRemove"
+        onPress={onConfirm}>
+        <Text>{title}</Text>
+      </Pressable>
+    ),
+  }
+})
+jest.mock('#/state/preferences/enable-square-buttons', () => ({
+  useEnableSquareButtons: () => false,
+}))
+
 jest.mock('#/state/gallery', () => ({createInitialImages: jest.fn()}))
 jest.mock('#/state/queries/threadgate', () => ({
   threadgateRecordToAllowUISetting: jest.fn(() => []),
@@ -145,6 +162,7 @@ jest.mock('#/view/com/composer/state/video', () => ({
 
 import {PollEditor} from '../PollEditor'
 
+/** Fills choices in order, the way typing does, so spare slots appear too. */
 function composerWith(options: string[]): ComposerState {
   let state = createComposerState({
     initText: undefined,
@@ -156,9 +174,6 @@ function composerWith(options: string[]): ComposerState {
   const postId = state.thread.posts[0].id
   const actions: PostAction[] = [
     {type: 'embed_add_poll'},
-    ...options.slice(2).map(() => ({
-      type: 'embed_add_poll_option' as const,
-    })),
     ...options.map((text, index) => ({
       type: 'embed_update_poll_option' as const,
       index,
@@ -173,20 +188,13 @@ function composerWith(options: string[]): ComposerState {
 
 const mockDispatch = jest.fn()
 
-function ComposerHarness({
-  options,
-  text,
-}: {
-  options: string[]
-  text: string
-}) {
+function ComposerHarness({options}: {options: string[]}) {
   const [state, dispatch] = useReducer(composerReducer, options, composerWith)
   const post = state.thread.posts[0]
   if (!post.embed.poll) return null
   return (
     <PollEditor
       poll={post.embed.poll}
-      text={text}
       dispatch={postAction => {
         mockDispatch(postAction)
         dispatch({type: 'update_post', postId: post.id, postAction})
@@ -195,8 +203,8 @@ function ComposerHarness({
   )
 }
 
-function renderEditor(options: string[], text = 'Which one?') {
-  return render(<ComposerHarness options={options} text={text} />)
+function renderEditor(options: string[]) {
+  return render(<ComposerHarness options={options} />)
 }
 
 function lifecycle(kind: 'mount' | 'unmount') {
@@ -242,52 +250,87 @@ describe('PollEditor', () => {
     expect(getByTestId('pollOptionInput-1')).toHaveProp('maxLength', 100)
   })
 
-  it('adds a choice and reports the new count', () => {
+  it('has no add or remove buttons for choices', () => {
+    const {queryByTestId} = renderEditor(['one', 'two', 'three'])
+    expect(queryByTestId('addPollOptionBtn')).toBeNull()
+    expect(queryByTestId('pollOptionRemove-0')).toBeNull()
+  })
+
+  it('offers another choice only once both choices have text', () => {
+    const {getByTestId, queryByTestId} = renderEditor(['', ''])
+    expect(queryByTestId('pollOptionInput-2')).toBeNull()
+
+    fireEvent.changeText(getByTestId('pollOptionInput-0'), 'one')
+    expect(queryByTestId('pollOptionInput-2')).toBeNull()
+
+    fireEvent.changeText(getByTestId('pollOptionInput-1'), 'two')
+    expect(getByTestId('pollOptionInput-2')).toHaveProp('value', '')
+    expect(getByTestId('pollOptionInput-2')).toHaveProp(
+      'placeholder',
+      'Choice (optional)',
+    )
+  })
+
+  it('reports a choice added by typing into the extra slot', () => {
     const {getByTestId} = renderEditor(['one', 'two'])
 
-    fireEvent.press(getByTestId('addPollOptionBtn'))
+    fireEvent.changeText(getByTestId('pollOptionInput-2'), 't')
 
     expect(mockMetric).toHaveBeenCalledTimes(1)
     expect(mockMetric).toHaveBeenCalledWith('composer:poll:optionAdd', {
       count: 3,
     })
-    expect(mockDispatch).toHaveBeenCalledWith({type: 'embed_add_poll_option'})
   })
 
-  it('hides the add row at four choices', () => {
-    const three = renderEditor(['a', 'b', 'c'])
-    expect(three.getByTestId('addPollOptionBtn')).toBeTruthy()
-    three.unmount()
-
-    const four = renderEditor(['a', 'b', 'c', 'd'])
-    expect(four.getByTestId('pollOptionInput-3')).toBeTruthy()
-    expect(four.queryByTestId('addPollOptionBtn')).toBeNull()
+  it('stops offering choices at four', () => {
+    const {getByTestId, queryByTestId} = renderEditor(['a', 'b', 'c', 'd'])
+    expect(getByTestId('pollOptionInput-3')).toBeTruthy()
+    expect(queryByTestId('pollOptionInput-4')).toBeNull()
   })
 
-  it('hides the per-choice remove when there are two choices', () => {
-    const {queryByTestId} = renderEditor(['one', 'two'])
-    expect(queryByTestId('pollOptionRemove-0')).toBeNull()
+  it('keeps the field when the last choice is cleared', () => {
+    const {getByTestId, queryByTestId} = renderEditor(['a', 'b', 'c'])
+    expect(getByTestId('pollOptionInput-3')).toHaveProp('value', '')
+
+    fireEvent.changeText(getByTestId('pollOptionInput-2'), '')
+
+    expect(getByTestId('pollOptionInput-2')).toHaveProp('value', '')
+    expect(queryByTestId('pollOptionInput-3')).toBeNull()
+    expect(lifecycle('unmount')).toEqual([''])
   })
 
-  it('removes a choice by its index', () => {
-    const {getByTestId} = renderEditor(['one', 'two', 'three'])
+  it('adds the extra slot without remounting the other choices', () => {
+    const {getByTestId} = renderEditor(['A', ''])
+    expect(lifecycle('mount')).toEqual(['A', ''])
 
-    fireEvent.press(getByTestId('pollOptionRemove-1'))
+    fireEvent.changeText(getByTestId('pollOptionInput-1'), 'B')
 
-    expect(mockDispatch).toHaveBeenCalledTimes(1)
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'embed_remove_poll_option',
-      index: 1,
-    })
-    expect(mockMetric).not.toHaveBeenCalled()
+    expect(lifecycle('mount')).toEqual(['A', '', ''])
+    expect(lifecycle('unmount')).toEqual([])
+    expect(consoleError).not.toHaveBeenCalled()
   })
 
-  it('removes the poll and reports it', () => {
-    const {getByTestId, queryByTestId} = renderEditor(['one', 'two'])
+  it('removes an untouched poll without asking', () => {
+    const {getByTestId, queryByTestId} = renderEditor(['', ''])
 
     fireEvent.press(getByTestId('removePollBtn'))
 
-    expect(mockMetric).toHaveBeenCalledTimes(1)
+    expect(mockPromptOpen).not.toHaveBeenCalled()
+    expect(mockMetric).toHaveBeenCalledWith('composer:poll:remove', {})
+    expect(mockDispatch).toHaveBeenCalledWith({type: 'embed_remove_poll'})
+    expect(queryByTestId('pollEditor')).toBeNull()
+  })
+
+  it('asks before removing a poll that has choices written', () => {
+    const {getByTestId, queryByTestId} = renderEditor(['one', ''])
+
+    fireEvent.press(getByTestId('removePollBtn'))
+
+    expect(mockPromptOpen).toHaveBeenCalledTimes(1)
+    expect(mockDispatch).not.toHaveBeenCalled()
+
+    fireEvent.press(getByTestId('confirmRemove'))
+
     expect(mockMetric).toHaveBeenCalledWith('composer:poll:remove', {})
     expect(mockDispatch).toHaveBeenCalledWith({type: 'embed_remove_poll'})
     expect(queryByTestId('pollEditor')).toBeNull()
@@ -306,62 +349,18 @@ describe('PollEditor', () => {
 
   it('points out a choice that cannot be saved', () => {
     const {getByTestId, queryByTestId} = renderEditor(['a\u0000b', 'fine'])
-    const hint = getByTestId('pollOptionHint-0')
-    expect(hint).toHaveTextContent(
-      'This choice contains characters that cannot be saved.',
+    expect(getByTestId('pollOptionHint-0')).toHaveTextContent(
+      'This choice contains characters that cannot be saved',
       {exact: true},
     )
     expect(queryByTestId('pollOptionHint-1')).toBeNull()
   })
 
-  it.each([
-    {kind: 'empty', text: ''},
-    {kind: 'only whitespace', text: ' \n\t '},
-  ])('asks for post text when it is $kind', ({text}) => {
-    const {getByTestId} = renderEditor(['one', 'two'], text)
-    expect(getByTestId('pollQuestionHint')).toHaveTextContent(
-      'Add post text to ask your question.',
-      {exact: true},
-    )
-  })
-
-  it('shows no post text hint when there is post text', () => {
-    const {queryByTestId} = renderEditor(['one', 'two'], 'A question')
-    expect(queryByTestId('pollQuestionHint')).toBeNull()
-  })
-
-  it('says where the question comes from and who runs voting', () => {
-    const {getByText} = renderEditor(['one', 'two'])
-    expect(getByText('Your post text is the question.', {exact: true})).toBeTruthy()
+  it('says who runs voting, and nothing about the question', () => {
+    const {getByText, queryByText} = renderEditor(['one', 'two'])
     expect(
-      getByText('Votes are public and handled by TOKIMEKI.', {exact: true}),
+      getByText('Votes are public and handled by TOKIMEKI Poll', {exact: true}),
     ).toBeTruthy()
-  })
-
-  it('unmounts only the removed row so the others keep their input', () => {
-    const {getByTestId, queryByTestId} = renderEditor(['A', 'B', 'C'])
-    expect(lifecycle('mount')).toEqual(['A', 'B', 'C'])
-
-    fireEvent.press(getByTestId('pollOptionRemove-0'))
-
-    expect(lifecycle('unmount')).toEqual(['A'])
-    expect(getByTestId('pollOptionInput-0')).toHaveProp('value', 'B')
-    expect(getByTestId('pollOptionInput-1')).toHaveProp('value', 'C')
-    expect(queryByTestId('pollOptionInput-2')).toBeNull()
-    expect(consoleError).not.toHaveBeenCalled()
-  })
-
-  it('stops adding rows at four when the add row is pressed twice', () => {
-    const {getByTestId, queryByTestId} = renderEditor(['A', 'B', 'C'])
-    const add = getByTestId('addPollOptionBtn')
-
-    act(() => {
-      fireEvent.press(add)
-      fireEvent.press(add)
-    })
-
-    expect(lifecycle('mount')).toHaveLength(4)
-    expect(queryByTestId('addPollOptionBtn')).toBeNull()
-    expect(consoleError).not.toHaveBeenCalled()
+    expect(queryByText(/question/)).toBeNull()
   })
 })
