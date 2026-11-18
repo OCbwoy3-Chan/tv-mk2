@@ -186,7 +186,10 @@ import {
   useAvatarDecoration,
   useAvatarShape,
 } from '#/deltas/feat/avatarDecorations'
-import {useAtprotoRkeyV2Settings, useDeltasPreferences} from '#/deltas/preferences'
+import {
+  useAtprotoRkeyV2Settings,
+  useDeltasPreferences,
+} from '#/deltas/preferences'
 import {
   IS_ANDROID,
   IS_IOS,
@@ -1488,7 +1491,10 @@ export const ComposePost = ({
         omitViaField,
         tidSuffix: evenMoreCustomizablePostTids ? undefined : tidSuffix,
         extendedPostTids: evenMoreCustomizablePostTids,
-        atprotoRkeyV2Generation: { ...rkeySettings, generation: rkeySettings.generation ?? 'tid' },
+        atprotoRkeyV2Generation: {
+          ...rkeySettings,
+          generation: rkeySettings.generation ?? 'tid',
+        },
       })
       postUri = result.uris[0]
       if (result.poll) {
@@ -2082,7 +2088,7 @@ let ComposerPost = memo(function ComposerPost({
     ? isFirstPost
       ? l`Write your reply`
       : l`Add another post`
-    : l`Anything but skeet`
+    : l`Jarona!`
   const discardPromptControl = Prompt.usePromptControl()
 
   const enableSquareButtons = useEnableSquareButtons()
