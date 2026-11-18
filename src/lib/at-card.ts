@@ -19,6 +19,30 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+/**
+ * The `associatedRefs` of a link card: the records the card stands for, such
+ * as a poll or an event. Taken from the AppView's view when it has them, else
+ * from the post record's matching external media.
+ */
+export function getLinkAssociatedRefs(
+  view: {uri: string; associatedRefs?: readonly {uri: string}[]},
+  record: unknown,
+): {uri: string}[] {
+  if (view.associatedRefs?.length) return [...view.associatedRefs]
+  if (!isObject(record)) return []
+  let embed = record.embed
+  if (!isObject(embed)) return []
+  if (embed.$type === 'app.bsky.embed.recordWithMedia') embed = embed.media
+  if (!isObject(embed) || embed.$type !== 'app.bsky.embed.external') return []
+  const external = embed.external
+  if (!isObject(external) || external.uri !== view.uri) return []
+  const refs = external.associatedRefs
+  if (!Array.isArray(refs)) return []
+  return refs.flatMap(ref =>
+    isObject(ref) && typeof ref.uri === 'string' ? [{uri: ref.uri}] : [],
+  )
+}
+
 /** Read attribution only from the record's matching external media. */
 export function getEmbedCreator(
   record: unknown,

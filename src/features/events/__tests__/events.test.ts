@@ -19,7 +19,7 @@ import {
   RSVP_INTERESTED,
   RSVP_NOTGOING,
 } from '../types'
-import {makeEventLink, parseEventUrl} from '../url'
+import {eventFromRefs, makeEventLink, parseEventUrl} from '../url'
 
 describe('parseEventRecord', () => {
   it('reads the published fields and common extensions', () => {
@@ -563,5 +563,26 @@ describe('eventLinkLabel', () => {
     expect(eventLinkLabel(i18n, counts, parsed)).toBe(
       'View event Meetup, 0 going',
     )
+  })
+})
+
+describe('eventFromRefs', () => {
+  it('finds an event record among the refs', () => {
+    expect(
+      eventFromRefs([
+        {uri: 'at://did:plc:alice/app.bsky.feed.post/3kpost'},
+        {uri: 'at://did:plc:alice/community.lexicon.calendar.event/3kevent'},
+      ]),
+    ).toEqual({actor: 'did:plc:alice', rkey: '3kevent'})
+  })
+
+  it('ignores RSVPs, handles and missing refs', () => {
+    expect(
+      eventFromRefs([
+        {uri: 'at://did:plc:alice/community.lexicon.calendar.rsvp/3krsvp'},
+        {uri: 'at://alice.test/community.lexicon.calendar.event/3kevent'},
+      ]),
+    ).toBe(undefined)
+    expect(eventFromRefs(undefined)).toBe(undefined)
   })
 })
