@@ -56,6 +56,7 @@ import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {useNameGradient, useNameStyle} from '#/deltas/feat/avatarDecorations'
+import {useDeltasPreferences} from '#/deltas/preferences'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -141,6 +142,7 @@ let MessageItem = ({
   nextMessage: MessageItemNeighbor
   relatedProfiles: Map<string, chat.bsky.actor.defs.ProfileViewBasic>
 }): React.ReactNode => {
+  const {showBlockedMessages} = useDeltasPreferences()
   const enableSquareButtons = useEnableSquareButtons()
   const t = useTheme()
   const {currentAccount} = useSession()
@@ -545,7 +547,10 @@ let MessageItem = ({
                 {displayName}
               </Text>
             ) : null}
-            {profile && isBlockedOrBlocking(profile) && isGroupChat ? (
+            {profile &&
+            isBlockedOrBlocking(profile) &&
+            isGroupChat &&
+            !showBlockedMessages ? (
               <BlockedPlaceholder profile={profile} style={borderRadiusStyle} />
             ) : (
               <View style={[a.relative]}>
@@ -608,6 +613,7 @@ let MessageItem = ({
                       {replyTo && !isEmojiOnly ? (
                         <ReplyQuote
                           replyTo={replyTo}
+                          isGroupChat={isGroupChat}
                           isFromSelf={isFromSelf}
                           relatedProfiles={relatedProfiles}
                           onPress={onPressReplyTo}
@@ -912,10 +918,12 @@ function ReplyCaption({
  */
 function ReplyQuote({
   replyTo,
+  isGroupChat,
   isFromSelf,
   relatedProfiles,
   onPress,
 }: {
+  isGroupChat: boolean
   replyTo:
     | chat.bsky.convo.defs.MessageView
     | chat.bsky.convo.defs.DeletedMessageView
@@ -924,6 +932,7 @@ function ReplyQuote({
   relatedProfiles: Map<string, chat.bsky.actor.defs.ProfileViewBasic>
   onPress?: () => void
 }) {
+  const {showBlockedMessages} = useDeltasPreferences()
   const enableSquareButtons = useEnableSquareButtons()
   const t = useTheme()
   const {t: l} = useLingui()
@@ -939,7 +948,10 @@ function ReplyQuote({
   )
   // Hide the quoted content if we block, or are blocked by, the original
   // sender - mirroring how the message bubble itself is hidden.
-  const isBlocked = senderProfile ? isBlockedOrBlocking(senderProfile) : false
+  const isBlocked =
+    !(isGroupChat && showBlockedMessages) &&
+    !!senderProfile &&
+    isBlockedOrBlocking(senderProfile)
   const unavailableLabel = useUnavailableProfileLabel(senderProfile)
   const senderName =
     senderProfile && !isBlocked

@@ -80,17 +80,22 @@ export const KIN_BADGE_TYPES: KinBadgeType[] = [
 ]
 
 export const KIN_BADGES: KinBadgeToplevel[] = [
-    // {
-    //     group: "ATProtoverse",
-    //     id: "at",
-    //     badges: [
-    //         {
-    //             name: "Kris",
-    //             id: "kris",
-    //             img: require("#/../assets/badges/kris.png"),
-    //         },
-    //     ]
-    // },
+    {
+        group: "ATProtoverse",
+        id: "at",
+        badges: [
+            {
+                name: "Bluesky",
+                id: "bsky",
+                img: require("#/../assets/badges/bsky.svg"),
+            },
+            {
+                name: "Witchsky",
+                id: "witchsky",
+                img: require("#/../assets/badges/witchsky.svg"),
+            }
+        ]
+    },
     {
         group: "Deltarune",
         id: "dr",

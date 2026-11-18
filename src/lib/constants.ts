@@ -92,6 +92,9 @@ export function IS_PROD_SERVICE(url?: string) {
   return url && url !== STAGING_SERVICE && !url.startsWith(LOCAL_DEV_SERVICE)
 }
 
+export const KRIS_FEED_OWNER_DID = 'did:web:vessel.darkworld.download'
+export const KRIS_FEED_GENERATOR_DID = 'did:web:tenna.party'
+
 export const PROD_DEFAULT_FEED = (rkey: string) =>
   `at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/${rkey}`
 

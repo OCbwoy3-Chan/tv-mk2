@@ -52,6 +52,7 @@ import {RichText} from '#/components/RichText'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {KrisFeedSettings} from '#/deltas/feat/krisFeedSettings'
 import {IS_WEB} from '#/env'
 
 export function ProfileFeedHeaderSkeleton() {
@@ -587,6 +588,8 @@ function DialogInner({
               </Button>
             </View>
           ) : null}
+
+          <KrisFeedSettings info={info} />
 
           <View style={[a.pt_xs, a.gap_lg]}>
             <Divider />

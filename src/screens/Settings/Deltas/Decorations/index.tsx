@@ -90,7 +90,7 @@ function DecorationsSettings() {
 
   return (
     <RunesScreenLayout titleText={l`Profile decorations`}>
-      <View style={[a.px_xl, a.pb_lg]}>
+      <View style={[a.px_xl, a.pb_lg, a.pt_sm]}>
         <Admonition type="tip">
           <Trans>
             These decorations are only visible on tenna.party. They might not display

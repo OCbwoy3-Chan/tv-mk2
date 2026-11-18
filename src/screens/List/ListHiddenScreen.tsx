@@ -50,7 +50,7 @@ export function ListHiddenScreen({
   const listMuteMutation = useListMuteMutation()
   const {mutateAsync: removeSavedFeed} = useRemoveFeedMutation()
 
-  const {setIsContentVisible} = useHider()
+  const {setIsContentVisible, meta} = useHider()
 
   const savedFeedConfig = preferences.savedFeeds.find(f => f.value === list.uri)
 
@@ -181,7 +181,7 @@ export function ListHiddenScreen({
               ) : null}
             </Button>
           ) : null}
-          {isOwner ? (
+          {meta.allowOverride ? (
             <Button
               variant="solid"
               color="secondary"

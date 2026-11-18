@@ -9,6 +9,8 @@ export type DeltasNavigatorParams = {
   DeltasSettings: undefined
   DeltasDecorationsSettingsScreen: undefined
   DeltasBadgeSettingsScreen: undefined
+  DeltasModerationSettingsScreen: undefined
+  DeltasPostingSettingsScreen: undefined
 }
 
 const Flat = createNativeStackNavigatorWithAuth<
@@ -21,6 +23,8 @@ export const DeltasRoutes: Record<
 > = {
   DeltasSettings: '/settings/deltas',
   DeltasBadgeSettingsScreen: '/settings/deltas/badge',
+  DeltasModerationSettingsScreen: '/settings/deltas/moderation',
+  DeltasPostingSettingsScreen: '/settings/deltas/posting',
   DeltasDecorationsSettingsScreen: '/settings/deltas/decorations',
 }
 
@@ -37,6 +41,16 @@ const DeltasBadgeSettingsScreen = deltaDeferredNamedScreen(
 const DeltasDecorationsSettingsScreen = deltaDeferredNamedScreen(
   () => require('#/screens/Settings/Deltas/Decorations'),
   'DeltasDecorationsSettingsScreen',
+)
+
+const DeltasModerationSettingsScreen = deltaDeferredNamedScreen(
+  () => require('#/screens/Settings/Deltas/ModerationSettingsScreen'),
+  'DeltasModerationSettingsScreen',
+)
+
+const DeltasPostingSettingsScreen = deltaDeferredNamedScreen(
+  () => require('#/screens/Settings/Deltas/PostingSettingsScreen'),
+  'DeltasPostingSettingsScreen',
 )
 
 export function DeltasCommonStacks({
@@ -64,6 +78,16 @@ export function DeltasCommonStacks({
         name="DeltasDecorationsSettingsScreen"
         getComponent={() => DeltasDecorationsSettingsScreen}
         options={{title: title(msg`Profile decorations`)}}
+      />
+      <Stack.Screen
+        name="DeltasModerationSettingsScreen"
+        getComponent={() => DeltasModerationSettingsScreen}
+        options={{title: title(msg`Moderation`)}}
+      />
+      <Stack.Screen
+        name="DeltasPostingSettingsScreen"
+        getComponent={() => DeltasPostingSettingsScreen}
+        options={{title: title(msg`Posting`)}}
       />
     </>
   )

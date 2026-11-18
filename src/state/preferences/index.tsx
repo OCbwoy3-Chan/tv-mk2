@@ -1,6 +1,7 @@
 import {type PropsWithChildren} from 'react'
 
 import {Provider as EmojiFontProvider} from '#/state/preferences/emoji-font'
+import {DeltasPreferencesProvider} from '#/deltas/preferences'
 import {Provider as AlsoLikedCollapseByDefaultProvider} from './also-liked-collapse-by-default'
 import {Provider as AlsoLikedFeedProvider} from './also-liked-feed-enabled'
 import {Provider as AltTextRequiredProvider} from './alt-text-required'
@@ -251,9 +252,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
                                                                                                                                                 <ShowPostTagsProvider>
                                                                                                                                                   <EmojiFontProvider>
                                                                                                                                                     <PasteToLinkEnabledProvider>
-                                                                                                                                                      {
-                                                                                                                                                        children
-                                                                                                                                                      }
+                                                                                                                                                      <DeltasPreferencesProvider>
+                                                                                                                                                        {children}
+                                                                                                                                                      </DeltasPreferencesProvider>
                                                                                                                                                     </PasteToLinkEnabledProvider>
                                                                                                                                                   </EmojiFontProvider>
                                                                                                                                                 </ShowPostTagsProvider>

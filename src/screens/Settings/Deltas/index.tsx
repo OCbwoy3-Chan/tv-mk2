@@ -29,7 +29,7 @@ export function DeltasSettingsScreen({ }: Props) {
         <RunesScreenLayout titleText="Deltas">
             <SettingsList.Item>
                 <Admonition type="info" style={[a.flex_1]}>
-                    The development of tenna.party V2 is still work-in-progress.
+                    The development is still work-in-progress.
                     Private posts have been dropped in preperation for{" "}
                     <InlineLinkText
                         {...createStaticClick(() =>
@@ -43,7 +43,7 @@ export function DeltasSettingsScreen({ }: Props) {
                     >
                         Bluesky Communities
                     </InlineLinkText>.
-                    Dropped before GTA 6!
+                    We got tenna.party 2 before GTA 6!
                 </Admonition>
             </SettingsList.Item>
 
@@ -120,12 +120,12 @@ export function DeltasSettingsScreen({ }: Props) {
                     ]}>
                         
                     <Link
-                        label={l`Bypass settings`}
-                        to="/settings/deltas/bypasses"
+                        label={l`Moderation settings`}
+                        to="/settings/deltas/moderation"
                     >
                         {state => (
                             <DeltasSubItem
-                                title={l`Bypasses`}
+                                title={l`Moderation`}
                                 icon={ShieldCheckIcon}
                                 style={[
                                     (state.hovered || state.pressed) && [t.atoms.bg_contrast_50],

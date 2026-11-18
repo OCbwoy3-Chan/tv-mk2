@@ -9,6 +9,7 @@ import {
   ModerationDetailsDialog,
   useModerationDetailsDialogControl,
 } from '#/components/moderation/ModerationDetailsDialog'
+import {useDeltasPreferences} from '#/deltas/preferences'
 
 type Context = {
   isContentVisible: boolean
@@ -30,13 +31,16 @@ export function Outer({
   modui,
   isContentVisibleInitialState,
   allowOverride,
+  isList = false,
   children,
 }: React.PropsWithChildren<{
   isContentVisibleInitialState?: boolean
   allowOverride?: boolean
+  isList?: boolean
   modui: ModerationUI | undefined
 }>) {
   const control = useModerationDetailsDialogControl()
+  const {showHiddenList} = useDeltasPreferences()
   const blur = modui?.blurs[0]
   const [isContentVisible, setIsContentVisible] = useState(
     isContentVisibleInitialState || !blur,
@@ -51,7 +55,8 @@ export function Outer({
           cause.labelDef.identifier === '!no-unauthenticated',
       ),
     ),
-    allowOverride: allowOverride ?? !modui?.noOverride,
+    allowOverride:
+      (isList && showHiddenList) || (allowOverride ?? !modui?.noOverride),
   }
 
   const showInfoDialog = () => {

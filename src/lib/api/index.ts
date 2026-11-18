@@ -17,6 +17,12 @@ import {retry} from '#/lib/async/retry'
 import {withCreator} from '#/lib/at-card'
 import {IMAGE_SIZE_CONFIG_POSTS, MAX_TAGS} from '#/lib/constants'
 import {} from '#/lib/constants'
+import {
+  buildPrefixedatprotoRkeyV2,
+  buildSuffixedatprotoRkeyV2,
+  isValidAtprotoTidPrefix,
+  isValidAtprotoTidSuffix,
+} from '#/deltas/atproto-rkey'
 import {isNetworkError} from '#/lib/strings/errors'
 import {
   applyFacetSyntax,
@@ -134,6 +140,8 @@ interface PostOpts {
   pdsClient: Client
   omitViaField?: boolean
   tidSuffix?: string
+  extendedPostTids?: boolean
+  atprotoRkeyV2Generation?: PostDraft['atprotoRkeyV2']
 }
 
 export type PostResult = {
@@ -276,8 +284,24 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     // The sorting behavior for multiple posts sharing the same createdAt time is
     // undefined, so what we'll do here is increment the time by 1 for every post
     now.setMilliseconds(now.getMilliseconds() + 1)
-    tid = nextPostTid(tid, opts.tidSuffix)
-    const rkey = tid.toString()
+    tid = nextPostTid(tid, opts.extendedPostTids ? undefined : opts.tidSuffix)
+    let rkey = tid.toString()
+    if (opts.extendedPostTids) {
+      const settings = draft.atprotoRkeyV2 ?? opts.atprotoRkeyV2Generation
+      if (settings?.generation === 'prefix') {
+        const prefix = settings.prefix?.trim() ?? ''
+        if (!isValidAtprotoTidPrefix(prefix)) {
+          throw new Error('Invalid post TID prefix')
+        }
+        rkey = buildPrefixedatprotoRkeyV2(prefix, rkey)
+      } else if (settings?.generation === 'suffix') {
+        const suffix = settings.suffix?.trim() ?? ''
+        if (!isValidAtprotoTidSuffix(suffix)) {
+          throw new Error('Invalid post TID suffix')
+        }
+        rkey = buildSuffixedatprotoRkeyV2(rkey, suffix)
+      }
+    }
     const uri = `at://${did}/app.bsky.feed.post/${rkey}` as AtUriString
     uris.push(uri)
 

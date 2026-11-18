@@ -55,6 +55,7 @@ import {createPortalGroup} from '#/components/Portal'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {useDeltasPreferences} from '#/deltas/preferences'
 import {IS_NATIVE} from '#/env'
 import {chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -301,6 +302,8 @@ function BaseChatItem({
         (convo.details.unreadJoinRequestCount ?? 0) > 0)) &&
     (convo.kind !== 'group' || convo.details.lockStatus === 'unlocked')
 
+  const {showBlockedMessages} = useDeltasPreferences()
+
   const blockInfo = useMemo(() => {
     if (!primaryProfileModeration) return {listBlocks: [], userBlock: undefined}
     const modui = primaryProfileModeration.ui('profileView')
@@ -347,7 +350,7 @@ function BaseChatItem({
         i18n,
       })
       if (info) {
-        lastMessage = info.isBlockedMessage
+        lastMessage = info.isBlockedMessage && !(convo.kind === 'group' && showBlockedMessages)
           ? l`This message is hidden`
           : (info.message ?? lastMessage)
         lastMessageSentAt = info.sentAt
@@ -408,7 +411,7 @@ function BaseChatItem({
       LastMessageIcon,
       lastMessageSentAt,
     }
-  }, [l, convo, currentAccount?.did, isDeletedAccount, primaryProfile, i18n])
+  }, [l, convo, currentAccount?.did, isDeletedAccount, primaryProfile, i18n, showBlockedMessages])
 
   const [showActions, setShowActions] = useState(false)
 

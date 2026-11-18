@@ -16,14 +16,15 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - More descriptive PDS dialogs
 - 200 max labelers
 - Profile Bages (character + kin)
-- *Enhanced* Profile Decorations (stolen from mu, basically free eurosky+)
+- Free *& Enhanced* Eurosky+ Profile Decorations
+- More customizable post TIDs/rkeys (e.g. deltarunetmrw)
+- Show blocked messages in group chats
+- Show hidden lists (like ones hidden by Bluesky Moderation)
+- MDNI badges
 
 ### TODO: Kris
 
 Deltas:
-- [ ] More customizable post TID/rkey (in composer)
-- [ ] Bypass Bluesky Moderation & blocks when viewing lists
-- [ ] Bypass viewing blocked messages in groupchats
 - [ ] Mod self-labels
 
 - [ ] Tennalings/Krislings feeds

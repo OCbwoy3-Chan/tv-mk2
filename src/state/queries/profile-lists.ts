@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query'
 
 import {useAppviewClient} from '#/state/session'
+import {useDeltasPreferences} from '#/deltas/preferences'
 import {app} from '#/lexicons'
 import {useModerationOpts} from '../preferences/moderation-opts'
 
@@ -17,6 +18,7 @@ export const RQKEY_ROOT = 'profile-lists'
 export const RQKEY = (did: string) => [RQKEY_ROOT, did]
 
 export function useProfileListsQuery(did: string, opts?: {enabled?: boolean}) {
+  const {showHiddenList} = useDeltasPreferences()
   const moderationOpts = useModerationOpts()
   const enabled = opts?.enabled !== false && Boolean(moderationOpts)
   const client = useAppviewClient()
@@ -45,6 +47,7 @@ export function useProfileListsQuery(did: string, opts?: {enabled?: boolean}) {
           return {
             ...page,
             lists: page.lists.filter(list => {
+              if (showHiddenList) return true
               const decision = moderateUserList(list, moderationOpts!)
               return !decision
                 .ui('contentList')

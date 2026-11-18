@@ -122,6 +122,7 @@ export function TitleAndByline({
   return (
     <View style={[a.flex_1]}>
       <Hider.Outer
+        isList
         modui={modUi}
         isContentVisibleInitialState={
           creator && currentAccount?.did === creator.did

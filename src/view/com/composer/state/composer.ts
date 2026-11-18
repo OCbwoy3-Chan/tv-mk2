@@ -115,9 +115,20 @@ export type PostDraft = {
   tags: string[]
   embed: EmbedDraft
   shortenedGraphemeLength: number
+  atprotoRkeyV2?: {
+    generation: 'tid' | 'prefix' | 'suffix'
+    prefix?: string
+    suffix?: string
+  }
 }
 
 export type PostAction =
+  | {
+      type: 'update_rkey'
+      generation: 'tid' | 'prefix' | 'suffix'
+      prefix?: string
+      suffix?: string
+    }
   | {type: 'register_bluemoji'; item: BluemojiItem}
   | {type: 'update_richtext'; richtext: RichText}| {type: 'update_labels'; labels: SelfLabel[]}| {type: 'update_tags'; tags: string[]}| {type: 'embed_add_images'; images: ComposerImage[]}| {type: 'embed_update_image'; image: ComposerImage}| {type: 'embed_remove_image'; image: ComposerImage}| {
       type: 'embed_add_video'
@@ -373,6 +384,7 @@ export function composerReducer(
         shortenedGraphemeLength: 0,
         labels: [],
         tags: [],
+        atprotoRkeyV2: state.thread.posts[activePostIndex]?.atprotoRkeyV2,
         embed: {
           quote: undefined,
           media: undefined,
@@ -525,6 +537,16 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
       return {
         ...state,
         labels: action.labels,
+      }
+    }
+    case 'update_rkey': {
+      return {
+        ...state,
+        atprotoRkeyV2: {
+          generation: action.generation,
+          prefix: action.prefix ?? '',
+          suffix: action.suffix ?? '',
+        },
       }
     }
     case 'update_tags': {
@@ -962,6 +984,7 @@ export function createComposerState({
   initQuoteUri,
   initInteractionSettings,
   initVideoUri,
+  initatprotoRkeyV2,
   initTags,
 }: {
   initText: string | undefined
@@ -971,6 +994,7 @@ export function createComposerState({
   initInteractionSettings:
     app.bsky.actor.defs.PostInteractionSettingsPref | undefined
   initVideoUri?: ComposerOpts['videoUri']
+  initatprotoRkeyV2?: PostDraft['atprotoRkeyV2']
   initTags?: ComposerOpts['tags']
 }): ComposerState {
   let media: ImagesMedia | GalleryMedia | VideoMedia | undefined
@@ -1096,6 +1120,7 @@ export function createComposerState({
           shortenedGraphemeLength: getShortenedLength(initRichText),
           labels: [],
           tags: initTags?.length ? initTags.slice(0, MAX_TAGS) : [],
+          atprotoRkeyV2: initatprotoRkeyV2,
           embed: {
             quote,
             media,

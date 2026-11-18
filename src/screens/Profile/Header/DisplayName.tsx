@@ -77,6 +77,7 @@ export function ProfileHeaderDisplayName({
           <ProfileBadges
             profile={profile}
             size="lg"
+            mdniFontSize={gtMobile ? a.text_4xl.fontSize : a.text_3xl.fontSize}
             interactive
             showBetaBadge
           />

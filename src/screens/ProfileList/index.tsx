@@ -195,7 +195,10 @@ function ProfileListScreenLoaded({
 
   if (isCurateList) {
     return (
-      <Hider.Outer modui={moderation.ui('contentView')} allowOverride={isOwner}>
+      <Hider.Outer
+        isList
+        modui={moderation.ui('contentView')}
+        allowOverride={isOwner}>
         <Hider.Mask>
           <ListHiddenScreen list={list} preferences={preferences} />
         </Hider.Mask>
@@ -252,7 +255,10 @@ function ProfileListScreenLoaded({
     )
   }
   return (
-    <Hider.Outer modui={moderation.ui('contentView')} allowOverride={isOwner}>
+    <Hider.Outer
+      isList
+      modui={moderation.ui('contentView')}
+      allowOverride={isOwner}>
       <Hider.Mask>
         <ListHiddenScreen list={list} preferences={preferences} />
       </Hider.Mask>

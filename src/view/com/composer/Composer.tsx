@@ -133,6 +133,7 @@ import {isEphemeralAuthError} from '#/state/session/ephemeral-auth'
 import {useComposerControls, useComposerState} from '#/state/shell/composer'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
 import {saveRecovery} from '#/state/shell/composer/recovery'
+import {AtprotoBtn} from '#/view/com/composer/AtprotoBtn'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
 import {DraftsButton} from '#/view/com/composer/drafts/DraftsButton'
@@ -185,6 +186,7 @@ import {
   useAvatarDecoration,
   useAvatarShape,
 } from '#/deltas/feat/avatarDecorations'
+import {useAtprotoRkeyV2Settings, useDeltasPreferences} from '#/deltas/preferences'
 import {
   IS_ANDROID,
   IS_IOS,
@@ -360,6 +362,8 @@ export const ComposePost = ({
   const requireAltTextEnabled = useRequireAltTextEnabled()
   const omitViaField = useOmitViaField()
   const tidSuffix = useTidSuffix()
+  const {evenMoreCustomizablePostTids} = useDeltasPreferences()
+  const rkeySettings = useAtprotoRkeyV2Settings()
 
   const langPrefs = useLanguagePrefs()
   const setLangPrefs = useLanguagePrefsApi()
@@ -496,6 +500,10 @@ export const ComposePost = ({
         initInteractionSettings: preferences?.postInteractionSettings,
         initVideoUri,
         initTags,
+        initatprotoRkeyV2: {
+          ...rkeySettings,
+          generation: rkeySettings.generation ?? 'tid',
+        },
       }),
   )
 
@@ -1478,7 +1486,9 @@ export const ComposePost = ({
         chatClient: postingAgent ? buildChatClient(postingAgent) : chatClient,
         pdsClient: postingPdsClient,
         omitViaField,
-        tidSuffix,
+        tidSuffix: evenMoreCustomizablePostTids ? undefined : tidSuffix,
+        extendedPostTids: evenMoreCustomizablePostTids,
+        atprotoRkeyV2Generation: { ...rkeySettings, generation: rkeySettings.generation ?? 'tid' },
       })
       postUri = result.uris[0]
       if (result.poll) {
@@ -2774,6 +2784,7 @@ function ComposerPills({
     media?.type === 'gif' ||
     media?.type === 'video'
   const hasLink = !!post.embed.link
+  const rkeySettings = useAtprotoRkeyV2Settings()
 
   return (
     <Animated.View
@@ -2829,6 +2840,20 @@ function ComposerPills({
             }}
           />
         ) : null}
+        <AtprotoBtn
+          generation={
+            post.atprotoRkeyV2?.generation ?? rkeySettings.generation ?? 'tid'
+          }
+          prefix={post.atprotoRkeyV2?.prefix ?? rkeySettings.prefix}
+          suffix={post.atprotoRkeyV2?.suffix ?? rkeySettings.suffix}
+          onChangeSettings={(generation, prefix, suffix) => {
+            dispatch({
+              type: 'update_post',
+              postId: post.id,
+              postAction: {type: 'update_rkey', generation, prefix, suffix},
+            })
+          }}
+        />
       </ScrollView>
     </Animated.View>
   )

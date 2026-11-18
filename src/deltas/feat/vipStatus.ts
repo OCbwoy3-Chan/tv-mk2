@@ -1,9 +1,9 @@
-import {AtUri} from '@atproto/syntax'
-import {useQuery} from '@tanstack/react-query'
+import { AtUri } from '@atproto/syntax'
+import { useQuery } from '@tanstack/react-query'
 
-import {useConstellationInstance} from '#/state/preferences/constellation-instance'
-import {STALE} from '#/state/queries'
-import {createQueryKey} from '#/state/queries/util'
+import { useConstellationInstance } from '#/state/preferences/constellation-instance'
+import { STALE } from '#/state/queries'
+import { createQueryKey } from '#/state/queries/util'
 
 /** Lists used only by the standalone VIP-status lookup. */
 const DEFAULT_VIP_LIST_URIS = [
@@ -29,7 +29,7 @@ const LIST_ITEM_LIST_PATH = 'list'
 
 type GetManyToManyResponse = {
   items?: {
-    linkRecord: {did: string; collection: string; rkey: string}
+    linkRecord: { did: string; collection: string; rkey: string }
     otherSubject: string
   }[]
   cursor?: string | null
@@ -81,7 +81,7 @@ export async function getVipStatus(
   }
 
   const res = await fetch(url.toString(), {
-    headers: {accept: 'application/json'},
+    headers: { accept: 'application/json' },
   })
   if (!res.ok) {
     throw new Error(`Constellation getManyToMany failed: ${res.status}`)

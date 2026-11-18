@@ -12,6 +12,7 @@ import {
 import {deviceLanguageCodes, deviceLocales} from '#/locale/deviceLocales'
 import {findSupportedAppLanguage} from '#/locale/languages'
 import {logger} from '#/logger'
+import { deltasPreferencesZodSchema } from '#/deltas/preferences'
 
 const externalEmbedOptions = ['show', 'hide'] as const
 
@@ -352,6 +353,7 @@ const schema = z.object({
   plcDirectory: z.string().optional(),
   plcDirectoryCustom: z.string().optional(),
   hideUnreplyablePosts: z.boolean().optional(),
+  deltasPreferences: deltasPreferencesZodSchema,
   hideQuotesOfBlockedAccounts: z.boolean().optional(),
   hideBluemojiReactions: z.boolean().optional(),
   pdsLabel: z

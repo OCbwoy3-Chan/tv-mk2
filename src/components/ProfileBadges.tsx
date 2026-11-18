@@ -25,9 +25,13 @@ import {verificationBadges} from '#/components/verification/badges'
 import {VerificationCheck} from '#/components/verification/VerificationCheck'
 import {VerificationCheckButton} from '#/components/verification/VerificationCheckButton'
 import {verifierColor} from '#/components/verification/verifier-color'
+import {KinBadge} from '#/deltas/feat/badges/kin'
+import {hasPremiumBadge, VipBadge} from '#/deltas/feat/badges/vip'
+import {getKinBadge} from '#/deltas/feat/kinBadges'
+import {MdniBadge, useHasMdniBadge} from '#/deltas/feat/mdni/mdniBadge'
 import {IS_WEB} from '#/env'
 import type * as bsky from '#/types/bsky'
-import {BetaBadge, BetaBadgeButton, useIsBetaBadgeVisible} from './BetaBadge'
+import {BetaBadge, BetaBadgeButton} from './BetaBadge'
 
 export type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
@@ -70,6 +74,7 @@ type ProfileBadgesProps = ViewStyleProp & {
   /** The beta badge is reserved for the full profile header. */
   showBetaBadge?: boolean
   size: Size
+  mdniFontSize?: number
   allowFontScaling?: boolean
 }
 
@@ -88,6 +93,7 @@ export function ProfileBadgesFromProfileShadow({
   pdsInteractive = true,
   // showBetaBadge = false,
   size,
+  mdniFontSize,
   style,
   allowFontScaling = true,
 }: Omit<ProfileBadgesProps, 'profile'> & {
@@ -122,17 +128,20 @@ export function ProfileBadgesFromProfileShadow({
     shouldShowPdsCandidate && (!pdsData || !(hideBskyPds && pdsData.isBsky))
 
   const showBetaBadge = false
+  const showMdniBadge = useHasMdniBadge(shadowed)
   const isBetaBadgeVisible = false // useIsBetaBadgeVisible(shadowed) && showBetaBadge
   const badgeVisibility = [
     verification.showBadge,
     isBetaBadgeVisible,
     isBotAccount(shadowed),
     isPetAccount(shadowed),
+    getKinBadge(shadowed).has,
+    hasPremiumBadge(shadowed),
   ]
   const badgeCount = badgeVisibility.filter(Boolean).length
 
   // if nothing to show, don't render the container at all
-  if (!showPdsBadge && badgeCount < 1) return null
+  if (!showMdniBadge && !showPdsBadge && badgeCount < 1) return null
 
   const isOnTheSmallSide = size === 'xs' || size === 'sm'
 
@@ -170,6 +179,11 @@ export function ProfileBadgesFromProfileShadow({
         isOnTheSmallSide ? a.gap_2xs : a.gap_xs,
         style,
       ]}>
+      {showMdniBadge && (
+        <MdniBadge
+          width={mdniFontSize ? mdniFontSize * scaleMultiplier : botIconWidth}
+        />
+      )}
       {showPdsBadge && (
         <PdsInlineIcon
           size={size}
@@ -237,6 +251,18 @@ export function ProfileBadgesFromProfileShadow({
           <PetBadge profile={shadowed} width={botIconWidth} />
         </>
       )}
+      <KinBadge
+        profile={shadowed}
+        width={botIconWidth}
+        interactive
+        hitSlop={hitSlops[4]}
+      />
+      <VipBadge
+        profile={shadowed}
+        width={botIconWidth}
+        interactive
+        hitSlop={hitSlops[5]}
+      />
     </View>
   )
 }
