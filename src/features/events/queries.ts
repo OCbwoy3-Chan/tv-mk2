@@ -84,15 +84,16 @@ export function useEventQuery(uri: string | undefined, initial?: EventView) {
   })
 }
 
-/**
- * The first few RSVPs in one status, for the avatar row next to that status's
- * count. Two separate queries keep going and interested avatars distinct.
- */
-export function useRsvpsQuery(uri: string | undefined, status: RsvpStatus) {
+/** The first few RSVPs in one status, for an avatar row beside its count. */
+export function useRsvpsQuery(
+  uri: string | undefined,
+  status: RsvpStatus,
+  enabled = true,
+) {
   const client = useAppviewClient()
   return useQuery({
     queryKey: rsvpsQueryKey(uri ?? '', status),
-    enabled: !!uri,
+    enabled: !!uri && enabled,
     staleTime: STALE.SECONDS.THIRTY,
     queryFn: () =>
       calendarXrpc<RsvpPage>(

@@ -192,32 +192,7 @@ describe('parseEventUrl', () => {
   })
 })
 
-describe('eventDateParts', () => {
-  const i18n = setupI18n({locale: 'en', messages: {en: {}}})
-  const base = {name: 'x', cancelled: false, links: []}
-
-  it('shows the end date when the event ends on a later day', () => {
-    const parts = eventDateParts(i18n, {
-      ...base,
-      startsAt: new Date('2026-10-02T23:00:00.000Z'),
-      endsAt: new Date('2026-10-04T21:00:00.000Z'),
-      timezone: 'America/New_York',
-    })
-    expect(parts?.timeRange).toBe('7:00 PM – Sun, Oct 4, 5:00 PM EDT')
-  })
-
-  it('shows only times when the event ends the same day', () => {
-    const parts = eventDateParts(i18n, {
-      ...base,
-      startsAt: new Date('2026-10-02T23:00:00.000Z'),
-      endsAt: new Date('2026-10-03T02:00:00.000Z'),
-      timezone: 'America/New_York',
-    })
-    expect(parts?.timeRange).toBe('7:00 PM – 10:00 PM EDT')
-  })
-})
-
-describe('formatEventTime', () => {
+describe('event times', () => {
   const i18n = setupI18n({locale: 'en', messages: {en: {}}})
   const base = {name: 'x', cancelled: false, links: []}
   /**
@@ -225,53 +200,68 @@ describe('formatEventTime', () => {
    * only ever calls `i18n.date(..., options)`, so a zone in `options` is
    * exactly what a device in that zone would produce.
    */
-  const pinZone = (timeZone: string) => {
+  const inZone = <T>(timeZone: string, fn: () => T): T => {
     const date = i18n.date.bind(i18n)
-    i18n.date = (_value, options = {}) =>
-      // Only stand in for "the device zone" (no explicit zone in options);
-      // an explicit zone is a deliberate request that must be respected.
-      date(_value, {timeZone, ...options})
-    return () => {
+    i18n.date = (value, options = {}) => date(value, {timeZone, ...options})
+    try {
+      return fn()
+    } finally {
       i18n.date = date
     }
   }
 
-  it('drops the local date when both zones are on the same day', () => {
-    const unpin = pinZone('America/New_York')
-    // 10:00 UTC is Oct 1 in both New York and Berlin.
-    const time = formatEventTime(i18n, {
-      ...base,
-      startsAt: new Date('2026-10-01T10:00:00.000Z'),
-      timezone: 'Europe/Berlin',
+  describe('eventDateParts', () => {
+    it('shows the end date when the event ends on a later day', () => {
+      const parts = inZone('America/New_York', () =>
+        eventDateParts(i18n, {
+          ...base,
+          startsAt: new Date('2026-10-02T23:00:00.000Z'),
+          endsAt: new Date('2026-10-04T21:00:00.000Z'),
+        }),
+      )
+      expect(parts?.timeRange).toBe('7:00 PM – Sun, Oct 4, 5:00 PM EDT')
     })
-    unpin()
-    expect(time?.primary).toContain('Oct 1')
-    expect(time?.local).toBeDefined()
-    expect(time?.local).not.toMatch(/Oct/)
-    expect(time?.local).toMatch(/\d{1,2}:\d{2}/)
+
+    it('shows only times when the event ends the same day', () => {
+      const parts = inZone('America/New_York', () =>
+        eventDateParts(i18n, {
+          ...base,
+          startsAt: new Date('2026-10-02T23:00:00.000Z'),
+          endsAt: new Date('2026-10-03T02:00:00.000Z'),
+        }),
+      )
+      expect(parts?.timeRange).toBe('7:00 PM – 10:00 PM EDT')
+    })
+
+    it("uses the viewer's zone, not the event's", () => {
+      // 21:00 UTC is Oct 1 in Berlin but already Oct 2 in Tokyo.
+      const parts = inZone('Asia/Tokyo', () =>
+        eventDateParts(i18n, {
+          ...base,
+          startsAt: new Date('2026-10-01T21:00:00.000Z'),
+          timezone: 'Europe/Berlin',
+        }),
+      )
+      expect(parts?.longDate).toBe('Friday, October 2')
+      expect(parts?.timeRange).toBe('6:00 AM GMT+9')
+    })
   })
 
-  it('keeps the local date when the zones fall on different days', () => {
-    const unpin = pinZone('Asia/Tokyo')
-    // 21:00 UTC is Oct 1 in Berlin but already Oct 2 in Tokyo, so the local
-    // side must keep its date rather than read as the event's day.
-    const time = formatEventTime(i18n, {
-      ...base,
-      startsAt: new Date('2026-10-01T21:00:00.000Z'),
-      timezone: 'Europe/Berlin',
+  describe('formatEventTime', () => {
+    it("shows only the viewer's time, whatever the event's zone", () => {
+      const time = inZone('Asia/Tokyo', () =>
+        formatEventTime(i18n, {
+          ...base,
+          startsAt: new Date('2026-10-01T21:00:00.000Z'),
+          timezone: 'Europe/Berlin',
+        }),
+      )
+      expect(time).toBe('Fri, Oct 2, 6:00 AM GMT+9')
     })
-    unpin()
-    expect(time?.primary).toContain('Oct 1')
-    expect(time?.local).toContain('Oct 2')
-  })
 
-  it('omits the local time when there is no event timezone', () => {
-    const time = formatEventTime(i18n, {
-      ...base,
-      startsAt: new Date('2026-10-01T23:00:00.000Z'),
+    it('is undefined without a start time', () => {
+      expect(formatEventTime(i18n, base)).toBe(undefined)
     })
-    expect(time?.local).toBe(undefined)
-    expect(formatEventTime(i18n, base)).toBe(undefined)
   })
 })
 

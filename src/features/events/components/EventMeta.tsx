@@ -1,5 +1,5 @@
 import {View} from 'react-native'
-import {msg, plural} from '@lingui/core/macro'
+import {plural} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
 import {atoms as a, useTheme} from '#/alf'
@@ -8,16 +8,10 @@ import {Clock_Stroke2_Corner0_Rounded as ClockIcon} from '#/components/icons/Clo
 import {Globe_Stroke2_Corner0_Rounded as GlobeIcon} from '#/components/icons/Globe'
 import {Pin_Stroke2_Corner0_Rounded as PinIcon} from '#/components/icons/Pin'
 import {Text} from '#/components/Typography'
-import {type app} from '#/lexicons'
 import {eventPlace, formatEventTime} from '../format'
 import {useRsvpsQuery} from '../queries'
 import {type ParsedEvent} from '../record'
-import {
-  type EventView,
-  RSVP_GOING,
-  RSVP_INTERESTED,
-  type RsvpView,
-} from '../types'
+import {type EventView, RSVP_GOING} from '../types'
 import {LiveWatchButton} from './LiveWatchButton'
 
 export function EventMeta({
@@ -38,10 +32,9 @@ export function EventMeta({
         <View style={[a.flex_row, a.align_center, a.gap_xs]}>
           <ClockIcon size="sm" style={[t.atoms.text_contrast_medium]} />
           <Text
-            numberOfLines={2}
+            numberOfLines={1}
             style={[a.text_sm, t.atoms.text_contrast_medium, a.flex_1]}>
-            {time.primary}
-            {time.local ? ` · ${_(msg`${time.local} your time`)}` : ''}
+            {time}
           </Text>
         </View>
       )}
@@ -66,57 +59,39 @@ export function EventMeta({
 }
 
 /**
- * Going and interested in one row, with each status's own avatars stacked
- * separately so the two groups never mix.
+ * Both counts on one line, with avatars of people going only: interested
+ * avatars are left to the event page, where there is room to tell them apart.
+ * People the viewer follows come first when the AppView supplies them.
  */
 function RsvpCounts({event}: {event: EventView}) {
   const t = useTheme()
-  const going = useRsvpsQuery(event.uri, RSVP_GOING)
-  const interested = useRsvpsQuery(event.uri, RSVP_INTERESTED)
-  const goingAvatars = profilesOf(going.data?.rsvps)
-  const interestedAvatars = profilesOf(interested.data?.rsvps)
+  const known = event.knownGoing ?? []
+  const going = useRsvpsQuery(
+    event.uri,
+    RSVP_GOING,
+    known.length === 0 && event.goingCount > 0,
+  )
+  const avatars = (
+    known.length > 0 ? known : (going.data?.rsvps.map(r => r.actor) ?? [])
+  ).slice(0, 5)
+  const goingLabel = plural(event.goingCount, {
+    one: '# going',
+    other: '# going',
+  })
 
   return (
     <View style={[a.flex_row, a.align_center, a.gap_sm, a.pt_2xs]}>
-      <CountRow
-        label={plural(event.goingCount, {
-          one: '# going',
-          other: '# going',
-        })}
-        avatars={goingAvatars}
-      />
-      {event.interestedCount > 0 && (
-        <>
-          <Text style={[a.text_sm, t.atoms.text_contrast_low]}>·</Text>
-          <CountRow
-            label={plural(event.interestedCount, {
+      {avatars.length > 0 && <AvatarStack profiles={avatars} size={20} />}
+      <Text
+        numberOfLines={1}
+        style={[a.flex_1, a.text_sm, t.atoms.text_contrast_medium]}>
+        {event.interestedCount > 0
+          ? `${goingLabel} · ${plural(event.interestedCount, {
               one: '# interested',
               other: '# interested',
-            })}
-            avatars={interestedAvatars}
-          />
-        </>
-      )}
+            })}`
+          : goingLabel}
+      </Text>
     </View>
   )
-}
-
-function CountRow({
-  label,
-  avatars,
-}: {
-  label: string
-  avatars: app.bsky.actor.defs.ProfileViewBasic[]
-}) {
-  const t = useTheme()
-  return (
-    <View style={[a.flex_row, a.align_center, a.gap_sm]}>
-      {avatars.length > 0 && <AvatarStack profiles={avatars} size={20} />}
-      <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>{label}</Text>
-    </View>
-  )
-}
-
-function profilesOf(rsvps: RsvpView[] | undefined) {
-  return (rsvps ?? []).map(rsvp => rsvp.actor)
 }

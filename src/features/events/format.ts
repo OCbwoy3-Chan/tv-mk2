@@ -15,46 +15,16 @@ const format = (i18n: I18n, date: Date, options: Intl.DateTimeFormatOptions) =>
     ...options,
   })
 
-/** The calendar day a moment falls on, in a given (or the device's) zone. */
-const dayKey = (i18n: I18n, date: Date, timeZone?: string) =>
-  i18n.date(date, {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    ...(timeZone ? {timeZone} : {}),
-  })
-
 /**
- * The start time in the event's own timezone, plus the viewer's local time
- * when that differs, so an in-person event reads the way the host wrote it.
- *
- * The local part drops the date when both zones fall on the same day, since
- * `primary` already shows it and repeating it overflowed the feed card. When
- * the zones fall on different days the date is kept, so "7:00 PM" is not read
- * as the same day as the event.
+ * The start time in the viewer's own timezone. The event's `timezone` is not
+ * shown: one time is easier to read than the host's time next to ours.
  */
 export function formatEventTime(
   i18n: I18n,
   event: ParsedEvent,
-): {primary: string; local?: string} | undefined {
+): string | undefined {
   if (!event.startsAt) return
-  const local = format(i18n, event.startsAt, {})
-  if (!event.timezone) return {primary: local}
-  const inEventZone = format(i18n, event.startsAt, {timeZone: event.timezone})
-  if (inEventZone === local) return {primary: local}
-  const sameDay =
-    dayKey(i18n, event.startsAt) ===
-    dayKey(i18n, event.startsAt, event.timezone)
-  return {
-    primary: inEventZone,
-    local: sameDay
-      ? format(i18n, event.startsAt, {
-          weekday: undefined,
-          month: undefined,
-          day: undefined,
-        })
-      : local,
-  }
+  return format(i18n, event.startsAt, {})
 }
 
 export type EventPhase = 'upcoming' | 'current' | 'past'
@@ -80,15 +50,14 @@ export type EventDateParts = {
   timeRange: string
 }
 
-/** Date pieces for large date displays, in the event's own timezone. */
+/** Date pieces for large date displays, in the viewer's own timezone. */
 export function eventDateParts(
   i18n: I18n,
   event: ParsedEvent,
 ): EventDateParts | undefined {
   if (!event.startsAt) return
-  const timeZone = event.timezone
   const part = (options: Intl.DateTimeFormatOptions, date: Date) =>
-    i18n.date(date, {...options, timeZone})
+    i18n.date(date, options)
   const time = {hour: 'numeric', minute: '2-digit'} as const
   const start = part(time, event.startsAt)
   const zone = part({timeZoneName: 'short'}, event.startsAt).split(' ').pop()
@@ -140,7 +109,7 @@ export function eventLinkLabel(
   return [
     _(msg`View event ${parsed.name}`),
     status,
-    formatEventTime(i18n, parsed)?.primary,
+    formatEventTime(i18n, parsed),
     eventPlace(_, parsed),
     plural(event.goingCount, {one: '# going', other: '# going'}),
     event.interestedCount > 0

@@ -7,7 +7,8 @@ import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {atoms as a, useTheme} from '#/alf'
 import {Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
-import {eventLinkLabel, eventPhase} from '../format'
+import {accentForeground} from '#/features/themes/accentForeground'
+import {eventLinkLabel, type EventPhase, eventPhase} from '../format'
 import {useEventQuery} from '../queries'
 import {parseEventRecord} from '../record'
 import {type EventView} from '../types'
@@ -53,20 +54,7 @@ export function EventCard({
           <View style={[a.flex_1, a.gap_xs]}>
             <View style={[a.flex_row, a.align_center, a.gap_sm]}>
               {showPhase && phase && !parsed.cancelled && (
-                <Text
-                  style={[
-                    a.text_xs,
-                    a.font_bold,
-                    phase === 'current'
-                      ? t.atoms.text_contrast_high
-                      : t.atoms.text_contrast_medium,
-                  ]}>
-                  {phase === 'upcoming' ? (
-                    <Trans>Upcoming</Trans>
-                  ) : (
-                    <Trans>Happening now</Trans>
-                  )}
-                </Text>
+                <PhasePill phase={phase} />
               )}
               {(badge || parsed.cancelled) && (
                 <Text
@@ -96,6 +84,39 @@ export function EventCard({
           <RsvpButtons event={event} />
         </View>
       )}
+    </View>
+  )
+}
+
+function PhasePill({phase}: {phase: EventPhase}) {
+  const t = useTheme()
+  const current = phase === 'current'
+  return (
+    <View
+      style={[
+        a.rounded_full,
+        a.px_sm,
+        {paddingVertical: 2},
+        current
+          ? {backgroundColor: t.palette.primary_500}
+          : t.atoms.bg_contrast_50,
+      ]}>
+      <Text
+        style={[
+          a.text_xs,
+          a.font_bold,
+          current
+            ? {color: accentForeground(t, t.palette.primary_500)}
+            : t.atoms.text_contrast_medium,
+        ]}>
+        {phase === 'upcoming' ? (
+          <Trans>Upcoming</Trans>
+        ) : current ? (
+          <Trans>Happening now</Trans>
+        ) : (
+          <Trans>Past</Trans>
+        )}
+      </Text>
     </View>
   )
 }
