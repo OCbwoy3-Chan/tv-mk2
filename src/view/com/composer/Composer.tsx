@@ -134,6 +134,7 @@ import {useComposerControls, useComposerState} from '#/state/shell/composer'
 import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
 import {saveRecovery} from '#/state/shell/composer/recovery'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
+import {ComposerExtrasMenu} from '#/view/com/composer/ComposerExtrasMenu'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
 import {DraftsButton} from '#/view/com/composer/drafts/DraftsButton'
 import {EventEditor} from '#/view/com/composer/event/EventEditor'
@@ -2824,6 +2825,11 @@ function ComposerPills({
   )
 }
 
+/** One toolbar icon button: a 24px icon with 8px padding, plus the row gap. */
+const TOOLBAR_SLOT_WIDTH = 44
+/** The footer's own horizontal padding, plus a little room to breathe. */
+const FOOTER_PADDING_X = 7 + 16 + 8
+
 function ComposerFooter({
   post,
   dispatch,
@@ -2860,6 +2866,20 @@ function ComposerFooter({
   const {gtPhone} = useBreakpoints()
   const hasPoll = !!post.embed.poll
   const hasEvent = !!post.embed.event
+  const showEmojiPicker = IS_WEB && gtPhone
+  const [footerWidth, setFooterWidth] = useState(0)
+  const [trailingWidth, setTrailingWidth] = useState(0)
+  /*
+   * Poll and event fold into one "more" menu when the whole row of buttons
+   * would crowd the language and character count on the right. Button widths
+   * are fixed (icon plus padding), so the fit is computed rather than measured
+   * per button, which would flip back and forth as the row changed.
+   */
+  const leadingSlots = 3 + (showEmojiPicker ? 1 : 0)
+  const foldExtras =
+    footerWidth > 0 &&
+    (leadingSlots + 2) * TOOLBAR_SLOT_WIDTH >
+      footerWidth - FOOTER_PADDING_X - trailingWidth
   /*
    * Once we've allowed a certain type of asset to be selected, we don't allow
    * other types of media to be selected.
@@ -2951,6 +2971,7 @@ function ComposerFooter({
 
   return (
     <View
+      onLayout={e => setFooterWidth(e.nativeEvent.layout.width)}
       style={[
         a.flex_row,
         a.py_xs,
@@ -2988,15 +3009,26 @@ function ComposerFooter({
                 onSelectGif={onSelectGif}
                 disabled={!!media || hasPoll || hasEvent}
               />
-              <SelectPollBtn
-                onPress={() => dispatch({type: 'embed_add_poll'})}
-                disabled={!canAddPoll || postHasAttachment(post)}
-              />
-              <SelectEventBtn
-                onPress={() => dispatch({type: 'embed_add_event'})}
-                disabled={!canAddEvent || postHasAttachment(post)}
-              />
-              {IS_WEB && gtPhone ? (
+              {foldExtras ? (
+                <ComposerExtrasMenu
+                  canAddPoll={canAddPoll && !postHasAttachment(post)}
+                  canAddEvent={canAddEvent && !postHasAttachment(post)}
+                  onAddPoll={() => dispatch({type: 'embed_add_poll'})}
+                  onAddEvent={() => dispatch({type: 'embed_add_event'})}
+                />
+              ) : (
+                <>
+                  <SelectPollBtn
+                    onPress={() => dispatch({type: 'embed_add_poll'})}
+                    disabled={!canAddPoll || postHasAttachment(post)}
+                  />
+                  <SelectEventBtn
+                    onPress={() => dispatch({type: 'embed_add_event'})}
+                    disabled={!canAddEvent || postHasAttachment(post)}
+                  />
+                </>
+              )}
+              {showEmojiPicker ? (
                 <EmojiPicker.Root nextFocusRef={textInputRef}>
                   <EmojiPicker.Trigger label={l`Open emoji picker`}>
                     {({props}) => (
@@ -3018,7 +3050,9 @@ function ComposerFooter({
           )}
         </LayoutAnimationConfig>
       </View>
-      <View style={[a.flex_row, a.align_center, a.justify_between]}>
+      <View
+        onLayout={e => setTrailingWidth(e.nativeEvent.layout.width)}
+        style={[a.flex_row, a.align_center, a.justify_between]}>
         {showAddButton && (
           <Button
             label={l`Add another post to thread`}
