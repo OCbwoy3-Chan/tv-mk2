@@ -3,6 +3,12 @@ import {View} from 'react-native'
 import {atoms as a, useTheme} from '#/alf'
 import {Text} from '#/components/Typography'
 
+/**
+ * Poll choices sit a step above small text but stay under the post's own
+ * text (`text_md`), so a poll doesn't outweigh what it's attached to.
+ */
+export const POLL_CHOICE_TEXT = {fontSize: 14}
+
 /** One option of a poll as a percentage bar, highlighted if the viewer picked it. */
 export function PollBar({
   label,
@@ -36,16 +42,26 @@ export function PollBar({
           a.justify_between,
           a.align_center,
           a.gap_sm,
-          a.px_sm,
-          a.py_xs,
+          a.px_md,
+          a.py_sm,
         ]}>
         <Text
           emoji
-          style={[a.text_sm, mine && a.font_bold, a.flex_1, a.leading_snug]}
+          style={[
+            POLL_CHOICE_TEXT,
+            mine && a.font_bold,
+            a.flex_1,
+            a.leading_snug,
+          ]}
           numberOfLines={2}>
           {label}
         </Text>
-        <Text style={[a.text_sm, a.font_semi_bold, t.atoms.text_contrast_high]}>
+        <Text
+          style={[
+            POLL_CHOICE_TEXT,
+            a.font_semi_bold,
+            t.atoms.text_contrast_high,
+          ]}>
           {pct}%
         </Text>
       </View>

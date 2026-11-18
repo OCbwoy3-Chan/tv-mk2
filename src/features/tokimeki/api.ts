@@ -12,6 +12,7 @@ import {
 import {resolvePdsServiceUrl} from '#/state/queries/resolve-identity'
 import {createQueryKey} from '#/state/queries/util'
 import {useSession} from '#/state/session'
+import {withRecentVote} from './recent-votes'
 import {
   TOKIMEKI_HOSTS,
   TOKIMEKI_POLL_COLLECTION,
@@ -285,7 +286,10 @@ export function useTokimekiPoll({
     staleTime: STALE.SECONDS.THIRTY,
     async queryFn() {
       if (!ref) return null
-      return await fetchTokimekiPoll(ref, viewerDid, instance)
+      return withRecentVote(
+        await fetchTokimekiPoll(ref, viewerDid, instance),
+        viewerDid,
+      )
     },
   })
 }

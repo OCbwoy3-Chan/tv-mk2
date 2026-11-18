@@ -183,7 +183,12 @@ describe('publishing a post with a poll', () => {
     expect(writtenRkey).toBe(rkey)
     expect(record.$type).toBe(TOKIMEKI_POLL_COLLECTION)
     expect(record.options).toEqual(['Yes', 'No'])
-    expect(record.subject).toMatchObject({cid: 'bafyreifake'})
+    // By URI only: the post is written after the poll and points back at it.
+    expect(record.subject).toStrictEqual({
+      uri: expect.stringMatching(
+        /^at:\/\/did:plc:alice\/app\.bsky\.feed\.post\//,
+      ),
+    })
 
     const writes = writesOf(ctx.applyWrites)
     expect(writes[0].value.embed).toStrictEqual({
@@ -193,7 +198,12 @@ describe('publishing a post with a poll', () => {
         title: 'Poll from TOKIMEKI',
         description: 'Yes / No',
         thumb,
-        associatedRefs: undefined,
+        associatedRefs: [
+          {
+            uri: `at://did:plc:alice/${TOKIMEKI_POLL_COLLECTION}/${rkey}`,
+            cid: 'cid-poll',
+          },
+        ],
       },
     })
     expect(result.poll).toEqual({rkey, optionCount: 2})
@@ -266,7 +276,7 @@ describe('publishing a post with a poll', () => {
     expect(ctx.putRecord.mock.calls[0][1]).toBe('3mpoll')
   })
 
-  it('writes the poll once, before the preview, and replies to the final post', async () => {
+  it('writes the poll once, then the post pointing back at it', async () => {
     const ctx = setup()
     jest
       .spyOn(cid, 'computeCid')
@@ -283,13 +293,11 @@ describe('publishing a post with a poll', () => {
       ]),
     })
     /*
-     * TOKIMEKI only renders the preview for a poll it has indexed, so the poll
-     * is written first and never rewritten: a second version would fork it.
+     * TOKIMEKI only renders the preview for a poll it has indexed and keeps a
+     * poll as first written, so the poll is written first and never again.
      */
     expect(ctx.putRecord).toHaveBeenCalledTimes(1)
-    expect(ctx.putRecord.mock.calls[0][0].subject).toMatchObject({
-      cid: 'cid-without-preview',
-    })
+    expect(ctx.putRecord.mock.calls[0][0].subject).not.toHaveProperty('cid')
     expect(writesOf(ctx.applyWrites)[1].value).toMatchObject({
       reply: {
         parent: {cid: 'cid-with-preview'},

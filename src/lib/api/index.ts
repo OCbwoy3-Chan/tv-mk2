@@ -295,26 +295,21 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     }
     if (draft.embed.poll) {
       /*
-       * The poll is written once, before its link card exists: TOKIMEKI only
-       * serves the card image for a poll it has indexed, and the image then
-       * changes the post's CID. So `subject.cid` names the post as hashed
-       * before the card was attached. Rewriting the poll with the final CID
-       * afterwards would fork it: TOKIMEKI keeps the first version and hands
-       * its CID to voters, while the PDS holds another.
+       * The poll is written first and once: TOKIMEKI only serves the card
+       * image for a poll it has indexed, and it keeps a poll as first written.
+       * It names the post by URI alone, so the post's card can then point back
+       * at the poll's exact version through `associatedRefs`.
        */
       opts.onStateChange?.(t`Creating poll...`)
-      await createPoll(
+      const createdPollRef = await createPoll(
         opts.pdsClient,
         draft.embed.poll,
-        {
-          uri,
-          cid: await computeCid(record),
-        },
+        {uri},
         new Date(now),
       )
       createdPoll = true
       try {
-        record.embed = await resolveEmbed(
+        const embed = await resolveEmbed(
           opts.appviewClient,
           opts.chatClient,
           opts.pdsClient,
@@ -322,6 +317,23 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
           draft,
           opts.onStateChange,
         )
+        if (embed?.$type === 'app.bsky.embed.external') {
+          const card = embed as $Typed<app.bsky.embed.external.Main>
+          record.embed = {
+            ...card,
+            external: {
+              ...card.external,
+              associatedRefs: [
+                {
+                  uri: createdPollRef.uri as AtUriString,
+                  cid: createdPollRef.cid,
+                },
+              ],
+            },
+          }
+        } else {
+          record.embed = embed
+        }
       } catch (err) {
         await deletePoll(opts.pdsClient, draft.embed.poll.rkey!)
         throw err

@@ -10,7 +10,7 @@ import {formatCount} from '#/view/com/util/numeric/format'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import {Poll_Stroke2_Corner0_Rounded as PollIcon} from '#/components/icons/Poll'
-import {PollBar} from '#/components/Poll/PollBar'
+import {POLL_CHOICE_TEXT, PollBar} from '#/components/Poll/PollBar'
 import {Text} from '#/components/Typography'
 import {usePollBluePoll, usePollBlueVotes} from '../api'
 import {usePollBlueVoteMutation} from '../mutations'
@@ -121,7 +121,7 @@ function PollBody({poll}: {poll: PollRecord | null | undefined}) {
               size="small"
               color={mine ? 'primary' : 'secondary'}
               style={[a.justify_start]}>
-              <ButtonText>{option.text}</ButtonText>
+              <ButtonText style={[POLL_CHOICE_TEXT]}>{option.text}</ButtonText>
             </Button>
           )
         })}

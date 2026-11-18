@@ -3,6 +3,7 @@ import {type StyleProp, View, type ViewStyle} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {useOpenLink} from '#/lib/hooks/useOpenLink'
+import {useGetTimeAgo} from '#/lib/hooks/useTimeAgo'
 import {SHARP_CORNERS} from '#/lib/shapes'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useSession} from '#/state/session'
@@ -10,7 +11,7 @@ import {formatCount} from '#/view/com/util/numeric/format'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import {Poll_Stroke2_Corner0_Rounded as PollIcon} from '#/components/icons/Poll'
-import {PollBar} from '#/components/Poll/PollBar'
+import {POLL_CHOICE_TEXT, PollBar} from '#/components/Poll/PollBar'
 import {ExternalEmbed} from '#/components/Post/Embed/ExternalEmbed'
 import {Text} from '#/components/Typography'
 import {type app} from '#/lexicons'
@@ -18,6 +19,7 @@ import {useTokimekiPoll} from '../api'
 import {useTokimekiVoteMutation} from '../mutations'
 import {type TokimekiPoll, type TokimekiPollRef} from '../types'
 
+const COUNTDOWN_TICK_MS = 60 * 1000
 const POLL_PAGE = 'https://poll.tokimeki.tech/p'
 
 /**
@@ -62,11 +64,16 @@ function PollBody({
   const {hasSession, currentAccount} = useSession()
   const vote = useTokimekiVoteMutation(poll, currentAccount?.did ?? '')
   const [now, setNow] = useState(() => Date.now())
+  const timeUntil = useGetTimeAgo({future: true})
   useEffect(() => {
     if (!poll?.endsAt) return
     const end = new Date(poll.endsAt).getTime()
     if (end <= now) return
-    const timer = setTimeout(() => setNow(Date.now()), end - now)
+    // Ticks each minute for the "Ends in" countdown, and once more at the end.
+    const timer = setTimeout(
+      () => setNow(Date.now()),
+      Math.min(end - now, COUNTDOWN_TICK_MS),
+    )
     return () => clearTimeout(timer)
   }, [poll?.endsAt, now])
 
@@ -113,7 +120,7 @@ function PollBody({
               size="small"
               color={mine ? 'primary' : 'secondary'}
               style={[a.justify_start]}>
-              <ButtonText>{option}</ButtonText>
+              <ButtonText style={[POLL_CHOICE_TEXT]}>{option}</ButtonText>
             </Button>
           ) : (
             <PollBar key={i} label={option} pct={pct} mine={mine} />
@@ -139,16 +146,23 @@ function PollBody({
           a.border_t,
           t.atoms.border_contrast_low,
         ]}>
-        <Text style={[a.text_xs, t.atoms.text_contrast_medium]}>
+        <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
           {total === 1 ? (
-            <Trans>Poll · 1 vote</Trans>
+            <Trans>1 vote</Trans>
           ) : (
-            <Trans>Poll · {formatCount(i18n, total)} votes</Trans>
+            <Trans>{formatCount(i18n, total)} votes</Trans>
           )}
           {ended ? (
             <>
               {' '}
               <Trans>· Ended</Trans>
+            </>
+          ) : poll.endsAt ? (
+            <>
+              {' '}
+              <Trans comment="When a poll closes, e.g. “Ends in 3 hours”">
+                · Ends in {timeUntil(now, poll.endsAt, {format: 'long'})}
+              </Trans>
             </>
           ) : null}
         </Text>
@@ -196,7 +210,9 @@ function CardHeader() {
           a.leading_snug,
           t.atoms.text_contrast_medium,
         ]}>
-        <Trans comment="Label on a poll shared from TOKIMEKI">TOKIMEKI</Trans>
+        <Trans comment="Label at the top of a poll card in a post; TOKIMEKI is the poll service">
+          TOKIMEKI POLL
+        </Trans>
       </Text>
     </View>
   )

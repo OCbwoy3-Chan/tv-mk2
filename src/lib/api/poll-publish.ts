@@ -8,8 +8,13 @@ import {
   TOKIMEKI_POLL_COLLECTION,
 } from '#/features/tokimeki/types'
 
-/** The post a poll belongs to. */
-export type PollPostRef = {uri: string; cid: string}
+/**
+ * The post a poll belongs to, by URI only: the post points back at the poll
+ * with a strongRef (`external.associatedRefs`), so it is written after the
+ * poll and its CID isn't known yet. TOKIMEKI's lexicon makes the CID optional
+ * for exactly this.
+ */
+export type PollPostRef = {uri: string}
 
 export function tokimekiPollUrl(did: string, rkey: string): string {
   return `https://${TOKIMEKI_HOSTS[0]}/p/${did}/${rkey}`
@@ -18,7 +23,7 @@ export function tokimekiPollUrl(did: string, rkey: string): string {
 function pollRecord(draft: PollDraft, post: PollPostRef, now: Date) {
   return {
     $type: TOKIMEKI_POLL_COLLECTION,
-    subject: {uri: post.uri, cid: post.cid},
+    subject: {uri: post.uri},
     options: pollOptionsForPublish(draft),
     createdAt: now.toISOString(),
     endsAt: pollEndsAt(draft.duration, now),

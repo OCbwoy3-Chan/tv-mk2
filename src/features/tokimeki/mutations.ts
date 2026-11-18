@@ -8,6 +8,7 @@ import {usePdsClient} from '#/state/session'
 import * as Toast from '#/components/Toast'
 import {com} from '#/lexicons'
 import {RQKEY_POLL} from './api'
+import {forgetVote, rememberVote} from './recent-votes'
 import {TOKIMEKI_VOTE_COLLECTION, type TokimekiPoll} from './types'
 
 const VOTE_REFETCH_DELAY_MS = 4000
@@ -49,6 +50,8 @@ export function useTokimekiVoteMutation(
       await queryClient.cancelQueries({queryKey: key})
       const prev = queryClient.getQueryData<TokimekiPoll | null>(key)
       if (prev) {
+        // Survives refetches that land before the indexers see the vote.
+        rememberVote(prev, viewerDid, index)
         const counts = [...prev.counts]
         counts[index] = (counts[index] ?? 0) + 1
         queryClient.setQueryData<TokimekiPoll>(key, {
@@ -61,6 +64,7 @@ export function useTokimekiVoteMutation(
       return {prev, key}
     },
     onError: (_e, _index, ctx) => {
+      if (poll) forgetVote(poll.uri, viewerDid)
       if (ctx) queryClient.setQueryData(ctx.key, ctx.prev ?? null)
       logger.error('Failed to record TOKIMEKI poll vote', {safeMessage: _e})
       Toast.show(l`Could not record your vote`, {type: 'error'})
