@@ -35,15 +35,13 @@ export function DeltasSettingsScreen({ }: Props) {
                         {...createStaticClick(() =>
                             navigation.navigate("PostThread", {
                                 name: "did:plc:gsbue2dtbtqzw5du5btlh7p2",
-                                rkey: "3mnxh6mmlxk2k",
-                                view: "reader"
+                                rkey: "3mnxh6mmlxk2k"
                             }),
                         )}
                         label={l`Bluesky Communities`}
                     >
                         Bluesky Communities
                     </InlineLinkText>.
-                    We got tenna.party 2 before GTA 6!
                 </Admonition>
             </SettingsList.Item>
 
