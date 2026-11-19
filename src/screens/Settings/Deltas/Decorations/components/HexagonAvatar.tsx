@@ -7,6 +7,12 @@ import {hexagonPath} from '#/deltas/feat/avatarDecorations/avatarShapes'
  * Hexagon avatar rendered as an SVG clip so it works identically on web and
  * native without a masked-view native module. The stroke is drawn on the same
  * path, inset by half the stroke width so it stays inside the avatar bounds.
+ *
+ * The clip id must be unique per mounted instance. Browsers resolve
+ * `url(#id)` to the first matching element in document order, so a shared id
+ * can point at a clipPath inside a hidden subtree (an inactive screen, a
+ * virtualized-off row). That reference resolves to nothing, and the image then
+ * paints unclipped - a plain rectangle under the hexagon stroke.
  */
 export function HexagonAvatar({
   uri,
@@ -24,7 +30,9 @@ export function HexagonAvatar({
   strokeWidth?: number
   testID?: string
 }) {
-  const clipId = `avatar-hexagon-${useId().replace(/:/g, '')}`
+  // useId returns the same value on every render and differs per instance.
+  // Strip the punctuation React puts in it so the fragment stays URL-safe.
+  const clipId = `avatar-hexagon-${useId().replace(/[^\w-]/g, '')}`
   return (
     <Svg width={size} height={size} testID={testID}>
       <Defs>

@@ -9,6 +9,7 @@ const domTests = [
   '<rootDir>/src/components/Post/Embed/VideoEmbed/VideoEmbedInner/web-controls/usePictureInPicture.test.tsx',
   '<rootDir>/src/features/keyboardShortcuts/postNavigation.web.test.ts',
   '<rootDir>/src/features/keyboardShortcuts/overlayNavigation.web.test.ts',
+  '<rootDir>/src/screens/Settings/Deltas/Decorations/components/HexagonAvatar.web.test.tsx',
 ]
 
 function preset(name) {
