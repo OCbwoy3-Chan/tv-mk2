@@ -7,8 +7,7 @@ import { Hashtag_Stroke2_Corner0_Rounded as HashtagIcon } from '#/components/ico
 import { useDeltasPreferences, useSetDeltasPreference } from '#/deltas/preferences'
 import { Admonition } from '#/components/Admonition'
 import { atoms as a } from '#/alf'
-import { createStaticClick, InlineLinkText } from '#/components/Link'
-import { useNavigationDeduped } from '#/lib/hooks/useNavigationDeduped'
+import { InlineLinkText } from '#/components/Link'
 
 export function DeltasPostingSettingsScreen() {
   const { t: l } = useLingui()

@@ -5,7 +5,7 @@ import {RunesScreenLayout} from '#/screens/Settings/RunesSettings/components/Run
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import * as Toggle from '#/components/forms/Toggle'
-import {BulletList_Stroke1_Corner0_Rounded as ListIcon} from '#/components/icons/BulletList'
+import {BulletList_Stroke2_Corner0_Rounded as ListIcon} from '#/components/icons/BulletList'
 import {Message_Stroke2_Corner0_Rounded as MessageIcon} from '#/components/icons/Message'
 import {useDeltasPreferences, useSetDeltasPreference} from '#/deltas/preferences'
 import { Shield_Stroke2_Corner0_Rounded as ShieldIcon } from '#/components/icons/Shield'

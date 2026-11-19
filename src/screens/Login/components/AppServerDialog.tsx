@@ -41,6 +41,7 @@ import {createStaticClick, InlineLinkText} from '#/components/Link'
 import {Loader} from '#/components/Loader'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
+import {ClearCachesButton} from '#/deltas/feat/ClearCachesButton'
 import {IS_WEB} from '#/env'
 import {usePrepareSettingsSyncForRestart} from '#/features/settingsSync'
 
@@ -557,6 +558,8 @@ function AppServerDialogInner({
           }>
           <ButtonText>{confirmLabel}</ButtonText>
         </Button>
+
+        <ClearCachesButton />
 
         <Text style={[t.atoms.text_contrast_medium, a.text_sm, a.leading_snug]}>
           <Trans>See also:</Trans>{' '}

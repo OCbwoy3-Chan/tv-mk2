@@ -60,6 +60,9 @@ const pendingTasks = new Map<string, PendingTask>()
 const labelStates = new Map<string, LabelState>()
 const labelListeners = new Map<string, Set<() => void>>()
 
+let clearingCache = false
+let persistPromise: Promise<void> | undefined
+
 let taskOrder = 0
 let activeCount = 0
 let activeNearCount = 0
@@ -144,6 +147,7 @@ async function readCached(did: string) {
 }
 
 function queuePersist(did: string, data: PdsLabelData) {
+  if (clearingCache) return
   const entry = {savedAt: Date.now(), data}
   pendingWrites.set(did, entry)
   void loadBucket(bucketIndex(did)).then(bucket => {
@@ -156,10 +160,10 @@ function queuePersist(did: string, data: PdsLabelData) {
     if (IS_NATIVE) {
       persistInteractionHandle = requestIdleCallback(() => {
         persistInteractionHandle = undefined
-        void flushPersistBatch().catch(() => {})
+        void (persistPromise = flushPersistBatch()).catch(() => {})
       })
     } else {
-      void flushPersistBatch().catch(() => {})
+      void (persistPromise = flushPersistBatch()).catch(() => {})
     }
   }, PERSIST_DEBOUNCE)
 }
@@ -196,10 +200,10 @@ async function flushPersistBatch() {
       if (IS_NATIVE) {
         persistInteractionHandle = requestIdleCallback(() => {
           persistInteractionHandle = undefined
-          void flushPersistBatch().catch(() => {})
+          void (persistPromise = flushPersistBatch()).catch(() => {})
         })
       } else {
-        void flushPersistBatch().catch(() => {})
+        void (persistPromise = flushPersistBatch()).catch(() => {})
       }
     }, PERSIST_DEBOUNCE)
   }
@@ -378,4 +382,22 @@ export async function resolvePdsLabel(
   const cached = await readCached(did)
   if (cached) return cached
   return enqueueResolution(did, priority)
+}
+
+/** Stop pending writes before removing the persistent PDS icon metadata. */
+export async function clearPdsLabelCache() {
+  clearingCache = true
+  try {
+    if (persistTimer) clearTimeout(persistTimer)
+    if (persistInteractionHandle) cancelIdleCallback(persistInteractionHandle)
+    persistTimer = undefined
+    persistInteractionHandle = undefined
+    pendingWrites.clear()
+    await persistPromise?.catch(() => {})
+    loadedBuckets.clear()
+    labelStates.clear()
+    await cacheStore.clear()
+  } finally {
+    clearingCache = false
+  }
 }

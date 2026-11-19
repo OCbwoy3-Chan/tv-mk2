@@ -26,6 +26,7 @@ import * as Prompt from '#/components/Prompt'
 import {SendErrorReportDialog} from '#/components/SendErrorReportDialog'
 import * as Toast from '#/components/Toast'
 import {getDeviceId} from '#/analytics/identifiers'
+import {ClearCachesButton} from '#/deltas/feat/ClearCachesButton'
 import * as env from '#/env'
 import {IS_ANDROID, IS_IOS, IS_NATIVE} from '#/env'
 import {useDemoMode} from '#/storage/hooks/demo-mode'
@@ -135,6 +136,9 @@ export function AboutSettingsScreen({}: Props) {
               <Trans>Send error report</Trans>
             </SettingsList.ItemText>
           </SettingsList.PressableItem>
+          <SettingsList.Item>
+            <ClearCachesButton />
+          </SettingsList.Item>
           {IS_NATIVE && (
             <SettingsList.PressableItem
               onPress={() => onClearImageCache()}
