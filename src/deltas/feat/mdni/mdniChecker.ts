@@ -9,7 +9,7 @@ const META =
     /\b(?:what(?:'?s| is| does)?|meaning|definition|term|phrase|means?|refers? to|explaining?|discuss(?:ing)?|criticiz(?:e|ing)|against|oppose|hate|dislike|stupid|annoying|silly|says?|said|quote|quoting|mentions?|reference|anti[- ]?mdni)\b/iu
 
 const NEGATED =
-    /\b(?:not|never|isn't|isnt)\s+(?:#?mdni|18\s*\+|adults?\s+only)\b|\b(?:don't|dont|do not|doesn't|doesnt)\s+(?:use|have|enforce|follow)\s+#?mdni\b|\bminors?\s+(?:are|is)\s+(?:welcome|allowed)\b/iu
+    /\b(?:not|never|isn't|isnt)\s+(?:#?mdni|18\s*\+|adults?\s+only)(?![\p{L}\p{N}_])|\b(?:don't|dont|do not|doesn't|doesnt)\s+(?:use|have|enforce|follow)\s+#?mdni\b|\bminors?\s+(?:are|is)\s+(?:welcome|allowed)\b/iu
 
 const EXCLUDED =
     /\bdni\s*:\s*#?mdni\b|\b#?mdni\s+(?:accounts?|users?|people|supporters?)\s+(?:dni|dnf|do not interact)\b/iu
@@ -18,7 +18,7 @@ const RESTRICTIONS = [
     /\bminors?\s*,?\s*(?:please\s+|pls\s+)?(?:dni|dnf|do\s+not\s+(?:interact|follow)|don't\s+(?:interact|follow)|stay\s+away|go\s+away|begone|keep\s+out)\b/iu,
     /\bno\s+minors?\s*(?:[,!]\s*(?:please|pls)\b|\b(?:please|pls|allowed|here)\b|[!.,]?\s*$)/iu,
     /\b(?:under\s*(?:18|21)|u18|u21)\s*[-,:]?\s*(?:dni|dnf|do\s+not\s+interact|not\s+allowed)\b/iu,
-    /\b(?:18|21)\s*\+\s*(?:only|account|acc|page|profile)\b/iu,
+    /\b(?:18|21)\s*\+(?![\p{L}\p{N}_])/iu,
     /\badults?\s+only\b|\bonly\s+adults\b/iu,
     /\bminors?\s+(?:not\s+allowed|not\s+welcome|keep\s+out)\b/iu,
 ]
