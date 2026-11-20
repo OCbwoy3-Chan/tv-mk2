@@ -26,7 +26,7 @@ import { com } from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import { RunesScreenLayout } from '../RunesSettings/components/RunesScreenLayout'
-import { Admonition } from '#/components/Admonition'
+import * as Admonition from '#/components/Admonition'
 import { Logomark } from '#/view/icons/Logomark'
 import * as Toggle from '#/components/forms/Toggle'
 import * as Select from '#/components/Select'
@@ -180,33 +180,36 @@ export function DeltasBadgeSettingsScreen() {
                 }}
               />
               <SettingsList.Item>
-                <Admonition type="tip">
-                  <View>
-                    <Text>
-                      <Trans>Here's a brief guide to the kin options:</Trans>
-                    </Text>
-                    <Text>
-                      <Trans>- Fictive: You identify as the character.</Trans>
-                    </Text>
-                    <Text>
-                      <Trans>
-                        - Fictionkin: You identify as the character on a more
-                        personal level.
-                      </Trans>
-                    </Text>
-                    <Text>
-                      <Trans>
-                        - Otherkin: Basically Therian for fictional species.
-                      </Trans>
-                    </Text>
-                    <Text style={[a.mt_lg]}>
-                      <Trans>
-                        These descriptions are a starting point; people may use
-                        these terms differently.
-                      </Trans>
-                    </Text>
-                  </View>
-                </Admonition>
+                <Admonition.Outer type="tip" style={a.flex_1}>
+                  <Admonition.Row>
+                    <Admonition.Icon />
+                    <Admonition.Content>
+                      <Text>
+                        <Trans>Here's a brief guide to the kin options:</Trans>
+                      </Text>
+                      <Text>
+                        <Trans>- Fictive: You identify as the character.</Trans>
+                      </Text>
+                      <Text>
+                        <Trans>
+                          - Fictionkin: You identify as the character on a more
+                          personal level.
+                        </Trans>
+                      </Text>
+                      <Text>
+                        <Trans>
+                          - Otherkin: Basically Therian for fictional species.
+                        </Trans>
+                      </Text>
+                      <Text style={[a.mt_lg]}>
+                        <Trans>
+                          These descriptions are a starting point; people may use
+                          these terms differently.
+                        </Trans>
+                      </Text>
+                    </Admonition.Content>
+                  </Admonition.Row>
+                </Admonition.Outer>
               </SettingsList.Item>
             </>
           )}
