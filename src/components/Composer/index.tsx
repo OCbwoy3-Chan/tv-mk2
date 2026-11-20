@@ -20,6 +20,7 @@ import {RichText} from '@bsky/sdk/richtext'
 import {mergeRefs} from '#/lib/merge-refs'
 import {maskPastedLink} from '#/lib/strings/masked-link-paste'
 import {getFacetSyntaxRemovalIndices} from '#/lib/strings/rich-text-manip'
+import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {
   atoms as a,
   type TextStyleProp,
@@ -42,6 +43,19 @@ import {
 } from '#/components/forms/AutosizedTextarea'
 import {Span, Text} from '#/components/Typography'
 import {IS_IOS, IS_WEB, IS_WEB_TOUCH_DEVICE} from '#/env'
+import {InlineBluemoji} from '#/features/bluemoji/InlineBluemoji'
+import {
+  applyNativeEmojiEditWithSelection,
+  nativeToRaw,
+  projectNativeEmoji,
+  rawToNative,
+} from '#/features/bluemoji/nativeEditor'
+import {useComposerBluemojiItems} from '#/features/bluemoji/useComposerItems'
+import {
+  type BluemojiRef,
+  getBluemojiImage,
+  getBluemojiModeration,
+} from '#/features/bluemoji/util'
 import {
   angleLinkFacet,
   angleMentionFacet,
@@ -119,6 +133,8 @@ export type ComposerProps = Omit<
   >['placement']
   disableEmojiFacets?: boolean
   enableMaskedLinks?: boolean
+  bluemoji?: Record<string, BluemojiRef>
+  bluemojiRepo?: string
 }
 
 export function Composer({
@@ -136,6 +152,8 @@ export function Composer({
   defaultValue,
   disableEmojiFacets = !IS_WEB,
   enableMaskedLinks = false,
+  bluemoji,
+  bluemojiRepo,
   ...rest
 }: ComposerProps) {
   const {theme: t, fonts} = useAlf()
@@ -321,22 +339,83 @@ export function Composer({
 
   const syntaxRichText = new RichText({text: tapper.state.text})
   syntaxRichText.detectFacetsWithoutResolution()
+  const bluemojiItems = useComposerBluemojiItems(
+    syntaxRichText,
+    bluemoji,
+    bluemojiRepo,
+  )
+  const moderationOpts = useModerationOpts()
+  const verifiedItems = new Map(
+    [...bluemojiItems].filter(
+      ([, item]) =>
+        IS_WEB &&
+        getBluemojiImage(item) &&
+        getBluemojiModeration(item, moderationOpts) === 'ignore',
+    ),
+  )
+  const projection = projectNativeEmoji(syntaxRichText, verifiedItems)
+  const projectedSelection = {
+    start: rawToNative(projection, tapper.state.selection.start),
+    end: rawToNative(projection, tapper.state.selection.end),
+  }
   const removalIndices = getFacetSyntaxRemovalIndices(syntaxRichText)
   const syntaxColor =
     typeof textStyle.color === 'string' ? textStyle.color : t.atoms.text.color
+  const renderSyntax = (text: string, start: number) => {
+    const parts: React.ReactNode[] = []
+    let offset = start
+    for (const token of projection.tokens) {
+      if (token.end <= start || token.start >= start + text.length) continue
+      if (token.start >= start) {
+        parts.push(
+          <SyntaxText
+            key={`text-${offset}`}
+            text={tapper.state.text.slice(offset, token.start)}
+            start={offset}
+            removalIndices={removalIndices}
+            color={syntaxColor}
+          />,
+          <Span
+            key={`emoji-${token.start}`}
+            style={web({
+              display: 'inline-block',
+              width: '1em',
+              height: '1em',
+              verticalAlign: 'text-bottom',
+            })}>
+            <InlineBluemoji
+              interactive={false}
+              claim={{
+                did: token.item.did,
+                name: token.item.record.name,
+                record: {uri: token.item.uri, cid: token.item.cid},
+              }}
+              fallbackText=""
+              size={textStyle.fontSize ?? a.text_md.fontSize}
+            />
+          </Span>,
+        )
+      }
+      offset = token.end
+    }
+    parts.push(
+      <SyntaxText
+        key={`text-${offset}`}
+        text={tapper.state.text.slice(offset, start + text.length)}
+        start={offset}
+        removalIndices={removalIndices}
+        color={syntaxColor}
+      />,
+    )
+    return parts
+  }
   const textContent = (
     <Text style={[textStyle, web({whiteSpace: 'pre-wrap'})]}>
       {tapper.state.nodes.map((node, i) => {
         switch (node.type) {
           case 'text':
             return (
-              <SyntaxText
-                key={i}
-                text={node.value}
-                start={node.start}
-                removalIndices={removalIndices}
-                color={syntaxColor}
-              />
+              <Span key={i}>{renderSyntax(node.value, node.start)}</Span>
             )
           case 'trigger':
           case 'facet': {
@@ -349,12 +428,7 @@ export function Composer({
                     color: t.atoms.text_link.color,
                   }
                 }>
-                <SyntaxText
-                  text={node.raw}
-                  start={node.start}
-                  removalIndices={removalIndices}
-                  color={syntaxColor}
-                />
+                {renderSyntax(node.raw, node.start)}
               </Span>
             )
           }
@@ -414,7 +488,58 @@ export function Composer({
           {...rest}
           {...tapper.inputProps}
           {...sift.targetProps}
+          {...(IS_WEB && bluemojiRepo && {
+            value: projection.text,
+            selection: projectedSelection,
+            accessibilityValue: {text: tapper.state.text},
+            onSelectionChange: (event: {
+              nativeEvent: {selection: {start: number; end: number}}
+            }) => {
+              const {start, end} = event.nativeEvent.selection
+              tapper.inputProps.onSelectionChange({
+                nativeEvent: {
+                  selection: {
+                    start: nativeToRaw(projection, start),
+                    end: nativeToRaw(projection, end),
+                  },
+                },
+              })
+            },
+            onCopy: (event: React.ClipboardEvent) => {
+              if (!projection.tokens.length) return
+              event.clipboardData.setData(
+                'text/plain',
+                tapper.state.text.slice(
+                  tapper.state.selection.start,
+                  tapper.state.selection.end,
+                ),
+              )
+              event.preventDefault()
+            },
+            onCut: (event: React.ClipboardEvent) => {
+              if (!projection.tokens.length || rest.editable === false) return
+              const {start, end} = tapper.state.selection
+              event.clipboardData.setData(
+                'text/plain',
+                tapper.state.text.slice(start, end),
+              )
+              event.preventDefault()
+              tapper.inputProps.onChangeText(
+                tapper.state.text.slice(0, start) + tapper.state.text.slice(end),
+              )
+              tapper.inputProps.onSelectionChange({
+                nativeEvent: {selection: {start, end: start}},
+              })
+            },
+          })}
           onChangeText={next => {
+            if (IS_WEB && projection.tokens.length) {
+              next = applyNativeEmojiEditWithSelection(
+                projection,
+                next,
+                projectedSelection,
+              ).raw
+            }
             const masked = enableMaskedLinks
               ? maskPastedLink(tapper.state.text, next, tapper.state.selection)
               : next
@@ -501,8 +626,13 @@ function AutocompleteInner({
       !!activeFacet.value.length &&
       activeFacet.raw.endsWith(':')
     ) {
-      if (items?.[0]) {
-        activeFacet.replace(items[0].value, {noTrailingSpace: true})
+      const exactMatch = items?.find(
+        item =>
+          item.type === 'emoji' &&
+          item.emoji.id === activeFacet.value.toLowerCase(),
+      )
+      if (exactMatch) {
+        activeFacet.replace(exactMatch.value, {noTrailingSpace: true})
         onDismiss()
       }
     }

@@ -43,7 +43,6 @@ import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
 import {useSession} from '#/state/session'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, native, platform, tokens, useTheme, utils} from '#/alf'
-import {isOnlyEmoji} from '#/alf/typography'
 import {Button} from '#/components/Button'
 import {ActionsWrapper} from '#/components/dms/ActionsWrapper'
 import {useMessageDialogs} from '#/components/dms/MessageOverlays'
@@ -57,6 +56,7 @@ import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {useNameGradient, useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {useDeltasPreferences} from '#/deltas/preferences'
+import {isOnlyEmojiRichText} from '#/features/bluemoji/richText'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -243,8 +243,10 @@ let MessageItem = ({
   const prevHasReactions =
     prevIsMessage &&
     filterBlockedReactions(prevMessage.reactions, relatedProfiles).length > 0
-  const isNextEmojiOnly = nextIsMessage && isOnlyEmoji(nextMessage.text)
-  const isPrevEmojiOnly = prevIsMessage && isOnlyEmoji(prevMessage.text)
+  const isNextEmojiOnly =
+    nextIsMessage && isOnlyEmojiRichText(new RichTextAPI(nextMessage))
+  const isPrevEmojiOnly =
+    prevIsMessage && isOnlyEmojiRichText(new RichTextAPI(prevMessage))
   const squaredBottomCorner =
     !hasReactions &&
     !isNextEmojiOnly &&
@@ -282,7 +284,7 @@ let MessageItem = ({
     facets: message.facets,
   })
 
-  const isEmojiOnly = isOnlyEmoji(message.text)
+  const isEmojiOnly = isOnlyEmojiRichText(rt)
 
   const hasEmbed =
     bsky.isType(app.bsky.embed.record.view, message.embed) ||

@@ -22,7 +22,7 @@ import {
   buildSuffixedatprotoRkeyV2,
   isValidAtprotoTidPrefix,
   isValidAtprotoTidSuffix,
-} from '#/deltas/atproto-rkey'
+} from '#/deltas/lib/atproto-rkey'
 import {isNetworkError} from '#/lib/strings/errors'
 import {
   applyFacetSyntax,
@@ -323,6 +323,12 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     }
     if (!opts.omitViaField) {
       ;(record as app.bsky.feed.post.Main & {via?: string}).via = via
+    }
+    if (draft.bridgyOriginalText?.trim()) {
+      Object.assign(record, {
+        bridgyOriginalText: draft.bridgyOriginalText,
+        bridgyOriginalUrl: `https://tenna.party/profile/${did}/post/${rkey}`,
+      })
     }
     if (draft.embed.poll) {
       pollCreatedAt = new Date(now)

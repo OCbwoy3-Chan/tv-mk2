@@ -394,10 +394,13 @@ function skeletons(count: number) {
  */
 export function BluemojiPickerButton({
   onInsert,
+  compact = false,
 }: {
   onInsert: (item: BluemojiItem) => void
+  compact?: boolean
 }) {
   const {t: l} = useLingui()
+  const t = useTheme()
   const control = Dialog.useDialogControl()
   const enableSquareButtons = useEnableSquareButtons()
   return (
@@ -408,9 +411,17 @@ export function BluemojiPickerButton({
         label={l`Open custom emoji picker`}
         color="primary"
         shape={enableSquareButtons ? 'square' : 'round'}
-        style={a.p_sm}
+        style={
+          compact
+            ? {width: 40, height: 40, padding: 0, backgroundColor: 'transparent'}
+            : a.p_sm
+        }
+        hoverStyle={compact ? {backgroundColor: 'transparent'} : undefined}
         onPress={control.open}>
-        <BluemojiIcon size="lg" />
+        <BluemojiIcon
+          size={compact ? 'md' : 'lg'}
+          style={compact ? t.atoms.text_contrast_high : undefined}
+        />
       </Button>
       <Dialog.Outer control={control}>
         <Dialog.Handle />

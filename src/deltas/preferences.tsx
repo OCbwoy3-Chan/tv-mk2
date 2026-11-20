@@ -14,6 +14,9 @@ export const deltasPreferencesZodSchema = z
       .optional(),
     atprotoRkeyV2PrefixDefault: z.string().optional(),
     atprotoRkeyV2SuffixDefault: z.string().optional(),
+
+    spoofFediversePost: z.boolean().optional()
+
   })
   .optional()
 
@@ -25,6 +28,7 @@ type DeltasPreferences = {
   atprotoRkeyV2GenerationDefault: 'tid' | 'prefix' | 'suffix'
   atprotoRkeyV2PrefixDefault: string
   atprotoRkeyV2SuffixDefault: string
+  spoofFediversePost: boolean
 }
 
 const defaults: DeltasPreferences = {
@@ -35,6 +39,7 @@ const defaults: DeltasPreferences = {
   atprotoRkeyV2GenerationDefault: 'tid',
   atprotoRkeyV2PrefixDefault: '',
   atprotoRkeyV2SuffixDefault: '',
+  spoofFediversePost: false
 }
 
 function resolvePreferences(
@@ -55,6 +60,7 @@ function resolvePreferences(
     evenMoreCustomizablePostTids:
       value?.evenMoreCustomizablePostTids ??
       defaults.evenMoreCustomizablePostTids,
+    spoofFediversePost: value?.spoofFediversePost ?? defaults.spoofFediversePost
   }
 }
 

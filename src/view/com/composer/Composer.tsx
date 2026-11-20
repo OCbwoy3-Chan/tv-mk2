@@ -165,6 +165,7 @@ import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, native, useBreakpoints, useTheme, web} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import {SpoofFediverseBtn} from '#/components/Composer/SpoofFediverseBtn'
 import {ComposerExitDialog} from '#/components/ComposerExitDialog'
 import * as EmojiPicker from '#/components/EmojiPicker'
 import {EphemeralAccountSwitcher} from '#/components/EphemeralAccountSwitcher'
@@ -2860,6 +2861,16 @@ function ComposerPills({
               type: 'update_post',
               postId: post.id,
               postAction: {type: 'update_rkey', generation, prefix, suffix},
+            })
+          }}
+        />
+        <SpoofFediverseBtn
+          value={post.bridgyOriginalText}
+          onChange={text => {
+            dispatch({
+              type: 'update_post',
+              postId: post.id,
+              postAction: {type: 'update_bridgy_text', text},
             })
           }}
         />

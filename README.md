@@ -21,6 +21,11 @@ alt="Get it on Obtainium" height="54" /></a> -->
 - Show blocked messages in group chats
 - Show hidden lists (like ones hidden by Bluesky Moderation)
 - MDNI badges
+- Masking custom emojis e.g. `[Bluesky](:walter_white:)`
+- Custom emojis in DMs
+
+## [Deltas+](http://tenna.party/settings/deltas/plus)
+- Ability to spoof Fediverse (Bridgy Fed) posts and their text
 
 ### TODO: Kris
 

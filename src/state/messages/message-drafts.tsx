@@ -7,6 +7,7 @@ import {
   useReducer,
 } from 'react'
 
+import {type BluemojiRef} from '#/features/bluemoji/util'
 import {useCurrentConvoId} from './current-convo-id'
 
 const MessageDraftsContext = createContext<{
@@ -30,7 +31,9 @@ export function useMessageDraft() {
   const {state, dispatch} = useMessageDraftsContext()
   return useMemo(
     () => ({
-      getDraft: () => (currentConvoId && state[currentConvoId]) || '',
+      getDraft: () => (currentConvoId && state[currentConvoId]?.text) || '',
+      getBluemoji: () =>
+        (currentConvoId && state[currentConvoId]?.bluemoji) || {},
       clearDraft: () => {
         if (currentConvoId) {
           dispatch({type: 'clear', convoId: currentConvoId})
@@ -41,10 +44,13 @@ export function useMessageDraft() {
   )
 }
 
-export function useSaveMessageDraft(message: string) {
+export function useSaveMessageDraft(
+  message: string,
+  bluemoji: Record<string, BluemojiRef>,
+) {
   const {currentConvoId} = useCurrentConvoId()
   const {dispatch} = useMessageDraftsContext()
-  const getMessage = useEffectEvent(() => message)
+  const getMessage = useEffectEvent(() => ({text: message, bluemoji}))
 
   useEffect(() => {
     return () => {
@@ -59,9 +65,10 @@ export function useSaveMessageDraft(message: string) {
   }, [currentConvoId, dispatch])
 }
 
-type State = {[convoId: string]: string}
+type MessageDraft = {text: string; bluemoji: Record<string, BluemojiRef>}
+type State = {[convoId: string]: MessageDraft | undefined}
 type Actions =
-  | {type: 'set'; convoId: string; draft: string}
+  | {type: 'set'; convoId: string; draft: MessageDraft}
   | {type: 'clear'; convoId: string}
 
 function reducer(state: State, action: Actions): State {
@@ -69,7 +76,7 @@ function reducer(state: State, action: Actions): State {
     case 'set':
       return {...state, [action.convoId]: action.draft}
     case 'clear':
-      return {...state, [action.convoId]: ''}
+      return {...state, [action.convoId]: undefined}
     default:
       return state
   }

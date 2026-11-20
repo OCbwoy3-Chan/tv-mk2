@@ -6,7 +6,7 @@ import {
   isValidAtprotoTidPrefix,
   isValidAtprotoTidSuffix,
   normalizeatprotoRkeyV2,
-} from '#/deltas/atproto-rkey'
+} from '#/deltas/lib/atproto-rkey'
 import {
   useAtprotoRkeyV2Settings,
   useDeltasPreferences,

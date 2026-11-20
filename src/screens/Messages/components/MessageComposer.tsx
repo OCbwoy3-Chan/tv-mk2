@@ -35,6 +35,7 @@ import {
   useSaveMessageDraft,
 } from '#/state/messages/message-drafts'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useSession} from '#/state/session'
 import {atoms as a, native, platform, tokens, useTheme, utils} from '#/alf'
 import {Composer, useComposerInternalApiRef} from '#/components/Composer'
 import {useMessageReplies} from '#/components/dms/MessageReplies'
@@ -45,6 +46,11 @@ import {PaperPlaneVertical_Filled_Stroke2_Corner1_Rounded as PaperPlaneIcon} fro
 import {Loader} from '#/components/Loader'
 import * as Toast from '#/components/Toast'
 import {IS_ANDROID, IS_IOS, IS_LIQUID_GLASS, IS_NATIVE, IS_WEB} from '#/env'
+import {BluemojiPickerButton} from '#/features/bluemoji/Picker'
+import {
+  type BluemojiRef,
+  getBluemojiInsertionName,
+} from '#/features/bluemoji/util'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {type chat} from '#/lexicons'
 import {getMessageComposerHorizontalPadding} from './messageComposerLayout'
@@ -65,6 +71,7 @@ export function MessageComposer({
     message: string,
     embed?: MessageEmbedState,
     replyTo?: $Typed<chat.bsky.convo.defs.MessageView>,
+    bluemoji?: Record<string, BluemojiRef>,
   ) => void
   messageEmbed: MessageEmbedState | undefined
   setEmbed: (embedUrl: string | undefined) => void
@@ -72,17 +79,19 @@ export function MessageComposer({
   loading?: boolean
 }) {
   const enableSquareButtons = useEnableSquareButtons()
+  const {currentAccount} = useSession()
   const t = useTheme()
   const {t: l} = useLingui()
   const haptics = useHaptics()
   const {needsEmailVerification} = useEmail()
   const editable = !needsEmailVerification && !loading
-  const {getDraft, clearDraft} = useMessageDraft()
+  const {getDraft, getBluemoji, clearDraft} = useMessageDraft()
   const composerInternalApiRef = useComposerInternalApiRef()
   const {replyTo, clearReply} = useMessageReplies()
 
   const [text, setText] = useState(getDraft)
-  useSaveMessageDraft(text)
+  const [bluemoji, setBluemoji] = useState(getBluemoji)
+  useSaveMessageDraft(text, bluemoji)
 
   useEffect(() => {
     if (!replyTo) return
@@ -147,6 +156,8 @@ export function MessageComposer({
     }
 
     isSubmittingRef.current = true
+    const sentBluemoji = bluemoji
+    setBluemoji({})
     clearDraft()
     haptics.confirm()
     setEmbed(undefined)
@@ -169,6 +180,7 @@ export function MessageComposer({
               $type: 'chat.bsky.convo.defs#messageView',
             }
           : undefined,
+        sentBluemoji,
       )
     })
   }
@@ -281,8 +293,35 @@ export function MessageComposer({
                 </EmojiPicker.Root>
               ) : null}
 
+              {editable && (
+                <View
+                  style={[
+                    a.absolute,
+                    a.z_30,
+                    {top: 0, right: IS_WEB ? 32 : 0},
+                  ]}>
+                  <BluemojiPickerButton
+                    compact
+                    onInsert={item => {
+                      const name = getBluemojiInsertionName(item, bluemoji)
+                      setBluemoji({
+                        ...bluemoji,
+                        [name]: {
+                          did: item.did,
+                          name: item.record.name,
+                          record: {uri: item.uri, cid: item.cid},
+                        },
+                      })
+                      composerInternalApiRef.current?.insert(name)
+                    }}
+                  />
+                </View>
+              )}
+
               <Composer
                 enableMaskedLinks
+                bluemoji={bluemoji}
+                bluemojiRepo={currentAccount?.did}
                 nativeID={textInputId}
                 label={l`Message input field`}
                 placeholder={
@@ -301,7 +340,8 @@ export function MessageComposer({
                   paddingLeft: 16,
                   paddingTop: 10,
                   paddingBottom: 10,
-                  paddingRight: 16 + platform({web: 20, default: 0}),
+                  paddingRight:
+                    16 + (editable ? platform({web: 60, default: 40}) : 0),
                 }}
                 onChange={handleChange}
                 onFacetCommitted={facet => {

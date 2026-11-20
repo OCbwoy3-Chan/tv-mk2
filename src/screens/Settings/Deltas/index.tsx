@@ -16,6 +16,9 @@ import { PaintRoller_Stroke2_Corner2_Rounded as PaintRollerIcon } from '#/compon
 import { UserCircle_Stroke2_Corner0_Rounded as UserCircleIcon } from '#/components/icons/UserCircle'
 import { ShieldCheck_Stroke2_Corner0_Rounded as ShieldCheckIcon } from '#/components/icons/Shield'
 import { Hashtag_Stroke2_Corner0_Rounded as HashtagIcon } from '#/components/icons/Hashtag'
+import { useSession } from '#/state/session'
+import { useVipStatusQuery } from '#/deltas/lib/vipEntitlement'
+import { Star_Stroke2_Corner0_Rounded as StarIcon } from '#/components/icons/Star'
 
 type Props = NativeStackScreenProps<DeltasNavigatorParams>
 
@@ -23,7 +26,10 @@ export function DeltasSettingsScreen({ }: Props) {
     const { t: l } = useLingui()
     const t = useTheme();
     const { gtMobile } = useBreakpoints();
-    const navigation = useNavigationDeduped()
+    const navigation = useNavigationDeduped();
+
+    const user = useSession();
+    const hasVip = useVipStatusQuery(user.currentAccount?.did);
 
     return (
         <RunesScreenLayout titleText="Deltas">
@@ -63,7 +69,7 @@ export function DeltasSettingsScreen({ }: Props) {
                         a.overflow_hidden,
                         t.atoms.bg_contrast_25,
                     ]}>
-                        
+
                     <Link
                         label={l`View or edit your profile badge`}
                         to="/settings/deltas/badge"
@@ -116,7 +122,7 @@ export function DeltasSettingsScreen({ }: Props) {
                         a.overflow_hidden,
                         t.atoms.bg_contrast_25,
                     ]}>
-                        
+
                     <Link
                         label={l`Moderation settings`}
                         to="/settings/deltas/moderation"
@@ -148,6 +154,25 @@ export function DeltasSettingsScreen({ }: Props) {
                             />
                         )}
                     </Link>
+
+                    {hasVip && <>
+                        <Divider />
+
+                        <Link
+                            label={l`Deltas+ settings`}
+                            to="/settings/deltas/plus"
+                        >
+                            {state => (
+                                <DeltasSubItem
+                                    title={l`Deltas+`}
+                                    icon={StarIcon}
+                                    style={[
+                                        (state.hovered || state.pressed) && [t.atoms.bg_contrast_50],
+                                    ]}
+                                />
+                            )}
+                        </Link>
+                    </>}
                 </View>
             </View>
         </RunesScreenLayout>

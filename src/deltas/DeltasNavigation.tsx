@@ -1,9 +1,9 @@
-import {MessageDescriptor} from '@lingui/core'
-import {msg} from '@lingui/core/macro'
+import { MessageDescriptor } from '@lingui/core'
+import { msg } from '@lingui/core/macro'
 
-import {FlatNavigatorParams} from '#/lib/routes/types'
-import {createNativeStackNavigatorWithAuth} from '#/view/shell/createNativeStackNavigatorWithAuth'
-import {deltaDeferredNamedScreen} from './DeltaNavigationLib'
+import { FlatNavigatorParams } from '#/lib/routes/types'
+import { createNativeStackNavigatorWithAuth } from '#/view/shell/createNativeStackNavigatorWithAuth'
+import { deltaDeferredNamedScreen } from './lib/DeltaNavigationLib'
 
 export type DeltasNavigatorParams = {
   DeltasSettings: undefined
@@ -11,6 +11,7 @@ export type DeltasNavigatorParams = {
   DeltasBadgeSettingsScreen: undefined
   DeltasModerationSettingsScreen: undefined
   DeltasPostingSettingsScreen: undefined
+  DeltasPlusSettingsScreen: undefined
 }
 
 const Flat = createNativeStackNavigatorWithAuth<
@@ -26,6 +27,7 @@ export const DeltasRoutes: Record<
   DeltasModerationSettingsScreen: '/settings/deltas/moderation',
   DeltasPostingSettingsScreen: '/settings/deltas/posting',
   DeltasDecorationsSettingsScreen: '/settings/deltas/decorations',
+  DeltasPlusSettingsScreen: '/settings/deltas/plus',
 }
 
 const DeltasSettingsScreen = deltaDeferredNamedScreen(
@@ -53,8 +55,13 @@ const DeltasPostingSettingsScreen = deltaDeferredNamedScreen(
   'DeltasPostingSettingsScreen',
 )
 
+const DeltasPlusSettingsScreen = deltaDeferredNamedScreen(
+  () => require('#/screens/Settings/Deltas/DeltasPlus/DeltasPlusSettingsScreen'),
+  'DeltasPlusSettingsScreen',
+)
+
 export function DeltasCommonStacks({
-  props: {Stack, title},
+  props: { Stack, title },
 }: {
   props: {
     Stack: typeof Flat
@@ -67,27 +74,32 @@ export function DeltasCommonStacks({
       <Stack.Screen
         name="DeltasSettings"
         getComponent={() => DeltasSettingsScreen}
-        options={{title: title(msg`Deltas`)}}
+        options={{ title: title(msg`Deltas`) }}
       />
       <Stack.Screen
         name="DeltasBadgeSettingsScreen"
         getComponent={() => DeltasBadgeSettingsScreen}
-        options={{title: title(msg`Badge settings`)}}
+        options={{ title: title(msg`Badge settings`) }}
       />
       <Stack.Screen
         name="DeltasDecorationsSettingsScreen"
         getComponent={() => DeltasDecorationsSettingsScreen}
-        options={{title: title(msg`Profile decorations`)}}
+        options={{ title: title(msg`Profile decorations`) }}
       />
       <Stack.Screen
         name="DeltasModerationSettingsScreen"
         getComponent={() => DeltasModerationSettingsScreen}
-        options={{title: title(msg`Moderation`)}}
+        options={{ title: title(msg`Moderation`) }}
       />
       <Stack.Screen
         name="DeltasPostingSettingsScreen"
         getComponent={() => DeltasPostingSettingsScreen}
-        options={{title: title(msg`Posting`)}}
+        options={{ title: title(msg`Posting`) }}
+      />
+      <Stack.Screen
+        name="DeltasPlusSettingsScreen"
+        getComponent={() => DeltasPlusSettingsScreen}
+        options={{ title: title(msg`Deltas+`) }}
       />
     </>
   )

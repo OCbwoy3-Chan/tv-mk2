@@ -5,7 +5,6 @@ import { useConstellationInstance } from '#/state/preferences/constellation-inst
 import { STALE } from '#/state/queries'
 import { createQueryKey } from '#/state/queries/util'
 
-/** Lists used only by the standalone VIP-status lookup. */
 const DEFAULT_VIP_LIST_URIS = [
   'at://did:web:vessel.darkworld.download/app.bsky.graph.list/3msl7flumz422',
 ]
@@ -36,12 +35,7 @@ type GetManyToManyResponse = {
 }
 
 /**
- * Whether `subjectDid` belongs to any exact configured subscriber list.
- *
- * `did` restricts the linking record to the list owner, while the many-to-many
- * join verifies BOTH links in the same listitem: `list` points to the exact
- * configured list URI and `subject` points to this profile DID. This supports
- * ordinary list items created by Bluesky clients and needs no body fetch.
+ * Check whether `subjectDid` belongs to any exact configured subscriber list.
  */
 export async function getVipStatus(
   subjectDid: string,
@@ -96,7 +90,7 @@ export async function getVipStatus(
 
 const useVipStatusQueryRoot = 'vipStatus'
 
-/** VIP membership is independent of decoration access. */
+/** Check if a user has a VIP Entitlement */
 export function useVipStatusQuery(did: string | undefined) {
   const constellation = useConstellationInstance()
   return useQuery({

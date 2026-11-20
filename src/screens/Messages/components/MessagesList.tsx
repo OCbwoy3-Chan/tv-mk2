@@ -25,6 +25,7 @@ import {scheduleOnRN} from 'react-native-worklets'
 import {type $Typed} from '@atproto/lex'
 import {useScrollEdgeEffectRef} from '@bsky.app/expo-scroll-edge-effect'
 import {RichText} from '@bsky/sdk/richtext'
+import {useQueryClient} from '@tanstack/react-query'
 
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {mergeRefs} from '#/lib/merge-refs'
@@ -70,6 +71,11 @@ import {Loader} from '#/components/Loader'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_ANDROID, IS_NATIVE, IS_WEB} from '#/env'
+import {fetchBluemojiItemQuery} from '#/features/bluemoji/queries'
+import {
+  type BluemojiRef,
+  detectBluemojiFacets,
+} from '#/features/bluemoji/util'
 import {app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {ChatStatusInfo} from './ChatStatusInfo'
@@ -152,6 +158,7 @@ export function MessagesList({
    */
   const appviewClient = useAppviewClient()
   const {hasSession, currentAccount} = useSession()
+  const queryClient = useQueryClient()
   const getPost = useGetPost()
   const getJoinLinkPreview = useGetJoinLinkPreview()
   const {embed: messageEmbed, setEmbed} = useMessageEmbed()
@@ -529,6 +536,7 @@ export function MessagesList({
       text: string,
       embedState?: MessageEmbedState,
       reply?: $Typed<chat.bsky.convo.defs.MessageView>,
+      bluemoji: Record<string, BluemojiRef> = {},
     ) => {
       let rt = new RichText({text: text.trimEnd()}, {cleanNewlines: true})
 
@@ -640,6 +648,12 @@ export function MessagesList({
         (a, b) => a.index.byteStart - b.index.byteStart,
       ) as typeof rt.facets
 
+      await detectBluemojiFacets(rt, name =>
+        fetchBluemojiItemQuery(
+          queryClient,
+          bluemoji[name] ?? {did: currentAccount?.did ?? '', name},
+        ).catch(() => null),
+      )
       rt = applyFacetSyntax(rt, {removeSyntax: true})
       await resolveSyntaxMentions(rt, appviewClient)
 
@@ -703,6 +717,7 @@ export function MessagesList({
       setHasScrolled,
       ax,
       currentAccount?.did,
+      queryClient,
     ],
   )
 
@@ -924,6 +939,7 @@ function Composer({
     message: string,
     embed?: MessageEmbedState,
     replyTo?: $Typed<chat.bsky.convo.defs.MessageView>,
+    bluemoji?: Record<string, BluemojiRef>,
   ) => Promise<void>
   messageEmbed: MessageEmbedState | undefined
   setEmbed: (embedUrl: string | undefined) => void
@@ -934,8 +950,9 @@ function Composer({
       message: string,
       embed?: MessageEmbedState,
       replyTo?: $Typed<chat.bsky.convo.defs.MessageView>,
+      bluemoji?: Record<string, BluemojiRef>,
     ) => {
-      void onSendMessage(message, embed, replyTo)
+      void onSendMessage(message, embed, replyTo, bluemoji)
     },
   )
 

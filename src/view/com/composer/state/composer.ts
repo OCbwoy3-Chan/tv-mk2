@@ -105,6 +105,7 @@ export type EmbedDraft = {
 }
 
 export type PostDraft = {
+  bridgyOriginalText?: string
   bluemoji?: Record<string, BluemojiRef>
   id: string
   richtext: RichText
@@ -123,6 +124,7 @@ export type PostDraft = {
 }
 
 export type PostAction =
+  | {type: 'update_bridgy_text'; text?: string}
   | {
       type: 'update_rkey'
       generation: 'tid' | 'prefix' | 'suffix'
@@ -526,6 +528,9 @@ const pad2 = (n: number) => String(n).padStart(2, '0')
 
 function postReducer(state: PostDraft, action: PostAction): PostDraft {
   switch (action.type) {
+    case 'update_bridgy_text': {
+      return {...state, bridgyOriginalText: action.text}
+    }
     case 'update_richtext': {
       return {
         ...state,

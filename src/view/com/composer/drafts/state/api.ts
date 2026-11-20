@@ -60,6 +60,7 @@ const KLIPY_HOSTNAME = 'static.klipy.com'
  * extra field on draft posts (valid AT Protocol open object).
  */
 type DraftPostWithTags = AppBskyDraftDefs.DraftPost & {
+  bridgyOriginalText?: string
   tags?: string[]
   bluemoji?: Record<string, BluemojiRef>
 }
@@ -166,6 +167,9 @@ async function postDraftToServerPost(
     ;(draftPost as DraftPostWithTags).tags = post.tags
   }
   if (post.bluemoji) (draftPost as DraftPostWithTags).bluemoji = post.bluemoji
+  if (post.bridgyOriginalText) {
+    ;(draftPost as DraftPostWithTags).bridgyOriginalText = post.bridgyOriginalText
+  }
 
   // Add embeds
   if (post.embed.media) {
@@ -726,6 +730,10 @@ export async function draftToComposerPosts(
       return {
         id: `draft-post-${index}`,
         bluemoji: (post as DraftPostWithTags).bluemoji,
+        bridgyOriginalText:
+          typeof (post as DraftPostWithTags).bridgyOriginalText === 'string'
+            ? (post as DraftPostWithTags).bridgyOriginalText
+            : undefined,
         richtext,
         shortenedGraphemeLength: shortenLinks(
           applyFacetSyntax(richtext.clone(), {removeSyntax: true}),

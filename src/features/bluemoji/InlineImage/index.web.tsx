@@ -9,10 +9,8 @@ const PROBE = '🟦'
 type Box = {
   /** Width of the glyph's advance, which the slot reserves. */
   width: number
-  /** Height of the glyph's content box, which the image fills. */
+  /** Height of the glyph's content box, which the slot reserves. */
   height: number
-  /** Distance from the slot's bottom up to the glyph's content bottom. */
-  offsetBottom: number
 }
 
 export function InlineImage({
@@ -34,23 +32,15 @@ export function InlineImage({
   const measure = () => {
     const element = probe.current
     if (!element) return
-    /*
-     * The element's box is the line box, which a line-height pads with leading.
-     * A range over its text is the glyph's own content box instead, and the
-     * gap between the two bottoms is the leading the image has to step over.
-     */
     const range = document.createRange()
     range.selectNodeContents(element)
     const glyph = range.getBoundingClientRect()
     if (!glyph.width || !glyph.height) return
-    const offsetBottom = element.getBoundingClientRect().bottom - glyph.bottom
-
     setBox(previous =>
       previous?.width === glyph.width &&
-      previous.height === glyph.height &&
-      previous.offsetBottom === offsetBottom
+      previous.height === glyph.height
         ? previous
-        : {width: glyph.width, height: glyph.height, offsetBottom},
+        : {width: glyph.width, height: glyph.height},
     )
   }
 
@@ -73,16 +63,16 @@ export function InlineImage({
       style={{
         display: 'inline-block',
         position: 'relative',
-        verticalAlign: 'baseline',
-        // Until the first measurement the probe alone holds the slot open, so
-        // there is no layout jump - only the image appearing.
-        ...(box && {width: box.width, height: box.height}),
+        verticalAlign: 'text-bottom',
+        width: box?.width ?? size,
+        height: box?.height ?? size,
       }}>
-      {/* In flow, so the browser sizes it exactly like the emoji beside it. */}
+      {/* Measure without adding a second line box inside the image slot. */}
       <span
         ref={probe}
         aria-hidden
         style={{
+          position: 'absolute',
           visibility: 'hidden',
           whiteSpace: 'nowrap',
           userSelect: 'none',
@@ -90,19 +80,15 @@ export function InlineImage({
         }}>
         {PROBE}
       </span>
-      {/*
-        Square, as tall as the glyph. The slot is a little wider than the glyph
-        (emoji advances include side bearings), so taking the height rather than
-        the width keeps the image from looking larger than the real emoji.
-      */}
+      {/* The square glyph's advance excludes the font's vertical leading. */}
       <Image
         {...props}
         style={{
           position: 'absolute',
-          bottom: box?.offsetBottom ?? 0,
+          bottom: box ? Math.max(0, (box.height - box.width) / 2) : 0,
           left: '50%',
           transform: [{translateX: '-50%'}],
-          height: box?.height ?? '100%',
+          height: box ? Math.min(box.width, box.height) : size,
           aspectRatio: 1,
         }}
       />
