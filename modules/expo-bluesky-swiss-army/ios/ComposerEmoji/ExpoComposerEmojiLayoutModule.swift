@@ -146,13 +146,16 @@ class ComposerEmojiLayoutView: ExpoView {
       guard let index = anchors[id], index >= 0, index < text.length,
             text.character(at: index) == 0x3000,
             let position = editor.position(from: editor.beginningOfDocument, offset: index),
-            let end = editor.position(from: position, offset: 1),
-            let range = editor.textRange(from: position, to: end),
             let parent = image.superview else {
         image.alpha = 0
         continue
       }
-      let rect = editor.convert(editor.firstRect(for: range), to: parent)
+      /* A whitespace selection can have an empty rect; its caret still locates the line. */
+      let rect = editor.convert(editor.caretRect(for: position), to: parent)
+      guard !rect.isNull, !rect.isInfinite, rect.height > 0 else {
+        image.alpha = 0
+        continue
+      }
       image.alpha = 1
       image.transform = .identity
       guard image.bounds.width > 0, image.bounds.height > 0 else { continue }
