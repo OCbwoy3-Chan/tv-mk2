@@ -283,6 +283,7 @@ func serve(cctx *cli.Context) error {
 	// OAuth client metadata (generated dynamically from request host)
 	e.GET("/oauth-client-metadata.json", server.OAuthClientMetadata)
 	e.GET("/oauth-client-metadata-native.json", server.OAuthClientMetadataNative)
+	e.GET("/oauth-client-metadata-ios.json", server.OAuthClientMetadataNative)
 
 	// OAuth callback (serves SPA so React handles it client-side)
 	e.GET("/auth/web/callback", server.WebGeneric)
@@ -603,6 +604,10 @@ func (srv *Server) oauthClientMetadata(c echo.Context, native bool) error {
 	if native {
 		filename = "oauth-client-metadata-native.json"
 	}
+	ios := c.Path() == "/oauth-client-metadata-ios.json"
+	if ios {
+		filename = "oauth-client-metadata-ios.json"
+	}
 	data, err := bskyweb.StaticFS.ReadFile("static/" + filename)
 	if err != nil {
 		return err
@@ -631,7 +636,13 @@ func (srv *Server) oauthClientMetadata(c echo.Context, native bool) error {
 	metadata["client_id"] = baseURL + "/" + filename
 	metadata["client_uri"] = baseURL
 	host := strings.ToLower(strings.Split(c.Request().Host, ":")[0])
-	if native && host != "tenna.party" && !strings.HasSuffix(host, ".tenna.party") {
+	if ios {
+		parts := strings.Split(host, ".")
+		for i, j := 0, len(parts)-1; i < j; i, j = i+1, j-1 {
+			parts[i], parts[j] = parts[j], parts[i]
+		}
+		metadata["redirect_uris"] = []string{strings.Join(parts, ".") + ":/auth/callback"}
+	} else if native && host != "tenna.party" && !strings.HasSuffix(host, ".tenna.party") {
 		metadata["redirect_uris"] = []string{"app.witchsky:/auth/callback"}
 	} else if !native {
 		metadata["redirect_uris"] = []string{baseURL + "/auth/web/callback"}

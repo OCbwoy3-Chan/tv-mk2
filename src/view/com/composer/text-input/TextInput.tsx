@@ -8,6 +8,7 @@ import {
 } from 'react'
 import {
   PixelRatio,
+  Text as RNText,
   TextInput as RNTextInput,
   type TextInputSelectionChangeEvent,
   View,
@@ -313,6 +314,19 @@ export function TextInput({
     text: projection.text,
     emojis: emojiTokens.map(({token, id}) => ({id, index: token.index})),
   })
+  let rawOffset = 0
+  const textContent = [...richtext.segments()].map((segment, index) => {
+    const start = rawToNative(projection, rawOffset)
+    rawOffset += segment.text.length
+    const end = rawToNative(projection, rawOffset)
+    return (
+      <RNText
+        key={index}
+        style={segment.isLink() ? {color: t.palette.primary_500} : undefined}>
+        {projection.text.slice(start, end)}
+      </RNText>
+    )
+  })
 
   return (
     <View style={[a.flex_1, a.pl_md, hasRightPadding && a.pr_4xl]}>
@@ -355,7 +369,6 @@ export function TextInput({
           <RNTextInput
             testID="composerTextInput"
             ref={textInput}
-            value={projection.text}
             accessibilityValue={{text: richtext.text}}
             onChangeText={(newText: string) => {
               const edit = applyNativeEmojiEditWithSelection(
@@ -411,7 +424,9 @@ export function TextInput({
                 borderColor: 'transparent',
               },
             ]}
-          />
+          >
+            {textContent}
+          </RNTextInput>
           <NativeComposerLayout
             testID="composerEmojiLayoutObserver"
             pointerEvents="none"

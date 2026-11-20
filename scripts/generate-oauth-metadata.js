@@ -4,18 +4,21 @@ const {createOAuthMetadata} = require('../src/state/session/oauth-config.ts')
 
 function generateOAuthMetadata(outputDir, options = {}) {
   fs.mkdirSync(outputDir, {recursive: true})
-  for (const native of [false, true]) {
+  for (const [native, ios] of [[false, false], [true, false], [true, true]]) {
     const metadata = createOAuthMetadata({
       baseUrl: process.env.EXPO_PUBLIC_OAUTH_BASE_URL || 'https://tenna.party',
       clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'tenna.party',
       ...options,
       native,
+      ios,
     })
     fs.writeFileSync(
       path.join(
         outputDir,
         native
-          ? 'oauth-client-metadata-native.json'
+          ? ios
+            ? 'oauth-client-metadata-ios.json'
+            : 'oauth-client-metadata-native.json'
           : 'oauth-client-metadata.json',
       ),
       JSON.stringify(metadata, null, 2) + '\n',

@@ -1,0 +1,19 @@
+{
+  "client_id": "https://tenna.party/oauth-client-metadata-ios.json",
+  "client_name": "tenna.party",
+  "client_uri": "https://tenna.party",
+  "redirect_uris": [
+    "party.tenna:/auth/callback"
+  ],
+  "scope": "atproto transition:generic transition:email transition:chat.bsky identity:handle",
+  "token_endpoint_auth_method": "none",
+  "response_types": [
+    "code"
+  ],
+  "grant_types": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "application_type": "native",
+  "dpop_bound_access_tokens": true
+}

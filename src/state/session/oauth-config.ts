@@ -82,12 +82,14 @@ export function createOAuthMetadata({
   baseUrl,
   clientName = 'tenna.party',
   native = false,
+  ios = false,
   appview = DEFAULT_APPVIEW_AUDIENCE,
   chat = DEFAULT_CHAT_AUDIENCE,
 }: {
   baseUrl: string
   clientName?: string
   native?: boolean
+  ios?: boolean
   appview?: string
   chat?: string
 }) {
@@ -104,7 +106,9 @@ export function createOAuthMetadata({
   }
   const clientId = new URL(
     native
-      ? '/oauth-client-metadata-native.json'
+      ? ios
+        ? '/oauth-client-metadata-ios.json'
+        : '/oauth-client-metadata-native.json'
       : '/oauth-client-metadata.json',
     baseUrl,
   )
@@ -113,7 +117,9 @@ export function createOAuthMetadata({
     client_name: clientName,
     client_uri: baseUrl,
     redirect_uris: native
-      ? ([
+      ? ios
+        ? ([`${origin.hostname.split('.').reverse().join('.')}:/auth/callback`] as [string, ...string[]])
+        : ([
           NATIVE_REDIRECT_URI,
           ...(origin.hostname === 'tenna.party' ||
           origin.hostname.endsWith('.tenna.party')

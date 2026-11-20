@@ -20,6 +20,7 @@ export function getNativeOAuthClient(
     baseUrl,
     clientName: process.env.EXPO_PUBLIC_OAUTH_CLIENT_NAME || 'tenna.party',
     native: true,
+    ios: IS_IOS,
     ...audiences,
   })
   let client = clients.get(metadata.client_id)
