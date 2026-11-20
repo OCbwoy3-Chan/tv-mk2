@@ -27,7 +27,7 @@ export type BluemojiRef = {
 
 /** Keep different collections' identically named emoji distinct within a draft. */
 export function getBluemojiInsertionName(
-  item: BluemojiItem,
+  item: {uri: string; cid?: string; record: {name: string}},
   refs: Record<string, BluemojiRef> = {},
 ) {
   for (const [name, ref] of Object.entries(refs)) {
@@ -184,12 +184,21 @@ export function createBluemojiFacet(
   }
 }
 
-/** Alias ranges that are neither escaped nor covered by another facet. */
-export function getBluemojiMatches(rt: RichText) {
-  return Array.from(rt.text.matchAll(/(?=(:[^\s:]{1,128}:))/gu))
+/** Alias and masked emoji ranges outside escapes and existing facets. */
+export function getBluemojiMatches(
+  rt: RichText,
+  {preserveMaskSyntax = false}: {preserveMaskSyntax?: boolean} = {},
+) {
+  return Array.from(
+    rt.text.matchAll(
+      /\[([^\]\n]+)\]\((:[^\s:]{1,128}:)\)|(?=(:[^\s:]{1,128}:))/gu,
+    ),
+  )
     .map(match => {
-      match[0] = match[1]
-      return match
+      const name = match[2] ?? match[3]
+      const mask = match[1]
+      match[0] ||= name
+      return Object.assign(match, {name, mask})
     })
     .filter(match => {
       if (
@@ -209,6 +218,13 @@ export function getBluemojiMatches(rt: RichText) {
         f => f.index.byteStart < byteEnd && f.index.byteEnd > byteStart,
       )
     })
+    .map(match => {
+      if (preserveMaskSyntax && match.mask !== undefined) {
+        match.index += match.mask.length + 3
+        match[0] = match.name
+      }
+      return match
+    })
 }
 
 /** Add verified emoji while retaining the editor's original text and offsets. */
@@ -219,7 +235,7 @@ export function addBluemojiFacets(
   const matches = getBluemojiMatches(rt)
   const facets = [...(rt.facets ?? [])]
   for (const match of matches) {
-    const item = items.get(match[0])
+    const item = items.get(match.name)
     if (!item || !getBluemojiImage(item)) continue
     if (
       facets.some(
@@ -232,9 +248,10 @@ export function addBluemojiFacets(
       )
     )
       continue
-    const byteStart = rt.unicodeText.utf16IndexToUtf8Index(match.index)
+    const start = match.index + (match.mask === undefined ? 0 : 1)
+    const byteStart = rt.unicodeText.utf16IndexToUtf8Index(start)
     const byteEnd = rt.unicodeText.utf16IndexToUtf8Index(
-      match.index + match[0].length,
+      start + (match.mask ?? match[0]).length,
     )
     facets.push({
       index: {byteStart, byteEnd},
@@ -253,9 +270,31 @@ export async function detectBluemojiFacets(
   const matches = getBluemojiMatches(rt)
   const items = new Map<string, BluemojiItem | null>()
   await Promise.all(
-    [...new Set(matches.map(match => match[0]))].map(async name => {
+    [...new Set(matches.map(match => match.name))].map(async name => {
       items.set(name, await lookup(name))
     }),
   )
-  return addBluemojiFacets(rt, items)
+  addBluemojiFacets(rt, items)
+  for (const match of matches.reverse()) {
+    if (match.mask === undefined) continue
+    const start = rt.unicodeText.utf16IndexToUtf8Index(match.index + 1)
+    const end = rt.unicodeText.utf16IndexToUtf8Index(
+      match.index + 1 + match.mask.length,
+    )
+    if (
+      !rt.facets?.some(
+        facet =>
+          facet.index.byteStart === start &&
+          facet.index.byteEnd === end &&
+          facet.features.some(getBluemojiFacet),
+      )
+    )
+      continue
+    rt.delete(
+      end,
+      rt.unicodeText.utf16IndexToUtf8Index(match.index + match[0].length),
+    )
+    rt.delete(start - 1, start)
+  }
+  return rt
 }

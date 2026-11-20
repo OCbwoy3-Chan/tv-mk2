@@ -15,7 +15,7 @@ export function useComposerBluemojiItems(
   repo: string | undefined,
 ) {
   const names = [
-    ...new Set(getBluemojiMatches(richtext).map(match => match[0])),
+    ...new Set(getBluemojiMatches(richtext).map(match => match.name)),
   ]
   const results = useQueries({
     queries: names.map(name =>

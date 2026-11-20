@@ -8,6 +8,7 @@ import * as bsky from '#/types/bsky'
 import {
   ESCAPED_MARKDOWN_LINK_PATTERN,
   getMarkdownLinkHighlightRanges,
+  isEmojiDestination,
   MARKDOWN_ESCAPE_PATTERN,
   MARKDOWN_LINK_PATTERN,
   normalizeMarkdownLinkDestination,
@@ -224,7 +225,11 @@ export function applyMarkdownLinkFacets(rt: RichText): RichText {
   const markdownFacets: AppBskyRichtextFacet.Main[] = []
   const ranges: {start: number; end: number}[] = []
   for (const match of rt.text.matchAll(MARKDOWN_LINK_PATTERN)) {
-    if (isEscapedFacetSyntax(rt.text, match.index)) continue
+    if (
+      isEscapedFacetSyntax(rt.text, match.index) ||
+      isEmojiDestination(match[1])
+    )
+      continue
     const toByte = (offset: number) =>
       rt.unicodeText.utf16IndexToUtf8Index(match.index + offset)
     ranges.push({start: toByte(0), end: toByte(match[0].length)})
@@ -465,7 +470,8 @@ export function parseMarkdownLinks(text: string): {
   const facets: AppBskyRichtextFacet.Main[] = []
 
   while ((match = regex.exec(text)) !== null) {
-    if (isEscapedFacetSyntax(text, match.index)) continue
+    if (isEscapedFacetSyntax(text, match.index) || isEmojiDestination(match[1]))
+      continue
     const [fullMatch, linkUrl] = match
     const linkText = fullMatch.slice(1, fullMatch.indexOf(']'))
     const matchStart = match.index

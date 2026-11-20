@@ -25,8 +25,8 @@ export function projectNativeEmoji(
   const tokens: NativeEmojiProjection['tokens'] = []
   let text = ''
   let end = 0
-  for (const match of getBluemojiMatches(rt)) {
-    const item = items.get(match[0])
+  for (const match of getBluemojiMatches(rt, {preserveMaskSyntax: true})) {
+    const item = items.get(match.name)
     if (!item || match.index < end) continue
     text += rt.text.slice(end, match.index)
     end = match.index + match[0].length

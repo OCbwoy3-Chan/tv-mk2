@@ -53,7 +53,7 @@ export function syncBluemojiEditor(
     rt.detectFacetsWithoutResolution()
     applyMarkdownLinkFacets(rt)
     applyFacetSyntax(rt)
-    const matches = getBluemojiMatches(rt)
+    const matches = getBluemojiMatches(rt, {preserveMaskSyntax: true})
     for (const child of children) {
       if (child.node.type === emojiType) {
         const alias = bluemojiNodeText(child.node)

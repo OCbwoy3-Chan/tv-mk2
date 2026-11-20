@@ -115,6 +115,7 @@ import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
 import {IS_INTERNAL} from '#/env'
 import {IS_NATIVE} from '#/env'
+import {type BluemojiRef} from '#/features/bluemoji/util'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {PostMenuControlItems} from './PostMenuControlItems'
@@ -407,8 +408,11 @@ let PostMenuItems = ({
       }
     }
 
+    const bluemoji: Record<string, BluemojiRef> = {}
+    const text = richTextToRedraftString(richText, bluemoji)
     openComposer({
-      text: richTextToRedraftString(richText),
+      text,
+      bluemoji,
       tags: record.tags,
       imageUris,
       videoUri,

@@ -25,6 +25,7 @@ import {type Recovery} from '#/state/shell/composer/recovery/codec'
 import {type ComposerState} from '#/view/com/composer/state/composer'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
+import {type BluemojiRef} from '#/features/bluemoji/util'
 import {type app} from '#/lexicons'
 
 export interface ComposerOptsPostRef {
@@ -60,6 +61,8 @@ export interface ComposerOpts {
   quote?: app.bsky.feed.defs.PostView
   mention?: string // handle of user to mention
   text?: string
+  /** Preserve the original custom emoji sources when redrafting. */
+  bluemoji?: Record<string, BluemojiRef>
   /**
    * Outline tags from `app.bsky.feed.post` `tags` (e.g. when redrafting).
    */

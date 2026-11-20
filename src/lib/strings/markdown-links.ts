@@ -18,6 +18,11 @@ export const ESCAPED_MARKDOWN_LINK_PATTERN = new RegExp(
 export const MARKDOWN_ESCAPE_PATTERN =
   /\\([!"#$%&'()*+,\-./:;<=>?@[\]\\^_`{|}~])/g
 
+/** Custom emoji destinations use labels without creating links. */
+export function isEmojiDestination(destination: string) {
+  return /^:[^\s:]{1,128}:$/u.test(destination)
+}
+
 /** Remove destination delimiters and Markdown punctuation escapes. */
 export function normalizeMarkdownLinkDestination(destination: string): string {
   const uri = (

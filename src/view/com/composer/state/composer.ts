@@ -979,6 +979,7 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
 
 export function createComposerState({
   initText,
+  initBluemoji,
   initMention,
   initImageUris,
   initQuoteUri,
@@ -988,6 +989,7 @@ export function createComposerState({
   initTags,
 }: {
   initText: string | undefined
+  initBluemoji?: ComposerOpts['bluemoji']
   initMention: string | undefined
   initImageUris: ComposerOpts['imageUris']
   initQuoteUri: string | undefined
@@ -1117,6 +1119,7 @@ export function createComposerState({
         {
           id: nanoid(),
           richtext: initRichText,
+          bluemoji: initBluemoji,
           shortenedGraphemeLength: getShortenedLength(initRichText),
           labels: [],
           tags: initTags?.length ? initTags.slice(0, MAX_TAGS) : [],

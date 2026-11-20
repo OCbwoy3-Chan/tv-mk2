@@ -1,6 +1,13 @@
 import {AppBskyRichtextFacet} from '@atproto/api'
 import {RichText} from '@bsky/sdk/richtext'
 
+import {
+  type BluemojiRef,
+  getBluemojiFacet,
+  getBluemojiInsertionName,
+  getBluemojiMatches,
+  getBluemojiRefUri,
+} from '#/features/bluemoji/util'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {
@@ -42,7 +49,10 @@ export function richTextToString(rt: RichText, loose: boolean): string {
 }
 
 /** Preserve a post's text and facets when copying or redrafting it. */
-export function richTextToRedraftString(rt: RichText): string {
+export function richTextToRedraftString(
+  rt: RichText,
+  bluemoji: Record<string, BluemojiRef> = {},
+): string {
   if (!rt.facets?.length) return escapeUnfacetedText(rt.text)
 
   const detected = new RichText({text: rt.text})
@@ -53,6 +63,23 @@ export function richTextToRedraftString(rt: RichText): string {
     const facet = segment.facet
     if (!facet) {
       result += escapeUnfacetedText(segment.text)
+      continue
+    }
+
+    const emoji = facet.features.map(getBluemojiFacet).find(Boolean)
+    const uri = emoji && getBluemojiRefUri(emoji)
+    if (emoji && uri) {
+      const name = getBluemojiInsertionName(
+        {uri, cid: emoji.record?.cid, record: {name: emoji.name}},
+        bluemoji,
+      )
+      bluemoji[name] = {
+        did: emoji.did,
+        name: emoji.name,
+        record: {uri, cid: emoji.record?.cid},
+      }
+      result +=
+        segment.text === emoji.name ? name : `[${segment.text}](${name})`
       continue
     }
 
@@ -136,6 +163,10 @@ function escapeUnfacetedText(text: string): string {
   }
 
   const detected = new RichText({text})
+  for (const match of getBluemojiMatches(detected)) {
+    escapedStarts.add(match.index)
+    syntaxRanges.push({start: match.index, end: match.index + match[0].length})
+  }
   detected.detectFacetsWithoutResolution()
   for (const facet of detected.facets ?? []) {
     const start = detected.unicodeText.slice(0, facet.index.byteStart).length

@@ -6,6 +6,14 @@ the composing account's collection and public discovery, and supports
 supported. Selected emoji retain their source owner in drafts, including when
 two collections use the same alias.
 
+Use `[Šleso](:šlesers:)blox` to mask text with a custom emoji. The composer
+keeps `[Šleso](` and `)` visible around the emoji image; the published text is
+`Šlesoblox`, with an emoji
+facet covering only `Šleso`. Clients without custom emoji support display that
+text. Unresolved emoji keep their typed syntax, and backslash escapes keep
+masks literal. Redraft restores mask syntax and original emoji sources,
+including ordinary custom emoji and aliases shared by different collections.
+
 ## Trust boundary
 
 Everything inside someone else's record is self-attested: a facet's `did`,
