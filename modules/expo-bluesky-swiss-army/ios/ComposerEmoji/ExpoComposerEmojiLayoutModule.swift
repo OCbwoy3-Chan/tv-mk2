@@ -95,7 +95,10 @@ class ComposerEmojiLayoutView: ExpoView {
       if let editor = view as? UITextView, editor !== input {
         observe(editor)
       }
-      if let id = view.nativeID, id.hasPrefix("composer-emoji-") {
+      // Fabric stores nativeID in nativeId rather than UIView's legacy property.
+      let fabricID = view.responds(to: NSSelectorFromString("nativeId"))
+        ? view.value(forKey: "nativeId") as? String : nil
+      if let id = fabricID ?? view.nativeID, id.hasPrefix("composer-emoji-") {
         images[id] = view
       }
     }
@@ -108,10 +111,16 @@ class ComposerEmojiLayoutView: ExpoView {
     if text as String == configurationText {
       anchors = configurationAnchors
     }
-    guard let font = editor.font,
-          let emojiFont = UIFont(name: "AppleColorEmoji", size: font.pointSize) else { return }
-    let size = ceil(("😀" as NSString).size(withAttributes: [.font: emojiFont]).width)
     let slotAttribute = NSAttributedString.Key("WitchskyComposerEmojiSlot")
+    let slotIndex = anchors.values.first { $0 >= 0 && $0 < text.length && text.character(at: $0) == 0x3000 }
+    let slotAttributes = slotIndex.map { editor.textStorage.attributes(at: $0, effectiveRange: nil) }
+    // Read the actual text run's font when attributed input has no global font.
+    guard let font = (slotAttributes?[slotAttribute] as? UIFont)
+      ?? (slotAttributes?[.font] as? UIFont)
+      ?? editor.font
+      ?? (editor.typingAttributes[.font] as? UIFont),
+      let emojiFont = UIFont(name: "AppleColorEmoji", size: font.pointSize) else { return }
+    let size = ceil(("😀" as NSString).size(withAttributes: [.font: emojiFont]).width)
     let activeIndices = Set(anchors.values)
     var staleRanges: [(NSRange, UIFont)] = []
     editor.textStorage.enumerateAttribute(slotAttribute, in: NSRange(location: 0, length: text.length)) { value, range, _ in
