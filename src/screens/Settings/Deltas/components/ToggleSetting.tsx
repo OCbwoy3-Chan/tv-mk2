@@ -1,4 +1,4 @@
-import {type DeltasPlusSetting} from '#/screens/Settings/Deltas/DeltasPlus/components/types'
+import {type DeltasSetting} from '#/screens/Settings/Deltas/components/types'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import * as Toggle from '#/components/forms/Toggle'
 import {
@@ -9,7 +9,7 @@ import {
 export function ToggleSetting({
   setting,
 }: {
-  setting: Extract<DeltasPlusSetting, {type: 'toggle'}>
+  setting: Extract<DeltasSetting, {type: 'toggle'}>
 }) {
   const preferences = useDeltasPreferences()
   const setPreference = useSetDeltasPreference()

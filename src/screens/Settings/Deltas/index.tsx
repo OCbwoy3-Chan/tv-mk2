@@ -141,12 +141,12 @@ export function DeltasSettingsScreen({ }: Props) {
                     <Divider />
 
                     <Link
-                        label={l`Posting quirks settings`}
-                        to="/settings/deltas/posting"
+                        label={l`App quirks settings`}
+                        to="/settings/deltas/app"
                     >
                         {state => (
                             <DeltasSubItem
-                                title={l`Posting`}
+                                title={l`App`}
                                 icon={HashtagIcon}
                                 style={[
                                     (state.hovered || state.pressed) && [t.atoms.bg_contrast_50],

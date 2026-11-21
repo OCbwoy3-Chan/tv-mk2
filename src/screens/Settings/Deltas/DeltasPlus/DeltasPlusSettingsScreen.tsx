@@ -3,8 +3,8 @@ import {Trans, useLingui} from '@lingui/react/macro'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {useSession} from '#/state/session'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import {DeltasPlusSettingItem} from '#/screens/Settings/Deltas/DeltasPlus/components/DeltasPlusSettingItem'
-import {type DeltasPlusSetting} from '#/screens/Settings/Deltas/DeltasPlus/components/types'
+import {DeltasSettingItem} from '#/screens/Settings/Deltas/components/DeltasSettingItem'
+import {type DeltasSetting} from '#/screens/Settings/Deltas/components/types'
 import {RunesScreenLayout} from '#/screens/Settings/RunesSettings/components/RunesScreenLayout'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -28,7 +28,7 @@ export function DeltasPlusSettingsScreen() {
     user.currentAccount?.did,
   )
 
-  const DELTASPLUS_MAIN_SETTINGS: DeltasPlusSetting[] = [
+  const DELTASPLUS_MAIN_SETTINGS: DeltasSetting[] = [
     {
       type: 'toggle',
       label: t`Spoof fediverse posts`,
@@ -97,7 +97,7 @@ export function DeltasPlusSettingsScreen() {
   return (
     <RunesScreenLayout titleText={t`Deltas+`}>
       {DELTASPLUS_MAIN_SETTINGS.map(setting => (
-        <DeltasPlusSettingItem key={setting.value} setting={setting} />
+        <DeltasSettingItem key={setting.value} setting={setting} />
       ))}
     </RunesScreenLayout>
   )

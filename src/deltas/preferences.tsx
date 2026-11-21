@@ -15,6 +15,8 @@ export const deltasPreferencesZodSchema = z
     atprotoRkeyV2PrefixDefault: z.string().optional(),
     atprotoRkeyV2SuffixDefault: z.string().optional(),
 
+    euroskyNotifWorkaround: z.boolean().optional(),
+
     spoofFediversePost: z.boolean().optional(),
     gta6Font: z.boolean().optional(),
     gta6FontBlobCid: z.string().optional()
@@ -31,6 +33,8 @@ type DeltasPreferences = {
   atprotoRkeyV2PrefixDefault: string
   atprotoRkeyV2SuffixDefault: string
 
+  euroskyNotifWorkaround: boolean
+
   spoofFediversePost: boolean
   gta6Font: boolean
   gta6FontBlobCid: string
@@ -45,6 +49,8 @@ const defaults: DeltasPreferences = {
   atprotoRkeyV2PrefixDefault: '',
   atprotoRkeyV2SuffixDefault: '',
 
+  euroskyNotifWorkaround: false,
+
   spoofFediversePost: false,
   gta6Font: false,
   gta6FontBlobCid: ''
@@ -54,23 +60,10 @@ function resolvePreferences(
   value: z.infer<typeof deltasPreferencesZodSchema>,
 ): DeltasPreferences {
   return {
-    atprotoRkeyV2GenerationDefault:
-      value?.atprotoRkeyV2GenerationDefault ??
-      defaults.atprotoRkeyV2GenerationDefault,
-    atprotoRkeyV2PrefixDefault:
-      value?.atprotoRkeyV2PrefixDefault ?? defaults.atprotoRkeyV2PrefixDefault,
-    atprotoRkeyV2SuffixDefault:
-      value?.atprotoRkeyV2SuffixDefault ?? defaults.atprotoRkeyV2SuffixDefault,
-    showBlockedMessages:
-      value?.showBlockedMessages ?? defaults.showBlockedMessages,
-    showHiddenList: value?.showHiddenList ?? defaults.showHiddenList,
-    showMdniBadge: value?.showMdniBadge ?? defaults.showMdniBadge,
-    evenMoreCustomizablePostTids:
-      value?.evenMoreCustomizablePostTids ??
-      defaults.evenMoreCustomizablePostTids,
-    spoofFediversePost: value?.spoofFediversePost ?? defaults.spoofFediversePost,
-    gta6Font: value?.gta6Font ?? defaults.gta6Font,
-    gta6FontBlobCid: value?.gta6FontBlobCid ?? defaults.gta6FontBlobCid
+    ...defaults,
+    ...Object.fromEntries(
+      Object.entries(value ?? {}).filter(([, v]) => v != null),
+    ),
   }
 }
 

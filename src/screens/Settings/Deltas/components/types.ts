@@ -9,10 +9,10 @@ type StringPreferenceKey = {
   [K in keyof Preferences]: string extends Preferences[K] ? K : never
 }[keyof Preferences]
 
-export type DeltasPlusSetting = {
+export type DeltasSetting = {
   label: string
   visible?: boolean
-  info?: string
+  info?: React.ReactNode
   error?: string
 } & (
   | {

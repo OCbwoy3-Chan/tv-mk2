@@ -10,7 +10,7 @@ export type DeltasNavigatorParams = {
   DeltasDecorationsSettingsScreen: undefined
   DeltasBadgeSettingsScreen: undefined
   DeltasModerationSettingsScreen: undefined
-  DeltasPostingSettingsScreen: undefined
+  AppQuirksSettingsScreen: undefined
   DeltasPlusSettingsScreen: undefined
 }
 
@@ -25,7 +25,7 @@ export const DeltasRoutes: Record<
   DeltasSettings: '/settings/deltas',
   DeltasBadgeSettingsScreen: '/settings/deltas/badge',
   DeltasModerationSettingsScreen: '/settings/deltas/moderation',
-  DeltasPostingSettingsScreen: '/settings/deltas/posting',
+  AppQuirksSettingsScreen: '/settings/deltas/app',
   DeltasDecorationsSettingsScreen: '/settings/deltas/decorations',
   DeltasPlusSettingsScreen: '/settings/deltas/plus',
 }
@@ -50,9 +50,9 @@ const DeltasModerationSettingsScreen = deltaDeferredNamedScreen(
   'DeltasModerationSettingsScreen',
 )
 
-const DeltasPostingSettingsScreen = deltaDeferredNamedScreen(
-  () => require('#/screens/Settings/Deltas/PostingSettingsScreen'),
-  'DeltasPostingSettingsScreen',
+const AppQuirksSettingsScreen = deltaDeferredNamedScreen(
+  () => require('#/screens/Settings/Deltas/AppQuirksSettingsScreen'),
+  'DeltasAppQuirksSettingsScreen',
 )
 
 const DeltasPlusSettingsScreen = deltaDeferredNamedScreen(
@@ -92,9 +92,9 @@ export function DeltasCommonStacks({
         options={{ title: title(msg`Moderation`) }}
       />
       <Stack.Screen
-        name="DeltasPostingSettingsScreen"
-        getComponent={() => DeltasPostingSettingsScreen}
-        options={{ title: title(msg`Posting`) }}
+        name="AppQuirksSettingsScreen"
+        getComponent={() => AppQuirksSettingsScreen}
+        options={{ title: title(msg`App`) }}
       />
       <Stack.Screen
         name="DeltasPlusSettingsScreen"

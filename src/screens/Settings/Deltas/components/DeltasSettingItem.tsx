@@ -1,16 +1,16 @@
 import {View} from 'react-native'
 
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import {TextSetting} from '#/screens/Settings/Deltas/DeltasPlus/components/TextSetting'
-import {ToggleSetting} from '#/screens/Settings/Deltas/DeltasPlus/components/ToggleSetting'
-import {type DeltasPlusSetting} from '#/screens/Settings/Deltas/DeltasPlus/components/types'
+import {TextSetting} from '#/screens/Settings/Deltas/components/TextSetting'
+import {ToggleSetting} from '#/screens/Settings/Deltas/components/ToggleSetting'
+import {type DeltasSetting} from '#/screens/Settings/Deltas/components/types'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 
-export function DeltasPlusSettingItem({
+export function DeltasSettingItem({
   setting,
 }: {
-  setting: DeltasPlusSetting
+  setting: DeltasSetting
 }) {
   if (setting.visible === false) return null
   return (

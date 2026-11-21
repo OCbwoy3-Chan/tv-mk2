@@ -1,4 +1,4 @@
-import {type DeltasPlusSetting} from '#/screens/Settings/Deltas/DeltasPlus/components/types'
+import {type DeltasSetting} from '#/screens/Settings/Deltas/components/types'
 import * as TextField from '#/components/forms/TextField'
 import {
   useDeltasPreferences,
@@ -8,7 +8,7 @@ import {
 export function TextSetting({
   setting,
 }: {
-  setting: Extract<DeltasPlusSetting, {type: 'text'}>
+  setting: Extract<DeltasSetting, {type: 'text'}>
 }) {
   const preferences = useDeltasPreferences()
   const setPreference = useSetDeltasPreference()
