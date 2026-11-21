@@ -36,6 +36,7 @@ import {atoms as a, useAlf, utils} from '#/alf'
 import {normalizeTextStyles} from '#/alf/typography'
 import {IS_ANDROID} from '#/env'
 import {InlineBluemoji} from '#/features/bluemoji/InlineBluemoji'
+import {NativeComposerEmoji} from '#/features/bluemoji/NativeComposerEmoji'
 import {NativeComposerLayout} from '#/features/bluemoji/NativeComposerLayout'
 import {
   applyNativeEmojiEditWithSelection,
@@ -338,7 +339,7 @@ export function TextInput({
           collapsable={false}
           style={[!autocompletePrefix && a.flex_1, props.style]}>
           {emojiTokens.map(({token, id}) => (
-            <View
+            <NativeComposerEmoji
               key={id}
               nativeID={id}
               collapsable={false}
@@ -364,7 +365,7 @@ export function TextInput({
                 size={emojiSize}
                 baselineOffset={0}
               />
-            </View>
+            </NativeComposerEmoji>
           ))}
           <RNTextInput
             testID="composerTextInput"

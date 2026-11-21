@@ -10,6 +10,52 @@ public class ExpoComposerEmojiLayoutModule: Module {
         view.configure(value)
       }
     }
+    View(ComposerEmojiView.self) {
+      ViewName("ComposerEmoji")
+    }
+  }
+}
+
+/** Restores native layout overrides before the emoji wrapper can be reused. */
+class ComposerEmojiView: ExpoView {
+  private var originalState: (bounds: CGRect, center: CGPoint, transform: CGAffineTransform, alpha: CGFloat)?
+
+  func position(at rect: CGRect?, size: CGFloat) {
+    if originalState == nil {
+      originalState = (bounds, center, transform, alpha)
+    }
+    guard let rect, bounds.width > 0, bounds.height > 0 else {
+      alpha = 0
+      return
+    }
+    alpha = 1
+    transform = .identity
+    center = CGPoint(x: rect.minX + size / 2, y: rect.maxY - size / 2)
+    transform = CGAffineTransform(scaleX: size / bounds.width, y: size / bounds.height)
+  }
+
+  private func restoreLayout() {
+    guard let originalState else { return }
+    transform = .identity
+    bounds = originalState.bounds
+    center = originalState.center
+    transform = originalState.transform
+    alpha = originalState.alpha
+    self.originalState = nil
+  }
+
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    if window == nil {
+      restoreLayout()
+    }
+  }
+
+  override func didMoveToSuperview() {
+    super.didMoveToSuperview()
+    if superview == nil {
+      restoreLayout()
+    }
   }
 }
 
@@ -89,8 +135,8 @@ class ComposerEmojiLayoutView: ExpoView {
   }
 
   func positionImages() {
-    guard let container = superview else { return }
-    var images: [String: UIView] = [:]
+    guard window != nil, let container = superview else { return }
+    var images: [String: ComposerEmojiView] = [:]
     visit(container) { view in
       if let editor = view as? UITextView, editor !== input {
         observe(editor)
@@ -98,8 +144,9 @@ class ComposerEmojiLayoutView: ExpoView {
       // Fabric stores nativeID in nativeId rather than UIView's legacy property.
       let fabricID = view.responds(to: NSSelectorFromString("nativeId"))
         ? view.value(forKey: "nativeId") as? String : nil
-      if let id = fabricID ?? view.nativeID, id.hasPrefix("composer-emoji-") {
-        images[id] = view
+      if let image = view as? ComposerEmojiView,
+         let id = fabricID ?? view.nativeID, id.hasPrefix("composer-emoji-") {
+        images[id] = image
       }
     }
     guard let editor = input else { return }
@@ -156,21 +203,16 @@ class ComposerEmojiLayoutView: ExpoView {
             text.character(at: index) == 0x3000,
             let position = editor.position(from: editor.beginningOfDocument, offset: index),
             let parent = image.superview else {
-        image.alpha = 0
+        image.position(at: nil, size: size)
         continue
       }
       /* A whitespace selection can have an empty rect; its caret still locates the line. */
       let rect = editor.convert(editor.caretRect(for: position), to: parent)
       guard !rect.isNull, !rect.isInfinite, rect.height > 0 else {
-        image.alpha = 0
+        image.position(at: nil, size: size)
         continue
       }
-      image.alpha = 1
-      image.transform = .identity
-      guard image.bounds.width > 0, image.bounds.height > 0 else { continue }
-      image.layer.anchorPoint = .zero
-      image.layer.position = CGPoint(x: rect.minX, y: rect.maxY - size)
-      image.transform = CGAffineTransform(scaleX: size / image.bounds.width, y: size / image.bounds.height)
+      image.position(at: rect, size: size)
     }
   }
 
