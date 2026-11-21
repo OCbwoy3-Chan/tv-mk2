@@ -86,6 +86,7 @@ import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {IS_INTERNAL, IS_IOS, IS_NATIVE} from '#/env'
 import {useActorStatus} from '#/features/liveNow'
 import {useActiveThemeUpdate} from '#/features/themes/api'
@@ -588,6 +589,7 @@ function ProfilePreview({
 }) {
   const t = useTheme()
   const {gtMobile} = useBreakpoints()
+  const nameStyle = useNameStyle(profile.did)
   const shadow = useProfileShadow(profile)
   const moderationOpts = useModerationOpts()
   const hideDisplayNames = useHideDisplayNames()
@@ -628,6 +630,7 @@ function ProfilePreview({
             t.atoms.text,
             gtMobile ? a.text_4xl : a.text_3xl,
             a.font_bold,
+            !hideDisplayNames && !moderation.ui('displayName').blur && nameStyle,
           ]}>
           {displayName}
         </Text>

@@ -9,6 +9,8 @@ import {useSlingshotInstance} from '#/state/preferences/slingshot-instance'
 import {STALE} from '#/state/queries'
 import {createQueryKey} from '#/state/queries/util'
 import {usePdsClient, useSession} from '#/state/session'
+import {useDeltasPreferences} from '#/deltas/preferences'
+import {useGta6FontQuery} from '#/deltas/lib/useGta6Font'
 import {com} from '#/lexicons'
 import {type DecorationFrame, getFrame} from './catalog'
 import {getNameGradient, type NameGradient} from './nameGradients'
@@ -57,15 +59,24 @@ export function useNameGradient(
 }
 
 /**
- * Computed text style for a DID's display name (gradient plus optional
- * outline), or undefined. Spread into a name's style array at the call site so
- * both the gradient and the outline resolve in one place.
+ * Display-name font, gradient, and optional outline, or undefined.
  */
 export function useNameStyle(did: string | undefined): TextStyle | undefined {
   const active = useActiveDecorations(did)
+  const {gta6Font} = useDeltasPreferences()
+  const {data: fontFamily} = useGta6FontQuery()
   const gradient = getNameGradient(active?.name)
-  if (!gradient) return undefined
-  return nameGradientTextStyle(gradient, {outline: active?.nameOutline})
+  const fontEnabled = gta6Font && !!fontFamily
+  if (!gradient && !fontEnabled) return undefined
+  return {
+    ...(gradient &&
+      nameGradientTextStyle(gradient, {outline: active?.nameOutline})),
+    ...(fontEnabled && {
+      fontFamily,
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+    }),
+  }
 }
 
 const myDecorationSettingsQueryRoot = 'myDecorationSettings'

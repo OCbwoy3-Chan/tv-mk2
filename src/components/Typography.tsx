@@ -9,6 +9,7 @@ import {UITextView} from '#/platform/ui-text-view'
 import {GradientName} from '#/screens/Settings/Deltas/Decorations/components/GradientName'
 import {
   atoms as a,
+  flatten,
   native,
   platform,
   type TextStyleProp,
@@ -70,6 +71,16 @@ export function Text({
       flags,
     },
   )
+
+  const displayNameFont = flatten(style)?.fontFamily
+  if (displayNameFont?.startsWith('DeltasFont-')) {
+    s.fontFamily = platform({
+      web: `${displayNameFont}, ${s.fontFamily}`,
+      default: displayNameFont,
+    })
+    s.fontWeight = 'normal'
+    s.fontStyle = 'normal'
+  }
 
   if (__DEV__) {
     if (!emoji && childHasEmoji(children)) {

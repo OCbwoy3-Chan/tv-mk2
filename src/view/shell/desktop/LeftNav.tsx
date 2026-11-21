@@ -251,6 +251,8 @@ function ProfileCard({minimal}: {minimal: boolean}) {
                           // The name is a handle when display names are off.
                           gradient={hideDisplayNames ? undefined : nameGradient}
                           style={[
+                            a.self_start,
+                            {maxWidth: '100%'},
                             a.font_bold,
                             a.text_sm,
                             a.leading_snug,

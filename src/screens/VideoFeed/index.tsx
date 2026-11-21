@@ -115,6 +115,7 @@ import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {IS_ANDROID} from '#/env'
 import {usePostFeedQuery as useFollowingV2PostFeedQuery} from '#/features/followingV2/home/queries/postFeed'
 import {app} from '#/lexicons'
@@ -952,6 +953,7 @@ function Overlay({
   )
   const confirmFollow = useConfirmFollow()
   const hideDisplayNames = useHideDisplayNames()
+  const nameStyle = useNameStyle(post.author.did)
   const authorPrimaryName = getAuthorPrimaryName(post.author, {
     hideDisplayNames,
   })
@@ -1086,7 +1088,7 @@ function Overlay({
                     />
                     <View style={[a.flex_1]}>
                       <Text
-                        style={[a.text_md, a.font_bold]}
+                        style={[a.text_md, a.font_bold, !hideDisplayNames && nameStyle]}
                         emoji
                         numberOfLines={1}>
                         {authorPrimaryName}

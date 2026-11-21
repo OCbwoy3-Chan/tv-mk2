@@ -1,0 +1,30 @@
+{
+  "lexicon": 1,
+  "id": "party.tenna.entitlement.listitem",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A link between a use and a tenna.party VIP entitlement.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": [
+          "subject",
+          "list"
+        ],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "format": "did",
+            "description": "DID receiving the entitlement."
+          },
+          "list": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "DID-based AT URI of a party.tenna.entitlement.list record in the same repository."
+          }
+        }
+      }
+    }
+  }
+}

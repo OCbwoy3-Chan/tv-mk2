@@ -12,6 +12,7 @@ import {useProfileQuery} from '#/state/queries/profile'
 import {atoms as a} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
+import {useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {type app} from '#/lexicons'
 import {LoadingPlaceholder} from './LoadingPlaceholder'
 
@@ -29,6 +30,7 @@ export function UserInfoText({
   prefix?: string
   style?: StyleProp<TextStyle>
 }) {
+  const nameStyle = useNameStyle(did)
   attr = attr || 'handle'
   failed = failed || 'user'
   const hideDisplayNames = useHideDisplayNames()
@@ -60,7 +62,7 @@ export function UserInfoText({
         style={style}
         numberOfLines={1}
         to={makeProfileLink(profile)}>
-        <Text emoji style={style}>
+        <Text emoji style={[style, !hideDisplayNames && attr === 'displayName' && nameStyle]}>
           {text}
         </Text>
       </InlineLinkText>

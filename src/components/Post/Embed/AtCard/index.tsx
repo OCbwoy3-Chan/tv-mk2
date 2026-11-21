@@ -19,6 +19,7 @@ import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {Divider} from '#/components/Divider'
 import {Link} from '#/components/Link'
 import {Text} from '#/components/Typography'
+import {useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {IS_NATIVE} from '#/env'
 import {contrastForeground} from '#/features/themes/accentForeground'
 import {type app} from '#/lexicons'
@@ -56,6 +57,7 @@ export function AtCard({
     did: showAttieAccount ? ATTIE_ACCOUNT_DID : undefined,
   })
   const displayedProfile = showAttieAccount ? attieProfile : authorProfile
+  const nameStyle = useNameStyle(displayedProfile?.did)
   const displayedName = displayedProfile
     ? getAuthorPrimaryName(displayedProfile, {hideDisplayNames})
     : showAttieAccount
@@ -170,6 +172,7 @@ export function AtCard({
                     a.font_medium,
                     a.leading_tight,
                     t.atoms.text,
+                    !hideDisplayNames && nameStyle,
                   ]}>
                   {displayedName}
                 </Text>

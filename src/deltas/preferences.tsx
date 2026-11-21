@@ -15,7 +15,9 @@ export const deltasPreferencesZodSchema = z
     atprotoRkeyV2PrefixDefault: z.string().optional(),
     atprotoRkeyV2SuffixDefault: z.string().optional(),
 
-    spoofFediversePost: z.boolean().optional()
+    spoofFediversePost: z.boolean().optional(),
+    gta6Font: z.boolean().optional(),
+    gta6FontBlobCid: z.string().optional()
 
   })
   .optional()
@@ -28,7 +30,10 @@ type DeltasPreferences = {
   atprotoRkeyV2GenerationDefault: 'tid' | 'prefix' | 'suffix'
   atprotoRkeyV2PrefixDefault: string
   atprotoRkeyV2SuffixDefault: string
+
   spoofFediversePost: boolean
+  gta6Font: boolean
+  gta6FontBlobCid: string
 }
 
 const defaults: DeltasPreferences = {
@@ -39,7 +44,10 @@ const defaults: DeltasPreferences = {
   atprotoRkeyV2GenerationDefault: 'tid',
   atprotoRkeyV2PrefixDefault: '',
   atprotoRkeyV2SuffixDefault: '',
-  spoofFediversePost: false
+
+  spoofFediversePost: false,
+  gta6Font: false,
+  gta6FontBlobCid: ''
 }
 
 function resolvePreferences(
@@ -60,7 +68,9 @@ function resolvePreferences(
     evenMoreCustomizablePostTids:
       value?.evenMoreCustomizablePostTids ??
       defaults.evenMoreCustomizablePostTids,
-    spoofFediversePost: value?.spoofFediversePost ?? defaults.spoofFediversePost
+    spoofFediversePost: value?.spoofFediversePost ?? defaults.spoofFediversePost,
+    gta6Font: value?.gta6Font ?? defaults.gta6Font,
+    gta6FontBlobCid: value?.gta6FontBlobCid ?? defaults.gta6FontBlobCid
   }
 }
 

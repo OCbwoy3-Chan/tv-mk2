@@ -14,6 +14,7 @@ import {QuoteEmbed} from '#/components/Post/Embed'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {PronounPill} from '#/components/PronounPill'
 import {Text} from '#/components/Typography'
+import {useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {parseEmbed} from '#/types/bsky/post'
@@ -21,6 +22,7 @@ import {parseEmbed} from '#/types/bsky/post'
 export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
   const t = useTheme()
   const {_} = useLingui()
+  const nameStyle = useNameStyle(replyTo.author.did)
   const hideDisplayNames = useHideDisplayNames()
   const {embed} = replyTo
 
@@ -110,7 +112,7 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
       <View style={[a.flex_1, a.pl_md, a.pr_sm, a.gap_2xs]}>
         <View style={[a.flex_row, a.align_center, a.pr_xs]}>
           <Text
-            style={[a.font_semi_bold, a.text_md, a.leading_snug, a.flex_shrink]}
+            style={[a.font_semi_bold, a.text_md, a.leading_snug, a.flex_shrink, !hideDisplayNames && nameStyle]}
             numberOfLines={1}
             emoji>
             {getAuthorPrimaryName(replyTo.author, {hideDisplayNames})}
