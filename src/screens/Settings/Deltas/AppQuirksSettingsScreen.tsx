@@ -1,11 +1,15 @@
 import { Trans, useLingui } from '@lingui/react/macro'
 
 import { DeltasSettingItem } from '#/screens/Settings/Deltas/components/DeltasSettingItem'
+import {ImportNotificationSettings} from '#/screens/Settings/Deltas/components/ImportNotificationSettings'
 import { type DeltasSetting } from '#/screens/Settings/Deltas/components/types'
 import { RunesScreenLayout } from '#/screens/Settings/RunesSettings/components/RunesScreenLayout'
 import { Hashtag_Stroke2_Corner0_Rounded as HashtagIcon } from '#/components/icons/Hashtag'
 import { InlineLinkText } from '#/components/Link'
-import { MagnifyingGlass_Stroke2_Corner0_Rounded as MagnifyingGlassIcon } from '#/components/icons/MagnifyingGlass'
+import { BellRinging_Stroke2_Corner0_Rounded as BellIcon } from '#/components/icons/Bell'
+import { View } from 'react-native'
+import { Text } from '#/components/Typography'
+import { atoms as a } from '#/alf'
 
 export function DeltasAppQuirksSettingsScreen() {
   const { t: l } = useLingui()
@@ -29,22 +33,32 @@ export function DeltasAppQuirksSettingsScreen() {
     },
     {
       type: 'toggle',
-      label: l`Eurosky Notifications V2 workaround`,
+      label: l`Eurosky notification workaround`,
       value: 'euroskyNotifWorkaround',
       info: (
-        <Trans>
-          Tries to fix Notifications V2. Specific to Eurosky.
-        </Trans>
+        <View>
+          <Text>
+            <Trans>
+              Compatibility layer to fix notifications when using the Eurosky AppView.
+            </Trans>
+          </Text>
+          <Text style={[a.font_bold]}>
+            <Trans>
+              We're better than Mu 😏
+            </Trans>
+          </Text>
+        </View>
       ),
-      icon: MagnifyingGlassIcon,
+      icon: BellIcon,
     },
   ]
 
   return (
-    <RunesScreenLayout titleText={l`Posting`}>
+    <RunesScreenLayout titleText={l`App`}>
       {settings.map(setting => (
         <DeltasSettingItem key={setting.value} setting={setting} />
       ))}
+      <ImportNotificationSettings />
     </RunesScreenLayout>
   )
 }

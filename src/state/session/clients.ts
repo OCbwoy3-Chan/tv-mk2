@@ -3,6 +3,7 @@ import {type PasswordSession} from '@atproto/lex-password-session'
 
 import {CHAT_PROXY_SERVICE, PUBLIC_BSKY_SERVICE} from '#/lib/constants'
 import {createLexClient} from '#/lib/lexClient'
+import {withXrpcCompat} from '#/lib/xrpc-compat'
 import {
   readAppViewProxy,
   readCustomAppViewUrl,
@@ -28,7 +29,7 @@ import {networkAwareFetch} from './network'
  * fetch, which is `networkAwareFetch` wrapped in the disposal kill switch.
  */
 export function buildAppviewClient(agent: Agent): Client {
-  return createLexClient(agent, {
+  return createLexClient(withXrpcCompat(agent), {
     service: readAppViewProxy(),
     includeDeviceSessionHeaders: true,
   })
