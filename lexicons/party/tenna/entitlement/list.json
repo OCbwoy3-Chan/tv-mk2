@@ -5,7 +5,7 @@
     "main": {
       "type": "record",
       "description": "A tenna.party VIP entitlement",
-      "key": "string",
+      "key": "any",
       "record": {
         "type": "object",
         "required": [
