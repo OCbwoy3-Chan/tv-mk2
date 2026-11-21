@@ -125,16 +125,25 @@ export function Name({profile}: {profile: bsky.profile.AnyProfileView}) {
         disableMismatchWarning
         disableUnderline
         emoji
-        gradient={decorated ? gradient : undefined}
         style={[
           a.text_md,
           a.leading_snug,
           a.font_semi_bold,
           t.atoms.text,
           web({direction: 'ltr', unicodeBidi: 'isolate'}),
-          decorated && nameStyle,
         ]}>
-        {forceLTR(name)}
+        <Text
+          emoji
+          gradient={decorated ? gradient : undefined}
+          style={[
+            a.text_md,
+            a.leading_snug,
+            a.font_semi_bold,
+            t.atoms.text,
+            decorated && nameStyle,
+          ]}>
+          {forceLTR(name)}
+        </Text>
         <ProfileBadges
           profile={profile}
           size="sm"
