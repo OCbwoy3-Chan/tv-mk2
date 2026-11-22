@@ -35,6 +35,9 @@ jest.mock('#/alf', () => {
     }),
   }
 })
+jest.mock('../EventCoverPicker', () => ({
+  EventCoverPicker: () => null,
+}))
 jest.mock('#/components/Typography', () => {
   const {Text} = require('react-native')
   return {Text}

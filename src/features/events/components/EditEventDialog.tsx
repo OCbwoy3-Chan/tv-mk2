@@ -2,7 +2,11 @@ import {useState} from 'react'
 import {View} from 'react-native'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {type EventDraft, isEventDraftPublishable} from '#/lib/api/event'
+import {
+  type EventCover,
+  type EventDraft,
+  isEventDraftPublishable,
+} from '#/lib/api/event'
 import {isNetworkError} from '#/lib/network-error'
 import {logger} from '#/logger'
 import {EventEditor} from '#/view/com/composer/event/EventEditor'
@@ -14,8 +18,9 @@ import * as Toast from '#/components/Toast'
 import {Text} from '#/components/Typography'
 import {applyEventEdit, eventDraftFromRecord} from '#/features/events/edit'
 import {useUpdateEventMutation} from '#/features/events/queries'
-import {type ParsedEvent} from '#/features/events/record'
+import {coverUrl, type ParsedEvent} from '#/features/events/record'
 import {type EventView} from '#/features/events/types'
+import {Poster} from './Poster'
 
 /** Edits an event the signed-in user created, with the composer's fields. */
 export function EditEventDialog({
@@ -42,9 +47,14 @@ function DialogInner({event, parsed}: {event: EventView; parsed: ParsedEvent}) {
   const discardControl = Prompt.usePromptControl()
   const [initial] = useState(() => eventDraftFromRecord(parsed))
   const [draft, setDraft] = useState<EventDraft | undefined>(initial)
+  /* Unchanged (undefined), removed (null), or a newly picked image. */
+  const [coverChange, setCoverChange] = useState<EventCover | null>()
   const {mutate, isPending} = useUpdateEventMutation(event)
+  const currentCover = coverUrl(event)
 
-  const dirty = JSON.stringify(draft) !== JSON.stringify(initial)
+  const dirty =
+    coverChange !== undefined ||
+    JSON.stringify(draft) !== JSON.stringify(initial)
   const canSave =
     !!initial &&
     !!draft &&
@@ -64,17 +74,20 @@ function DialogInner({event, parsed}: {event: EventView; parsed: ParsedEvent}) {
       initial,
       draft,
     )
-    mutate(record, {
-      onSuccess: () => {
-        control.close(() => Toast.show(l`Event updated`))
+    mutate(
+      {record, cover: coverChange},
+      {
+        onSuccess: () => {
+          control.close(() => Toast.show(l`Event updated`))
+        },
+        onError: error => {
+          if (!isNetworkError(error)) {
+            logger.error('Failed to update event', {safeMessage: error})
+          }
+          Toast.show(l`Couldn't save the event`, {type: 'error'})
+        },
       },
-      onError: error => {
-        if (!isNetworkError(error)) {
-          logger.error('Failed to update event', {safeMessage: error})
-        }
-        Toast.show(l`Couldn't save the event`, {type: 'error'})
-      },
-    })
+    )
   }
 
   return (
@@ -116,11 +129,20 @@ function DialogInner({event, parsed}: {event: EventView; parsed: ParsedEvent}) {
           {draft ? (
             <EventEditor
               bare
-              event={draft}
+              event={coverChange ? {...draft, cover: coverChange} : draft}
+              coverPreview={coverChange === null ? undefined : currentCover}
+              coverPlaceholder={
+                <Poster
+                  event={{...event, thumb: undefined}}
+                  parsed={parsed}
+                  size={96}
+                />
+              }
               dispatch={action => {
-                if (action.type === 'embed_update_event') {
-                  setDraft(prev => prev && {...prev, ...action.patch})
-                }
+                if (action.type !== 'embed_update_event') return
+                const {cover, uploadedCover: _, ...patch} = action.patch
+                if ('cover' in action.patch) setCoverChange(cover ?? null)
+                setDraft(prev => prev && {...prev, ...patch})
               }}
             />
           ) : (

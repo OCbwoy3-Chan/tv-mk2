@@ -23,6 +23,13 @@ jest.mock('multiformats/cid', () => ({
   CID: {createV1: () => ({toString: () => 'bafyreifake'})},
 }))
 jest.mock('../resolve', () => ({imageToThumb: jest.fn()}))
+const mockUploadBlob = jest.fn(
+  (_client: unknown, _path: string, _mime?: string) =>
+    Promise.resolve({blob: {ref: 'blob-cover'}}),
+)
+jest.mock('#/lib/api/upload-blob', () => ({
+  uploadBlob: (...args: [unknown, string, string?]) => mockUploadBlob(...args),
+}))
 
 const EVENT_URI = 'at://did:plc:alice/community.lexicon.calendar.event/3kevent'
 const queryClient = {invalidateQueries: jest.fn()} as unknown as QueryClient
@@ -264,5 +271,63 @@ describe('the event card', () => {
     expect(
       (embed as {external: {description: string}}).external.description,
     ).toContain('Bring snacks')
+  })
+})
+
+describe('an event with a cover image', () => {
+  it('uploads it once and writes it as the thumbnail and the card image', async () => {
+    mockUploadBlob.mockClear()
+    const ctx = setup()
+    await post(queryClient, {
+      ...clientsOf(ctx),
+      thread: thread([
+        draft({
+          event: {
+            ...EVENT,
+            cover: {
+              path: 'file:///cover.jpg',
+              mime: 'image/jpeg',
+              width: 800,
+              height: 800,
+            },
+          },
+        }),
+      ]),
+    })
+
+    expect(mockUploadBlob).toHaveBeenCalledTimes(1)
+    const media = [
+      {
+        role: 'thumbnail',
+        content: {ref: 'blob-cover'},
+        aspect_ratio: {width: 800, height: 800},
+      },
+    ]
+    expect(ctx.calls.create[0]).toMatchObject({media})
+    // Attaching the post keeps the cover.
+    expect(ctx.calls.put[0]).toMatchObject({record: {media}})
+
+    const [, input] = (
+      ctx.pdsClient.call as unknown as jest.Mock<
+        unknown,
+        [{$nsid?: string}, {writes: {value: {embed?: unknown}}[]}]
+      >
+    ).mock.calls.find(
+      ([def]) => def.$nsid === com.atproto.repo.applyWrites.$nsid,
+    )!
+    expect(input.writes[0].value.embed).toMatchObject({
+      external: {thumb: {ref: 'blob-cover'}},
+    })
+  })
+
+  it('writes no media without a cover', async () => {
+    mockUploadBlob.mockClear()
+    const ctx = setup()
+    await post(queryClient, {
+      ...clientsOf(ctx),
+      thread: thread([draft({event: {...EVENT}})]),
+    })
+    expect(mockUploadBlob).not.toHaveBeenCalled()
+    expect(ctx.calls.create[0]).not.toHaveProperty('media')
   })
 })

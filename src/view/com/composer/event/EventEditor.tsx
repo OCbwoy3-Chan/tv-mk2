@@ -18,6 +18,7 @@ import * as TextField from '#/components/forms/TextField'
 import {CalendarDays_Stroke2_Corner0_Rounded as CalendarIcon} from '#/components/icons/CalendarDays'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {EventCoverPicker} from './EventCoverPicker'
 
 /** Starts and Ends share a row when each still gets at least this much. */
 const DATE_FIELD_MIN_WIDTH = 260
@@ -26,9 +27,15 @@ export function EventEditor({
   event,
   dispatch,
   bare = false,
+  coverPreview,
+  coverPlaceholder,
 }: {
   event: EventDraft
   dispatch: (action: PostAction) => void
+  /** The current cover to show when none has been picked, when editing. */
+  coverPreview?: string
+  /** What the event shows without a cover, when that is known. */
+  coverPlaceholder?: React.ReactNode
   /**
    * Just the fields: no card frame and no "Event" heading or remove button,
    * for editing an existing event in a dialog of its own.
@@ -98,6 +105,14 @@ export function EventEditor({
           />
         </View>
       )}
+
+      <EventCoverPicker
+        cover={event.cover?.path ?? coverPreview}
+        placeholder={coverPlaceholder}
+        onChange={cover =>
+          update({cover: cover ?? undefined, uploadedCover: undefined})
+        }
+      />
 
       <View style={[a.gap_xs]}>
         <TextField.LabelText>

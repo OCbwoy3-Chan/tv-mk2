@@ -10,6 +10,8 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import {type EventCover, withCoverMedia} from '#/lib/api/event'
+import {uploadBlob} from '#/lib/api/upload-blob'
 import {BLACKSKY_APPVIEW} from '#/lib/constants'
 import {STALE} from '#/state/queries'
 import {createQueryKey} from '#/state/queries/util'
@@ -291,19 +293,49 @@ export function useDeleteEventMutation() {
 export function useUpdateEventMutation(event: EventView) {
   const pdsClient = usePdsClient()
   const queryClient = useQueryClient()
-  return useMutation<{cid: string}, Error, Record<string, unknown>>({
-    mutationFn: async record => {
+  return useMutation<
+    {cid: string; record: Record<string, unknown>},
+    Error,
+    {
+      record: Record<string, unknown>
+      /** A new cover to upload, null to remove it, or absent to keep it. */
+      cover?: EventCover | null
+    }
+  >({
+    mutationFn: async ({record, cover}) => {
       const {host: repo, rkey} = new AtUri(event.uri)
-      const res = await pdsClient.putRecord(record as never, rkey, {
+      let next = record
+      if (cover !== undefined) {
+        const uploaded = cover
+          ? {
+              blob: (await uploadBlob(pdsClient, cover.path, cover.mime)).blob,
+              width: cover.width,
+              height: cover.height,
+            }
+          : null
+        const {media: _media, ...rest} = record
+        const media = withCoverMedia(record.media, uploaded)
+        next = media.length ? {...rest, media} : rest
+      }
+      const res = await pdsClient.putRecord(next as never, rkey, {
         repo,
         service: null,
       })
-      return {cid: res.body.cid}
+      return {cid: res.body.cid, record: next}
     },
-    onSuccess: ({cid}, record) => {
+    onSuccess: ({cid, record}, {cover}) => {
       queryClient.setQueryData<EventView | null>(
         eventQueryKey(event.uri),
-        prev => (prev ? {...prev, cid, record} : prev),
+        prev =>
+          prev
+            ? {
+                ...prev,
+                cid,
+                record,
+                // Show the new cover before the AppView has its CDN copy.
+                ...(cover !== undefined ? {thumb: cover?.path} : {}),
+              }
+            : prev,
       )
       void queryClient.invalidateQueries({queryKey: [MY_EVENTS_KEY_ROOT]})
     },

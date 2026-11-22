@@ -57,19 +57,6 @@ export function EventHeader({
   return (
     <View style={[a.pb_xl]}>
       <View style={[a.align_center, a.px_lg, a.pt_lg, a.gap_lg]}>
-        {parsed.cancelled && (
-          <View
-            style={[
-              a.rounded_full,
-              a.px_md,
-              a.py_xs,
-              {backgroundColor: t.palette.negative_500},
-            ]}>
-            <Text style={[a.text_sm, a.font_bold, {color: t.palette.white}]}>
-              <Trans>Cancelled</Trans>
-            </Text>
-          </View>
-        )}
         <Poster event={event} parsed={parsed} size={240} />
         <Text
           emoji

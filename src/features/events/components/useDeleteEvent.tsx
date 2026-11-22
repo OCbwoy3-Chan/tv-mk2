@@ -12,15 +12,19 @@ import {type EventView} from '#/features/events/types'
 
 /**
  * Deleting an event the signed-in user created: `open` asks first, and
- * `prompt` has to be rendered for that. On success the page is left.
+ * `prompt` has to be rendered for that. On success the page is left, unless
+ * `leaveOnDelete` is off.
  */
 export function useDeleteEvent({
   event,
   onDeleted,
+  leaveOnDelete = true,
 }: {
   event: EventView
-  /** Called before leaving the page, so it can stop rendering the event. */
-  onDeleted: () => void
+  /** Called first, so the page can stop rendering the event. */
+  onDeleted?: () => void
+  /** Leave the page after deleting; off where the event is just a card. */
+  leaveOnDelete?: boolean
 }) {
   const {t: l} = useLingui()
   const navigation = useNavigation<NavigationProp>()
@@ -31,9 +35,10 @@ export function useDeleteEvent({
   const onConfirm = () =>
     mutate(event.uri, {
       onSuccess: () => {
-        onDeleted()
+        onDeleted?.()
         queryClient.setQueryData(eventQueryKey(event.uri), null)
         Toast.show(l`Event deleted`)
+        if (!leaveOnDelete) return
         if (navigation.canGoBack()) {
           navigation.goBack()
         } else {

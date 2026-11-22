@@ -53,6 +53,7 @@ import {
   ensureEvent,
   finalizeEvent,
   rsvpSelfGoing,
+  uploadEventCover,
 } from './event-publish'
 import {reuseGalleryImageBlob} from './resolve-gallery'
 import {uploadBlob} from './upload-blob'
@@ -198,15 +199,20 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
 
   // The event record has to exist before the post so the link card can point
   // at it; it is finalized (with the post ref) only if the post write lands.
-  const eventDraft = eventPost?.embed.event
+  let eventDraft = eventPost?.embed.event
   let eventRef: EventRecordRef | undefined
   let createdEvent = false
   if (eventPost && eventDraft) {
     // A reply whose parent is gone should fail before an event is created.
     await replyPromise
+    if (eventDraft.cover && !eventDraft.uploadedCover) {
+      opts.onStateChange?.(t`Uploading event image...`)
+      eventDraft = await uploadEventCover(opts.pdsClient, eventDraft)
+    }
     opts.onStateChange?.(t`Creating event...`)
     createdEvent = !eventDraft.record
-    eventRef = await ensureEvent(opts.pdsClient, eventDraft)
+    const written = eventDraft
+    eventRef = await ensureEvent(opts.pdsClient, written)
     opts.onEvent?.(eventPost.id, {uri: eventRef.uri, cid: eventRef.cid})
     thread = {
       ...thread,
@@ -214,7 +220,7 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
         p === eventPost
           ? {
               ...p,
-              embed: {...p.embed, event: {...eventDraft, record: eventRef}},
+              embed: {...p.embed, event: {...written, record: eventRef}},
             }
           : p,
       ),
@@ -634,6 +640,8 @@ function resolveEvent(
       uri: makeEventUrl({did: pdsClient.assertDid}, rkey) as UriString,
       title: event.name.trim(),
       description,
+      // The cover doubles as the card image, for apps that don't know events.
+      ...(event.uploadedCover ? {thumb: event.uploadedCover.blob} : {}),
       associatedRefs: [{uri: ref.uri as AtUriString, cid: ref.cid}],
     },
   }

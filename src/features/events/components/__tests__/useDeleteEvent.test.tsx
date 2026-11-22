@@ -95,8 +95,18 @@ const EVENT = {
   creator: {did: 'did:plc:alice', handle: 'alice.test'},
 } as unknown as EventView
 
-function Harness({onDeleted}: {onDeleted: () => void}) {
-  const {open, prompt} = useDeleteEvent({event: EVENT, onDeleted})
+function Harness({
+  onDeleted,
+  leaveOnDelete,
+}: {
+  onDeleted: () => void
+  leaveOnDelete?: boolean
+}) {
+  const {open, prompt} = useDeleteEvent({
+    event: EVENT,
+    onDeleted,
+    leaveOnDelete,
+  })
   const {Pressable} = require('react-native')
   return (
     <>
@@ -112,9 +122,11 @@ function Harness({onDeleted}: {onDeleted: () => void}) {
   )
 }
 
-function renderButton() {
+function renderButton(leaveOnDelete?: boolean) {
   const onDeleted = jest.fn()
-  const utils = render(<Harness onDeleted={onDeleted} />)
+  const utils = render(
+    <Harness onDeleted={onDeleted} leaveOnDelete={leaveOnDelete} />,
+  )
   return {onDeleted, ...utils}
 }
 
@@ -142,6 +154,18 @@ describe('useDeleteEvent', () => {
     expect(mockSetQueryData).toHaveBeenCalledWith(['event', EVENT.uri], null)
     expect(mockToast).toHaveBeenCalledWith('Event deleted')
     expect(mockGoBack).toHaveBeenCalledTimes(1)
+  })
+
+  it('stays put when deleting from an event card', () => {
+    mockMutate.mockImplementation((_uri, options) => options.onSuccess?.())
+    const {getByTestId} = renderButton(false)
+
+    fireEvent.press(getByTestId('confirmDelete'))
+
+    expect(mockSetQueryData).toHaveBeenCalledWith(['event', EVENT.uri], null)
+    expect(mockToast).toHaveBeenCalledWith('Event deleted')
+    expect(mockGoBack).not.toHaveBeenCalled()
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 
   it('goes home when there is nowhere to go back to', () => {

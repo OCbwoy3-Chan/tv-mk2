@@ -22,6 +22,7 @@ import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
 import * as ProfileCard from '#/components/ProfileCard'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
+import {EventOptionsMenu} from '#/features/events/components/EventOptionsMenu'
 import {useEventQuery, useEventRsvpsQuery} from '#/features/events/queries'
 import {type ParsedEvent, parseEventRecord} from '#/features/events/record'
 import {
@@ -33,7 +34,6 @@ import {
 } from '#/features/events/types'
 import {eventAtUri, makeEventUrl} from '#/features/events/url'
 import {EventHeader} from './EventHeader'
-import {EventOptionsMenu} from './EventOptionsMenu'
 import {GuestTabs} from './GuestTabs'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Event'>
@@ -54,9 +54,12 @@ export function EventScreen({route}: Props) {
       <Layout.Header.Outer>
         <Layout.Header.BackButton />
         <Layout.Header.Content align="left">
-          <Layout.Header.TitleText>
-            <Trans>Event</Trans>
-          </Layout.Header.TitleText>
+          <View style={[a.flex_row, a.align_center, a.gap_sm]}>
+            <Layout.Header.TitleText>
+              <Trans>Event</Trans>
+            </Layout.Header.TitleText>
+            {parsed?.cancelled && <CancelledChip />}
+          </View>
         </Layout.Header.Content>
         {event ? (
           <View style={[a.flex_row, a.align_center, a.gap_sm]}>
@@ -296,6 +299,23 @@ function GuestItem({rsvp, noBorder}: {rsvp: RsvpView; noBorder?: boolean}) {
         moderationOpts={moderationOpts}
         style={[a.px_lg, a.py_md]}
       />
+    </View>
+  )
+}
+
+function CancelledChip() {
+  const t = useTheme()
+  return (
+    <View
+      testID="eventCancelledChip"
+      style={[
+        a.rounded_full,
+        a.px_sm,
+        {paddingVertical: 2, backgroundColor: t.palette.negative_500},
+      ]}>
+      <Text style={[a.text_xs, a.font_bold, {color: t.palette.white}]}>
+        <Trans>Cancelled</Trans>
+      </Text>
     </View>
   )
 }
