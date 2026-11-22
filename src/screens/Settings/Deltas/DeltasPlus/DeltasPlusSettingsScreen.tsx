@@ -23,10 +23,10 @@ export function DeltasPlusSettingsScreen() {
   const {data: hasVip} = useVipStatusQuery(user.currentAccount?.did)
   const {openComposer} = useOpenComposer()
   const fontQuery = useGta6FontQuery()
-  const {data: hasGta6Names} = useDeltasEntitlementQuery(
-    'at://did:web:vessel.darkworld.download/party.tenna.entitlement.list/gta6',
-    user.currentAccount?.did,
-  )
+  // const {data: hasGta6Names} = useDeltasEntitlementQuery(
+  //   'at://did:web:vessel.darkworld.download/party.tenna.entitlement.list/gta6',
+  //   user.currentAccount?.did,
+  // )
 
   const DELTASPLUS_MAIN_SETTINGS: DeltasSetting[] = [
     {
@@ -38,24 +38,25 @@ export function DeltasPlusSettingsScreen() {
     },
     {
       type: 'toggle',
-      label: t`GTA 6 display names`,
+      label: t`Custom display name font`,
       value: 'gta6Font',
-      visible: hasGta6Names === true,
-      info: t`Changes the font on display names to the one used in the Grand Theft Auto VI Discord promotion.`,
+      // visible: hasGta6Names === true,
+      info: t`Changes the font on display names to be something different.`,
       icon: Star_Filled_Corner0_Rounded,
     },
     {
       type: 'text',
-      label: t`GTA 6 font Blob CID`,
+      label: t`Display name font CID`,
       value: 'gta6FontBlobCid',
       placeholder: 'bafkrei...',
-      visible: hasGta6Names === true && preferences.gta6Font,
+      // visible: hasGta6Names === true && preferences.gta6Font,
+      visible: preferences.gta6Font,
       trim: true,
       info: fontQuery.isFetching
         ? t`Checking...`
         : fontQuery.isSuccess
           ? t`Font valid! Display names now use it.`
-          : t`Upload the "Pricedown for Discord" font to your repository and provide its CID.`,
+          : t`Upload any TTF font to an atproto blob on your repo and provide its CID.`,
       error: fontQuery.isError
         ? t`Invalid font, is it on your repo?`
         : undefined,

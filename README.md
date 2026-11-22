@@ -13,19 +13,29 @@ alt="Get it on Obtainium" height="54" /></a> -->
 
 ## Enhancements on top of Witchsky
 
+Fixes and changes:
 - More descriptive PDS dialogs
 - 200 max labelers
-- Profile Bages (character + kin)
-- Free *& Enhanced* Eurosky+ Profile Decorations
-- More customizable post TIDs/rkeys (e.g. deltarunetmrw)
-- Show blocked messages in group chats
-- Show hidden lists (like ones hidden by Bluesky Moderation)
-- MDNI badges
 - Masking custom emojis e.g. `[Bluesky](:walter_white:)`
 - Custom emojis in DMs
 
-## [Deltas+](http://tenna.party/settings/deltas/plus)
-- Ability to spoof Fediverse (Bridgy Fed) posts and their text
+Profile stuff:
+- Profile Bages (character + kin)
+- *Enhanced* Eurosky+ Profile Decorations (for free)
+
+Moderation options:
+- Show blocked messages in group chats
+- Show hidden lists (like ones hidden by Bluesky Moderation)
+- MDNI badges shown on 18+ accounts if they don't have it in their name
+
+App quirk options:
+- More customizable & vanity post TIDs/rkeys (e.g. `deltarunetmrw`)
+- Notifications V2 AppView compat workaround (BECAUSE EUROSKY REFUSES TO IMPLEMENT THEM)
+- AppView notification prefs migrator 
+
+[Deltas+](http://tenna.party/settings/deltas/plus) gated options:
+- Spoof Fediverse (Bridgy Fed) posts and their text
+- Change display name font globally
 
 ### TODO: Kris
 

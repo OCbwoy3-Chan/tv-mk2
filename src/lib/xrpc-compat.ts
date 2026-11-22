@@ -156,12 +156,15 @@ export function withXrpcCompat(agent: Agent): Agent {
         })
       }
       // shortcut: groups stop at V1 page boundaries; use server grouping when supported.
-      return Response.json({
-        cursor: data.cursor,
-        seenAt: data.seenAt,
-        groups,
-        relatedViews,
-      } satisfies Output)
+      return new Response(
+        JSON.stringify({
+          cursor: data.cursor,
+          seenAt: data.seenAt,
+          groups,
+          relatedViews,
+        } satisfies Output),
+        {headers: {'content-type': 'application/json'}},
+      )
     },
   }
 }

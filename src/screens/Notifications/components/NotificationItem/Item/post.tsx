@@ -1,6 +1,10 @@
 import {useState} from 'react'
 import {type GestureResponderEvent, View} from 'react-native'
-import {moderatePost, type ModerationDecision} from '@bsky/sdk/moderation'
+import {
+  moderatePost,
+  moderateProfile,
+  type ModerationDecision,
+} from '@bsky/sdk/moderation'
 import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {Trans, useLingui} from '@lingui/react/macro'
 
@@ -18,6 +22,7 @@ import {
   usePostShadow,
 } from '#/state/cache/post-shadow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {type ParentPost} from '#/state/queries/notifications/grouped/types'
 import {useSession} from '#/state/session'
@@ -38,6 +43,7 @@ import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {RichText} from '#/components/RichText'
 import {SubtleHover} from '#/components/SubtleHover'
 import {Text} from '#/components/Typography'
+import {useNameGradient, useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {PostPoll} from '#/features/pollblue/components/PostPoll'
 import {pollPostParts} from '#/features/pollblue/parse'
 import {app} from '#/lexicons'
@@ -79,6 +85,14 @@ export function Author({profile}: {profile: bsky.profile.AnyProfileView}) {
   const t = useTheme()
   const {t: l} = useLingui()
   const name = useDisplayName(profile)
+  const moderationOpts = useModerationOpts()
+  const hideDisplayNames = useHideDisplayNames()
+  const decorated =
+    !!moderationOpts &&
+    !hideDisplayNames &&
+    !moderateProfile(profile, moderationOpts).ui('displayName').blur
+  const gradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
   const href = makeProfileLink(profile)
   const label = l`Go to ${name}’s profile`
 
@@ -87,6 +101,7 @@ export function Author({profile}: {profile: bsky.profile.AnyProfileView}) {
       <View style={[a.flex_row, a.align_center, a.self_start, a.max_w_full]}>
         <WebOnlyInlineLinkText
           emoji
+          gradient={decorated ? gradient : undefined}
           numberOfLines={1}
           to={href}
           label={label}
@@ -98,6 +113,7 @@ export function Author({profile}: {profile: bsky.profile.AnyProfileView}) {
             a.font_semi_bold,
             t.atoms.text,
             web({direction: 'ltr', unicodeBidi: 'isolate'}),
+            decorated && nameStyle,
           ]}>
           {forceLTR(name)}
         </WebOnlyInlineLinkText>

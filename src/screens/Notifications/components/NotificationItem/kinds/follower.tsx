@@ -5,6 +5,7 @@ import {useQueryClient} from '@tanstack/react-query'
 
 import {makeProfileLink} from '#/lib/routes/links'
 import {sanitizeHandle} from '#/lib/strings/handles'
+import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {type NotificationView} from '#/state/queries/notifications/grouped/types'
 import {unstableCacheProfileView} from '#/state/queries/unstable-profile-cache'
@@ -13,6 +14,7 @@ import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {NotificationFollowSmall_Filled_Corner0_Rounded as PersonPlusIcon} from '#/components/icons/Notification'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
+import {useNameGradient, useNameStyle} from '#/deltas/feat/avatarDecorations'
 import type * as bsky from '#/types/bsky'
 import * as Item from '../Item'
 import {type NotificationOf} from '../types'
@@ -83,6 +85,14 @@ export function FollowerNotification({
   const {gtMobile} = useBreakpoints()
   const queryClient = useQueryClient()
   const name = Item.useDisplayName(profile)
+  const moderationOpts = useModerationOpts()
+  const hideDisplayNames = useHideDisplayNames()
+  const decorated =
+    !!moderationOpts &&
+    !hideDisplayNames &&
+    !moderateProfile(profile, moderationOpts).ui('displayName').blur
+  const gradient = useNameGradient(profile.did)
+  const nameStyle = useNameStyle(profile.did)
 
   const {starterPack} = notification
   const viaStarterPack =
@@ -132,6 +142,7 @@ export function FollowerNotification({
         <View style={[a.flex_row, a.align_center]}>
           <Text
             emoji
+            gradient={decorated ? gradient : undefined}
             numberOfLines={1}
             style={[
               a.flex_shrink,
@@ -139,6 +150,7 @@ export function FollowerNotification({
               a.font_semi_bold,
               a.leading_snug,
               t.atoms.text,
+              decorated && nameStyle,
             ]}>
             {name}
           </Text>

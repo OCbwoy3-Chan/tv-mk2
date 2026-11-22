@@ -7,9 +7,6 @@ import { RunesScreenLayout } from '#/screens/Settings/RunesSettings/components/R
 import { Hashtag_Stroke2_Corner0_Rounded as HashtagIcon } from '#/components/icons/Hashtag'
 import { InlineLinkText } from '#/components/Link'
 import { BellRinging_Stroke2_Corner0_Rounded as BellIcon } from '#/components/icons/Bell'
-import { View } from 'react-native'
-import { Text } from '#/components/Typography'
-import { atoms as a } from '#/alf'
 
 export function DeltasAppQuirksSettingsScreen() {
   const { t: l } = useLingui()
@@ -35,20 +32,7 @@ export function DeltasAppQuirksSettingsScreen() {
       type: 'toggle',
       label: l`Eurosky notification workaround`,
       value: 'euroskyNotifWorkaround',
-      info: (
-        <View>
-          <Text>
-            <Trans>
-              Compatibility layer to fix notifications when using the Eurosky AppView.
-            </Trans>
-          </Text>
-          <Text style={[a.font_bold]}>
-            <Trans>
-              We're better than Mu 😏
-            </Trans>
-          </Text>
-        </View>
-      ),
+      info: l`Eurosky refuses to implement Notifications V2. This is a compatibility workaround.`,
       icon: BellIcon,
     },
   ]
