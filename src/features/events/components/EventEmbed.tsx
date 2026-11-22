@@ -110,17 +110,30 @@ export function EventEmbed({
               </ButtonText>
             </Button>
           ) : (
-            <View style={[a.flex_row, a.align_center, a.gap_2xs]}>
-              <GlobeIcon
-                size="xs"
-                style={[a.transition_color, t.atoms.text_contrast_low]}
-              />
-              <Text
-                numberOfLines={1}
-                style={[a.text_xs, t.atoms.text_contrast_medium]}>
-                {toNiceDomain(link.uri)}
-              </Text>
-            </View>
+            <Link
+              testID="eventEmbedSiteLink"
+              to={link.uri}
+              label={l`Open ${toNiceDomain(link.uri)}`}
+              onPress={onOpen}
+              style={[a.flex_row, a.align_center, a.gap_2xs, a.self_start]}>
+              {({hovered, pressed}) => (
+                <>
+                  <GlobeIcon
+                    size="xs"
+                    style={[a.transition_color, t.atoms.text_contrast_low]}
+                  />
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      a.text_xs,
+                      t.atoms.text_contrast_medium,
+                      (hovered || pressed) && a.underline,
+                    ]}>
+                    {toNiceDomain(link.uri)}
+                  </Text>
+                </>
+              )}
+            </Link>
           )}
           <RsvpButtons event={event} />
         </View>

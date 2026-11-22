@@ -4,7 +4,6 @@ import {LinearGradient} from 'expo-linear-gradient'
 import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 
-import {HITSLOP_10} from '#/lib/constants'
 import {useOpenLink} from '#/lib/hooks/useOpenLink'
 import {toNiceDomain} from '#/lib/strings/url-helpers'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -254,6 +253,12 @@ function About({description}: {description: string}) {
   const {t: l} = useLingui()
   const [overflows, setOverflows] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [measuredFor, setMeasuredFor] = useState(description)
+  if (measuredFor !== description) {
+    setMeasuredFor(description)
+    setOverflows(false)
+    setExpanded(false)
+  }
   const collapsed = overflows && !expanded
   const bg = t.palette.contrast_25
   // Resolves @handles to DIDs so mentions link, as profile bios do.
@@ -278,12 +283,19 @@ function About({description}: {description: string}) {
           collapsed && {maxHeight: ABOUT_COLLAPSED_HEIGHT},
         ]}>
         <View
-          onLayout={e =>
-            setOverflows(
+          onLayout={e => {
+            /*
+             * Only ever switches on: once clipped, Android can report the
+             * clipped height here, which would unclip it, measure it tall,
+             * clip it again, and flicker between the two.
+             */
+            if (
               e.nativeEvent.layout.height >
-                ABOUT_COLLAPSED_HEIGHT + ABOUT_COLLAPSE_SLACK,
-            )
-          }>
+              ABOUT_COLLAPSED_HEIGHT + ABOUT_COLLAPSE_SLACK
+            ) {
+              setOverflows(true)
+            }
+          }}>
           <RichText
             value={descriptionRT}
             enableTags
@@ -291,40 +303,33 @@ function About({description}: {description: string}) {
           />
         </View>
         {collapsed && (
-          <>
+          /* The whole fade expands the text, not just the words. */
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={l`See more`}
+            accessibilityHint={l`Shows the full description`}
+            onPress={() => setExpanded(true)}
+            style={[
+              a.absolute,
+              a.justify_end,
+              a.align_center,
+              {left: 0, right: 0, bottom: 0, height: ABOUT_FADE_HEIGHT},
+            ]}>
             <LinearGradient
               key={t.name}
               pointerEvents="none"
               colors={[utils.alpha(bg, 0), bg]}
-              style={[
-                a.absolute,
-                {left: 0, right: 0, bottom: 0, height: ABOUT_FADE_HEIGHT},
-              ]}
+              style={[a.absolute, a.inset_0]}
             />
-            <View
-              pointerEvents="box-none"
+            <Text
               style={[
-                a.absolute,
-                a.align_center,
-                {left: 0, right: 0, bottom: 0},
+                a.text_md,
+                a.font_semi_bold,
+                {color: t.palette.primary_500},
               ]}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={l`See more`}
-                accessibilityHint={l`Shows the full description`}
-                hitSlop={HITSLOP_10}
-                onPress={() => setExpanded(true)}>
-                <Text
-                  style={[
-                    a.text_md,
-                    a.font_semi_bold,
-                    {color: t.palette.primary_500},
-                  ]}>
-                  <Trans>See more</Trans>
-                </Text>
-              </Pressable>
-            </View>
-          </>
+              <Trans>See more</Trans>
+            </Text>
+          </Pressable>
         )}
       </View>
     </View>
