@@ -59,7 +59,9 @@ import {useNavigation} from '@react-navigation/native'
 import {useQueries, useQueryClient} from '@tanstack/react-query'
 
 import {generateAltText} from '#/lib/ai/generateAltText'
+import {eventHasContent} from '#/lib/api/event'
 import * as apilib from '#/lib/api/index'
+import {pollHasContent} from '#/lib/api/poll'
 import {EmbeddingDisabledError} from '#/lib/api/resolve'
 import {useAppState} from '#/lib/appState'
 import {retry} from '#/lib/async/retry'
@@ -1123,12 +1125,7 @@ export const ComposePost = ({
   const handleDiscard = useCallback(() => {
     const posts = thread.posts
     const hasContent = posts.some(
-      post =>
-        post.richtext.text.trim().length > 0 ||
-        post.embed.media ||
-        post.embed.link ||
-        post.embed.poll ||
-        post.embed.event,
+      post => post.richtext.text.trim().length > 0 || hasKeepableEmbed(post),
     )
     ax.metric('draft:discard', {
       logContext: 'ComposerClose',
@@ -1162,11 +1159,7 @@ export const ComposePost = ({
       }
 
       const hasContent = thread.posts.some(
-        post =>
-          post.shortenedGraphemeLength > 0 ||
-          post.embed.media ||
-          post.embed.link ||
-          post.embed.poll,
+        post => post.shortenedGraphemeLength > 0 || hasKeepableEmbed(post),
       )
 
       if (
@@ -3264,6 +3257,20 @@ async function whenAppViewReady(
         below: 0,
         branchingFactor: 0,
       }),
+  )
+}
+
+/**
+ * Whether a post's attachments are worth a "save as draft?" prompt. A poll
+ * or event the user opened but never filled in is not, so closing just
+ * closes, the same as with an empty post.
+ */
+function hasKeepableEmbed(post: PostDraft) {
+  return Boolean(
+    post.embed.media ||
+    post.embed.link ||
+    (post.embed.poll && pollHasContent(post.embed.poll)) ||
+    (post.embed.event && eventHasContent(post.embed.event)),
   )
 }
 

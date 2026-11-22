@@ -26,7 +26,7 @@ function pollRecord(draft: PollDraft, post: PollPostRef, now: Date) {
     subject: {uri: post.uri},
     options: pollOptionsForPublish(draft),
     createdAt: now.toISOString(),
-    endsAt: pollEndsAt(draft.duration, now),
+    endsAt: pollEndsAt(draft, now),
   }
 }
 

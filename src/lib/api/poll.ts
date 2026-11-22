@@ -24,9 +24,42 @@ const POLL_DURATION_MS: Record<PollDuration, number> = {
   '7d': 7 * 24 * 60 * 60e3,
 }
 
+/** A custom closing time has to be at least this far ahead when posting. */
+export const POLL_MIN_CUSTOM_LEAD_MS = 5 * 60e3
+
+/** A local `YYYY-MM-DDTHH:mm` value, as a Date. */
+function fromLocalDateTime(value: string): Date | undefined {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value)
+  if (!m) return undefined
+  const [, y, mo, d, h, mi] = m.map(Number)
+  const date = new Date(y, mo - 1, d, h, mi, 0, 0)
+  return isNaN(date.getTime()) ? undefined : date
+}
+
 /** The poll's closing time, as `tech.tokimeki.poll.poll` stores it. */
-export function pollEndsAt(duration: PollDuration, now: Date): string {
-  return new Date(now.getTime() + POLL_DURATION_MS[duration]).toISOString()
+export function pollEndsAt(
+  draft: Pick<PollDraft, 'duration' | 'endsAt'>,
+  now: Date,
+): string {
+  const custom = draft.endsAt ? fromLocalDateTime(draft.endsAt) : undefined
+  if (custom) return custom.toISOString()
+  return new Date(
+    now.getTime() + POLL_DURATION_MS[draft.duration],
+  ).toISOString()
+}
+
+/** What's wrong with a custom closing time, or null when it's fine. */
+export function getPollEndIssue(
+  draft: Pick<PollDraft, 'endsAt'>,
+  now: Date,
+): 'invalid' | 'too_soon' | null {
+  if (!draft.endsAt) return null
+  const end = fromLocalDateTime(draft.endsAt)
+  if (!end) return 'invalid'
+  if (end.getTime() - now.getTime() < POLL_MIN_CUSTOM_LEAD_MS) {
+    return 'too_soon'
+  }
+  return null
 }
 
 /**
@@ -36,6 +69,11 @@ export function pollEndsAt(duration: PollDuration, now: Date): string {
 export type PollDraft = {
   options: string[]
   duration: PollDuration
+  /**
+   * A custom closing time, local `YYYY-MM-DDTHH:mm`; when set it is used
+   * instead of `duration`.
+   */
+  endsAt?: string
   /** Record key assigned while publishing; never stored on a draft. */
   rkey?: string
 }
@@ -149,12 +187,16 @@ export function pollHasContent(poll: Pick<PollDraft, 'options'>): boolean {
   return poll.options.some(option => option.trim().length > 0)
 }
 
-export function isPollDraftPublishable(draft: PollDraft): boolean {
+export function isPollDraftPublishable(
+  draft: PollDraft,
+  now = new Date(),
+): boolean {
   const options = pollOptionsInUse(draft.options)
   return (
     options.length >= POLL_MIN_OPTIONS &&
     options.length <= POLL_MAX_OPTIONS &&
-    getOptionIssues(options).every(issue => issue === null)
+    getOptionIssues(options).every(issue => issue === null) &&
+    getPollEndIssue(draft, now) === null
   )
 }
 
@@ -219,5 +261,8 @@ export function decodePollDraft(value: unknown): PollDraft | undefined {
   return {
     options: list,
     duration: isPollDuration(duration) ? duration : DEFAULT_POLL_DURATION,
+    ...(typeof value.endsAt === 'string' && fromLocalDateTime(value.endsAt)
+      ? {endsAt: value.endsAt}
+      : {}),
   }
 }

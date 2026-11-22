@@ -136,6 +136,7 @@ it("uses TOKIMEKI's counts and CID, and finds the viewer's own vote", async () =
     counts: [3, 4],
     totalVotes: 7,
     myVote: 1,
+    myVoteUris: [`at://${voter}/${TOKIMEKI_VOTE_COLLECTION}/vote`],
   })
   // Only the viewer's own backlinks are looked up.
   expect(constellationLinks).toHaveBeenCalledTimes(1)

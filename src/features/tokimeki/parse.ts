@@ -50,3 +50,15 @@ export function tokimekiPollFromRefs(
   }
   return undefined
 }
+
+/**
+ * The choices a TOKIMEKI link card lists in its description ("YES / NO"), for
+ * drawing a poll at its real size while it loads. Two blanks if unreadable.
+ */
+export function choicesFromLinkCard(description: string | undefined): string[] {
+  const named = (description ?? '')
+    .split(' / ')
+    .map(choice => choice.trim())
+    .filter(Boolean)
+  return named.length >= 2 && named.length <= 4 ? named : ['', '']
+}

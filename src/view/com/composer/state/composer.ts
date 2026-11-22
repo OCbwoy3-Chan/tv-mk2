@@ -138,6 +138,8 @@ export type PostAction =
   | {type: 'embed_add_poll_option'}
   | {type: 'embed_remove_poll_option'; index: number}
   | {type: 'embed_set_poll_duration'; duration: PollDuration}
+  /** A custom closing time (local `YYYY-MM-DDTHH:mm`), or undefined to clear it. */
+  | {type: 'embed_set_poll_end'; endsAt: string | undefined}
   | {type: 'embed_set_poll_rkey'; rkey: string}
   | {type: 'embed_add_event'}
   | {type: 'embed_update_event'; patch: Partial<EventDraft>}
@@ -884,7 +886,21 @@ function postReducer(state: PostDraft, action: PostAction): PostDraft {
         ...state,
         embed: {
           ...state.embed,
-          poll: {...poll, duration: action.duration},
+          // Picking a preset replaces a custom closing time.
+          poll: {...poll, duration: action.duration, endsAt: undefined},
+        },
+      }
+    }
+    case 'embed_set_poll_end': {
+      const poll = state.embed.poll
+      if (!poll) {
+        return state
+      }
+      return {
+        ...state,
+        embed: {
+          ...state.embed,
+          poll: {...poll, endsAt: action.endsAt},
         },
       }
     }

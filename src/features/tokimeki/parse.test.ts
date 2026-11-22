@@ -1,4 +1,8 @@
-import {parseTokimekiPollUrl, tokimekiPollFromRefs} from './parse'
+import {
+  choicesFromLinkCard,
+  parseTokimekiPollUrl,
+  tokimekiPollFromRefs,
+} from './parse'
 
 const DID = 'did:plc:rzjl3bznelq76ukmp6bbwfzw'
 const RKEY = '3mzlhqlhwyjev'
@@ -57,5 +61,17 @@ describe('tokimekiPollFromRefs', () => {
       ]),
     ).toBe(undefined)
     expect(tokimekiPollFromRefs(undefined)).toBe(undefined)
+  })
+})
+
+describe('choicesFromLinkCard', () => {
+  it('reads the choices the card lists', () => {
+    expect(choicesFromLinkCard('YES / NO')).toEqual(['YES', 'NO'])
+    expect(choicesFromLinkCard('a / b / c / d')).toHaveLength(4)
+  })
+
+  it('falls back to two blank rows', () => {
+    expect(choicesFromLinkCard(undefined)).toEqual(['', ''])
+    expect(choicesFromLinkCard('just a description')).toEqual(['', ''])
   })
 })

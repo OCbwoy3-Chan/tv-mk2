@@ -50,6 +50,71 @@ jest.mock('#/components/Typography', () => {
 jest.mock('#/components/icons/Poll', () => ({
   Poll_Stroke2_Corner0_Rounded: () => null,
 }))
+jest.mock('#/components/forms/DateTimeField', () => {
+  const {Text} = require('react-native')
+  return {
+    DateTimeField: ({value, testID}: {value: string; testID: string}) => (
+      <Text testID={testID}>{value}</Text>
+    ),
+    utils: jest.requireActual('#/components/forms/DateTimeField/utils'),
+  }
+})
+jest.mock('#/components/icons/Check', () => ({
+  Check_Stroke2_Corner0_Rounded: () => null,
+}))
+jest.mock('#/components/icons/Clock', () => ({
+  Clock_Stroke2_Corner0_Rounded: () => null,
+}))
+jest.mock('#/components/icons/Chevron', () => ({
+  ChevronBottom_Stroke2_Corner0_Rounded: () => null,
+}))
+jest.mock('#/components/Menu', () => {
+  const {Pressable, Text, View} = require('react-native')
+  return {
+    Root: ({children}: {children: React.ReactNode}) => <View>{children}</View>,
+    Outer: ({children}: {children: React.ReactNode}) => <View>{children}</View>,
+    Group: ({children}: {children: React.ReactNode}) => <View>{children}</View>,
+    ItemText: ({children}: {children: React.ReactNode}) => (
+      <Text>{children}</Text>
+    ),
+    ItemRadio: () => null,
+    ItemIcon: () => null,
+    Trigger: ({
+      children,
+      label,
+    }: {
+      children: (p: {
+        props: object
+        state: {hovered: boolean; pressed: boolean}
+      }) => React.ReactNode
+      label: string
+    }) =>
+      children({
+        props: {accessibilityLabel: label},
+        state: {hovered: false, pressed: false},
+      }),
+    Item: ({
+      children,
+      label,
+      onPress,
+      testID,
+    }: {
+      children: React.ReactNode
+      label: string
+      onPress: () => void
+      testID: string
+    }) => (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        accessibilityHint=""
+        testID={testID}
+        onPress={onPress}>
+        {children}
+      </Pressable>
+    ),
+  }
+})
 jest.mock('#/components/icons/Times', () => ({
   TimesLarge_Stroke2_Corner0_Rounded: () => null,
 }))
@@ -334,6 +399,34 @@ describe('PollEditor', () => {
     expect(mockMetric).toHaveBeenCalledWith('composer:poll:remove', {})
     expect(mockDispatch).toHaveBeenCalledWith({type: 'embed_remove_poll'})
     expect(queryByTestId('pollEditor')).toBeNull()
+  })
+
+  it('lets the author pick a custom closing time, and go back to a preset', () => {
+    const {getByTestId, queryByTestId} = renderEditor(['one', 'two'])
+    expect(queryByTestId('pollEndField')).toBeNull()
+
+    fireEvent.press(getByTestId('pollDuration-custom'))
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'embed_set_poll_end',
+      endsAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/),
+    })
+    // Starts a day out (the preset), so there is nothing to warn about.
+    expect(getByTestId('pollEndField')).toBeTruthy()
+    expect(queryByTestId('pollEndHint')).toBeNull()
+    expect(getByTestId('pollDurationBtn').props.accessibilityLabel).toBe(
+      'Poll closes at a set time, change',
+    )
+
+    fireEvent.press(getByTestId('pollDuration-6h'))
+    expect(queryByTestId('pollEndField')).toBeNull()
+  })
+
+  it('shows the closing time on a single dropdown', () => {
+    const {getByTestId} = renderEditor(['one', 'two'])
+    expect(getByTestId('pollDurationBtn').props.accessibilityLabel).toBe(
+      'Poll closes after 1 day, change',
+    )
   })
 
   it('reports the chosen closing time', () => {

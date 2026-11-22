@@ -124,15 +124,22 @@ async function verifiedVotes(
     })),
   )
   const byVoter = new Map<string, {index: number; time: number}>()
+  /* Every vote record a voter has on this poll, counted or not. */
+  const recordsByVoter = new Map<string, string[]>()
   for (const vote of votes) {
-    const counted = readVote(vote.record?.value, pollUri, poll)
+    if (!vote.record) continue
+    recordsByVoter.set(vote.did, [
+      ...(recordsByVoter.get(vote.did) ?? []),
+      vote.record.uri,
+    ])
+    const counted = readVote(vote.record.value, pollUri, poll)
     if (!counted) continue
     const previous = byVoter.get(vote.did)
     if (!previous || counted.time < previous.time) {
       byVoter.set(vote.did, counted)
     }
   }
-  return byVoter
+  return {byVoter, recordsByVoter}
 }
 
 type ServicePoll = {
@@ -217,12 +224,14 @@ export async function fetchTokimekiPoll(
   try {
     const fromService = await fetchFromTokimeki(pollUri)
     let myVote: number | undefined
+    let myVoteUris: string[] | undefined
     if (viewerDid) {
       try {
         const mine = await verifiedVotes(instance, pollUri, fromService.value, [
           viewerDid,
         ])
-        myVote = mine.get(viewerDid)?.index
+        myVote = mine.byVoter.get(viewerDid)?.index
+        myVoteUris = mine.recordsByVoter.get(viewerDid)
       } catch {
         /* The counts are still right without it. */
       }
@@ -235,6 +244,7 @@ export async function fetchTokimekiPoll(
       counts: fromService.counts,
       totalVotes: fromService.totalVotes,
       myVote,
+      myVoteUris,
     }
   } catch {
     return fetchFromConstellation(ref, viewerDid, instance)
@@ -250,7 +260,11 @@ async function fetchFromConstellation(
   const record = await readRecord(ref.did, TOKIMEKI_POLL_COLLECTION, ref.rkey)
   if (!record || !isPollValue(record.value)) return null
   const value = record.value
-  const byVoter = await verifiedVotes(instance, record.uri, value)
+  const {byVoter, recordsByVoter} = await verifiedVotes(
+    instance,
+    record.uri,
+    value,
+  )
   const counts = value.options.map(() => 0)
   for (const vote of byVoter.values()) counts[vote.index]++
   return {
@@ -261,6 +275,7 @@ async function fetchFromConstellation(
     counts,
     totalVotes: byVoter.size,
     myVote: byVoter.get(viewerDid)?.index,
+    myVoteUris: recordsByVoter.get(viewerDid),
   }
 }
 

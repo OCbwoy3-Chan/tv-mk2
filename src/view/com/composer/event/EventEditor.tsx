@@ -83,9 +83,9 @@ export function EventEditor({
             <CalendarIcon size="sm" fill={t.palette.primary_500} />
             <Text
               style={[
-                a.text_xs,
-                a.font_bold,
-                {color: t.palette.primary_500, textTransform: 'uppercase'},
+                a.text_sm,
+                a.font_semi_bold,
+                {color: t.palette.primary_500},
               ]}>
               <Trans comment="Heading of the event editor card in the post composer">
                 Event

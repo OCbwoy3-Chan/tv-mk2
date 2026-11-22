@@ -3,6 +3,7 @@ import {
   DEFAULT_POLL_DURATION,
   getOptionIssue,
   getOptionIssues,
+  getPollEndIssue,
   isPollDraftPublishable,
   isPollDuration,
   POLL_MAX_OPTIONS,
@@ -144,7 +145,32 @@ describe('pollEndsAt', () => {
     ['3d', '2026-11-10T12:00:00.000Z'],
     ['7d', '2026-11-14T12:00:00.000Z'],
   ])('closes a %s poll at %s', (duration, expected) => {
-    expect(pollEndsAt(duration as '1d', now)).toBe(expected)
+    expect(pollEndsAt({duration: duration as '1d'}, now)).toBe(expected)
+  })
+
+  it('uses a custom closing time instead of the preset', () => {
+    const end = new Date(2026, 10, 20, 18, 30)
+    expect(pollEndsAt({duration: '1d', endsAt: '2026-11-20T18:30'}, now)).toBe(
+      end.toISOString(),
+    )
+  })
+})
+
+describe('getPollEndIssue', () => {
+  const now = new Date(2026, 10, 7, 12, 0)
+
+  it('accepts no custom time, or one far enough ahead', () => {
+    expect(getPollEndIssue({}, now)).toBeNull()
+    expect(getPollEndIssue({endsAt: '2026-11-07T13:00'}, now)).toBeNull()
+  })
+
+  it('refuses a time in the past or a few minutes away', () => {
+    expect(getPollEndIssue({endsAt: '2026-11-07T11:00'}, now)).toBe('too_soon')
+    expect(getPollEndIssue({endsAt: '2026-11-07T12:03'}, now)).toBe('too_soon')
+  })
+
+  it('refuses a value that is not a date and time', () => {
+    expect(getPollEndIssue({endsAt: 'tomorrow'}, now)).toBe('invalid')
   })
 })
 
