@@ -1,3 +1,5 @@
+import {isValidDid, isValidHandle} from '@atproto/syntax'
+
 const labelPattern = String.raw`\[[^\]]+\][ \t]*\(`
 const angleDestinationPattern = String.raw`<[^<>\r\n]+>`
 const bareDestinationPattern = String.raw`(?:\\.|[^\\()<>\r\n]|\((?:\\.|[^\\()<>\r\n])*\))+`
@@ -54,4 +56,17 @@ export function getMarkdownLinkHighlightRanges(
     {start: start + 1, end: raw.length - 2},
     {start: raw.length - 1, end: raw.length},
   ]
+}
+
+/** Masked mentions accept a handle or an explicit DID as their destination. */
+export function getMarkdownMentionDestination(
+  destination: string,
+): string | undefined {
+  const value = (
+    destination.startsWith('<') ? destination.slice(1, -1).trim() : destination
+  ).replace(MARKDOWN_ESCAPE_PATTERN, '$1')
+  if (value.startsWith('@') && isValidHandle(value.slice(1))) {
+    return value.slice(1).toLowerCase()
+  }
+  return isValidDid(value) ? value : undefined
 }

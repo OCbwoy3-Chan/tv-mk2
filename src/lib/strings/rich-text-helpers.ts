@@ -114,6 +114,12 @@ export function richTextToRedraftString(
       continue
     }
 
+    const mention = facet.features.find(AppBskyRichtextFacet.isMention)
+    if (mention) {
+      result += `[${segment.text}](${mention.did})`
+      continue
+    }
+
     result += link
       ? `[${segment.text}](${formatMarkdownLinkDestination(link.uri)})`
       : segment.text

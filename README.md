@@ -16,7 +16,7 @@ alt="Get it on Obtainium" height="54" /></a> -->
 Fixes and changes:
 - More descriptive PDS dialogs
 - 200 max labelers
-- Masking custom emojis e.g. `[Bluesky](:walter_white:)`
+- Custom emoji & mention masking e.g. `[Kris](@kris.kralsei.stream)`, `[Ralsei](:ralsei:)`
 - Custom emojis in DMs
 
 Profile stuff:

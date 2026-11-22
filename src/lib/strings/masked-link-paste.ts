@@ -2,6 +2,7 @@ import {sanitizeUrl} from '@braintree/sanitize-url'
 
 import {
   formatMarkdownLinkDestination,
+  getMarkdownMentionDestination,
   normalizeMarkdownLinkDestination,
 } from '#/lib/strings/markdown-links'
 
@@ -19,6 +20,9 @@ export function maskPastedLink(
   const label = previous.slice(start, end)
   if (!inserted || /[\s<>\\]/.test(inserted) || /[\]\n]/.test(label))
     return next
+  if (getMarkdownMentionDestination(inserted)) {
+    return `${before}[${label}](${inserted})${after}`
+  }
   try {
     const uri = normalizeMarkdownLinkDestination(inserted)
     if (sanitizeUrl(uri) === 'about:blank') return next

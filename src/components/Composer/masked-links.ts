@@ -2,6 +2,7 @@ import {type TapperFacet} from '@bsky.app/tapper'
 import {CASHTAG_REGEX} from '@bsky/sdk/richtext'
 
 import {
+  getMarkdownMentionDestination,
   MARKDOWN_LINK_PATTERN,
   normalizeMarkdownLinkDestination,
 } from '#/lib/strings/markdown-links'
@@ -93,6 +94,8 @@ export function normalizeComposerLink(facet: TapperFacet): TapperFacet {
     }
   }
   if (facet.type !== 'maskedLink') return facet
+  const mention = getMarkdownMentionDestination(facet.value)
+  if (mention) return {...facet, type: 'mention', value: mention}
   return {
     ...facet,
     type: 'url',

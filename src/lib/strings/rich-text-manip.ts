@@ -8,6 +8,7 @@ import * as bsky from '#/types/bsky'
 import {
   ESCAPED_MARKDOWN_LINK_PATTERN,
   getMarkdownLinkHighlightRanges,
+  getMarkdownMentionDestination,
   isEmojiDestination,
   MARKDOWN_ESCAPE_PATTERN,
   MARKDOWN_LINK_PATTERN,
@@ -233,11 +234,11 @@ export function applyMarkdownLinkFacets(rt: RichText): RichText {
     const toByte = (offset: number) =>
       rt.unicodeText.utf16IndexToUtf8Index(match.index + offset)
     ranges.push({start: toByte(0), end: toByte(match[0].length)})
-    const uri = normalizeMarkdownLinkDestination(match[1])
+    const feature = getMarkdownDestinationFeature(match[1])
     for (const range of getMarkdownLinkHighlightRanges(match[0], match[1])) {
       markdownFacets.push({
         index: {byteStart: toByte(range.start), byteEnd: toByte(range.end)},
-        features: [{$type: 'app.bsky.richtext.facet#link', uri}],
+        features: [feature],
       })
     }
   }
@@ -427,7 +428,7 @@ function collectFacetSyntax(rt: RichText): number[] {
   return deletionPoints
 }
 
-/** Resolve handles added by angle link syntax after automatic facet detection. */
+/** Resolve handles added by explicit facet syntax after automatic facet detection. */
 export async function resolveSyntaxMentions(rt: RichText, client: Client) {
   const failed = new Set<NonNullable<typeof rt.facets>[number]>()
   await Promise.all(
@@ -459,6 +460,17 @@ export async function resolveSyntaxMentions(rt: RichText, client: Client) {
   }
 }
 
+/** Use a mention facet for identity destinations and a link facet otherwise. */
+function getMarkdownDestinationFeature(destination: string) {
+  const did = getMarkdownMentionDestination(destination)
+  return did
+    ? {$type: 'app.bsky.richtext.facet#mention' as const, did}
+    : {
+        $type: 'app.bsky.richtext.facet#link' as const,
+        uri: normalizeMarkdownLinkDestination(destination),
+      }
+}
+
 export function parseMarkdownLinks(text: string): {
   text: string
   facets: AppBskyRichtextFacet.Main[]
@@ -479,19 +491,13 @@ export function parseMarkdownLinks(text: string): {
     const startByte = new UnicodeString(newText).length
     newText += linkText
     const endByte = new UnicodeString(newText).length
-    const validUrl = normalizeMarkdownLinkDestination(linkUrl)
 
     facets.push({
       index: {
         byteStart: startByte,
         byteEnd: endByte,
       },
-      features: [
-        {
-          $type: 'app.bsky.richtext.facet#link',
-          uri: validUrl,
-        },
-      ],
+      features: [getMarkdownDestinationFeature(linkUrl)],
     })
 
     lastIndex = matchStart + fullMatch.length
