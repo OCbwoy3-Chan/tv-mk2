@@ -31,3 +31,20 @@ export function getThreadShortcut(
   }
   return undefined
 }
+
+/** Backspace may dismiss an empty composition, but must never discard siblings. */
+export function getEmptyPostBackspaceAction({
+  hasContent,
+  isFirstPost,
+  canRemovePost,
+  canCloseComposer,
+}: {
+  hasContent: boolean
+  isFirstPost: boolean
+  canRemovePost: boolean
+  canCloseComposer: boolean
+}): 'close-composer' | 'remove-post' | undefined {
+  if (hasContent) return undefined
+  if (!canRemovePost) return canCloseComposer ? 'close-composer' : undefined
+  return isFirstPost ? undefined : 'remove-post'
+}

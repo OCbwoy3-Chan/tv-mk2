@@ -49,6 +49,9 @@ export type ComposerLogContext =
   'Fab' | 'PostReply' | 'QuotePost' | 'ProfileFeed' | 'Deeplink' | 'Other'
 
 export interface ComposerOpts {
+  /** Retain the minimized presentation when recovering a composition. */
+  isMinimized?: boolean
+
   /** Local composition restored after an account switch or native app termination. */
   recoveredState?: ComposerState
 

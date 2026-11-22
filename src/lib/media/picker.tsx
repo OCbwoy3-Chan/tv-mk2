@@ -37,8 +37,9 @@ export async function openCropper(opts: OpenCropperOptions) {
   const item = await ExpoImageCropTool.openCropperAsync({
     doneButtonText: t`Done`,
     cancelButtonText: t`Cancel`,
-    ...opts,
+    // PNG unless a caller asks otherwise; a full-size PNG is slow to write.
     format: 'png',
+    ...opts,
   })
 
   return {

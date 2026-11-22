@@ -12,10 +12,14 @@ import {
   type EventView,
   RSVP_GOING,
   RSVP_INTERESTED,
-  RSVP_NOTGOING,
   type RsvpStatus,
 } from '../types'
 
+/**
+ * Going and Interested, as Blacksky offers them. Tapping the selected choice
+ * clears the RSVP; an older "not going" answer just shows neither selected,
+ * and either button replaces it.
+ */
 export function RsvpButtons({
   event,
   size = 'small',
@@ -53,12 +57,8 @@ export function RsvpButtons({
       label: l`Interested`,
       removeLabel: l`Interested, tap to remove`,
     },
-    {
-      status: RSVP_NOTGOING,
-      label: l`Not going`,
-      removeLabel: l`Not going, tap to remove`,
-    },
   ]
+
   return (
     <View style={[a.flex_row, a.gap_sm, fill && a.w_full, style]}>
       {choices.map(choice => {
@@ -66,6 +66,7 @@ export function RsvpButtons({
         return (
           <Button
             key={choice.status}
+            testID={`rsvp-${choice.status.split('#')[1]}`}
             label={selected ? choice.removeLabel : choice.label}
             size={size}
             color={selected ? 'primary' : 'secondary'}
@@ -73,7 +74,7 @@ export function RsvpButtons({
             style={[a.flex_1, a.px_xs]}
             onPress={() => onPress(choice.status)}>
             {selected && <ButtonIcon icon={CheckIcon} />}
-            <ButtonText>
+            <ButtonText numberOfLines={1}>
               <Trans>{choice.label}</Trans>
             </ButtonText>
           </Button>

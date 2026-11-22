@@ -287,6 +287,7 @@ export function TextInput({
       {
         fontScale: fonts.scaleMultiplier,
         fontFamily: fonts.family,
+        fontLetterSpacing: fonts.letterSpacing,
         flags: {},
       },
     )
@@ -424,8 +425,7 @@ export function TextInput({
                 borderWidth: 1,
                 borderColor: 'transparent',
               },
-            ]}
-          >
+            ]}>
             {textContent}
           </RNTextInput>
           <NativeComposerLayout

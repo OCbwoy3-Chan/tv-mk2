@@ -1,5 +1,5 @@
-import {useMemo, useState} from 'react'
-import {type ListRenderItemInfo, View} from 'react-native'
+import {useMemo, useRef, useState} from 'react'
+import {type ListRenderItemInfo, useWindowDimensions, View} from 'react-native'
 import {plural} from '@lingui/core/macro'
 import {Trans, useLingui} from '@lingui/react/macro'
 
@@ -7,15 +7,22 @@ import {
   type CommonNavigatorParams,
   type NativeStackScreenProps,
 } from '#/lib/routes/types'
+import {shareUrl} from '#/lib/sharing'
 import {cleanError} from '#/lib/strings/errors'
+import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
-import {List} from '#/view/com/util/List'
+import {useSession} from '#/state/session'
+import {List, type ListMethods} from '#/view/com/util/List'
 import {atoms as a, useTheme} from '#/alf'
-import {Button, ButtonText} from '#/components/Button'
-import * as SegmentedControl from '#/components/forms/SegmentedControl'
+import {Button, ButtonIcon, ButtonText} from '#/components/Button'
+import {ArrowOutOfBoxModified_Stroke2_Corner2_Rounded as ShareIcon} from '#/components/icons/ArrowOutOfBox'
+import {ChainLink_Stroke2_Corner0_Rounded as ChainLinkIcon} from '#/components/icons/ChainLink'
 import * as Layout from '#/components/Layout'
 import {ListFooter, ListMaybePlaceholder} from '#/components/Lists'
+import * as ProfileCard from '#/components/ProfileCard'
 import {Text} from '#/components/Typography'
+import {IS_WEB} from '#/env'
+import {EventOptionsMenu} from '#/features/events/components/EventOptionsMenu'
 import {useEventQuery, useEventRsvpsQuery} from '#/features/events/queries'
 import {type ParsedEvent, parseEventRecord} from '#/features/events/record'
 import {
@@ -25,8 +32,9 @@ import {
   type RsvpStatus,
   type RsvpView,
 } from '#/features/events/types'
-import {eventAtUri} from '#/features/events/url'
-import {EventHeader, GuestRow} from './EventHeader'
+import {eventAtUri, makeEventUrl} from '#/features/events/url'
+import {EventHeader} from './EventHeader'
+import {GuestTabs} from './GuestTabs'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams, 'Event'>
 
@@ -37,19 +45,48 @@ export function EventScreen({route}: Props) {
   const uri = did ? eventAtUri(did, rkey) : undefined
   const {data: event, isLoading, error, refetch} = useEventQuery(uri)
   const parsed = event ? parseEventRecord(event.record) : undefined
+  const [deleted, setDeleted] = useState(false)
+  const {currentAccount} = useSession()
+  const isOwnEvent = !!event && currentAccount?.did === event.creator.did
 
   return (
     <Layout.Screen testID="eventScreen">
       <Layout.Header.Outer>
         <Layout.Header.BackButton />
         <Layout.Header.Content align="left">
-          <Layout.Header.TitleText>
-            <Trans>Event</Trans>
-          </Layout.Header.TitleText>
+          <View style={[a.flex_row, a.align_center, a.gap_sm]}>
+            <Layout.Header.TitleText>
+              <Trans>Event</Trans>
+            </Layout.Header.TitleText>
+            {parsed?.cancelled && <CancelledChip />}
+          </View>
         </Layout.Header.Content>
-        <Layout.Header.Slot />
+        {event ? (
+          <View style={[a.flex_row, a.align_center, a.gap_sm]}>
+            <Button
+              testID="shareEventBtn"
+              label={IS_WEB ? l`Copy link to event` : l`Share event`}
+              size="small"
+              color="secondary"
+              onPress={() => void shareUrl(makeEventUrl(event.creator, rkey))}>
+              <ButtonIcon icon={IS_WEB ? ChainLinkIcon : ShareIcon} />
+              <ButtonText>
+                {IS_WEB ? <Trans>Copy link</Trans> : <Trans>Share</Trans>}
+              </ButtonText>
+            </Button>
+            {isOwnEvent && parsed && (
+              <EventOptionsMenu
+                event={event}
+                parsed={parsed}
+                onDeleted={() => setDeleted(true)}
+              />
+            )}
+          </View>
+        ) : (
+          <Layout.Header.Slot />
+        )}
       </Layout.Header.Outer>
-      {event && parsed ? (
+      {deleted ? null : event && parsed ? (
         <EventBody event={event} parsed={parsed} />
       ) : (
         <ListMaybePlaceholder
@@ -74,25 +111,35 @@ export function EventScreen({route}: Props) {
   )
 }
 
-/*
- * The appview has no "all" status filter: leaving `status` off returns exactly
- * going + interested (not-going respondents are excluded on purpose), which is
- * what the "Either" tab wants. `undefined` here means "leave the param off".
- */
-type GuestTab = 'going' | 'interested' | 'either'
-const GUEST_TABS: {
-  value: GuestTab
-  status: RsvpStatus | undefined
-}[] = [
-  {value: 'going', status: RSVP_GOING},
-  {value: 'interested', status: RSVP_INTERESTED},
-  {value: 'either', status: undefined},
-]
+const GUEST_STATUSES: RsvpStatus[] = [RSVP_GOING, RSVP_INTERESTED]
+/** Room taken by the header and bottom bar, which the list scrolls under. */
+const SCREEN_CHROME_HEIGHT = 120
 
 function EventBody({event, parsed}: {event: EventView; parsed: ParsedEvent}) {
+  const t = useTheme()
   const {t: l} = useLingui()
-  const [tab, setTab] = useState<GuestTab>('going')
-  const active = GUEST_TABS.find(t => t.value === tab) ?? GUEST_TABS[0]
+  const {height: windowHeight} = useWindowDimensions()
+  const listRef = useRef<ListMethods>(null)
+  const scrollY = useRef(0)
+  const tabsLayout = useRef({y: 0, height: 0})
+  const [tab, setTab] = useState(0)
+  const status = GUEST_STATUSES[tab]
+
+  /*
+   * The counts in the header open their tab. The list only scrolls when the
+   * tab bar is off screen: scrolling it to the top regardless clamps to the
+   * bottom of a short list, which reads as a jump to nowhere.
+   */
+  const showGuests = (next: RsvpStatus) => {
+    setTab(GUEST_STATUSES.indexOf(next))
+    const {y, height} = tabsLayout.current
+    const visible =
+      y >= scrollY.current &&
+      y + height <= scrollY.current + windowHeight - SCREEN_CHROME_HEIGHT
+    if (!visible) {
+      listRef.current?.scrollToOffset({offset: y, animated: true})
+    }
+  }
 
   const {
     data,
@@ -102,7 +149,7 @@ function EventBody({event, parsed}: {event: EventView; parsed: ParsedEvent}) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useEventRsvpsQuery(event.uri, active.status)
+  } = useEventRsvpsQuery(event.uri, status)
   const rsvps = useMemo(
     () => data?.pages.flatMap(page => page.rsvps) ?? [],
     [data],
@@ -123,11 +170,13 @@ function EventBody({event, parsed}: {event: EventView; parsed: ParsedEvent}) {
     .map(rsvp => rsvp.actor)
 
   const renderItem = ({item, index}: ListRenderItemInfo<RsvpView>) => (
-    <GuestRow rsvp={item} noBorder={index === 0} />
+    <GuestItem rsvp={item} noBorder={index === 0} />
   )
 
   return (
     <List
+      ref={listRef}
+      onScrollOffsetChange={offset => (scrollY.current = offset)}
       data={rsvps}
       keyExtractor={(item: RsvpView) => item.uri}
       renderItem={renderItem}
@@ -138,37 +187,28 @@ function EventBody({event, parsed}: {event: EventView; parsed: ParsedEvent}) {
             parsed={parsed}
             going={going}
             interested={interested}
+            onPressGuests={showGuests}
           />
-          <View style={[a.px_lg, a.pt_lg]}>
-            <SegmentedControl.Root
-              type="tabs"
-              size="small"
-              label={l`Guest list filter`}
-              value={tab}
-              onChange={setTab}>
-              <SegmentedControl.Item label={l`Going`} value="going">
-                <SegmentedControl.ItemText>
-                  <Trans>Going</Trans>
-                </SegmentedControl.ItemText>
-              </SegmentedControl.Item>
-              <SegmentedControl.Item label={l`Interested`} value="interested">
-                <SegmentedControl.ItemText>
-                  <Trans>Interested</Trans>
-                </SegmentedControl.ItemText>
-              </SegmentedControl.Item>
-              <SegmentedControl.Item label={l`Either`} value="either">
-                <SegmentedControl.ItemText>
-                  <Trans>All</Trans>
-                </SegmentedControl.ItemText>
-              </SegmentedControl.Item>
-            </SegmentedControl.Root>
+          <View onLayout={e => (tabsLayout.current = e.nativeEvent.layout)}>
+            <GuestTabs
+              items={[l`Going`, l`Interested`]}
+              selected={tab}
+              onSelect={setTab}
+            />
           </View>
           {!isLoading && !error && rsvps.length === 0 && (
-            <Text style={[a.px_lg, a.py_md, a.text_sm]}>
-              {tab === 'interested' ? (
+            <Text
+              style={[
+                a.px_lg,
+                a.py_xl,
+                a.text_md,
+                a.text_center,
+                t.atoms.text_contrast_medium,
+              ]}>
+              {status === RSVP_INTERESTED ? (
                 <Trans>No one has marked themselves interested yet.</Trans>
               ) : (
-                <Trans>No one has RSVP'd yet.</Trans>
+                <Trans>No one is going yet.</Trans>
               )}
             </Text>
           )}
@@ -187,7 +227,9 @@ function EventBody({event, parsed}: {event: EventView; parsed: ParsedEvent}) {
           />
           {mutedOrBlockedCount > 0 && (
             <MutedOrBlockedSection
+              key={tab}
               eventUri={event.uri}
+              status={status}
               count={mutedOrBlockedCount}
             />
           )}
@@ -200,15 +242,17 @@ function EventBody({event, parsed}: {event: EventView; parsed: ParsedEvent}) {
 
 function MutedOrBlockedSection({
   eventUri,
+  status,
   count,
 }: {
   eventUri: string
+  status: RsvpStatus
   count: number
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
   const [open, setOpen] = useState(false)
-  const {data} = useEventRsvpsQuery(eventUri, undefined, 'mutedOrBlocked', open)
+  const {data} = useEventRsvpsQuery(eventUri, status, 'mutedOrBlocked', open)
   const rsvps = data?.pages.flatMap(page => page.rsvps) ?? []
 
   return (
@@ -233,8 +277,45 @@ function MutedOrBlockedSection({
       </Button>
       {open &&
         rsvps.map((item, index) => (
-          <GuestRow key={item.uri} rsvp={item} noBorder={index === 0} />
+          <GuestItem key={item.uri} rsvp={item} noBorder={index === 0} />
         ))}
+    </View>
+  )
+}
+
+/**
+ * One guest, as a standard profile row with a follow button. The padding is on
+ * the card's link rather than around it, so the link fills the row: the whole
+ * row is pressable and the j/k selection outline wraps the row, not its text.
+ */
+function GuestItem({rsvp, noBorder}: {rsvp: RsvpView; noBorder?: boolean}) {
+  const t = useTheme()
+  const moderationOpts = useModerationOpts()
+  if (!moderationOpts) return null
+  return (
+    <View style={[!noBorder && [a.border_t, t.atoms.border_contrast_low]]}>
+      <ProfileCard.Default
+        profile={rsvp.actor}
+        moderationOpts={moderationOpts}
+        style={[a.px_lg, a.py_md]}
+      />
+    </View>
+  )
+}
+
+function CancelledChip() {
+  const t = useTheme()
+  return (
+    <View
+      testID="eventCancelledChip"
+      style={[
+        a.rounded_full,
+        a.px_sm,
+        {paddingVertical: 2, backgroundColor: t.palette.negative_500},
+      ]}>
+      <Text style={[a.text_xs, a.font_bold, {color: t.palette.white}]}>
+        <Trans>Cancelled</Trans>
+      </Text>
     </View>
   )
 }

@@ -16,4 +16,9 @@ export type TokimekiPoll = {
   totalVotes: number
   /** 0-based index of the viewer's pick; absent if they have not voted. */
   myVote?: number
+  /**
+   * The viewer's vote records on this poll, so the vote can be taken back.
+   * Usually one; a double tap can leave more.
+   */
+  myVoteUris?: string[]
 }

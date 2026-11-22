@@ -2,7 +2,7 @@ import {type UriString} from '@atproto/syntax'
 
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
-import {getEmbedCreator, withCreator} from './at-card'
+import {getEmbedCreator, getLinkAssociatedRefs, withCreator} from './at-card'
 
 const uri = 'https://example.attie.site/' as UriString
 const did = 'did:plc:4hodhjl2kposuchzvpiviwps'
@@ -67,3 +67,55 @@ it.each([undefined, 'not-a-did', 'at://did:plc:abc'])(
     expect(withCreator(external, creator)).not.toHaveProperty('creator')
   },
 )
+
+describe('getLinkAssociatedRefs', () => {
+  const poll = {uri: 'at://did:plc:alice/tech.tokimeki.poll.poll/3kpoll'}
+  const postWith = (external: Record<string, unknown>) => ({
+    $type: 'app.bsky.feed.post',
+    embed: {$type: 'app.bsky.embed.external', external},
+  })
+
+  it("prefers the view's refs", () => {
+    expect(getLinkAssociatedRefs({uri, associatedRefs: [poll]}, {})).toEqual([
+      poll,
+    ])
+  })
+
+  it("falls back to the record's matching link card", () => {
+    expect(
+      getLinkAssociatedRefs(
+        {uri},
+        postWith({uri, associatedRefs: [{...poll, cid: 'c'}]}),
+      ),
+    ).toEqual([poll])
+  })
+
+  it('reads the link card inside a quote with media', () => {
+    expect(
+      getLinkAssociatedRefs(
+        {uri},
+        {
+          embed: {
+            $type: 'app.bsky.embed.recordWithMedia',
+            media: postWith({uri, associatedRefs: [poll]}).embed,
+          },
+        },
+      ),
+    ).toEqual([poll])
+  })
+
+  it('ignores a different link, and malformed refs', () => {
+    expect(
+      getLinkAssociatedRefs(
+        {uri},
+        postWith({uri: 'https://other.test/', associatedRefs: [poll]}),
+      ),
+    ).toEqual([])
+    expect(
+      getLinkAssociatedRefs(
+        {uri},
+        postWith({uri, associatedRefs: [{nope: 1}, 'x', poll]}),
+      ),
+    ).toEqual([poll])
+  })
+})

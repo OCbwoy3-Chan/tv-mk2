@@ -13,7 +13,7 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 import {useQueryClient} from '@tanstack/react-query'
 
-import {getEmbedCreator} from '#/lib/at-card'
+import {getEmbedCreator, getLinkAssociatedRefs} from '#/lib/at-card'
 import {makeProfileLink} from '#/lib/routes/links'
 import {SHARP_CORNERS} from '#/lib/shapes'
 import {getChatInviteCodeFromUrl} from '#/lib/strings/url-helpers'
@@ -48,9 +48,12 @@ import {Embed as StarterPackCard} from '#/components/StarterPack/StarterPackCard
 import {SubtleHover} from '#/components/SubtleHover'
 import {IS_ANDROID, IS_WEB} from '#/env'
 import {EventEmbed} from '#/features/events/components/EventEmbed'
-import {parseEventUrl} from '#/features/events/url'
+import {eventFromRefs, parseEventUrl} from '#/features/events/url'
 import {TokimekiPollEmbed} from '#/features/tokimeki/components/TokimekiPollEmbed'
-import {parseTokimekiPollUrl} from '#/features/tokimeki/parse'
+import {
+  parseTokimekiPollUrl,
+  tokimekiPollFromRefs,
+} from '#/features/tokimeki/parse'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 export {PostPoll} from '#/features/pollblue/components/PostPoll'
@@ -177,7 +180,10 @@ function MediaEmbed({
           </ContentHider>
         )
       }
-      const tokimekiRef = parseTokimekiPollUrl(embed.view.external.uri)
+      const refs = getLinkAssociatedRefs(embed.view.external, rest.post?.record)
+      const tokimekiRef =
+        tokimekiPollFromRefs(refs) ??
+        parseTokimekiPollUrl(embed.view.external.uri)
       if (tokimekiRef) {
         return (
           <ContentHider
@@ -202,7 +208,8 @@ function MediaEmbed({
           />
         )
       }
-      const eventRef = parseEventUrl(embed.view.external.uri)
+      const eventRef =
+        eventFromRefs(refs) ?? parseEventUrl(embed.view.external.uri)
       if (eventRef) {
         return (
           <ContentHider

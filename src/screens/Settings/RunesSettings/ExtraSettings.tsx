@@ -29,7 +29,7 @@ import {
 } from '#/state/preferences/render-bridged-html'
 import {useSetTidSuffix, useTidSuffix} from '#/state/preferences/tid-suffix'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import {atoms as a} from '#/alf'
+import {atoms as a, useAlf} from '#/alf'
 import {Admonition} from '#/components/Admonition'
 import {Button, ButtonText} from '#/components/Button'
 import * as Dialog from '#/components/Dialog'
@@ -42,6 +42,7 @@ import {Fediverse as FediverseIcon} from '#/components/icons/Fediverse'
 import {Hashtag_Stroke2_Corner0_Rounded as HashtagIcon} from '#/components/icons/Hashtag'
 import {LikeRepost_Stroke2_Corner2_Rounded as LikeRepostIcon} from '#/components/icons/Heart2'
 import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
+import {PageText_Stroke2_Corner0_Rounded as PageTextIcon} from '#/components/icons/Page'
 import {Text} from '#/components/Typography'
 import {IS_WEB} from '#/env'
 import {useDevMode} from '#/storage/hooks/dev-mode'
@@ -49,6 +50,7 @@ import {RunesScreenLayout} from './components/RunesScreenLayout'
 
 export function RunesExtraSettingsScreen() {
   const {t: l} = useLingui()
+  const {fonts} = useAlf()
 
   const directFetchRecords = useDirectFetchRecords()
   const setDirectFetchRecords = useSetDirectFetchRecords()
@@ -94,6 +96,19 @@ export function RunesExtraSettingsScreen() {
           <SettingsList.ItemIcon icon={FediverseIcon} />
           <SettingsList.ItemText>
             <Trans>Render formatted text from bridged fediverse posts</Trans>
+          </SettingsList.ItemText>
+          <Toggle.Platform />
+        </SettingsList.Item>
+      </Toggle.Item>
+      <Toggle.Item
+        name="font_letter_spacing"
+        label={l`Add letter spacing to the system font`}
+        value={fonts.letterSpacing}
+        onChange={value => fonts.setLetterSpacing(value)}>
+        <SettingsList.Item>
+          <SettingsList.ItemIcon icon={PageTextIcon} />
+          <SettingsList.ItemText>
+            <Trans>Add letter spacing to the system font</Trans>
           </SettingsList.ItemText>
           <Toggle.Platform />
         </SettingsList.Item>

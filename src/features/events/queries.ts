@@ -10,12 +10,15 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import {type EventCover, withCoverMedia} from '#/lib/api/event'
+import {uploadBlob} from '#/lib/api/upload-blob'
 import {BLACKSKY_APPVIEW} from '#/lib/constants'
 import {STALE} from '#/state/queries'
 import {createQueryKey} from '#/state/queries/util'
 import {useAppviewClient, usePdsClient, useSession} from '#/state/session'
 import {applyRsvp} from './rsvp-state'
 import {
+  EVENT_COLLECTION,
   type EventView,
   RSVP_COLLECTION,
   type RsvpStatus,
@@ -84,15 +87,16 @@ export function useEventQuery(uri: string | undefined, initial?: EventView) {
   })
 }
 
-/**
- * The first few RSVPs in one status, for the avatar row next to that status's
- * count. Two separate queries keep going and interested avatars distinct.
- */
-export function useRsvpsQuery(uri: string | undefined, status: RsvpStatus) {
+/** The first few RSVPs in one status, for an avatar row beside its count. */
+export function useRsvpsQuery(
+  uri: string | undefined,
+  status: RsvpStatus,
+  enabled = true,
+) {
   const client = useAppviewClient()
   return useQuery({
     queryKey: rsvpsQueryKey(uri ?? '', status),
-    enabled: !!uri,
+    enabled: !!uri && enabled,
     staleTime: STALE.SECONDS.THIRTY,
     queryFn: () =>
       calendarXrpc<RsvpPage>(
@@ -255,6 +259,85 @@ export function useRsvpMutation(event: EventView) {
         viewer: {...base.viewer, rsvp: result},
       })
       markListsStale(queryClient)
+    },
+  })
+}
+
+/**
+ * Deletes the viewer's own event record. Other people's RSVPs live in their
+ * repos and are left alone; without the event they no longer show anywhere.
+ * The event's cached view is left for the caller to drop, so the open event
+ * page doesn't flash "not found" while it's being left.
+ */
+export function useDeleteEventMutation() {
+  const pdsClient = usePdsClient()
+  const queryClient = useQueryClient()
+  return useMutation<void, Error, string>({
+    mutationFn: async uri => {
+      const {host: repo, rkey} = new AtUri(uri)
+      await pdsClient.deleteRecord(EVENT_COLLECTION, rkey, {
+        repo,
+        service: null,
+      })
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({queryKey: [MY_EVENTS_KEY_ROOT]})
+    },
+  })
+}
+
+/**
+ * Rewrites the viewer's own event record. The edited view is cached straight
+ * away, since the AppView only sees the change once it reaches the firehose.
+ */
+export function useUpdateEventMutation(event: EventView) {
+  const pdsClient = usePdsClient()
+  const queryClient = useQueryClient()
+  return useMutation<
+    {cid: string; record: Record<string, unknown>},
+    Error,
+    {
+      record: Record<string, unknown>
+      /** A new cover to upload, null to remove it, or absent to keep it. */
+      cover?: EventCover | null
+    }
+  >({
+    mutationFn: async ({record, cover}) => {
+      const {host: repo, rkey} = new AtUri(event.uri)
+      let next = record
+      if (cover !== undefined) {
+        const uploaded = cover
+          ? {
+              blob: (await uploadBlob(pdsClient, cover.path, cover.mime)).blob,
+              width: cover.width,
+              height: cover.height,
+            }
+          : null
+        const {media: _media, ...rest} = record
+        const media = withCoverMedia(record.media, uploaded)
+        next = media.length ? {...rest, media} : rest
+      }
+      const res = await pdsClient.putRecord(next as never, rkey, {
+        repo,
+        service: null,
+      })
+      return {cid: res.body.cid, record: next}
+    },
+    onSuccess: ({cid, record}, {cover}) => {
+      queryClient.setQueryData<EventView | null>(
+        eventQueryKey(event.uri),
+        prev =>
+          prev
+            ? {
+                ...prev,
+                cid,
+                record,
+                // Show the new cover before the AppView has its CDN copy.
+                ...(cover !== undefined ? {thumb: cover?.path} : {}),
+              }
+            : prev,
+      )
+      void queryClient.invalidateQueries({queryKey: [MY_EVENTS_KEY_ROOT]})
     },
   })
 }

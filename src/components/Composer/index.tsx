@@ -286,6 +286,7 @@ export function Composer({
       {
         fontScale: fonts.scaleMultiplier,
         fontFamily: fonts.family,
+        fontLetterSpacing: fonts.letterSpacing,
         flags: {},
       },
     )
@@ -414,9 +415,7 @@ export function Composer({
       {tapper.state.nodes.map((node, i) => {
         switch (node.type) {
           case 'text':
-            return (
-              <Span key={i}>{renderSyntax(node.value, node.start)}</Span>
-            )
+            return <Span key={i}>{renderSyntax(node.value, node.start)}</Span>
           case 'trigger':
           case 'facet': {
             return (
@@ -488,50 +487,52 @@ export function Composer({
           {...rest}
           {...tapper.inputProps}
           {...sift.targetProps}
-          {...(IS_WEB && bluemojiRepo && {
-            value: projection.text,
-            selection: projectedSelection,
-            accessibilityValue: {text: tapper.state.text},
-            onSelectionChange: (event: {
-              nativeEvent: {selection: {start: number; end: number}}
-            }) => {
-              const {start, end} = event.nativeEvent.selection
-              tapper.inputProps.onSelectionChange({
-                nativeEvent: {
-                  selection: {
-                    start: nativeToRaw(projection, start),
-                    end: nativeToRaw(projection, end),
+          {...(IS_WEB &&
+            bluemojiRepo && {
+              value: projection.text,
+              selection: projectedSelection,
+              accessibilityValue: {text: tapper.state.text},
+              onSelectionChange: (event: {
+                nativeEvent: {selection: {start: number; end: number}}
+              }) => {
+                const {start, end} = event.nativeEvent.selection
+                tapper.inputProps.onSelectionChange({
+                  nativeEvent: {
+                    selection: {
+                      start: nativeToRaw(projection, start),
+                      end: nativeToRaw(projection, end),
+                    },
                   },
-                },
-              })
-            },
-            onCopy: (event: React.ClipboardEvent) => {
-              if (!projection.tokens.length) return
-              event.clipboardData.setData(
-                'text/plain',
-                tapper.state.text.slice(
-                  tapper.state.selection.start,
-                  tapper.state.selection.end,
-                ),
-              )
-              event.preventDefault()
-            },
-            onCut: (event: React.ClipboardEvent) => {
-              if (!projection.tokens.length || rest.editable === false) return
-              const {start, end} = tapper.state.selection
-              event.clipboardData.setData(
-                'text/plain',
-                tapper.state.text.slice(start, end),
-              )
-              event.preventDefault()
-              tapper.inputProps.onChangeText(
-                tapper.state.text.slice(0, start) + tapper.state.text.slice(end),
-              )
-              tapper.inputProps.onSelectionChange({
-                nativeEvent: {selection: {start, end: start}},
-              })
-            },
-          })}
+                })
+              },
+              onCopy: (event: React.ClipboardEvent) => {
+                if (!projection.tokens.length) return
+                event.clipboardData.setData(
+                  'text/plain',
+                  tapper.state.text.slice(
+                    tapper.state.selection.start,
+                    tapper.state.selection.end,
+                  ),
+                )
+                event.preventDefault()
+              },
+              onCut: (event: React.ClipboardEvent) => {
+                if (!projection.tokens.length || rest.editable === false) return
+                const {start, end} = tapper.state.selection
+                event.clipboardData.setData(
+                  'text/plain',
+                  tapper.state.text.slice(start, end),
+                )
+                event.preventDefault()
+                tapper.inputProps.onChangeText(
+                  tapper.state.text.slice(0, start) +
+                    tapper.state.text.slice(end),
+                )
+                tapper.inputProps.onSelectionChange({
+                  nativeEvent: {selection: {start, end: start}},
+                })
+              },
+            })}
           onChangeText={next => {
             if (IS_WEB && projection.tokens.length) {
               next = applyNativeEmojiEditWithSelection(

@@ -34,6 +34,7 @@ import {type ThreadPostItem} from '#/screens/PostThread/reader'
 import {atoms as a, useTheme} from '#/alf'
 import {EphemeralAccountSwitcherFromScope} from '#/components/EphemeralAccountSwitcher'
 import {useEphemeralAccountError} from '#/components/hooks/useEphemeralAccountError'
+import {useEphemeralPostToggle} from '#/components/hooks/useEphemeralPostToggle'
 import {useRunWithEphemeralAgent} from '#/components/hooks/useRunWithEphemeralAgent'
 import {Reply_Stroke2_Corner0_Rounded as ReplyIcon} from '#/components/icons/Reply'
 import {
@@ -270,57 +271,14 @@ function ReaderSeamInner({
     }
   }
 
-  const onSelectLikeAccount = async (account: (typeof accounts)[number]) => {
-    try {
-      const wasLiked = await runWithEphemeralAgent(account, async agent => {
-        const res = await agent.getPosts({uris: [shadow.uri]})
-        const target = res.data.posts[0]
-        const likeUri = target?.viewer?.like
-
-        if (likeUri) {
-          await agent.deleteLike(likeUri)
-          return true
-        }
-
-        await agent.like(shadow.uri, shadow.cid)
-        return false
-      })
-
-      Toast.show(
-        wasLiked
-          ? l`Removed like as @${account.handle}`
-          : l`Liked as @${account.handle}`,
-      )
-    } catch (e) {
-      showEphemeralError(e, account, onSelectLikeAccount)
-    }
-  }
-
-  const onSelectRepostAccount = async (account: (typeof accounts)[number]) => {
-    try {
-      const wasReposted = await runWithEphemeralAgent(account, async agent => {
-        const res = await agent.getPosts({uris: [shadow.uri]})
-        const target = res.data.posts[0]
-        const repostUri = target?.viewer?.repost
-
-        if (repostUri) {
-          await agent.deleteRepost(repostUri)
-          return true
-        }
-
-        await agent.repost(shadow.uri, shadow.cid)
-        return false
-      })
-
-      Toast.show(
-        wasReposted
-          ? l`Removed repost as @${account.handle}`
-          : l`Reposted as @${account.handle}`,
-      )
-    } catch (e) {
-      showEphemeralError(e, account, onSelectRepostAccount)
-    }
-  }
+  const ephemeralPost = useEphemeralPostToggle({
+    uri: shadow.uri,
+    cid: shadow.cid,
+  })
+  const onSelectLikeAccount = (account: (typeof accounts)[number]) =>
+    ephemeralPost.toggle('like', account)
+  const onSelectRepostAccount = (account: (typeof accounts)[number]) =>
+    ephemeralPost.toggle('repost', account)
 
   const renderReplyButton = (onLongPress?: () => void) => (
     <PostControlButton
@@ -507,6 +465,7 @@ function ReaderSeamInner({
       ) : (
         isThreadEnd && <View style={[a.pb_sm]} />
       )}
+      {ephemeralPost.prompt}
     </>
   )
 }

@@ -1,4 +1,7 @@
-import {getThreadShortcut} from './thread-shortcuts'
+import {
+  getEmptyPostBackspaceAction,
+  getThreadShortcut,
+} from './thread-shortcuts'
 
 const allAvailable = {
   canAddPost: true,
@@ -44,4 +47,30 @@ it.each([
   expect(
     getThreadShortcut({altKey: true, shiftKey: true, code}, allAvailable),
   ).toBe(action)
+})
+
+it('closes only an empty single-post composer and preserves thread removal guards', () => {
+  const single = {
+    hasContent: false,
+    isFirstPost: true,
+    canRemovePost: false,
+    canCloseComposer: true,
+  }
+  expect(getEmptyPostBackspaceAction(single)).toBe('close-composer')
+  expect(
+    getEmptyPostBackspaceAction({...single, hasContent: true}),
+  ).toBeUndefined()
+  expect(
+    getEmptyPostBackspaceAction({...single, canCloseComposer: false}),
+  ).toBeUndefined()
+  expect(
+    getEmptyPostBackspaceAction({...single, canRemovePost: true}),
+  ).toBeUndefined()
+  expect(
+    getEmptyPostBackspaceAction({
+      ...single,
+      canRemovePost: true,
+      isFirstPost: false,
+    }),
+  ).toBe('remove-post')
 })

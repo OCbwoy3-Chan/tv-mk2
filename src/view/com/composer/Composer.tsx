@@ -59,7 +59,9 @@ import {useNavigation} from '@react-navigation/native'
 import {useQueries, useQueryClient} from '@tanstack/react-query'
 
 import {generateAltText} from '#/lib/ai/generateAltText'
+import {eventHasContent} from '#/lib/api/event'
 import * as apilib from '#/lib/api/index'
+import {pollHasContent} from '#/lib/api/poll'
 import {EmbeddingDisabledError} from '#/lib/api/resolve'
 import {useAppState} from '#/lib/appState'
 import {retry} from '#/lib/async/retry'
@@ -155,6 +157,7 @@ import {SelectPollBtn} from '#/view/com/composer/poll/SelectPollBtn'
 import {SuggestedLanguage} from '#/view/com/composer/select-language/SuggestedLanguage'
 import {TagsBtn} from '#/view/com/composer/tags/TagsBtn'
 import {TextInput} from '#/view/com/composer/text-input/TextInput'
+import {getEmptyPostBackspaceAction} from '#/view/com/composer/text-input/thread-shortcuts'
 import {TextSyntaxHelp} from '#/view/com/composer/TextSyntaxHelp'
 import {ThreadgateBtn} from '#/view/com/composer/threadgate/ThreadgateBtn'
 import {SubtitleDialogBtn} from '#/view/com/composer/videos/SubtitleDialog'
@@ -361,7 +364,8 @@ export const ComposePost = ({
   const {closeComposer, minimizeComposer} = useComposerControls()
   const shellComposerState = useComposerState()
   const isComposerOpen = !!shellComposerState
-  const isComposerVisible = isComposerOpen && !shellComposerState.isMinimized
+  const isComposerMinimized = shellComposerState?.isMinimized
+  const isComposerVisible = isComposerOpen && !isComposerMinimized
   const showEphemeralError = useEphemeralAccountError()
   const {t: l, i18n} = useLingui()
   const forceAltTextEnabled = useForceAltTextEnabled()
@@ -516,9 +520,20 @@ export const ComposePost = ({
 
   useLayoutEffect(() => {
     if (isComposerOpen) {
-      saveRecovery(currentDid, {activeAccountDid, replyTo}, composerState)
+      saveRecovery(
+        currentDid,
+        {activeAccountDid, replyTo, isMinimized: isComposerMinimized},
+        composerState,
+      )
     }
-  }, [isComposerOpen, currentDid, activeAccountDid, replyTo, composerState])
+  }, [
+    isComposerOpen,
+    isComposerMinimized,
+    currentDid,
+    activeAccountDid,
+    replyTo,
+    composerState,
+  ])
 
   const thread = composerState.thread
   const target = shellComposerState?.target
@@ -1128,12 +1143,7 @@ export const ComposePost = ({
   const handleDiscard = useCallback(() => {
     const posts = thread.posts
     const hasContent = posts.some(
-      post =>
-        post.richtext.text.trim().length > 0 ||
-        post.embed.media ||
-        post.embed.link ||
-        post.embed.poll ||
-        post.embed.event,
+      post => post.richtext.text.trim().length > 0 || hasKeepableEmbed(post),
     )
     ax.metric('draft:discard', {
       logContext: 'ComposerClose',
@@ -1167,11 +1177,7 @@ export const ComposePost = ({
       }
 
       const hasContent = thread.posts.some(
-        post =>
-          post.shortenedGraphemeLength > 0 ||
-          post.embed.media ||
-          post.embed.link ||
-          post.embed.poll,
+        post => post.shortenedGraphemeLength > 0 || hasKeepableEmbed(post),
       )
 
       if (
@@ -1960,6 +1966,9 @@ export const ComposePost = ({
                 isReply={index > 0 || !!replyTo}
                 isActive={post.id === activePost.id}
                 canRemovePost={thread.posts.length > 1}
+                onCloseEmpty={
+                  isComposerEmpty && !isPublishing ? onClose : undefined
+                }
                 canMovePostUp={index > 0}
                 canMovePostDown={index < thread.posts.length - 1}
                 canAddPost={post.id === activePost.id && canAddPost}
@@ -2048,6 +2057,7 @@ let ComposerPost = memo(function ComposerPost({
   isLastPost,
   isPartOfThread,
   canRemovePost,
+  onCloseEmpty,
   canMovePostUp,
   canMovePostDown,
   canAddPost,
@@ -2069,6 +2079,7 @@ let ComposerPost = memo(function ComposerPost({
   isLastPost: boolean
   isPartOfThread: boolean
   canRemovePost: boolean
+  onCloseEmpty?: () => void
   canMovePostUp: boolean
   canMovePostDown: boolean
   canAddPost: boolean
@@ -2240,11 +2251,18 @@ let ComposerPost = memo(function ComposerPost({
           canMovePostUp={canMovePostUp}
           canMovePostDown={canMovePostDown}
           onBackspaceEmpty={() => {
-            if (!canRemovePost || isFirstPost || !isEmptyPost(post)) {
-              return false
+            const action = getEmptyPostBackspaceAction({
+              hasContent: postHasContent(post),
+              isFirstPost,
+              canRemovePost,
+              canCloseComposer: !!onCloseEmpty,
+            })
+            if (action === 'close-composer') {
+              onCloseEmpty?.()
+            } else if (action === 'remove-post') {
+              dispatch({type: 'remove_post', postId: post.id})
             }
-            dispatch({type: 'remove_post', postId: post.id})
-            return true
+            return !!action
           }}
           onAddPost={onAddPost}
           onMovePost={onMovePost}
@@ -2344,7 +2362,6 @@ let ComposerPost = memo(function ComposerPost({
       <ComposerEmbeds
         canRemoveQuote={canRemoveQuote}
         embed={post.embed}
-        text={richtext.text}
         dispatch={dispatchPost}
         clearVideo={() => onClearVideo(post.id)}
         isActivePost={isActive}
@@ -2640,14 +2657,12 @@ function ComposerAvatar({
 
 function ComposerEmbeds({
   embed,
-  text,
   dispatch,
   clearVideo,
   canRemoveQuote,
   isActivePost,
 }: {
   embed: EmbedDraft
-  text: string
   dispatch: (action: PostAction) => void
   clearVideo: () => void
   canRemoveQuote: boolean
@@ -2676,9 +2691,7 @@ function ComposerEmbeds({
         </View>
       )}
 
-      {embed.poll && (
-        <PollEditor poll={embed.poll} text={text} dispatch={dispatch} />
-      )}
+      {embed.poll && <PollEditor poll={embed.poll} dispatch={dispatch} />}
       {embed.event && <EventEditor event={embed.event} dispatch={dispatch} />}
 
       {!embed.media && embed.link && (
@@ -3063,25 +3076,6 @@ function ComposerFooter({
                 onSelectGif={onSelectGif}
                 disabled={!!media || hasPoll || hasEvent}
               />
-              {foldExtras ? (
-                <ComposerExtrasMenu
-                  canAddPoll={canAddPoll && !postHasAttachment(post)}
-                  canAddEvent={canAddEvent && !postHasAttachment(post)}
-                  onAddPoll={() => dispatch({type: 'embed_add_poll'})}
-                  onAddEvent={() => dispatch({type: 'embed_add_event'})}
-                />
-              ) : (
-                <>
-                  <SelectPollBtn
-                    onPress={() => dispatch({type: 'embed_add_poll'})}
-                    disabled={!canAddPoll || postHasAttachment(post)}
-                  />
-                  <SelectEventBtn
-                    onPress={() => dispatch({type: 'embed_add_event'})}
-                    disabled={!canAddEvent || postHasAttachment(post)}
-                  />
-                </>
-              )}
               {showEmojiPicker ? (
                 <EmojiPicker.Root nextFocusRef={textInputRef}>
                   <EmojiPicker.Trigger label={l`Open emoji picker`}>
@@ -3107,6 +3101,25 @@ function ComposerFooter({
                   textInputRef.current?.insertText(`${name} `)
                 }}
               />
+              {foldExtras ? (
+                <ComposerExtrasMenu
+                  canAddPoll={canAddPoll && !postHasAttachment(post)}
+                  canAddEvent={canAddEvent && !postHasAttachment(post)}
+                  onAddPoll={() => dispatch({type: 'embed_add_poll'})}
+                  onAddEvent={() => dispatch({type: 'embed_add_event'})}
+                />
+              ) : (
+                <>
+                  <SelectPollBtn
+                    onPress={() => dispatch({type: 'embed_add_poll'})}
+                    disabled={!canAddPoll || postHasAttachment(post)}
+                  />
+                  <SelectEventBtn
+                    onPress={() => dispatch({type: 'embed_add_event'})}
+                    disabled={!canAddEvent || postHasAttachment(post)}
+                  />
+                </>
+              )}
             </ToolbarWrapper>
           )}
         </LayoutAnimationConfig>
@@ -3325,6 +3338,20 @@ async function whenAppViewReady(
         below: 0,
         branchingFactor: 0,
       }),
+  )
+}
+
+/**
+ * Whether a post's attachments are worth a "save as draft?" prompt. A poll
+ * or event the user opened but never filled in is not, so closing just
+ * closes, the same as with an empty post.
+ */
+function hasKeepableEmbed(post: PostDraft) {
+  return Boolean(
+    post.embed.media ||
+    post.embed.link ||
+    (post.embed.poll && pollHasContent(post.embed.poll)) ||
+    (post.embed.event && eventHasContent(post.embed.event)),
   )
 }
 

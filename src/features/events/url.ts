@@ -28,7 +28,12 @@ export function parseEventUrl(url: string): EventRef | undefined {
     return
   }
   let ref: EventRef | undefined
-  if (isOwn && parts.length === 4 && parts[0] === 'profile' && parts[2] === 'event') {
+  if (
+    isOwn &&
+    parts.length === 4 &&
+    parts[0] === 'profile' &&
+    parts[2] === 'event'
+  ) {
     ref = {actor: parts[1], rkey: parts[3]}
   } else if (isOwn && parts.length === 3 && parts[0] === 'event') {
     // Pre-standard links, still shared by Blacksky.
@@ -46,6 +51,22 @@ export function parseEventUrl(url: string): EventRef | undefined {
   if (!ref || !RKEY_RE.test(ref.rkey)) return
   if (!ref.actor.startsWith('did:') && !ref.actor.includes('.')) return
   return ref
+}
+
+/**
+ * An event named in a link card's `associatedRefs`, so an event is found by
+ * its record rather than by recognising a calendar site's web address.
+ */
+export function eventFromRefs(
+  refs: readonly {uri: string}[] | undefined,
+): EventRef | undefined {
+  for (const ref of refs ?? []) {
+    const match = /^at:\/\/(did:[^/]+)\/([^/]+)\/([^/?#]+)$/.exec(ref.uri)
+    if (match && match[2] === EVENT_COLLECTION && RKEY_RE.test(match[3])) {
+      return {actor: match[1], rkey: match[3]}
+    }
+  }
+  return undefined
 }
 
 export function eventAtUri(did: string, rkey: string) {

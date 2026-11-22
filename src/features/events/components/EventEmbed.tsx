@@ -6,6 +6,7 @@ import {SHARP_CORNERS} from '#/lib/shapes'
 import {toNiceDomain} from '#/lib/strings/url-helpers'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useResolveDidQuery} from '#/state/queries/resolve-uri'
+import {useSession} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {Button, ButtonText} from '#/components/Button'
 import {Divider} from '#/components/Divider'
@@ -19,6 +20,7 @@ import {useEventQuery} from '../queries'
 import {parseEventRecord} from '../record'
 import {eventAtUri, type EventRef, makeEventLink} from '../url'
 import {EventMeta} from './EventMeta'
+import {EventOptionsMenu} from './EventOptionsMenu'
 import {Poster} from './Poster'
 import {RsvpButtons} from './RsvpButtons'
 
@@ -37,6 +39,7 @@ export function EventEmbed({
   const {t: l, i18n} = useLingui()
   const openLink = useOpenLink()
   const shapePreference = useEnableSquareButtons()
+  const {currentAccount} = useSession()
   const {data: did} = useResolveDidQuery(eventRef.actor)
   const {data: event} = useEventQuery(
     did ? eventAtUri(did, eventRef.rkey) : undefined,
@@ -50,6 +53,7 @@ export function EventEmbed({
   const phase = eventPhase(parsed, new Date())
   const sharp = shapePreference === 'sharp' && SHARP_CORNERS
   const showActions = !parsed.cancelled && phase !== 'past'
+  const isOwn = currentAccount?.did === event.creator.did
 
   return (
     <View
@@ -110,19 +114,41 @@ export function EventEmbed({
               </ButtonText>
             </Button>
           ) : (
-            <View style={[a.flex_row, a.align_center, a.gap_2xs]}>
-              <GlobeIcon
-                size="xs"
-                style={[a.transition_color, t.atoms.text_contrast_low]}
-              />
-              <Text
-                numberOfLines={1}
-                style={[a.text_xs, t.atoms.text_contrast_medium]}>
-                {toNiceDomain(link.uri)}
-              </Text>
-            </View>
+            <Link
+              testID="eventEmbedSiteLink"
+              to={link.uri}
+              label={l`Open ${toNiceDomain(link.uri)}`}
+              onPress={onOpen}
+              style={[a.flex_row, a.align_center, a.gap_2xs, a.self_start]}>
+              {({hovered, pressed}) => (
+                <>
+                  <GlobeIcon
+                    size="xs"
+                    style={[a.transition_color, t.atoms.text_contrast_low]}
+                  />
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      a.text_xs,
+                      t.atoms.text_contrast_medium,
+                      (hovered || pressed) && a.underline,
+                    ]}>
+                    {toNiceDomain(link.uri)}
+                  </Text>
+                </>
+              )}
+            </Link>
           )}
-          <RsvpButtons event={event} />
+          <View style={[a.flex_row, a.gap_sm]}>
+            <RsvpButtons event={event} style={[a.flex_1]} />
+            {isOwn && (
+              <EventOptionsMenu
+                event={event}
+                parsed={parsed}
+                leaveOnDelete={false}
+              />
+            )}
+          </View>
         </View>
       )}
     </View>

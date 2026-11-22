@@ -159,6 +159,8 @@ export function ProfileEvents({
       ListFooterComponent={
         events.length ? (
           <ListFooter
+            // The cards have their own borders; a rule under the last one doubles it.
+            style={a.border_t_0}
             isFetchingNextPage={isFetchingNextPage}
             error={error ? _(msg`Couldn't load more events.`) : undefined}
             onRetry={next.fetchNextPage}

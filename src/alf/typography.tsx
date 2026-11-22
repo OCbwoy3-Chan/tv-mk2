@@ -28,9 +28,11 @@ export function normalizeTextStyles(
   {
     fontScale,
     fontFamily,
+    fontLetterSpacing,
   }: {
     fontScale: number
     fontFamily: Alf['fonts']['family']
+    fontLetterSpacing: Alf['fonts']['letterSpacing']
   } & Pick<Alf, 'flags'>,
 ) {
   const s: MutableTextStyle = {...flatten(styles)}
@@ -46,7 +48,7 @@ export function normalizeTextStyles(
     s.lineHeight = s.fontSize
   }
 
-  applyFonts(s, fontFamily)
+  applyFonts(s, fontFamily, fontLetterSpacing)
 
   return s
 }
@@ -104,7 +106,9 @@ export function renderChildrenWithEmoji(
         emojis[index] ? (
           <UITextView
             key={index}
-            style={{color: '#000', WebkitTextFillColor: 'initial'} as TextStyle}>
+            style={
+              {color: '#000', WebkitTextFillColor: 'initial'} as TextStyle
+            }>
             {emojis[index]}
           </UITextView>
         ) : null,

@@ -17,12 +17,6 @@ import {retry} from '#/lib/async/retry'
 import {withCreator} from '#/lib/at-card'
 import {IMAGE_SIZE_CONFIG_POSTS, MAX_TAGS} from '#/lib/constants'
 import {} from '#/lib/constants'
-import {
-  buildPrefixedatprotoRkeyV2,
-  buildSuffixedatprotoRkeyV2,
-  isValidAtprotoTidPrefix,
-  isValidAtprotoTidSuffix,
-} from '#/deltas/lib/atproto-rkey'
 import {isNetworkError} from '#/lib/strings/errors'
 import {
   applyFacetSyntax,
@@ -47,6 +41,12 @@ import {
   type PostDraft,
   type ThreadDraft,
 } from '#/view/com/composer/state/composer'
+import {
+  buildPrefixedatprotoRkeyV2,
+  buildSuffixedatprotoRkeyV2,
+  isValidAtprotoTidPrefix,
+  isValidAtprotoTidSuffix,
+} from '#/deltas/lib/atproto-rkey'
 import {IS_IOS, IS_WEB} from '#/env'
 import {fetchBluemojiItemQuery} from '#/features/bluemoji/queries'
 import {detectBluemojiFacets} from '#/features/bluemoji/util'
@@ -61,6 +61,7 @@ import {
   ensureEvent,
   finalizeEvent,
   rsvpSelfGoing,
+  uploadEventCover,
 } from './event-publish'
 import {reuseGalleryImageBlob} from './resolve-gallery'
 import {uploadBlob} from './upload-blob'
@@ -208,15 +209,20 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
 
   // The event record has to exist before the post so the link card can point
   // at it; it is finalized (with the post ref) only if the post write lands.
-  const eventDraft = eventPost?.embed.event
+  let eventDraft = eventPost?.embed.event
   let eventRef: EventRecordRef | undefined
   let createdEvent = false
   if (eventPost && eventDraft) {
     // A reply whose parent is gone should fail before an event is created.
     await replyPromise
+    if (eventDraft.cover && !eventDraft.uploadedCover) {
+      opts.onStateChange?.(t`Uploading event image...`)
+      eventDraft = await uploadEventCover(opts.pdsClient, eventDraft)
+    }
     opts.onStateChange?.(t`Creating event...`)
     createdEvent = !eventDraft.record
-    eventRef = await ensureEvent(opts.pdsClient, eventDraft)
+    const written = eventDraft
+    eventRef = await ensureEvent(opts.pdsClient, written)
     opts.onEvent?.(eventPost.id, {uri: eventRef.uri, cid: eventRef.cid})
     thread = {
       ...thread,
@@ -224,7 +230,7 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
         p === eventPost
           ? {
               ...p,
-              embed: {...p.embed, event: {...eventDraft, record: eventRef}},
+              embed: {...p.embed, event: {...written, record: eventRef}},
             }
           : p,
       ),
@@ -250,7 +256,7 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
   let tid: TID | undefined
   let eventPostRef: {uri: string; cid: string} | undefined
   let pollPostRef: {uri: string; cid: string} | undefined
-  let pollCreatedAt: Date | undefined
+  let createdPoll = false
 
   for (let i = 0; i < thread.posts.length; i++) {
     const draft = thread.posts[i]
@@ -331,19 +337,22 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
       })
     }
     if (draft.embed.poll) {
-      pollCreatedAt = new Date(now)
+      /*
+       * The poll is written first and once: TOKIMEKI only serves the card
+       * image for a poll it has indexed, and it keeps a poll as first written.
+       * It names the post by URI alone, so the post's card can then point back
+       * at the poll's exact version through `associatedRefs`.
+       */
       opts.onStateChange?.(t`Creating poll...`)
-      await createPoll(
+      const createdPollRef = await createPoll(
         opts.pdsClient,
         draft.embed.poll,
-        {
-          uri,
-          cid: await computeCid(record),
-        },
-        pollCreatedAt,
+        {uri},
+        new Date(now),
       )
+      createdPoll = true
       try {
-        record.embed = await resolveEmbed(
+        const embed = await resolveEmbed(
           opts.appviewClient,
           opts.chatClient,
           opts.pdsClient,
@@ -351,6 +360,23 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
           draft,
           opts.onStateChange,
         )
+        if (embed?.$type === 'app.bsky.embed.external') {
+          const card = embed as $Typed<app.bsky.embed.external.Main>
+          record.embed = {
+            ...card,
+            external: {
+              ...card.external,
+              associatedRefs: [
+                {
+                  uri: createdPollRef.uri as AtUriString,
+                  cid: createdPollRef.cid,
+                },
+              ],
+            },
+          }
+        } else {
+          record.embed = embed
+        }
       } catch (err) {
         await deletePoll(opts.pdsClient, draft.embed.poll.rkey!)
         throw err
@@ -410,16 +436,8 @@ export async function post(queryClient: QueryClient, opts: PostOpts) {
     }
   }
 
-  /*
-   * The thumbnail changes the post's CID, so replace the preliminary subject
-   * with the finished post ref before writing the post and any thread replies.
-   */
-  let createdPoll = false
   const pollToWrite = thread.posts.find(p => p.embed.poll)?.embed.poll
   if (pollPostRef && pollToWrite?.rkey) {
-    opts.onStateChange?.(t`Creating poll...`)
-    await createPoll(opts.pdsClient, pollToWrite, pollPostRef, pollCreatedAt)
-    createdPoll = true
     poll = {rkey: pollToWrite.rkey, optionCount: pollToWrite.options.length}
   }
 
@@ -639,6 +657,10 @@ export async function resolveEmbed(
  * The post's link card for an event it created. The event record itself is
  * written earlier in `post()`, so the URI is already known; it just has to be
  * rendered as an absolute witchsky URL so `parseEventUrl` picks it up.
+ *
+ * `associatedRefs` names the event record the card was built from. Its CID is
+ * the version written before the post: `finalizeEvent` then adds the post's
+ * own ref, and the two records cannot hold each other's final CIDs.
  */
 function resolveEvent(
   pdsClient: Client,
@@ -660,6 +682,9 @@ function resolveEvent(
       uri: makeEventUrl({did: pdsClient.assertDid}, rkey) as UriString,
       title: event.name.trim(),
       description,
+      // The cover doubles as the card image, for apps that don't know events.
+      ...(event.uploadedCover ? {thumb: event.uploadedCover.blob} : {}),
+      associatedRefs: [{uri: ref.uri as AtUriString, cid: ref.cid}],
     },
   }
 }

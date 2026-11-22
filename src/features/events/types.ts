@@ -18,6 +18,8 @@ export type EventView = {
   thumb?: string
   goingCount: number
   interestedCount: number
+  /** People the viewer follows who are going, when the AppView knows. */
+  knownGoing?: app.bsky.actor.defs.ProfileViewBasic[]
   viewer?: {rsvp?: {uri: string; status: string}}
   labels?: com.atproto.label.defs.Label[]
   indexedAt: string

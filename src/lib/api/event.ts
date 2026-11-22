@@ -1,3 +1,5 @@
+import {type BlobRef} from '@atproto/lex'
+
 import {inspectText} from '#/lib/api/poll'
 
 export const EVENT_NAME_MAX_BYTES = 1000
@@ -24,7 +26,47 @@ export type EventDraft = {
   mode: EventMode
   /** Free-text place for in-person/hybrid, or a join URL. */
   place?: string
+  /** A picked cover image, not uploaded yet. */
+  cover?: EventCover
+  /** The cover once uploaded, so retries and later writes reuse the blob. */
+  uploadedCover?: UploadedEventCover
   record?: EventRecordRef
+}
+
+/** A local image chosen as an event's cover. */
+export type EventCover = {
+  path: string
+  mime: string
+  width: number
+  height: number
+}
+
+export type UploadedEventCover = {blob: BlobRef; width: number; height: number}
+
+/**
+ * The `media` entry other calendar apps read as an event's cover: Blacksky's
+ * AppView takes the first `thumbnail` item's blob as the event's `thumb`.
+ */
+export function coverMediaItem(cover: UploadedEventCover) {
+  return {
+    role: 'thumbnail',
+    content: cover.blob,
+    aspect_ratio: {width: cover.width, height: cover.height},
+  }
+}
+
+/**
+ * A record's `media` with the cover replaced (or removed, for null); other
+ * media items, like galleries from other apps, stay.
+ */
+export function withCoverMedia(
+  media: unknown,
+  cover: UploadedEventCover | null,
+): unknown[] {
+  const others = (Array.isArray(media) ? media : []).filter(
+    item => !isObject(item) || item.role !== 'thumbnail',
+  )
+  return cover ? [...others, coverMediaItem(cover)] : others
 }
 
 export type EventFieldIssue = 'empty' | 'too_long' | 'invalid'
@@ -69,6 +111,20 @@ export function getEventNameIssue(
   draft: Pick<EventDraft, 'name'>,
 ): EventFieldIssue | null {
   return getNameIssue(draft.name)
+}
+
+/**
+ * Whether anything was entered into an event. The start time is not counted:
+ * the editor fills it in, so it is there before the event is touched.
+ */
+export function eventHasContent(event: EventDraft): boolean {
+  return Boolean(
+    event.name.trim() ||
+    event.place?.trim() ||
+    event.description?.trim() ||
+    event.endsDate ||
+    event.cover,
+  )
 }
 
 export function isEventDraftPublishable(draft: EventDraft): boolean {
@@ -180,6 +236,10 @@ export function decodeEventDraft(value: unknown): EventDraft | undefined {
     timezone,
     mode,
     place: typeof value.place === 'string' ? value.place : undefined,
+    /*
+     * The cover is not restored: a picked image is a local file (a blob: URL
+     * on web) that may be gone after a reload.
+     */
     record: decodeRecordRef(value.record),
   }
 }

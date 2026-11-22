@@ -200,6 +200,53 @@ it('clears the previous recovery when all contents are removed', async () => {
   expect(mockSessionStorage.size).toBe(0)
 })
 
+it.each([
+  {
+    kind: 'a poll with a choice',
+    embed: {poll: {options: ['Yes', ''], duration: '1d'}},
+  },
+  {
+    kind: 'an event with a name',
+    embed: {
+      event: {
+        name: 'Picnic',
+        date: '2026-12-01',
+        time: '12:00',
+        timezone: 'UTC',
+        mode: 'inperson',
+      },
+    },
+  },
+] as const)('keeps a composition that only has $kind', async ({embed}) => {
+  const state = composition('')
+  Object.assign(state.thread.posts[0].embed, embed)
+  saveRecovery('alice', {activeAccountDid: 'alice'}, state)
+  expect(await readRecovery('alice')).toBeDefined()
+  expect(await reloadedTab().readRecovery('alice')).toBeDefined()
+})
+
+it.each([
+  {kind: 'poll', embed: {poll: {options: ['', ' '], duration: '1d'}}},
+  {
+    kind: 'event',
+    embed: {
+      event: {
+        name: ' ',
+        date: '2026-12-01',
+        time: '12:00',
+        timezone: 'UTC',
+        mode: 'inperson',
+      },
+    },
+  },
+] as const)('does not keep an untouched $kind', async ({embed}) => {
+  const state = composition('')
+  Object.assign(state.thread.posts[0].embed, embed)
+  saveRecovery('alice', {activeAccountDid: 'alice'}, state)
+  expect(await readRecovery('alice')).toBeUndefined()
+  expect(mockSessionStorage.size).toBe(0)
+})
+
 it('ignores and clears empty snapshots saved by previous versions', () => {
   mockSessionStorage.set(
     'composerRecovery',
@@ -660,4 +707,29 @@ it('does not apply a pending target to a different composition', () => {
 
   expect(session.state?.text).toBe('another post')
   expect(session.state?.quote).toBeUndefined()
+})
+
+it('recovers a minimized tab draft without reopening it or clearing its cached post', () => {
+  saveRecovery(
+    'alice',
+    {activeAccountDid: 'alice', isMinimized: true},
+    composition('keep this minimized post'),
+  )
+  mockReadRecovery = reloadedTab().readRecovery
+  const session = observeComposer()
+  expect(session.state?.isMinimized).toBe(true)
+  expect(session.state?.recoveredState?.thread.posts[0].richtext.text).toBe(
+    'keep this minimized post',
+  )
+  act(() => expect(session.controls!.closeComposer()).toBe(false))
+  expect(mockSessionStorage.size).toBe(1)
+  act(() => session.controls!.restoreComposer())
+  expect(session.state?.isMinimized).toBe(false)
+  expect(session.state?.recoveredState?.thread.posts[0].richtext.text).toBe(
+    'keep this minimized post',
+  )
+  act(() => {
+    session.controls!.closeComposer()
+  })
+  expect(mockSessionStorage.size).toBe(0)
 })

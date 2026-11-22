@@ -3,9 +3,11 @@ import {AtUri} from '@atproto/syntax'
 
 import {
   buildEventRecord,
+  coverMediaItem,
   type EventDraft,
   type EventRecordRef,
 } from '#/lib/api/event'
+import {uploadBlob} from '#/lib/api/upload-blob'
 import {logger} from '#/logger'
 import {
   EVENT_COLLECTION,
@@ -25,8 +27,25 @@ type Nsid = `${string}.${string}.${string}`
 function eventRecord(draft: EventDraft, extra?: Record<string, unknown>) {
   return {
     ...buildEventRecord(draft),
+    ...(draft.uploadedCover
+      ? {media: [coverMediaItem(draft.uploadedCover)]}
+      : {}),
     ...extra,
   }
+}
+
+/**
+ * Uploads the draft's picked cover, unless an earlier attempt already did.
+ * Returns the draft with the blob, which every later write reuses.
+ */
+export async function uploadEventCover(
+  client: Client,
+  draft: EventDraft,
+): Promise<EventDraft> {
+  if (!draft.cover || draft.uploadedCover) return draft
+  const {path, mime, width, height} = draft.cover
+  const {blob} = await uploadBlob(client, path, mime)
+  return {...draft, uploadedCover: {blob, width, height}}
 }
 
 /**

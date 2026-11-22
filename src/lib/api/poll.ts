@@ -3,8 +3,9 @@ import {countGraphemes, graphemeSegments} from 'unicode-segmenter/grapheme'
 /** TOKIMEKI's composer lets a poll have two to four choices. */
 export const POLL_MIN_OPTIONS = 2
 export const POLL_MAX_OPTIONS = 4
-/** Length cap of TOKIMEKI's own option field. */
-export const POLL_OPTION_MAX_CHARS = 100
+/** TOKIMEKI's option limits, as its lexicon states them. */
+export const POLL_OPTION_MAX_GRAPHEMES = 100
+export const POLL_OPTION_MAX_BYTES = 1000
 
 /** Values on a People's Assembly statement vote; kept for old conversations. */
 export const POLL_VOTE_VALUES = ['agree', 'disagree', 'pass'] as const
@@ -23,9 +24,42 @@ const POLL_DURATION_MS: Record<PollDuration, number> = {
   '7d': 7 * 24 * 60 * 60e3,
 }
 
+/** A custom closing time has to be at least this far ahead when posting. */
+export const POLL_MIN_CUSTOM_LEAD_MS = 5 * 60e3
+
+/** A local `YYYY-MM-DDTHH:mm` value, as a Date. */
+function fromLocalDateTime(value: string): Date | undefined {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value)
+  if (!m) return undefined
+  const [, y, mo, d, h, mi] = m.map(Number)
+  const date = new Date(y, mo - 1, d, h, mi, 0, 0)
+  return isNaN(date.getTime()) ? undefined : date
+}
+
 /** The poll's closing time, as `tech.tokimeki.poll.poll` stores it. */
-export function pollEndsAt(duration: PollDuration, now: Date): string {
-  return new Date(now.getTime() + POLL_DURATION_MS[duration]).toISOString()
+export function pollEndsAt(
+  draft: Pick<PollDraft, 'duration' | 'endsAt'>,
+  now: Date,
+): string {
+  const custom = draft.endsAt ? fromLocalDateTime(draft.endsAt) : undefined
+  if (custom) return custom.toISOString()
+  return new Date(
+    now.getTime() + POLL_DURATION_MS[draft.duration],
+  ).toISOString()
+}
+
+/** What's wrong with a custom closing time, or null when it's fine. */
+export function getPollEndIssue(
+  draft: Pick<PollDraft, 'endsAt'>,
+  now: Date,
+): 'invalid' | 'too_soon' | null {
+  if (!draft.endsAt) return null
+  const end = fromLocalDateTime(draft.endsAt)
+  if (!end) return 'invalid'
+  if (end.getTime() - now.getTime() < POLL_MIN_CUSTOM_LEAD_MS) {
+    return 'too_soon'
+  }
+  return null
 }
 
 /**
@@ -35,6 +69,11 @@ export function pollEndsAt(duration: PollDuration, now: Date): string {
 export type PollDraft = {
   options: string[]
   duration: PollDuration
+  /**
+   * A custom closing time, local `YYYY-MM-DDTHH:mm`; when set it is used
+   * instead of `duration`.
+   */
+  endsAt?: string
   /** Record key assigned while publishing; never stored on a draft. */
   rkey?: string
 }
@@ -99,26 +138,70 @@ export function getOptionIssue(text: string): PollOptionIssue | null {
   if (option.length === 0) return 'empty'
   const {wellFormed, hasNul} = inspectText(option)
   if (!wellFormed || hasNul) return 'invalid'
-  if (option.length > POLL_OPTION_MAX_CHARS) return 'too_long'
+  if (
+    countGraphemes(option) > POLL_OPTION_MAX_GRAPHEMES ||
+    inspectText(option).bytes > POLL_OPTION_MAX_BYTES
+  ) {
+    return 'too_long'
+  }
   return null
 }
 
-export function getOptionIssues(
-  options: string[],
-): (PollOptionIssue | null)[] {
+export function getOptionIssues(options: string[]): (PollOptionIssue | null)[] {
   return options.map(getOptionIssue)
 }
 
-export function isPollDraftPublishable(draft: PollDraft): boolean {
+/**
+ * The choices that count: the first {@link POLL_MIN_OPTIONS} always, later
+ * ones only once filled in. The editor keeps a blank slot after the last
+ * filled choice (see {@link withSpareOption}), which must neither block
+ * posting nor be published.
+ */
+export function pollOptionsInUse(options: string[]): string[] {
+  return options.filter(
+    (option, i) => i < POLL_MIN_OPTIONS || option.trim().length > 0,
+  )
+}
+
+/**
+ * The editor's choices with exactly one blank slot to type the next choice
+ * into, once every choice is filled and there is room for another. Extra
+ * trailing blanks collapse back, so clearing the last choice keeps its field.
+ */
+export function withSpareOption(options: string[]): string[] {
+  const next = [...options]
+  const isBlank = (option: string) => option.trim().length === 0
+  while (
+    next.length > POLL_MIN_OPTIONS &&
+    isBlank(next[next.length - 1]) &&
+    isBlank(next[next.length - 2])
+  ) {
+    next.pop()
+  }
+  if (next.length < POLL_MAX_OPTIONS && !next.some(isBlank)) next.push('')
+  return next
+}
+
+/** Whether any poll choice has been written; an untouched poll has none. */
+export function pollHasContent(poll: Pick<PollDraft, 'options'>): boolean {
+  return poll.options.some(option => option.trim().length > 0)
+}
+
+export function isPollDraftPublishable(
+  draft: PollDraft,
+  now = new Date(),
+): boolean {
+  const options = pollOptionsInUse(draft.options)
   return (
-    draft.options.length >= POLL_MIN_OPTIONS &&
-    draft.options.length <= POLL_MAX_OPTIONS &&
-    getOptionIssues(draft.options).every(issue => issue === null)
+    options.length >= POLL_MIN_OPTIONS &&
+    options.length <= POLL_MAX_OPTIONS &&
+    getOptionIssues(options).every(issue => issue === null) &&
+    getPollEndIssue(draft, now) === null
   )
 }
 
 export function pollOptionsForPublish(draft: PollDraft): string[] {
-  return draft.options.map(normalizePollOption)
+  return pollOptionsInUse(draft.options).map(normalizePollOption)
 }
 
 export function isPollDuration(value: unknown): value is PollDuration {
@@ -178,5 +261,8 @@ export function decodePollDraft(value: unknown): PollDraft | undefined {
   return {
     options: list,
     duration: isPollDuration(duration) ? duration : DEFAULT_POLL_DURATION,
+    ...(typeof value.endsAt === 'string' && fromLocalDateTime(value.endsAt)
+      ? {endsAt: value.endsAt}
+      : {}),
   }
 }
