@@ -1,10 +1,10 @@
 import {useId} from 'react'
 import Svg, {ClipPath, Defs, Image as SvgImage, Path} from 'react-native-svg'
 
-import {hexagonPath} from '#/deltas/feat/avatarDecorations/avatarShapes'
+import {hexagonPath, trianglePath} from '#/deltas/feat/avatarDecorations/avatarShapes'
 
 /**
- * Hexagon avatar rendered as an SVG clip so it works identically on web and
+ * Polygon avatar rendered as an SVG clip so it works identically on web and
  * native without a masked-view native module. The stroke is drawn on the same
  * path, inset by half the stroke width so it stays inside the avatar bounds.
  *
@@ -18,6 +18,7 @@ export function HexagonAvatar({
   uri,
   size,
   rounded,
+  shape = 'hexagon',
   stroke,
   strokeWidth,
   testID,
@@ -25,6 +26,7 @@ export function HexagonAvatar({
   uri: string
   size: number
   rounded: boolean
+  shape?: 'hexagon' | 'triangle'
   /** Border, decoration frame, or live color. */
   stroke?: string
   strokeWidth?: number
@@ -33,11 +35,12 @@ export function HexagonAvatar({
   // useId returns the same value on every render and differs per instance.
   // Strip the punctuation React puts in it so the fragment stays URL-safe.
   const clipId = `avatar-hexagon-${useId().replace(/[^\w-]/g, '')}`
+  const path = shape === 'triangle' ? trianglePath : hexagonPath
   return (
     <Svg width={size} height={size} testID={testID}>
       <Defs>
         <ClipPath id={clipId}>
-          <Path d={hexagonPath(size, rounded)} />
+          <Path d={path(size, rounded)} />
         </ClipPath>
       </Defs>
       <SvgImage
@@ -52,7 +55,7 @@ export function HexagonAvatar({
       {stroke && strokeWidth ? (
         <Path
           testID="avatarHexagonBorder"
-          d={hexagonPath(size, rounded, strokeWidth / 2)}
+          d={path(size, rounded, strokeWidth / 2)}
           fill="none"
           stroke={stroke}
           strokeWidth={strokeWidth}

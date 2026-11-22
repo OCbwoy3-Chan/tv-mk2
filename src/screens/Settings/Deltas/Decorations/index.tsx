@@ -271,6 +271,7 @@ const SHAPE_LABELS: Record<AvatarShape, MessageDescriptor> = {
   square: msg`Square`,
   squircle: msg`Squircle`,
   hexagon: msg`Hexagon`,
+  triangle: msg`Triangle`,
 }
 
 const SWATCH_HEIGHT = 52

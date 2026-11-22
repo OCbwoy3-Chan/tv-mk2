@@ -294,7 +294,9 @@ function KnownFollowerAvatar({
       ? dim / 2
       : profileShape === 'squircle'
         ? Math.round(dim * 0.25)
-        : profileShape === 'square' || profileShape === 'hexagon'
+        : profileShape === 'square' ||
+            profileShape === 'hexagon' ||
+            profileShape === 'triangle'
           ? getShapeRadius(
               enableSquareAvatars === 'sharp' ? 'sharp' : true,
               3,

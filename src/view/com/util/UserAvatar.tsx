@@ -330,14 +330,16 @@ let UserAvatar = ({
     : enableSquareAvatars === 'sharp'
       ? 'sharp'
       : (overrideShape ?? (type === 'user' ? avishapeforce : 'square'))
-  const hexagon = profileShape === 'hexagon' && !moderation?.blur
+  const polygon =
+    (profileShape === 'hexagon' || profileShape === 'triangle') &&
+    !moderation?.blur
   const thumbnailFormat = useThumbnailFormat()
   const imageCdnHost = useImageCdnHost()
 
   const aviStyle = useMemo(() => {
     let borderRadius
 
-    if (profileShape === 'hexagon' && !moderation?.blur) {
+    if (polygon) {
       borderRadius = 0
     } else if (profileShape === 'squircle') {
       borderRadius = Math.round(size * 0.25)
@@ -361,7 +363,7 @@ let UserAvatar = ({
       ...extraAviStyle,
       ...(finalShape === 'sharp' && SHARP_CORNERS),
     }
-  }, [finalShape, profileShape, size, t, extraAviStyle, moderation?.blur])
+  }, [finalShape, profileShape, size, t, extraAviStyle, polygon])
 
   const borderStyle = useMemo(() => {
     return [
@@ -439,13 +441,14 @@ let UserAvatar = ({
   )
 
   /*
-   * A hexagon cannot be a rounded rect, so it renders as a clipped SVG image
+   * A polygon cannot be a rounded rect, so it renders as a clipped SVG image
    * with the border, frame, and live ring all drawn on the same path. The
    * stroke color is only resolved in that branch.
    */
-  const hexagonImage =
-    hexagon && imageUri ? (
+  const polygonImage =
+    polygon && imageUri ? (
       <HexagonAvatar
+        shape={profileShape === 'triangle' ? 'triangle' : 'hexagon'}
         testID="userAvatarImage"
         uri={imageUri}
         size={size}
@@ -465,7 +468,7 @@ let UserAvatar = ({
   return avatar &&
     !(moderation?.blur && IS_ANDROID /* android crashes with blur */) ? (
     <View style={containerStyle}>
-      {hexagonImage ??
+      {polygonImage ??
         (usePlainRNImage ? (
           <RNImage
             accessibilityIgnoresInvertColors
@@ -487,8 +490,8 @@ let UserAvatar = ({
             useAppleWebpCodec
           />
         ))}
-      {!noBorder && !hexagon && <MediaInsetBorder style={borderStyle} />}
-      {!hexagon && decorationRing}
+      {!noBorder && !polygon && <MediaInsetBorder style={borderStyle} />}
+      {!polygon && decorationRing}
       {live && size > 16 && !hideLiveBadge && (
         <LiveIndicator size={size > 32 ? 'small' : 'tiny'} />
       )}
@@ -530,7 +533,7 @@ let EditableUserAvatar = ({
   const circular = type !== 'algo' && type !== 'list' && !enableSquareAvatars
 
   const aviStyle = useMemo(() => {
-    if (profileShape === 'hexagon') {
+    if (profileShape === 'hexagon' || profileShape === 'triangle') {
       return {width: size, height: size, borderRadius: 0}
     }
     if (profileShape === 'squircle') {
@@ -647,8 +650,9 @@ let EditableUserAvatar = ({
           {({props}) => (
             <Pressable {...props} testID="changeAvatarBtn">
               {avatar ? (
-                profileShape === 'hexagon' ? (
+                profileShape === 'hexagon' || profileShape === 'triangle' ? (
                   <HexagonAvatar
+                    shape={profileShape}
                     testID="userAvatarImage"
                     uri={avatar}
                     size={size}
@@ -670,6 +674,7 @@ let EditableUserAvatar = ({
                     profileShape === 'circle'
                       ? 'circle'
                       : profileShape === 'hexagon' ||
+                          profileShape === 'triangle' ||
                           profileShape === 'squircle' ||
                           profileShape === 'square'
                         ? 'square'
@@ -794,7 +799,7 @@ let PreviewableUserAvatar = ({
 
   const linkStyle = {
     borderRadius:
-      profileShape === 'hexagon'
+      profileShape === 'hexagon' || profileShape === 'triangle'
         ? 0
         : profileShape === 'squircle'
           ? Math.round(props.size * 0.25)

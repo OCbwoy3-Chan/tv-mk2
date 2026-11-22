@@ -29,7 +29,7 @@ export function DeltasSettingsScreen({ }: Props) {
     const navigation = useNavigationDeduped();
 
     const user = useSession();
-    const hasVip = useVipStatusQuery(user.currentAccount?.did);
+    const {data: hasVip, isLoading} = useVipStatusQuery(user.currentAccount?.did);
 
     return (
         <RunesScreenLayout titleText="Deltas">
@@ -155,7 +155,7 @@ export function DeltasSettingsScreen({ }: Props) {
                         )}
                     </Link>
 
-                    {hasVip && <>
+                    {(!isLoading && hasVip) && <>
                         <Divider />
 
                         <Link

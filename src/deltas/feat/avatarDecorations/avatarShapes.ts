@@ -3,6 +3,7 @@ export const AVATAR_SHAPES = [
   'square',
   'squircle',
   'hexagon',
+  'triangle',
 ] as const
 
 export type AvatarShape = (typeof AVATAR_SHAPES)[number]
@@ -19,15 +20,36 @@ export function isAvatarShape(value: unknown): value is AvatarShape {
  * its edge. `inset` keeps a stroked copy of the path inside the avatar bounds.
  */
 export function hexagonPath(size: number, rounded: boolean, inset = 0) {
-  const width = size - inset * 2
-  const vertices = [
+  return polygonPath(size, rounded, inset, [
     [0.25, 0.067],
     [0.75, 0.067],
     [1, 0.5],
     [0.75, 0.933],
     [0.25, 0.933],
     [0, 0.5],
-  ].map(([x, y]) => [inset + x * width, inset + y * width])
+  ])
+}
+
+/** An upward-pointing triangle with optional rounded corners. */
+export function trianglePath(size: number, rounded: boolean, inset = 0) {
+  return polygonPath(size, rounded, inset, [
+    [0.5, 0],
+    [1, 1],
+    [0, 1],
+  ])
+}
+
+function polygonPath(
+  size: number,
+  rounded: boolean,
+  inset: number,
+  points: number[][],
+) {
+  const width = size - inset * 2
+  const vertices = points.map(([x, y]) => [
+    inset + x * width,
+    inset + y * width,
+  ])
   const amount = rounded ? 0.12 : 0
   const point = (from: number[], to: number[]) =>
     `${from[0] + (to[0] - from[0]) * amount} ${from[1] + (to[1] - from[1]) * amount}`
