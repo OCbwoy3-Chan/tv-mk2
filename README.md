@@ -5,7 +5,7 @@ Hey, audience! This is the codebase for the [tenna.party](https://tenna.party) a
 Get the app itself:
 
 - **Web: [tenna.party](https://tenna.party)**
-- **iOS/Android: IPA & Obtainium (on the server)**
+- **iOS/Android: IPA & Obtainium (im lazy so the links are on the [fluxer](https://fluxer.gg/4x3SR8Ui))**
 
 <!-- <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://tangled.org/did:plc:3thjdgidhlxp7qzhffroeece">
 <img src="https://github.com/ImranR98/Obtainium/blob/main/assets/graphics/badge_obtainium.png?raw=true"
