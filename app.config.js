@@ -70,7 +70,14 @@ module.exports = function (_config) {
       version: VERSION,
       name: 'tenna.party',
       slug: 'tennaparty',
-      scheme: ['bluesky', 'witchsky', 'app.witchsky', 'tenna', 'app.tennaparty', 'party.tenna'],
+      scheme: [
+        'bluesky',
+        'witchsky',
+        'app.witchsky',
+        'tenna',
+        'app.tennaparty',
+        'party.tenna',
+      ],
       // owner: 'blueskysocial',
       // owner: 'neema.brown',
       runtimeVersion: {
@@ -376,16 +383,16 @@ module.exports = function (_config) {
           {
             bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID
               ? `${process.env.WITCHSKY_BUNDLE_ID}.BlueskyWidgets`
-              : 'app.witchsky.BlueskyWidgets',
+              : 'party.tenna.BlueskyWidgets',
             groupIdentifier: process.env.WITCHSKY_BUNDLE_ID
               ? `group.${process.env.WITCHSKY_BUNDLE_ID}`
-              : 'group.app.witchsky',
+              : 'group.party.tenna',
             enableAndroid: true,
             widgets: [
               {
                 name: 'TrendingTopicsWidget',
                 displayName: 'TV Time',
-                description: 'See what everybody\'s talking in Hometown.',
+                description: "See what everybody's talking about.",
                 ios: {
                   contentMarginsDisabled: true,
                   supportedFamilies: [
@@ -642,7 +649,8 @@ module.exports = function (_config) {
             },
             liquid_glass_r: {
               ios: './assets/app-icons/roblox/ios_icon_roblox_classic.png',
-              android: './assets/app-icons/roblox/android_icon_roblox_classic.png',
+              android:
+                './assets/app-icons/roblox/android_icon_roblox_classic.png',
               prerendered: true,
             },
             liquid_glass_o: {
@@ -652,7 +660,8 @@ module.exports = function (_config) {
             },
             roblox_hollow: {
               ios: './assets/app-icons/roblox/ios_icon_roblox_hollow.png',
-              android: './assets/app-icons/roblox/android_icon_roblox_hollow.png',
+              android:
+                './assets/app-icons/roblox/android_icon_roblox_hollow.png',
               prerendered: true,
             },
             liquid_glass_bluesky: {
@@ -668,12 +677,14 @@ module.exports = function (_config) {
             },
             bluesky_dark: {
               ios: './assets/app-icons/bsky/ios_icon_bluesky_legacy_dark.png',
-              android: './assets/app-icons/bsky/android_icon_bluesky_legacy_dark.png',
+              android:
+                './assets/app-icons/bsky/android_icon_bluesky_legacy_dark.png',
               prerendered: true,
             },
             bluesky_testflight: {
               ios: './assets/app-icons/bsky/ios_icon_bluesky_testflight.png',
-              android: './assets/app-icons/bsky/android_icon_bluesky_testflight.png',
+              android:
+                './assets/app-icons/bsky/android_icon_bluesky_testflight.png',
               prerendered: true,
             },
 
