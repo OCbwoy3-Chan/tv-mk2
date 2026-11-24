@@ -59,6 +59,7 @@ import {
 import {RQKEY_ROOT as RQKEY_LIST_CONVOS} from './messages/list-conversations'
 import {RQKEY as RQKEY_MY_BLOCKED} from './my-blocked-accounts'
 import {RQKEY as RQKEY_MY_MUTED} from './my-muted-accounts'
+import {fetchProfileBatched} from './profile-batch'
 
 export * from '#/state/queries/unstable-profile-cache'
 /**
@@ -80,9 +81,16 @@ export const profilesQueryKey = (handles: string[]) => [
 export function useProfileQuery({
   did,
   staleTime = STALE.SECONDS.FIFTEEN,
+  batch = false,
 }: {
   did: string | undefined
   staleTime?: number
+  /**
+   * Coalesce with other lookups into one getProfiles request. Worth it for
+   * components that mount many at once (e.g. reply-to names in a feed); a lone
+   * profile is better off without the batching delay.
+   */
+  batch?: boolean
 }) {
   const client = useAppviewClient()
   const {getUnstableProfile} = useUnstableProfileViewCache()
@@ -95,6 +103,10 @@ export function useProfileQuery({
     refetchOnWindowFocus: true,
     queryKey: RQKEY(did ?? ''),
     queryFn: async () => {
+      // getProfiles answers by DID, so handles take the single-profile call.
+      if (batch && did?.startsWith('did:')) {
+        return await fetchProfileBatched(client, did)
+      }
       return await client.call(app.bsky.actor.getProfile, {
         actor: (did ?? '') as AtIdentifierString,
       })
