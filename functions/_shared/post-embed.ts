@@ -60,6 +60,7 @@ type Thread = {
     embed?: Embed
     indexedAt: string
     record?: {facets?: Facet[]; text?: string}
+    uri?: string
   }
 }
 
@@ -350,6 +351,13 @@ class HeadHandler {
         : ''
 
     const embedElems = await renderEmbedMeta(getPreviewMedia(this.thread))
+    const uri = this.thread.post.uri
+    const atUri = uri
+      ? html`
+          <link rel="alternate" href="${uri}" />
+          <meta name="at:canonical" content="${uri}" />
+        `
+      : ''
 
     element.append(
       html`
@@ -364,6 +372,7 @@ class HeadHandler {
         <meta
           name="article:published_time"
           content="${this.thread.post.indexedAt}" />
+        ${atUri}
       `,
       {html: true},
     )

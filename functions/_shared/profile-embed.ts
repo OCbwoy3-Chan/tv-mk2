@@ -101,6 +101,9 @@ class HeadHandler {
         <link
           rel="alternate"
           href="at://${view.did}/app.bsky.actor.profile/self" />
+        <meta
+          name="at:canonical"
+          content="at://${view.did}/app.bsky.actor.profile/self" />
       `,
       {html: true},
     )
