@@ -240,6 +240,7 @@ function ReaderSeamInner({
         uri: shadow.uri,
         cid: shadow.cid,
         text: record.text,
+        facets: record.facets,
         author: shadow.author,
         embed: shadow.embed,
         moderation,

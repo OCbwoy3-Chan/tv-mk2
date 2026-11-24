@@ -324,7 +324,11 @@ export function TextInput({
     return (
       <RNText
         key={index}
-        style={segment.isLink() ? {color: t.palette.primary_500} : undefined}>
+        style={
+          segment.isLink() || segment.isMention()
+            ? {color: t.palette.primary_500}
+            : undefined
+        }>
         {projection.text.slice(start, end)}
       </RNText>
     )

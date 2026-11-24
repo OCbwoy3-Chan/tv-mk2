@@ -335,6 +335,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
         uri: post.uri,
         cid: post.cid,
         text: record.text,
+        facets: record.facets,
         author: post.author,
         embed: post.embed,
         moderation,

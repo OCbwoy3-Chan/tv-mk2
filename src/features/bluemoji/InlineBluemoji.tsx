@@ -18,6 +18,7 @@ import {
   type BluemojiRef,
   getBluemojiImage,
   getBluemojiModeration,
+  getBluemojiRefUri,
 } from '#/features/bluemoji/util'
 
 export function InlineBluemoji({
@@ -36,21 +37,35 @@ export function InlineBluemoji({
   const {t: l} = useLingui()
   const detailsControl = Dialog.useDialogControl()
   const [visible, setVisible] = useState(false)
-  const {data: item} = useBluemojiItemQuery(claim)
+  const {data: item, isPending} = useBluemojiItemQuery(claim)
   const opts = useModerationOpts()
   const autoplayDisabled = useAutoplayDisabled()
   const instance = useBluemojiInstance()
   const [failedUri, setFailedUri] = useState<string>()
+  const [loadedUri, setLoadedUri] = useState<string>()
   const uri =
     item && getBluemojiModeration(item, opts) === 'ignore'
       ? getBluemojiImage(item, instance)
       : undefined
+  if (isPending && getBluemojiRefUri(claim)) {
+    return (
+      <InlineImage
+        testID="inlineBluemojiSkeleton"
+        loading
+        accessibilityLabel={l`Loading emoji`}
+        size={size}
+        baselineOffset={baselineOffset}
+      />
+    )
+  }
   if (!uri || uri === failedUri || !item) return fallbackText
   const alt = item.record.alt?.trim() || item.record.name
   const image = (
     <InlineImage
       testID="inlineBluemoji"
       source={{uri}}
+      loading={loadedUri !== uri}
+      onDisplay={() => setLoadedUri(uri)}
       accessibilityLabel={alt}
       accessibilityHint={undefined}
       size={size}

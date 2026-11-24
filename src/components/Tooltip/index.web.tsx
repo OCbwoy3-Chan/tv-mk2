@@ -70,11 +70,11 @@ export function Target({
   style?: React.ComponentProps<typeof View>['style']
 }) {
   return (
-    <Popover.Trigger asChild>
+    <Popover.Anchor asChild>
       <View collapsable={false} style={style}>
         {children}
       </View>
-    </Popover.Trigger>
+    </Popover.Anchor>
   )
 }
 

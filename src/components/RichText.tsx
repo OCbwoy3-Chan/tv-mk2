@@ -336,7 +336,7 @@ export function RichText({
         els.push(
           <InlineBluemoji
             key={key}
-            interactive={!IS_NATIVE || enableEmojiDetails}
+            interactive={enableEmojiDetails}
             claim={bluemoji}
             fallbackText={segment.text}
             size={customEmojiSize}

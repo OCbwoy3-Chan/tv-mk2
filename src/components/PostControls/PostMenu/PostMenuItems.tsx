@@ -323,6 +323,7 @@ let PostMenuItems = ({
               uri: parentPost.uri,
               cid: parentPost.cid,
               text: parentPost.record.text || '',
+              facets: parentPost.record.facets,
               author: parentPost.author,
               embed: parentPost.embed,
               langs: parentPost.record.langs,

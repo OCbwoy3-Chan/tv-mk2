@@ -128,6 +128,19 @@ const CATALOG = [
     },
   },
   {
+    id: 'fluxer',
+    label: 'Fluxer',
+    // No link fills in a message on iOS
+    ios: {
+      scheme: 'fluxer',
+      copyAndOpen: true,
+    },
+    android: {
+      packages: ['com.fluxer'],
+      directShare: true,
+    },
+  },
+  {
     id: 'telegram',
     label: 'Telegram',
     ios: {
@@ -180,33 +193,33 @@ const CATALOG = [
       directShare: true,
     },
   },
-  {
-    id: 'facebook',
-    label: 'Facebook',
-    // The sharer.php link is reported to open the feed and drop the link
-    ios: {
-      scheme: 'fb',
-      copyAndOpen: true,
-    },
-    android: {
-      packages: ['com.facebook.katana'],
-      directShare: true,
-    },
-  },
-  {
-    id: 'messenger',
-    label: 'Messenger',
-    ios: {
-      scheme: 'fb-messenger',
-      // Undocumented by Meta, but it's what other apps' share sheets use
-      getShareUrl: ({url}) => `fb-messenger://share/?link=${enc(url)}`,
-      pasteFallback: true,
-    },
-    android: {
-      packages: ['com.facebook.orca'],
-      directShare: true,
-    },
-  },
+  // {
+  //   id: 'facebook',
+  //   label: 'Facebook',
+  //   // The sharer.php link is reported to open the feed and drop the link
+  //   ios: {
+  //     scheme: 'fb',
+  //     copyAndOpen: true,
+  //   },
+  //   android: {
+  //     packages: ['com.facebook.katana'],
+  //     directShare: true,
+  //   },
+  // },
+  // {
+  //   id: 'messenger',
+  //   label: 'Messenger',
+  //   ios: {
+  //     scheme: 'fb-messenger',
+  //     // Undocumented by Meta, but it's what other apps' share sheets use
+  //     getShareUrl: ({url}) => `fb-messenger://share/?link=${enc(url)}`,
+  //     pasteFallback: true,
+  //   },
+  //   android: {
+  //     packages: ['com.facebook.orca'],
+  //     directShare: true,
+  //   },
+  // },
   {
     id: 'line',
     label: 'LINE',
@@ -247,34 +260,37 @@ const CATALOG = [
         `https://www.reddit.com/submit?url=${enc(url)}&title=${enc(title)}`,
     },
   },
-  {
-    id: 'x',
-    label: 'X',
-    ios: {
-      // Undocumented scheme; the x.com intent link is reported to open a login page
-      scheme: 'twitter',
-      getShareUrl: ({url}) => `twitter://post?message=${enc(url)}`,
-    },
-    android: {
-      // twitter://post opens a blank composer on Android
-      packages: ['com.twitter.android'],
-      getShareUrl: ({url}) => `https://x.com/intent/post?text=${enc(url)}`,
-    },
-  },
-  {
-    id: 'threads',
-    label: 'Threads',
-    ios: {
-      scheme: 'barcelona',
-      getShareUrl: ({url}) =>
-        `https://www.threads.com/intent/post?text=${enc(url)}`,
-    },
-    android: {
-      packages: ['com.instagram.barcelona'],
-      getShareUrl: ({url}) =>
-        `https://www.threads.com/intent/post?text=${enc(url)}`,
-    },
-  },
+
+  // fuck nazis
+  // {
+  //   id: 'x',
+  //   label: 'X',
+  //   ios: {
+  //     // Undocumented scheme; the x.com intent link is reported to open a login page
+  //     scheme: 'twitter',
+  //     getShareUrl: ({url}) => `twitter://post?message=${enc(url)}`,
+  //   },
+  //   android: {
+  //     // twitter://post opens a blank composer on Android
+  //     packages: ['com.twitter.android'],
+  //     getShareUrl: ({url}) => `https://x.com/intent/post?text=${enc(url)}`,
+  //   },
+  // },
+
+  // {
+  //   id: 'threads',
+  //   label: 'Threads',
+  //   ios: {
+  //     scheme: 'barcelona',
+  //     getShareUrl: ({url}) =>
+  //       `https://www.threads.com/intent/post?text=${enc(url)}`,
+  //   },
+  //   android: {
+  //     packages: ['com.instagram.barcelona'],
+  //     getShareUrl: ({url}) =>
+  //       `https://www.threads.com/intent/post?text=${enc(url)}`,
+  //   },
+  // },
 ] as const satisfies readonly SharePlatform[]
 
 export type SharePlatformId = (typeof CATALOG)[number]['id']

@@ -47,6 +47,7 @@ export interface ComposerOptsPostRef {
   uri: string
   cid: string
   text: string
+  facets?: app.bsky.feed.post.Main['facets']
   langs?: string[]
   author: app.bsky.actor.defs.ProfileViewBasic
   embed?: app.bsky.feed.defs.PostView['embed']

@@ -1,6 +1,7 @@
 import {useCallback, useMemo, useState} from 'react'
 import {LayoutAnimation, Pressable, View} from 'react-native'
 import {Image} from 'expo-image'
+import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
@@ -14,6 +15,7 @@ import {QuoteEmbed} from '#/components/Post/Embed'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {PronounPill} from '#/components/PronounPill'
 import {Text} from '#/components/Typography'
+import {RichText} from '#/components/RichText'
 import {useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -125,12 +127,13 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
         </View>
         <View style={[a.flex_row, a.gap_md]}>
           <View style={[a.flex_1, a.flex_grow]}>
-            <Text
+            <RichText
+              value={new RichTextAPI({text: replyTo.text, facets: replyTo.facets})}
               style={[a.text_md, a.leading_snug, t.atoms.text_contrast_high]}
               numberOfLines={!showFull ? 6 : undefined}
-              emoji>
-              {replyTo.text}
-            </Text>
+              disableLinks
+              emojiMultiplier={1}
+            />
           </View>
           {images && !replyTo.moderation?.ui('contentMedia').blur && (
             <ComposerReplyToImages images={images} totalNumber={totalNumber} />

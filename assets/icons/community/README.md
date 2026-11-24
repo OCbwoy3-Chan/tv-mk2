@@ -45,6 +45,7 @@ The icons in this directory are the marks of third-party services that appear in
 | `Vgen.svg` | [VGen](https://vgen.co) |
 | `Zeffy.svg` | [Zeffy](https://www.zeffy.com) |
 | `Discord.svg` | [Discord](https://discord.com) |
+| `Fluxer.svg` | [Fluxer Platform AB](https://fluxer.com) |
 | `Facebook.svg` | [Meta Platforms](https://www.facebook.com) |
 | `Line.svg` | [LY Corporation](https://line.me) |
 | `Messenger.svg` | [Meta Platforms](https://www.messenger.com) |

@@ -6,6 +6,7 @@ import {atoms as a, useTheme} from '#/alf'
 import {type Props as SVGIconProps} from '#/components/icons/common'
 import {Discord} from '#/components/icons/community/Discord'
 import {Facebook} from '#/components/icons/community/Facebook'
+import {Fluxer} from '#/components/icons/community/Fluxer'
 import {Line} from '#/components/icons/community/Line'
 import {Messenger} from '#/components/icons/community/Messenger'
 import {Reddit} from '#/components/icons/community/Reddit'
@@ -79,6 +80,12 @@ const APPEARANCE: Record<SharePlatformId, Appearance> = {
     scale: 0.564,
     center: [12, 12],
   },
+  fluxer: {
+    icon: Fluxer,
+    color: '#4641D9',
+    scale: 0.72,
+    center: [12, 12],
+  },
   telegram: {
     icon: Telegram,
     color: '#26A5E4',
@@ -105,18 +112,18 @@ const APPEARANCE: Record<SharePlatformId, Appearance> = {
     scale: 0.543,
     center: [12.06, 12],
   },
-  facebook: {
-    icon: Facebook,
-    color: '#0866FF',
-    scale: 0.7,
-    center: [12, 14.04],
-  },
-  messenger: {
-    icon: Messenger,
-    color: '#0866FF',
-    scale: 0.467,
-    center: [11.97, 11.93],
-  },
+  // facebook: {
+  //   icon: Facebook,
+  //   color: '#0866FF',
+  //   scale: 0.7,
+  //   center: [12, 14.04],
+  // },
+  // messenger: {
+  //   icon: Messenger,
+  //   color: '#0866FF',
+  //   scale: 0.467,
+  //   center: [11.97, 11.93],
+  // },
   line: {
     icon: Line,
     color: '#06C755',
@@ -135,20 +142,20 @@ const APPEARANCE: Record<SharePlatformId, Appearance> = {
     scale: 0.67,
     center: [12.08, 11.86],
   },
-  x: {
-    icon: X,
-    color: '#000000',
-    outline: true,
-    scale: 0.44,
-    center: [11.96, 12.1],
-  },
-  threads: {
-    icon: Threads,
-    color: '#000000',
-    outline: true,
-    scale: 0.525,
-    center: [11.97, 12.03],
-  },
+  // x: {
+  //   icon: X,
+  //   color: '#000000',
+  //   outline: true,
+  //   scale: 0.44,
+  //   center: [11.96, 12.1],
+  // },
+  // threads: {
+  //   icon: Threads,
+  //   color: '#000000',
+  //   outline: true,
+  //   scale: 0.525,
+  //   center: [11.97, 12.03],
+  // },
 }
 
 /**

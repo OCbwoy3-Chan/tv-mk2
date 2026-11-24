@@ -1,6 +1,7 @@
 import {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {Image, type ImageProps} from 'expo-image'
 
+import {useTheme} from '#/alf'
 import {useEmojiFont} from '#/state/preferences/emoji-font/context'
 
 /** Emoji the browser draws from the same font as the surrounding text. */
@@ -15,9 +16,15 @@ type Box = {
 
 export function InlineImage({
   size,
+  loading = false,
   baselineOffset: _baselineOffset,
   ...props
-}: {size: number; baselineOffset?: number} & Omit<ImageProps, 'style'>) {
+}: {
+  size: number
+  baselineOffset?: number
+  loading?: boolean
+} & Omit<ImageProps, 'style'>) {
+  const t = useTheme()
   const emojiFont = useEmojiFont()
   const probe = useRef<HTMLSpanElement>(null)
   const [box, setBox] = useState<Box>()
@@ -84,6 +91,8 @@ export function InlineImage({
       <Image
         {...props}
         style={{
+          backgroundColor: loading ? t.palette.contrast_50 : undefined,
+          borderRadius: loading ? 4 : 0,
           position: 'absolute',
           bottom: box ? Math.max(0, (box.height - box.width) / 2) : 0,
           left: '50%',

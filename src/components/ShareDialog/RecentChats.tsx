@@ -22,6 +22,12 @@ import {type ConvoWithDetails, parseConvoView} from '#/components/dms/util'
 import {Message_Stroke2_Corner0_Rounded as ChatIcon} from '#/components/icons/Message'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
+import {
+  useAvatarDecoration,
+  useAvatarShape,
+  useNameGradient,
+  useNameStyle,
+} from '#/deltas/feat/avatarDecorations'
 import {type chat} from '#/lexicons'
 import {SHEET_GUTTER} from './const'
 
@@ -199,8 +205,16 @@ function RecentChatItem({
   const t = useTheme()
 
   const primaryProfile = useProfileShadow(primaryMember)
+  const decoration = useAvatarDecoration(primaryProfile.did)
+  const profileShape = useAvatarShape(primaryProfile.did)
+  const nameGradient = useNameGradient(primaryProfile.did)
+  const nameStyle = useNameStyle(primaryProfile.did)
 
   const moderation = moderateProfile(primaryProfile, moderationOpts)
+  const decoratedName =
+    convo.kind === 'direct' &&
+    !!primaryProfile.displayName &&
+    !moderation.ui('displayName').blur
   const name =
     convo.kind === 'group'
       ? convo.details.name
@@ -233,6 +247,8 @@ function RecentChatItem({
       ) : (
         <UserAvatar
           avatar={primaryProfile.avatar}
+          decoration={decoration}
+          profileShape={profileShape}
           size={AVATAR_SIZE}
           type={primaryProfile.associated?.labeler ? 'labeler' : 'user'}
           moderation={moderation.ui('avatar')}
@@ -241,10 +257,13 @@ function RecentChatItem({
       <View style={[a.flex_row, a.align_center, a.justify_center, a.w_full]}>
         <Text
           emoji
+          gradient={decoratedName ? nameGradient : undefined}
           style={[
+            a.flex_shrink,
             a.text_xs,
             a.leading_snug,
             isGrid ? t.atoms.text : t.atoms.text_contrast_medium,
+            decoratedName && nameStyle,
           ]}
           numberOfLines={1}>
           {name}
