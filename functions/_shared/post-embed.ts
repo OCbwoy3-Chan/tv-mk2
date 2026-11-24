@@ -1,21 +1,25 @@
+import {
+  renderPostComponentEmbed,
+  serializeComponentEmbed,
+} from './component-embed.ts'
 import {renderCachedEmbed} from './embed-cache.ts'
-import {html, type ProfileView, renderHandleString} from './profile-embed.ts'
-import {getVideoBlobUrl} from './video-blob.ts'
+import {
+  html,
+  HtmlSafeString,
+  type ProfileView,
+  renderHandleString,
+} from './profile-embed.ts'
 
 type Facet = {
   features?: Array<{$type?: string; uri?: string}>
   index?: {byteEnd?: number; byteStart?: number}
 }
 
-type AspectRatio = {height?: number; width?: number}
-
 type ImageView = {thumb?: string; thumbnail?: string; fullsize?: string}
 
 type VideoView = {
   alt?: string
-  aspectRatio?: AspectRatio
   cid?: string
-  playlist?: string
   thumbnail?: string
 }
 
@@ -41,13 +45,7 @@ type ViewRecord = {
   uri?: string
   value?: {
     $type?: string
-    embed?: {
-      $type?: string
-      cid?: string
-      playlist?: string
-      thumbnail?: string
-      aspectRatio?: AspectRatio
-    }
+    embed?: Embed
     text?: string
   }
 }
@@ -209,13 +207,7 @@ export function expandPostTextRich(postView: Thread): string {
 export type PreviewMedia =
   | {kind: 'external'; thumb: string}
   | {kind: 'images'; urls: string[]}
-  | {
-      aspectRatio?: AspectRatio
-      cid: string
-      did: string
-      kind: 'video'
-      thumbnail?: string
-    }
+  | {kind: 'video'; alt?: string; cid: string; did: string; thumbnail?: string}
 
 function getEmbedMedia(
   embed: Embed | undefined,
@@ -239,14 +231,15 @@ function getEmbedMedia(
 
   if (embed.$type === TYPE.video) {
     const video = embed as VideoView
-    if (!video.cid) return
-    return {
-      aspectRatio: video.aspectRatio,
-      cid: video.cid,
-      did: authorDid,
-      kind: 'video',
-      thumbnail: video.thumbnail,
-    }
+    return video.cid
+      ? {
+          alt: video.alt,
+          cid: video.cid,
+          did: authorDid,
+          kind: 'video',
+          thumbnail: video.thumbnail,
+        }
+      : undefined
   }
 
   if (embed.$type === TYPE.external) {
@@ -274,9 +267,28 @@ export function getPreviewMedia(thread: Thread): PreviewMedia | undefined {
   )
 }
 
-export async function renderEmbedMeta(media: PreviewMedia | undefined) {
+/**
+ * Open Graph / Twitter card tags for the post's media.
+ *
+ * A video stays a thumbnail card. `og:video` and `twitter:card=player` select
+ * Discord's player layout, which renders the title and never the description,
+ * and nothing can add the description back - the video itself goes in the
+ * component embed instead (see `component-embed.ts`). Every other unfurler
+ * gets the card with the post text.
+ */
+export function renderEmbedMeta(media: PreviewMedia | undefined) {
   if (!media) {
     return html`<meta name="twitter:card" content="summary" />`
+  }
+
+  if (media.kind === 'video') {
+    return media.thumbnail
+      ? html`
+          <meta property="og:image" content="${media.thumbnail}" />
+          <meta name="twitter:image" content="${media.thumbnail}" />
+          <meta name="twitter:card" content="summary_large_image" />
+        `
+      : html`<meta name="twitter:card" content="summary" />`
   }
 
   if (media.kind === 'external') {
@@ -286,47 +298,117 @@ export async function renderEmbedMeta(media: PreviewMedia | undefined) {
     `
   }
 
-  if (media.kind === 'images') {
-    return html`
-      ${media.urls.map(url => html`<meta property="og:image" content="${url}" />`)}
-      <meta name="twitter:card" content="summary_large_image" />
-    `
-  }
+  return html`
+    ${media.urls.map(url => html`<meta property="og:image" content="${url}" />`)}
+    <meta name="twitter:card" content="summary_large_image" />
+  `
+}
 
-  const stream = await getVideoBlobUrl(media.did, media.cid)
-  const {width, height} = media.aspectRatio ?? {}
+/**
+ * The Discord component embed for a video post, as a `<script>` element the
+ * caller appends to `<head>`. Unlike the Open Graph tags this keeps the post
+ * text above the video, and Discord re-hosts the media itself.
+ */
+function renderVideoComponentEmbed({
+  appName,
+  media,
+  postText,
+  thread,
+  url,
+}: {
+  appName: string
+  media: Extract<PreviewMedia, {kind: 'video'}>
+  postText: string
+  thread: Thread
+  url: string
+}) {
+  const author = thread.post.author
+
+  const embed = renderPostComponentEmbed({
+    appName,
+    authorName: author.displayName ?? author.handle,
+    authorAvatar: author.avatar,
+    authorHandle: author.handle,
+    postText,
+    postUrl: url,
+    videoAlt: media.alt,
+    /* Our proxy serves the blob playable; see `functions/video`. */
+    videoUrl: `${new URL(url).origin}/video/${media.did}/${media.cid}`,
+  })
+  if (!embed) return ''
+
+  /*
+   * Script content is not HTML-escaped, and the payload has no raw `<` left,
+   * so it is appended as markup rather than through the escaping template.
+   */
+  return new HtmlSafeString([
+    `<script id="discord:component-embed" type="application/json">${serializeComponentEmbed(embed)}</script>`,
+  ])
+}
+
+/**
+ * The metadata appended to `<head>` for a post. `postText` is the expanded
+ * text used for descriptions.
+ */
+export function renderHeadMeta({
+  appName,
+  postText: postTextString,
+  thread,
+  url,
+}: {
+  appName: string
+  postText: string
+  thread: Thread
+  url: string
+}) {
+  const author = thread.post.author
+  const media = getPreviewMedia(thread)
+
+  const postText =
+    postTextString.length > 0
+      ? html`
+          <meta name="description" content="${postTextString}" />
+          <meta property="og:description" content="${postTextString}" />
+        `
+      : ''
+
+  /*
+   * Discord ignores Open Graph for a video it can play, so the text rides in a
+   * component embed. When the payload cannot be made to fit, the component
+   * embed is empty and the card below still carries the text.
+   */
+  const componentEmbed =
+    media?.kind === 'video'
+      ? renderVideoComponentEmbed({
+          appName,
+          media,
+          postText: postTextString,
+          thread,
+          url,
+        })
+      : ''
+
+  const embedElems = renderEmbedMeta(media)
+
+  const uri = thread.post.uri
+  const atUri = uri
+    ? html`
+        <link rel="alternate" href="${uri}" />
+        <meta name="at:canonical" content="${uri}" />
+      `
+    : ''
 
   return html`
-    ${
-      media.thumbnail
-        ? html`
-            <meta property="og:image" content="${media.thumbnail}" />
-            <meta name="twitter:image" content="${media.thumbnail}" />
-          `
-        : ''
-    }
-    <meta property="og:video" content="${stream}" />
-    <meta property="og:video:secure_url" content="${stream}" />
-    <meta property="og:video:type" content="video/mp4" />
-    ${
-      width && height
-        ? html`
-            <meta property="og:video:width" content="${String(width)}" />
-            <meta property="og:video:height" content="${String(height)}" />
-          `
-        : ''
-    }
-    <meta name="twitter:card" content="player" />
-    <meta name="twitter:player:stream" content="${stream}" />
-    <meta name="twitter:player:stream:content_type" content="video/mp4" />
-    ${
-      width && height
-        ? html`
-            <meta name="twitter:player:width" content="${String(width)}" />
-            <meta name="twitter:player:height" content="${String(height)}" />
-          `
-        : ''
-    }
+    <meta property="og:site_name" content="${appName}" />
+    <meta property="og:type" content="article" />
+    <meta property="profile:username" content="${author.handle}" />
+    <meta property="og:url" content="${url}" />
+    <meta property="og:title" content="${renderHandleString(author)}" />
+    ${postText} ${embedElems} ${componentEmbed}
+    <meta name="twitter:label1" content="Account DID" />
+    <meta name="twitter:value1" content="${author.did}" />
+    <meta name="article:published_time" content="${thread.post.indexedAt}" />
+    ${atUri}
   `
 }
 
@@ -340,40 +422,13 @@ class HeadHandler {
     this.postTextString = postTextString
   }
   async element(element) {
-    const author = this.thread.post.author
-
-    const postText =
-      this.postTextString.length > 0
-        ? html`
-            <meta name="description" content="${this.postTextString}" />
-            <meta property="og:description" content="${this.postTextString}" />
-          `
-        : ''
-
-    const embedElems = await renderEmbedMeta(getPreviewMedia(this.thread))
-    const uri = this.thread.post.uri
-    const atUri = uri
-      ? html`
-          <link rel="alternate" href="${uri}" />
-          <meta name="at:canonical" content="${uri}" />
-        `
-      : ''
-
     element.append(
-      html`
-        <meta property="og:site_name" content="Witchsky" />
-        <meta property="og:type" content="article" />
-        <meta property="profile:username" content="${author.handle}" />
-        <meta property="og:url" content="${this.url}" />
-        <meta property="og:title" content="${renderHandleString(author)}" />
-        ${postText} ${embedElems}
-        <meta name="twitter:label1" content="Account DID" />
-        <meta name="twitter:value1" content="${author.did}" />
-        <meta
-          name="article:published_time"
-          content="${this.thread.post.indexedAt}" />
-        ${atUri}
-      `,
+      renderHeadMeta({
+        appName: 'Witchsky',
+        postText: this.postTextString,
+        thread: this.thread,
+        url: this.url,
+      }),
       {html: true},
     )
   }
