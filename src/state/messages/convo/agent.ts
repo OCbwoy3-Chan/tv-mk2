@@ -367,6 +367,17 @@ export class Convo {
             void this.setup()
             this.setupFirehose()
             this.requestPollInterval(ACTIVE_POLL_INTERVAL)
+            /*
+             * With a cached view in hand there is no need to wait on getConvo
+             * before rendering: go ready now and let setup() refresh it, or
+             * move us to Disabled or Error, when it lands. History only needs
+             * the convo id, so it loads alongside rather than after.
+             */
+            this.needsVerification = this.canRenderFromCachedConvo()
+            if (this.needsVerification) {
+              this.status = ConvoStatus.Ready
+              void this.fetchMessageHistory()
+            }
             break
           }
         }
@@ -411,7 +422,7 @@ export class Convo {
       case ConvoStatus.Ready: {
         switch (action.event) {
           case ConvoDispatchEvent.Resume: {
-            void this.refreshConvo()
+            if (!this.maybeVerifyCachedConvo()) void this.refreshConvo()
             this.requestPollInterval(ACTIVE_POLL_INTERVAL)
             break
           }
@@ -450,7 +461,7 @@ export class Convo {
             } else {
               if (this.convo) {
                 this.status = ConvoStatus.Ready
-                void this.refreshConvo()
+                if (!this.maybeVerifyCachedConvo()) void this.refreshConvo()
                 this.maybeRecoverFromNetworkError()
               } else {
                 this.status = ConvoStatus.Initializing
@@ -549,7 +560,11 @@ export class Convo {
   }
 
   private reset() {
-    this.convo = undefined
+    /*
+     * The convo view is kept: it is what a fresh agent would start from as
+     * placeholder data anyway, and lets init render immediately instead of
+     * blanking until getConvo returns.
+     */
     this.snapshot = undefined
 
     this.status = ConvoStatus.Uninitialized
@@ -562,6 +577,10 @@ export class Convo {
     this.pendingMessages = new Map()
     this.deletedMessages = new Set()
     this.relatedProfiles = new Map()
+    // The kept view still names its members, so keep showing them.
+    for (const member of this.convo?.members ?? []) {
+      this.relatedProfiles.set(member.did, member)
+    }
     // Shadow updates fired while suspended are missed, so the overlay may be
     // stale - drop it and trust the from-scratch refetch.
     this.profileShadows = new Map()
@@ -583,8 +602,10 @@ export class Convo {
     }
 
     if (this.fetchMessageHistoryError) {
-      this.fetchMessageHistoryError.retry()
+      // fetchMessageHistory refuses to run while the error is set.
+      const {retry} = this.fetchMessageHistoryError
       this.fetchMessageHistoryError = undefined
+      retry()
       this.commit()
     }
   }
@@ -600,6 +621,9 @@ export class Convo {
   }
 
   private updateConvo(convo: Partial<chat.bsky.convo.defs.ConvoView>) {
+    if (this.needsVerification) {
+      this.unverifiedEdits = {...this.unverifiedEdits, ...convo}
+    }
     if (this.convo) {
       this.convo =
         parseConvoView({...this.convo.view, ...convo}, this.senderUserDid) ??
@@ -612,8 +636,39 @@ export class Convo {
   }
 
   /**
-   * Initialises the convo with placeholder data, if provided. We still refetch it before rendering the convo,
-   * but this allows us to render the convo header immediately.
+   * Optimistic edits (e.g. accepting the convo) made while rendering from an
+   * unverified cached view. getConvo may answer before the server applies
+   * them, so they are laid over its response instead of being reverted by it.
+   */
+  private unverifiedEdits: Partial<chat.bsky.convo.defs.ConvoView> | undefined
+  /**
+   * Rendering from a cached view that getConvo has not confirmed yet. Until it
+   * does, a network failure keeps the cached view, and verification is retried
+   * on reconnect and resume.
+   */
+  private needsVerification = false
+  private isSettingUp = false
+
+  /** Retry verification of a cached view; returns whether one was started. */
+  private maybeVerifyCachedConvo() {
+    if (!this.needsVerification) return false
+    if (!this.isSettingUp) void this.setup()
+    return true
+  }
+
+  /**
+   * A cached view is enough to render once it shows this account as an active
+   * member. A cached disabled status is not trusted: it is terminal, so only
+   * the server may put the convo into it.
+   */
+  private canRenderFromCachedConvo() {
+    const self = this.convo?.members.find(m => m.did === this.senderUserDid)
+    return !!self && !self.chatDisabled
+  }
+
+  /**
+   * Initialises the convo with placeholder data, if provided, so it can render
+   * before the refetch in setup() lands.
    */
   private setupPlaceholderData(
     data: NonNullable<ConvoParams['placeholderData']>,
@@ -622,10 +677,13 @@ export class Convo {
   }
 
   private async setup() {
+    this.isSettingUp = true
     try {
       const {convo} = await this.fetchConvo()
 
-      this.setConvo(convo)
+      this.setConvo(
+        this.unverifiedEdits ? {...convo, ...this.unverifiedEdits} : convo,
+      )
 
       /*
        * Some validation prior to `Ready` status
@@ -641,6 +699,8 @@ export class Convo {
       }
 
       const userIsDisabled = Boolean(self.chatDisabled)
+      this.needsVerification = false
+      this.unverifiedEdits = undefined
 
       if (userIsDisabled) {
         this.dispatch({event: ConvoDispatchEvent.Disable})
@@ -655,6 +715,15 @@ export class Convo {
         })
       }
 
+      /*
+       * Already rendering from the cached view: a flaky network should not
+       * replace a working convo with an error screen. Verification is retried
+       * on reconnect and resume (see maybeVerifyCachedConvo).
+       */
+      if (isNetworkError(e) && this.needsVerification) {
+        return
+      }
+
       this.dispatch({
         event: ConvoDispatchEvent.Error,
         payload: {
@@ -666,6 +735,8 @@ export class Convo {
         },
       })
       this.commit()
+    } finally {
+      this.isSettingUp = false
     }
   }
 
@@ -896,6 +967,7 @@ export class Convo {
 
   onFirehoseConnect() {
     this.firehoseError = undefined
+    this.maybeVerifyCachedConvo()
     void this.batchRetryPendingMessages()
     this.commit()
   }
