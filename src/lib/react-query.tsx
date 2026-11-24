@@ -4,15 +4,23 @@ import {createAsyncStoragePersister} from '@tanstack/query-async-storage-persist
 import {
   type DehydrateOptions,
   focusManager,
+  IsRestoringProvider,
   onlineManager,
   QueryClient,
+  QueryClientProvider,
 } from '@tanstack/react-query'
 import {
   type PersistQueryClientOptions,
-  PersistQueryClientProvider,
+  persistQueryClientRestore,
+  persistQueryClientSubscribe,
 } from '@tanstack/react-query-persist-client'
 
 import {createPersistedQueryStorage} from '#/lib/persisted-query-storage'
+import {
+  getRetainedQueryClient,
+  holdRetainedQueryClient,
+  type RetainedValue,
+} from '#/lib/retained-query-clients'
 import {listenNetworkConfirmed, listenNetworkLost} from '#/state/events'
 import {isQueryPersisted} from '#/state/queries/util'
 import * as env from '#/env'
@@ -152,6 +160,58 @@ const dehydrateOptions: DehydrateOptions = {
   },
 }
 
+type RetainedQueryClient = RetainedValue & {
+  queryClient: QueryClient
+  persistOptions: Omit<PersistQueryClientOptions, 'queryClient'>
+  /** Shared so a retained client reads storage only on its first mount. */
+  restore?: Promise<void>
+  restored: boolean
+}
+
+function createRetainedQueryClient(
+  currentDid: string | undefined,
+): RetainedQueryClient {
+  const id = currentDid ?? 'logged-out'
+  const queryClient = createQueryClient()
+  const base = createPersistedQueryStorage(id)
+  let retired = false
+  /*
+   * The persister throttles writes, so one can still be queued after the
+   * provider unsubscribes. Once the account is logged out or removed its
+   * storage is cleared, and a late write must not bring the data back.
+   */
+  const storage: typeof base = {
+    getItem: async key => {
+      if (retired) return null
+      const value = await base.getItem(key)
+      // Discarded while reading: don't hydrate the client being freed.
+      return retired ? null : value
+    },
+    setItem: (key, value) =>
+      retired ? Promise.resolve() : base.setItem(key, value),
+    removeItem: key => (retired ? Promise.resolve() : base.removeItem(key)),
+  }
+  const persister = createAsyncStoragePersister({
+    storage,
+    key: 'queryClient-' + id,
+    // JSON, as by default, but with Following v2's Home Following snapshot.
+    serialize: client => JSON.stringify(saveFollowingSnapshot(client)),
+    deserialize: cached => loadFollowingSnapshot(JSON.parse(cached)),
+  })
+  return {
+    queryClient,
+    persistOptions: {persister, dehydrateOptions, buster: env.APP_VERSION},
+    restored: false,
+    retire: () => {
+      retired = true
+    },
+    dispose: () => {
+      void queryClient.cancelQueries()
+      queryClient.clear()
+    },
+  }
+}
+
 export function QueryProvider({
   children,
   currentDid,
@@ -183,24 +243,43 @@ function QueryProviderInner({
       'Something is very wrong. Expected did to be stable due to key above.',
     )
   }
-  // We create the query client here so that it's scoped to a specific DID.
-  // Do not move the query client creation outside of this component.
-  const [queryClient, _setQueryClient] = useState(() => createQueryClient())
-  const [persistOptions, _setPersistOptions] = useState(() => {
-    const storage = createPersistedQueryStorage(currentDid ?? 'logged-out')
-    const asyncPersister = createAsyncStoragePersister({
-      storage,
-      key: 'queryClient-' + (currentDid ?? 'logged-out'),
-      // JSON, as by default, but with Following v2's Home Following snapshot.
-      serialize: client => JSON.stringify(saveFollowingSnapshot(client)),
-      deserialize: cached => loadFollowingSnapshot(JSON.parse(cached)),
+  /*
+   * The query client is scoped to a specific DID. It is kept across account
+   * switches (see retained-query-clients) so switching back to an account
+   * renders its cached screens immediately.
+   */
+  const [retained, _setRetained] = useState(() =>
+    getRetainedQueryClient(currentDid ?? 'logged-out', () =>
+      createRetainedQueryClient(currentDid),
+    ),
+  )
+  const {queryClient, persistOptions} = retained
+  const [isRestoring, setIsRestoring] = useState(!retained.restored)
+
+  useEffect(() => holdRetainedQueryClient(retained), [retained])
+
+  /*
+   * Like PersistQueryClientProvider, but a retained client is restored from
+   * storage once: on later mounts its memory is already newer, and restoring
+   * again would only hold its queries back while storage is read.
+   */
+  useEffect(() => {
+    const options = {...persistOptions, queryClient}
+    if (!isRestoring) return persistQueryClientSubscribe(options)
+    let cancelled = false
+    retained.restore ??= persistQueryClientRestore(options)
+      .catch(() => {})
+      .then(() => {
+        retained.restored = true
+      })
+    void retained.restore.then(() => {
+      if (!cancelled) setIsRestoring(false)
     })
-    return {
-      persister: asyncPersister,
-      dehydrateOptions,
-      buster: env.APP_VERSION,
-    } satisfies Omit<PersistQueryClientOptions, 'queryClient'>
-  })
+    return () => {
+      cancelled = true
+    }
+  }, [retained, queryClient, persistOptions, isRestoring])
+
   useEffect(() => {
     if (IS_WEB) {
       // WARNING, BROKEN
@@ -210,10 +289,8 @@ function QueryProviderInner({
     }
   }, [queryClient])
   return (
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={persistOptions}>
-      {children}
-    </PersistQueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <IsRestoringProvider value={isRestoring}>{children}</IsRestoringProvider>
+    </QueryClientProvider>
   )
 }

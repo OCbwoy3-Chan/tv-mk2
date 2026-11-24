@@ -1,5 +1,6 @@
 import {type OAuthSession} from '@atproto/oauth-client-browser'
 
+import {readAppViewProxy} from '#/state/preferences/custom-appview-did'
 import {buildAppviewClient, buildChatClient, buildPdsClient} from './clients'
 import {configureModerationForAccount} from './moderation'
 import {oauthCreateAgent, oauthResumeSession} from './oauth-agent'
@@ -16,6 +17,8 @@ function buildOAuthBundle(
   return {
     session: null,
     oauthAgent,
+    // Read alongside buildAppviewClient, which fixes the same value.
+    appview: readAppViewProxy(),
     appviewClient: buildAppviewClient(authAgent),
     pdsClient: buildPdsClient(authAgent),
     chatClient: buildChatClient(authAgent),
