@@ -20,7 +20,7 @@ import {useGlobalDialogsControlContext} from '#/components/dialogs/Context'
 import {AnalyticsContext, useAnalyticsBase, utils} from '#/analytics'
 import {IS_WEB} from '#/env'
 import {com} from '#/lexicons'
-import {device} from '#/storage'
+import {account as accountStorage, device} from '#/storage'
 import {emitSessionDropped} from '../events'
 import {getPublicAppviewClient} from './clients'
 import {createSessionBundleAndCreateAccount} from './create-account'
@@ -971,6 +971,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
       clearAgeAssuranceServerDataForDid({did: account.did})
       forgetWarmSession(account.did)
       discardRetainedQueryClient(account.did)
+      accountStorage.remove([account.did, 'profile'])
       void clearPersistedQueryStorage(account.did)
     },
     [store, cancelPendingTask],

@@ -28,9 +28,10 @@ import {clearStorage} from '#/state/persisted'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useAccountProfilesQuery} from '#/state/queries/account-profiles'
 import {useDeleteActorDeclaration} from '#/state/queries/messages/actor-declaration'
 import {useModerationInboxUnreadCountQuery} from '#/state/queries/moderation-inbox'
-import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
+import {useProfileQuery} from '#/state/queries/profile'
 import {usePdsClient} from '#/state/session'
 import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
 import {
@@ -124,8 +125,8 @@ export function SettingsScreen({}: Props) {
   const switchAccountControl = useDialogControl()
   const signOutPromptControl = Prompt.usePromptControl()
   const {data: profile} = useProfileQuery({did: currentAccount?.did})
-  const {data: otherProfiles} = useProfilesQuery({
-    handles: accounts
+  const {data: otherProfiles} = useAccountProfilesQuery({
+    dids: accounts
       .filter(acc => acc.did !== currentAccount?.did)
       .map(acc => acc.did),
   })

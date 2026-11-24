@@ -10,7 +10,8 @@ import {
 import {type GestureResponderEvent} from 'react-native'
 import {useLingui} from '@lingui/react/macro'
 
-import {useProfileQuery, useProfilesQuery} from '#/state/queries/profile'
+import {useAccountProfilesQuery} from '#/state/queries/account-profiles'
+import {useProfileQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession} from '#/state/session'
 import {SwitchMenuItems} from '#/view/shell/desktop/LeftNav'
 import {useDialogControl} from '#/components/Dialog'
@@ -78,8 +79,8 @@ function useEphemeralAccountSwitcherData(
   const {data: currentProfileQuery} = useProfileQuery({
     did: currentProfileFromBatch ? undefined : selectedDid,
   })
-  const {data} = useProfilesQuery({
-    handles: accounts
+  const {data} = useAccountProfilesQuery({
+    dids: accounts
       .filter(account => currentProfileFromBatch || account.did !== selectedDid)
       .map(account => account.did),
   })

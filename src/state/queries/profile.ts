@@ -110,9 +110,17 @@ export function useProfileQuery({
 export function useProfilesQuery({
   handles,
   maintainData,
+  placeholderProfiles,
 }: {
   handles: string[]
   maintainData?: boolean
+  /**
+   * Shown while the first fetch is in flight, e.g. profiles cached on device.
+   * Must keep its identity across renders: a new object each render becomes
+   * new placeholder data each render, and profile shadows reset their state
+   * during render whenever the profile they are given changes - which loops.
+   */
+  placeholderProfiles?: {profiles: app.bsky.actor.defs.ProfileViewDetailed[]}
 }) {
   const client = useAppviewClient()
   return useQuery({
@@ -129,7 +137,7 @@ export function useProfilesQuery({
       )
       return {profiles: responses.flatMap(response => response.profiles)}
     },
-    placeholderData: maintainData ? keepPreviousData : undefined,
+    placeholderData: maintainData ? keepPreviousData : placeholderProfiles,
   })
 }
 

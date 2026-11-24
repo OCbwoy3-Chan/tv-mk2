@@ -39,10 +39,10 @@ import {
   useChatsTabBadgeDisplay,
   useNotificationsTabBadgeDisplay,
 } from '#/state/preferences/metrics-display-preference'
+import {useAccountProfilesQuery} from '#/state/queries/account-profiles'
 import {useFetchHandle} from '#/state/queries/handle'
 import {useUnreadMessageCount} from '#/state/queries/messages/list-conversations'
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
-import {useProfilesQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
 import {useSortedAccountItems} from '#/state/session/sorting'
 import {useThemePrefs} from '#/state/shell'
@@ -151,8 +151,8 @@ const LEFT_NAV_PWI_WIDTH = 245
 function ProfileCard({minimal}: {minimal: boolean}) {
   const {currentAccount, accounts} = useSession()
   const {logoutEveryAccount} = useSessionApi()
-  const {isLoading, data} = useProfilesQuery({
-    handles: accounts.map(acc => acc.did),
+  const {isLoading, data} = useAccountProfilesQuery({
+    dids: accounts.map(acc => acc.did),
   })
   const profiles = data?.profiles
   const signOutPromptControl = Prompt.usePromptControl()
