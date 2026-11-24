@@ -48,7 +48,7 @@ import {NoFeedsPinned} from '#/screens/Home/NoFeedsPinned'
 import {useTheme} from '#/alf'
 import * as Layout from '#/components/Layout'
 import {useAnalytics} from '#/analytics'
-import {IS_LIQUID_GLASS, IS_WEB} from '#/env'
+import {IS_NATIVE, IS_WEB} from '#/env'
 import {useDemoMode} from '#/storage/hooks/demo-mode'
 import {FeedPage} from './FeedPage'
 import {type FeedDescriptor} from './queries/postFeed'
@@ -96,7 +96,7 @@ export function HomeScreen(props: Props) {
     return (
       <Layout.Screen
         testID="HomeScreen"
-        noInsetTop={IS_LIQUID_GLASS}
+        noInsetTop={IS_NATIVE}
         style={userStyle('wsky-screen--home')}>
         <HomeHeaderModeProvider>
           <HomeScreenReady

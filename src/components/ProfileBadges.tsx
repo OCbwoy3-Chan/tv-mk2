@@ -62,6 +62,15 @@ const betaIconSizes: Record<Size, number> = {
   xl: 12,
 } as const
 
+/*
+ * Inside a Text, the badges sit with their bottom on the baseline on every
+ * platform (iOS needs patches/react-native/inline-view-baseline.patch). They
+ * are a little taller than the cap height of the names they follow, which
+ * leaves them about 0.75pt above its centre on iOS, Android and web (measured
+ * in the Storybook "Profile badges" section), so nudge them down by that.
+ */
+const INLINE_OFFSET = 0.75
+
 const betaBadgePadding: Record<Size, number> = {
   xs: 1,
   sm: 2,
@@ -76,6 +85,11 @@ type ProfileBadgesProps = ViewStyleProp & {
   pdsInteractive?: boolean
   /** The beta badge is reserved for the full profile header. */
   showBetaBadge?: boolean
+  /**
+   * Set when the badges are rendered inside a `Text`, after a name, so that
+   * they're centred on the name's cap height.
+   */
+  inline?: boolean
   size: Size
   mdniFontSize?: number
   allowFontScaling?: boolean
@@ -94,7 +108,7 @@ export function ProfileBadgesFromProfileShadow({
   profile,
   interactive = false,
   pdsInteractive = true,
-  // showBetaBadge = false,
+  inline = false,
   size,
   mdniFontSize,
   style,
@@ -187,7 +201,11 @@ export function ProfileBadgesFromProfileShadow({
       style={[
         a.flex_row,
         a.align_center,
-        isOnTheSmallSide ? a.gap_2xs : a.gap_xs,
+        gap,
+        inline && [
+          a.px_2xs,
+          {transform: [{translateY: INLINE_OFFSET * scaleMultiplier}]},
+        ],
         style,
       ]}>
       {showMdniBadge && (

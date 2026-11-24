@@ -10,7 +10,7 @@ export const VerifiedCheck = forwardRef<Svg, Props>(
   function LogoImpl(props, ref) {
     const theme = useTheme()
     const {perVerifierBadges} = useDeerVerification()
-    const {fill, size, style, ...rest} = useCommonSVGProps(props)
+    const {fill, width, height, style, ...rest} = useCommonSVGProps(props)
 
     return (
       <Svg
@@ -18,8 +18,8 @@ export const VerifiedCheck = forwardRef<Svg, Props>(
         {...rest}
         ref={ref}
         viewBox="0 0 24 24"
-        width={size}
-        height={size}
+        width={width}
+        height={height}
         style={[style]}>
         <Circle cx="12" cy="12" r="11.5" fill={fill} />
         <Path

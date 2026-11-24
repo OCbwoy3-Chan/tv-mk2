@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react'
 import {View} from 'react-native'
+import {KeyboardController} from 'react-native-keyboard-controller'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {usePhotoLibraryPermission} from '#/lib/hooks/usePermissions'
@@ -315,6 +316,11 @@ function LinkFormInner({
   const closeInset = IS_LIQUID_GLASS ? tokens.space._2xl : tokens.space.xl
   const previewUrl = selectedIcon?.previewUrl
 
+  const openSupportedSites = async () => {
+    await KeyboardController.dismiss()
+    supportedSitesControl.open()
+  }
+
   return (
     <Dialog.ScrollableInner
       style={web({maxWidth: 480})}
@@ -347,7 +353,7 @@ function LinkFormInner({
               <InlineLinkText
                 label={l`View all support sites`}
                 style={[a.text_md, a.leading_snug]}
-                {...createStaticClick(() => supportedSitesControl.open())}>
+                {...createStaticClick(() => void openSupportedSites())}>
                 View all support sites
               </InlineLinkText>
             </Trans>

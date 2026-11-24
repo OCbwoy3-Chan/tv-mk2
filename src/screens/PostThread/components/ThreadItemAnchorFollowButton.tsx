@@ -31,6 +31,7 @@ import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
 import {IS_IOS} from '#/env'
+import {useFeedItemFeedback} from '#/features/feedFeedback'
 import {type app} from '#/lexicons'
 import {GrowthHack} from './GrowthHack'
 
@@ -98,6 +99,7 @@ function PostThreadFollowBtnLoaded({
   >('follow')
   const [pendingEphemeralAccount, setPendingEphemeralAccount] =
     useState<SessionAccount | null>(null)
+  const feedItem = useFeedItemFeedback()
 
   const isFollowing = !!profile.viewer?.following
   const isFollowedBy = !!profile.viewer?.followedBy
@@ -144,6 +146,9 @@ function PostThreadFollowBtnLoaded({
   const executeFollow = useCallback(async () => {
     try {
       await queueFollow()
+      if (feedItem.item?.authorDid === profile.did) {
+        feedItem.send('app.bsky.feed.defs#interactionFollow')
+      }
     } catch (e: any) {
       if (e?.name !== 'AbortError') {
         logger.error('Failed to follow', {message: String(e)})
@@ -152,7 +157,7 @@ function PostThreadFollowBtnLoaded({
         })
       }
     }
-  }, [queueFollow, _])
+  }, [queueFollow, _, feedItem, profile.did])
 
   const executeUnfollow = useCallback(async () => {
     try {

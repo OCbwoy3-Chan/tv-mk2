@@ -11,6 +11,7 @@ import {useNavigation} from '@react-navigation/native'
 
 import {useWebMediaQueries} from '#/lib/hooks/useWebMediaQueries'
 import {useModerationCauseDescription} from '#/lib/moderation/useModerationCauseDescription'
+import {getHomeNavigationAction} from '#/lib/routes/navigation'
 import {type NavigationProp} from '#/lib/routes/types'
 import {getShapeStyle} from '#/lib/shapes'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -165,7 +166,9 @@ export function ScreenHider({
             if (navigation.canGoBack()) {
               navigation.goBack()
             } else {
-              navigation.navigate('Home')
+              navigation.dispatch(
+                getHomeNavigationAction(navigation.getState(), 'navigate'),
+              )
             }
           }}>
           <ButtonText>

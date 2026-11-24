@@ -1,7 +1,6 @@
-import {useCallback} from 'react'
-import {msg} from '@lingui/core/macro'
-import {useLingui} from '@lingui/react'
+import {useLingui} from '@lingui/react/macro'
 
+import {requestPermissionsAsync} from '#/lib/media/media-library'
 import {useDownloadFormat} from '#/state/preferences/download-format'
 import * as Toast from '#/components/Toast'
 import {IS_NATIVE} from '#/env'
@@ -10,29 +9,35 @@ import {saveImageToMediaLibrary} from './manip'
 /**
  * Same as `saveImageToMediaLibrary`, but also handles permissions and toasts
  *
- * iOS doesn't not require permissions to save images to the media library,
- * so this file is platform-split as it's much simpler than the Android version.
+ * iOS only needs add-only access to save images to the media library.
  */
 export function useSaveImageToMediaLibrary() {
-  const {_} = useLingui()
+  const {t: l} = useLingui()
   const downloadFormat = useDownloadFormat()
-  return useCallback(
-    async (uri: string, format?: string, downloadName?: string) => {
-      if (!IS_NATIVE) {
-        throw new Error('useSaveImageToMediaLibrary is native only')
+  return async (uri: string, format?: string, downloadName?: string) => {
+    if (!IS_NATIVE) {
+      throw new Error('useSaveImageToMediaLibrary is native only')
+    }
+
+    try {
+      // Asset.create requires permission to be granted before it is called.
+      const permission = await requestPermissionsAsync(true)
+      if (!permission.granted) {
+        Toast.show(
+          l`Permission to access your photo library was denied. Please enable it in your system settings.`,
+          {type: 'error'},
+        )
+        return
       }
 
-      try {
-        await saveImageToMediaLibrary({
-          uri,
-          downloadName,
-          format: format ?? downloadFormat ?? 'original',
-        })
-        Toast.show(_(msg`Image saved`))
-      } catch (e: any) {
-        Toast.show(_(msg`Failed to save image: ${String(e)}`), {type: 'error'})
-      }
-    },
-    [downloadFormat, _],
-  )
+      await saveImageToMediaLibrary({
+        uri,
+        downloadName,
+        format: format ?? downloadFormat ?? 'original',
+      })
+      Toast.show(l`Image saved`)
+    } catch (e: unknown) {
+      Toast.show(l`Failed to save image: ${String(e)}`, {type: 'error'})
+    }
+  }
 }

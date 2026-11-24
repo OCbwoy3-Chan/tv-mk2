@@ -2,7 +2,7 @@ import {type Client} from '@atproto/lex'
 
 import {app} from '#/lexicons'
 
-type Profile = app.bsky.actor.defs.ProfileView
+type Profile = Pick<app.bsky.actor.defs.ProfileView, 'did' | 'viewer'>
 
 /** Reads every page before copying, so source read failures cannot cause partial imports. */
 async function readSubscriptions(client: Client) {

@@ -53,6 +53,7 @@ import {
   createPlaybackTelemetry,
   type PlaybackTelemetry,
 } from '#/lib/media/video/playbackTelemetry'
+import {getHomeNavigationAction} from '#/lib/routes/navigation'
 import {
   type CommonNavigatorParams,
   type NavigationProp,
@@ -69,11 +70,6 @@ import {
   usePostShadow,
 } from '#/state/cache/post-shadow'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {
-  FeedFeedbackProvider,
-  useFeedFeedback,
-  useFeedFeedbackContext,
-} from '#/state/feed-feedback'
 import {useConfirmFollow} from '#/state/preferences/confirm-follow'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
@@ -117,6 +113,13 @@ import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {useNameStyle} from '#/deltas/feat/avatarDecorations'
 import {IS_ANDROID} from '#/env'
+import {
+  FeedFeedbackProvider,
+  FeedItemProvider,
+  useFeedFeedback,
+  useFeedFeedbackContext,
+  useFeedItemFeedback,
+} from '#/features/feedFeedback'
 import {usePostFeedQuery as useFollowingV2PostFeedQuery} from '#/features/followingV2/home/queries/postFeed'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
@@ -220,7 +223,11 @@ function Feed() {
   }, [params])
   const feedUri = params.type === 'feedgen' ? params.uri : undefined
   const {data: feedInfo} = useFeedInfo(feedUri)
-  const feedFeedback = useFeedFeedback(feedInfo ?? undefined, hasSession)
+  const feedFeedback = useFeedFeedback(
+    feedInfo ?? undefined,
+    hasSession,
+    'feed',
+  )
   const feedParams =
     params.type === 'feedgen' && params.sourceInterstitial !== 'none'
       ? {feedCacheKey: params.sourceInterstitial}
@@ -617,8 +624,6 @@ let VideoItem = ({
               active={active}
               scrollGesture={scrollGesture}
               moderation={moderation}
-              feedContext={feedContext}
-              reqId={reqId}
             />
           )}
         </>
@@ -628,7 +633,16 @@ let VideoItem = ({
 
   return (
     <ReportDialogMetadataContext.Provider key={post.uri}>
-      {content}
+      <FeedItemProvider
+        value={{
+          uri: post.uri,
+          authorDid: post.author.did,
+          feedContext,
+          reqId,
+          via: undefined,
+        }}>
+        {content}
+      </FeedItemProvider>
     </ReportDialogMetadataContext.Provider>
   )
 }
@@ -915,8 +929,6 @@ function Overlay({
   active,
   scrollGesture,
   moderation,
-  feedContext,
-  reqId,
 }: {
   player?: VideoPlayer
   post: Shadow<app.bsky.feed.defs.PostView>
@@ -924,8 +936,6 @@ function Overlay({
   active: boolean
   scrollGesture: NativeGesture
   moderation: ModerationDecision
-  feedContext: string | undefined
-  reqId: string | undefined
 }) {
   const {t: l} = useLingui()
   const t = useTheme()
@@ -1054,14 +1064,7 @@ function Overlay({
         <Hider.Content>
           <View style={[a.absolute, a.inset_0, a.z_20]}>
             <View style={[a.flex_1]}>
-              {player && (
-                <PlayPauseTapArea
-                  player={player}
-                  post={post}
-                  feedContext={feedContext}
-                  reqId={reqId}
-                />
-              )}
+              {player && <PlayPauseTapArea player={player} post={post} />}
             </View>
 
             <LinearGradient
@@ -1203,7 +1206,6 @@ function Overlay({
                       richText={richText}
                       post={post}
                       record={record}
-                      feedContext={feedContext}
                       logContext="FeedItem"
                       forceGoogleTranslate={true}
                       onPressReply={() =>
@@ -1363,13 +1365,9 @@ function VideoItemPlaceholder({
 function PlayPauseTapArea({
   player,
   post,
-  feedContext,
-  reqId,
 }: {
   player: VideoPlayer
   post: Shadow<app.bsky.feed.defs.PostView>
-  feedContext: string | undefined
-  reqId: string | undefined
 }) {
   const {t: l} = useLingui()
   const doubleTapRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -1381,7 +1379,7 @@ function PlayPauseTapArea({
     undefined,
     'ImmersiveVideo',
   )
-  const {sendInteraction} = useFeedFeedbackContext()
+  const feedItem = useFeedItemFeedback()
   const {isPlaying} = useEvent(player, 'playingChange', {
     isPlaying: player.playing,
   })
@@ -1415,12 +1413,7 @@ function PlayPauseTapArea({
       doubleTapRef.current = null
       haptics.tap()
       void queueLike()
-      sendInteraction({
-        item: post.uri,
-        event: 'app.bsky.feed.defs#interactionLike',
-        feedContext,
-        reqId,
-      })
+      feedItem.send('app.bsky.feed.defs#interactionLike')
     } else {
       doubleTapRef.current = setTimeout(togglePlayPause, 200)
     }
@@ -1490,7 +1483,9 @@ function EndMessage() {
           if (navigation.canGoBack()) {
             navigation.goBack()
           } else {
-            navigation.navigate('Home')
+            navigation.dispatch(
+              getHomeNavigationAction(navigation.getState(), 'navigate'),
+            )
           }
         }}
         variant="solid"

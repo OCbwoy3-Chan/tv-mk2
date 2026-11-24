@@ -13,6 +13,7 @@ export const router = new Router<AllNavigatableRoutes>({
   AuthCallback: '/auth/web/callback',
   Search: '/search',
   Atmosphere: '/atmosphere',
+  AtmosphereActivityList: '/atmosphere/activity',
   Feeds: '/feeds',
   Notifications: '/notifications',
   NotificationsActivityList: '/notifications/activity',

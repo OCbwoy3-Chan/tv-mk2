@@ -25,7 +25,6 @@ import {type SessionAccount, useSession} from '#/state/session'
 import {PreviewableUserAvatar, UserAvatar} from '#/view/com/util/UserAvatar'
 import {
   atoms as a,
-  platform,
   type TextStyleProp,
   useTheme,
   type ViewStyleProp,
@@ -300,12 +299,7 @@ function InlineNameAndHandle({
         numberOfLines={1}>
         {forceLTR(name)}
       </Text>
-      <View
-        style={[
-          a.pl_2xs,
-          a.self_center,
-          {marginTop: platform({default: 0, android: -1})},
-        ]}>
+      <View style={[a.pl_2xs, a.self_center]}>
         <ProfileBadges profile={profile} size="sm" />
       </View>
       {!hideDisplayNames && (

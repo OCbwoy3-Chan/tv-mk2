@@ -181,6 +181,6 @@ function downloadUrl(href: string, filename: string, external = false) {
   document.body.removeChild(a)
 }
 
-export async function safeDeleteAsync() {
+export function safeDelete() {
   // no-op
 }

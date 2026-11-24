@@ -62,7 +62,7 @@ export function PetAccountAlert({
               label={l`Open settings`}
               onPress={() => {
                 control.close(() => {
-                  void navigate('PetLabelSettings')
+                  void navigate({name: 'PetLabelSettings', params: undefined})
                 })
               }}
               color="secondary"

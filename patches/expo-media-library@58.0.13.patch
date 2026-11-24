@@ -1,0 +1,14 @@
+diff --git a/android/src/main/java/expo/modules/medialibrary/next/objects/wrappers/MimeType.kt b/android/src/main/java/expo/modules/medialibrary/next/objects/wrappers/MimeType.kt
+index f14cbedcedbe3c8ab7f32f2a8c4726c9c4b9a984..8e0ea15b0b6c15148515e66e57415e7d1a032011 100644
+--- a/android/src/main/java/expo/modules/medialibrary/next/objects/wrappers/MimeType.kt
++++ b/android/src/main/java/expo/modules/medialibrary/next/objects/wrappers/MimeType.kt
+@@ -33,7 +33,8 @@ value class MimeType(val value: String?) {
+ 
+   fun albumRootDirectory(): String = when {
+     value == null -> Environment.DIRECTORY_PICTURES
+-    isImage() || isVideo() -> Environment.DIRECTORY_PICTURES
++    isVideo() -> Environment.DIRECTORY_MOVIES
++    isImage() -> Environment.DIRECTORY_PICTURES
+     isAudio() -> Environment.DIRECTORY_MUSIC
+     else -> Environment.DIRECTORY_PICTURES
+   }

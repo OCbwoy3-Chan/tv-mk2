@@ -4,7 +4,7 @@ import {type ModerationDecision} from '@bsky/sdk/moderation'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
 import {type Shadow} from '#/state/cache/types'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
-import {atoms as a, platform, useBreakpoints, useTheme, web} from '#/alf'
+import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {Text} from '#/components/Typography'
@@ -66,22 +66,7 @@ export function ProfileHeaderDisplayName({
             {primaryName}
           </Text>
         )}
-        <View
-          style={[
-            a.pl_xs,
-            // Anchor to the name instead of the first badge's content baseline.
-            // Lift the centered row slightly to align with the visible letters.
-            web({verticalAlign: 'middle', transform: [{translateY: -1}]}),
-            {marginTop: platform({ios: 2})},
-          ]}>
-          <ProfileBadges
-            profile={profile}
-            size="lg"
-            mdniFontSize={gtMobile ? a.text_4xl.fontSize : a.text_3xl.fontSize}
-            interactive
-            showBetaBadge
-          />
-        </View>
+        <ProfileBadges profile={profile} size="lg" mdniFontSize={gtMobile ? a.text_4xl.fontSize : a.text_3xl.fontSize} interactive showBetaBadge style={[a.pl_xs]} />
       </View>
     </View>
   )

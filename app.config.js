@@ -1,5 +1,6 @@
 // @ts-check
 const pkg = require('./package.json')
+const {getNativeQueries} = require('./src/components/ShareDialog/catalog.ts')
 
 /**
  * @param {import('@expo/config-types').ExpoConfig} _config
@@ -51,6 +52,12 @@ module.exports = function (_config) {
     10,
   )
 
+  /**
+   * Apps the share sheet can detect, generated from the share platform
+   * catalog. Changing these needs a native build.
+   */
+  const SHARE_PLATFORM_QUERIES = getNativeQueries()
+
   const IOS_ICON_FILE =
     PLATFORM === 'web' // web build doesn't like .icon files
       ? './assets/app-icons/tenna/ios_icon_legacy_light.png'
@@ -92,10 +99,9 @@ module.exports = function (_config) {
           CADisableMinimumFrameDurationOnPhone: true,
           UIBackgroundModes: ['remote-notification'],
           NSUserActivityTypes: ['INSendMessageIntent'],
+          LSApplicationQueriesSchemes: SHARE_PLATFORM_QUERIES.iosSchemes,
           NSCameraUsageDescription:
             'Used for profile pictures, posts, and other kinds of content.',
-          NSMicrophoneUsageDescription:
-            'Used for posts and other kinds of content.',
           NSPhotoLibraryAddUsageDescription:
             'Used to save images to your library.',
           NSPhotoLibraryUsageDescription:
@@ -149,10 +155,11 @@ module.exports = function (_config) {
         entitlements: {
           'com.apple.developer.kernel.increased-memory-limit': true,
           'com.apple.developer.kernel.extended-virtual-addressing': true,
-          'com.apple.security.application-groups': process.env
-            .WITCHSKY_BUNDLE_ID
-            ? `group.${process.env.WITCHSKY_BUNDLE_ID}`
-            : 'group.party.tenna',
+          'com.apple.security.application-groups': [
+            process.env.WITCHSKY_BUNDLE_ID
+              ? `group.${process.env.WITCHSKY_BUNDLE_ID}`
+              : 'group.party.tenna',
+          ],
           'com.apple.developer.usernotifications.communication': true,
           // 'com.apple.developer.device-information.user-assigned-device-name': true,
           'com.apple.developer.declared-age-range': true,
@@ -221,6 +228,7 @@ module.exports = function (_config) {
         versionCode: Number.isFinite(ANDROID_VERSION_CODE)
           ? ANDROID_VERSION_CODE
           : 1,
+        blockedPermissions: ['android.permission.ACCESS_FINE_LOCATION'],
         intentFilters: [
           {
             action: 'VIEW',
@@ -330,6 +338,25 @@ module.exports = function (_config) {
         'expo-sharing',
         'expo-video',
         [
+          'expo-camera',
+          {
+            microphonePermission: false,
+            recordAudioAndroid: false,
+          },
+        ],
+        [
+          'expo-image-picker',
+          {
+            microphonePermission: false,
+          },
+        ],
+        [
+          'expo-media-library',
+          {
+            preventAutomaticLimitedAccessAlert: true,
+          },
+        ],
+        [
           'expo-localization',
           {
             /*
@@ -341,6 +368,49 @@ module.exports = function (_config) {
           },
         ],
         'expo-web-browser',
+        'expo-background-task',
+        // edits expo-widgets' output, and mods run in reverse order
+        './plugins/withTrendingWidget.js',
+        [
+          'expo-widgets',
+          {
+            bundleIdentifier: process.env.WITCHSKY_BUNDLE_ID
+              ? `${process.env.WITCHSKY_BUNDLE_ID}.BlueskyWidgets`
+              : 'app.witchsky.BlueskyWidgets',
+            groupIdentifier: process.env.WITCHSKY_BUNDLE_ID
+              ? `group.${process.env.WITCHSKY_BUNDLE_ID}`
+              : 'group.app.witchsky',
+            enableAndroid: true,
+            widgets: [
+              {
+                name: 'TrendingTopicsWidget',
+                displayName: 'Trending Topics',
+                description: 'See what people are talking about on Bluesky.',
+                ios: {
+                  contentMarginsDisabled: true,
+                  supportedFamilies: [
+                    'systemSmall',
+                    'systemMedium',
+                    'systemLarge',
+                  ],
+                  // lets the widget render before the app is first opened
+                  initialLayout:
+                    'src/features/trendingWidget/TrendingTopicsWidget.ios.tsx',
+                },
+                android: {
+                  // 4x3 cells, or 250x180dp on Android 11 and lower
+                  minWidth: 250,
+                  minHeight: 180,
+                  targetCellWidth: 4,
+                  targetCellHeight: 3,
+                  // lets the widget render before the app is first opened
+                  initialLayout:
+                    'src/features/trendingWidget/TrendingTopicsWidget.android.tsx',
+                },
+              },
+            ],
+          },
+        ],
         [
           'react-native-nano-icons',
           {
@@ -355,10 +425,13 @@ module.exports = function (_config) {
             })),
           },
         ],
-        [
-          'react-native-edge-to-edge',
-          {android: {enforceNavigationBarContrast: false}},
-        ],
+        /*
+         * Mods run in reverse registration order. Register the system bars
+         * plugin before expo-navigation-bar, which removes
+         * `android:windowLightNavigationBar` when no `style` is set.
+         */
+        './plugins/withAndroidStylesSystemBarsPlugin.js',
+        ['expo-navigation-bar', {enforceContrast: false}],
         /*
          * Expo runs Gradle mods in reverse registration order. Keep Bitdrift
          * before Sentry so its plugins block is prepended after Sentry's apply
@@ -423,11 +496,19 @@ module.exports = function (_config) {
         './plugins/withAndroidManifestLargeHeapPlugin.js',
         './plugins/withAndroidManifestFCMIconPlugin.js',
         './plugins/withAndroidManifestIntentQueriesPlugin.js',
+        [
+          './plugins/withAndroidManifestSharePlatformQueriesPlugin.js',
+          {
+            packages: SHARE_PLATFORM_QUERIES.androidPackages,
+            schemes: SHARE_PLATFORM_QUERIES.androidSchemes,
+          },
+        ],
         './plugins/withAndroidManifestOptionalCameraPlugin.js',
         './plugins/withAndroidStylesAccentColorPlugin.js',
         './plugins/withAndroidNoJitpackPlugin.js',
         './plugins/withAndroidPreparedTextLayoutPlugin.js',
         './plugins/withAndroidComposeVersion.js',
+        './plugins/withIOSWindowingControlStyle.js',
         './plugins/shareExtension/withShareExtensions.js',
         './plugins/notificationsExtension/withNotificationsExtension.js',
         [
@@ -647,7 +728,18 @@ module.exports = function (_config) {
           },
         ],
         ['expo-screen-orientation'],
-        ['expo-location'],
+        [
+          'expo-location',
+          {
+            locationWhenInUsePermission:
+              'Bluesky uses your approximate location via GPS to determine the content and features available in your region.',
+            locationAlwaysAndWhenInUsePermission: false,
+            locationAlwaysPermission: false,
+            motionUsagePermission: false,
+            locationFullAccuracyPermission: false,
+            isIosReducedAccuracyByDefault: true,
+          },
+        ],
         [
           'expo-contacts',
           {

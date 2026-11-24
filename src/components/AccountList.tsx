@@ -11,7 +11,7 @@ import {sanitizeHandle} from '#/lib/strings/handles'
 import {useAutoCompactAccountSwitcher} from '#/state/preferences/auto-compact-account-switcher'
 import {useCompactAccountSwitcher} from '#/state/preferences/compact-account-switcher'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
-import {useProfilesQuery} from '#/state/queries/profile'
+import {useAccountProfilesQuery} from '#/state/queries/account-profiles'
 import {type SessionAccount, useSession} from '#/state/session'
 import {useSortedAccountItems} from '#/state/session/sorting'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -51,8 +51,8 @@ export function AccountList({
   const autoCompactSwitcher = useAutoCompactAccountSwitcher()
   const accounts = accountsProp ?? sessionAccounts
   const [, , hiddenDidsSet] = useHiddenAccountsElsewhere()
-  const {data: profiles} = useProfilesQuery({
-    handles: accounts.map(acc => acc.did),
+  const {data: profiles} = useAccountProfilesQuery({
+    dids: accounts.map(acc => acc.did),
   })
   const sortedAccounts = useSortedAccountItems(accounts).filter(
     account => !hiddenDidsSet.has(account.did),
@@ -230,13 +230,7 @@ function AccountItem({
                   profile?.displayName || profile?.handle || account.handle,
                 )}
               </Text>
-              {profile && (
-                <ProfileBadges
-                  profile={profile}
-                  size="sm"
-                  style={[{marginTop: -2}]}
-                />
-              )}
+              {profile && <ProfileBadges profile={profile} size="sm" />}
             </View>
             <Text
               style={[

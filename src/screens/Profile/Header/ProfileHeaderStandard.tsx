@@ -27,7 +27,7 @@ import {
 } from '#/state/queries/profile'
 import {type SessionAccount, useRequireAuth, useSession} from '#/state/session'
 import {ProfileMenu} from '#/view/com/profile/ProfileMenu'
-import {atoms as a, native, platform, tokens, useTheme, web} from '#/alf'
+import {atoms as a, native, tokens, useTheme, web} from '#/alf'
 import {SubscribeProfileButton} from '#/components/activity-notifications/SubscribeProfileButton'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
@@ -200,6 +200,7 @@ let ProfileHeaderStandard = ({
               />
               <ProfileHeaderHandle
                 profile={profile}
+                moderation={moderation}
                 showPronouns={false}
                 verticalPadding={2}
               />
@@ -213,7 +214,7 @@ let ProfileHeaderStandard = ({
                       testID="profileHeaderDescription"
                       style={[a.text_md]}
                       numberOfLines={15}
-                      selectable={platform({android: false, default: true})}
+                      selectable
                       value={descriptionRT}
                       enableTags
                       authorHandle={profile.handle}
@@ -253,7 +254,9 @@ let ProfileHeaderStandard = ({
               // Keep above Followed by / tabs so the join-date tooltip paints correctly
               web({position: 'relative', zIndex: 2}),
             ]}>
-            <PronounPill pronouns={profile.pronouns} showIcon />
+            {!isBlockedUser && !moderation.ui('profileView').blur && (
+              <PronounPill pronouns={profile.pronouns} showIcon />
+            )}
 
             <View style={[a.flex_row, a.align_center, a.gap_xs]}>
               <CalendarDays

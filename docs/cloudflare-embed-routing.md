@@ -81,3 +81,25 @@ ordinary browser requests from the daily Workers request quota.
 If Functions ever exhaust the free daily quota, set the Pages project to
 **Fail open** under **Settings > Runtime** so static application pages continue
 to work.
+
+## Video posts
+
+A post with a video cannot use Open Graph alone. Discord switches to its player
+layout whenever `og:video` or `twitter:card` is `player`, and that layout renders
+the title but never the description, so the post text disappears. The preview is
+therefore built as a [component embed](https://docs.discord.com/developers/link-previews/component-embeds):
+a `<script id="discord:component-embed" type="application/json">` in `<head>`
+whose container holds the author, the post text, and the video in a media
+gallery. The Open Graph tags stay as a large card, Discord's documented fallback
+when a component embed cannot be shown.
+
+The post text is trimmed until the payload fits Discord's 3,000-byte limit. If
+even the empty payload (`author avatar`, video, button) does not fit, the
+component embed is omitted and the card carries the text instead.
+
+Discord fetches the media itself, so the video URL must be playable: the PDS
+serves blobs with `Content-Disposition: attachment` and without range support.
+`functions/video/[did]/[cid].ts` re-serves the blob with a video content type,
+`Accept-Ranges`, and range slicing for files up to 50 MB. `/video/*` is in the
+`web/_routes.json` include list, so these fetches are Pages Function requests
+(Cloudflare caches them for a day, keyed by the immutable blob URL).

@@ -11,7 +11,7 @@ import {atoms as a, useTheme} from '#/alf'
 import * as Dialog from '#/components/Dialog'
 import {Text} from '#/components/Typography'
 import {handleOverlayNavigation} from '#/features/keyboardShortcuts/overlayNavigation.web'
-import {goBack, navigate} from '#/Navigation'
+import {goBack, navigate, navigateToPath} from '#/Navigation'
 import {router} from '#/routes'
 import {listenOpenKeyboardShortcuts} from './events'
 import {KeyboardShortcutsDialog} from './KeyboardShortcutsDialog'
@@ -258,9 +258,7 @@ export function KeyboardShortcuts() {
       return true
     }
 
-    const [name, params] = router.matchPath(href)
-    // @ts-expect-error Router.matchPath returns matching name and params as a correlated pair.
-    void navigate(name, params)
+    void navigateToPath(href)
     clearSelection()
     selectOpenedPost(returnTarget)
     return true
@@ -341,7 +339,7 @@ export function KeyboardShortcuts() {
       viewportTop: selected.getBoundingClientRect().top,
     })
     clearSelection()
-    void navigate(route.name, route.params)
+    void navigateToPath(destinationPath)
     return true
   }
 
@@ -350,32 +348,32 @@ export function KeyboardShortcuts() {
 
     switch (key) {
       case 'h':
-        void navigate('Home')
+        void navigateToPath('/')
         break
       case 'e':
-        void navigate('Search', {})
+        void navigateToPath('/search')
         break
       case 'n':
-        void navigate('Notifications')
+        void navigateToPath('/notifications')
         break
       case 'c':
-        void navigate('Messages', {})
+        void navigateToPath('/messages')
         break
       case 'f':
-        void navigate('Feeds')
+        void navigateToPath('/feeds')
         break
       case 'l':
-        void navigate('Lists')
+        void navigateToPath('/lists')
         break
       case 'b':
-        void navigate('Bookmarks')
+        void navigateToPath('/saved')
         break
       case 'p':
         if (!currentAccount) return false
-        void navigate('Profile', {name: currentAccount.handle})
+        void navigate({name: 'Profile', params: {name: currentAccount.handle}})
         break
       case 's':
-        void navigate('Settings')
+        void navigateToPath('/settings')
         break
       default:
         return false

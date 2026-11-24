@@ -1,13 +1,9 @@
-import {copyAsync} from 'expo-file-system/legacy'
-import {
-  cacheDirectory,
-  EncodingType,
-  writeAsStringAsync,
-} from 'expo-file-system/legacy'
+import uuid from 'react-native-uuid'
+import {EncodingType, File, Paths} from 'expo-file-system'
 import {type BlobRef, type Client, type EncodingString} from '@atproto/lex'
 import {nanoid} from 'nanoid/non-secure'
 
-import {safeDeleteAsync} from '#/lib/media/manip'
+import {safeDelete} from '#/lib/media/manip'
 
 /**
  * The blob-upload response body: `{blob}`. lex `Client.uploadBlob` returns the
@@ -108,26 +104,15 @@ async function dataUriToBlobOnNative(dataUri: string): Promise<Blob> {
   if (!isBase64) {
     return dataUriToBlobViaFetch(dataUri)
   }
-  const baseDir = cacheDirectory
-  if (!baseDir) {
-    return dataUriToBlobViaFetch(dataUri)
-  }
-  const tmpUri = joinPath(baseDir, `upload-blob-${nanoid()}.bin`)
+  const tmpFile = new File(Paths.cache, `upload-blob-${nanoid()}.bin`)
   try {
-    await writeAsStringAsync(tmpUri, payload, {
+    await tmpFile.write(payload, {
       encoding: EncodingType.Base64,
     })
-    return await asBlob(tmpUri)
+    return await asBlob(tmpFile.uri)
   } finally {
-    await safeDeleteAsync(tmpUri)
+    safeDelete(tmpFile.uri)
   }
-}
-
-function joinPath(dir: string, name: string) {
-  if (dir.endsWith('/')) {
-    return name.startsWith('/') ? dir.slice(0, -1) + name : dir + name
-  }
-  return name.startsWith('/') ? dir + name : `${dir}/${name}`
 }
 
 async function dataUriToBlobViaFetch(dataUri: string): Promise<Blob> {
@@ -156,9 +141,9 @@ async function withSafeFile<T>(
     // Since we don't "own" the file, we should avoid renaming or modifying it.
     // Instead, let's copy it to a temporary file and use that (then remove the
     // temporary file).
-    const newPath = uri.replace(/\.jpe?g$/, '.bin')
+    const newPath = new File(Paths.cache, `${uuid.v4()}.bin`).uri
     try {
-      await copyAsync({from: uri, to: newPath})
+      await new File(uri).copy(new File(newPath))
     } catch {
       // Failed to copy the file, just use the original
       return await fn(uri)
@@ -167,7 +152,7 @@ async function withSafeFile<T>(
       return await fn(newPath)
     } finally {
       // Remove the temporary file
-      await safeDeleteAsync(newPath)
+      safeDelete(newPath)
     }
   } else {
     return fn(uri)

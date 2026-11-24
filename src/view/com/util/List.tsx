@@ -49,7 +49,8 @@ export type ListProps<ItemT = any> = Omit<
   refreshing?: boolean
   onRefresh?: () => void
   onItemNearViewport?: (item: ItemT) => void
-  onItemSeen?: (item: ItemT) => void
+  /** The index may be unavailable for native viewability tokens. */
+  onItemSeen?: (item: ItemT, index: number | undefined) => void
   desktopFixedHeight?: number | boolean
   // Web only prop to contain the scroll to the container rather than the window
   disableFullWindowScroll?: boolean
@@ -167,7 +168,9 @@ let List = forwardRef<ListMethods, ListProps>(
           changed: Array<ViewToken>
         }) => {
           for (const item of info.changed) {
-            if (item.isViewable) onItemSeen(item.item)
+            if (item.isViewable) {
+              onItemSeen(item.item, item.index)
+            }
           }
         },
         {

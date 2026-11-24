@@ -2,22 +2,26 @@
   "platforms": ["ios", "tvos", "android", "web"],
   "ios": {
     "modules": [
+      "ExpoBlueskyAppLinkModule",
       "ExpoBlueskySharedPrefsModule",
       "ExpoBlueskyReferrerModule",
       "ExpoBlueskyVisibilityViewModule",
       "ExpoPlatformInfoModule",
       "ExpoBlueskyNotificationSettingsModule",
-      "ExpoComposerEmojiLayoutModule"
+      "ExpoComposerEmojiLayoutModule",
+      "ExpoBlueskyWidgetInfoModule"
     ]
   },
   "android": {
     "modules": [
+      "expo.modules.blueskyswissarmy.applink.ExpoBlueskyAppLinkModule",
       "expo.modules.blueskyswissarmy.sharedprefs.ExpoBlueskySharedPrefsModule",
       "expo.modules.blueskyswissarmy.referrer.ExpoBlueskyReferrerModule",
       "expo.modules.blueskyswissarmy.visibilityview.ExpoBlueskyVisibilityViewModule",
       "expo.modules.blueskyswissarmy.platforminfo.ExpoPlatformInfoModule",
       "expo.modules.blueskyswissarmy.share.ExpoBlueskyShareModule",
-      "expo.modules.blueskyswissarmy.composeremoji.ExpoComposerEmojiLayoutModule"
+      "expo.modules.blueskyswissarmy.composeremoji.ExpoComposerEmojiLayoutModule",
+      "expo.modules.blueskyswissarmy.widgetinfo.ExpoBlueskyWidgetInfoModule"
     ]
   }
 }

@@ -68,7 +68,7 @@ function ReactionToast({
       <Toast.Action
         label={l`View post`}
         onPress={() =>
-          navigate('PostThread', {name: author.host, rkey: author.rkey})
+          navigate({name: 'PostThread', params: {name: author.host, rkey: author.rkey}})
         }>
         <Trans>View</Trans>
       </Toast.Action>

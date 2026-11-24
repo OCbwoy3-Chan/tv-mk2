@@ -22,14 +22,16 @@ Provider.displayName = 'TooltipProvider'
 type TooltipContextType = {
   position: 'top' | 'bottom'
   color: TooltipColor
+  maxWidth: number
   onVisibleChange: (open: boolean) => void
 }
 
 const TooltipContext = createContext<
-  Pick<TooltipContextType, 'position' | 'color'>
+  Pick<TooltipContextType, 'position' | 'color' | 'maxWidth'>
 >({
   position: 'bottom',
   color: 'default',
+  maxWidth: BUBBLE_MAX_WIDTH,
 })
 TooltipContext.displayName = 'TooltipContext'
 
@@ -37,16 +39,22 @@ export function Outer({
   children,
   position = 'bottom',
   color = 'default',
+  maxWidth = BUBBLE_MAX_WIDTH,
   visible,
   onVisibleChange,
 }: {
   children: React.ReactNode
   position?: 'top' | 'bottom'
   color?: TooltipColor
+  /** Widest the bubble can grow before its text wraps. */
+  maxWidth?: number
   visible: boolean
   onVisibleChange: (visible: boolean) => void
 }) {
-  const ctx = useMemo(() => ({position, color}), [position, color])
+  const ctx = useMemo(
+    () => ({position, color, maxWidth}),
+    [position, color, maxWidth],
+  )
   return (
     <Popover.Root open={visible} onOpenChange={onVisibleChange}>
       <TooltipContext.Provider value={ctx}>{children}</TooltipContext.Provider>
@@ -78,7 +86,7 @@ export function Content({
   label: string
 }) {
   const t = useTheme()
-  const {position, color} = useContext(TooltipContext)
+  const {position, color, maxWidth} = useContext(TooltipContext)
   const style = getTooltipStyle(t, color)
   return (
     <Popover.Portal>
@@ -111,9 +119,12 @@ export function Content({
         />
         <View
           style={[
-            a.px_md,
+            color === 'outlined' ? a.px_sm : a.px_md,
             a.py_sm,
-            {maxWidth: BUBBLE_MAX_WIDTH, display: 'flex'},
+            {
+              display: 'flex',
+              maxWidth: `min(${maxWidth}px, calc(100vw - ${MIN_EDGE_SPACE * 2}px))`,
+            },
           ]}>
           {children}
         </View>

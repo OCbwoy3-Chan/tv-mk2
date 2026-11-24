@@ -24,8 +24,13 @@ jest.mock('../BookmarkButton', () => ({usePostBookmark: () => ({})}))
 jest.mock('#/state/session', () => ({
   useRequireAuth: () => (action: () => void) => action(),
 }))
-jest.mock('#/state/feed-feedback', () => ({
-  useFeedFeedbackContext: () => ({sendInteraction: jest.fn()}),
+jest.mock('#/features/feedFeedback', () => ({
+  useFeedItemFeedback: () => ({
+    item: undefined,
+    feedDescriptor: undefined,
+    send: jest.fn(),
+    sendUnspecced: jest.fn(),
+  }),
 }))
 jest.mock('#/lib/hooks/useOpenComposer', () => ({
   useOpenComposer: () => ({openComposer: jest.fn()}),
@@ -54,14 +59,7 @@ function mount(reposted = false) {
       repost: reposted ? 'at://did:plc:me/app.bsky.feed.repost/abc' : undefined,
     },
   } as unknown as Shadow<app.bsky.feed.defs.PostView>
-  return render(
-    <PostMenuControlItems
-      post={post}
-      postFeedContext={undefined}
-      postReqId={undefined}
-      logContext="Post"
-    />,
-  )
+  return render(<PostMenuControlItems post={post} logContext="Post" />)
 }
 
 beforeEach(() => {

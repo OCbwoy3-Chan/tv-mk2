@@ -10,6 +10,7 @@ import {PlatformInfo} from '@bsky.app/expo-bluesky-swiss-army'
 import {Trans, useLingui} from '@lingui/react/macro'
 import {useNavigation, useNavigationState} from '@react-navigation/native'
 
+import {UNREAD_NOTIFICATION_CAP} from '#/lib/constants'
 import {useAccountSwitcher} from '#/lib/hooks/useAccountSwitcher'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {
@@ -39,10 +40,11 @@ import {
   useChatsTabBadgeDisplay,
   useNotificationsTabBadgeDisplay,
 } from '#/state/preferences/metrics-display-preference'
+import {useAccountProfilesQuery} from '#/state/queries/account-profiles'
 import {useFetchHandle} from '#/state/queries/handle'
 import {useUnreadMessageCount} from '#/state/queries/messages/list-conversations'
+import {useModerationInboxUnreadCountQuery} from '#/state/queries/moderation-inbox'
 import {useUnreadNotifications} from '#/state/queries/notifications/unread'
-import {useProfilesQuery} from '#/state/queries/profile'
 import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
 import {useSortedAccountItems} from '#/state/session/sorting'
 import {useThemePrefs} from '#/state/shell'
@@ -55,6 +57,7 @@ import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {NavSignupCard} from '#/view/shell/NavSignupCard'
 import {
   atoms as a,
+  native,
   tokens,
   useBreakpoints,
   useLayoutBreakpoints,
@@ -157,8 +160,8 @@ const LEFT_NAV_PWI_WIDTH = 245
 function ProfileCard({minimal}: {minimal: boolean}) {
   const {currentAccount, accounts} = useSession()
   const {logoutEveryAccount} = useSessionApi()
-  const {isLoading, data} = useProfilesQuery({
-    handles: accounts.map(acc => acc.did),
+  const {isLoading, data} = useAccountProfilesQuery({
+    dids: accounts.map(acc => acc.did),
   })
   const profiles = data?.profiles
   const signOutPromptControl = Prompt.usePromptControl()
@@ -525,6 +528,7 @@ function SwitchMenuItemAvatar({
 interface NavItemProps {
   beta?: boolean
   count?: string
+  exactMatch?: boolean
   hasNew?: boolean
   href: string
   icons: {
@@ -539,6 +543,7 @@ interface NavItemProps {
 function NavItem({
   beta,
   count,
+  exactMatch = false,
   hasNew,
   href,
   icons,
@@ -575,7 +580,9 @@ function NavItem({
     IS_NATIVE && tab
       ? getTabState(navigationState, tab) !== TabState.Outside
       : isCurrent
-  const isRelated = currentRouteInfo.name.startsWith(pathName)
+  const isRelated = exactMatch
+    ? false
+    : currentRouteInfo.name.startsWith(pathName)
   const navigation = useNavigation<NavigationProp>()
   const onPressWrapped = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -789,7 +796,7 @@ export function DesktopLeftNav({
   onNavigateTab?: (tab: SidebarTab) => void
 }) {
   const {hasSession, currentAccount} = useSession()
-  const {t: l} = useLingui()
+  const {i18n, t: l} = useLingui()
   const ax = useAnalytics()
   const {gtMobile} = useBreakpoints()
   const {activeTheme} = useThemePrefs()
@@ -816,8 +823,21 @@ export function DesktopLeftNav({
   const chatsTabBadgeDisplay = useChatsTabBadgeDisplay()
   const chatsText =
     chatsTabBadgeDisplay === 'text' ? chatsCustomText : undefined
+  const moderationInboxUnreadCountQuery = useModerationInboxUnreadCountQuery()
+  const moderationInboxUnreadCount =
+    moderationInboxUnreadCountQuery.data?.unreadCounts.total ?? 0
+  const numUnreadModerationInbox =
+    moderationInboxUnreadCount > 0
+      ? moderationInboxUnreadCount >= UNREAD_NOTIFICATION_CAP
+        ? l({
+            message: `${i18n.number(UNREAD_NOTIFICATION_CAP - 1)}+`,
+            comment:
+              'Displayed when the number of notifications exceeds the cap – for example, 99+',
+          })
+        : i18n.number(moderationInboxUnreadCount)
+      : undefined
   const hasHomeBadge = useHomeBadge()
-  const isAtmosphereExploreEnabled = ax.features.enabled(
+  const isAtmosphereEnabled = ax.features.enabled(
     ax.features.AtmosphereScreenEnable,
   )
   const insets = useSafeAreaInsets()
@@ -883,20 +903,6 @@ export function DesktopLeftNav({
               active: BellFilledIcon,
             }}
           />
-          {isAtmosphereExploreEnabled && (
-            <NavItem
-              label={l`Atmosphere`}
-              href="/atmosphere"
-              navItem="atmosphere"
-              onNavigateTab={onNavigateTab}
-              minimal={leftNavMinimal}
-              beta
-              icons={{
-                inactive: EarthIcon,
-                active: EarthIcon,
-              }}
-            />
-          )}
           <NavItem
             label={l`Chat`}
             href="/messages"
@@ -928,6 +934,21 @@ export function DesktopLeftNav({
               active: MessageFilledIcon,
             }}
           />
+          {isAtmosphereEnabled && (
+            <NavItem
+              label={l`Atmosphere`}
+              href="/atmosphere"
+              navItem="atmosphere"
+              onNavigateTab={onNavigateTab}
+              exactMatch
+              minimal={leftNavMinimal}
+              beta
+              icons={{
+                inactive: EarthIcon,
+                active: EarthIcon,
+              }}
+            />
+          )}
           <NavItem
             label={l`Feeds`}
             href="/feeds"
@@ -966,6 +987,7 @@ export function DesktopLeftNav({
             navItem="settings"
             onNavigateTab={onNavigateTab}
             minimal={leftNavMinimal}
+            count={numUnreadModerationInbox}
             hasNew={Boolean(themeUpdate)}
             icons={{
               inactive: SettingsIcon,
@@ -985,14 +1007,14 @@ export function DesktopLeftNav({
       style={[
         a.fixed,
         a.top_0,
-        a.p_lg,
+        web(a.p_lg),
         userStyle(
           'wsky-nav',
           'wsky-nav--desktop',
           leftNavMinimal && 'wsky-nav--compact',
         ),
         styles.leftNav,
-        IS_NATIVE && {top: insets.top, bottom: insets.bottom},
+        native(a.bottom_0),
         !hasSession && !leftNavMinimal && {width: LEFT_NAV_PWI_WIDTH},
         leftNavMinimal && [
           {width: LEFT_NAV_MINIMAL_WIDTH},
@@ -1019,7 +1041,18 @@ export function DesktopLeftNav({
         },
       ]}>
       {IS_NATIVE ? (
-        <ScrollView style={[a.flex_1, a.w_full]}>{content}</ScrollView>
+        <ScrollView
+          style={[a.flex_1, a.w_full]}
+          contentContainerStyle={[
+            a.p_lg,
+            {
+              paddingTop: insets.top + tokens.space.lg,
+              paddingBottom: insets.bottom + tokens.space.lg,
+            },
+          ]}
+          showsVerticalScrollIndicator={false}>
+          {content}
+        </ScrollView>
       ) : (
         content
       )}

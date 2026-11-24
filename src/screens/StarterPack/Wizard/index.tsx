@@ -161,7 +161,13 @@ function WizardInner({
   fromDialog?: boolean
   onSuccess?: () => void
 }) {
-  const navigation = useNavigation<NavigationProp>()
+  const navigation =
+    useNavigation<
+      NavigationProp<
+        CommonNavigatorParams,
+        'StarterPackEdit' | 'StarterPackWizard'
+      >
+    >()
   const ax = useAnalytics()
   const {t: l} = useLingui()
   const [state, dispatch] = useWizardState()
@@ -605,7 +611,11 @@ function Footer({
               textStyles,
               t.atoms.text_contrast_medium,
             ]}>
-            <Trans>Add {8 - items.length} more to continue</Trans>
+            <Plural
+              value={8 - items.length}
+              one="Add # more to continue"
+              other="Add # more to continue"
+            />
           </Text>
         )}
         <Button

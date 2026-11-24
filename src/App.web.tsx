@@ -271,7 +271,6 @@ function InnerApp() {
                                                                       <EphemeralAccountSwitcherRootScope>
                                                                         <Shell />
                                                                       </EphemeralAccountSwitcherRootScope>
-                                                                      <ToastOutlet />
                                                                     </HotkeysProvider>
                                                                   </TranslateOnDeviceProvider>
                                                                 </IntentDialogProvider>
@@ -299,6 +298,7 @@ function InnerApp() {
                     </QueryProvider>
                   </AnalyticsFeaturesContext>
                 </Fragment>
+                <ToastOutlet />
               </ActiveVideoProvider>
             </VideoVolumeProvider>
           </Splash>

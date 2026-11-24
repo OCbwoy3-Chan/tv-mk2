@@ -15,10 +15,9 @@ import {useQueryClient} from '@tanstack/react-query'
 import {DISCOVER_FEED_URI, VIDEO_FEED_URIS} from '#/lib/constants'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {getRootNavigation, getTabState, TabState} from '#/lib/routes/helpers'
-import {type AllNavigatorParams} from '#/lib/routes/types'
+import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {userStyle} from '#/lib/userstyles'
 import {listenSoftReset} from '#/state/events'
-import {FeedFeedbackProvider, useFeedFeedback} from '#/state/feed-feedback'
 import {useSetHomeBadge} from '#/state/home-badge'
 import {type FeedSourceInfo} from '#/state/queries/feed'
 import {
@@ -38,6 +37,7 @@ import {useHeaderOffset} from '#/components/hooks/useHeaderOffset'
 import {EditBig_Stroke2_Corner2_Rounded as EditBigIcon} from '#/components/icons/EditBig'
 import {useAnalytics} from '#/analytics'
 import {IS_NATIVE} from '#/env'
+import {FeedFeedbackProvider, useFeedFeedback} from '#/features/feedFeedback'
 import {accentForeground} from '#/features/themes/accentForeground'
 import {app} from '#/lexicons'
 
@@ -67,12 +67,12 @@ export function FeedPage({
   const ax = useAnalytics()
   const {hasSession} = useSession()
   const {_} = useLingui()
-  const navigation = useNavigation<NavigationProp<AllNavigatorParams>>()
+  const navigation = useNavigation<NavigationProp<CommonNavigatorParams>>()
   const queryClient = useQueryClient()
   const {openComposer} = useOpenComposer()
   const [isScrolledDown, setIsScrolledDown] = useState(false)
   const headerOffset = useHeaderOffset()
-  const feedFeedback = useFeedFeedback(feedInfo, hasSession)
+  const feedFeedback = useFeedFeedback(feedInfo, hasSession, 'feed')
   const scrollElRef = useRef<ListMethods>(null)
   const [hasNew, setHasNew] = useState(false)
   const setHomeBadge = useSetHomeBadge()

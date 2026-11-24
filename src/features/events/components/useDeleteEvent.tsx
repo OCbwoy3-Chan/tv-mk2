@@ -3,6 +3,7 @@ import {useNavigation} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
 
 import {isNetworkError} from '#/lib/network-error'
+import {getHomeNavigationAction} from '#/lib/routes/navigation'
 import {type NavigationProp} from '#/lib/routes/types'
 import {logger} from '#/logger'
 import * as Prompt from '#/components/Prompt'
@@ -42,7 +43,9 @@ export function useDeleteEvent({
         if (navigation.canGoBack()) {
           navigation.goBack()
         } else {
-          navigation.navigate('Home')
+          navigation.dispatch(
+            getHomeNavigationAction(navigation.getState(), 'navigate'),
+          )
         }
       },
       onError: error => {

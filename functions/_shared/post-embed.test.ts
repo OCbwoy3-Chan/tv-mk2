@@ -2,6 +2,7 @@ import {
   expandPostTextRich,
   getPreviewMedia,
   renderEmbedMeta,
+  renderHeadMeta,
 } from './post-embed'
 
 const author = {
@@ -143,13 +144,10 @@ const videoEmbed = {
 }
 
 describe('getPreviewMedia', () => {
-  it('uses the post own video', () => {
-    expect(getPreviewMedia(threadWith(videoEmbed))).toEqual({
+  it('uses the post own video thumbnail', () => {
+    expect(getPreviewMedia(threadWith(videoEmbed))).toMatchObject({
       kind: 'video',
-      cid: 'bafyvideo',
-      did: author.did,
       thumbnail: 'https://video.bsky.app/thumb.jpg',
-      aspectRatio: {height: 1920, width: 1080},
     })
   })
 
@@ -166,7 +164,10 @@ describe('getPreviewMedia', () => {
       }),
     )
 
-    expect(media).toMatchObject({kind: 'video', cid: 'bafyvideo'})
+    expect(media).toMatchObject({
+      kind: 'video',
+      thumbnail: 'https://video.bsky.app/thumb.jpg',
+    })
   })
 
   it('uses the media half of recordWithMedia', () => {
@@ -193,36 +194,38 @@ describe('getPreviewMedia', () => {
 })
 
 describe('renderEmbedMeta', () => {
-  const tags = async (media: any) => (await renderEmbedMeta(media)).toString()
+  const tags = (media: Parameters<typeof renderEmbedMeta>[0]) =>
+    renderEmbedMeta(media).toString()
 
-  it('emits a player card for video', async () => {
-    const out = await tags({
+  it('previews a video as a card so Discord keeps the post text', () => {
+    const out = tags({
       kind: 'video',
-      cid: 'bafyvideo',
-      did: 'did:plc:alice',
+      cid: 'bafy',
+      did: 'did:plc:a',
       thumbnail: 'thumb.jpg',
-      aspectRatio: {height: 1920, width: 1080},
     })
 
-    for (const snippet of [
-      'name="twitter:card" content="player"',
-      'property="og:video"',
-      'property="og:video:secure_url"',
-      'property="og:video:type" content="video/mp4"',
-      'property="og:video:width" content="1080"',
-      'property="og:video:height" content="1920"',
-      'name="twitter:player:stream"',
-      'name="twitter:player:stream:content_type" content="video/mp4"',
-      'name="twitter:player:width" content="1080"',
-      'name="twitter:player:height" content="1920"',
-      'property="og:image" content="thumb.jpg"',
-    ]) {
-      expect(out).toContain(snippet)
-    }
+    expect(out).toContain('property="og:image" content="thumb.jpg"')
+    expect(out).toContain('name="twitter:image" content="thumb.jpg"')
+    expect(out).toContain('name="twitter:card" content="summary_large_image"')
+
+    /*
+     * `og:video` and `twitter:card=player` select Discord's player layout,
+     * which renders the title but never the description.
+     */
+    expect(out).not.toContain('og:video')
+    expect(out).not.toContain('twitter:player')
+    expect(out).not.toContain('"player"')
   })
 
-  it('caps images at four', async () => {
-    const out = await tags({
+  it('falls back to a summary card for a video without a thumbnail', () => {
+    expect(tags({kind: 'video', cid: 'bafy', did: 'did:plc:a'})).toContain(
+      'content="summary"',
+    )
+  })
+
+  it('caps images at four', () => {
+    const out = tags({
       kind: 'images',
       urls: ['1.jpg', '2.jpg', '3.jpg', '4.jpg'],
     })
@@ -231,7 +234,69 @@ describe('renderEmbedMeta', () => {
     expect(out).toContain('summary_large_image')
   })
 
-  it('falls back to a summary card', async () => {
-    expect(await tags(undefined)).toContain('content="summary"')
+  it('falls back to a summary card', () => {
+    expect(tags(undefined)).toContain('content="summary"')
+  })
+})
+
+describe('renderHeadMeta', () => {
+  const url = 'https://witchsky.app/profile/alice.test/post/3abc'
+  const head = (postText: string, embed: any) =>
+    renderHeadMeta({
+      appName: 'Witchsky',
+      postText,
+      thread: threadWith(embed),
+      url,
+    }).toString()
+
+  it('carries the post text in a Discord component embed next to the video', () => {
+    const out = head('look at this clip', videoEmbed)
+
+    expect(out).toContain('name="description" content="look at this clip"')
+    expect(out).toContain('<script id="discord:component-embed"')
+    // The text is inside the payload, not just in the Open Graph tags.
+    expect(out).toContain('look at this clip')
+    expect(out).toContain('/video/did:plc:alice/bafyvideo')
+    expect(out).not.toContain('og:video')
+  })
+
+  it('trims a long post text instead of dropping the video', () => {
+    const out = head('x'.repeat(6000), videoEmbed)
+    const payload = out.match(
+      /<script id="discord:component-embed"[^>]*>([\s\S]*?)<\/script>/,
+    )
+
+    expect(payload).toBeTruthy()
+    expect(new TextEncoder().encode(payload![1]).length).toBeLessThanOrEqual(
+      3000,
+    )
+    expect(out).not.toContain('og:video')
+  })
+
+  it('keeps the text card when even the empty component embed cannot fit', () => {
+    const hugeAvatar = `https://cdn.test/${'a'.repeat(3000)}`
+    const out = renderHeadMeta({
+      appName: 'Witchsky',
+      postText: 'look at this clip',
+      thread: (() => {
+        const thread = threadWith(videoEmbed)
+        thread.post.author = {...author, avatar: hugeAvatar}
+        return thread
+      })(),
+      url,
+    }).toString()
+
+    expect(out).not.toContain('discord:component-embed')
+    expect(out).toContain('name="twitter:card" content="summary_large_image"')
+    expect(out).toContain('property="og:type" content="article"')
+    expect(out).toContain('name="description" content="look at this clip"')
+  })
+
+  it('leaves text-only posts on a plain card', () => {
+    const out = head('just words', undefined)
+
+    expect(out).not.toContain('discord:component-embed')
+    expect(out).toContain('name="twitter:card" content="summary"')
+    expect(out).toContain('property="og:type" content="article"')
   })
 })

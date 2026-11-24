@@ -3,6 +3,7 @@ import {type SessionRecord} from '#/analytics/identifiers/session'
 import {type Gif} from '#/features/gifPicker/types'
 import {type InviteThemeKey} from '#/features/inviteFriends/themes'
 import {type Geolocation} from '#/geolocation/types'
+import {type app} from '#/lexicons'
 
 /**
  * Data that's specific to the device and does not vary based account
@@ -71,6 +72,12 @@ export type Device = {
   activitySubscriptionsNudged?: boolean
   threadgateNudged?: boolean
   inviteFriendsFollowersPromoDismissed?: boolean
+  /**
+   * Whether the trending topics widget was installed the last time we checked,
+   * so `trendingWidget:installed` and `trendingWidget:uninstalled` are only
+   * logged when that changes.
+   */
+  trendingWidgetInstalled?: boolean
   pendingOTAUpdate?: {
     attemptedAt: number
     channel: string
@@ -143,4 +150,24 @@ export type Account = {
    * labeler headers.
    */
   labelers?: string[]
+
+  /**
+   * A public snapshot of the account's own profile (no viewer state), so
+   * account switchers can show its avatar and name immediately rather than
+   * after a getProfiles round trip. `fetchedAt` keeps an older fetch from
+   * overwriting a newer one.
+   */
+  profile?: {
+    profile: Pick<
+      app.bsky.actor.defs.ProfileViewDetailed,
+      | 'did'
+      | 'handle'
+      | 'displayName'
+      | 'avatar'
+      | 'associated'
+      | 'labels'
+      | 'verification'
+    >
+    fetchedAt: number
+  }
 }

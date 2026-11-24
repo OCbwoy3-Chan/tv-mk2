@@ -1,6 +1,7 @@
 import {useEffect} from 'react'
 import {useNavigation} from '@react-navigation/native'
 
+import {getHomeNavigationAction} from '#/lib/routes/navigation'
 import {type NavigationProp} from '#/lib/routes/types'
 
 export function AuthCallback() {
@@ -8,7 +9,9 @@ export function AuthCallback() {
 
   useEffect(() => {
     // Web OAuth callback route — not used on native.
-    navigation.replace('Home')
+    navigation.dispatch(
+      getHomeNavigationAction(navigation.getState(), 'replace'),
+    )
   }, [navigation])
 
   return null

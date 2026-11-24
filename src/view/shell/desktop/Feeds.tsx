@@ -3,6 +3,7 @@ import {useLingui} from '@lingui/react/macro'
 import {useNavigation, useNavigationState} from '@react-navigation/native'
 
 import {getCurrentRoute} from '#/lib/routes/helpers'
+import {getHomeNavigationAction} from '#/lib/routes/navigation'
 import {type NavigationProp} from '#/lib/routes/types'
 import {getShapeStyle} from '#/lib/shapes'
 import {getLocalizedFeedName} from '#/lib/strings/feed-names'
@@ -101,7 +102,9 @@ export function DesktopFeeds() {
                 feedDescriptor: feed,
               })
               setSelectedFeed(feed)
-              navigation.navigate('Home')
+              navigation.dispatch(
+                getHomeNavigationAction(navigation.getState(), 'navigate'),
+              )
               if (route.name === 'Home' && feed === selectedFeed) {
                 emitSoftReset()
               }

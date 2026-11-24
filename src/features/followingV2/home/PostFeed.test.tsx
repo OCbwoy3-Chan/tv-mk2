@@ -29,7 +29,7 @@ jest.mock('#/state/cache/profile-shadow', () => ({
   usePostAuthorShadowFilter: () => [],
 }))
 jest.mock('#/state/events', () => ({listenPostCreated: () => () => {}}))
-jest.mock('#/state/feed-feedback', () => ({
+jest.mock('#/features/feedFeedback', () => ({
   useFeedFeedbackContext: () => ({onItemSeen: jest.fn()}),
 }))
 jest.mock('#/state/preferences/disable-composer-prompt', () => ({

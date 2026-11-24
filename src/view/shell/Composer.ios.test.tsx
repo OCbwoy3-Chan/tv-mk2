@@ -47,9 +47,6 @@ jest.mock('#/alf', () => {
 jest.mock('#/components/Tooltip', () => ({
   SheetCompatProvider: ({children}: React.PropsWithChildren) => children,
 }))
-jest.mock('react-native-edge-to-edge', () => ({
-  SystemBars: {pushStackEntry: jest.fn(), popStackEntry: jest.fn()},
-}))
 
 afterEach(() => {
   mockComposerState = {}

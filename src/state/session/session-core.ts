@@ -67,6 +67,8 @@ export type PasswordSessionBundle = {
 export type OAuthSessionBundle = {
   session: null
   oauthAgent: OauthBskyAppAgent
+  /** The AppView proxy the bundle's clients were built against. */
+  readonly appview: string
   appviewClient: Client
   pdsClient: Client
   chatClient: Client

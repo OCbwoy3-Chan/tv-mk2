@@ -18,8 +18,8 @@ jest.mock('#/state/session', () => ({
   useSession: () => ({currentAccount: {did: 'did:plc:me'}}),
 }))
 jest.mock('#/state/queries/post', () => ({useGetPost: () => mockGetPost}))
-jest.mock('#/state/feed-feedback', () => ({
-  useFeedFeedbackContext: () => ({sendInteraction: mockInteraction}),
+jest.mock('#/features/feedFeedback', () => ({
+  useFeedItemFeedback: () => ({send: mockInteraction}),
 }))
 jest.mock('#/state/shell/progress-guide', () => ({
   ProgressGuideAction: {Like: 'like'},
@@ -49,8 +49,6 @@ it('checks the current like state and then auto-likes with feed feedback', async
     useAutoLikeAfterRepost({
       post,
       queueLike: mockQueueLike,
-      feedContext: 'ctx',
-      reqId: 'req',
       onLike,
     }),
   )
@@ -58,12 +56,9 @@ it('checks the current like state and then auto-likes with feed feedback', async
   expect(mockGetPost).toHaveBeenCalledWith({uri: post.uri})
   expect(onLike).toHaveBeenCalledTimes(1)
   expect(mockQueueLike).toHaveBeenCalledTimes(1)
-  expect(mockInteraction).toHaveBeenCalledWith({
-    item: post.uri,
-    event: 'app.bsky.feed.defs#interactionLike',
-    feedContext: 'ctx',
-    reqId: 'req',
-  })
+  expect(mockInteraction).toHaveBeenCalledWith(
+    'app.bsky.feed.defs#interactionLike',
+  )
   expect(mockCaptureAction).toHaveBeenCalledWith('like')
 })
 

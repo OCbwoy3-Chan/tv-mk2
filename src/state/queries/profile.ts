@@ -59,6 +59,7 @@ import {
 import {RQKEY_ROOT as RQKEY_LIST_CONVOS} from './messages/list-conversations'
 import {RQKEY as RQKEY_MY_BLOCKED} from './my-blocked-accounts'
 import {RQKEY as RQKEY_MY_MUTED} from './my-muted-accounts'
+import {fetchProfileBatched} from './profile-batch'
 
 export * from '#/state/queries/unstable-profile-cache'
 /**
@@ -80,9 +81,16 @@ export const profilesQueryKey = (handles: string[]) => [
 export function useProfileQuery({
   did,
   staleTime = STALE.SECONDS.FIFTEEN,
+  batch = false,
 }: {
   did: string | undefined
   staleTime?: number
+  /**
+   * Coalesce with other lookups into one getProfiles request. Worth it for
+   * components that mount many at once (e.g. reply-to names in a feed); a lone
+   * profile is better off without the batching delay.
+   */
+  batch?: boolean
 }) {
   const client = useAppviewClient()
   const {getUnstableProfile} = useUnstableProfileViewCache()
@@ -95,6 +103,10 @@ export function useProfileQuery({
     refetchOnWindowFocus: true,
     queryKey: RQKEY(did ?? ''),
     queryFn: async () => {
+      // getProfiles answers by DID, so handles take the single-profile call.
+      if (batch && did?.startsWith('did:')) {
+        return await fetchProfileBatched(client, did)
+      }
       return await client.call(app.bsky.actor.getProfile, {
         actor: (did ?? '') as AtIdentifierString,
       })
@@ -110,9 +122,17 @@ export function useProfileQuery({
 export function useProfilesQuery({
   handles,
   maintainData,
+  placeholderProfiles,
 }: {
   handles: string[]
   maintainData?: boolean
+  /**
+   * Shown while the first fetch is in flight, e.g. profiles cached on device.
+   * Must keep its identity across renders: a new object each render becomes
+   * new placeholder data each render, and profile shadows reset their state
+   * during render whenever the profile they are given changes - which loops.
+   */
+  placeholderProfiles?: {profiles: app.bsky.actor.defs.ProfileViewDetailed[]}
 }) {
   const client = useAppviewClient()
   return useQuery({
@@ -129,7 +149,7 @@ export function useProfilesQuery({
       )
       return {profiles: responses.flatMap(response => response.profiles)}
     },
-    placeholderData: maintainData ? keepPreviousData : undefined,
+    placeholderData: maintainData ? keepPreviousData : placeholderProfiles,
   })
 }
 
@@ -307,6 +327,12 @@ export function useProfileUpdateMutation() {
                 (updates.links ?? []).map(ref => ref.cid).join()
             ) {
               // links come from separate records, so compare those too
+              return false
+            }
+            if (
+              'pronouns' in updates &&
+              (fresh.pronouns || undefined) !== (updates.pronouns || undefined)
+            ) {
               return false
             }
             return (

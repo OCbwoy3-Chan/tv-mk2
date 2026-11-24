@@ -5,6 +5,7 @@ import {useLingui} from '@lingui/react'
 import {Trans} from '@lingui/react/macro'
 
 import {cleanError} from '#/lib/strings/errors'
+import {checkAndFormatResetCode} from '#/lib/strings/password'
 import {matchXrpcError} from '#/lib/xrpc-error'
 import {usePdsClient, useSession, useSessionApi} from '#/state/session'
 import {ErrorMessage} from '#/view/com/util/error/ErrorMessage'
@@ -59,9 +60,10 @@ export function DisableEmail2FADialog({
     setIsProcessing(true)
     try {
       if (currentAccount?.email) {
+        const token = confirmationCode.trim()
         await pdsClient.call(com.atproto.server.updateEmail, {
           email: currentAccount.email,
-          token: confirmationCode.trim(),
+          token: checkAndFormatResetCode(token) || token,
           emailAuthFactor: false,
         })
         await partialRefreshSession()

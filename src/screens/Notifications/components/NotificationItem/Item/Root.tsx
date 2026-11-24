@@ -10,10 +10,22 @@ import {
 } from 'react-native'
 
 import {WebAuxClickWrapper} from '#/view/com/util/WebAuxClickWrapper'
-import {atoms as a, useTheme} from '#/alf'
+import {atoms as a, tokens, useTheme} from '#/alf'
 import {useLink} from '#/components/Link'
 import {SubtleHover} from '#/components/SubtleHover'
 import {SuppressHoverContext, useRowHover} from './hover'
+
+/**
+ * A row's padding at either side. Section headers sit further in, with
+ * `a.px_lg`.
+ */
+export const ROW_GUTTER = tokens.space.md
+
+/**
+ * The space between a row's avatar and its content. It's a little wider than
+ * a feed post's, as the badge hangs into it.
+ */
+export const ROW_GAP = tokens.space.md
 
 type ItemContextValue = {
   isRead: boolean
@@ -148,15 +160,13 @@ export function Root({
             style={[
               a.flex_row,
               a.align_start,
-              a.gap_lg,
               /*
                * As a button it's a `<button>` on web, which a block parent
                * shrinks to fit its content rather than stretching
                */
               a.w_full,
-              a.px_lg,
               a.py_md,
-              {backgroundColor},
+              {gap: ROW_GAP, paddingHorizontal: ROW_GUTTER, backgroundColor},
               style,
             ]}>
             <SubtleHover hover={hover} />

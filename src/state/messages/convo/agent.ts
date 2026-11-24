@@ -18,7 +18,7 @@ import {
 import {
   ACTIVE_POLL_INTERVAL,
   BACKGROUND_POLL_INTERVAL,
-  INACTIVE_TIMEOUT,
+  HISTORY_PAGE_SIZE,
   NETWORK_FAILURE_STATUSES,
 } from '#/state/messages/convo/const'
 import {
@@ -40,7 +40,6 @@ import {
   type GroupConvoMember,
   parseConvoView,
 } from '#/components/dms/util'
-import {IS_NATIVE} from '#/env'
 import {type app, chat} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
@@ -144,7 +143,33 @@ export class Convo {
 
   private isProcessingPendingMessages = false
 
-  private lastActiveTimestamp: number | undefined
+  /**
+   * Set when the event bus skipped part of the log, until the newest page of
+   * messages has been fetched to replace what we had.
+   */
+  private needsResync = false
+  private isResyncing = false
+  /**
+   * The reactions and deletions the log reported while a resync was fetching,
+   * by message id, with `null` for a deletion. The page it fetched may predate
+   * them, and the log won't send them again, so they're applied on top of it.
+   */
+  private updatesDuringResync:
+    Map<string, chat.bsky.convo.defs.MessageView | null> | undefined
+  /**
+   * Bumped whenever the loaded messages are replaced, so a history fetch that
+   * started before then can tell its page no longer lines up.
+   */
+  private historyGeneration = 0
+
+  /**
+   * Call when replacing the loaded messages. A history fetch still in flight
+   * will drop its page, and no longer blocks a fresh fetch.
+   */
+  private startNewHistoryGeneration() {
+    this.historyGeneration++
+    this.isFetchingHistory = false
+  }
 
   private emitter = new EventEmitter<{event: [ConvoEvent]}>()
 
@@ -367,6 +392,17 @@ export class Convo {
             void this.setup()
             this.setupFirehose()
             this.requestPollInterval(ACTIVE_POLL_INTERVAL)
+            /*
+             * With a cached view in hand there is no need to wait on getConvo
+             * before rendering: go ready now and let setup() refresh it, or
+             * move us to Disabled or Error, when it lands. History only needs
+             * the convo id, so it loads alongside rather than after.
+             */
+            this.needsVerification = this.canRenderFromCachedConvo()
+            if (this.needsVerification) {
+              this.status = ConvoStatus.Ready
+              void this.fetchMessageHistory()
+            }
             break
           }
         }
@@ -411,7 +447,7 @@ export class Convo {
       case ConvoStatus.Ready: {
         switch (action.event) {
           case ConvoDispatchEvent.Resume: {
-            void this.refreshConvo()
+            if (!this.maybeVerifyCachedConvo()) void this.refreshConvo()
             this.requestPollInterval(ACTIVE_POLL_INTERVAL)
             break
           }
@@ -445,19 +481,20 @@ export class Convo {
       case ConvoStatus.Backgrounded: {
         switch (action.event) {
           case ConvoDispatchEvent.Resume: {
-            if (this.wasChatInactive()) {
-              this.reset()
+            /*
+             * No need to start over however long we were away: the event bus
+             * replays the log from where it left off, or reports a gap if it
+             * can't (see `resync`).
+             */
+            if (this.convo) {
+              this.status = ConvoStatus.Ready
+              if (!this.maybeVerifyCachedConvo()) void this.refreshConvo()
+              this.maybeRecoverFromNetworkError()
             } else {
-              if (this.convo) {
-                this.status = ConvoStatus.Ready
-                void this.refreshConvo()
-                this.maybeRecoverFromNetworkError()
-              } else {
-                this.status = ConvoStatus.Initializing
-                void this.setup()
-              }
-              this.requestPollInterval(ACTIVE_POLL_INTERVAL)
+              this.status = ConvoStatus.Initializing
+              void this.setup()
             }
+            this.requestPollInterval(ACTIVE_POLL_INTERVAL)
             break
           }
           case ConvoDispatchEvent.Suspend: {
@@ -544,12 +581,15 @@ export class Convo {
       next: this.status,
     })
 
-    this.updateLastActiveTimestamp()
     this.commit()
   }
 
   private reset() {
-    this.convo = undefined
+    /*
+     * The convo view is kept: it is what a fresh agent would start from as
+     * placeholder data anyway, and lets init render immediately instead of
+     * blanking until getConvo returns.
+     */
     this.snapshot = undefined
 
     this.status = ConvoStatus.Uninitialized
@@ -562,6 +602,10 @@ export class Convo {
     this.pendingMessages = new Map()
     this.deletedMessages = new Set()
     this.relatedProfiles = new Map()
+    // The kept view still names its members, so keep showing them.
+    for (const member of this.convo?.members ?? []) {
+      this.relatedProfiles.set(member.did, member)
+    }
     // Shadow updates fired while suspended are missed, so the overlay may be
     // stale - drop it and trust the from-scratch refetch.
     this.profileShadows = new Map()
@@ -569,6 +613,8 @@ export class Convo {
     this.pendingMessageFailure = null
     this.fetchMessageHistoryError = undefined
     this.firehoseError = undefined
+    this.needsResync = false
+    this.startNewHistoryGeneration()
 
     this.dispatch({event: ConvoDispatchEvent.Init})
   }
@@ -583,10 +629,14 @@ export class Convo {
     }
 
     if (this.fetchMessageHistoryError) {
-      this.fetchMessageHistoryError.retry()
+      // fetchMessageHistory refuses to run while the error is set.
+      const {retry} = this.fetchMessageHistoryError
       this.fetchMessageHistoryError = undefined
+      retry()
       this.commit()
     }
+
+    void this.resync()
   }
 
   private setConvo(convo: chat.bsky.convo.defs.ConvoView) {
@@ -600,6 +650,9 @@ export class Convo {
   }
 
   private updateConvo(convo: Partial<chat.bsky.convo.defs.ConvoView>) {
+    if (this.needsVerification) {
+      this.unverifiedEdits = {...this.unverifiedEdits, ...convo}
+    }
     if (this.convo) {
       this.convo =
         parseConvoView({...this.convo.view, ...convo}, this.senderUserDid) ??
@@ -612,8 +665,39 @@ export class Convo {
   }
 
   /**
-   * Initialises the convo with placeholder data, if provided. We still refetch it before rendering the convo,
-   * but this allows us to render the convo header immediately.
+   * Optimistic edits (e.g. accepting the convo) made while rendering from an
+   * unverified cached view. getConvo may answer before the server applies
+   * them, so they are laid over its response instead of being reverted by it.
+   */
+  private unverifiedEdits: Partial<chat.bsky.convo.defs.ConvoView> | undefined
+  /**
+   * Rendering from a cached view that getConvo has not confirmed yet. Until it
+   * does, a network failure keeps the cached view, and verification is retried
+   * on reconnect and resume.
+   */
+  private needsVerification = false
+  private isSettingUp = false
+
+  /** Retry verification of a cached view; returns whether one was started. */
+  private maybeVerifyCachedConvo() {
+    if (!this.needsVerification) return false
+    if (!this.isSettingUp) void this.setup()
+    return true
+  }
+
+  /**
+   * A cached view is enough to render once it shows this account as an active
+   * member. A cached disabled status is not trusted: it is terminal, so only
+   * the server may put the convo into it.
+   */
+  private canRenderFromCachedConvo() {
+    const self = this.convo?.members.find(m => m.did === this.senderUserDid)
+    return !!self && !self.chatDisabled
+  }
+
+  /**
+   * Initialises the convo with placeholder data, if provided, so it can render
+   * before the refetch in setup() lands.
    */
   private setupPlaceholderData(
     data: NonNullable<ConvoParams['placeholderData']>,
@@ -622,10 +706,13 @@ export class Convo {
   }
 
   private async setup() {
+    this.isSettingUp = true
     try {
       const {convo} = await this.fetchConvo()
 
-      this.setConvo(convo)
+      this.setConvo(
+        this.unverifiedEdits ? {...convo, ...this.unverifiedEdits} : convo,
+      )
 
       /*
        * Some validation prior to `Ready` status
@@ -641,6 +728,8 @@ export class Convo {
       }
 
       const userIsDisabled = Boolean(self.chatDisabled)
+      this.needsVerification = false
+      this.unverifiedEdits = undefined
 
       if (userIsDisabled) {
         this.dispatch({event: ConvoDispatchEvent.Disable})
@@ -655,6 +744,15 @@ export class Convo {
         })
       }
 
+      /*
+       * Already rendering from the cached view: a flaky network should not
+       * replace a working convo with an error screen. Verification is retried
+       * on reconnect and resume (see maybeVerifyCachedConvo).
+       */
+      if (isNetworkError(e) && this.needsVerification) {
+        return
+      }
+
       this.dispatch({
         event: ConvoDispatchEvent.Error,
         payload: {
@@ -666,6 +764,8 @@ export class Convo {
         },
       })
       this.commit()
+    } finally {
+      this.isSettingUp = false
     }
   }
 
@@ -683,18 +783,6 @@ export class Convo {
 
   suspend() {
     this.dispatch({event: ConvoDispatchEvent.Suspend})
-  }
-
-  /**
-   * Called on any state transition, like when the chat is backgrounded. This
-   * value is then checked on background -> foreground transitions.
-   */
-  private updateLastActiveTimestamp() {
-    this.lastActiveTimestamp = Date.now()
-  }
-  private wasChatInactive() {
-    if (!this.lastActiveTimestamp) return true
-    return Date.now() - this.lastActiveTimestamp > INACTIVE_TIMEOUT
   }
 
   private requestedPollInterval: (() => void) | undefined
@@ -797,6 +885,8 @@ export class Convo {
      */
     if (this.fetchMessageHistoryError) return
 
+    const generation = this.historyGeneration
+
     try {
       this.isFetchingHistory = true
       this.commit()
@@ -806,10 +896,16 @@ export class Convo {
         return this.chatClient.call(chat.bsky.convo.getMessages, {
           cursor: nextCursor,
           convoId: this.convoId,
-          limit: IS_NATIVE ? 30 : 60,
+          limit: HISTORY_PAGE_SIZE,
         })
       })
       const {cursor, messages, relatedProfiles} = response
+
+      /*
+       * The loaded messages were replaced while we were fetching (see
+       * `resync`), so this page no longer joins up with them.
+       */
+      if (generation !== this.historyGeneration) return
 
       // Trust the cursor for pagination. We can't infer "no more pages" from a
       // short page: the server pages by raw rows but strips deleted messages
@@ -851,13 +947,18 @@ export class Convo {
         })
       }
 
-      this.fetchMessageHistoryError = {
-        retry: () => {
-          void this.fetchMessageHistory()
-        },
+      if (generation === this.historyGeneration) {
+        this.fetchMessageHistoryError = {
+          retry: () => {
+            void this.fetchMessageHistory()
+          },
+        }
       }
     } finally {
-      this.isFetchingHistory = false
+      // a newer generation may have started its own fetch by now
+      if (generation === this.historyGeneration) {
+        this.isFetchingHistory = false
+      }
       this.commit()
     }
   }
@@ -883,6 +984,10 @@ export class Convo {
             this.ingestFirehose(event.logs)
             break
           }
+          case 'gap': {
+            this.onFirehoseGap()
+            break
+          }
         }
       },
       /*
@@ -896,13 +1001,128 @@ export class Convo {
 
   onFirehoseConnect() {
     this.firehoseError = undefined
+    this.maybeVerifyCachedConvo()
     void this.batchRetryPendingMessages()
+    void this.resync()
     this.commit()
   }
 
   onFirehoseError(error?: MessagesEventBusError) {
     this.firehoseError = error
     this.commit()
+  }
+
+  onFirehoseGap() {
+    /*
+     * Before `Ready`, the first history fetch hasn't happened yet and will
+     * load the newest messages anyway. Other states start over on resume.
+     */
+    if (
+      this.status !== ConvoStatus.Ready &&
+      this.status !== ConvoStatus.Backgrounded
+    ) {
+      return
+    }
+    this.needsResync = true
+    void this.resync()
+  }
+
+  /**
+   * Replaces the loaded messages with the newest page, after the event bus
+   * skipped part of the log and the messages we have may no longer join up
+   * with what comes next. Unlike `reset`, the convo stays `Ready` and keeps
+   * rendering what it has until the new page lands. If this fails,
+   * `needsResync` is set again and it runs again on the next connect or
+   * resume.
+   */
+  private async resync() {
+    if (!this.needsResync || this.isResyncing) return
+    this.isResyncing = true
+    /*
+     * Cleared before fetching, so that another gap during the fetch sets it
+     * again and we fetch once more: this page may predate that gap.
+     */
+    this.needsResync = false
+    const updates = new Map<string, chat.bsky.convo.defs.MessageView | null>()
+    this.updatesDuringResync = updates
+
+    const generation = this.historyGeneration
+    /*
+     * Messages from before the gap are either in the new page, or older than
+     * it and no longer contiguous with it. Anything that arrives while we
+     * fetch is newer than the gap, so keep that.
+     */
+    const staleMessageIds = new Set(this.newMessages.keys())
+
+    void this.refreshConvo()
+
+    try {
+      const {cursor, messages, relatedProfiles} = await networkRetry(2, () => {
+        return this.chatClient.call(chat.bsky.convo.getMessages, {
+          convoId: this.convoId,
+          limit: HISTORY_PAGE_SIZE,
+        })
+      })
+
+      // reset() already threw everything away while we were fetching
+      if (generation !== this.historyGeneration) return
+
+      this.startNewHistoryGeneration()
+      this.oldestRev = cursor ?? null
+      this.fetchMessageHistoryError = undefined
+
+      if (relatedProfiles) {
+        for (const profile of relatedProfiles) {
+          this.relatedProfiles.set(profile.did, profile)
+        }
+        this.applyProfileShadows()
+      }
+
+      this.pastMessages = new Map()
+      for (const message of messages) {
+        if (
+          bsky.isType(chat.bsky.convo.defs.messageView, message) ||
+          bsky.isType(chat.bsky.convo.defs.deletedMessageView, message) ||
+          bsky.isType(chat.bsky.convo.defs.systemMessageView, message)
+        ) {
+          this.pastMessages.set(message.id, message)
+        }
+      }
+      for (const id of this.newMessages.keys()) {
+        if (staleMessageIds.has(id) || this.pastMessages.has(id)) {
+          this.newMessages.delete(id)
+        }
+      }
+      for (const [id, update] of updates) {
+        if (update === null) {
+          this.pastMessages.delete(id)
+          this.newMessages.delete(id)
+        } else {
+          if (this.pastMessages.has(id)) this.pastMessages.set(id, update)
+          if (this.newMessages.has(id)) this.newMessages.set(id, update)
+        }
+      }
+
+      this.commit()
+    } catch (err) {
+      const e = err as Error
+      if (!isNetworkError(e) && !isErrorMaybeAppPasswordPermissions(e)) {
+        logger.error('failed to resync messages', {
+          safeMessage: e.message,
+        })
+      }
+      // unless reset() already started over
+      if (generation === this.historyGeneration) {
+        this.needsResync = true
+      }
+      return
+    } finally {
+      this.isResyncing = false
+      this.updatesDuringResync = undefined
+    }
+
+    // another gap arrived while we were fetching
+    if (this.needsResync) void this.resync()
   }
 
   ingestFirehose(events: chat.bsky.convo.getLog.$OutputBody['logs']) {
@@ -982,6 +1202,7 @@ export class Convo {
             this.pastMessages.delete(ev.message.id)
             this.newMessages.delete(ev.message.id)
             this.deletedMessages.add(ev.message.id)
+            this.updatesDuringResync?.set(ev.message.id, null)
             needsCommit = true
           } else if (
             (bsky.isType(chat.bsky.convo.defs.logAddReaction, ev) ||
@@ -989,8 +1210,10 @@ export class Convo {
             bsky.isType(chat.bsky.convo.defs.messageView, ev.message)
           ) {
             /*
-             * Update if we have this in state - replace message wholesale. If we don't, don't worry about it.
+             * Replace the message wholesale if we have it in state. A resync's
+             * page may have it even if we don't, so that gets it too.
              */
+            this.updatesDuringResync?.set(ev.message.id, ev.message)
             if (this.pastMessages.has(ev.message.id)) {
               this.pastMessages.set(ev.message.id, ev.message)
               needsCommit = true

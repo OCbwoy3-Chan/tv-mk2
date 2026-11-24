@@ -4,6 +4,7 @@
     "/__embed/profile/*",
     "/profile/*/theme/*",
     "/theme-og/*",
+    "/video/*/*",
     "/oauth-client-metadata.json",
     "/oauth-client-metadata-native.json"
   ],

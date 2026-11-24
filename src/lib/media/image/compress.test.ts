@@ -1,12 +1,14 @@
-import {deleteAsync} from 'expo-file-system/legacy'
+import {Paths} from 'expo-file-system'
 import {type ImageManipulatorContext, SaveFormat} from 'expo-image-manipulator'
 import {fromByteArray, toByteArray} from 'base64-js'
 
 import {compressImage} from '#/lib/media/image/compress'
+import {compressToFit} from '#/lib/media/image/compressToFit'
 import {renderImage} from '#/lib/media/image-manipulator'
 import {type ComposerImage} from '#/state/gallery'
 
 jest.mock('#/lib/media/image-manipulator', () => ({renderImage: jest.fn()}))
+jest.mock('#/lib/media/image/compressToFit', () => ({compressToFit: jest.fn()}))
 jest.mock('#/lib/media/image/cache', () => ({
   moveIfNecessary: jest.fn((uri: string) => Promise.resolve(uri)),
 }))
@@ -19,13 +21,24 @@ const image: ComposerImage = {
   alt: '',
   source: {
     id: 'source',
-    path: 'source.jpg',
+    path: 'source.webp',
     width: 6000,
     height: 3000,
-    mime: 'image/jpeg',
+    mime: 'image/webp',
   },
 }
+const pngImage: ComposerImage = {
+  ...image,
+  source: {...image.source, path: 'source.png', mime: 'image/png'},
+}
 const limits = {maxDimension: 4000, maxSize: 2000000}
+const jpeg = {
+  path: 'file://compressed.jpg',
+  width: 4000,
+  height: 2000,
+  mime: 'image/jpeg',
+  size: 1000,
+}
 
 /** Pad a valid fixture after IEND to simulate a larger encoder output. */
 function pngWithSize(png: string, size: number) {
@@ -34,101 +47,67 @@ function pngWithSize(png: string, size: number) {
   return fromByteArray(bytes)
 }
 
-function mockRenderer({
-  png = opaquePng,
-  jpegSize = (quality: number, _width: number) => quality * 2400000,
-}: {
-  png?: string
-  jpegSize?: (quality: number, width: number) => number
-} = {}) {
-  jest
-    .mocked(renderImage)
-    .mockImplementation((_source, manipulate, options) => {
-      let dimensions = {width: 0, height: 0}
-      manipulate?.({
-        resize: (value: typeof dimensions) => {
-          dimensions = value
-        },
-      } as unknown as ImageManipulatorContext)
-      const base64 =
-        options?.format === SaveFormat.PNG
-          ? png
-          : 'a'.repeat(
-              Math.ceil(
-                jpegSize(options?.compress ?? 1, dimensions.width) / 3,
-              ) * 4,
-            )
-      return Promise.resolve({
-        uri: `file://image-${jest.mocked(renderImage).mock.calls.length}`,
-        ...dimensions,
-        base64,
-      })
+function mockRenderer(png: (width: number) => string = () => opaquePng) {
+  jest.mocked(renderImage).mockImplementation((_source, manipulate) => {
+    let dimensions = {width: 0, height: 0}
+    manipulate?.({
+      resize: (value: typeof dimensions) => {
+        dimensions = value
+      },
+    } as unknown as ImageManipulatorContext)
+    return Promise.resolve({
+      uri: `file://image-${jest.mocked(renderImage).mock.calls.length}`,
+      ...dimensions,
+      base64: png(dimensions.width),
     })
+  })
+}
+
+function deletedPaths() {
+  return jest.mocked(Paths.info).mock.calls.map(([path]) => path)
 }
 
 beforeEach(() => {
   jest.clearAllMocks()
   mockRenderer()
+  jest.mocked(compressToFit).mockResolvedValue(jpeg)
 })
 
-it('compresses opaque PNGs as JPEG at the highest fitting quality before resizing', async () => {
-  mockRenderer({png: pngWithSize(opaquePng, 2100000)})
-  const result = await compressImage(
-    {...image, source: {...image.source, mime: 'image/png'}},
-    limits,
+it('keeps PNGs lossless when they fit, including exactly at the limit', async () => {
+  expect(await compressImage(pngImage, limits)).toMatchObject({
+    mime: 'image/png',
+    width: 4000,
+    height: 2000,
+  })
+  expect(await compressImage(pngImage, {...limits, maxSize: 95})).toMatchObject(
+    {mime: 'image/png', size: 95},
   )
-  expect(result).toMatchObject({mime: 'image/jpeg', width: 4000, height: 2000})
-  expect(result.size).toBeLessThanOrEqual(limits.maxSize)
-  const qualities = jest
-    .mocked(renderImage)
-    .mock.calls.slice(1)
-    .map(([, , options]) => options!.compress!)
-  expect(qualities).toContain(0.83)
-  expect(qualities).toContain(0.84)
-  expect(result.size).toBe(1992000)
-  expect(deleteAsync).not.toHaveBeenCalledWith(result.path, expect.anything())
-  expect(jest.mocked(deleteAsync).mock.calls.length).toBe(qualities.length)
+  expect(renderImage).toHaveBeenCalledTimes(2)
+  expect(compressToFit).not.toHaveBeenCalled()
 })
 
-it('keeps opaque PNGs lossless when they fit', async () => {
-  const result = await compressImage(
-    {...image, source: {...image.source, mime: 'image/png'}},
-    limits,
-  )
-  expect(result).toMatchObject({mime: 'image/png', width: 4000, height: 2000})
-  expect(renderImage).toHaveBeenCalledTimes(1)
+it('re-encodes oversized opaque PNGs as JPEG and deletes the PNG attempt', async () => {
+  mockRenderer(() => pngWithSize(opaquePng, 2100000))
+  expect(await compressImage(pngImage, limits)).toBe(jpeg)
+  expect(compressToFit).toHaveBeenCalledWith(pngImage.source, limits)
+  expect(deletedPaths()).toEqual(['file://image-1'])
 })
 
-it('keeps a PNG exactly at the byte limit', async () => {
-  const result = await compressImage(
-    {...image, source: {...image.source, mime: 'image/png'}},
-    {...limits, maxSize: 95},
-  )
-  expect(result).toMatchObject({mime: 'image/png', size: 95})
-  expect(renderImage).toHaveBeenCalledTimes(1)
-})
-
-it('keeps transparency and avoids unnecessary PNG rendering when it fits', async () => {
-  mockRenderer({png: transparentPng})
+it('keeps transparency from other formats as PNG', async () => {
+  mockRenderer(() => transparentPng)
   expect(await compressImage(image, limits)).toMatchObject({
     mime: 'image/png',
     width: 4000,
     height: 2000,
   })
   expect(renderImage).toHaveBeenCalledTimes(1)
+  expect(compressToFit).not.toHaveBeenCalled()
 })
 
 it('shrinks oversized PNGs without flattening their transparency', async () => {
-  mockRenderer({png: transparentPng})
-  const renderer = jest.mocked(renderImage).getMockImplementation()!
-  jest.mocked(renderImage).mockImplementation(async (...args) => {
-    const result = await renderer(...args)
-    return {
-      ...result,
-      base64:
-        result.width > 3200 ? pngWithSize(transparentPng, 400) : transparentPng,
-    }
-  })
+  mockRenderer(width =>
+    width > 3200 ? pngWithSize(transparentPng, 400) : transparentPng,
+  )
   const result = await compressImage(image, {...limits, maxSize: 100})
   expect(result).toMatchObject({mime: 'image/png', width: 3200, height: 1600})
   expect(result.size).toBeLessThanOrEqual(100)
@@ -137,64 +116,30 @@ it('shrinks oversized PNGs without flattening their transparency', async () => {
       .mocked(renderImage)
       .mock.calls.every(([, , options]) => options?.format === SaveFormat.PNG),
   ).toBe(true)
+  expect(deletedPaths()).toEqual(['file://image-1'])
 })
 
-it('reduces JPEG dimensions when the quality floor cannot meet the limit', async () => {
-  mockRenderer({
-    jpegSize: (_quality, width) => (width > 3200 ? 2100000 : 1000000),
-  })
-  expect(await compressImage(image, limits)).toMatchObject({
-    mime: 'image/jpeg',
-    width: 3200,
-    height: 1600,
-  })
-  expect(
-    jest
-      .mocked(renderImage)
-      .mock.calls.slice(1)
-      .every(([, , options]) => options!.compress! >= 0.26),
-  ).toBe(true)
+it('sends JPEGs straight to the JPEG compressor', async () => {
+  const jpegImage: ComposerImage = {
+    ...image,
+    source: {...image.source, mime: 'image/jpeg'},
+  }
+  expect(await compressImage(jpegImage, limits)).toBe(jpeg)
+  expect(renderImage).not.toHaveBeenCalled()
 })
 
-it('uses the cropped source and never upscales small or very narrow images', async () => {
-  mockRenderer({jpegSize: () => 100})
-  const result = await compressImage(
-    {
-      ...image,
-      transformed: {
-        path: 'crop.png',
-        width: 1,
-        height: 10000,
-        mime: 'image/png',
-      },
-    },
-    limits,
-  )
-  expect(result).toMatchObject({width: 1, height: 4000})
-  expect(
-    jest.mocked(renderImage).mock.calls.every(([path]) => path === 'crop.png'),
-  ).toBe(true)
-  expect(
-    await compressImage(
-      {...image, source: {...image.source, width: 100, height: 50}},
-      limits,
-    ),
-  ).toMatchObject({width: 100, height: 50})
-})
-
-it('cleans up intermediate files when a render fails', async () => {
-  jest.mocked(renderImage).mockRejectedValueOnce(new Error('decode failed'))
-  await expect(compressImage(image, limits)).rejects.toThrow('decode failed')
-  mockRenderer()
-  const renderer = jest.mocked(renderImage).getMockImplementation()!
-  jest
-    .mocked(renderImage)
-    .mockImplementationOnce(renderer)
-    .mockRejectedValueOnce(new Error('encode failed'))
-  await expect(compressImage(image, limits)).rejects.toThrow('encode failed')
-  expect(deleteAsync).toHaveBeenCalledWith(expect.stringMatching(/^file:/), {
-    idempotent: true,
+it('uses the cropped source and never upscales', async () => {
+  const transformed = {
+    path: 'crop.png',
+    width: 100,
+    height: 50,
+    mime: 'image/png',
+  }
+  expect(await compressImage({...image, transformed}, limits)).toMatchObject({
+    width: 100,
+    height: 50,
   })
+  expect(jest.mocked(renderImage).mock.calls[0][0]).toBe('crop.png')
 })
 
 it('rejects a failed base64 export and cleans up the output', async () => {
@@ -204,5 +149,5 @@ it('rejects a failed base64 export and cleans up the output', async () => {
   await expect(compressImage(image, limits)).rejects.toThrow(
     'Unable to compress image',
   )
-  expect(deleteAsync).toHaveBeenCalledWith('file://failed', {idempotent: true})
+  expect(deletedPaths()).toEqual(['file://failed'])
 })

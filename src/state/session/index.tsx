@@ -20,7 +20,7 @@ import {useGlobalDialogsControlContext} from '#/components/dialogs/Context'
 import {AnalyticsContext, useAnalyticsBase, utils} from '#/analytics'
 import {IS_WEB} from '#/env'
 import {com} from '#/lexicons'
-import {device} from '#/storage'
+import {account as accountStorage, device} from '#/storage'
 import {emitSessionDropped} from '../events'
 import {getPublicAppviewClient} from './clients'
 import {createSessionBundleAndCreateAccount} from './create-account'
@@ -52,15 +52,33 @@ import {
   redactSessionData,
   redactState,
 } from './logging'
+import {configureModerationForAccount} from './moderation'
 import {
   createOAuthSessionBundleAndLogin,
   createOAuthSessionBundleAndResume,
 } from './oauth-session-bundle'
+import {canAttemptSessionResume} from './util'
+import {
+  clearWarmSessions,
+  forgetWarmSession,
+  pruneWarmSessions,
+  retainWarmSession,
+  takeWarmSession,
+  verifyWarmSession,
+  type WarmSession,
+  warmSessions,
+} from './warm-sessions'
 export type {SessionAccount} from '#/state/session/types'
 
 import {type AtpAgent} from '@atproto/api'
 
+import {afterNextPaint} from '#/lib/async/after-next-paint'
 import {clearPersistedQueryStorage} from '#/lib/persisted-query-storage'
+import {
+  discardAllRetainedQueryClients,
+  discardRetainedQueryClient,
+} from '#/lib/retained-query-clients'
+import {logger} from '#/logger'
 import {
   type SessionAccount,
   type SessionApiContext,
@@ -333,6 +351,103 @@ export function Provider({children}: PropsWithChildren<{}>) {
     onSessionChangeRef.current = onSessionChange
   }, [onSessionChange])
 
+  /**
+   * Activate a bundle, keeping the outgoing account's OAuth bundle warm so
+   * switching back to it does not need another restore.
+   */
+  const switchToBundle = useCallback(
+    (newBundle: ActiveSessionBundle, newAccount: SessionAccount) => {
+      const prev = store.getState()
+      store.dispatch({type: 'switched-to-account', newBundle, newAccount})
+      const prevBundle = prev.currentBundleState.bundle as unknown as
+        ActiveSessionBundle | PublicSessionBundle
+      const prevAccount = prev.accounts.find(
+        a => a.did === prev.currentBundleState.did,
+      )
+      if (
+        prevAccount?.isOauthSession &&
+        prevAccount.did !== newAccount.did &&
+        'oauthAgent' in prevBundle
+      ) {
+        retainWarmSession(prevAccount, prevBundle)
+      }
+    },
+    [store],
+  )
+
+  /**
+   * Swap to an already-resumed session with no network round trip. Returns
+   * false when the account is no longer saved as an OAuth account.
+   */
+  const activateWarmSession = useCallback(
+    (warm: WarmSession) => {
+      const latestEntry = store
+        .getState()
+        .accounts.find(a => a.did === warm.account.did)
+      // The account may have been removed (here or in another tab) meanwhile.
+      if (!latestEntry?.isOauthSession) return false
+      // Labeler subscriptions may have changed since the session was warmed.
+      void configureModerationForAccount(warm.bundle, warm.account)
+      switchToBundle(warm.bundle, warm.account)
+      return true
+    },
+    [store, switchToBundle],
+  )
+
+  /**
+   * Undo a warm switch whose session turned out to be unusable: go back to the
+   * account that was active before it, or log out if there was none or it
+   * cannot be restored either. Restoring can take a while (password sessions
+   * may refresh), so nothing is committed unless this operation still owns the
+   * failed session by then.
+   */
+  const rollBackSwitch = useCallback(
+    async ({
+      previous,
+      failedBundle,
+      signal,
+    }: {
+      previous: SessionAccount | undefined
+      failedBundle: ActiveSessionBundle
+      signal: AbortSignal
+    }) => {
+      const owned = () =>
+        !signal.aborted &&
+        (store.getState().currentBundleState.bundle as unknown) === failedBundle
+      const eligible = () => {
+        const latest = previous
+          ? store.getState().accounts.find(a => a.did === previous.did)
+          : undefined
+        return latest && canAttemptSessionResume(latest) ? latest : undefined
+      }
+      let restored: {account: SessionAccount; bundle: ActiveSessionBundle}
+      try {
+        const latest = eligible()
+        if (!latest) throw new Error('No account to return to')
+        restored =
+          (latest.isOauthSession
+            ? await takeWarmSession(latest.did)
+            : undefined) ??
+          (latest.isOauthSession
+            ? await createOAuthSessionBundleAndResume(latest)
+            : await createSessionBundleAndResume(latest, onSessionChange))
+      } catch {
+        if (owned()) store.dispatch({type: 'logged-out-current-account'})
+        return
+      }
+      if (!owned() || !eligible()) {
+        // Superseded by a logout or another switch while restoring.
+        disposeBundle(restored.bundle)
+        return
+      }
+      const failedDid = store.getState().currentBundleState.did
+      switchToBundle(restored.bundle, restored.account)
+      // switchToBundle parks the outgoing bundle - the one that just failed.
+      if (failedDid) forgetWarmSession(failedDid)
+    },
+    [store, onSessionChange, switchToBundle],
+  )
+
   const createAccount = useCallback<SessionApiContext['createAccount']>(
     async (params, metrics) => {
       addSessionDebugLog({type: 'method:start', method: 'createAccount'})
@@ -378,11 +493,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
         disposeBundle(bundle)
         return
       }
-      store.dispatch({
-        type: 'switched-to-account',
-        newBundle: bundle,
-        newAccount: account,
-      })
+      switchToBundle(bundle, account)
       ax.metric(
         'account:loggedIn',
         {logContext, withPassword: !params.oauthSession},
@@ -394,7 +505,7 @@ export function Provider({children}: PropsWithChildren<{}>) {
         account: redactAccount(account),
       })
     },
-    [ax, store, onSessionChange, cancelPendingTask],
+    [ax, onSessionChange, cancelPendingTask, switchToBundle],
   )
 
   const logoutCurrentAccount = useCallback<
@@ -423,6 +534,8 @@ export function Provider({children}: PropsWithChildren<{}>) {
         clearAgeAssuranceServerDataForDid({
           did: prevState.currentBundleState.did,
         })
+        forgetWarmSession(prevState.currentBundleState.did)
+        discardRetainedQueryClient(prevState.currentBundleState.did)
         void clearPersistedQueryStorage(prevState.currentBundleState.did)
       }
       // reset onboarding flow on logout
@@ -454,6 +567,8 @@ export function Provider({children}: PropsWithChildren<{}>) {
       )
       addSessionDebugLog({type: 'method:end', method: 'logout'})
       clearAgeAssuranceServerDataForAll()
+      clearWarmSessions()
+      discardAllRetainedQueryClients()
       for (const account of prevState.accounts) {
         void clearPersistedQueryStorage(account.did)
       }
@@ -495,6 +610,11 @@ export function Provider({children}: PropsWithChildren<{}>) {
           refreshJwt: props.oauthSession ? undefined : refreshed.refreshJwt,
         }
         store.dispatch({type: 'updated-stored-account', account: updated})
+        /*
+         * A new grant replaces the stored tokens and, on native, the DPoP key a
+         * warm session would still sign with.
+         */
+        forgetWarmSession(account.did)
         return updated
       }
       if (options?.directOAuth) {
@@ -524,79 +644,178 @@ export function Provider({children}: PropsWithChildren<{}>) {
         method: 'resumeSession',
         account: redactAccount(storedAccount),
       })
-      if (IS_WEB && isSwitchingAccounts && storedAccount.isOauthSession) {
-        const {ensureAppViewAccess} = await import('./oauth-appview-switch')
-        if (!(await ensureAppViewAccess(storedAccount.did))) {
+      // One signal for the whole operation: logout or a newer switch aborts it.
+      const signal = cancelPendingTask()
+      /*
+       * An interactive switch that was superseded must not report success;
+       * callers already ignore "cancelled" errors. Startup resumes keep
+       * resolving quietly.
+       */
+      const superseded = () => {
+        if (isSwitchingAccounts) throw new Error('Account switch cancelled')
+      }
+      /*
+       * Set when a warm session was activated but then failed verification, so
+       * a failed cold retry can return to the previous account.
+       */
+      let failedWarmSwitch:
+        | {
+            previous: SessionAccount | undefined
+            failedBundle: ActiveSessionBundle
+          }
+        | undefined
+
+      if (isSwitchingAccounts) {
+        /*
+         * Swapping in a warm session remounts the whole app synchronously.
+         * Waiting for a painted frame first lets the menu that triggered it
+         * close visibly. The wait sits inside this operation, after its signal,
+         * so a logout or newer switch meanwhile still cancels it.
+         */
+        await afterNextPaint()
+        if (signal.aborted) return superseded()
+      }
+
+      if (isSwitchingAccounts && storedAccount.isOauthSession) {
+        const warm = await takeWarmSession(storedAccount.did)
+        // A taken lease is never returned, so an abort simply drops it.
+        if (signal.aborted) return superseded()
+        if (warm) {
+          const before = store.getState()
+          const previous = before.accounts.find(
+            a => a.did === before.currentBundleState.did,
+          )
+          if (activateWarmSession(warm)) {
+            onboardingDispatch({type: 'skip'})
+            /*
+             * Rendering already switched; this is what a cold restore would
+             * have checked first. Only a definitive failure undoes it - being
+             * offline is no reason to think the session is bad.
+             */
+            const verdict = await verifyWarmSession(warm)
+            if (
+              signal.aborted ||
+              (store.getState().currentBundleState.bundle as unknown) !==
+                warm.bundle
+            ) {
+              return superseded()
+            }
+            if (verdict.status !== 'invalid') {
+              const live = store
+                .getState()
+                .accounts.find(a => a.did === warm.account.did)
+              if (verdict.status === 'valid' && live) {
+                /*
+                 * Only the fields the server just returned: the warm account
+                 * snapshot would also carry its old lastActiveAt back over the
+                 * one this switch stamped, which orders the switcher.
+                 */
+                store.dispatch({
+                  type: 'updated-stored-account',
+                  account: {...live, ...verdict.fresh},
+                })
+              }
+              addSessionDebugLog({
+                type: 'method:end',
+                method: 'resumeSession',
+                account: redactAccount(warm.account),
+              })
+              return
+            }
+            logger.warn('session: warm session failed verification', {
+              message:
+                verdict.error instanceof Error
+                  ? verdict.error.message
+                  : String(verdict.error),
+            })
+            failedWarmSwitch = {previous, failedBundle: warm.bundle}
+            storedAccount =
+              store
+                .getState()
+                .accounts.find(a => a.did === storedAccount.did) ??
+              storedAccount
+          }
+        }
+      }
+
+      try {
+        if (IS_WEB && isSwitchingAccounts && storedAccount.isOauthSession) {
+          const {ensureAppViewAccess} = await import('./oauth-appview-switch')
+          if (!(await ensureAppViewAccess(storedAccount.did))) {
+            if (signal.aborted) return superseded()
+            storedAccount = await reauthenticateAccount(storedAccount, {
+              allowAppServerSwitch: true,
+            })
+          }
+          if (signal.aborted) return superseded()
+        }
+        if (
+          isSwitchingAccounts &&
+          !storedAccount.isOauthSession &&
+          !storedAccount.refreshJwt
+        ) {
           storedAccount = await reauthenticateAccount(storedAccount, {
             allowAppServerSwitch: true,
           })
+          if (signal.aborted) return superseded()
         }
-      }
-      if (
-        isSwitchingAccounts &&
-        !storedAccount.isOauthSession &&
-        !storedAccount.refreshJwt
-      ) {
-        storedAccount = await reauthenticateAccount(storedAccount, {
-          allowAppServerSwitch: true,
-        })
-      }
-      const signal = cancelPendingTask()
-      const restore = () =>
-        storedAccount.isOauthSession
-          ? createOAuthSessionBundleAndResume(storedAccount)
-          : createSessionBundleAndResume(storedAccount, onSessionChange)
-      let restored: Awaited<ReturnType<typeof restore>>
-      try {
-        restored = await restore()
-      } catch (error) {
-        if (
-          signal.aborted ||
-          !isSwitchingAccounts ||
-          !isEphemeralAuthError(error)
-        ) {
-          throw error
+        const restore = () =>
+          storedAccount.isOauthSession
+            ? createOAuthSessionBundleAndResume(storedAccount)
+            : createSessionBundleAndResume(storedAccount, onSessionChange)
+        let restored: Awaited<ReturnType<typeof restore>>
+        try {
+          restored = await restore()
+        } catch (error) {
+          if (
+            signal.aborted ||
+            !isSwitchingAccounts ||
+            !isEphemeralAuthError(error)
+          ) {
+            throw error
+          }
+          storedAccount = await reauthenticateAccount(storedAccount, {
+            allowAppServerSwitch: true,
+          })
+          if (signal.aborted) return superseded()
+          restored = await restore()
         }
-        storedAccount = await reauthenticateAccount(storedAccount, {
-          allowAppServerSwitch: true,
-        })
-        if (signal.aborted) return
-        restored = await restore()
-      }
-      const {bundle, account} = restored
+        const {bundle, account} = restored
 
-      if (signal.aborted) {
-        // The factory returns an armed bundle, so a superseded resume must dispose it.
-        disposeBundle(bundle)
-        return
-      }
-      /*
-       * A cross-tab logout may clear or remove the account while resume is in
-       * flight. Check the account entry rather than the current did so ordinary
-       * account switching remains valid.
-       */
-      const latest = store.getState()
-      const latestEntry = latest.accounts.find(a => a.did === account.did)
-      if (
-        !latestEntry ||
-        (!latestEntry.isOauthSession && !latestEntry.refreshJwt)
-      ) {
-        disposeBundle(bundle)
-        return
-      }
-      store.dispatch({
-        type: 'switched-to-account',
-        newBundle: bundle,
-        newAccount: account,
-      })
-      addSessionDebugLog({
-        type: 'method:end',
-        method: 'resumeSession',
-        account: redactAccount(account),
-      })
-      if (isSwitchingAccounts) {
-        // reset onboarding flow on switch account
-        onboardingDispatch({type: 'skip'})
+        if (signal.aborted) {
+          // The factory returns an armed bundle, so a superseded resume must dispose it.
+          disposeBundle(bundle)
+          return superseded()
+        }
+        /*
+         * A cross-tab logout may clear or remove the account while resume is in
+         * flight. Check the account entry rather than the current did so ordinary
+         * account switching remains valid.
+         */
+        const latest = store.getState()
+        const latestEntry = latest.accounts.find(a => a.did === account.did)
+        if (
+          !latestEntry ||
+          (!latestEntry.isOauthSession && !latestEntry.refreshJwt)
+        ) {
+          disposeBundle(bundle)
+          return
+        }
+        switchToBundle(bundle, account)
+        addSessionDebugLog({
+          type: 'method:end',
+          method: 'resumeSession',
+          account: redactAccount(account),
+        })
+        if (isSwitchingAccounts) {
+          // reset onboarding flow on switch account
+          onboardingDispatch({type: 'skip'})
+        }
+      } catch (error) {
+        if (failedWarmSwitch) {
+          await rollBackSwitch({...failedWarmSwitch, signal})
+        }
+        throw error
       }
     },
     [
@@ -605,6 +824,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
       cancelPendingTask,
       onboardingDispatch,
       reauthenticateAccount,
+      activateWarmSession,
+      rollBackSwitch,
+      switchToBundle,
     ],
   )
 
@@ -747,6 +969,9 @@ export function Provider({children}: PropsWithChildren<{}>) {
         account: redactAccount(account),
       })
       clearAgeAssuranceServerDataForDid({did: account.did})
+      forgetWarmSession(account.did)
+      discardRetainedQueryClient(account.did)
+      accountStorage.remove([account.did, 'profile'])
       void clearPersistedQueryStorage(account.did)
     },
     [store, cancelPendingTask],
@@ -775,6 +1000,24 @@ export function Provider({children}: PropsWithChildren<{}>) {
         syncedAccounts: synced.accounts,
         syncedCurrentDid: synced.currentAccount?.did,
       })
+      /*
+       * Another tab removed accounts or logged out. Drop what this tab kept for
+       * them in memory, on the same transition: the leader already cleared
+       * their persisted data. OAuth logout leaves the saved account entry
+       * untouched, so a logout is only visible as the current account going
+       * away; treat that as a logout of everything this tab kept warm.
+       */
+      const syncedDids = new Set(synced.accounts.map(a => a.did))
+      for (const account of before.accounts) {
+        if (!syncedDids.has(account.did)) {
+          forgetWarmSession(account.did)
+          discardRetainedQueryClient(account.did)
+        }
+      }
+      if (before.currentBundleState.did && !synced.currentAccount) {
+        clearWarmSessions()
+        discardAllRetainedQueryClients()
+      }
       const syncedAccount = synced.accounts.find(
         a => a.did === synced.currentAccount?.did,
       )
@@ -899,6 +1142,15 @@ export function Provider({children}: PropsWithChildren<{}>) {
     const listener = device.addOnValueChangedListener(
       ['customAppViewDid'],
       () => {
+        /*
+         * Warm bundles and other accounts' cached data were built against the
+         * old AppView. The active account's queries are reset where the
+         * AppView is changed, and its client must keep persisting.
+         */
+        clearWarmSessions()
+        discardAllRetainedQueryClients({
+          except: store.getState().currentBundleState.did ?? 'logged-out',
+        })
         clearTimeout(timer)
         timer = setTimeout(() => syncSession(persisted.get('session')), 0)
       },
@@ -910,6 +1162,32 @@ export function Provider({children}: PropsWithChildren<{}>) {
       unsubscribe()
     }
   }, [store, onSessionChange, cancelPendingTask])
+
+  const currentDid = state.currentBundleState.did
+  const {accounts} = state
+  /*
+   * Once an account is active, resume the other saved OAuth accounts in the
+   * background so switching to them is instant. Deferred so it does not
+   * compete with the active account's first requests.
+   */
+  useEffect(() => {
+    pruneWarmSessions(did =>
+      accounts.some(
+        a => a.did === did && a.isOauthSession && did !== currentDid,
+      ),
+    )
+    if (!accounts.some(a => a.isOauthSession && a.did !== currentDid)) return
+    if (!currentDid) return
+    const timer = setTimeout(() => {
+      const latest = store.getState()
+      // A logout can land before this effect's cleanup runs.
+      if (!latest.currentBundleState.did) return
+      warmSessions(
+        latest.accounts.filter(a => a.did !== latest.currentBundleState.did),
+      )
+    }, WARM_SESSIONS_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [store, currentDid, accounts])
 
   const stateContext = useMemo(
     () => ({
@@ -999,6 +1277,8 @@ export function Provider({children}: PropsWithChildren<{}>) {
     </BundleContext.Provider>
   )
 }
+
+const WARM_SESSIONS_DELAY_MS = 3_000
 
 function useOneTaskAtATime() {
   const abortController = useRef<AbortController | null>(null)

@@ -8,7 +8,12 @@ import {useDialogControl} from '#/components/Dialog'
 import * as TextField from '#/components/forms/TextField'
 import {PlusSmall_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import * as Prompt from '#/components/Prompt'
-import {PILL_LEFT, PILL_RIGHT_TEXT, PILL_VERTICAL} from '../pillSize'
+import {
+  PILL_DASHED_BORDER,
+  PILL_LEFT,
+  PILL_RIGHT_TEXT,
+  PILL_VERTICAL,
+} from '../pillSize'
 import {normalizeProfileLinkUrl} from '../providers'
 import {buildProfileRow, reorderLinks} from '../row'
 import {MAX_PROFILE_LINKS, type ProfileLink} from '../types'
@@ -208,11 +213,12 @@ function AddLinkPill({onPress}: {onPress: () => void}) {
       style={{
         // the outline variant draws a hairline on native; this wants a full point
         borderStyle: 'dashed',
-        borderWidth: 1,
+        borderWidth: PILL_DASHED_BORDER,
         borderColor: t.palette.contrast_600,
-        paddingVertical: PILL_VERTICAL,
-        paddingLeft: PILL_LEFT,
-        paddingRight: PILL_RIGHT_TEXT,
+        // less the border, so it's the same size as the solid pills
+        paddingVertical: PILL_VERTICAL - PILL_DASHED_BORDER,
+        paddingLeft: PILL_LEFT - PILL_DASHED_BORDER,
+        paddingRight: PILL_RIGHT_TEXT - PILL_DASHED_BORDER,
       }}>
       <ButtonIcon icon={PlusIcon} />
       <ButtonText style={{marginLeft: -2}}>

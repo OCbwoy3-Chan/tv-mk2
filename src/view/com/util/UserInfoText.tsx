@@ -38,6 +38,8 @@ export function UserInfoText({
   const {data: profile, isError} = useProfileQuery({
     did,
     staleTime: STALE.INFINITY,
+    // Mounted once per reply-to name across a feed.
+    batch: true,
   })
 
   if (isError) {

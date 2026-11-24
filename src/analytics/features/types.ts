@@ -32,13 +32,13 @@ export enum Features {
 
   OnboardingInterestsRequiredEnable = 'onboarding:interests:required:enable',
 
-  ModerationInboxEnable = 'moderation_inbox:enable',
-
   AtmosphereScreenEnable = 'atmosphere_screen:enable',
 
-  NotificationsV2Enable = 'notifications_v2:enable',
+  ShareDestinationsEnable = 'share_destinations:enable',
 
-  ProfileLinksEnable = 'profile_links:enable',
+  PostViewCountsEnable = 'post_view_counts:enable',
+
+  WebListVirtualizationEnable = 'web_list:virtualization:enable',
 
   // values
   StarterPacksConfig = 'starter_packs:config',

@@ -61,6 +61,7 @@ export function Outer({
   onOpen,
   onClose,
   onBack,
+  preventDismiss = false,
   webOptions,
 }: React.PropsWithChildren<DialogOuterProps>) {
   const {_} = useLingui()
@@ -117,9 +118,10 @@ export function Outer({
       const startTarget = pressStartTarget.current
       pressStartTarget.current = null
       if (startTarget && startTarget !== e.target) return
+      if (preventDismiss) return
       webOptions?.onBackgroundPress ? webOptions.onBackgroundPress(e) : close()
     },
-    [webOptions, close],
+    [webOptions, close, preventDismiss],
   )
 
   useImperativeHandle(
@@ -140,13 +142,13 @@ export function Outer({
       isNativePopover: false,
       nativeSnapPoint: 0,
       disableDrag: false,
+      preventDismiss,
       setDisableDrag: () => {},
       isWithinDialog: true,
       isHeightConstrained: false,
-      shouldMeasureContentHeight: false,
-      setDesiredContentHeight: () => {},
+      setContentScrollViewTag: () => {},
     }),
-    [close, onBack],
+    [close, onBack, preventDismiss],
   )
 
   return (
@@ -215,7 +217,7 @@ export function Inner({
 }: DialogInnerProps) {
   const t = useTheme()
   const enableSquareButtons = useEnableSquareButtons()
-  const {close, onBack} = useContext(Context)
+  const {close, onBack, preventDismiss} = useContext(Context)
   const {gtMobile} = useBreakpoints()
   const {reduceMotionEnabled} = useA11y()
   FocusGuards.useFocusGuards()
@@ -237,7 +239,7 @@ export function Inner({
         // note: flatten is required for some reason -sfn
         style={flatten([
           a.relative,
-          a.rounded_md,
+          a.rounded_xl,
           a.w_full,
           a.border,
           t.atoms.bg,
@@ -257,12 +259,14 @@ export function Inner({
           className="wsky-dialog"
           onInteractOutside={preventDefault}
           onFocusOutside={preventDefault}
-          onDismiss={close}
+          onDismiss={() => {
+            if (!preventDismiss) close()
+          }}
           onEscapeKeyDown={
             onBack
               ? event => {
                   event.preventDefault()
-                  onBack()
+                  if (!preventDismiss) onBack()
                 }
               : undefined
           }
@@ -373,7 +377,7 @@ export function FlatListFooter({
 
 export function Close() {
   const {_} = useLingui()
-  const {close} = useContext(Context)
+  const {close, preventDismiss} = useContext(Context)
 
   const enableSquareButtons = useEnableSquareButtons()
 
@@ -393,6 +397,7 @@ export function Close() {
         color="secondary"
         shape={enableSquareButtons ? 'square' : 'round'}
         onPress={() => close()}
+        disabled={preventDismiss}
         label={_(msg`Close active dialog`)}>
         <ButtonIcon icon={X} size="md" />
       </Button>

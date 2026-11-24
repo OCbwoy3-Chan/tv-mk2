@@ -36,6 +36,13 @@ jest.mock('#/components/Prompt', () => ({
 
 jest.unmock('multiformats/cid')
 
+/* Run scheduled cache purges immediately so tests can assert their effects. */
+globalThis.requestIdleCallback = (callback: IdleRequestCallback) => {
+  callback({didTimeout: false, timeRemaining: () => 0})
+  return 0
+}
+globalThis.cancelIdleCallback = () => {}
+
 jest.mock('idb-keyval', () => ({
   createStore: jest.fn(),
   get: jest.fn((key: string) => Promise.resolve(mockMediaStorage.get(key))),
