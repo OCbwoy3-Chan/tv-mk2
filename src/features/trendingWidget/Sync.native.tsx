@@ -37,13 +37,13 @@ export function TrendingTopicsWidgetSync() {
   const {data: preferences} = usePreferencesQuery()
   const languagePrefs = useLanguagePrefs()
   const copy = {
-    emptyMessage: l`No trending topics are available right now.`,
+    emptyMessage: l`Nothing's airing right now. Stay tuned.`,
     shortTitle: l({
-      message: 'Trending',
+      message: 'On Air',
       comment:
         'Header of the small Trending Topics home screen widget, next to the Bluesky logo. Keep it short.',
     }),
-    title: l`Trending on Bluesky`,
+    title: l`On Air`,
   }
 
   useEffect(() => {

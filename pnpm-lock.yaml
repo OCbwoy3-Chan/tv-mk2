@@ -906,6 +906,9 @@ importers:
       lint-staged:
         specifier: ^17.0.8
         version: 17.0.8
+      node:
+        specifier: runtime:^24.22.1
+        version: runtime:24.22.3
       oxlint:
         specifier: ^1.73.0
         version: 1.73.0(oxlint-tsgolint@7.0.2001)
@@ -6916,6 +6919,7 @@ packages:
     engines: {node: ^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0}
     hasBin: true
     peerDependencies:
+      '@expo/dom-webview': '*'
       '@expo/metro-runtime': '*'
       react: '*'
       react-dom: '*'
@@ -6923,6 +6927,8 @@ packages:
       react-native-web: '*'
       react-native-webview: '*'
     peerDependenciesMeta:
+      '@expo/dom-webview':
+        optional: true
       '@expo/metro-runtime':
         optional: true
       react-dom:
@@ -8423,6 +8429,138 @@ packages:
     resolution: {integrity: sha512-x0InOIyzgdk+eyaWaRJFH5snEtiImgBgblZ2CyPrLmqqcuMQkEvcDPHbzqbD8eDsSeJbVOjn+crzyzHaM4D+/A==}
     engines: {node: '>=18'}
 
+  node@runtime:24.22.3:
+    resolution:
+      type: variations
+      variants:
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-aT/ojEqF5+Fy7BMvdg5ns5JbLWRCyxyzp0tz/Pgx9wo=
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-aix-ppc64.tar.gz
+          targets:
+            - cpu: ppc64
+              os: aix
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-/24X1IdLdtJyISuQjMAg1ugV+6Wmx+qqBq3XJYQDB/0=
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-darwin-arm64.tar.gz
+          targets:
+            - cpu: arm64
+              os: darwin
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-l3YUrwUEyBBF5/2FWW28oOX5UblmgVFtra/tzKjER/c=
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-darwin-x64.tar.gz
+          targets:
+            - cpu: x64
+              os: darwin
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-JhryryUN/X6fJc8VHRsnE6Ct+PEKmtEWxJR/aGJ6/+g=
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-linux-arm64.tar.gz
+          targets:
+            - cpu: arm64
+              os: linux
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-uksmreH3s/W6Z1aFaBXeWONTdGAE5+RsyDgkOmy/Mpk=
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-linux-ppc64le.tar.gz
+          targets:
+            - cpu: ppc64le
+              os: linux
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-2PhDl8FHjA7QwbKTQ2Ju0PXxoJhd8MWXXDDwwDg2Yx8=
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-linux-s390x.tar.gz
+          targets:
+            - cpu: s390x
+              os: linux
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-VJm2Y/Yscgk3FdqY9K6m+DQnrYurnPnHXwkk4ORWzhQ=
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-linux-x64-musl.tar.gz
+          targets:
+            - cpu: x64
+              os: linux
+              libc: musl
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-Bh7D4wYhFXBbVrUfqcwzCrUNNLaWk4fU5LGlDGgJrMI=
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-linux-x64.tar.gz
+          targets:
+            - cpu: x64
+              os: linux
+        - resolution:
+            archive: zip
+            bin:
+              node: node.exe
+            integrity: sha256-s8x0opWznU8nMnHpb1jAbdKzV1fKEqvsZMfQWYtDTxQ=
+            prefix: node-v24.22.3-win-arm64
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-win-arm64.zip
+          targets:
+            - cpu: arm64
+              os: win32
+        - resolution:
+            archive: zip
+            bin:
+              node: node.exe
+            integrity: sha256-5hKvmfYmq0FeoiWva85clx/rRIy1yuJQuxw/pQxffZ8=
+            prefix: node-v24.22.3-win-x64
+            type: binary
+            url: https://nodejs.org/download/release/v24.22.3/node-v24.22.3-win-x64.zip
+          targets:
+            - cpu: x64
+              os: win32
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-JIyWqE9sgzhka5/XO/ElEkZ4+PsI218jAj9GIFXg7tw=
+            type: binary
+            url: https://unofficial-builds.nodejs.org/download/release/v24.22.3/node-v24.22.3-linux-arm64-musl.tar.gz
+          targets:
+            - cpu: arm64
+              os: linux
+              libc: musl
+        - resolution:
+            archive: tarball
+            bin:
+              node: bin/node
+            integrity: sha256-LbT4pAq+X1tdEZlkIj/tycTHxefGMpAa6GCvUix4RLI=
+            type: binary
+            url: https://unofficial-builds.nodejs.org/download/release/v24.22.3/node-v24.22.3-linux-x64-musl.tar.gz
+          targets:
+            - cpu: x64
+              os: linux
+              libc: musl
+    version: 24.22.3
+    hasBin: true
+
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
@@ -8998,11 +9136,14 @@ packages:
     hasBin: true
     peerDependencies:
       '@expo/config': '>=9.0.0'
+      '@expo/config-plugins': '*'
       expo: '*'
       react: '*'
       react-native: '>=0.81.0'
     peerDependenciesMeta:
       '@expo/config':
+        optional: true
+      '@expo/config-plugins':
         optional: true
       expo:
         optional: true
@@ -15347,8 +15488,8 @@ snapshots:
     optionalDependencies:
       ajv: 8.20.0
 
-  ajv-formats@3.0.1(ajv@8.20.0):
-    optionalDependencies:
+  ajv-formats@3.0.1:
+    dependencies:
       ajv: 8.20.0
 
   ajv-keywords@3.5.2(ajv@6.15.0):
@@ -17151,7 +17292,7 @@ snapshots:
     dependencies:
       '@fastify/merge-json-schemas': 0.2.1
       ajv: 8.20.0
-      ajv-formats: 3.0.1(ajv@8.20.0)
+      ajv-formats: 3.0.1
       fast-uri: 3.1.9
       json-schema-ref-resolver: 3.0.0
       rfdc: 1.4.1
@@ -18943,6 +19084,8 @@ snapshots:
   node-int64@0.4.0: {}
 
   node-releases@2.0.56: {}
+
+  node@runtime:24.22.3: {}
 
   normalize-path@3.0.0: {}
 

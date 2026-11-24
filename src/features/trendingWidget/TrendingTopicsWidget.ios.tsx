@@ -169,7 +169,7 @@ function TrendingTopicsWidget(
           ]}>
           {isSmall
             ? (props.shortTitle ?? 'Trending')
-            : (props.title ?? 'Trending on Bluesky')}
+            : (props.title ?? 'On Air')}
         </Text>
         <Spacer minLength={0} />
       </HStack>
@@ -198,7 +198,7 @@ function TrendingTopicsWidget(
               foregroundStyle(secondaryTextColor),
               lineLimit(3),
             ]}>
-            {props.emptyMessage ?? 'Open Bluesky to load trending topics.'}
+            {props.emptyMessage ?? 'Open tenna.party to load trending topics.'}
           </Text>
           {/* the whole widget opens the app, this just makes that obvious */}
           {props.topics ? null : (
@@ -211,7 +211,7 @@ function TrendingTopicsWidget(
                 clipShape('capsule'),
                 padding({top: 6}),
               ]}>
-              Open Bluesky
+              Open tenna.party
             </Text>
           )}
         </VStack>

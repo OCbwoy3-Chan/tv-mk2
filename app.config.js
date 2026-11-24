@@ -384,8 +384,8 @@ module.exports = function (_config) {
             widgets: [
               {
                 name: 'TrendingTopicsWidget',
-                displayName: 'Trending Topics',
-                description: 'See what people are talking about on Bluesky.',
+                displayName: 'TV Time',
+                description: 'See what everybody\'s talking in Hometown.',
                 ios: {
                   contentMarginsDisabled: true,
                   supportedFamilies: [

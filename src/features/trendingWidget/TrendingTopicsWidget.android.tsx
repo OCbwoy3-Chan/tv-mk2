@@ -75,7 +75,7 @@ function TrendingTopicsWidget(
             color={textColor}
             maxLines={1}
             style={{fontSize: 15, fontWeight: 'bold'}}>
-            {props.title ?? 'Trending on Bluesky'}
+            {props.title ?? 'On Air'}
           </Text>
         </Row>
       </Button>
@@ -129,7 +129,7 @@ function TrendingTopicsWidget(
               color={secondaryTextColor}
               maxLines={3}
               style={{fontSize: 13}}>
-              {props.emptyMessage ?? 'Open Bluesky to load trending topics.'}
+              {props.emptyMessage ?? 'Open tenna.party to load trending topics.'}
             </Text>
             {/* the whole card opens the app, this just makes that obvious */}
             {props.topics ? null : (
@@ -145,7 +145,7 @@ function TrendingTopicsWidget(
                     color="#FFFFFF"
                     maxLines={1}
                     style={{fontSize: 13, fontWeight: 'bold'}}>
-                    Open Bluesky
+                    Open tenna.party
                   </Text>
                 </Row>
               </Column>
