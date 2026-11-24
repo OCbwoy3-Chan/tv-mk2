@@ -74,11 +74,13 @@ it('exposes the selected page tab to keyboard navigation on web', () => {
   try {
     act(() => {
       root.render(
-        <TabBar
-          selectedPage={1}
-          items={['Posts', 'Replies', 'Media']}
-          onSelect={onSelect}
-        />,
+        <I18nProvider i18n={i18n}>
+          <TabBar
+            selectedPage={1}
+            items={['Posts', 'Replies', 'Media']}
+            onSelect={onSelect}
+          />
+        </I18nProvider>,
       )
     })
     const bar = container.querySelector<HTMLElement>('[role="tablist"]')!

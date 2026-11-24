@@ -327,6 +327,11 @@
       "count": 1
     }
   },
+  "src/features/feedFeedback/index.tsx": {
+    "typescript/no-explicit-any": {
+      "count": 3
+    }
+  },
   "src/features/liveNow/index.tsx": {
     "typescript/no-explicit-any": {
       "count": 3
@@ -458,11 +463,6 @@
       "count": 1
     }
   },
-  "src/lib/media/save-image.ios.ts": {
-    "typescript/no-explicit-any": {
-      "count": 1
-    }
-  },
   "src/lib/media/save-image.ts": {
     "typescript/no-explicit-any": {
       "count": 1
@@ -492,11 +492,6 @@
     }
   },
   "src/lib/routes/router.ts": {
-    "typescript/no-explicit-any": {
-      "count": 1
-    }
-  },
-  "src/lib/routes/types.ts": {
     "typescript/no-explicit-any": {
       "count": 1
     }
@@ -578,9 +573,6 @@
     }
   },
   "src/screens/PostThread/index.tsx": {
-    "no-unused-vars": {
-      "count": 2
-    },
     "typescript/no-misused-promises": {
       "count": 1
     }
@@ -707,14 +699,6 @@
       "count": 1
     }
   },
-  "src/state/feed-feedback.tsx": {
-    "no-unused-vars": {
-      "count": 1
-    },
-    "typescript/no-explicit-any": {
-      "count": 3
-    }
-  },
   "src/state/gallery.ts": {
     "typescript/prefer-promise-reject-errors": {
       "count": 1
@@ -779,14 +763,6 @@
     },
     "typescript/no-unsafe-member-access": {
       "count": 1
-    }
-  },
-  "src/state/queries/notifications/feed.ts": {
-    "typescript/no-explicit-any": {
-      "count": 2
-    },
-    "typescript/no-unsafe-member-access": {
-      "count": 2
     }
   },
   "src/state/queries/notifications/unread.tsx": {
@@ -939,20 +915,6 @@
     },
     "typescript/no-misused-promises": {
       "count": 3
-    },
-    "typescript/no-unsafe-member-access": {
-      "count": 2
-    }
-  },
-  "src/view/com/notifications/NotificationFeedItem.tsx": {
-    "react-native-a11y/has-accessibility-hint": {
-      "count": 1
-    },
-    "typescript/no-explicit-any": {
-      "count": 3
-    },
-    "typescript/no-floating-promises": {
-      "count": 1
     },
     "typescript/no-unsafe-member-access": {
       "count": 2

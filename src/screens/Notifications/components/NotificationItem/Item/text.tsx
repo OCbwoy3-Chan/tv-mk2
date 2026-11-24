@@ -1,10 +1,8 @@
 import {type StyleProp, type TextStyle} from 'react-native'
 import {moderateProfile} from '@bsky/sdk/moderation'
-import {type I18n} from '@lingui/core'
-import {defineMessage} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react/macro'
 
-import {dateDiff, formatDateDiff} from '#/lib/hooks/useTimeAgo'
+import {formatTimeAgo} from '#/lib/hooks/useTimeAgo'
 import {makeProfileLink} from '#/lib/routes/links'
 import {forceLTR} from '#/lib/strings/bidi'
 import {getAuthorPrimaryName} from '#/lib/strings/display-names'
@@ -13,7 +11,7 @@ import {niceDate} from '#/lib/strings/time'
 import {useHideDisplayNames} from '#/state/preferences/hide-display-names'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {TimeElapsed} from '#/view/com/util/TimeElapsed'
-import {atoms as a, useTheme, web} from '#/alf'
+import {atoms as a, select, useTheme, web} from '#/alf'
 import {InlineLinkText} from '#/components/Link'
 import {ProfileBadges} from '#/components/ProfileBadges'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
@@ -124,11 +122,7 @@ export function Name({profile}: {profile: bsky.profile.AnyProfileView}) {
           web({direction: 'ltr', unicodeBidi: 'isolate'}),
         ]}>
         {forceLTR(name)}
-        <ProfileBadges
-          profile={profile}
-          size="sm"
-          style={[a.px_2xs, {transform: [{translateY: 1}]}]}
-        />
+        <ProfileBadges profile={profile} size="sm" inline />
       </InlineLinkText>
     </ProfileHoverCard>
   )
@@ -141,39 +135,25 @@ export function Name({profile}: {profile: bsky.profile.AnyProfileView}) {
 export function Timestamp({date}: {date: string}) {
   const t = useTheme()
   const {i18n} = useLingui()
+  /*
+   * The dark themes use `contrast_500` (`#667B99` in dark, per design), as
+   * the lower steps are too faint against them, especially on the unread tint.
+   */
+  const color = select(t.name, {
+    light: t.palette.contrast_400,
+    dim: t.palette.contrast_500,
+    dark: t.palette.contrast_500,
+  })
 
   return (
     <TimeElapsed timestamp={date} timeToString={formatTimeAgo}>
       {({timeElapsed}) => (
         <Text
           title={niceDate(i18n, date)}
-          style={[
-            a.self_start,
-            a.text_sm,
-            t.atoms.text_contrast_low,
-            {color: t.palette.contrast_300},
-          ]}>
+          style={[a.self_start, a.text_sm, t.atoms.text_contrast_low, {color}]}>
           {timeElapsed}
         </Text>
       )}
     </TimeElapsed>
-  )
-}
-
-function formatTimeAgo(i18n: I18n, timestamp: string) {
-  const diff = dateDiff(timestamp, Date.now())
-  const formatted = formatDateDiff({diff, i18n})
-
-  // "now", and dates over a year old, read fine on their own
-  if (diff.unit === 'now' || (diff.unit === 'month' && diff.value >= 12)) {
-    return formatted
-  }
-
-  return i18n._(
-    defineMessage({
-      message: `${formatted} ago`,
-      comment:
-        'How long ago a notification happened, e.g. "7m ago". The time is already abbreviated and translated.',
-    }),
   )
 }

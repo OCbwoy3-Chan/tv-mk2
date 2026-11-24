@@ -25,7 +25,22 @@ import {type Recovery} from '#/state/shell/composer/recovery/codec'
 import {type ComposerState} from '#/view/com/composer/state/composer'
 import * as Prompt from '#/components/Prompt'
 import * as Toast from '#/components/Toast'
+import {IS_NATIVE} from '#/env'
 import {type app} from '#/lexicons'
+
+/** Native provides idle callbacks; use the next frame on web for browser support. */
+function schedulePurge(callback: () => void): number {
+  return IS_NATIVE
+    ? requestIdleCallback(callback)
+    : requestAnimationFrame(callback)
+}
+function cancelPurge(id: number) {
+  if (IS_NATIVE) {
+    cancelIdleCallback(id)
+  } else {
+    cancelAnimationFrame(id)
+  }
+}
 
 export interface ComposerOptsPostRef {
   uri: string
@@ -133,6 +148,22 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
     return {...recovery.opts, recoveredState: recovery.state}
   })
   const queryClient = useQueryClient()
+  const pendingPurgeRef = useRef<number | undefined>(undefined)
+
+  function cancelPendingPurge() {
+    if (pendingPurgeRef.current !== undefined) {
+      cancelPurge(pendingPurgeRef.current)
+      pendingPurgeRef.current = undefined
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (pendingPurgeRef.current !== undefined) {
+        cancelPurge(pendingPurgeRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!(recovery instanceof Promise)) return
@@ -196,6 +227,11 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
         }
         return
       }
+      /*
+       * A purge scheduled by the previous composer must not delete files from
+       * a composer that is opened before the callback gets to run.
+       */
+      cancelPendingPurge()
       setState(prevOpts => {
         if (prevOpts) {
           // Never replace an already open composer.
@@ -213,13 +249,17 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
         recoveryCancelled.current = true
         setState(undefined)
         if (currentAccount) clearRecovery(currentAccount.did)
-        void purgeTemporaryImageFiles()
-        // Purging deletes cached thumbnails on disk, so remove the query
-        // caches that may hold references to those now-deleted file paths.
-        // Without this, restoring a draft would serve stale ResolvedLink
-        // data pointing at missing files, causing "Failed to load blob".
-        queryClient.removeQueries({queryKey: [RQKEY_LINK_ROOT]})
-        queryClient.removeQueries({queryKey: [RQKEY_GIF_ROOT]})
+        cancelPendingPurge()
+        pendingPurgeRef.current = schedulePurge(() => {
+          pendingPurgeRef.current = undefined
+          void purgeTemporaryImageFiles()
+          // Purging deletes cached thumbnails on disk, so remove the query
+          // caches that may hold references to those now-deleted file paths.
+          // Without this, restoring a draft would serve stale ResolvedLink
+          // data pointing at missing files, causing "Failed to load blob".
+          queryClient.removeQueries({queryKey: [RQKEY_LINK_ROOT]})
+          queryClient.removeQueries({queryKey: [RQKEY_GIF_ROOT]})
+        })
       }
 
       return wasOpen

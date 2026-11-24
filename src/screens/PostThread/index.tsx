@@ -16,12 +16,9 @@ import {useInitialNumToRender} from '#/lib/hooks/useInitialNumToRender'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {useOpenComposer} from '#/lib/hooks/useOpenComposer'
 import {usePostViewTracking} from '#/lib/hooks/usePostViewTracking'
+import {useSetPostTitle} from '#/lib/hooks/useSetPostTitle'
 import {getShapeStyle} from '#/lib/shapes'
 import {usePostViewAuthorShadowFilter} from '#/state/cache/profile-shadow'
-import {
-  type StateContext as FeedFeedbackStateContext,
-  useFeedFeedback,
-} from '#/state/feed-feedback'
 import {useAlsoLikedCollapseByDefault} from '#/state/preferences/also-liked-collapse-by-default'
 import {useAlsoLikedFeedEnabled} from '#/state/preferences/also-liked-feed-enabled'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -38,7 +35,6 @@ import {
 import {useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
 import {useShellLayout} from '#/state/shell/shell-layout'
-import {useUnstablePostSource} from '#/state/unstable-post-source'
 import {List, type ListMethods} from '#/view/com/util/List'
 import {HeaderDropdown} from '#/screens/PostThread/components/HeaderDropdown'
 import {HeaderReaderToggle} from '#/screens/PostThread/components/HeaderReaderToggle'
@@ -85,13 +81,19 @@ import {ChevronTop_Stroke2_Corner0_Rounded as ChevronTopIcon} from '#/components
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
-import {IS_IOS, IS_NATIVE} from '#/env'
+import {IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
+import {
+  FeedFeedbackProvider,
+  FeedItemProvider,
+  useFeedFeedback,
+} from '#/features/feedFeedback'
+import {
+  feedItemFromPostSource,
+  usePostSource,
+} from '#/features/feedFeedback/postSource'
 
 const PARENT_CHUNK_SIZE = IS_NATIVE ? 5 : 20
 const CHILDREN_CHUNK_SIZE = 50
-const analyticsOnlyOnItemSeen: FeedFeedbackStateContext['onItemSeen'] = () => {}
-const analyticsOnlySendInteraction: FeedFeedbackStateContext['sendInteraction'] =
-  () => {}
 
 export function PostThread({
   uri,
@@ -101,15 +103,26 @@ export function PostThread({
   initialView?: 'reader'
 }) {
   const ax = useAnalytics()
+  const showViewCount = ax.features.enabled(ax.features.PostViewCountsEnable)
   const {gtMobile} = useBreakpoints()
   const {hasSession} = useSession()
   const initialNumToRender = useInitialNumToRender()
   const {height: windowHeight} = useWindowDimensions()
   const moderationOpts = useModerationOpts()
-  const anchorPostSource = useUnstablePostSource(uri)
+  const anchorPostSource = usePostSource(uri)
+  /*
+   * Only the anchor is the feed item the user tapped, so only it reports feed
+   * feedback. Parents and replies get the feed for analytics but no item.
+   */
+  const anchorFeedItem = useMemo(
+    () =>
+      anchorPostSource ? feedItemFromPostSource(anchorPostSource) : undefined,
+    [anchorPostSource],
+  )
   const feedFeedback = useFeedFeedback(
     anchorPostSource?.feedSourceInfo,
     hasSession,
+    'thread',
   )
 
   /*
@@ -136,6 +149,8 @@ export function PostThread({
     }
     return {hasParents}
   }, [thread.data.items])
+
+  useSetPostTitle(anchor?.value.post.author)
 
   // Track post:view event when anchor post is viewed
   const seenPostUriRef = useRef<string | null>(null)
@@ -190,12 +205,12 @@ export function PostThread({
       logContext: 'PostReply',
     })
 
-    if (anchorPostSource) {
+    if (anchorFeedItem) {
       feedFeedback.sendInteraction({
-        item: post.uri,
+        item: anchorFeedItem.uri,
         event: 'app.bsky.feed.defs#interactionReply',
-        feedContext: anchorPostSource.post.feedContext,
-        reqId: anchorPostSource.post.reqId,
+        feedContext: anchorFeedItem.feedContext,
+        reqId: anchorFeedItem.reqId,
       })
     }
   })
@@ -664,21 +679,23 @@ export function PostThread({
                 ref={anchorRef}
                 onLayout={() => setDeferParents(false)}
               />
-              <ThreadItemAnchor
-                item={item}
-                readerSeam={
-                  reader?.anchorSeam
-                    ? {
-                        ...reader.anchorSeam,
-                        onToggle: () => toggleSeam(item.uri),
-                        sort: thread.state.sort,
-                      }
-                    : undefined
-                }
-                threadgateRecord={thread.data.threadgate?.record ?? undefined}
-                onPostSuccess={optimisticOnPostReply}
-                postSource={anchorPostSource}
-              />
+              <FeedItemProvider value={anchorFeedItem}>
+                <ThreadItemAnchor
+                  item={item}
+                  showViewCount={showViewCount}
+                  readerSeam={
+                    reader?.anchorSeam
+                      ? {
+                          ...reader.anchorSeam,
+                          onToggle: () => toggleSeam(item.uri),
+                          sort: thread.state.sort,
+                        }
+                      : undefined
+                  }
+                  threadgateRecord={thread.data.threadgate?.record ?? undefined}
+                  onPostSuccess={optimisticOnPostReply}
+                />
+              </FeedItemProvider>
             </View>
           )
         } else {
@@ -767,7 +784,8 @@ export function PostThread({
       optimisticOnPostReply,
       onReplyToAnchor,
       gtMobile,
-      anchorPostSource,
+      anchorFeedItem,
+      showViewCount,
     ],
   )
 
@@ -900,83 +918,91 @@ export function PostThread({
           onRetry={thread.actions.refetch}
         />
       ) : (
-        <List
-          ref={listRef}
-          data={deferredSlices}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          onContentSizeChange={platform({
-            web: onContentSizeChangeWebOnly,
-            default: onContentSizeChangeNativeOnly,
-          })}
-          onStartReached={onStartReached}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={2}
-          onStartReachedThreshold={1}
-          onScrollOffsetChange={handleScrollOffsetChange}
-          onItemSeen={(item: ReaderItem) => {
-            // Track post:view for parent posts and replies (non-anchor posts)
-            if (item.type === 'threadPost' && item.depth !== 0) {
-              trackThreadItemView(item.value.post)
-            } else if (item.type === 'readerSegment') {
-              trackThreadItemView(item.item.value.post)
-            }
-          }}
-          /**
-           * NATIVE ONLY
-           * {@link https://reactnative.dev/docs/scrollview#maintainvisiblecontentposition}
-           */
-          maintainVisibleContentPosition={
-            disableIosVisiblePositionMaintenance
-              ? undefined
-              : {minIndexForVisible: 0}
-          }
-          desktopFixedHeight
-          sideBorders={false}
-          ListFooterComponent={
-            <ThreadAlsoLiked
-              posts={visibleAlsoLikedPosts}
-              visible={alsoLikedVisible}
-              collapsed={alsoLikedCollapsed}
-              isLoading={alsoLiked.isLoading}
-              showLoadingState={
-                !alsoLikedCollapsed &&
-                !alsoLiked.error &&
-                visibleAlsoLikedPosts.length === 0 &&
-                (!alsoLiked.isFetched ||
-                  alsoLiked.isLoading ||
-                  (alsoLiked.hasNextPage && alsoLiked.isFetchingNextPage))
+        <FeedFeedbackProvider value={feedFeedback}>
+          <List
+            ref={listRef}
+            data={deferredSlices}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            onContentSizeChange={platform({
+              web: onContentSizeChangeWebOnly,
+              default: onContentSizeChangeNativeOnly,
+            })}
+            onStartReached={onStartReached}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={2}
+            onStartReachedThreshold={1}
+            onScrollOffsetChange={handleScrollOffsetChange}
+            onItemSeen={(item: ReaderItem) => {
+              // Track post:view for parent posts and replies (non-anchor posts)
+              if (item.type === 'threadPost' && item.depth !== 0) {
+                trackThreadItemView(item.value.post)
+              } else if (item.type === 'readerSegment') {
+                trackThreadItemView(item.item.value.post)
               }
-              isFetchingNextPage={alsoLiked.isFetchingNextPage}
-              error={alsoLiked.error}
-              onRetry={retryAlsoLiked}
-              headerRef={alsoLikedHeaderRef}
-              onToggleCollapsed={toggleAlsoLikedCollapsed}
-              spacerHeight={platform({
-                web: defaultListFooterHeight,
-                default: deferParents
-                  ? windowHeight * 2
-                  : defaultListFooterHeight,
-              })}
-              isTombstoneView={isTombstoneView}
-            />
-          }
-          initialNumToRender={initialNumToRender}
-          /**
-           * Default: 21
-           *
-           * Smaller for placeholder data so we don't waste time rendering skeletons
-           */
-          windowSize={thread.state.isPlaceholderData ? 1 : 7}
-          /**
-           * Default: 10
-           */
-          maxToRenderPerBatch={5}
-          /**
-           * Default: 50
-           */
-          updateCellsBatchingPeriod={100}
-        />
+            }}
+            /**
+             * NATIVE ONLY
+             * {@link https://reactnative.dev/docs/scrollview#maintainvisiblecontentposition}
+             */
+            maintainVisibleContentPosition={
+              disableIosVisiblePositionMaintenance
+                ? undefined
+                : {minIndexForVisible: 0}
+            }
+            /*
+             * The web anchor positioning in onContentSizeChangeWebOnly reads
+             * the parents' layout as they're prepended, so the thread renders
+             * every row on web.
+             */
+            disableVirtualization={IS_WEB}
+            desktopFixedHeight
+            sideBorders={false}
+            ListFooterComponent={
+              <ThreadAlsoLiked
+                posts={visibleAlsoLikedPosts}
+                visible={alsoLikedVisible}
+                collapsed={alsoLikedCollapsed}
+                isLoading={alsoLiked.isLoading}
+                showLoadingState={
+                  !alsoLikedCollapsed &&
+                  !alsoLiked.error &&
+                  visibleAlsoLikedPosts.length === 0 &&
+                  (!alsoLiked.isFetched ||
+                    alsoLiked.isLoading ||
+                    (alsoLiked.hasNextPage && alsoLiked.isFetchingNextPage))
+                }
+                isFetchingNextPage={alsoLiked.isFetchingNextPage}
+                error={alsoLiked.error}
+                onRetry={retryAlsoLiked}
+                headerRef={alsoLikedHeaderRef}
+                onToggleCollapsed={toggleAlsoLikedCollapsed}
+                spacerHeight={platform({
+                  web: defaultListFooterHeight,
+                  default: deferParents
+                    ? windowHeight * 2
+                    : defaultListFooterHeight,
+                })}
+                isTombstoneView={isTombstoneView}
+              />
+            }
+            initialNumToRender={initialNumToRender}
+            /**
+             * Default: 21
+             *
+             * Smaller for placeholder data so we don't waste time rendering skeletons
+             */
+            windowSize={thread.state.isPlaceholderData ? 1 : 7}
+            /**
+             * Default: 10
+             */
+            maxToRenderPerBatch={5}
+            /**
+             * Default: 50
+             */
+            updateCellsBatchingPeriod={100}
+          />
+        </FeedFeedbackProvider>
       )}
 
       {!gtMobile &&
@@ -1043,7 +1069,6 @@ function ReaderHideRepliesButton({onPress}: {onPress: () => void}) {
     </Animated.View>
   )
 }
-
 function MobileComposePrompt({onPressReply}: {onPressReply: () => unknown}) {
   const {footerHeight} = useShellLayout()
 

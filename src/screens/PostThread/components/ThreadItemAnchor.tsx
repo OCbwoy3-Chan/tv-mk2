@@ -23,7 +23,6 @@ import {
   usePostShadow,
 } from '#/state/cache/post-shadow'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
-import {FeedFeedbackProvider, useFeedFeedback} from '#/state/feed-feedback'
 import {useCompactPosts} from '#/state/preferences/compact-posts'
 import {useEnableSquareAvatars} from '#/state/preferences/enable-square-avatars'
 import {useEnableSquareButtons} from '#/state/preferences/enable-square-buttons'
@@ -40,8 +39,8 @@ import {type ThreadItem} from '#/state/queries/usePostThread/types'
 import {useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
-import {type PostSource} from '#/state/unstable-post-source'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
+import {PostViewCount} from '#/screens/PostThread/components/PostViewCount'
 import {ReaderSeam} from '#/screens/PostThread/components/ReaderSeam'
 import {ReaderBracket} from '#/screens/PostThread/components/ReaderSeamControls'
 import {ThreadItemAnchorFollowButton} from '#/screens/PostThread/components/ThreadItemAnchorFollowButton'
@@ -61,7 +60,7 @@ import {type ReaderSeam as ReaderSeamData} from '#/screens/PostThread/reader'
 import {atoms as a, tokens, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
 import {DebugFieldDisplay} from '#/components/DebugFieldDisplay'
-import {CalendarClock_Stroke2_Corner0_Rounded as CalendarClockIcon} from '#/components/icons/CalendarClock'
+import {CalendarClock_Stroke2_Corner0_Rounded as CalendarClockIcon} from '#/components/icons/Calendar'
 import {Trash_Stroke2_Corner0_Rounded as TrashIcon} from '#/components/icons/Trash'
 import {GalleryBleed} from '#/components/images/Gallery'
 import {Link} from '#/components/Link'
@@ -85,6 +84,7 @@ import * as Skele from '#/components/Skeleton'
 import {Text} from '#/components/Typography'
 import {WhoCanReply} from '#/components/WhoCanReply'
 import {Features, useAnalytics} from '#/analytics'
+import {useFeedItemFeedback} from '#/features/feedFeedback'
 import {useActorStatus} from '#/features/liveNow'
 import {PostPoll} from '#/features/pollblue/components/PostPoll'
 import {pollPostParts} from '#/features/pollblue/parse'
@@ -99,9 +99,9 @@ export type ThreadItemAnchorReaderSeam = ReaderSeamData & {
 export function ThreadItemAnchor({
   item,
   readerSeam,
+  showViewCount = false,
   onPostSuccess,
   threadgateRecord,
-  postSource,
 }: {
   item: Extract<ThreadItem, {type: 'threadPost'}>
   /**
@@ -109,9 +109,9 @@ export function ThreadItemAnchor({
    * controls and replies into a seam below the post body.
    */
   readerSeam?: ThreadItemAnchorReaderSeam
+  showViewCount?: boolean
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: app.bsky.feed.threadgate.Main
-  postSource?: PostSource
 }) {
   const postShadow = usePostShadow(item.value.post)
   const threadRootUri = item.value.post.record.reply?.root?.uri || item.uri
@@ -125,12 +125,12 @@ export function ThreadItemAnchor({
     <ReportDialogMetadataContext.Provider key={postShadow.uri}>
       <ThreadItemAnchorInner
         item={item}
+        showViewCount={showViewCount}
         isRoot={isRoot}
         readerSeam={readerSeam}
         postShadow={postShadow}
         onPostSuccess={onPostSuccess}
         threadgateRecord={threadgateRecord}
-        postSource={postSource}
       />
     </ReportDialogMetadataContext.Provider>
   )
@@ -220,20 +220,20 @@ function ThreadItemAnchorParentReplyLine({
 
 const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   item,
+  showViewCount,
   isRoot,
   readerSeam,
   postShadow,
   onPostSuccess,
   threadgateRecord,
-  postSource,
 }: {
   item: Extract<ThreadItem, {type: 'threadPost'}>
+  showViewCount: boolean
   isRoot: boolean
   readerSeam?: ThreadItemAnchorReaderSeam
   postShadow: Shadow<app.bsky.feed.defs.PostView>
   onPostSuccess?: (data: OnPostSuccessData) => void
   threadgateRecord?: app.bsky.feed.threadgate.Main
-  postSource?: PostSource
 }) {
   const inReader = !!readerSeam
   const t = useTheme()
@@ -241,8 +241,8 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
   const ax = useAnalytics()
   const {t: l} = useLingui()
   const {openComposer} = useOpenComposer()
-  const {currentAccount, hasSession} = useSession()
-  const feedFeedback = useFeedFeedback(postSource?.feedSourceInfo, hasSession)
+  const {currentAccount} = useSession()
+  const feedItem = useFeedItemFeedback()
   const compactPosts = useCompactPosts()
   const isCompactPosts = !!compactPosts
   const avatarSize = isCompactPosts ? 34 : 42
@@ -325,21 +325,6 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
     !onlyFollowersCanReply &&
     !hideScaryFollowButtons
 
-  const viaRepost = useMemo(() => {
-    const reason = postSource?.post.reason
-
-    if (
-      bsky.isType(app.bsky.feed.defs.reasonRepost, reason) &&
-      reason.uri &&
-      reason.cid
-    ) {
-      return {
-        uri: reason.uri,
-        cid: reason.cid,
-      }
-    }
-  }, [postSource])
-
   const onPressReply = useNonReactiveCallback(() => {
     openComposer({
       replyTo: {
@@ -355,14 +340,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
       logContext: 'PostReply',
     })
 
-    if (postSource) {
-      feedFeedback.sendInteraction({
-        item: post.uri,
-        event: 'app.bsky.feed.defs#interactionReply',
-        feedContext: postSource.post.feedContext,
-        reqId: postSource.post.reqId,
-      })
-    }
+    feedItem.send('app.bsky.feed.defs#interactionReply')
   })
 
   const onOpenAuthor = () => {
@@ -370,16 +348,9 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
       uri: post.uri,
       authorDid: post.author.did,
       logContext: 'PostThreadItem',
-      feedDescriptor: feedFeedback.feedDescriptor,
+      feedDescriptor: feedItem.feedDescriptor,
     })
-    if (postSource) {
-      feedFeedback.sendInteraction({
-        item: post.uri,
-        event: 'app.bsky.feed.defs#clickthroughAuthor',
-        feedContext: postSource.post.feedContext,
-        reqId: postSource.post.reqId,
-      })
-    }
+    feedItem.send('app.bsky.feed.defs#clickthroughAuthor')
   }
 
   const onOpenEmbed = () => {
@@ -387,16 +358,9 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
       uri: post.uri,
       authorDid: post.author.did,
       logContext: 'PostThreadItem',
-      feedDescriptor: feedFeedback.feedDescriptor,
+      feedDescriptor: feedItem.feedDescriptor,
     })
-    if (postSource) {
-      feedFeedback.sendInteraction({
-        item: post.uri,
-        event: 'app.bsky.feed.defs#clickthroughEmbed',
-        feedContext: postSource.post.feedContext,
-        reqId: postSource.post.reqId,
-      })
-    }
+    feedItem.send('app.bsky.feed.defs#clickthroughEmbed')
   }
 
   return (
@@ -593,7 +557,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                       viewContext={PostEmbedViewContext.ThreadHighlighted}
                       onOpen={onOpenEmbed}
                       post={post}
-                      feedDescriptor={feedFeedback.feedDescriptor}
+                      feedDescriptor={feedItem.feedDescriptor}
                     />
                   </View>
                 )}
@@ -604,6 +568,7 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                   <ExpandedPostDetails
                     post={item.value.post}
                     isThreadAuthor={isThreadAuthor}
+                    showViewCount={showViewCount}
                   />
                   {showExpandedMetrics ? (
                     // Show this section unless we're *sure* it has no engagement.
@@ -690,21 +655,16 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
                         marginLeft: -5,
                       },
                     ]}>
-                    <FeedFeedbackProvider value={feedFeedback}>
-                      <PostControls
-                        big={!isCompactPosts}
-                        variant={isCompactPosts ? 'compact' : undefined}
-                        post={postShadow}
-                        record={record}
-                        richText={richText}
-                        onPressReply={onPressReply}
-                        logContext="PostThreadItem"
-                        threadgateRecord={threadgateRecord}
-                        feedContext={postSource?.post?.feedContext}
-                        reqId={postSource?.post?.reqId}
-                        viaRepost={viaRepost}
-                      />
-                    </FeedFeedbackProvider>
+                    <PostControls
+                      big={!isCompactPosts}
+                      variant={isCompactPosts ? 'compact' : undefined}
+                      post={postShadow}
+                      record={record}
+                      richText={richText}
+                      onPressReply={onPressReply}
+                      logContext="PostThreadItem"
+                      threadgateRecord={threadgateRecord}
+                    />
                   </View>
                 </>
               )}
@@ -734,9 +694,11 @@ const ThreadItemAnchorInner = memo(function ThreadItemAnchorInner({
 function ExpandedPostDetails({
   post,
   isThreadAuthor,
+  showViewCount,
 }: {
   post: Extract<ThreadItem, {type: 'threadPost'}>['value']['post']
   isThreadAuthor: boolean
+  showViewCount: boolean
 }) {
   const t = useTheme()
   const {i18n} = useLingui()
@@ -744,17 +706,83 @@ function ExpandedPostDetails({
   const isRootPost = !('reply' in post.record)
   const via = (post.record as {via?: string}).via
 
+  const [widths, setWidths] = useState({
+    available: 0,
+    date: 0,
+    count: 0,
+    reply: 0,
+  })
+  const hasCount = showViewCount && widths.count > 0
+  const wrapCount =
+    hasCount &&
+    widths.available > 0 &&
+    widths.date + a.gap_md.gap + widths.count + widths.reply > widths.available
+
+  const wrapReply =
+    widths.reply > 0 &&
+    widths.available > 0 &&
+    widths.date + widths.reply > widths.available
+
+  function measure(part: keyof typeof widths, width: number) {
+    setWidths(prev => (prev[part] === width ? prev : {...prev, [part]: width}))
+  }
+
+  const viewCount = showViewCount ? (
+    <View
+      key="count"
+      style={[
+        {maxWidth: '100%'},
+        wrapCount && !wrapReply
+          ? {width: '100%'}
+          : {marginLeft: hasCount && !wrapCount ? a.gap_md.gap : 0},
+      ]}>
+      <View
+        onLayout={e => measure('count', e.nativeEvent.layout.width)}
+        style={[a.flex_row, a.self_start, {maxWidth: '100%'}]}>
+        <PostViewCount key={post.uri} post={post} />
+      </View>
+    </View>
+  ) : null
+  const reply = isRootPost ? (
+    <View
+      key="reply"
+      onLayout={e => measure('reply', e.nativeEvent.layout.width)}
+      style={{marginLeft: 'auto', paddingLeft: a.gap_md.gap, maxWidth: '100%'}}>
+      <WhoCanReply post={post} isThreadAuthor={isThreadAuthor} plain />
+    </View>
+  ) : null
+
   return (
     <View style={[a.gap_md, a.pt_md, a.align_start]}>
       <BackdatedPostIndicator post={post} />
-      <View style={[a.flex_row, a.align_center, a.flex_wrap, a.gap_sm]}>
-        <Text style={[a.text_sm, t.atoms.text_contrast_medium]}>
-          {niceDate(i18n, post.indexedAt, 'dot separated')}
-          {showViaClient && via ? ` · ${truncateVia(via)}` : null}
-        </Text>
-        {isRootPost && (
-          <WhoCanReply post={post} isThreadAuthor={isThreadAuthor} />
-        )}
+      <View
+        onLayout={e => measure('available', e.nativeEvent.layout.width)}
+        style={[
+          a.self_stretch,
+          a.flex_row,
+          a.align_center,
+          a.flex_wrap,
+          {rowGap: a.gap_sm.gap},
+        ]}>
+        <View
+          style={[
+            a.flex_row,
+            a.align_center,
+            wrapReply && {width: '100%'},
+            {maxWidth: '100%'},
+          ]}>
+          <Text
+            onLayout={e => measure('date', e.nativeEvent.layout.width)}
+            style={[
+              a.text_sm,
+              t.atoms.text_contrast_medium,
+              {maxWidth: '100%'},
+            ]}>
+            {niceDate(i18n, post.indexedAt, 'dot separated')}
+            {showViaClient && via ? ` · ${truncateVia(via)}` : null}
+          </Text>
+        </View>
+        {wrapCount && !wrapReply ? [reply, viewCount] : [viewCount, reply]}
       </View>
     </View>
   )

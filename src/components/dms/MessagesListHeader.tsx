@@ -8,6 +8,7 @@ import {makeProfileLink} from '#/lib/routes/links'
 import {sanitizeHandle} from '#/lib/strings/handles'
 import {useProfileShadow} from '#/state/cache/profile-shadow'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
+import {useProfileQuery} from '#/state/queries/profile'
 import {useUnavailableAccountLabel} from '#/state/queries/unavailable-content'
 import {PreviewableUserAvatar} from '#/view/com/util/UserAvatar'
 import {useIsWithinSplitView} from '#/screens/Messages/components/splitView/context'
@@ -84,7 +85,10 @@ function ProfileHeaderReady({
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
-  const profile = useProfileShadow(convo.primaryMember)
+  const {data: profileDetails} = useProfileQuery({
+    did: convo.primaryMember.did,
+  })
+  const profile = useProfileShadow(profileDetails ?? convo.primaryMember)
   const unavailableLabel = useUnavailableAccountLabel(
     profile.did,
     profile.handle === 'missing.invalid',
@@ -110,6 +114,13 @@ function ProfileHeaderReady({
   const handle = isDeletedAccount
     ? l`Account inaccessible`
     : sanitizeHandle(profile.handle, '@')
+  const pronouns = profileDetails?.pronouns?.trim()
+  const blockHide = profile.viewer?.blocking || profile.viewer?.blockedBy
+  const showPronouns =
+    !isDeletedAccount &&
+    !!pronouns &&
+    !blockHide &&
+    !moderation.ui('profileView').blur
 
   return (
     <Wrapper
@@ -148,15 +159,33 @@ function ProfileHeaderReady({
               <MuteStatus muted={convo.view.muted} />
             </View>
             {handle ? (
-              <Text
-                style={[
-                  a.text_xs,
-                  t.atoms.text_contrast_high,
-                  android({includeFontPadding: false}),
-                ]}
-                numberOfLines={1}>
-                {handle}
-              </Text>
+              <View style={[a.flex_row, a.align_center, a.gap_sm]}>
+                <Text
+                  style={[
+                    a.flex_shrink,
+                    a.text_xs,
+                    t.atoms.text_contrast_high,
+                    android({includeFontPadding: false}),
+                  ]}
+                  numberOfLines={1}>
+                  {handle}
+                </Text>
+                {showPronouns && (
+                  <Text
+                    emoji
+                    testID="dmHeaderPronouns"
+                    numberOfLines={1}
+                    style={[
+                      a.flex_shrink,
+                      a.text_xs,
+                      {color: t.palette.contrast_600},
+                      web({unicodeBidi: 'isolate'}),
+                      android({includeFontPadding: false}),
+                    ]}>
+                    {pronouns}
+                  </Text>
+                )}
+              </View>
             ) : null}
           </View>
         </Link>

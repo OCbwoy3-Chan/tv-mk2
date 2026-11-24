@@ -8,6 +8,7 @@ import {
 
 import {IMAGE_SIZE_CONFIG_2K_1MB} from '#/lib/constants'
 import {getLinkMeta, type LinkMeta} from '#/lib/link-meta/link-meta'
+import {createLinkPreviewTelemetry} from '#/lib/link-meta/linkPreviewTelemetry'
 import {resolveShortLink} from '#/lib/link-meta/resolve-short-link'
 import {downloadAndResize} from '#/lib/media/manip'
 import {
@@ -380,20 +381,44 @@ function getAuthorDid(author: string | undefined): string | undefined {
 }
 
 async function resolveExternal(uri: string): Promise<ResolvedExternalLink> {
-  const result = await getLinkMeta(uri)
-  return {
-    type: 'external',
-    uri: result.url,
-    title: result.title ?? '',
-    description: result.description ?? '',
-    thumb: result.image ? await imageToThumb(result.image) : undefined,
-    authorDid: getAuthorDid(result.author),
-    /*
-     * New fields from Standard Site integration. Other fields are derived from
-     * opengraph/oembed as before.
-     */
-    associatedRefs: result.associatedRefs,
-    view: result.view,
+  let telemetry: ReturnType<typeof createLinkPreviewTelemetry> | undefined
+  try {
+    const result = await getLinkMeta(uri, undefined, {
+      onFetchStart: () => {
+        telemetry = createLinkPreviewTelemetry()
+        telemetry.startMetadata()
+      },
+    })
+    telemetry?.finishMetadata(Boolean(result.image))
+    if (result.image) {
+      telemetry?.startThumbnail()
+    }
+    const thumb = result.image ? await imageToThumb(result.image) : undefined
+    telemetry?.finish(
+      result.error
+        ? 'metadata_error'
+        : !result.image
+          ? 'no_image'
+          : thumb
+            ? 'success'
+            : 'thumbnail_error',
+    )
+    return {
+      type: 'external',
+      uri: result.url,
+      title: result.title ?? '',
+      description: result.description ?? '',
+      thumb,
+      authorDid: getAuthorDid(result.author),
+      /*
+       * New fields from Standard Site integration. Other fields are derived from
+       * opengraph/oembed as before.
+       */
+      associatedRefs: result.associatedRefs,
+      view: result.view,
+    }
+  } finally {
+    telemetry?.finish('error')
   }
 }
 

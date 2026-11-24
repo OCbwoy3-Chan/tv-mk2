@@ -77,7 +77,7 @@ export function useKeyboardHandlers({
           SETTLE_DURATION,
         )(
           v => {
-            scrollTo(v)
+            scrollTo({offset: v})
           },
           () => {
             stopTween = null

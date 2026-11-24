@@ -27,6 +27,7 @@ import {useIsWithinSplitView} from '#/screens/Messages/components/splitView/cont
 import {useTheme, web} from '#/alf'
 import * as Layout from '#/components/Layout'
 import {useAnalytics} from '#/analytics'
+import {useListVirtualizer} from './useListVirtualizer.web'
 
 export type ListMethods = {
   scrollToTop: () => void
@@ -57,7 +58,8 @@ export type ListProps<ItemT = any> = Omit<
   refreshing?: boolean
   onRefresh?: () => void
   onItemNearViewport?: (item: ItemT) => void
-  onItemSeen?: (item: ItemT) => void
+  /** The index may be unavailable for native viewability tokens. */
+  onItemSeen?: (item: ItemT, index: number | undefined) => void
   desktopFixedHeight?: number | boolean
   // Web only prop to contain the scroll to the container rather than the window
   disableFullWindowScroll?: boolean
@@ -68,10 +70,10 @@ export type ListProps<ItemT = any> = Omit<
 }
 export type ListRef = React.RefObject<ListMethods | null>
 
-const ON_ITEM_SEEN_WAIT_DURATION = 0.5e3 // when we consider post to  be "seen"
+const ON_ITEM_SEEN_WAIT_DURATION = 0.5e3 // when we consider post to be "seen"
 const ON_ITEM_SEEN_INTERSECTION_OPTS = {
-  rootMargin: '-200px 0px -200px 0px',
-} // post must be 200px visible to be "seen"
+  rootMargin: '0px 0px -200px 0px',
+}
 const ON_ITEM_NEAR_VIEWPORT_INTERSECTION_OPTS = {
   rootMargin: '800px 0px 800px 0px',
 }
@@ -108,6 +110,8 @@ function ListImpl<ItemT>(
     renderItem,
     extraData,
     style,
+    disableVirtualization,
+    initialNumToRender,
     ...props
   }: ListProps<ItemT>,
   ref: React.Ref<ListMethods>,
@@ -115,6 +119,7 @@ function ListImpl<ItemT>(
   const contextScrollHandlers = useScrollHandlers()
   const {isWithinSplitView} = useIsWithinSplitView()
   const t = useTheme()
+  const ax = useAnalytics()
 
   // automatically disable full window scroll when within split view
   const disableFullWindowScroll =
@@ -162,85 +167,9 @@ function ListImpl<ItemT>(
     if (disableFullWindowScroll) {
       const element = nativeRef.current
       if (!element) return
-
-      return {
-        get scrollWidth() {
-          return element.scrollWidth
-        },
-        get scrollHeight() {
-          return element.scrollHeight
-        },
-        get clientWidth() {
-          return element.clientWidth
-        },
-        get clientHeight() {
-          return element.clientHeight
-        },
-        get scrollY() {
-          return element.scrollTop
-        },
-        get scrollX() {
-          return element.scrollLeft
-        },
-        scrollTo(options?: ScrollToOptions) {
-          element.scrollTo(options)
-        },
-        scrollBy(options: ScrollToOptions) {
-          element.scrollBy(options)
-        },
-        addEventListener(
-          event: string,
-          handler: EventListenerOrEventListenerObject,
-        ) {
-          element.addEventListener(event, handler)
-        },
-        removeEventListener(
-          event: string,
-          handler: EventListenerOrEventListenerObject,
-        ) {
-          element.removeEventListener(event, handler)
-        },
-      }
-    } else {
-      return {
-        get scrollWidth() {
-          return document.documentElement.scrollWidth
-        },
-        get scrollHeight() {
-          return document.documentElement.scrollHeight
-        },
-        get clientWidth() {
-          return window.innerWidth
-        },
-        get clientHeight() {
-          return window.innerHeight
-        },
-        get scrollY() {
-          return window.scrollY
-        },
-        get scrollX() {
-          return window.scrollX
-        },
-        scrollTo(options: ScrollToOptions) {
-          window.scrollTo(options)
-        },
-        scrollBy(options: ScrollToOptions) {
-          window.scrollBy(options)
-        },
-        addEventListener(
-          event: string,
-          handler: EventListenerOrEventListenerObject,
-        ) {
-          window.addEventListener(event, handler)
-        },
-        removeEventListener(
-          event: string,
-          handler: EventListenerOrEventListenerObject,
-        ) {
-          window.removeEventListener(event, handler)
-        },
-      }
+      return createElementScrollable(element)
     }
+    return windowScrollable
   }, [disableFullWindowScroll])
 
   const nativeRef = useRef<HTMLDivElement>(null)
@@ -259,6 +188,30 @@ function ListImpl<ItemT>(
     },
     [],
   )
+
+  // --- virtualization ---
+  const [isInsideVisibleTree, setIsInsideVisibleTree] = useState(false)
+  const keys = isEmpty
+    ? []
+    : (data as Array<ItemT>).map((item, index) => keyExtractor!(item, index))
+  const {
+    start: windowStart,
+    end: windowEnd,
+    topSpacerHeight,
+    bottomSpacerHeight,
+    placeholders,
+    markerRef,
+    observeRow,
+    getScrollOffsetForIndex,
+  } = useListVirtualizer({
+    enabled:
+      !disableVirtualization &&
+      ax.features.enabled(ax.features.WebListVirtualizationEnable),
+    keys,
+    initialNumToRender,
+    scrollRootRef: disableFullWindowScroll ? nativeRef : null,
+    isActive: isInsideVisibleTree,
+  })
 
   useImperativeHandle(
     ref,
@@ -291,17 +244,31 @@ function ListImpl<ItemT>(
       },
 
       scrollToIndex({animated = true, index}) {
-        const node = rowNodesRef.current.get(index)
         // scrollIntoView with block: 'center' roughly matches the caller's
         // viewPosition of 0.3 - not exact, but close enough and it respects
         // whichever element is the scroll container (window or nativeRef).
-        node?.scrollIntoView({
-          block: 'center',
-          behavior: animated ? 'smooth' : 'instant',
-        })
+        const scrollIntoView = (node: HTMLElement) =>
+          node.scrollIntoView({
+            block: 'center',
+            behavior: animated ? 'smooth' : 'instant',
+          })
+        const node = rowNodesRef.current.get(index)
+        if (node) {
+          scrollIntoView(node)
+          return
+        }
+
+        /*
+         * The row isn't mounted, so jump to where we estimate it is. Once the
+         * virtualizer has rendered it there, settle on its real position.
+         */
+        const offset = getScrollOffsetForIndex(index)
+        if (offset == null) return
+        getScrollableNode()?.scrollTo({top: offset, behavior: 'instant'})
+        whenRowMounts(() => rowNodesRef.current.get(index), scrollIntoView)
       },
     }),
-    [getScrollableNode],
+    [getScrollableNode, getScrollOffsetForIndex],
   )
 
   // --- onContentSizeChange, maintainVisibleContentPosition ---
@@ -309,7 +276,6 @@ function ListImpl<ItemT>(
   useResizeObserver(containerRef, onContentSizeChange)
 
   // --- onScroll ---
-  const [isInsideVisibleTree, setIsInsideVisibleTree] = useState(false)
   useWebListTelemetry({
     containerRef: nativeRef,
     enabled: isInsideVisibleTree,
@@ -450,23 +416,59 @@ function ListImpl<ItemT>(
             />
           )}
           {headerComponent}
-          {isEmpty
-            ? emptyComponent
-            : (data as Array<ItemT>)?.map((item, index) => {
-                const key = keyExtractor!(item, index)
-                return (
-                  <Row<ItemT>
-                    key={key}
-                    item={item}
-                    index={index}
-                    renderItem={renderItem}
-                    extraData={extraData}
-                    onItemNearViewport={onItemNearViewport}
-                    onItemSeen={onItemSeen}
-                    registerRowNode={registerRowNode}
-                  />
-                )
-              })}
+          {isEmpty ? (
+            emptyComponent
+          ) : (
+            <>
+              {observeRow && (
+                <View
+                  ref={
+                    markerRef as unknown as React.Ref<
+                      React.ComponentRef<typeof View>
+                    >
+                  }
+                />
+              )}
+              {placeholders
+                ? placeholders.before.map(placeholder => (
+                    <FindablePlaceholder
+                      key={placeholder.key}
+                      height={placeholder.height}
+                      text={placeholder.text}
+                    />
+                  ))
+                : observeRow && <View style={{height: topSpacerHeight}} />}
+              {(data as Array<ItemT>)
+                .slice(windowStart, windowEnd)
+                .map((item, i) => {
+                  const index = windowStart + i
+                  const key = keys[index]
+                  return (
+                    <Row<ItemT>
+                      key={key}
+                      rowKey={key}
+                      item={item}
+                      index={index}
+                      renderItem={renderItem}
+                      extraData={extraData}
+                      onItemNearViewport={onItemNearViewport}
+                      onItemSeen={onItemSeen}
+                      registerRowNode={registerRowNode}
+                      observeRow={observeRow}
+                    />
+                  )
+                })}
+              {placeholders
+                ? placeholders.after.map(placeholder => (
+                    <FindablePlaceholder
+                      key={placeholder.key}
+                      height={placeholder.height}
+                      text={placeholder.text}
+                    />
+                  ))
+                : observeRow && <View style={{height: bottomSpacerHeight}} />}
+            </>
+          )}
           {onEndReached && !isEmpty && (
             <EdgeVisibility
               root={disableFullWindowScroll ? nativeRef : null}
@@ -480,6 +482,103 @@ function ListImpl<ItemT>(
       </Layout.Center>
     </View>
   )
+}
+
+/*
+ * Scroll metrics and methods for the element that scrolls the list. Kept out
+ * of the component because React Compiler can't compile getters.
+ */
+function createElementScrollable(element: HTMLElement) {
+  return {
+    get scrollWidth() {
+      return element.scrollWidth
+    },
+    get scrollHeight() {
+      return element.scrollHeight
+    },
+    get clientWidth() {
+      return element.clientWidth
+    },
+    get clientHeight() {
+      return element.clientHeight
+    },
+    get scrollY() {
+      return element.scrollTop
+    },
+    get scrollX() {
+      return element.scrollLeft
+    },
+    scrollTo(options?: ScrollToOptions) {
+      element.scrollTo(options)
+    },
+    scrollBy(options: ScrollToOptions) {
+      element.scrollBy(options)
+    },
+    addEventListener(
+      event: string,
+      handler: EventListenerOrEventListenerObject,
+    ) {
+      element.addEventListener(event, handler)
+    },
+    removeEventListener(
+      event: string,
+      handler: EventListenerOrEventListenerObject,
+    ) {
+      element.removeEventListener(event, handler)
+    },
+  }
+}
+
+const windowScrollable = {
+  get scrollWidth() {
+    return document.documentElement.scrollWidth
+  },
+  get scrollHeight() {
+    return document.documentElement.scrollHeight
+  },
+  get clientWidth() {
+    return window.innerWidth
+  },
+  get clientHeight() {
+    return window.innerHeight
+  },
+  get scrollY() {
+    return window.scrollY
+  },
+  get scrollX() {
+    return window.scrollX
+  },
+  scrollTo(options: ScrollToOptions) {
+    window.scrollTo(options)
+  },
+  scrollBy(options: ScrollToOptions) {
+    window.scrollBy(options)
+  },
+  addEventListener(event: string, handler: EventListenerOrEventListenerObject) {
+    window.addEventListener(event, handler)
+  },
+  removeEventListener(
+    event: string,
+    handler: EventListenerOrEventListenerObject,
+  ) {
+    window.removeEventListener(event, handler)
+  },
+}
+
+/** Calls onMounted with the row once it's in the DOM, checking once a frame. */
+function whenRowMounts(
+  getNode: () => HTMLElement | undefined,
+  onMounted: (node: HTMLElement) => void,
+  attempts = 10,
+) {
+  requestAnimationFrame(() => {
+    const node = getNode()
+    if (node) {
+      onMounted(node)
+    } else if (attempts > 1) {
+      whenRowMounts(getNode, onMounted, attempts - 1)
+    }
+  })
 }
 
 type ChromiumPerformance = Performance & {
@@ -524,7 +623,9 @@ function useWebListTelemetry({
   const ax = useAnalytics()
   const reportedMilestones = useRef(new Set<number>())
   const itemCountRef = useRef(itemCount)
-  itemCountRef.current = itemCount
+  useEffect(() => {
+    itemCountRef.current = itemCount
+  })
   const isLargeList = itemCount >= LARGE_LIST_MILESTONES[0]
 
   useEffect(() => {
@@ -652,6 +753,7 @@ const observeNearViewport = createRowObserver(
 const observeSeen = createRowObserver(ON_ITEM_SEEN_INTERSECTION_OPTS)
 
 let Row = function RowImpl<ItemT>({
+  rowKey,
   item,
   index,
   renderItem,
@@ -659,15 +761,18 @@ let Row = function RowImpl<ItemT>({
   onItemNearViewport,
   onItemSeen,
   registerRowNode,
+  observeRow,
 }: {
+  rowKey: string
   item: ItemT
   index: number
   renderItem:
     null | undefined | ((info: ListRenderItemInfo<ItemT>) => React.ReactNode)
   extraData: unknown
   onItemNearViewport: ((item: ItemT) => void) | undefined
-  onItemSeen: ((item: ItemT) => void) | undefined
+  onItemSeen: ListProps<ItemT>['onItemSeen']
   registerRowNode: (index: number, node: HTMLElement | null) => void
+  observeRow: ((key: string, node: HTMLElement | null) => void) | undefined
 }): React.ReactNode {
   const rowRef = useRef(null)
   const intersectionTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -700,7 +805,7 @@ let Row = function RowImpl<ItemT>({
             if (!intersectionTimeout.current) {
               intersectionTimeout.current = setTimeout(() => {
                 intersectionTimeout.current = undefined
-                onItemSeen(item)
+                onItemSeen(item, index)
               }, ON_ITEM_SEEN_WAIT_DURATION)
             }
           } else {
@@ -722,8 +827,11 @@ let Row = function RowImpl<ItemT>({
     const unobserve = row ? observeSeen(row, handleIntersection) : undefined
     return () => {
       unobserve?.()
-      clearTimeout(intersectionTimeout.current)
-      intersectionTimeout.current = undefined
+      // Rows can unmount while the seen timer is pending, e.g. when virtualized.
+      if (intersectionTimeout.current) {
+        clearTimeout(intersectionTimeout.current)
+        intersectionTimeout.current = undefined
+      }
     }
   }, [handleIntersection, onItemSeen])
 
@@ -735,6 +843,16 @@ let Row = function RowImpl<ItemT>({
       registerRowNode(index, null)
     }
   }, [index, registerRowNode])
+
+  // Let the virtualizer track this row's height.
+  useEffect(() => {
+    if (!observeRow) return
+    const node: HTMLElement | null = rowRef.current
+    observeRow(rowKey, node)
+    return () => {
+      observeRow(rowKey, null)
+    }
+  }, [rowKey, observeRow])
 
   if (!renderItem) {
     return null
@@ -754,17 +872,48 @@ let Row = function RowImpl<ItemT>({
   )
 }
 Row = memo(Row) as <ItemT>(props: {
+  rowKey: string
   item: ItemT
   index: number
   renderItem:
     null | undefined | ((info: ListRenderItemInfo<ItemT>) => React.ReactNode)
   extraData: unknown
   onItemNearViewport: ((item: ItemT) => void) | undefined
-  onItemSeen: ((item: ItemT) => void) | undefined
+  onItemSeen: ListProps<ItemT>['onItemSeen']
   registerRowNode: (index: number, node: HTMLElement | null) => void
+  observeRow: ((key: string, node: HTMLElement | null) => void) | undefined
 }) => React.ReactNode
 
-let Visibility = ({
+/**
+ * Stands in for a row outside the virtualized window. `hidden="until-found"`
+ * keeps it at the row's height without rendering its text, while still letting
+ * find-in-page match it. On a match the browser reveals it and scrolls to it,
+ * and the window then mounts the real row in its place, so the text stays
+ * transparent in the meantime.
+ */
+let FindablePlaceholder = function FindablePlaceholderImpl({
+  height,
+  text,
+}: {
+  height: number
+  text: string
+}): React.ReactNode {
+  return (
+    <div
+      ref={setHiddenUntilFound}
+      style={{height, overflow: 'hidden', color: 'transparent'}}>
+      {text}
+    </div>
+  )
+}
+FindablePlaceholder = memo(FindablePlaceholder)
+
+// React's types only allow a boolean `hidden`.
+function setHiddenUntilFound(node: HTMLDivElement | null) {
+  node?.setAttribute('hidden', 'until-found')
+}
+
+let Visibility = function VisibilityImpl({
   root,
   topMargin = '0px',
   bottomMargin = '0px',
@@ -776,7 +925,7 @@ let Visibility = ({
   bottomMargin?: string
   onVisibleChange: (isVisible: boolean) => void
   style?: ViewProps['style']
-}): React.ReactNode => {
+}): React.ReactNode {
   const tailRef = useRef(null)
   const isIntersecting = useRef(false)
 

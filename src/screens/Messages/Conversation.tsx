@@ -18,6 +18,7 @@ import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
 import {useViewportZoomLock} from '#/lib/hooks/useViewportZoomLock'
+import {getMessagesNavigationAction} from '#/lib/routes/navigation'
 import {
   type CommonNavigatorParams,
   type NavigationProp,
@@ -213,7 +214,13 @@ function InnerReady({
             if (navigation.canGoBack()) {
               navigation.goBack()
             } else {
-              navigation.navigate('Messages', {animation: 'pop'})
+              navigation.dispatch(
+                getMessagesNavigationAction(
+                  {animation: 'pop'},
+                  navigation.getState(),
+                  'navigate',
+                ),
+              )
             }
           },
         }),

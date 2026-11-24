@@ -28,6 +28,7 @@ import {type Dimensions} from '#/components/Lightbox/types'
 import {ImageContextMenu} from '#/components/Post/Embed/ImageContextMenu'
 import {PostEmbedViewContext} from '#/components/Post/Embed/types'
 import {useAnalytics} from '#/analytics'
+import {IS_ANDROID} from '#/env'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 import {type EmbedType} from '#/types/bsky/post'
@@ -130,12 +131,22 @@ export function ImageEmbed({
           ...postContext,
         })
       }
+      /** Screen-reader galleries supply only the selected image's thumbnail. */
+      const selectedOnly = refs.length === 1 && images.length > 1
       openLightbox({
         images: items.map((item, i) => ({
           ...item,
           thumbRect: null,
-          thumbRef: refs[i] ?? null,
-          thumbDimensions: fetchedDims[i] ?? null,
+          thumbRef: selectedOnly
+            ? i === index
+              ? refs[0]
+              : null
+            : (refs[i] ?? null),
+          thumbDimensions: selectedOnly
+            ? i === index
+              ? (fetchedDims[0] ?? null)
+              : null
+            : (fetchedDims[i] ?? null),
           thumbBorderRadius: getShapeRadius(
             shapePreference,
             tokens.borderRadius.md,
@@ -149,8 +160,12 @@ export function ImageEmbed({
       })
     }
     const onPressIn = (index: number) => {
-      // Start the selected full-size image immediately; other gallery images
-      // must not compete with it before the lightbox opens.
+      // Glide can't reuse the prefetch for the lightbox, so it'd just download twice
+      if (IS_ANDROID) return
+      /*
+       * Start the selected full-size image immediately; other gallery images
+       * must not compete with it before the lightbox opens.
+       */
       void Image.prefetch(items[index].uri, 'memory').catch(() => {})
     }
 

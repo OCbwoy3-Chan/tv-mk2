@@ -14,6 +14,7 @@ import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 import {HITSLOP_10} from '#/lib/constants'
 import {useAccountSwitcher} from '#/lib/hooks/useAccountSwitcher'
 import {useApplyPullRequestOTAUpdate} from '#/lib/hooks/useOTAUpdates'
+import {getHomeNavigationAction} from '#/lib/routes/navigation'
 import {
   type CommonNavigatorParams,
   type NavigationProp,
@@ -32,8 +33,12 @@ import {useAccountProfilesQuery} from '#/state/queries/account-profiles'
 import {useDeleteActorDeclaration} from '#/state/queries/messages/actor-declaration'
 import {useModerationInboxUnreadCountQuery} from '#/state/queries/moderation-inbox'
 import {useProfileQuery} from '#/state/queries/profile'
-import {usePdsClient} from '#/state/session'
-import {type SessionAccount, useSession, useSessionApi} from '#/state/session'
+import {
+  type SessionAccount,
+  usePdsClient,
+  useSession,
+  useSessionApi,
+} from '#/state/session'
 import {
   type AccountSortOption,
   sortAccountItems,
@@ -47,7 +52,7 @@ import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {AppServerHeaderControl} from '#/screens/Login/components/AppServerDialog'
 import {GrowthbookDialog} from '#/screens/Settings/components/GrowthbookDialog'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
-import {atoms as a, platform, tokens, useBreakpoints, useTheme} from '#/alf'
+import {atoms as a, tokens, useBreakpoints, useTheme} from '#/alf'
 import {AgeAssuranceDismissibleNotice} from '#/components/ageAssurance/AgeAssuranceDismissibleNotice'
 import {AvatarStackWithFetch} from '#/components/AvatarStack'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
@@ -106,15 +111,8 @@ export function SettingsScreen({}: Props) {
   const ax = useAnalytics()
   const {t: l} = useLingui()
   const t = useTheme()
-  const isModerationInboxEnabled = ax.features.enabled(
-    ax.features.ModerationInboxEnable,
-  )
-  const unreadCountQuery = useModerationInboxUnreadCountQuery(
-    isModerationInboxEnabled,
-  )
-  const unreadCount = isModerationInboxEnabled
-    ? (unreadCountQuery.data?.unreadCounts.total ?? 0)
-    : 0
+  const unreadCountQuery = useModerationInboxUnreadCountQuery()
+  const unreadCount = unreadCountQuery.data?.unreadCounts.total ?? 0
   const reducedMotion = useReducedMotion()
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOffset = useScrollViewOffset(scrollRef)
@@ -617,29 +615,20 @@ function ProfilePreview({
           a.align_center,
           a.justify_center,
           a.w_full,
+          a.pt_sm,
         ]}>
         <Text
           emoji
           testID="profileHeaderDisplayName"
           numberOfLines={1}
           style={[
-            a.pt_sm,
             t.atoms.text,
             gtMobile ? a.text_4xl : a.text_3xl,
             a.font_bold,
           ]}>
           {displayName}
         </Text>
-        <ProfileBadges
-          profile={shadow}
-          size="xl"
-          interactive
-          style={[
-            {
-              marginTop: platform({web: 8, ios: 8, android: 10}),
-            },
-          ]}
-        />
+        <ProfileBadges profile={shadow} size="xl" interactive />
       </View>
       {!hideDisplayNames && (
         <Text style={[a.text_md, a.leading_snug, t.atoms.text_contrast_medium]}>
@@ -669,7 +658,9 @@ function DevOptions() {
   const growthbookControl = useDialogControl()
 
   const resetOnboarding = () => {
-    navigation.navigate('Home')
+    navigation.dispatch(
+      getHomeNavigationAction(navigation.getState(), 'navigate'),
+    )
     onboardingDispatch({type: 'start'})
     Toast.show(l`Onboarding reset`)
   }

@@ -23,6 +23,9 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
   const {_} = useLingui()
   const hideDisplayNames = useHideDisplayNames()
   const {embed} = replyTo
+  const pronouns = replyTo.moderation?.ui('profileView').blur
+    ? undefined
+    : replyTo.author.pronouns?.trim()
 
   const [showFull, setShowFull] = useState(false)
 
@@ -116,7 +119,7 @@ export function ComposerReplyTo({replyTo}: {replyTo: ComposerOptsPostRef}) {
             {getAuthorPrimaryName(replyTo.author, {hideDisplayNames})}
           </Text>
           <ProfileBadges profile={replyTo.author} size="sm" style={[a.pl_xs]} />
-          <PronounPill pronouns={replyTo.author.pronouns} style={a.ml_xs} />
+          <PronounPill pronouns={pronouns} style={a.ml_xs} />
         </View>
         <View style={[a.flex_row, a.gap_md]}>
           <View style={[a.flex_1, a.flex_grow]}>

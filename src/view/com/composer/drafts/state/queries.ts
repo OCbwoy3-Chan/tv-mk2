@@ -1,9 +1,11 @@
+import {lexEquals, lexToJson} from '@atproto/lex'
 import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
 
+import {until} from '#/lib/async/until'
 import {decode} from '#/lib/storage-manifest/codec'
 import {isNetworkError} from '#/lib/strings/errors'
 import {matchXrpcError} from '#/lib/xrpc-error'
@@ -191,6 +193,32 @@ export function useSaveDraftMutation(accountDid?: string) {
           const data = await client.call(app.bsky.draft.createDraft, {draft})
           draftId = data.id
           logger.debug('created new draft', {draftId})
+        }
+
+        /*
+         * Saves are acknowledged before the drafts index catches up. For edits,
+         * finding the ID alone can still return the previous contents. Normalize
+         * optional fields the same way as the JSON sent to the server. Poll
+         * here, while the selected account's clients are still available.
+         */
+        const expectedDraft = lexToJson(draft)
+        const didObserveSave = await until(
+          5,
+          1e3,
+          data =>
+            data?.drafts.some(
+              view =>
+                view.id === draftId &&
+                lexEquals(lexToJson(view.draft), expectedDraft),
+            ) ?? false,
+          () => client.call(app.bsky.draft.getDrafts, {limit: 100}),
+        )
+        if (!didObserveSave) {
+          /*
+           * The write already succeeded. Failing the mutation here would invite
+           * retrying a create and saving a duplicate draft.
+           */
+          logger.warn('Saved draft not yet visible in drafts list', {draftId})
         }
 
         // Return data needed for onSuccess

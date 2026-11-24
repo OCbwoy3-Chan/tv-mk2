@@ -8,7 +8,6 @@ import * as Dialog from '#/components/Dialog'
 import * as Prompt from '#/components/Prompt'
 import {useAnalytics} from '#/analytics'
 import {DraftsListDialog} from './DraftsListDialog'
-import {useSaveDraftMutation} from './state/queries'
 import {type DraftSummary} from './state/schema'
 
 export function DraftsButton({
@@ -19,6 +18,7 @@ export function DraftsButton({
   isEmpty,
   isDirty,
   isEditingDraft,
+  isSaving,
   canSaveDraft,
   textLength,
 }: {
@@ -29,6 +29,7 @@ export function DraftsButton({
   isEmpty: boolean
   isDirty: boolean
   isEditingDraft: boolean
+  isSaving: boolean
   canSaveDraft: boolean
   textLength: number
 }) {
@@ -36,7 +37,6 @@ export function DraftsButton({
   const ax = useAnalytics()
   const draftsDialogControl = Dialog.useDialogControl()
   const savePromptControl = Prompt.usePromptControl()
-  const {isPending: isSaving} = useSaveDraftMutation(accountDid)
   const enableSquareButtons = useEnableSquareButtons()
 
   const handlePress = () => {
@@ -70,7 +70,7 @@ export function DraftsButton({
   return (
     <>
       <Button
-        label={l`Drafts`}
+        label={isSaving ? l`Saving draft…` : l`Drafts`}
         variant="ghost"
         color="primary"
         shape="default"
@@ -84,7 +84,7 @@ export function DraftsButton({
         disabled={isSaving}
         onPress={handlePress}>
         <ButtonText style={[a.text_md]} maxFontSizeMultiplier={2}>
-          <Trans>Drafts</Trans>
+          {isSaving ? <Trans>Saving draft…</Trans> : <Trans>Drafts</Trans>}
         </ButtonText>
       </Button>
       <DraftsListDialog

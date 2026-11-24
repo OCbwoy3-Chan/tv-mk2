@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useEffectEvent, useRef, useState} from 'react'
 import {Pressable, View} from 'react-native'
 import {
   useKeyboardHandler,
@@ -17,12 +17,17 @@ import {type $Typed} from '@atproto/lex'
 import {ScrollEdgeEffect} from '@bsky.app/expo-scroll-edge-effect'
 import {RichText} from '@bsky/sdk/richtext'
 import {useLingui} from '@lingui/react/macro'
+import {type RouteProp, useNavigation, useRoute} from '@react-navigation/native'
 import {countGraphemes} from 'unicode-segmenter/grapheme'
 
 import {HITSLOP_10, MAX_DM_GRAPHEME_LENGTH} from '#/lib/constants'
 import {PressableScale} from '#/lib/custom-animations/PressableScale'
 import {useHaptics} from '#/lib/haptics'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
+import {
+  type CommonNavigatorParams,
+  type NavigationProp,
+} from '#/lib/routes/types'
 import {getShapeStyle} from '#/lib/shapes'
 import {
   applyFacetSyntax,
@@ -83,6 +88,41 @@ export function MessageComposer({
 
   const [text, setText] = useState(getDraft)
   useSaveMessageDraft(text)
+
+  const route =
+    useRoute<RouteProp<CommonNavigatorParams, 'MessagesConversation'>>()
+  const navigation =
+    useNavigation<
+      NavigationProp<CommonNavigatorParams, 'MessagesConversation'>
+    >()
+  const pendingText = route.params.text
+
+  /*
+   * Stages navigation-provided text (e.g. a shared URL) in the input once,
+   * appended to any existing draft. The input is uncontrolled, so it's
+   * replaced through the imperative API rather than by changing `text`.
+   * Reads the latest draft through an effect event so typing doesn't re-run
+   * the effect below.
+   */
+  const stagePendingText = useEffectEvent((pending: string) => {
+    const composerApi = composerInternalApiRef.current
+    if (!composerApi) return
+    const nextText = text ? `${text}\n${pending}` : pending
+    composerApi.clear()
+    composerApi.insert(nextText)
+    setText(nextText)
+    navigation.setParams({text: undefined})
+  })
+
+  /*
+   * Waits for `editable` so the text isn't consumed while the chat is still
+   * loading or email verification blocks input.
+   */
+  useEffect(() => {
+    if (pendingText && editable) {
+      stagePendingText(pendingText)
+    }
+  }, [pendingText, editable])
 
   useEffect(() => {
     if (!replyTo) return
@@ -241,9 +281,7 @@ export function MessageComposer({
                     composerInternalApiRef.current?.insert(emoji.native)
                   }
                   nextFocusRef={() =>
-                    composerInternalApiRef.current?.input
-                      ?.element as unknown as
-                      {focus: () => void} | null | undefined
+                    composerInternalApiRef.current?.input?.element
                   }>
                   <EmojiPicker.Trigger label={l`Open emoji picker`}>
                     {({props, state, control}) => (

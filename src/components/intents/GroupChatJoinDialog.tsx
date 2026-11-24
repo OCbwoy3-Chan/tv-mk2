@@ -434,11 +434,7 @@ function GroupChatJoinDialogContent({code}: {code?: string}) {
                 </InlineLinkText>
               </Trans>
             </Text>
-            <ProfileBadges
-              profile={joinLinkPreview.owner}
-              size="sm"
-              style={{marginTop: -3}}
-            />
+            <ProfileBadges profile={joinLinkPreview.owner} size="sm" />
             <Text
               style={[
                 a.flex_shrink,

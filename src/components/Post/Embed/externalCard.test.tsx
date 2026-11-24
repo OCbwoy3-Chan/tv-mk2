@@ -2,10 +2,19 @@ import {render} from '@testing-library/react-native'
 
 import {Embed, PostEmbedViewContext} from './index'
 
+jest.mock('#/features/events/components/EventEmbed', () => ({}))
+jest.mock('#/lib/hooks/useIntentHandler', () => ({
+  useGroupChatJoinIntent: () => () => false,
+}))
+jest.mock('#/components/PeekMenu', () => ({}))
 jest.mock('#/state/session', () => ({}))
 jest.mock('#/state/queries/profile', () => ({}))
-jest.mock('#/state/queries/direct-fetch-record', () => ({}))
-jest.mock('#/alf', () => ({atoms: {mt_sm: {}}, useTheme: () => ({})}))
+jest.mock('#/state/queries/direct-fetch-record', () => ({LRU: Map}))
+jest.mock('#/alf', () => ({
+  atoms: {mt_sm: {}},
+  platform: (values: {default?: unknown}) => values.default,
+  useTheme: () => ({}),
+}))
 jest.mock('#/state/preferences/moderation-opts', () => ({
   useModerationOpts: () => undefined,
 }))

@@ -132,7 +132,12 @@ export function ProfileLinkPill({
 
   if (opensLink) {
     return (
-      <Link {...props} to={link.url} onPress={onPress} shouldProxy>
+      <Link
+        {...props}
+        to={link.url}
+        onPress={onPress}
+        shouldProxy
+        rel="me noopener noreferrer">
         {content}
       </Link>
     )

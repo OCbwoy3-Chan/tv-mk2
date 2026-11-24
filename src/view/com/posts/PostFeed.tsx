@@ -33,7 +33,6 @@ import {userStyle} from '#/lib/userstyles'
 import {logger} from '#/logger'
 import {usePostAuthorShadowFilter} from '#/state/cache/profile-shadow'
 import {listenPostCreated} from '#/state/events'
-import {useFeedFeedbackContext} from '#/state/feed-feedback'
 import {
   createPdsViewabilityStore,
   PdsViewabilityProvider,
@@ -80,6 +79,7 @@ import {
   PostFeedVideoGridRowPlaceholder,
   useVideoGridColumns,
 } from '#/components/feeds/PostFeedVideoGridRow'
+import {RepliesFeedLimited} from '#/components/feeds/RepliesFeedLimited'
 import {FeedTrendingTopicsInterstitial} from '#/components/interstitials/FeedTrendingTopics'
 import {TrendingVideos as TrendingVideosInterstitial} from '#/components/interstitials/TrendingVideos'
 import {isStandardSiteEmbed} from '#/components/Post/Embed/StandardSiteEmbed/utils'
@@ -89,6 +89,7 @@ import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
 import {IS_IOS, IS_NATIVE, IS_WEB} from '#/env'
+import {useFeedFeedbackContext} from '#/features/feedFeedback'
 import {DiscoverFeedLiveEventFeedsAndTrendingBanner} from '#/features/liveEvents/components/DiscoverFeedLiveEventFeedsAndTrendingBanner'
 import {
   isStatusStillActive,
@@ -341,6 +342,7 @@ let PostFeed = ({
     error,
     refetch,
     hasNextPage,
+    isPageFillLimited,
     isFetchingNextPage,
     isFetchingPreviousPage,
     isFetchPreviousPageError,
@@ -516,7 +518,8 @@ let PostFeed = ({
     } else if (
       feedType === 'author' &&
       (feedTab === 'posts_and_author_threads' ||
-        feedTab === 'posts_with_replies')
+        feedTab === 'posts_with_replies' ||
+        feedTab === 'posts_and_replies_only')
     ) {
       feedKind = 'profile'
     }
@@ -915,7 +918,7 @@ let PostFeed = ({
   const renderItem = useCallback(
     ({item: row, index: rowIndex}: ListRenderItemInfo<FeedRow>) => {
       if (row.type === 'empty') {
-        return renderEmptyState()
+        return isPageFillLimited ? <RepliesFeedLimited /> : renderEmptyState()
       } else if (row.type === 'error') {
         return (
           <PostFeedErrorMessage
@@ -1040,6 +1043,7 @@ let PostFeed = ({
     },
     [
       renderEmptyState,
+      isPageFillLimited,
       feed,
       error,
       onPressTryAgain,
@@ -1103,8 +1107,15 @@ let PostFeed = ({
     )
   }
 
+  const shouldRenderPageFillLimit =
+    isPageFillLimited && !isEmpty && !isFetching && !isError
   const shouldRenderEndOfFeed =
-    !hasNextPage && !isEmpty && !isFetching && !isError && !!renderEndOfFeed
+    !hasNextPage &&
+    !isPageFillLimited &&
+    !isEmpty &&
+    !isFetching &&
+    !isError &&
+    !!renderEndOfFeed
   const bottomBarOffset = useBottomBarOffset()
   const FeedFooter = useCallback(() => {
     /*
@@ -1127,7 +1138,15 @@ let PostFeed = ({
       (hasNextPage || pageNumber > 1) ? (
       <View style={[a.align_center, a.gap_md, {paddingBottom: offset}]}>
         {renderPaginationControls('bottom')}
-        {shouldRenderEndOfFeed && renderEndOfFeed()}
+        {shouldRenderPageFillLimit ? (
+          <RepliesFeedLimited hasPosts />
+        ) : (
+          shouldRenderEndOfFeed && renderEndOfFeed()
+        )}
+      </View>
+    ) : shouldRenderPageFillLimit ? (
+      <View style={{minHeight: offset}}>
+        <RepliesFeedLimited hasPosts />
       </View>
     ) : shouldRenderEndOfFeed ? (
       <View style={{minHeight: offset}}>{renderEndOfFeed()}</View>
@@ -1142,6 +1161,7 @@ let PostFeed = ({
     pageNumber,
     isFetchingNextPage,
     isFetchingPreviousPage,
+    shouldRenderPageFillLimit,
     shouldRenderEndOfFeed,
     renderEndOfFeed,
     headerOffset,
@@ -1367,7 +1387,7 @@ let PostFeed = ({
           onEndReached={
             disableInfiniteScroll ? undefined : () => void onEndReached()
           }
-          onEndReachedThreshold={2} // number of posts left to trigger load more
+          onEndReachedThreshold={2} // screen heights from the end, not posts
           removeClippedSubviews={true}
           extraData={extraData}
           desktopFixedHeight={

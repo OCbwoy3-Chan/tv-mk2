@@ -1,4 +1,5 @@
 import {useRef} from 'react'
+import {Platform} from 'react-native'
 import {AtUri} from '@atproto/syntax'
 import {useLingui} from '@lingui/react/macro'
 
@@ -8,7 +9,6 @@ import {makeProfileLink} from '#/lib/routes/links'
 import {shareUrl} from '#/lib/sharing'
 import {toShareUrl} from '#/lib/strings/url-helpers'
 import {type Shadow} from '#/state/cache/post-shadow'
-import {useFeedFeedbackContext} from '#/state/feed-feedback'
 import {
   usePostLikeMutationQueue,
   usePostRepostMutationQueue,
@@ -26,6 +26,7 @@ import * as Menu from '#/components/Menu'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
 import {IS_WEB} from '#/env'
+import {useFeedItemFeedback} from '#/features/feedFeedback'
 import {type app} from '#/lexicons'
 import {usePostBookmark} from '../BookmarkButton'
 import {useAutoLikeAfterRepost} from '../useAutoLikeAfterRepost'
@@ -37,13 +38,9 @@ import {useAutoLikeAfterRepost} from '../useAutoLikeAfterRepost'
  */
 export function PostMenuControlItems({
   post,
-  postFeedContext,
-  postReqId,
   logContext,
 }: {
   post: Shadow<app.bsky.feed.defs.PostView>
-  postFeedContext: string | undefined
-  postReqId: string | undefined
   logContext: 'FeedItem' | 'PostThreadItem' | 'Post' | 'ImmersiveVideo'
 }) {
   const {t: l} = useLingui()
@@ -51,27 +48,30 @@ export function PostMenuControlItems({
   const haptics = useHaptics()
   const requireAuth = useRequireAuth()
   const {openComposer} = useOpenComposer()
-  const {feedDescriptor, sendInteraction} = useFeedFeedbackContext()
+  const feedItem = useFeedItemFeedback()
+  const {feedDescriptor} = feedItem
   const [queueRepost, queueUnrepost] = usePostRepostMutationQueue(
     post,
-    undefined,
+    feedItem.item?.via,
     feedDescriptor,
     logContext,
   )
   const [queueLike] = usePostLikeMutationQueue(
     post,
-    undefined,
+    feedItem.item?.via,
     feedDescriptor,
     logContext,
   )
   const autoLikeAfterRepost = useAutoLikeAfterRepost({
     post,
     queueLike,
-    feedContext: postFeedContext,
-    reqId: postReqId,
   })
   const repostInFlight = useRef(false)
-  const {isBookmarked, toggleBookmark} = usePostBookmark({post, logContext})
+  const {isBookmarked, toggleBookmark} = usePostBookmark({
+    post,
+    logContext,
+    entryPoint: 'PostMenu',
+  })
 
   const isReposted = Boolean(post.viewer?.repost)
   const embeddingDisabled = Boolean(post.viewer?.embeddingDisabled)
@@ -107,12 +107,7 @@ export function PostMenuControlItems({
         )
       } else {
         haptics.confirm()
-        sendInteraction({
-          item: post.uri,
-          event: 'app.bsky.feed.defs#interactionRepost',
-          feedContext: postFeedContext,
-          reqId: postReqId,
-        })
+        feedItem.send('app.bsky.feed.defs#interactionRepost')
         await queueRepost()
         await autoLikeAfterRepost()
         Toast.show(l({message: 'Reposted', context: 'Toast after reposting'}), {
@@ -135,12 +130,7 @@ export function PostMenuControlItems({
       return
     }
     haptics.confirm()
-    sendInteraction({
-      item: post.uri,
-      event: 'app.bsky.feed.defs#interactionQuote',
-      feedContext: postFeedContext,
-      reqId: postReqId,
-    })
+    feedItem.send('app.bsky.feed.defs#interactionQuote')
     ax.metric('post:clickQuotePost', {
       uri: post.uri,
       authorDid: post.author.did,
@@ -165,16 +155,16 @@ export function PostMenuControlItems({
     if (IS_WEB) {
       ax.metric('share:press:copyLink', {uri: post.uri})
     } else {
-      ax.metric('share:press:nativeShare', {})
+      ax.metric('share:press:nativeShare', {
+        uri: post.uri,
+        authorDid: post.author.did,
+        entryPoint: 'PostMenu',
+        os: Platform.OS,
+      })
     }
     const {rkey} = new AtUri(post.uri)
     void shareUrl(toShareUrl(makeProfileLink(post.author, 'post', rkey)))
-    sendInteraction({
-      item: post.uri,
-      event: 'app.bsky.feed.defs#interactionShare',
-      feedContext: postFeedContext,
-      reqId: postReqId,
-    })
+    feedItem.send('app.bsky.feed.defs#interactionShare')
   }
 
   const onBookmark = async () => {

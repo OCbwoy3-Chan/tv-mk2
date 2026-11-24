@@ -67,13 +67,15 @@ jest.mock('#/lib/network-error', () => ({
   isNetworkError: (e: Error) => e.message === 'offline',
 }))
 const mockGoBack = jest.fn()
-const mockNavigate = jest.fn()
+const mockDispatch = jest.fn()
 let mockCanGoBack = true
 jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
   useNavigation: () => ({
     canGoBack: () => mockCanGoBack,
     goBack: mockGoBack,
-    navigate: mockNavigate,
+    dispatch: mockDispatch,
+    getState: () => ({routeNames: ['Home']}),
   }),
 }))
 const mockSetQueryData = jest.fn()
@@ -165,7 +167,7 @@ describe('useDeleteEvent', () => {
     expect(mockSetQueryData).toHaveBeenCalledWith(['event', EVENT.uri], null)
     expect(mockToast).toHaveBeenCalledWith('Event deleted')
     expect(mockGoBack).not.toHaveBeenCalled()
-    expect(mockNavigate).not.toHaveBeenCalled()
+    expect(mockDispatch).not.toHaveBeenCalled()
   })
 
   it('goes home when there is nowhere to go back to', () => {
@@ -176,7 +178,9 @@ describe('useDeleteEvent', () => {
     fireEvent.press(getByTestId('confirmDelete'))
 
     expect(mockGoBack).not.toHaveBeenCalled()
-    expect(mockNavigate).toHaveBeenCalledWith('Home')
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({type: 'NAVIGATE', payload: {name: 'Home'}}),
+    )
   })
 
   it('reports a failure and stays on the page', () => {

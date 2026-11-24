@@ -1,6 +1,7 @@
 import {useEffect} from 'react'
 import {useNavigation} from '@react-navigation/native'
 
+import {getHomeNavigationAction} from '#/lib/routes/navigation'
 import {type NavigationProp} from '#/lib/routes/types'
 import {replaceWebLocation} from '#/lib/routes/web'
 import {cleanError} from '#/lib/strings/errors'
@@ -45,7 +46,9 @@ export function AuthCallback() {
           return
         }
 
-        navigation.replace('Home')
+        navigation.dispatch(
+          getHomeNavigationAction(navigation.getState(), 'replace'),
+        )
       } catch (e: unknown) {
         if (isOAuthPopupComplete(e)) return
         const error =
@@ -64,7 +67,9 @@ export function AuthCallback() {
             if (returnUrl) {
               replaceWebLocation(returnUrl)
             } else {
-              navigation.replace('Home')
+              navigation.dispatch(
+                getHomeNavigationAction(navigation.getState(), 'replace'),
+              )
             }
             return
           } catch (resumeError) {
@@ -84,7 +89,9 @@ export function AuthCallback() {
         if (returnUrl) {
           replaceWebLocation(returnUrl)
         } else {
-          navigation.replace('Home')
+          navigation.dispatch(
+            getHomeNavigationAction(navigation.getState(), 'replace'),
+          )
         }
       }
     })()

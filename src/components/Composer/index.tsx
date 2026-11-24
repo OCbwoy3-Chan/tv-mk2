@@ -177,7 +177,7 @@ export function Composer({
   })
   const inputRef = mergeRefs<TextInputInstance>([
     ref,
-    tapper.inputProps.ref as React.Ref<TextInputInstance>,
+    tapper.inputProps.ref,
     sift.targetProps.ref as React.Ref<TextInputInstance>,
   ])
 
@@ -421,7 +421,7 @@ export function Composer({
               : next
             tapper.inputProps.onChangeText(masked)
             if (!IS_WEB && masked !== next) {
-              const input = tapper.input.element as TextInputInstance | null
+              const input = tapper.input.element
               const cursor =
                 tapper.state.selection.end +
                 masked.length -

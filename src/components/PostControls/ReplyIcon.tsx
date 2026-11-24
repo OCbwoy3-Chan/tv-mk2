@@ -7,15 +7,16 @@ import {Reply_Stroke2_Corner0_Rounded as Bubble} from '#/components/icons/Reply'
 const replyIcons = [false, true].map(restricted =>
   Array.from({length: 4}, (_, dotCount) => {
     return function ReplyIcon(props: Props) {
-      const {fill, size, style, gradient, ...rest} = useCommonSVGProps(props)
+      const {fill, width, height, style, gradient, ...rest} =
+        useCommonSVGProps(props)
 
       return (
         <Svg
           fill="none"
           {...rest}
           viewBox="0 0 24 24"
-          width={size}
-          height={size}
+          width={width}
+          height={height}
           style={style}>
           {gradient}
           <Path

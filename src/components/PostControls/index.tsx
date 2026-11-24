@@ -13,7 +13,6 @@ import {
 } from '#/lib/metrics-display'
 import {userStyle} from '#/lib/userstyles'
 import {type Shadow} from '#/state/cache/types'
-import {useFeedFeedbackContext} from '#/state/feed-feedback'
 import {useAutoLikeOnRepost} from '#/state/preferences/auto-like-on-repost'
 import {
   useLikesMetricsDisplay,
@@ -42,6 +41,7 @@ import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Skele from '#/components/Skeleton'
 import * as Toast from '#/components/Toast'
 import {useAnalytics} from '#/analytics'
+import {useFeedItemFeedback} from '#/features/feedFeedback'
 import {type app} from '#/lexicons'
 import {useRunWithEphemeralAgent} from '../hooks/useRunWithEphemeralAgent'
 import {BookmarkButton} from './BookmarkButton'
@@ -62,15 +62,12 @@ function PostControlsInner({
   post,
   record,
   richText,
-  feedContext,
-  reqId,
   style,
   onPressReply,
   onPostReply,
   logContext,
   threadgateRecord,
   onShowLess,
-  viaRepost,
   variant,
   forceGoogleTranslate = false,
 }: {
@@ -78,15 +75,12 @@ function PostControlsInner({
   post: Shadow<app.bsky.feed.defs.PostView>
   record: app.bsky.feed.post.Main
   richText: RichTextAPI
-  feedContext?: string | undefined
-  reqId?: string | undefined
   style?: StyleProp<ViewStyle>
   onPressReply: () => void
   onPostReply?: (postUri: string | undefined) => void
   logContext: 'FeedItem' | 'PostThreadItem' | 'Post' | 'ImmersiveVideo'
   threadgateRecord?: app.bsky.feed.threadgate.Main
   onShowLess?: (interaction: app.bsky.feed.defs.Interaction) => void
-  viaRepost?: {uri: string; cid: string}
   variant?: 'compact' | 'normal' | 'large'
   forceGoogleTranslate?: boolean
 }): React.ReactNode {
@@ -94,24 +88,24 @@ function PostControlsInner({
   const t = useTheme()
   const {t: l} = useLingui()
   const {openComposer} = useOpenComposer()
-  const {feedDescriptor} = useFeedFeedbackContext()
+  const feedItem = useFeedItemFeedback()
+  const {feedDescriptor} = feedItem
   const {accounts, currentAccount} = useSession()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
   const showEphemeralError = useEphemeralAccountError()
   const [queueLike, queueUnlike] = usePostLikeMutationQueue(
     post,
-    viaRepost,
+    feedItem.item?.via,
     feedDescriptor,
     logContext,
   )
   const [queueRepost, queueUnrepost] = usePostRepostMutationQueue(
     post,
-    viaRepost,
+    feedItem.item?.via,
     feedDescriptor,
     logContext,
   )
   const requireAuth = useRequireAuth()
-  const {sendInteraction} = useFeedFeedbackContext()
   const {captureAction} = useProgressGuideControls()
   const isBlocked = Boolean(
     post.author.viewer?.blocking ||
@@ -139,8 +133,6 @@ function PostControlsInner({
   const autoLikeAfterRepost = useAutoLikeAfterRepost({
     post,
     queueLike,
-    feedContext,
-    reqId,
     onLike: () => setHasLikeIconBeenToggled(true),
   })
 
@@ -156,12 +148,7 @@ function PostControlsInner({
     try {
       setHasLikeIconBeenToggled(true)
       if (!existingLike) {
-        sendInteraction({
-          item: post.uri,
-          event: 'app.bsky.feed.defs#interactionLike',
-          feedContext,
-          reqId,
-        })
+        feedItem.send('app.bsky.feed.defs#interactionLike')
         captureAction(ProgressGuideAction.Like)
         await queueLike()
       } else {
@@ -194,12 +181,7 @@ function PostControlsInner({
         await queueRepost()
         Toast.show(l`Repost bumped`)
       } else if (!existingRepost) {
-        sendInteraction({
-          item: post.uri,
-          event: 'app.bsky.feed.defs#interactionRepost',
-          feedContext,
-          reqId,
-        })
+        feedItem.send('app.bsky.feed.defs#interactionRepost')
         await queueRepost()
         await autoLikeAfterRepost()
       } else {
@@ -229,12 +211,7 @@ function PostControlsInner({
       return
     }
 
-    sendInteraction({
-      item: post.uri,
-      event: 'app.bsky.feed.defs#interactionQuote',
-      feedContext,
-      reqId,
-    })
+    feedItem.send('app.bsky.feed.defs#interactionQuote')
     ax.metric('post:clickQuotePost', {
       uri: post.uri,
       authorDid: post.author.did,
@@ -250,12 +227,7 @@ function PostControlsInner({
   }
 
   const onShare = () => {
-    sendInteraction({
-      item: post.uri,
-      event: 'app.bsky.feed.defs#interactionShare',
-      feedContext,
-      reqId,
-    })
+    feedItem.send('app.bsky.feed.defs#interactionShare')
   }
 
   const onReplyAsAccount = (accountDid: string) => {
@@ -570,8 +542,6 @@ function PostControlsInner({
           <PostMenuButton
             testID="postDropdownBtn"
             post={post}
-            postFeedContext={feedContext}
-            postReqId={reqId}
             big={big}
             record={record}
             richText={richText}

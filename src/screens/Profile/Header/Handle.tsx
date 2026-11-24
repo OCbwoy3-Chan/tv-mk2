@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react'
 import {Pressable, View} from 'react-native'
 import {type GestureResponderEvent} from 'react-native'
 import * as ExpoClipboard from 'expo-clipboard'
+import {type ModerationDecision} from '@bsky/sdk/moderation'
 import {Trans, useLingui} from '@lingui/react/macro'
 
 import {isInvalidHandle, sanitizeHandle} from '#/lib/strings/handles'
@@ -21,6 +22,7 @@ import {useProfileHandleLink} from './useProfileHandleLink'
 
 export function ProfileHeaderHandle({
   profile,
+  moderation,
   disableTaps,
   disableAuxiliaryTaps,
   showPronouns = true,
@@ -29,6 +31,7 @@ export function ProfileHeaderHandle({
   verticalPadding = 0,
 }: {
   profile: Shadow<app.bsky.actor.defs.ProfileViewDetailed>
+  moderation: ModerationDecision
   disableTaps?: boolean
   disableAuxiliaryTaps?: boolean
   showPronouns?: boolean
@@ -46,8 +49,13 @@ export function ProfileHeaderHandle({
   }, [copied])
   const hideDisplayNames = useHideDisplayNames()
   const invalidHandle = isInvalidHandle(profile.handle)
-  const pronouns = profile.pronouns
+  const pronouns = profile.pronouns?.trim()
   const blockHide = profile.viewer?.blocking || profile.viewer?.blockedBy
+  const shouldShowPronouns =
+    showPronouns &&
+    !!pronouns &&
+    !blockHide &&
+    !moderation.ui('profileView').blur
   const showFollowsYouBadge = useShowFollowsYouBadge()
   const shouldShowProfileLink = useProfileHandleLink(profile.handle)
   const disableNewskieDialog = disableTaps || disableAuxiliaryTaps
@@ -184,7 +192,7 @@ export function ProfileHeaderHandle({
               )}
             </View>
           ))}
-        {showPronouns && (
+        {shouldShowPronouns && (
           <PronounPill
             pronouns={pronouns}
             style={truncate ? {flexShrink: 0, maxWidth: '45%'} : undefined}

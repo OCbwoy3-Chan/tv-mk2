@@ -13,7 +13,6 @@ import {
   type Shadow,
   usePostShadow,
 } from '#/state/cache/post-shadow'
-import {FeedFeedbackProvider, useFeedFeedback} from '#/state/feed-feedback'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {sortAndAnnotateThreadItems} from '#/state/queries/usePostThread/traversal'
 import {
@@ -23,7 +22,6 @@ import {
 import {useAgent, useSession} from '#/state/session'
 import {type OnPostSuccessData} from '#/state/shell/composer'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
-import {type PostSource} from '#/state/unstable-post-source'
 import {ThreadComposePromptPill} from '#/screens/PostThread/components/ThreadComposePrompt'
 import {
   ThreadItemPost,
@@ -39,7 +37,7 @@ import {
 import {type ThreadPostItem} from '#/screens/PostThread/reader'
 import {atoms as a, useTheme} from '#/alf'
 import {Button} from '#/components/Button'
-import {CalendarClock_Stroke2_Corner0_Rounded as CalendarClockIcon} from '#/components/icons/CalendarClock'
+import {CalendarClock_Stroke2_Corner0_Rounded as CalendarClockIcon} from '#/components/icons/Calendar'
 import {Link} from '#/components/Link'
 import {PostControls} from '#/components/PostControls'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
@@ -47,6 +45,7 @@ import {PostEditedIndicator} from '#/components/PostEditedIndicator'
 import * as Prompt from '#/components/Prompt'
 import {Text} from '#/components/Typography'
 import {WhoCanReply} from '#/components/WhoCanReply'
+import {useFeedItemFeedback} from '#/features/feedFeedback'
 import {app} from '#/lexicons'
 import * as bsky from '#/types/bsky'
 
@@ -92,14 +91,12 @@ export function ReaderBracket({
  */
 export function ReaderSeamControls({
   post: postItem,
-  postSource,
   showComposePrompt = false,
   showDetails = true,
   onPostSuccess,
   threadgateRecord,
 }: {
   post: ThreadPostItem
-  postSource?: PostSource
   showComposePrompt?: boolean
   /**
    * Whether to show the full date and engagement-count rows above the action
@@ -120,7 +117,6 @@ export function ReaderSeamControls({
     <ReaderSeamControlsInner
       post={postItem}
       postShadow={postShadow}
-      postSource={postSource}
       showComposePrompt={showComposePrompt}
       showDetails={showDetails}
       onPostSuccess={onPostSuccess}
@@ -132,7 +128,6 @@ export function ReaderSeamControls({
 function ReaderSeamControlsInner({
   post: postItem,
   postShadow,
-  postSource,
   showComposePrompt,
   showDetails,
   onPostSuccess,
@@ -140,7 +135,6 @@ function ReaderSeamControlsInner({
 }: {
   post: ThreadPostItem
   postShadow: Shadow<app.bsky.feed.defs.PostView>
-  postSource?: PostSource
   showComposePrompt?: boolean
   showDetails?: boolean
   onPostSuccess?: (data: OnPostSuccessData) => void
@@ -148,10 +142,10 @@ function ReaderSeamControlsInner({
 }) {
   const t = useTheme()
   const {t: l, i18n} = useLingui()
-  const {currentAccount, hasSession} = useSession()
+  const {currentAccount} = useSession()
   const {openComposer} = useOpenComposer()
   const formatPostStatCount = useFormatPostStatCount()
-  const feedFeedback = useFeedFeedback(postSource?.feedSourceInfo, hasSession)
+  const feedItem = useFeedItemFeedback()
 
   const post = postShadow
   const record = postItem.value.post.record
@@ -174,14 +168,6 @@ function ReaderSeamControlsInner({
   )
   const quotesHref = makeProfileLink(post.author, 'post', urip.rkey, 'quotes')
 
-  const reason = postSource?.post.reason
-  const viaRepost =
-    bsky.isType(app.bsky.feed.defs.reasonRepost, reason) &&
-    reason.uri &&
-    reason.cid
-      ? {uri: reason.uri, cid: reason.cid}
-      : undefined
-
   const onPressReply = () => {
     openComposer({
       replyTo: {
@@ -197,14 +183,7 @@ function ReaderSeamControlsInner({
       logContext: 'PostReply',
     })
 
-    if (postSource) {
-      feedFeedback.sendInteraction({
-        item: post.uri,
-        event: 'app.bsky.feed.defs#interactionReply',
-        feedContext: postSource.post.feedContext,
-        reqId: postSource.post.reqId,
-      })
-    }
+    feedItem.send('app.bsky.feed.defs#interactionReply')
   }
 
   const hasEngagement =
@@ -303,20 +282,15 @@ function ReaderSeamControlsInner({
       {/* Action bar + optional compose prompt as one gap item */}
       <View>
         <View style={[a.py_xs, {marginLeft: -5}]}>
-          <FeedFeedbackProvider value={feedFeedback}>
-            <PostControls
-              big
-              post={postShadow}
-              record={record}
-              richText={richText}
-              onPressReply={onPressReply}
-              logContext="PostThreadItem"
-              threadgateRecord={threadgateRecord}
-              feedContext={postSource?.post?.feedContext}
-              reqId={postSource?.post?.reqId}
-              viaRepost={viaRepost}
-            />
-          </FeedFeedbackProvider>
+          <PostControls
+            big
+            post={postShadow}
+            record={record}
+            richText={richText}
+            onPressReply={onPressReply}
+            logContext="PostThreadItem"
+            threadgateRecord={threadgateRecord}
+          />
         </View>
         {showComposePrompt && (
           <View

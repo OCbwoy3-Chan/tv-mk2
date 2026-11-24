@@ -6,10 +6,6 @@ import {useQueryClient} from '@tanstack/react-query'
 import {cleanError} from '#/lib/strings/errors'
 import {userStyle} from '#/lib/userstyles'
 import {unstableCacheProfileView} from '#/state/queries/profile'
-import {
-  buildPostSourceKey,
-  setUnstablePostSource,
-} from '#/state/unstable-post-source'
 import {Post} from '#/view/com/post/Post'
 import {PostLoadingPlaceholder} from '#/view/com/util/LoadingPlaceholder'
 import {atoms as a, useTheme} from '#/alf'
@@ -19,6 +15,7 @@ import {
   ChevronTop_Stroke2_Corner0_Rounded as ChevronUpIcon,
 } from '#/components/icons/Chevron'
 import {Text} from '#/components/Typography'
+import {stashPostSource} from '#/features/feedFeedback/postSource'
 import {type app} from '#/lexicons'
 
 export function ThreadAlsoLiked({
@@ -55,9 +52,7 @@ export function ThreadAlsoLiked({
   const onBeforePress = useCallback(
     (post: app.bsky.feed.defs.PostView) => {
       unstableCacheProfileView(queryClient, post.author)
-      setUnstablePostSource(buildPostSourceKey(post.uri, post.author.handle), {
-        post: {post},
-      })
+      stashPostSource({post: {post}})
     },
     [queryClient],
   )

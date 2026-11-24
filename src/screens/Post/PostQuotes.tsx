@@ -4,7 +4,7 @@ import {Plural, Trans, useLingui} from '@lingui/react/macro'
 
 import {HITSLOP_10} from '#/lib/constants'
 import {useNonReactiveCallback} from '#/lib/hooks/useNonReactiveCallback'
-import {useSetTitle} from '#/lib/hooks/useSetTitle'
+import {useSetPostTitle} from '#/lib/hooks/useSetPostTitle'
 import {
   type CommonNavigatorParams,
   type NativeStackScreenProps,
@@ -13,8 +13,6 @@ import {makeRecordUri} from '#/lib/strings/url-helpers'
 import * as persisted from '#/state/persisted'
 import {usePostQuery} from '#/state/queries/post'
 import {type QuotesSort} from '#/state/queries/post-quotes'
-import {useProfileQuery} from '#/state/queries/profile'
-import {useResolveDidQuery} from '#/state/queries/resolve-uri'
 import {Pager} from '#/view/com/pager/Pager'
 import {TabBar} from '#/view/com/pager/TabBar'
 import {PostQuotes as PostQuotesComponent} from '#/view/com/post-thread/PostQuotes'
@@ -35,9 +33,7 @@ export const PostQuotesScreen = ({route, navigation}: Props) => {
   const {name, rkey} = route.params
   const uri = makeRecordUri(name, 'app.bsky.feed.post', rkey)
   const {data: post} = usePostQuery(uri)
-
-  const {data: resolvedDid} = useResolveDidQuery(name)
-  const {data: profile} = useProfileQuery({did: resolvedDid})
+  useSetPostTitle(post?.author)
   const [isQuotedPostExtracted, setIsQuotedPostExtracted] = useState(
     Boolean(persisted.get('extractQuotedPost')),
   )
@@ -53,8 +49,6 @@ export const PostQuotesScreen = ({route, navigation}: Props) => {
     setIsQuotedPostExtracted(nextValue)
     void persisted.write('extractQuotedPost', nextValue)
   }
-
-  useSetTitle(profile ? l`Post by @${profile.handle}` : undefined)
 
   const header = (
     <Layout.Header.Outer noBottomBorder>

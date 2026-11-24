@@ -298,7 +298,7 @@ function RepostCarouselWeb({
   const currentIndexRef = useRef(0)
   const stopTweenRef = useRef<(() => void) | null>(null)
 
-  const scrollTo = useCallback((offset: number) => {
+  const scrollTo = useCallback(({offset}: {offset: number}) => {
     const el =
       scrollRef.current?.getScrollableNode() as unknown as HTMLElement | null
     if (el) {
@@ -346,7 +346,7 @@ function RepostCarouselWeb({
         SETTLE_DURATION,
       )(
         v => {
-          scrollTo(v)
+          scrollTo({offset: v})
         },
         () => {
           stopTweenRef.current = null

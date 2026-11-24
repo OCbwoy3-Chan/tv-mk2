@@ -329,6 +329,12 @@ export function useProfileUpdateMutation() {
               // links come from separate records, so compare those too
               return false
             }
+            if (
+              'pronouns' in updates &&
+              (fresh.pronouns || undefined) !== (updates.pronouns || undefined)
+            ) {
+              return false
+            }
             return (
               (fresh.displayName || '') === (updates.displayName || '') &&
               (fresh.description || '') === (updates.description || '')

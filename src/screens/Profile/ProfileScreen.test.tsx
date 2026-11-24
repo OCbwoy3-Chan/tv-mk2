@@ -4,6 +4,7 @@ import {useProfileQuery} from '#/state/queries/profile'
 import {useAppviewClient} from '#/state/session'
 import {ProfileScreen} from '#/view/screens/Profile'
 
+jest.mock('#/features/events/components/ProfileEvents', () => ({}))
 jest.mock('#/state/session', () => ({
   useAppviewClient: jest.fn(),
   useSession: () => ({hasSession: false}),
@@ -62,7 +63,7 @@ jest.mock('@lingui/react', () => ({
   useLingui: () => ({_: (message: {id: string}) => message.id}),
   Trans: () => null,
 }))
-jest.mock('react-native-scroll-forwarder', () => {
+jest.mock('@bsky.app/react-native-scroll-forwarder', () => {
   const {View} = jest.requireActual('react-native')
   return {ScrollForwarderView: View}
 })

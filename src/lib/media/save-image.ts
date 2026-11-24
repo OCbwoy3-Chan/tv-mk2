@@ -1,5 +1,4 @@
 import {useCallback} from 'react'
-import * as MediaLibrary from 'expo-media-library/legacy'
 import {msg} from '@lingui/core/macro'
 import {useLingui} from '@lingui/react'
 
@@ -7,6 +6,7 @@ import {useDownloadFormat} from '#/state/preferences/download-format'
 import * as Toast from '#/components/Toast'
 import {IS_NATIVE} from '#/env'
 import {saveImageToMediaLibrary} from './manip'
+import {usePermissions} from './media-library'
 
 /**
  * Same as `saveImageToMediaLibrary`, but also handles permissions and toasts
@@ -14,7 +14,7 @@ import {saveImageToMediaLibrary} from './manip'
 export function useSaveImageToMediaLibrary() {
   const {_} = useLingui()
   const downloadFormat = useDownloadFormat()
-  const [, requestPermission, getPermission] = MediaLibrary.usePermissions({
+  const [, requestPermission, getPermission] = usePermissions({
     granularPermissions: ['photo'],
     /*
      * Don't query the permission on mount. Every image embed in the feed

@@ -12,7 +12,6 @@ import {
   type Shadow,
   usePostShadow,
 } from '#/state/cache/post-shadow'
-import {useFeedFeedback} from '#/state/feed-feedback'
 import {
   usePostLikeMutationQueue,
   usePostRepostMutationQueue,
@@ -45,6 +44,7 @@ import {
 import {RepostButton} from '#/components/PostControls/RepostButton'
 import {useFormatPostStatCount} from '#/components/PostControls/util'
 import * as Toast from '#/components/Toast'
+import {useFeedItemFeedback} from '#/features/feedFeedback'
 import {type app} from '#/lexicons'
 
 /**
@@ -131,7 +131,7 @@ function ReaderSeamInner({
 }) {
   const t = useTheme()
   const {t: l} = useLingui()
-  const {accounts, currentAccount, hasSession} = useSession()
+  const {accounts, currentAccount} = useSession()
   const runWithEphemeralAgent = useRunWithEphemeralAgent()
   const showEphemeralError = useEphemeralAccountError()
   const [hovered, setHovered] = useState(false)
@@ -139,7 +139,7 @@ function ReaderSeamInner({
   const requireAuth = useRequireAuth()
   const {openComposer} = useOpenComposer()
   const formatPostStatCount = useFormatPostStatCount()
-  const feedFeedback = useFeedFeedback(undefined, hasSession)
+  const feedItem = useFeedItemFeedback()
   const logContext = 'PostThreadItem'
 
   const shadow = postShadow
@@ -155,14 +155,14 @@ function ReaderSeamInner({
 
   const [queueLike, queueUnlike] = usePostLikeMutationQueue(
     shadow,
-    undefined,
-    feedFeedback.feedDescriptor,
+    feedItem.item?.via,
+    feedItem.feedDescriptor,
     logContext,
   )
   const [queueRepost, queueUnrepost] = usePostRepostMutationQueue(
     shadow,
-    undefined,
-    feedFeedback.feedDescriptor,
+    feedItem.item?.via,
+    feedItem.feedDescriptor,
     logContext,
   )
 

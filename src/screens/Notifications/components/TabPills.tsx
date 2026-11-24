@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {
   PixelRatio,
   Pressable,
@@ -44,6 +44,7 @@ export function TabPills({
   onSelectTab,
   contentContainerStyle,
   gutterWidth = tokens.space.lg,
+  getAccessibilityHint,
 }: {
   tabs: TabPillItem[]
   selectedTab: string
@@ -51,6 +52,8 @@ export function TabPills({
   onSelectTab: (tab: string) => void
   contentContainerStyle?: StyleProp<ViewStyle>
   gutterWidth?: number
+  /** Defaults to a hint that the tab shows notifications. */
+  getAccessibilityHint?: (tab: TabPillItem) => string
 }) {
   const t = useTheme()
   const shape = useEnableSquareButtons()
@@ -67,14 +70,21 @@ export function TabPills({
   const tabLayoutKey = tabs.map(tab => `${tab.key}:${tab.label}`).join('|')
   const tabCount = tabs.length
 
-  useLayoutEffect(() => {
+  /*
+   * Also runs on layout events, since the whole bar can be mounted hidden
+   * (e.g. `display: none` in an inactive web pager page) and only get real
+   * dimensions when revealed, without re-rendering. Hidden measurements are
+   * all zero, so they're skipped rather than overwriting the last good ones.
+   */
+  const measure = useCallback(() => {
     const viewportRect = listRef.current?.getBoundingClientRect()
     const contentRect = contentRef.current?.getBoundingClientRect()
     if (!viewportRect || !contentRect) return
+    if (!hasSize(viewportRect) || !hasSize(contentRect)) return
 
     const layouts = Array.from({length: tabCount}, (_, index) => {
       const rect = tabRefs.current[index]?.getBoundingClientRect()
-      if (!rect) return null
+      if (!rect || !hasSize(rect)) return null
       return {
         x: rect.left - contentRect.left,
         y: rect.top - contentRect.top,
@@ -105,7 +115,11 @@ export function TabPills({
       })
     }
     didMeasure.current = true
-  }, [selectedTab, tabLayoutKey, tabCount, tabs, windowWidth])
+  }, [selectedTab, tabCount, tabs])
+
+  useLayoutEffect(() => {
+    measure()
+  }, [measure, tabLayoutKey, windowWidth])
 
   function handleSelectTab(index: number) {
     const tab = tabs[index]
@@ -214,6 +228,7 @@ export function TabPills({
       <BlockDrawerGesture>
         <DraggableScrollView
           ref={listRef}
+          onLayout={measure}
           style={web({maskImage: edgeMask})}
           showsHorizontalScrollIndicator={false}
           decelerationRate="fast"
@@ -232,6 +247,7 @@ export function TabPills({
             ref={contentRef}
             {...{dataSet: {keyboardNavigationTabs: 'true'}}}
             accessibilityRole="tablist"
+            onLayout={measure}
             style={[
               a.flex_row,
               a.gap_sm,
@@ -246,8 +262,10 @@ export function TabPills({
                 }}
                 tab={tab}
                 index={index}
+                onLayout={measure}
                 active={tab.key === selectedTab}
                 onSelectTab={handleSelectTab}
+                getAccessibilityHint={getAccessibilityHint}
               />
             ))}
             {tabOffsets.map((layout, index) => (
@@ -386,24 +404,30 @@ function TabPill({
   tab,
   active,
   index,
+  onLayout,
   onSelectTab,
+  getAccessibilityHint,
 }: {
   elementRef: React.Ref<React.ComponentRef<typeof View>>
   tab: TabPillItem
   active: boolean
   index: number
+  onLayout: () => void
   onSelectTab: (index: number) => void
+  getAccessibilityHint?: (tab: TabPillItem) => string
 }) {
   const {t: l} = useLingui()
   const shape = useEnableSquareButtons()
 
   return (
-    <View ref={elementRef}>
+    <View ref={elementRef} onLayout={onLayout}>
       <Pressable
         accessibilityLabel={
           active ? l`${tab.label} tab, selected` : l`Select ${tab.label} tab`
         }
-        accessibilityHint={l`Shows ${tab.label} notifications`}
+        accessibilityHint={
+          getAccessibilityHint?.(tab) ?? l`Shows ${tab.label} notifications`
+        }
         accessibilityRole="tab"
         aria-selected={active}
         onPress={() => onSelectTab(index)}
@@ -435,6 +459,11 @@ type PillLayout = {
   y: number
   width: number
   height: number
+}
+
+/** Hidden (`display: none`) or detached nodes measure as all zeros. */
+function hasSize(rect: {width: number; height: number}) {
+  return rect.width > 0 && rect.height > 0
 }
 
 function areLayoutsEqual(a: PillLayout[], b: PillLayout[]) {

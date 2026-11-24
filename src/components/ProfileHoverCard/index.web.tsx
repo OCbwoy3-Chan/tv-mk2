@@ -72,6 +72,7 @@ import * as Prompt from '#/components/Prompt'
 import {RichText} from '#/components/RichText'
 import {Text} from '#/components/Typography'
 import {IS_WEB_TOUCH_DEVICE} from '#/env'
+import {useFeedItemFeedback} from '#/features/feedFeedback'
 import {useActorStatus} from '#/features/liveNow'
 import {LiveStatus} from '#/features/liveNow/components/LiveStatusDialog'
 import {type app} from '#/lexicons'
@@ -144,6 +145,16 @@ const HIDE_DURATION = 200
 
 export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
   const navigation = useNavigation<NavigationProp>()
+  /*
+   * The card renders in a portal, outside the feed item's context, so read the
+   * feed item here and pass the follow handler down. Only following the feed
+   * item's author counts, not e.g. a reposter or a quoted post's author.
+   */
+  const feedItem = useFeedItemFeedback()
+  const onFollow =
+    feedItem.item?.authorDid === props.did
+      ? () => feedItem.send('app.bsky.feed.defs#interactionFollow')
+      : undefined
 
   const followPromptControl = Prompt.usePromptControl()
   const [followConfirmState, setFollowConfirmState] = useState<{
@@ -390,6 +401,7 @@ export function ProfileHoverCardInner(props: ProfileHoverCardProps) {
                 did={props.did}
                 hide={onPress}
                 navigation={navigation}
+                onFollow={onFollow}
                 onRequestFollowConfirmation={params => {
                   setFollowConfirmState(params)
                   followPromptControl.open()
@@ -418,6 +430,7 @@ let Card = ({
   hide,
   navigation,
   onRequestFollowConfirmation,
+  onFollow,
 }: {
   did: string
   hide: () => void
@@ -428,6 +441,7 @@ let Card = ({
     displayName: string
     handle: string
   }) => void
+  onFollow?: () => void
 }): React.ReactNode => {
   const t = useTheme()
 
@@ -474,6 +488,7 @@ let Card = ({
             profile={data}
             moderationOpts={moderationOpts}
             hide={hide}
+            onFollow={onFollow}
             onRequestFollowConfirmation={onRequestFollowConfirmation}
           />
         )
@@ -498,6 +513,7 @@ function Inner({
   moderationOpts,
   hide,
   onRequestFollowConfirmation,
+  onFollow,
 }: {
   profile: app.bsky.actor.defs.ProfileViewDetailed
   moderationOpts: ModerationOpts
@@ -508,6 +524,7 @@ function Inner({
     displayName: string
     handle: string
   }) => void
+  onFollow?: () => void
 }) {
   const {_} = useLingui()
   const {currentAccount} = useSession()
@@ -520,6 +537,7 @@ function Inner({
   const {follow, unfollow} = useFollowMethods({
     profile: profileShadow,
     logContext: 'ProfileHoverCard',
+    onFollow,
   })
   const confirmFollow = useConfirmFollow()
   const hideDisplayNames = useHideDisplayNames()
@@ -683,18 +701,14 @@ function Inner({
               profile={profile}
               size="md"
               pdsInteractive={false}
-              style={[
-                a.pl_xs,
-                {
-                  marginTop: -1,
-                },
-              ]}
+              style={[a.pl_xs]}
             />
           </View>
         </Link>
 
         <ProfileHeaderHandle
           profile={profileShadow}
+          moderation={moderation}
           truncate
           disableAuxiliaryTaps
           onLinkPress={hide}
