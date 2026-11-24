@@ -26,9 +26,9 @@ describe('getSupportProvider', () => {
     )
     expect(getSupportProvider('https://kat.booth.pm')?.name).toBe('BOOTH')
     expect(getSupportProvider('https://skeb.jp/@kat')?.name).toBe('Skeb')
-    expect(getSupportProvider('https://www.givesendgo.com/kat')?.name).toBe(
-      'GiveSendGo',
-    )
+    // expect(getSupportProvider('https://www.givesendgo.com/kat')?.name).toBe(
+    //   'GiveSendGo',
+    // )
     expect(
       getSupportProvider('https://www.backerkit.com/c/projects/kat/zine')?.name,
     ).toBe('BackerKit')

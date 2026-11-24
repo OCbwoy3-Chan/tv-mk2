@@ -84,7 +84,7 @@ export const SUPPORT_PROVIDERS: SupportProvider[] = [
   {name: 'Etsy', logo: 'Etsy', domain: 'etsy.com'},
   {name: 'Fourthwall', logo: 'Fourthwall', domain: 'fourthwall.com'},
   {name: 'Givebutter', logo: 'Givebutter', domain: 'givebutter.com'},
-  {name: 'GiveSendGo', logo: 'GiveSendGo', domain: 'givesendgo.com'},
+  // {name: 'GiveSendGo', logo: 'GiveSendGo', domain: 'givesendgo.com'},
   {name: 'GoFundMe', logo: 'GoFundMe', domain: 'gofundme.com'},
   {
     name: 'GitHub Sponsors',
@@ -123,7 +123,7 @@ export const SUPPORT_PROVIDERS: SupportProvider[] = [
   {name: 'Skeb', logo: 'Skeb', domain: 'skeb.jp'},
   {name: 'Stripe', logo: 'Stripe', domain: 'buy.stripe.com'},
   {name: 'Stripe', logo: 'Stripe', domain: 'donate.stripe.com'},
-  {name: 'Substack', logo: 'Substack', domain: 'substack.com'},
+  // {name: 'Substack', logo: 'Substack', domain: 'substack.com'},
   {name: 'Throne', logo: 'Throne', domain: 'throne.com'},
   {name: 'Venmo', logo: 'Venmo', domain: 'venmo.com'},
   {name: 'VGen', logo: 'Vgen', domain: 'vgen.co'},
