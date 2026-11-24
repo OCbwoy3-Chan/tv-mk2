@@ -195,6 +195,18 @@ export function usePostFeedQuery(
     /** The pages it tuned, in the order it tuned them. */
     tuned: {page: FeedPageUnselected; selected: FeedPage}[]
   } | null>(null)
+  /*
+   * The selector below closes over this ref, and TanStack keeps the last
+   * fetch's options (selector included) alive with the cached query after
+   * unmount. Emptying it lets the selected pages - every post's moderation
+   * decision - be collected while only the raw pages stay cached.
+   */
+  useEffect(
+    () => () => {
+      lastRun.current = null
+    },
+    [],
+  )
   const isDiscover = feedDesc.includes(DISCOVER_FEED_URI)
 
   // Make sure this doesn't invalidate unless really needed.

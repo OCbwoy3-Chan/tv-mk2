@@ -16,7 +16,7 @@
  * 3. Don't call this query's `refetch()` if you're trying to sync latest; call `checkUnread()` instead.
  */
 
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {AtUri} from '@atproto/syntax'
 import {moderatePost} from '@bsky/sdk/moderation'
 import {
@@ -77,6 +77,18 @@ export function useNotificationFeedQuery(opts: {
     args: typeof selectArgs
     result: InfiniteData<FeedPage>
   } | null>(null)
+  /*
+   * The selector below closes over this ref, and TanStack keeps the last
+   * fetch's options (selector included) alive with the cached query after
+   * unmount. Emptying it lets the selected pages - every post's moderation
+   * decision - be collected while only the raw pages stay cached.
+   */
+  useEffect(
+    () => () => {
+      lastRun.current = null
+    },
+    [],
+  )
 
   const query = useInfiniteQuery<
     FeedPage,

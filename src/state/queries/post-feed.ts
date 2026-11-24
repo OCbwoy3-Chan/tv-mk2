@@ -1,4 +1,4 @@
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {AppState} from 'react-native'
 import {type Client} from '@atproto/lex'
 import {type AtIdentifierString, AtUri, type AtUriString} from '@atproto/syntax'
@@ -172,6 +172,18 @@ export function usePostFeedQuery(
     args: typeof selectArgs
     result: InfiniteData<FeedPage>
   } | null>(null)
+  /*
+   * The selector below closes over this ref, and TanStack keeps the last
+   * fetch's options (selector included) alive with the cached query after
+   * unmount. Emptying it lets the selected pages - every post's moderation
+   * decision - be collected while only the raw pages stay cached.
+   */
+  useEffect(
+    () => () => {
+      lastRun.current = null
+    },
+    [],
+  )
   const isDiscover = feedDesc.includes(DISCOVER_FEED_URI)
 
   /**
