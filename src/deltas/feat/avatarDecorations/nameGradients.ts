@@ -189,6 +189,13 @@ export const NAME_GRADIENTS: NameGradient[] = [
     segmented: true,
   },
   {
+    id: 'aroace',
+    name: msg`Aroace`,
+    colors: ['#E28C00', '#ECCD00', '#FFFFFF', '#62AEDC', '#203856'],
+    solid: '#E28C00',
+    segmented: true,
+  },
+  {
     id: 'agender',
     name: msg`Agender`,
     colors: [
