@@ -19,7 +19,11 @@ import { Hashtag_Stroke2_Corner0_Rounded as HashtagIcon } from '#/components/ico
 import { useSession } from '#/state/session'
 import { useVipStatusQuery } from '#/deltas/lib/vipEntitlement'
 import { Star_Stroke2_Corner0_Rounded as StarIcon } from '#/components/icons/Star'
-import {Globe_Stroke2_Corner0_Rounded as GlobeIcon} from '#/components/icons/Globe'
+import { Globe_Stroke2_Corner0_Rounded as GlobeIcon } from '#/components/icons/Globe'
+import * as Device from 'expo-device'
+import { IS_WEB } from '#/env'
+import { Image } from 'expo-image'
+import { Pressable } from '#/components/Pressable'
 
 type Props = NativeStackScreenProps<DeltasNavigatorParams>
 
@@ -30,7 +34,7 @@ export function DeltasSettingsScreen({ }: Props) {
     const navigation = useNavigationDeduped();
 
     const user = useSession();
-    const {data: hasVip, isLoading} = useVipStatusQuery(user.currentAccount?.did);
+    const { data: hasVip, isLoading } = useVipStatusQuery(user.currentAccount?.did);
 
     return (
         <RunesScreenLayout titleText="Deltas">
@@ -192,6 +196,40 @@ export function DeltasSettingsScreen({ }: Props) {
                         </Link>
                     </>}
                 </View>
+            </View>
+            <View style={[a.pt_lg]}>
+                <Text style={[t.atoms.text_contrast_high, a.text_md, a.text_center]}>
+                    tenna.party 2 by @kris.kralsei.stream
+                    {/* TODO: swap out handle when i change it */}
+                </Text>
+                <Text style={[t.atoms.text_contrast_low, a.text_sm, a.text_center]}>
+                    ({Device.osName ?? "Unknown"}
+                    {Device.osVersion ? " " + Device.osVersion : ""}
+                    {IS_WEB ? " Web" : (Device.modelId ?? Device.productName ?? "Device")})
+                </Text>
+                <Pressable
+                    style={[a.self_center]}
+                    onLongPress={()=>{
+                        navigation.push("Profile",{
+                            name: "did:web:vessel.darkworld.download",
+                        })                        
+                    }}
+                >
+                    <Image
+                        source={require('#/../assets/kris_overworld_splat.png')}
+                        accessible={false}
+                        accessibilityIgnoresInvertColors
+                        resizeMode="contain"
+                        style={[
+                            { width: 70, height: 60 },
+                            a.self_center,
+                            a.mt_md
+                        ]}
+                    />
+                </Pressable>
+                <Text style={[t.atoms.text_contrast_low, a.text_xs, a.text_center, a.pt_md, a.pb_xl]}>
+                    made in latvia 😔
+                </Text>
             </View>
         </RunesScreenLayout>
     )

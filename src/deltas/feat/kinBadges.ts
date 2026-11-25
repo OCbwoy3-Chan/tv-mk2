@@ -6,9 +6,9 @@ export type KinBadge = {
     id: string
     img: ImageProps["source"]
     /**
-     * ENGLISH ONLY (LATVIAN IS UNSUPPORTED).
-     * **Names starting with wovels (aeiou) must be "an"!!**
-     * Default to "a" if not provided
+     * Tēla vārda gramatiskais artikuls angļu valodā.
+     * Izmanto "an", ja vārds sākas ar patskani (aāeēiīuūo).
+     * Ja sākas ar līdzkani vai jebko citu, izmanto "a".
      */
     article?: "a" | "an"
 }
@@ -24,14 +24,14 @@ export type KinBadgeType = {
     name: string
     id: string
     /**
-     * For the badge info popup.
-     * %c -> Character Franchise
-     * %a -> Article (a/an)
+     * Žetona info teksts angliski.
+     * %c -> Tēla grupa
+     * %a -> Angļu val gramatiskais artikuls (a/an)
      */
     showAs?: {
-        /** badge description when viewing yours (default to others if unspecified) */
+        /** Apraksts, kad skaties savu žetonu (savādāk lieto `others`) */
         you?: string,
-        /** badge description when viewing others */
+        /** Apraksts, kad skaties citu vai `you` vērtība nav definēta */
         others: string
     } | string
 }
@@ -125,7 +125,7 @@ export const KIN_BADGES: KinBadgeToplevel[] = [
     },
 ]
 
-/** check if a selflabel is a kin badge label */
+/** pārbauda vai pašatzīme ir kina žetona atzīme */
 export function isKinBadge(label: { val: string }) {
     for (const group of KIN_BADGES) {
         for (const badge of group.badges) {
@@ -138,7 +138,7 @@ export function isKinBadge(label: { val: string }) {
     return null
 }
 
-/** get *the* kin badge for a user */
+/** dabū kaut kāda lietotāja kina žetona datus */
 export function getKinBadge(user: AnyProfileView): {
     has: boolean
     id: string
