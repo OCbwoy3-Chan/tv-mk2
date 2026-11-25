@@ -1,12 +1,12 @@
 import { Trans, useLingui } from '@lingui/react/macro'
 
 import { DeltasSettingItem } from '#/screens/Settings/Deltas/components/DeltasSettingItem'
-import {ImportNotificationSettings} from '#/screens/Settings/Deltas/components/ImportNotificationSettings'
+import { ImportNotificationSettings } from '#/screens/Settings/Deltas/components/ImportNotificationSettings'
 import { type DeltasSetting } from '#/screens/Settings/Deltas/components/types'
 import { RunesScreenLayout } from '#/screens/Settings/RunesSettings/components/RunesScreenLayout'
+import { BellRinging_Stroke2_Corner0_Rounded as BellIcon } from '#/components/icons/Bell'
 import { Hashtag_Stroke2_Corner0_Rounded as HashtagIcon } from '#/components/icons/Hashtag'
 import { InlineLinkText } from '#/components/Link'
-import { BellRinging_Stroke2_Corner0_Rounded as BellIcon } from '#/components/icons/Bell'
 
 export function DeltasAppQuirksSettingsScreen() {
   const { t: l } = useLingui()

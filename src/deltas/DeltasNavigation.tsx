@@ -11,6 +11,7 @@ export type DeltasNavigatorParams = {
   DeltasBadgeSettingsScreen: undefined
   DeltasModerationSettingsScreen: undefined
   AppQuirksSettingsScreen: undefined
+  AtmosphereIntegrations: undefined
   DeltasPlusSettingsScreen: undefined
 }
 
@@ -26,6 +27,7 @@ export const DeltasRoutes: Record<
   DeltasBadgeSettingsScreen: '/settings/deltas/badge',
   DeltasModerationSettingsScreen: '/settings/deltas/moderation',
   AppQuirksSettingsScreen: '/settings/deltas/app',
+  AtmosphereIntegrations: '/settings/deltas/atmosphere',
   DeltasDecorationsSettingsScreen: '/settings/deltas/decorations',
   DeltasPlusSettingsScreen: '/settings/deltas/plus',
 }
@@ -58,6 +60,11 @@ const AppQuirksSettingsScreen = deltaDeferredNamedScreen(
 const DeltasPlusSettingsScreen = deltaDeferredNamedScreen(
   () => require('#/screens/Settings/Deltas/DeltasPlus/DeltasPlusSettingsScreen'),
   'DeltasPlusSettingsScreen',
+)
+
+const DeltasAtmosphereIntegrationsSettingsScreen = deltaDeferredNamedScreen(
+  () => require('#/screens/Settings/Deltas/AtmosphereIntegrations'),
+  'DeltasAtmosphereIntegrationsSettingsScreen',
 )
 
 export function DeltasCommonStacks({
@@ -95,6 +102,11 @@ export function DeltasCommonStacks({
         name="AppQuirksSettingsScreen"
         getComponent={() => AppQuirksSettingsScreen}
         options={{ title: title(msg`App`) }}
+      />
+      <Stack.Screen
+        name="AtmosphereIntegrations"
+        getComponent={() => DeltasAtmosphereIntegrationsSettingsScreen}
+        options={{ title: title(msg`Atmosphere`) }}
       />
       <Stack.Screen
         name="DeltasPlusSettingsScreen"

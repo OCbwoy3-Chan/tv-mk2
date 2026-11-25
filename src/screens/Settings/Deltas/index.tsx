@@ -19,6 +19,7 @@ import { Hashtag_Stroke2_Corner0_Rounded as HashtagIcon } from '#/components/ico
 import { useSession } from '#/state/session'
 import { useVipStatusQuery } from '#/deltas/lib/vipEntitlement'
 import { Star_Stroke2_Corner0_Rounded as StarIcon } from '#/components/icons/Star'
+import {Globe_Stroke2_Corner0_Rounded as GlobeIcon} from '#/components/icons/Globe'
 
 type Props = NativeStackScreenProps<DeltasNavigatorParams>
 
@@ -148,6 +149,23 @@ export function DeltasSettingsScreen({ }: Props) {
                             <DeltasSubItem
                                 title={l`App`}
                                 icon={HashtagIcon}
+                                style={[
+                                    (state.hovered || state.pressed) && [t.atoms.bg_contrast_50],
+                                ]}
+                            />
+                        )}
+                    </Link>
+
+                    <Divider />
+
+                    <Link
+                        label={l`Atmosphere`}
+                        to="/settings/deltas/atmosphere"
+                    >
+                        {state => (
+                            <DeltasSubItem
+                                title={l`Atmosphere`}
+                                icon={GlobeIcon}
                                 style={[
                                     (state.hovered || state.pressed) && [t.atoms.bg_contrast_50],
                                 ]}

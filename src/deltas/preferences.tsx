@@ -8,6 +8,7 @@ export const deltasPreferencesZodSchema = z
     showBlockedMessages: z.boolean().optional(),
     showHiddenList: z.boolean().optional(),
     showMdniBadge: z.boolean().optional(),
+    showTealNowPlaying: z.boolean().optional(),
     evenMoreCustomizablePostTids: z.boolean().optional(),
     atprotoRkeyV2GenerationDefault: z
       .enum(['tid', 'prefix', 'suffix'])
@@ -28,6 +29,7 @@ type DeltasPreferences = {
   showBlockedMessages: boolean
   showHiddenList: boolean
   showMdniBadge: boolean
+  showTealNowPlaying: boolean
   evenMoreCustomizablePostTids: boolean
   atprotoRkeyV2GenerationDefault: 'tid' | 'prefix' | 'suffix'
   atprotoRkeyV2PrefixDefault: string
@@ -44,6 +46,7 @@ const defaults: DeltasPreferences = {
   showBlockedMessages: true,
   showHiddenList: true,
   showMdniBadge: true,
+  showTealNowPlaying: true,
   evenMoreCustomizablePostTids: false,
   atprotoRkeyV2GenerationDefault: 'tid',
   atprotoRkeyV2PrefixDefault: '',

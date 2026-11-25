@@ -57,6 +57,7 @@ import * as Toast from '#/components/Toast'
 import * as Tooltip from '#/components/Tooltip'
 import {Text} from '#/components/Typography'
 import {useAnalytics} from '#/analytics'
+import {TealNowPlaying} from '#/deltas/feat/TealNowPlaying'
 import {IS_IOS, IS_NATIVE} from '#/env'
 import {InviteFriendsDialog} from '#/features/inviteFriends'
 import {useActorStatus} from '#/features/liveNow'
@@ -247,7 +248,6 @@ let ProfileHeaderStandard = ({
           <View
             style={[
               a.flex_row,
-              a.flex_wrap,
               a.align_center,
               {gap: 10},
               a.pt_md,
@@ -295,6 +295,11 @@ let ProfileHeaderStandard = ({
                 </Text>
               )}
             </View>
+            {!isPlaceholderProfile &&
+              !isBlockedUser &&
+              !moderation.ui('profileView').blur && (
+                <TealNowPlaying did={profile.did} />
+              )}
           </View>
 
           {!isPlaceholderProfile &&
