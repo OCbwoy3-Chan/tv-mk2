@@ -4,7 +4,14 @@ import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {useLingui} from '@lingui/react/macro'
 
 import {type HtmlSegment, segmentsToText} from '#/lib/strings/bridged-html'
-import {type Kind, piecesOf} from '#/lib/strings/formatting'
+import {
+  type CodeBlock,
+  codeBlocksIn,
+  type Kind,
+  kindOf,
+  type Piece,
+  piecesOf,
+} from '#/lib/strings/formatting'
 import {isRTLText} from '#/lib/strings/text-direction'
 import {toShortUrl} from '#/lib/strings/url-helpers'
 import {
@@ -17,6 +24,7 @@ import {
   web,
 } from '#/alf'
 import {useNativeFontScale} from '#/alf/util/dimensions'
+import {HighlightedCode} from '#/components/HighlightedCode'
 import {InlineLinkText, type LinkProps} from '#/components/Link'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {RichTextTag} from '#/components/RichTextTag'
@@ -141,6 +149,7 @@ export function RichText({
   }>()
   const {facets} = richText
   const text = htmlSegments ? segmentsToText(htmlSegments) : richText.text
+  const blocks = htmlSegments ? [] : codeBlocksIn(text)
   const emojiOnly = !htmlSegments && isOnlyEmojiRichText(richText)
   const fontSize =
     (flatten(style).fontSize ?? a.text_sm.fontSize) *
@@ -163,7 +172,7 @@ export function RichText({
       : nativeEmojiFontSize
     : scaledFontSize
 
-  if (!facets?.length && !htmlSegments) {
+  if (!facets?.length && !htmlSegments && !blocks.length) {
     return (
       <Text
         emoji
@@ -270,7 +279,7 @@ export function RichText({
       key++
     }
   } else {
-    const pieces = piecesOf(richText.text, facets)
+    const pieces = withCodeBlocks(richText, blocks)
     const formatStyles = (kinds: Kind[]): StyleProp<TextStyle> => [
       kinds.includes('bold') && a.font_bold,
       kinds.includes('italic') && a.italic,
@@ -282,6 +291,18 @@ export function RichText({
     ]
     for (let i = 0; i < pieces.length; i++) {
       const segment = pieces[i]
+      if (segment.block) {
+        els.push(
+          <HighlightedCode
+            key={key++}
+            code={segment.block.code}
+            language={segment.block.language}
+            style={plainStyles}
+            selectable={selectable}
+          />,
+        )
+        continue
+      }
       if (segment.spoiler !== undefined) {
         const group = [segment]
         while (pieces[i + 1]?.spoiler === segment.spoiler) {
@@ -505,6 +526,74 @@ export function RichText({
       </NativeText>
     </>
   )
+}
+
+type CodePiece = Piece & {block?: CodeBlock}
+
+/** Replace fenced source ranges, retaining the original facet positions outside. */
+function withCodeBlocks(
+  richText: RichTextAPI,
+  candidates: CodeBlock[],
+): CodePiece[] {
+  const pieces = piecesOf(richText.text, richText.facets)
+  const spoilers = richText.facets?.filter(facet =>
+    facet.features.some(feature => kindOf(feature) === 'spoiler'),
+  )
+  // Check the original facets: another format may hide an overlapping marker.
+  const blocks = !spoilers?.length
+    ? candidates
+    : candidates.filter(block => {
+        const start = richText.unicodeText.utf16IndexToUtf8Index(block.start)
+        const end = richText.unicodeText.utf16IndexToUtf8Index(block.end)
+        return !spoilers.some(
+          facet => facet.index.byteStart < end && start < facet.index.byteEnd,
+        )
+      })
+  if (!blocks.length) return pieces
+  const result: CodePiece[] = []
+  for (const piece of pieces) {
+    let start = piece.start
+    for (const block of blocks) {
+      if (block.end <= start) continue
+      if (block.start >= piece.end) break
+      if (start < block.start) {
+        result.push({
+          ...piece,
+          start,
+          end: block.start,
+          text: piece.text.slice(
+            start - piece.start,
+            block.start - piece.start,
+          ),
+        })
+      }
+      start = Math.max(start, block.end)
+    }
+    if (start < piece.end) {
+      result.push({
+        ...piece,
+        start,
+        text: piece.text.slice(start - piece.start),
+      })
+    }
+  }
+  for (const block of blocks) {
+    result.push({
+      ...block,
+      block,
+      text: block.code,
+      kinds: ['code'],
+      // Retain feature identity for split labels and emoji crossing a boundary.
+      features: [
+        ...new Set(
+          pieces
+            .filter(piece => piece.start < block.end && block.start < piece.end)
+            .flatMap(piece => piece.features),
+        ),
+      ],
+    })
+  }
+  return result.sort((left, right) => left.start - right.start)
 }
 
 function Spoiler({

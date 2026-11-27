@@ -146,6 +146,36 @@ img {
   background-color: color-mix(in srgb, currentColor 18%, transparent);
   border-radius: 3px;
 }
+.ProseMirror .composer-code-comment {
+  color: var(--code-comment);
+}
+.ProseMirror .composer-code-keyword {
+  color: var(--code-keyword);
+}
+.ProseMirror .composer-code-string {
+  color: var(--code-string);
+}
+.ProseMirror .composer-code-number {
+  color: var(--code-number);
+}
+.ProseMirror .composer-code-function {
+  color: var(--code-function);
+}
+.ProseMirror .composer-code-type {
+  color: var(--code-type);
+}
+.ProseMirror .composer-code-property {
+  color: var(--code-property);
+}
+.ProseMirror .composer-code-punctuation {
+  color: var(--code-punctuation);
+}
+.ProseMirror .composer-code-added {
+  color: var(--code-added);
+}
+.ProseMirror .composer-code-removed {
+  color: var(--code-removed);
+}
 /* OLLIE: TODO -- this is not accessible */
 /* Remove focus state on inputs */
 .ProseMirror-focused {

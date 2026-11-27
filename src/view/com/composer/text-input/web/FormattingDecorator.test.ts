@@ -73,3 +73,31 @@ it.each(['snake_case', '2*3*4', '\\**literal**', '`**code**`'])(
     }
   },
 )
+
+it('maps highlighted tokens after Unicode paragraphs without including fences', () => {
+  const doc = schema.node('doc', null, [
+    paragraph('🌟'),
+    paragraph('```ts'),
+    paragraph('const label = "hé🌟";'),
+    paragraph('```'),
+  ])
+  const ranges = getFormattingDecorations(doc).find()
+  expect(ranges.some(range => range.from === 12 && range.to === 17)).toBe(true)
+  expect(ranges.some(range => range.from === 26 && range.to === 32)).toBe(true)
+})
+
+it('keeps a multiline string token aligned across hard breaks', () => {
+  const doc = schema.node('doc', null, [
+    schema.node('paragraph', null, [
+      schema.text('```python'),
+      schema.node('hardBreak'),
+      schema.text('value = """a'),
+      schema.node('hardBreak'),
+      schema.text('b"""'),
+      schema.node('hardBreak'),
+      schema.text('```'),
+    ]),
+  ])
+  const ranges = getFormattingDecorations(doc).find()
+  expect(ranges.some(range => range.from === 19 && range.to === 28)).toBe(true)
+})

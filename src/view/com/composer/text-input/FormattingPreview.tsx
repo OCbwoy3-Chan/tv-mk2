@@ -2,7 +2,7 @@ import {View} from 'react-native'
 import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {Trans} from '@lingui/react/macro'
 
-import {kindOf} from '#/lib/strings/formatting'
+import {codeBlocksIn, kindOf} from '#/lib/strings/formatting'
 import {
   applyFacetSyntax,
   parseMarkdownLinks,
@@ -14,7 +14,11 @@ import {Text} from '#/components/Typography'
 /** Keep the native editor's IME and selection intact; preview the posted facets. */
 export function FormattingPreview({richtext}: {richtext: RichTextAPI}) {
   const t = useTheme()
-  if (!richtext.facets?.some(facet => facet.features.some(kindOf))) return null
+  if (
+    !richtext.facets?.some(facet => facet.features.some(kindOf)) &&
+    !codeBlocksIn(richtext.text).length
+  )
+    return null
   const parsed = parseMarkdownLinks(richtext.text)
   const preview = new RichTextAPI({text: parsed.text})
   preview.detectFacetsWithoutResolution()

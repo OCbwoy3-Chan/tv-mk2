@@ -14,6 +14,7 @@ export function TextSyntaxHelp() {
     // l`[label](url) makes a masked link`,
     l`[label](...) makes a masked link, emoji or a mention`,
     l`**bold**, *italic* or _italic_, ~~strikethrough~~, and \`code\` format text`,
+    l`Use a line of three backticks with a language (like \`\`\`ts), then code, then three backticks on their own line for highlighted code`,
     l`||spoiler|| hides text until tapped (obscured with ROT18, not encrypted)`,
     l`${slash} before a formatting marker keeps it literal`,
     l`${slash}... keeps facets like links, hashtags, and mentions plain`,

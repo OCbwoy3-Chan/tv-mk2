@@ -1,4 +1,9 @@
-import {type StyleProp, StyleSheet, type TextStyle} from 'react-native'
+import {
+  type StyleProp,
+  StyleSheet,
+  Text as NativeText,
+  type TextStyle,
+} from 'react-native'
 import {type Unknown$TypedObject} from '@atproto/lex'
 import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {setupI18n} from '@lingui/core'
@@ -29,7 +34,18 @@ jest.mock('#/alf', () => ({
   },
   useTheme: () => ({
     atoms: {text_contrast_medium: {color: '#555'}},
-    palette: {contrast_25: '#eee', contrast_100: '#ddd'},
+    palette: {
+      contrast_25: '#eee',
+      contrast_100: '#ddd',
+      contrast_500: '#777',
+      contrast_600: '#666',
+      contrast_900: '#111',
+      primary_600: '#36c',
+      primary_700: '#25b',
+      primary_800: '#149',
+      positive_700: '#080',
+      negative_700: '#b22',
+    },
   }),
   useAlf: () => ({fonts: {scaleMultiplier: 1}}),
   flatten: (style: unknown) =>
@@ -534,4 +550,229 @@ it('shows code literally even when a link facet covers the same text', () => {
     fontFamily: 'Courier New',
   })
   expect(mockLinkTargets).toEqual([])
+})
+
+it.each([
+  new RichTextAPI({text: '```txt\n  literal <b> & text\n\tindented  \n```'}),
+  '```txt\n  literal <b> & text\n\tindented  \n```',
+])(
+  'renders unfaceted fenced code with exact whitespace in nested text',
+  value => {
+    const screen = render(
+      <NativeText>
+        <RichText testID="body" value={value} selectable suffix="suffix" />
+      </NativeText>,
+    )
+    const code = screen.getByText('  literal <b> & text\n\tindented  ', {
+      normalizer: text => text,
+    })
+    expect(StyleSheet.flatten(code.props.style)).toMatchObject({
+      fontFamily: 'Courier New',
+      backgroundColor: '#eee',
+    })
+    expect(screen.getByTestId('body').props.selectable).toBe(true)
+    expect(JSON.stringify(screen.toJSON())).not.toContain('```')
+    expect(JSON.stringify(screen.toJSON())).toContain('suffix')
+    expect(mockLinkTargets).toEqual([])
+  },
+)
+
+it('colors language tokens and leaves inline backticks unchanged', () => {
+  const screen = render(
+    <RichText
+      value={'`inline`\n```typescript\nconst answer = "yes"; // note\n```'}
+    />,
+  )
+  expect(
+    StyleSheet.flatten(screen.getByText('const').props.style),
+  ).toMatchObject({
+    color: '#b22',
+  })
+  expect(
+    StyleSheet.flatten(screen.getByText('"yes"').props.style),
+  ).toMatchObject({
+    color: '#080',
+  })
+  expect(
+    StyleSheet.flatten(screen.getByText('// note').props.style),
+  ).toMatchObject({color: '#777'})
+  expect(JSON.stringify(screen.toJSON())).toContain('`inline`')
+  expect(JSON.stringify(screen.toJSON())).not.toContain('typescript')
+})
+
+it('preserves UTF-8 facets, layout props and suffix around multiple blocks', () => {
+  const text =
+    '🌈 before\n```js\nconst café = 1\n```\n中 after\n```python\nprint("été")\n```\nfin'
+  const beforeEnd = text.indexOf('\n')
+  const afterStart = text.indexOf('中 after')
+  const finStart = text.lastIndexOf('fin')
+  const onLayout = jest.fn()
+  const onTextLayout = jest.fn()
+  const screen = render(
+    <RichText
+      testID="body"
+      value={withFacets(text, [
+        {start: 0, end: beforeEnd, features: [featureOf('bold')]},
+        {
+          start: afterStart,
+          end: afterStart + '中 after'.length,
+          features: [featureOf('italic')],
+        },
+        {
+          start: finStart,
+          end: text.length,
+          features: [
+            {
+              $type: 'app.bsky.richtext.facet#link',
+              uri: 'https://outside.test',
+            },
+          ],
+        },
+      ])}
+      style={{fontSize: 19, lineHeight: 25}}
+      numberOfLines={8}
+      onLayout={onLayout}
+      onTextLayout={onTextLayout}
+      suffix="suffix"
+    />,
+  )
+  expect(
+    StyleSheet.flatten(screen.getByText('🌈 before').props.style),
+  ).toMatchObject({fontWeight: '700', fontSize: 19, lineHeight: 25})
+  expect(
+    StyleSheet.flatten(screen.getByText('中 after').props.style),
+  ).toMatchObject({fontStyle: 'italic'})
+  expect(screen.getByText('const café = 1')).toBeTruthy()
+  expect(screen.getByText('print("été")')).toBeTruthy()
+  expect(mockLinkTargets).toEqual(['https://outside.test'])
+  expect(screen.getByTestId('body').props).toMatchObject({
+    numberOfLines: 8,
+    onLayout,
+    onTextLayout,
+  })
+  expect(JSON.stringify(screen.toJSON())).toContain('suffix')
+  expect(JSON.stringify(screen.toJSON())).not.toContain('```')
+})
+
+it.each([false, true])(
+  'keeps HTML and every interactive facet literal inside code (disableLinks=%s)',
+  disableLinks => {
+    const code = '<b>https://code.test @alice #tag :wave:</b>'
+    const text = `\`\`\`html\n${code}\n\`\`\``
+    const start = text.indexOf(code)
+    const screen = render(
+      <RichText
+        disableLinks={disableLinks}
+        enableTags
+        value={withFacets(text, [
+          {
+            start,
+            end: start + code.length,
+            features: [
+              {$type: 'app.bsky.richtext.facet#link', uri: 'https://code.test'},
+              {$type: 'app.bsky.richtext.facet#mention', did: 'did:plc:alice'},
+              {$type: 'app.bsky.richtext.facet#tag', tag: 'tag'},
+              {
+                $type: 'blue.moji.richtext.facet',
+                name: 'wave',
+              } as unknown as Unknown$TypedObject,
+            ],
+          },
+        ])}
+      />,
+    )
+    expect(screen.getByText(code)).toBeTruthy()
+    expect(mockLinkTargets).toEqual([])
+    expect(mockTagTargets).toEqual([])
+    expect(mockEmojiCalls).toEqual([])
+    expect(screen.queryByRole('link')).toBeNull()
+    expect(JSON.stringify(screen.toJSON())).not.toContain('```')
+  },
+)
+
+it('never highlights or mounts a fenced block intersecting a hidden spoiler', () => {
+  const secret = 'const secret = "private"'
+  const text = `\`\`\`js\n${shift(secret)}\n\`\`\``
+  const start = text.indexOf(shift(secret))
+  const screen = render(
+    <I18nProvider i18n={i18n}>
+      <RichText
+        value={withFacets(text, [
+          {
+            start,
+            end: start + secret.length,
+            features: [featureOf('spoiler')],
+          },
+        ])}
+      />
+    </I18nProvider>,
+  )
+  expect(JSON.stringify(screen.toJSON())).not.toContain('secret')
+  expect(JSON.stringify(screen.toJSON())).not.toContain(shift(secret))
+  // A conflicting block stays literal instead of bypassing the spoiler.
+  expect(JSON.stringify(screen.toJSON())).toContain('```js')
+  fireEvent.press(screen.getByRole('button', {name: 'Reveal spoiler'}), {
+    preventDefault: jest.fn(),
+    stopPropagation: jest.fn(),
+  })
+  expect(screen.getByText(secret)).toBeTruthy()
+  expect(screen.queryByText('const')).toBeNull()
+})
+
+it('renders code-only composer previews without mutating their source', () => {
+  const source = '```js\nconst answer = 42\n```'
+  const richtext = new RichTextAPI({text: source})
+  const screen = render(
+    <I18nProvider i18n={i18n}>
+      <FormattingPreview richtext={richtext} />
+    </I18nProvider>,
+  )
+  expect(screen.getByTestId('composerFormattingPreview')).toBeTruthy()
+  expect(screen.getByText('const answer = 42')).toBeTruthy()
+  expect(
+    StyleSheet.flatten(screen.getByText('const').props.style),
+  ).toMatchObject({
+    color: '#b22',
+  })
+  expect(JSON.stringify(screen.toJSON())).not.toContain('```')
+  expect(richtext.text).toBe(source)
+  expect(richtext.facets).toBeUndefined()
+})
+
+it('highlights an unlabeled block with shared generic rules', () => {
+  const screen = render(<RichText value={'```\nlet answer = 1\n```'} />)
+  expect(StyleSheet.flatten(screen.getByText('let').props.style)).toMatchObject(
+    {
+      color: '#b22',
+    },
+  )
+  expect(screen.getByText('let answer = 1')).toBeTruthy()
+  expect(JSON.stringify(screen.toJSON())).not.toContain('```')
+})
+
+it('keeps a whole fenced spoiler hidden while highlighting a separate block', () => {
+  const hidden = '```js\nconst privateValue = "secret"\n```'
+  const text = `${shift(hidden)}\n\`\`\`js\nconst publicValue = 1\n\`\`\``
+  const screen = render(
+    <I18nProvider i18n={i18n}>
+      <RichText
+        value={withFacets(text, [
+          {start: 0, end: hidden.length, features: [featureOf('spoiler')]},
+        ])}
+      />
+    </I18nProvider>,
+  )
+  expect(JSON.stringify(screen.toJSON())).not.toContain('secret')
+  expect(JSON.stringify(screen.toJSON())).not.toContain(shift('secret'))
+  expect(screen.getByText('const publicValue = 1')).toBeTruthy()
+  expect(
+    StyleSheet.flatten(screen.getByText('const').props.style),
+  ).toMatchObject({
+    color: '#b22',
+  })
+  fireEvent.press(screen.getByRole('button', {name: 'Reveal spoiler'}), {
+    preventDefault: jest.fn(),
+    stopPropagation: jest.fn(),
+  })
+  expect(screen.getByText(hidden)).toBeTruthy()
 })

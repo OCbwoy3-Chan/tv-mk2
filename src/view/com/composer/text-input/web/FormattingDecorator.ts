@@ -5,6 +5,7 @@ import {Plugin, PluginKey} from '@tiptap/pm/state'
 import {Decoration, DecorationSet} from '@tiptap/pm/view'
 
 import {formattingIn, kindOf} from '#/lib/strings/formatting'
+import {highlight} from '#/lib/strings/highlight'
 import {
   applyFacetSyntax,
   applyMarkdownLinkFacets,
@@ -71,8 +72,18 @@ export function getFormattingDecorations(doc: Node) {
     add(format.end, format.end + format.marker, 'composer-syntax')
   }
   for (const index of escapes) add(index, index + 1, 'composer-syntax')
-  for (const block of blocks)
+  for (const block of blocks) {
     add(block.start, block.end, 'composer-format-code')
+    const codeStart = text.indexOf('\n', block.start) + 1
+    add(block.start, codeStart, 'composer-syntax')
+    add(codeStart + block.code.length, block.end, 'composer-syntax')
+    let at = codeStart
+    for (const token of highlight(block.code, block.language)) {
+      if (token.kind)
+        add(at, at + token.text.length, `composer-code-${token.kind}`)
+      at += token.text.length
+    }
+  }
   return DecorationSet.create(doc, decorations)
 }
 

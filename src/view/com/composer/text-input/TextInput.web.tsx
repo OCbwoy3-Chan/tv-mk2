@@ -31,6 +31,7 @@ import {splitGraphemes} from 'unicode-segmenter/grapheme'
 import {useColorSchemeStyle} from '#/lib/hooks/useColorSchemeStyle'
 import {blobToDataUri, isUriImage} from '#/lib/media/util'
 import {kindOf} from '#/lib/strings/formatting'
+import {syntaxColors} from '#/lib/strings/highlight'
 import {formatMarkdownLinkDestination} from '#/lib/strings/markdown-links'
 import {
   applyFacetSyntax,
@@ -536,6 +537,12 @@ export function TextInput({
     style.minHeight = webForceMinHeight ? 140 : undefined
     return {
       ...style,
+      ...Object.fromEntries(
+        Object.entries(syntaxColors(t.palette)).map(([kind, color]) => [
+          `--code-${kind}`,
+          color,
+        ]),
+      ),
       '--placeholder-color': t.atoms.text_contrast_low.color,
       caretColor: t.palette.primary_500,
     }
