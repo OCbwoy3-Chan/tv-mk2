@@ -130,7 +130,7 @@ export function DesktopRightNav({routeName}: {routeName: string}) {
         <Text style={[t.atoms.text_contrast_low]}>{' ∙ '}</Text>
         <InlineLinkText
           label={_(msg`Code`)}
-          to={HELP_DESK_URL}
+          to={"https://tangled.org/did:plc:3thjdgidhlxp7qzhffroeece"}
           style={[t.atoms.text_contrast_medium]}>
           {_(msg`Code`)}
         </InlineLinkText>

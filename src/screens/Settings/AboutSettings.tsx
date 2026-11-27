@@ -116,7 +116,7 @@ export function AboutSettingsScreen({}: Props) {
               <Trans>Status Page</Trans>
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
-          <SettingsList.LinkItem to={HELP_DESK_URL} label={_(msg`Source code`)}>
+          <SettingsList.LinkItem to={"https://tangled.org/did:plc:3thjdgidhlxp7qzhffroeece"} label={_(msg`Source code`)}>
             <SettingsList.ItemIcon icon={CodeBracketsIcon} />
             <SettingsList.ItemText>
               <Trans>Source code</Trans>
