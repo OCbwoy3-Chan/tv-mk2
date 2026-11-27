@@ -1,5 +1,6 @@
 import {RichText} from '@bsky/sdk/richtext'
 
+import {featureOf, kindOf, piecesOf, shift} from './formatting'
 import {richTextToRedraftString} from './rich-text-helpers'
 import {
   applyFacetSyntax,
@@ -225,4 +226,124 @@ describe('richTextToRedraftString', () => {
 
     expect(richTextToRedraftString(original)).toBe('x<@person.test>')
   })
+})
+
+describe('formatting redrafts', () => {
+  function repost(text: string) {
+    const parsed = parseMarkdownLinks(text)
+    const rt = new RichText({text: parsed.text})
+    rt.detectFacetsWithoutResolution()
+    rt.facets = [
+      ...(rt.facets ?? []).filter(
+        f =>
+          !parsed.facets.some(
+            link =>
+              f.index.byteStart < link.index.byteEnd &&
+              f.index.byteEnd > link.index.byteStart,
+          ),
+      ),
+      ...parsed.facets,
+    ] as typeof rt.facets
+    return applyFacetSyntax(rt, {removeSyntax: true})
+  }
+
+  it('decodes spoilers and preserves nested formatting and links through a repost', () => {
+    const source =
+      '🌟 **bold *italic* [page](https://example.com)** ||secret 123 世||'
+    const original = repost(source)
+    const redraft = richTextToRedraftString(original)
+    expect(redraft).toBe(source)
+    expect(original.text).toContain(shift('secret 123 世'))
+    const again = repost(redraft)
+    expect(again.text).toBe(original.text)
+    expect(again.facets).toEqual(original.facets)
+  })
+
+  it('creates source syntax for foreign formatting facets without markers', () => {
+    const original = new RichText({
+      text: 'hello world',
+      facets: [
+        {index: {byteStart: 0, byteEnd: 11}, features: [featureOf('bold')]},
+        {index: {byteStart: 6, byteEnd: 11}, features: [featureOf('italic')]},
+      ],
+    })
+    const redraft = richTextToRedraftString(original)
+    expect(redraft).toBe('**hello *world***')
+    expect(
+      piecesOf(repost(redraft).text, repost(redraft).facets)
+        .map(p => p.text)
+        .join(''),
+    ).toBe('hello world')
+    expect(
+      repost(redraft)
+        .facets?.flatMap(f => f.features)
+        .map(kindOf),
+    ).toEqual(['bold', 'italic'])
+  })
+
+  it('does not promote plain Markdown into formatting while redrafting', () => {
+    const text = '**literal** *literal* ~~literal~~ ||literal|| `literal`'
+    const redraft = richTextToRedraftString(new RichText({text}))
+    const again = repost(redraft)
+    expect(again.text).toBe(text)
+    expect(again.facets ?? []).toEqual([])
+  })
+
+  it('round trips escaped literal markers alongside a real formatting facet', () => {
+    const original = repost(
+      String.raw`**bold** \*literal* \\path ||hidden \*literal*||`,
+    )
+    const redraft = richTextToRedraftString(original)
+    const again = repost(redraft)
+    expect(again.text).toBe(original.text)
+    expect(again.facets).toEqual(original.facets)
+  })
+
+  it('decodes markerless Unicode spoilers without losing their group', () => {
+    const text = shift('héllo 123 🌟')
+    const original = new RichText({
+      text,
+      facets: [
+        {
+          index: {byteStart: 0, byteEnd: new TextEncoder().encode(text).length},
+          features: [featureOf('spoiler')],
+        },
+      ],
+    })
+    expect(richTextToRedraftString(original)).toBe('||héllo 123 🌟||')
+  })
+})
+
+it('redrafts mentions inside overlapping formatting without escaping their angle syntax', () => {
+  const original = new RichText({
+    text: '@person.test',
+    facets: [
+      {
+        index: {byteStart: 0, byteEnd: 12},
+        features: [
+          featureOf('bold'),
+          {$type: 'app.bsky.richtext.facet#mention', did: 'did:plc:person'},
+        ],
+      },
+    ],
+  })
+  expect(richTextToRedraftString(original)).toBe('**<@person.test>**')
+})
+
+it('splits a foreign link around nested formatting instead of hiding markers inside its label', () => {
+  const original = new RichText({
+    text: 'one two three',
+    facets: [
+      {
+        index: {byteStart: 0, byteEnd: 13},
+        features: [
+          {$type: 'app.bsky.richtext.facet#link', uri: 'https://example.com'},
+        ],
+      },
+      {index: {byteStart: 4, byteEnd: 7}, features: [featureOf('bold')]},
+    ],
+  })
+  expect(richTextToRedraftString(original)).toBe(
+    '[one ](https://example.com)**[two](https://example.com)**[ three](https://example.com)',
+  )
 })

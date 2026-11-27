@@ -1,6 +1,7 @@
-import {type Client} from '@atproto/lex'
+import {type Client, type Unknown$TypedObject} from '@atproto/lex'
 import {RichText} from '@bsky/sdk/richtext'
 
+import {featureOf, kindOf, piecesOf, shift} from './formatting'
 import {
   applyFacetSyntax,
   applyMarkdownLinkFacets,
@@ -29,10 +30,18 @@ function prepare(text: string, removeSyntax = true) {
   return applyFacetSyntax(rt, {removeSyntax})
 }
 
-function facetTexts(rt: RichText) {
-  return rt.facets?.map(facet =>
-    rt.unicodeText.slice(facet.index.byteStart, facet.index.byteEnd),
-  )
+function facetTexts(rt: RichText, onlyLinks = false) {
+  return rt.facets
+    ?.filter(
+      facet =>
+        !onlyLinks ||
+        facet.features.some(
+          feature => feature.$type === 'app.bsky.richtext.facet#link',
+        ),
+    )
+    .map(facet =>
+      rt.unicodeText.slice(facet.index.byteStart, facet.index.byteEnd),
+    )
 }
 
 describe('facet syntax', () => {
@@ -94,10 +103,10 @@ describe('facet syntax', () => {
       applyMarkdownLinkFacets(editor)
       applyFacetSyntax(editor)
 
-      expect(facetTexts(editor)).toEqual([masked])
+      expect(facetTexts(editor, true)).toEqual([masked])
       const posted = prepare(text)
       expect(posted.text).toBe(`(*text with masked links${suffix}`)
-      expect(facetTexts(posted)).toEqual(['with masked links'])
+      expect(facetTexts(posted, true)).toEqual(['with masked links'])
     },
   )
   it.each([
@@ -428,5 +437,112 @@ describe('facet syntax', () => {
       $type: 'app.bsky.richtext.facet#mention',
       did: 'did:plc:person',
     })
+  })
+})
+
+describe('formatting and facet syntax integration', () => {
+  it.each([
+    String.raw`\\*literal* \<example.com> ||hello 123||`,
+    String.raw`\\\*literal* <example.com> ||hello 123||`,
+    String.raw`\*literal* \\example.com ||hello 123||`,
+  ])('unescapes each original slash at most once: %s', text => {
+    const rt = new RichText({text})
+    rt.detectFacetsWithoutResolution()
+    const indices = getFacetSyntaxRemovalIndices(rt)
+    const expected = [...text]
+      .filter((_, index) => !indices.has(index))
+      .join('')
+    applyFacetSyntax(rt, {removeSyntax: true})
+    expect(rt.text).toBe(expected.replace('hello 123', shift('hello 123')))
+    const first = rt.text
+    applyFacetSyntax(rt, {removeSyntax: true})
+    expect(rt.text).toBe(first)
+  })
+
+  it('never transforms Markdown links, angles or escapes inside code fences', () => {
+    const text = '```js\n[page](example.com) <#tag> \\\\word **bold**\n```'
+    expect(parseMarkdownLinks(text)).toEqual({text, facets: []})
+    expect(prepare(text).text).toBe(text)
+    expect(prepare(text).facets ?? []).toEqual([])
+    const inline = '`[page](example.com) <#tag> \\\\word`'
+    const rt = prepare(inline)
+    expect(rt.text).toBe(inline)
+    expect(rt.facets?.flatMap(f => f.features).map(kindOf)).toEqual(['code'])
+  })
+
+  it('suppresses links, mentions and tags inside spoilers but preserves their text', () => {
+    const text = '||@person.test #tag example.com||'
+    const rt = prepare(text)
+    expect(rt.text).toBe(`||${shift(text.slice(2, -2))}||`)
+    expect(rt.facets?.flatMap(f => f.features).map(kindOf)).toEqual(['spoiler'])
+    expect(
+      piecesOf(rt.text, rt.facets)
+        .map(p => p.text)
+        .join(''),
+    ).toBe(text.slice(2, -2))
+  })
+
+  it('keeps Unicode overlapping formatting and following emoji ranges while shortening', () => {
+    const source = '🌟 **https://example.com/éééééééééééééééééééé** :wave:'
+    const rt = prepare(source)
+    const emojiStart = rt.unicodeText.utf16IndexToUtf8Index(
+      rt.text.indexOf(':wave:'),
+    )
+    rt.facets!.push({
+      index: {byteStart: emojiStart, byteEnd: emojiStart + 6},
+      features: [
+        {
+          $type: 'blue.moji.richtext.facet',
+          did: 'did:plc:emoji',
+        } as unknown as Unknown$TypedObject,
+      ],
+    })
+    const shortened = shortenLinks(rt, true)
+    const formatting = shortened.facets!.find(f =>
+      f.features.some(f => kindOf(f) === 'bold'),
+    )!
+    const link = shortened.facets!.find(f =>
+      f.features.some(f => f.$type === 'app.bsky.richtext.facet#link'),
+    )!
+    expect(formatting.index).toEqual(link.index)
+    expect(
+      shortened.unicodeText.slice(
+        formatting.index.byteStart,
+        formatting.index.byteEnd,
+      ),
+    ).toBe(
+      shortened.text.slice(
+        shortened.text.indexOf('**') + 2,
+        shortened.text.lastIndexOf('**'),
+      ),
+    )
+    const emoji = shortened.facets!.find(f =>
+      f.features.some(f => f.$type === 'blue.moji.richtext.facet'),
+    )!
+    expect(
+      shortened.unicodeText.slice(emoji.index.byteStart, emoji.index.byteEnd),
+    ).toBe(':wave:')
+    expect(
+      piecesOf(shortened.text, shortened.facets)
+        .map(p => p.text)
+        .join(''),
+    ).not.toContain('**')
+  })
+
+  it('retains explicit full URL label identities while adding formatting facets', () => {
+    const uri = 'https://example.com/a-very-long-path-that-must-stay-explicit'
+    const parsed = parseMarkdownLinks(`**[${uri}](${uri})**`)
+    const rt = new RichText({
+      text: parsed.text,
+      facets: parsed.facets as NonNullable<RichText['facets']>,
+    })
+    applyFacetSyntax(rt, {removeSyntax: true})
+    const shortened = shortenLinks(rt, true, parsed.facets)
+    expect(shortened.text).toBe(`**${uri}**`)
+    expect(
+      shortened.facets?.some(f =>
+        f.features.some(feature => feature.$type === featureOf('bold').$type),
+      ),
+    ).toBe(true)
   })
 })

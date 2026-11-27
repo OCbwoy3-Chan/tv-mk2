@@ -5,6 +5,7 @@ import {RichText, UnicodeString} from '@bsky/sdk/richtext'
 
 import {app, com} from '#/lexicons'
 import * as bsky from '#/types/bsky'
+import {applyFormattingFacets, formattingIn, kindOf} from './formatting'
 import {
   ESCAPED_MARKDOWN_LINK_PATTERN,
   getMarkdownLinkHighlightRanges,
@@ -92,28 +93,30 @@ export function shortenLinks(
       }
       const shortened = new UnicodeString(toShortUrl(url))
 
-      // insert the shorten URL
-      rt.insert(byteStart, shortened.utf16)
-      /*
-       * The SDK shifts facets by UTF-16 length when inserting, but facet
-       * offsets are UTF-8 bytes. Correct that shift before removing the URL.
-       */
-      const missingBytes = shortened.length - shortened.utf16.length
-      if (missingBytes) {
-        for (const current of rt.facets) {
-          if (current.index.byteStart >= byteStart) {
-            current.index.byteStart += missingBytes
-            current.index.byteEnd += missingBytes
-          } else if (current.index.byteEnd > byteStart) {
-            current.index.byteEnd += missingBytes
-          }
-        }
+      rt.unicodeText = new UnicodeString(
+        rt.unicodeText.slice(0, byteStart) +
+          shortened.utf16 +
+          rt.unicodeText.slice(byteEnd),
+      )
+      const delta = shortened.length - (byteEnd - byteStart)
+      for (const current of rt.facets) {
+        const start = current.index.byteStart
+        const end = current.index.byteEnd
+        current.index.byteStart =
+          start <= byteStart
+            ? start
+            : start >= byteEnd
+              ? start + delta
+              : byteStart + Math.min(start - byteStart, shortened.length)
+        current.index.byteEnd =
+          end <= byteStart
+            ? end
+            : end >= byteEnd
+              ? end + delta
+              : byteStart + Math.min(end - byteStart, shortened.length)
       }
-      // update the facet to cover the new shortened URL
       facet.index.byteStart = byteStart
       facet.index.byteEnd = byteStart + shortened.length
-      // remove the old URL
-      rt.delete(byteStart + shortened.length, byteEnd + shortened.length)
     }
   }
   return rt
@@ -225,7 +228,21 @@ function getEscapedMarkdownProtectionRanges(
 export function applyMarkdownLinkFacets(rt: RichText): RichText {
   const markdownFacets: AppBskyRichtextFacet.Main[] = []
   const ranges: {start: number; end: number}[] = []
+  const formatting = formattingIn(rt.text)
+  const literal = [
+    ...formatting.blocks,
+    ...formatting.formats.filter(
+      format => format.kind === 'code' || format.kind === 'spoiler',
+    ),
+  ]
   for (const match of rt.text.matchAll(MARKDOWN_LINK_PATTERN)) {
+    if (
+      literal.some(
+        span =>
+          match.index < span.end && match.index + match[0].length > span.start,
+      )
+    )
+      continue
     if (
       isEscapedFacetSyntax(rt.text, match.index) ||
       isEmojiDestination(match[1])
@@ -273,17 +290,76 @@ export function getEnclosedFacet(text: string) {
   return /^[\p{P}]*$/u.test(trailing) ? facet : undefined
 }
 
+const postedFacetSyntax = new WeakMap<RichText, string>()
+
 /** Apply backslash escapes and angle syntax to detected facets. */
 export function applyFacetSyntax(
   rt: RichText,
   {removeSyntax = false}: {removeSyntax?: boolean} = {},
 ): RichText {
+  if (removeSyntax && postedFacetSyntax.get(rt) === rt.text) return rt
+  /*
+   * SDK detection requires whitespace before URLs/handles; formatting markers
+   * also form a boundary, without changing the editor's source text.
+   */
+  const rawFormatting = formattingIn(
+    rt.text,
+    (rt.facets ?? [])
+      .filter(facet => facet.features.some(feature => !kindOf(feature)))
+      .map(facet => ({
+        start: rt.unicodeText.slice(0, facet.index.byteStart).length,
+        end: rt.unicodeText.slice(0, facet.index.byteEnd).length,
+      })),
+  )
+  const literal = rawFormatting.formats.filter(
+    format => format.kind === 'code' || format.kind === 'spoiler',
+  )
+  for (const format of rawFormatting.formats) {
+    if (
+      literal.some(span => format.start < span.end && format.end > span.start)
+    )
+      continue
+    const content = new RichText({
+      text: rt.text.slice(format.start, format.end),
+    })
+    content.detectFacetsWithoutResolution()
+    const offset = rt.unicodeText.utf16IndexToUtf8Index(format.start)
+    for (const facet of content.facets ?? []) {
+      facet.index.byteStart += offset
+      facet.index.byteEnd += offset
+      if (
+        rt.facets?.some(
+          existing =>
+            existing.features.some(feature => !kindOf(feature)) &&
+            existing.index.byteStart < facet.index.byteEnd &&
+            existing.index.byteEnd > facet.index.byteStart,
+        )
+      )
+        continue
+      rt.facets = [...(rt.facets ?? []), facet]
+    }
+  }
   const deletionPoints = collectFacetSyntax(rt)
+  const formatting = formattingIn(
+    rt.text,
+    (rt.facets ?? [])
+      .filter(facet => facet.features.some(feature => !kindOf(feature)))
+      .map(facet => ({
+        start: rt.unicodeText.slice(0, facet.index.byteStart).length,
+        end: rt.unicodeText.slice(0, facet.index.byteEnd).length,
+      })),
+  )
+  applyFormattingFacets(rt, {forPosting: removeSyntax})
   if (removeSyntax) {
-    for (const index of deletionPoints.sort((a, b) => b - a)) {
-      const byte = rt.unicodeText.utf16IndexToUtf8Index(index)
+    const escaped = new Set(formatting.escapes)
+    for (const index of [...new Set(deletionPoints)].sort((a, b) => b - a)) {
+      if (escaped.has(index)) continue
+      const shifted =
+        index - formatting.escapes.filter(escape => escape < index).length
+      const byte = rt.unicodeText.utf16IndexToUtf8Index(shifted)
       rt.delete(byte, byte + 1)
     }
+    postedFacetSyntax.set(rt, rt.text)
   }
   return rt
 }
@@ -293,8 +369,31 @@ export function getFacetSyntaxRemovalIndices(rt: RichText): Set<number> {
   const preview = rt.clone()
   applyMarkdownLinkFacets(preview)
   const indices = new Set(collectFacetSyntax(preview))
+  const formatting = formattingIn(
+    preview.text,
+    (preview.facets ?? [])
+      .filter(facet => facet.features.some(feature => !kindOf(feature)))
+      .map(facet => ({
+        start: preview.unicodeText.slice(0, facet.index.byteStart).length,
+        end: preview.unicodeText.slice(0, facet.index.byteEnd).length,
+      })),
+  )
+  for (const index of formatting.escapes) indices.add(index)
+  const literal = [
+    ...formatting.blocks,
+    ...formatting.formats.filter(
+      format => format.kind === 'code' || format.kind === 'spoiler',
+    ),
+  ]
   for (const match of rt.text.matchAll(MARKDOWN_LINK_PATTERN)) {
     if (isEscapedFacetSyntax(rt.text, match.index)) continue
+    if (
+      literal.some(
+        span =>
+          match.index < span.end && match.index + match[0].length > span.start,
+      )
+    )
+      continue
     const destinationStart = match.index + match[0].length - match[1].length - 1
     for (const escape of match[1].matchAll(MARKDOWN_ESCAPE_PATTERN)) {
       indices.add(destinationStart + escape.index)
@@ -328,9 +427,25 @@ function collectFacetSyntax(rt: RichText): number[] {
   const toByte = (index: number) => rt.unicodeText.utf16IndexToUtf8Index(index)
   const protectedRanges: {start: number; end: number}[] = []
   const deletionPoints: number[] = []
+  const formatting = formattingIn(
+    text,
+    (rt.facets ?? [])
+      .filter(facet => facet.features.some(feature => !kindOf(feature)))
+      .map(facet => ({
+        start: rt.unicodeText.slice(0, facet.index.byteStart).length,
+        end: rt.unicodeText.slice(0, facet.index.byteEnd).length,
+      })),
+  )
+  const code = [
+    ...formatting.blocks,
+    ...formatting.formats
+      .filter(format => format.kind === 'code')
+      .map(format => ({start: format.start - 1, end: format.end + 1})),
+  ]
 
   for (let i = 0; i < text.length; i++) {
     if (text[i] !== '\\') continue
+    if (code.some(span => i >= span.start && i < span.end)) continue
     const start = i
     while (text[i] === '\\') i++
     const end = i
@@ -380,6 +495,16 @@ function collectFacetSyntax(rt: RichText): number[] {
   }
 
   for (const match of text.matchAll(/<[^<>\n]+>/g)) {
+    if (
+      code.some(span => match.index >= span.start && match.index < span.end) ||
+      formatting.formats.some(
+        format =>
+          format.kind === 'spoiler' &&
+          match.index >= format.start &&
+          match.index < format.end,
+      )
+    )
+      continue
     const start = toByte(match.index)
     const end = toByte(match.index + match[0].length)
     if (
@@ -476,13 +601,26 @@ export function parseMarkdownLinks(text: string): {
   facets: AppBskyRichtextFacet.Main[]
 } {
   const regex = new RegExp(MARKDOWN_LINK_PATTERN)
-  let match
   let newText = ''
   let lastIndex = 0
   const facets: AppBskyRichtextFacet.Main[] = []
+  const formatting = formattingIn(text)
+  const literal = [
+    ...formatting.blocks,
+    ...formatting.formats.filter(
+      format => format.kind === 'code' || format.kind === 'spoiler',
+    ),
+  ]
 
-  while ((match = regex.exec(text)) !== null) {
+  for (const match of text.matchAll(regex)) {
     if (isEscapedFacetSyntax(text, match.index) || isEmojiDestination(match[1]))
+      continue
+    if (
+      literal.some(
+        span =>
+          match.index < span.end && match.index + match[0].length > span.start,
+      )
+    )
       continue
     const [fullMatch, linkUrl] = match
     const linkText = fullMatch.slice(1, fullMatch.indexOf(']'))

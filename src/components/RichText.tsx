@@ -1,8 +1,10 @@
 import {useMemo, useState} from 'react'
 import {type StyleProp, Text as NativeText, type TextStyle} from 'react-native'
 import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
+import {useLingui} from '@lingui/react/macro'
 
 import {type HtmlSegment, segmentsToText} from '#/lib/strings/bridged-html'
+import {type Kind, piecesOf} from '#/lib/strings/formatting'
 import {isRTLText} from '#/lib/strings/text-direction'
 import {toShortUrl} from '#/lib/strings/url-helpers'
 import {
@@ -12,6 +14,7 @@ import {
   type TextStyleProp,
   useAlf,
   useTheme,
+  web,
 } from '#/alf'
 import {useNativeFontScale} from '#/alf/util/dimensions'
 import {InlineLinkText, type LinkProps} from '#/components/Link'
@@ -267,15 +270,58 @@ export function RichText({
       key++
     }
   } else {
-    // N.B. must access segments via `richText.segments`, not via destructuring
-    for (const segment of richText.segments()) {
-      const link = segment.link
-      const mention = segment.mention
-      const tag = segment.tag
-      const bluemoji = segment.facet?.features
-        .map(getBluemojiFacet)
-        .find(Boolean)
-
+    const pieces = piecesOf(richText.text, facets)
+    const formatStyles = (kinds: Kind[]): StyleProp<TextStyle> => [
+      kinds.includes('bold') && a.font_bold,
+      kinds.includes('italic') && a.italic,
+      kinds.includes('strikethrough') && a.strike_through,
+      kinds.includes('code') && {
+        fontFamily: IS_ANDROID ? 'monospace' : 'Courier New',
+        backgroundColor: t.palette.contrast_25,
+      },
+    ]
+    for (let i = 0; i < pieces.length; i++) {
+      const segment = pieces[i]
+      if (segment.spoiler !== undefined) {
+        const group = [segment]
+        while (pieces[i + 1]?.spoiler === segment.spoiler) {
+          group.push(pieces[++i])
+        }
+        els.push(
+          <Spoiler
+            key={`${richText.text}:${segment.start}`}
+            style={plainStyles}
+            selectable={selectable}>
+            {group.map(piece => (
+              <Text
+                key={piece.start}
+                emoji
+                style={[plainStyles, formatStyles(piece.kinds)]}>
+                {piece.text}
+              </Text>
+            ))}
+          </Spoiler>,
+        )
+        continue
+      }
+      // Code and spoilers are always literal, even if another client adds
+      // interactive facets over them.
+      const features = segment.kinds.includes('code') ? [] : segment.features
+      const mention = features.find(feature =>
+        bsky.isType(app.bsky.richtext.facet.mention, feature),
+      )
+      const link = features.find(feature =>
+        bsky.isType(app.bsky.richtext.facet.link, feature),
+      )
+      const tag = features.find(feature =>
+        bsky.isType(app.bsky.richtext.facet.tag, feature),
+      )
+      const bluemojiFeature = features.find(feature =>
+        getBluemojiFacet(feature),
+      )
+      const bluemoji = getBluemojiFacet(bluemojiFeature)
+      const formatting = formatStyles(segment.kinds)
+      const pieceStyles = [interactiveStyles, formatting]
       if (
         mention &&
         (disableMentionFacetValidation ||
@@ -287,7 +333,7 @@ export function RichText({
             <InlineLinkText
               selectable={selectable}
               to={`/profile/${mention.did}`}
-              style={interactiveStyles}
+              style={pieceStyles}
               // @ts-expect-error TODO
               dataSet={WORD_WRAP}
               shouldProxy={shouldProxyLinks}
@@ -298,22 +344,39 @@ export function RichText({
         )
       } else if (link && bsky.matches(app.bsky.richtext.facet.link, link)) {
         const isValidLink = URL_REGEX.test(link.uri)
+        // Shortening a fragment would discard text at a formatting boundary.
+        const split =
+          pieces[i - 1]?.features.includes(link) ||
+          pieces[i + 1]?.features.includes(link)
+        const label = split ? segment.text : toShortUrl(segment.text)
         if (!isValidLink || disableLinks) {
-          els.push(toShortUrl(segment.text))
+          els.push(
+            segment.kinds.length ? (
+              <Text
+                key={key}
+                emoji
+                selectable={selectable}
+                style={[plainStyles, formatting]}>
+                {label}
+              </Text>
+            ) : (
+              label
+            ),
+          )
         } else {
           els.push(
             <InlineLinkText
               selectable={selectable}
               key={key}
               to={link.uri}
-              style={interactiveStyles}
+              style={pieceStyles}
               // @ts-expect-error TODO
               dataSet={WORD_WRAP}
               shareOnLongPress
               shouldProxy={shouldProxyLinks}
               onPress={onLinkPress}
               emoji>
-              {toShortUrl(segment.text)}
+              {label}
             </InlineLinkText>,
           )
         }
@@ -328,17 +391,30 @@ export function RichText({
             key={key}
             display={segment.text}
             tag={tag.tag}
-            textStyle={interactiveStyles}
+            textStyle={pieceStyles}
             authorHandle={authorHandle}
           />,
         )
-      } else if (bluemoji) {
+      } else if (
+        bluemoji &&
+        bluemojiFeature &&
+        !pieces.some(
+          piece =>
+            (piece.spoiler !== undefined || piece.kinds.includes('code')) &&
+            piece.features.includes(bluemojiFeature),
+        )
+      ) {
+        // An emoji is one attachment, even when formatting splits its alias.
+        let fallbackText = segment.text
+        while (pieces[i + 1]?.features.includes(bluemojiFeature)) {
+          fallbackText += pieces[++i].text
+        }
         els.push(
           <InlineBluemoji
             key={key}
             interactive={enableEmojiDetails}
             claim={bluemoji}
-            fallbackText={segment.text}
+            fallbackText={fallbackText}
             size={customEmojiSize}
             baselineOffset={
               IS_NATIVE &&
@@ -349,7 +425,19 @@ export function RichText({
           />,
         )
       } else {
-        els.push(segment.text)
+        els.push(
+          segment.kinds.length ? (
+            <Text
+              key={key}
+              emoji
+              selectable={selectable}
+              style={[plainStyles, formatting]}>
+              {segment.text}
+            </Text>
+          ) : (
+            segment.text
+          ),
+        )
       }
       key++
     }
@@ -416,5 +504,49 @@ export function RichText({
         😀
       </NativeText>
     </>
+  )
+}
+
+function Spoiler({
+  children,
+  style,
+  selectable,
+}: Pick<TextProps, 'children' | 'style' | 'selectable'>) {
+  const {t} = useLingui()
+  const theme = useTheme()
+  const [revealed, setRevealed] = useState(false)
+  return (
+    <Text
+      emoji
+      accessible
+      accessibilityRole="button"
+      accessibilityLabel={revealed ? undefined : t`Reveal spoiler`}
+      accessibilityHint={revealed ? t`Hide spoiler` : t`Shows hidden text`}
+      accessibilityState={{expanded: revealed}}
+      selectable={revealed && selectable}
+      style={[
+        style,
+        {
+          backgroundColor: theme.palette.contrast_100,
+          borderRadius: 3,
+        },
+        !revealed && theme.atoms.text_contrast_medium,
+      ]}
+      {...web({
+        tabIndex: 0,
+        onKeyDown: (event: React.KeyboardEvent) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return
+          event.preventDefault()
+          event.stopPropagation()
+          if (!event.repeat) setRevealed(value => !value)
+        },
+      })}
+      onPress={event => {
+        event.preventDefault()
+        event.stopPropagation()
+        setRevealed(value => !value)
+      }}>
+      {revealed ? children : t`Spoiler`}
+    </Text>
   )
 }

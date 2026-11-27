@@ -18,6 +18,7 @@ Fixes and changes:
 - 200 max labelers
 - Custom emoji & mention masking e.g. `[Kris](@kris.kralsei.stream)`, `[Ralsei](:ralsei:)`
 - Custom emojis in DMs
+- [Parfait-compatible formatting facets](https://tangled.org/juliet.paris/parfait/blob/c435dfe0f995feb6925aaaf8b6e1bad5494608cc/src/lib/formatting.ts): write `**bold**`, `*italic*` / `_italic_`, `~~strikethrough~~`, inline `` `code` ``, and `||spoiler||` in the composer. Web styles the editable source; native shows a formatted preview. Escape a marker with `\` to keep it literal. Markers remain in posted text for other clients; spoilers use reversible ROT18 obscuring, not encryption, and reveal on tap in supporting clients.
 
 Profile stuff:
 - Profile Bages (character + kin)

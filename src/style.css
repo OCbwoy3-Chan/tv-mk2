@@ -128,6 +128,24 @@ img {
 .ProseMirror .composer-syntax {
   opacity: 0.5;
 }
+.ProseMirror .composer-format-bold {
+  font-weight: 700;
+}
+.ProseMirror .composer-format-italic {
+  font-style: italic;
+}
+.ProseMirror .composer-format-strikethrough {
+  text-decoration: line-through;
+}
+.ProseMirror .composer-format-code {
+  font-family: monospace;
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+  border-radius: 3px;
+}
+.ProseMirror .composer-format-spoiler {
+  background-color: color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 3px;
+}
 /* OLLIE: TODO -- this is not accessible */
 /* Remove focus state on inputs */
 .ProseMirror-focused {

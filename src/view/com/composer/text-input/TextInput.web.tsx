@@ -30,6 +30,7 @@ import {splitGraphemes} from 'unicode-segmenter/grapheme'
 
 import {useColorSchemeStyle} from '#/lib/hooks/useColorSchemeStyle'
 import {blobToDataUri, isUriImage} from '#/lib/media/util'
+import {kindOf} from '#/lib/strings/formatting'
 import {formatMarkdownLinkDestination} from '#/lib/strings/markdown-links'
 import {
   applyFacetSyntax,
@@ -62,6 +63,7 @@ import * as bsky from '#/types/bsky'
 import {type TextInputProps} from './TextInput.types'
 import {getThreadShortcut} from './thread-shortcuts'
 import {type AutocompleteRef, createSuggestion} from './web/Autocomplete'
+import {FormattingDecorator} from './web/FormattingDecorator'
 import {LinkDecorator} from './web/LinkDecorator'
 import {TagDecorator} from './web/TagDecorator'
 
@@ -129,6 +131,7 @@ export function TextInput({
       }),
       LinkDecorator,
       TagDecorator,
+      FormattingDecorator,
       Mention.configure({
         HTMLAttributes: {
           class: 'mention',
@@ -617,7 +620,14 @@ function richTextToEditorJson(
 function richTextToHTML(richtext: RichText): string {
   let html = ''
 
-  for (const segment of richtext.segments()) {
+  const source = new RichText({
+    text: richtext.text,
+    facets: richtext.facets?.flatMap(facet => {
+      const features = facet.features.filter(feature => !kindOf(feature))
+      return features.length ? [{...facet, features}] : []
+    }),
+  })
+  for (const segment of source.segments()) {
     if (segment.mention) {
       html += `<span data-type="mention" data-id="${escapeHTML(segment.mention.did)}"></span>`
     } else {
