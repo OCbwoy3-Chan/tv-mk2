@@ -30,9 +30,9 @@ export function DeltasAppQuirksSettingsScreen() {
     },
     {
       type: 'toggle',
-      label: l`Eurosky notification workaround`,
+      label: l`Notifications V2 workaround`,
       value: 'euroskyNotifWorkaround',
-      info: l`Eurosky refuses to implement Notifications V2. Requires Eurosky to be selected as your AppView.`,
+      info: l`Some AppViews might not have implemented Notifications V2.`,
       icon: BellIcon,
     },
   ]

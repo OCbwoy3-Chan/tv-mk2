@@ -1,7 +1,7 @@
 import {forwardRef} from 'react'
 import {type TextProps} from 'react-native'
 import Svg, {G, Path, type PathProps, type SvgProps} from 'react-native-svg'
-import {Image} from 'expo-image'
+import {Image, ImageProps} from 'expo-image'
 
 import {TENNA_LOGO_PATHS} from '#/view/icons/tennaLogo'
 import {useLogoVariant} from '#/view/icons/useLogoVariant'
@@ -18,6 +18,7 @@ type Props = {
   allowVariants?: boolean
   fill?: PathProps['fill']
   style?: TextProps['style']
+  source?: Pick<ImageProps,"source">
 } & Omit<SvgProps, 'style'>
 
 export const Logo = forwardRef(function LogoImpl(props: Props, ref) {
@@ -28,12 +29,12 @@ export const Logo = forwardRef(function LogoImpl(props: Props, ref) {
 
   const logoVariant = useLogoVariant(allowVariants)
 
-  if (logoVariant === 'kawaii') {
+  if (!!props.source || logoVariant === 'kawaii') {
     const useLargeKawaiiLogo = size > 100
     return (
       <Image
         source={
-          useLargeKawaiiLogo
+          props.source ? props.source : useLargeKawaiiLogo
             ? require('../../../assets/kawaii.avif')
             : require('../../../assets/kawaii_smol.avif')
         }

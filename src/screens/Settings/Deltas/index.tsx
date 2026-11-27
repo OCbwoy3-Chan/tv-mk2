@@ -198,9 +198,6 @@ export function DeltasSettingsScreen({ }: Props) {
                 </View>
             </View>
             <View style={[a.pt_lg]}>
-                <Text style={[t.atoms.text_contrast_low, a.text_sm, a.text_center]}>
-                    fuck šlesers
-                </Text>
                 <Image
                     source={require('#/../assets/kris_overworld_splat.png')}
                     accessible={false}

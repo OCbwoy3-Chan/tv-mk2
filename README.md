@@ -31,7 +31,7 @@ Moderation options:
 
 App quirk options:
 - More customizable & vanity post TIDs/rkeys (e.g. `deltarunetmrw`)
-- Notifications V2 AppView compat workaround (BECAUSE EUROSKY REFUSES TO IMPLEMENT THEM)
+- Notifications V2 AppView compat workaround
 - AppView notification prefs migrator 
 
 [Deltas+](http://tenna.party/settings/deltas/plus) gated options:

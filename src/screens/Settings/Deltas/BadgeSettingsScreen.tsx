@@ -27,7 +27,7 @@ import * as bsky from '#/types/bsky'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import { RunesScreenLayout } from '../RunesSettings/components/RunesScreenLayout'
 import * as Admonition from '#/components/Admonition'
-import { Logomark } from '#/view/icons/Logomark'
+import { Logo } from '#/view/icons/Logo'
 import * as Toggle from '#/components/forms/Toggle'
 import * as Select from '#/components/Select'
 
@@ -118,15 +118,14 @@ export function DeltasBadgeSettingsScreen() {
       <SettingsList.Item>
         <View style={[a.gap_sm, a.w_full]}>
           <View style={[a.flex_row, a.gap_sm]}>
-            <Logomark width={24} />
+            <Logo width={24} />
             <Text style={[a.text_2xl, a.font_bold]}>
               <Trans>Badge</Trans>
             </Text>
           </View>
           <Text style={[a.text_md, a.leading_snug]}>
             <Trans>
-              Show a character badge on your profile. A tenna.party exclusive rn
-              👀
+              Show a character badge on your profile.
             </Trans>
           </Text>
         </View>
@@ -185,7 +184,13 @@ export function DeltasBadgeSettingsScreen() {
                     <Admonition.Icon />
                     <Admonition.Content>
                       <Text>
-                        <Trans>Here's a brief guide to the kin options:</Trans>
+                        <Trans>What are kins, etc?:</Trans>
+                      </Text>
+                      <Text>
+                        <Trans>- Badge: No implied connection.</Trans>
+                      </Text>
+                      <Text>
+                        <Trans>- Favorite character: Your favorite character.</Trans>
                       </Text>
                       <Text>
                         <Trans>- Fictive: You identify as the character.</Trans>

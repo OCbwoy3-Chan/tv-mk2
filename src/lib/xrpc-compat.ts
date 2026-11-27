@@ -20,9 +20,9 @@ export function withXrpcCompat(agent: Agent): Agent {
       if (
         url.pathname !==
           '/xrpc/app.bsky.notification.getGroupedNotifications' ||
-        !persisted.get('deltasPreferences')?.euroskyNotifWorkaround ||
-        new Headers(init.headers).get('atproto-proxy') !==
-          'did:web:api.eurosky.network#bsky_appview'
+        !persisted.get('deltasPreferences')?.euroskyNotifWorkaround // ||
+        // new Headers(init.headers).get('atproto-proxy') !==
+        //   'did:web:api.eurosky.network#bsky_appview'
       ) {
         return agent.fetchHandler(path, init)
       }

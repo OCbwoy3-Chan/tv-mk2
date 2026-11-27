@@ -14,7 +14,7 @@ export const BSKY_SERVICE_DID = 'did:web:bsky.social'
 export const PUBLIC_BSKY_SERVICE =
   ENV_PUBLIC_BSKY_SERVICE || 'https://public.api.bsky.app'
 export const DEFAULT_SERVICE = BSKY_SERVICE
-export const HELP_DESK_URL = `https://tangled.org/did:plc:3thjdgidhlxp7qzhffroeece`
+export const HELP_DESK_URL = `https://userinput.app/s/did:web:vessel.darkworld.download/3n3c7kxggje22` // `https://tangled.org/did:plc:3thjdgidhlxp7qzhffroeece`
 export const CHAT_SERVICE = 'https://api.bsky.chat'
 export const EMBED_SERVICE = 'https://embed.bsky.app'
 export const EMBED_SCRIPT = `${EMBED_SERVICE}/static/embed.js`

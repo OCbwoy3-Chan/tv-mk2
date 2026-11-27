@@ -54,6 +54,14 @@ export const KIN_BADGE_TYPES: KinBadgeType[] = [
         },
     },
     {
+        name: "Favorite character",
+        id: "fav",
+        showAs: {
+            you: "Your favorite character is %c.",
+            others: "Their favorite character is %c."
+        },
+    },
+    {
         name: "Fictive",
         id: "fictive",
         showAs: {
