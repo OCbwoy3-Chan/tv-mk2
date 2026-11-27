@@ -198,38 +198,20 @@ export function DeltasSettingsScreen({ }: Props) {
                 </View>
             </View>
             <View style={[a.pt_lg]}>
-                <Text style={[t.atoms.text_contrast_high, a.text_md, a.text_center]}>
-                    tenna.party 2 by @kris.kralsei.stream
-                    {/* TODO: swap out handle when i change it */}
-                </Text>
                 <Text style={[t.atoms.text_contrast_low, a.text_sm, a.text_center]}>
-                    ({Device.osName ?? "Unknown"}
-                    {Device.osVersion ? " " + Device.osVersion : ""}
-                    {IS_WEB ? " Web" : (Device.modelId ?? Device.productName ?? "Device")})
+                    fuck šlesers
                 </Text>
-                <Pressable
-                    style={[a.self_center]}
-                    onLongPress={()=>{
-                        navigation.push("Profile",{
-                            name: "did:web:vessel.darkworld.download",
-                        })                        
-                    }}
-                >
-                    <Image
-                        source={require('#/../assets/kris_overworld_splat.png')}
-                        accessible={false}
-                        accessibilityIgnoresInvertColors
-                        resizeMode="contain"
-                        style={[
-                            { width: 70, height: 60 },
-                            a.self_center,
-                            a.mt_md
-                        ]}
-                    />
-                </Pressable>
-                <Text style={[t.atoms.text_contrast_low, a.text_xs, a.text_center, a.pt_md, a.pb_xl]}>
-                    made in latvia 😔
-                </Text>
+                <Image
+                    source={require('#/../assets/kris_overworld_splat.png')}
+                    accessible={false}
+                    accessibilityIgnoresInvertColors
+                    resizeMode="contain"
+                    style={[
+                        { width: 70, height: 60 },
+                        a.self_center,
+                        a.mt_md
+                    ]}
+                />
             </View>
         </RunesScreenLayout>
     )

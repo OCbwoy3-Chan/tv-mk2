@@ -293,7 +293,7 @@ export function TabPills({
                   },
                 ]}></View>
             ))}
-            {tabOffsets.length === tabs.length && (
+            {tabOffsets.length > 0 && tabOffsets.length === tabs.length && (
               <PillIndicator
                 layouts={tabOffsets}
                 dragProgress={dragProgress}
@@ -604,6 +604,9 @@ function PillIndicator({
   const widthOutputRange = layouts.map(layout => layout.width)
 
   const geometry = useDerivedValue(() => {
+    if (layouts.length === 1) {
+      return {x: layouts[0].x, width: layouts[0].width}
+    }
     const progress = dragProgress.get()
     return {
       x: interpolate(progress, inputRange, xOutputRange, 'clamp'),
