@@ -18,7 +18,7 @@ Fixes and changes:
 - 200 max labelers
 - Custom emoji & mention masking e.g. `[Kris](@kris.kralsei.stream)`, `[Ralsei](:ralsei:)`
 - Custom emojis in DMs
-- [Parfait](https://parfait.social) rich text support (from [purrsky](https://github.com/uwx/purrsky))
+- [Parfait](https://parfait.social) and [pckt](https://pckt.blog) rich text support (from [purrsky](https://github.com/uwx/purrsky))
 
 Profile stuff:
 - Profile Bages (character + kin)
