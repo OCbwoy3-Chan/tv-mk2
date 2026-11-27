@@ -1,9 +1,4 @@
-import {
-  type StyleProp,
-  StyleSheet,
-  Text as NativeText,
-  type TextStyle,
-} from 'react-native'
+import {type StyleProp, StyleSheet, type TextStyle} from 'react-native'
 import {type Unknown$TypedObject} from '@atproto/lex'
 import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {setupI18n} from '@lingui/core'
@@ -552,30 +547,49 @@ it('shows code literally even when a link facet covers the same text', () => {
   expect(mockLinkTargets).toEqual([])
 })
 
+it('renders a multiline code facet as a block without activating links', () => {
+  const code = 'const café = 1\nhttps://example.com'
+  const text = `before\n${code}\nafter`
+  const start = text.indexOf(code)
+  const screen = render(
+    <RichText
+      value={withFacets(text, [
+        {
+          start,
+          end: start + code.length,
+          features: [
+            featureOf('code'),
+            {$type: 'app.bsky.richtext.facet#link', uri: 'https://example.com'},
+          ],
+        },
+      ])}
+    />,
+  )
+  expect(screen.getByTestId('codeBlock')).toBeTruthy()
+  expect(screen.getByText(code)).toBeTruthy()
+  expect(mockLinkTargets).toEqual([])
+})
+
 it.each([
   new RichTextAPI({text: '```txt\n  literal <b> & text\n\tindented  \n```'}),
   '```txt\n  literal <b> & text\n\tindented  \n```',
-])(
-  'renders unfaceted fenced code with exact whitespace in nested text',
-  value => {
-    const screen = render(
-      <NativeText>
-        <RichText testID="body" value={value} selectable suffix="suffix" />
-      </NativeText>,
-    )
-    const code = screen.getByText('  literal <b> & text\n\tindented  ', {
-      normalizer: text => text,
-    })
-    expect(StyleSheet.flatten(code.props.style)).toMatchObject({
-      fontFamily: 'Courier New',
-      backgroundColor: '#eee',
-    })
-    expect(screen.getByTestId('body').props.selectable).toBe(true)
-    expect(JSON.stringify(screen.toJSON())).not.toContain('```')
-    expect(JSON.stringify(screen.toJSON())).toContain('suffix')
-    expect(mockLinkTargets).toEqual([])
-  },
-)
+])('renders unfaceted fenced code with exact whitespace in a block', value => {
+  const screen = render(
+    <RichText testID="body" value={value} selectable suffix="suffix" />,
+  )
+  const code = screen.getByText('  literal <b> & text\n\tindented  ', {
+    normalizer: text => text,
+  })
+  expect(StyleSheet.flatten(code.props.style)).toMatchObject({
+    fontFamily: 'Courier New',
+    backgroundColor: '#eee',
+  })
+  expect(screen.getByTestId('codeBlock')).toBeTruthy()
+  expect(code.props.selectable).toBe(true)
+  expect(JSON.stringify(screen.toJSON())).not.toContain('```')
+  expect(JSON.stringify(screen.toJSON())).toContain('suffix')
+  expect(mockLinkTargets).toEqual([])
+})
 
 it('colors language tokens and leaves inline backticks unchanged', () => {
   const screen = render(
@@ -645,11 +659,12 @@ it('preserves UTF-8 facets, layout props and suffix around multiple blocks', () 
   expect(screen.getByText('const café = 1')).toBeTruthy()
   expect(screen.getByText('print("été")')).toBeTruthy()
   expect(mockLinkTargets).toEqual(['https://outside.test'])
-  expect(screen.getByTestId('body').props).toMatchObject({
-    numberOfLines: 8,
-    onLayout,
-    onTextLayout,
+  expect(screen.getByTestId('body').props.onLayout).toBe(onLayout)
+  expect(StyleSheet.flatten(screen.getByTestId('body').props.style)).toMatchObject({
+    maxHeight: 200,
+    overflow: 'hidden',
   })
+  expect(screen.getAllByTestId('codeBlock')).toHaveLength(2)
   expect(JSON.stringify(screen.toJSON())).toContain('suffix')
   expect(JSON.stringify(screen.toJSON())).not.toContain('```')
 })

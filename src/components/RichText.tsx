@@ -191,6 +191,7 @@ export function RichText({
   }
 
   const els = []
+  const codeBlockIndices = new Set<number>()
   let key = 0
   if (htmlSegments) {
     const mentionDids = new Map<string, string>()
@@ -359,8 +360,14 @@ export function RichText({
       },
     ]
     for (let i = 0; i < pieces.length; i++) {
-      const segment = pieces[i]
+      const original = pieces[i]
+      let text = original.text
+      if (pieces[i - 1]?.block) text = text.replace(/^\n/, '')
+      if (pieces[i + 1]?.block) text = text.replace(/\n$/, '')
+      const segment = text === original.text ? original : {...original, text}
+      if (!segment.text && !segment.block) continue
       if (segment.block) {
+        codeBlockIndices.add(els.length)
         els.push(
           <HighlightedCode
             key={key++}
@@ -533,7 +540,65 @@ export function RichText({
     }
   }
 
-  const content = (
+  const lineHeight = flatten([a.leading_snug, style]).lineHeight ?? 1.3
+  const scaledLineHeight =
+    (lineHeight <= 2 ? fontSize * lineHeight : lineHeight) *
+    fonts.scaleMultiplier *
+    (IS_NATIVE ? nativeFontScale : 1)
+  const groups: {block: boolean; children: React.ReactNode[]}[] = []
+  if (codeBlockIndices.size) {
+    els.forEach((element, index) => {
+      const block = codeBlockIndices.has(index)
+      let group = groups[groups.length - 1]
+      if (!group || group.block !== block || block) {
+        group = {block, children: []}
+        groups.push(group)
+      }
+      group.children.push(element)
+    })
+  }
+  const content = codeBlockIndices.size ? (
+    <View
+      testID={testID}
+      onLayout={onLayout}
+      style={
+        numberOfLines
+          ? {maxHeight: numberOfLines * scaledLineHeight, overflow: 'hidden'}
+          : undefined
+      }>
+      {groups.map((group, index) =>
+        group.block ? (
+          <View
+            key={index}
+            testID="codeBlock"
+            style={{
+              backgroundColor: t.palette.contrast_25,
+              borderRadius: 6,
+              padding: 12,
+            }}>
+            {group.children}
+          </View>
+        ) : (
+          <Text
+            key={index}
+            emoji
+            selectable={selectable}
+            style={plainStyles}
+            onTextLayout={onTextLayout}
+            dataSet={WORD_WRAP}>
+            {group.children}
+            {index === groups.length - 1 && suffix ? ' ' : null}
+            {index === groups.length - 1 ? suffix : null}
+          </Text>
+        ),
+      )}
+      {suffix && groups[groups.length - 1]?.block ? (
+        <Text emoji selectable={selectable} style={[plainStyles, suffixStyles]}>
+          {suffix}
+        </Text>
+      ) : null}
+    </View>
+  ) : (
     <Text
       emoji
       selectable={selectable}
@@ -605,6 +670,31 @@ function withCodeBlocks(
   candidates: CodeBlock[],
 ): CodePiece[] {
   const pieces = piecesOf(richText.text, richText.facets)
+  const facetedBlocks: CodeBlock[] = []
+  for (let i = 0; i < pieces.length; i++) {
+    const first = pieces[i]
+    if (!first.kinds.includes('code') || first.spoiler !== undefined) continue
+    let end = first.end
+    while (
+      pieces[i + 1]?.start === end &&
+      pieces[i + 1].kinds.includes('code') &&
+      pieces[i + 1].spoiler === undefined
+    ) {
+      end = pieces[++i].end
+    }
+    const code = richText.text.slice(first.start, end)
+    if (
+      code.includes('\n') &&
+      (first.start === 0 || richText.text[first.start - 1] === '\n') &&
+      (end === richText.text.length ||
+        richText.text[end] === '\n' ||
+        code.endsWith('\n')) &&
+      !candidates.some(block => block.start < end && first.start < block.end)
+    ) {
+      facetedBlocks.push({start: first.start, end, code, language: ''})
+    }
+  }
+  candidates = [...candidates, ...facetedBlocks].sort((a, b) => a.start - b.start)
   const spoilers = richText.facets?.filter(facet =>
     facet.features.some(feature => kindOf(feature) === 'spoiler'),
   )
