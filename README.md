@@ -18,8 +18,7 @@ Fixes and changes:
 - 200 max labelers
 - Custom emoji & mention masking e.g. `[Kris](@kris.kralsei.stream)`, `[Ralsei](:ralsei:)`
 - Custom emojis in DMs
-- [Parfait-compatible formatting facets](https://tangled.org/juliet.paris/parfait/blob/c435dfe0f995feb6925aaaf8b6e1bad5494608cc/src/lib/formatting.ts): write `**bold**`, `*italic*` / `_italic_`, `~~strikethrough~~`, inline `` `code` ``, and `||spoiler||` in the composer. Web styles the editable source; native shows a formatted preview. Escape a marker with `\` to keep it literal. Markers remain in posted text for other clients; spoilers use reversible ROT18 obscuring, not encryption, and reveal on tap in supporting clients.
-- Language-aware [code highlighting adapted from Parfait](https://tangled.org/juliet.paris/parfait/blob/c435dfe0f995feb6925aaaf8b6e1bad5494608cc/src/lib/highlight.ts): fence code with a line such as ` ```ts ` and a closing line of three backticks. Posts, the web editor, and the native preview color supported languages (including Rust, Go, TypeScript, Python, HTML, CSS, SQL, and diffs); unknown or omitted languages use generic highlighting, while `text` keeps code plain. Fences stay in the posted record for other clients.
+- [Parfait](https://parfait.social) rich text support (from [purrsky](https://github.com/uwx/purrsky))
 
 Profile stuff:
 - Profile Bages (character + kin)
