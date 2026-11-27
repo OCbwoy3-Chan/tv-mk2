@@ -85,9 +85,23 @@ describe('htmlToSegments', () => {
       {text: 's', strike: true},
       {text: 'c', code: true},
       {text: '\n\n'},
-      {text: '▎ q', quote: true},
-      {text: '\n'},
-      {text: '▎ r', quote: true},
+      {text: 'q\nr', quote: true},
+    ])
+  })
+
+  it('keeps quote boundaries and links without inserting text markers', () => {
+    expect(
+      htmlToSegments(
+        '<p>before</p><blockquote><p>one <a href="https://example.com">link</a><br>two</p></blockquote><p>after</p>',
+      ),
+    ).toEqual([
+      {text: 'before'},
+      {text: '\n\n'},
+      {text: 'one ', quote: true},
+      {text: 'link', quote: true, link: 'https://example.com'},
+      {text: '\ntwo', quote: true},
+      {text: '\n\n'},
+      {text: 'after'},
     ])
   })
 

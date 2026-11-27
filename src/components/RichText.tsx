@@ -1,5 +1,5 @@
 import {useMemo, useState} from 'react'
-import {type StyleProp, Text as NativeText, type TextStyle} from 'react-native'
+import {type StyleProp, Text as NativeText, type TextStyle, View} from 'react-native'
 import {RichText as RichTextAPI} from '@bsky/sdk/richtext'
 import {useLingui} from '@lingui/react/macro'
 
@@ -277,6 +277,75 @@ export function RichText({
         els.push(segment.text)
       }
       key++
+    }
+    if (htmlSegments.some(segment => segment.quote)) {
+      const lineHeight = flatten([a.leading_snug, style]).lineHeight ?? 1.3
+      const scaledLineHeight =
+        (lineHeight <= 2 ? fontSize * lineHeight : lineHeight) *
+        fonts.scaleMultiplier *
+        (IS_NATIVE ? nativeFontScale : 1)
+      const groups: {
+        quote: boolean
+        children: React.ReactNode[]
+        spacing: number
+      }[] = []
+      let spacing = 0
+      for (let i = 0; i < htmlSegments.length; i++) {
+        const segment = htmlSegments[i]
+        const previous = htmlSegments[i - 1]
+        const next = htmlSegments[i + 1]
+        if (
+          /^\n+$/.test(segment.text) &&
+          previous &&
+          next &&
+          !!previous.quote !== !!next.quote
+        ) {
+          spacing = Math.max(0, segment.text.length - 1) * scaledLineHeight
+          continue
+        }
+        const quote = !!segment.quote
+        let group = groups[groups.length - 1]
+        if (!group || group.quote !== quote || spacing) {
+          group = {quote, children: [], spacing}
+          groups.push(group)
+          spacing = 0
+        }
+        group.children.push(els[i])
+      }
+      return (
+        <View
+          testID={testID}
+          onLayout={onLayout}
+          style={
+            numberOfLines
+              ? {maxHeight: numberOfLines * scaledLineHeight, overflow: 'hidden'}
+              : undefined
+          }>
+          {groups.map((group, index) => (
+            <View
+              key={index}
+              style={[
+                {marginTop: group.spacing},
+                group.quote && {
+                  borderLeftWidth: 3,
+                  borderLeftColor: t.palette.contrast_300,
+                  paddingLeft: 12,
+                },
+              ]}>
+              <Text
+                emoji
+                selectable={selectable}
+                style={[plainStyles, index === groups.length - 1 && suffixStyles]}
+                onTextLayout={onTextLayout}
+                dataSet={WORD_WRAP}>
+                {group.children}
+                {index === groups.length - 1 && suffix ? ' ' : null}
+                {index === groups.length - 1 ? suffix : null}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )
     }
   } else {
     const pieces = withCodeBlocks(richText, blocks)

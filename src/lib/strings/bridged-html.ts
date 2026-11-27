@@ -117,6 +117,11 @@ export function htmlToSegments(html: string): HtmlSegment[] {
       prev &&
       !prev.link &&
       !prev.tag &&
+      !(
+        !prev.quote &&
+        /^\n+$/.test(prev.text) &&
+        segments[segments.length - 2]?.quote
+      ) &&
       STYLE_KEYS.every(k => prev[k] === style[k])
     ) {
       prev.text += text
@@ -146,10 +151,16 @@ export function htmlToSegments(html: string): HtmlSegment[] {
     if (!text) return
     if (pendingBreaks > 0 && segments.length) {
       trimTrailing()
-      append('\n'.repeat(pendingBreaks), {})
+      if (!!last()?.quote !== !!style.quote) {
+        segments.push({text: '\n'.repeat(pendingBreaks)})
+      } else {
+        append(
+          '\n'.repeat(pendingBreaks),
+          style.quote ? {quote: true} : {},
+        )
+      }
     }
     pendingBreaks = 0
-    if (lineStart && style.quote) append('▎ ', style)
     append(text, style, target)
   }
 
