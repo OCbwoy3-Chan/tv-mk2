@@ -389,14 +389,22 @@ export function RichText({
             key={`${richText.text}:${segment.start}`}
             style={plainStyles}
             selectable={selectable}>
-            {group.map(piece => (
+            {revealed => (
               <Text
-                key={piece.start}
-                emoji
-                style={[plainStyles, formatStyles(piece.kinds)]}>
-                {piece.text}
+                accessibilityElementsHidden={!revealed}
+                importantForAccessibility={revealed ? 'auto' : 'no-hide-descendants'}
+                {...web({'aria-hidden': !revealed})}
+                style={!revealed && {opacity: 0}}>
+                {group.map(piece => (
+                  <Text
+                    key={piece.start}
+                    emoji
+                    style={[plainStyles, formatStyles(piece.kinds)]}>
+                    {piece.text}
+                  </Text>
+                ))}
               </Text>
-            ))}
+            )}
           </Spoiler>,
         )
         continue
@@ -759,7 +767,9 @@ function Spoiler({
   children,
   style,
   selectable,
-}: Pick<TextProps, 'children' | 'style' | 'selectable'>) {
+}: Pick<TextProps, 'style' | 'selectable'> & {
+  children: (revealed: boolean) => React.ReactNode
+}) {
   const {t} = useLingui()
   const theme = useTheme()
   const [revealed, setRevealed] = useState(false)
@@ -778,7 +788,7 @@ function Spoiler({
           backgroundColor: theme.palette.contrast_100,
           borderRadius: 3,
         },
-        !revealed && theme.atoms.text_contrast_medium,
+        !revealed && web({userSelect: 'none'}),
       ]}
       {...web({
         tabIndex: 0,
@@ -794,7 +804,7 @@ function Spoiler({
         event.stopPropagation()
         setRevealed(value => !value)
       }}>
-      {revealed ? children : t`Spoiler`}
+      {children(revealed)}
     </Text>
   )
 }

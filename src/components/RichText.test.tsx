@@ -314,7 +314,7 @@ it('composes formatting with mentions, tags and a single split bluemoji', () => 
   ])
 })
 
-it('never mounts hidden spoiler text, links, mentions, tags or emoji', () => {
+it('hides spoiler text from view and accessibility while retaining its layout', () => {
   const secret = 'secret @alice #tag :wave:'
   const text = `||${shift(secret)}||`
   const screen = render(
@@ -363,7 +363,10 @@ it('never mounts hidden spoiler text, links, mentions, tags or emoji', () => {
   )
   const button = screen.getByRole('button', {name: 'Reveal spoiler'})
   expect(button.props.accessibilityState).toEqual({expanded: false})
-  expect(JSON.stringify(screen.toJSON())).not.toContain('secret')
+  const hiddenText = button.findByProps({accessibilityElementsHidden: true})
+  expect(StyleSheet.flatten(hiddenText.props.style)).toMatchObject({
+    opacity: 0,
+  })
   expect(mockLinkTargets).toEqual([])
   expect(mockTagTargets).toEqual([])
   expect(mockEmojiCalls).toEqual([])
@@ -705,7 +708,7 @@ it.each([false, true])(
   },
 )
 
-it('never highlights or mounts a fenced block intersecting a hidden spoiler', () => {
+it('never highlights a fenced block intersecting a hidden spoiler', () => {
   const secret = 'const secret = "private"'
   const text = `\`\`\`js\n${shift(secret)}\n\`\`\``
   const start = text.indexOf(shift(secret))
@@ -722,7 +725,7 @@ it('never highlights or mounts a fenced block intersecting a hidden spoiler', ()
       />
     </I18nProvider>,
   )
-  expect(JSON.stringify(screen.toJSON())).not.toContain('secret')
+  expect(screen.queryByText(secret)).toBeNull()
   expect(JSON.stringify(screen.toJSON())).not.toContain(shift(secret))
   // A conflicting block stays literal instead of bypassing the spoiler.
   expect(JSON.stringify(screen.toJSON())).toContain('```js')
@@ -777,7 +780,7 @@ it('keeps a whole fenced spoiler hidden while highlighting a separate block', ()
       />
     </I18nProvider>,
   )
-  expect(JSON.stringify(screen.toJSON())).not.toContain('secret')
+  expect(screen.queryByText(hidden)).toBeNull()
   expect(JSON.stringify(screen.toJSON())).not.toContain(shift('secret'))
   expect(screen.getByText('const publicValue = 1')).toBeTruthy()
   expect(
